@@ -474,7 +474,15 @@
         "path": "기획/AtoZ_재선정과_Agent설계.md",
         "sha256": "85c572cfd27d618eb12c9327c57e62a2529135953aa979c6042845dad4a0f02a"
       },
-      "validation_level": "development graph audit + architecture review; not standalone LLM or device validation"
+      "validation_level": "development graph audit + architecture review; not standalone LLM or device validation",
+      "official_alignment": {
+        "official_task": "새로운 제품·서비스가 적용된 미래 키친 생활 시나리오(간접 연결)",
+        "kitchen_concept": "현재는 일반 실패 대응 흐름으로 구체적 키친 콘셉트 부족",
+        "agent_job": "실패 상태 그래프 생성·검사·수정",
+        "output": "실패 흐름과 검사 기록",
+        "verdict": "독립 주제에서 제외",
+        "reason": "선정 서비스의 연결 실패·미응답 보조 검사로 활용 가능"
+      }
     },
     {
       "id": "B8",
@@ -491,7 +499,15 @@
         "R6",
         "R7"
       ],
-      "feasibility": "conditional"
+      "feasibility": "conditional",
+      "official_alignment": {
+        "official_task": "가전 간 연계를 통한 AI 기반 키친 서비스",
+        "kitchen_concept": "여러 가전과 사람의 작업을 조율해 식사 준비를 맞추고 지연 때 안내를 바꾸는 경험",
+        "agent_job": "UX 기획자의 상황·기기·작업 조건을 구조화하고 일정 도구로 검사해 시나리오를 재설계",
+        "output": "정상/지연/기기 부족 UX 흐름, 타임라인, 화면·알림 명세와 검사 근거",
+        "verdict": "우선 검증·현재 추천",
+        "reason": "공식 항목과 직접 연결되고 계산 결과를 시연 가능. 현실 작업 데이터와 기준선 비교는 필요"
+      }
     },
     {
       "id": "A8",
@@ -508,7 +524,15 @@
         "R1",
         "R2"
       ],
-      "feasibility": "conditional"
+      "feasibility": "conditional",
+      "official_alignment": {
+        "official_task": "미래 라이프스타일과 가구 형태 변화에 따른 가전 및 폼팩터 제안",
+        "kitchen_concept": "작은 주방·가구 조건에서 미충족 요구를 찾아 제품/배치 지원 서비스 개선안을 제안",
+        "agent_job": "상품기획자의 공간 조건·제품 자료를 대조해 제약 계산, 기존 기능 반증, 콘셉트 생성",
+        "output": "제약 근거표, 고객 요구, 기존 대안과 차이, 제품·서비스 콘셉트 카드",
+        "verdict": "우선 검증·대안",
+        "reason": "공식 항목과 직접 연결. 모델별 데이터와 미충족 수요 증거가 관건"
+      }
     },
     {
       "id": "B9",
@@ -526,7 +550,15 @@
         "R4",
         "R5"
       ],
-      "feasibility": "conditional"
+      "feasibility": "conditional",
+      "official_alignment": {
+        "official_task": "새로운 제품·서비스가 적용된 미래 키친 생활 시나리오(간접 연결)",
+        "kitchen_concept": "현재는 일반 접근성 화면 검사로 구체적 키친 콘셉트 부족",
+        "agent_job": "화면 생성·접근성 검사·수정",
+        "output": "화면과 검사 기록",
+        "verdict": "독립 주제에서 제외",
+        "reason": "선정 서비스의 보조 화면 검증 기능으로 활용 가능"
+      }
     },
     {
       "id": "A9",
@@ -543,7 +575,15 @@
         "R8",
         "R9"
       ],
-      "feasibility": "conditional"
+      "feasibility": "conditional",
+      "official_alignment": {
+        "official_task": "발견한 고객 니즈와 기술을 결합한 신규 제품·서비스 콘셉트 제안",
+        "kitchen_concept": "목표 고객의 용량·에너지 요구에 맞춘 제품 콘셉트가 필요하나 현재 근거 부족",
+        "agent_job": "공개 제품 수치 비교와 요구사항 후보 생성",
+        "output": "현재는 비교표 중심; 고객 근거와 콘셉트 보완 필요",
+        "verdict": "보류",
+        "reason": "데이터 분석만으로 공식 산출물 충족을 주장하기 어려움"
+      }
     },
     {
       "id": "A10",
@@ -561,7 +601,15 @@
         "R1",
         "R2"
       ],
-      "feasibility": "conditional"
+      "feasibility": "conditional",
+      "official_alignment": {
+        "official_task": "SNS·검색 트렌드·제품 리뷰를 활용한 숨은 고객 니즈 발굴",
+        "kitchen_concept": "실제 보관·조작 불편을 모델별 기존 기능과 대조해 개선 기능을 제안",
+        "agent_job": "허가된 고객 원문 분류·중복 처리·공식 자료 반증·개선 기획",
+        "output": "출처/반증이 붙은 개선 요구사항과 콘셉트",
+        "verdict": "조건부 후순위",
+        "reason": "공식 항목은 직접 부합. 실제 고객 코퍼스 미확보와 기존 도구 중복"
+      }
     }
   ],
   "decision": {
@@ -569,7 +617,7 @@
     "candidate_id": null,
     "confirmed_by": null,
     "confirmed_at": null,
-    "rationale": "사용자의 LLM 대체 가능성 지적 및 복수 후보 비교 요청. Kitchen Recovery 최종 선정 재검토, B8/A8 우선 검증·B9 차선. 실제 우월성 미검증."
+    "rationale": "공식 포함 가능 과제 기준 B8 가전 연계 조리 경험 추천, A8 작은 주방 가전 기획 대안. B9/B7 독립 주제 제외. 실제 비교 검증 전 최종 확정하지 않음."
   },
   "stages": [
     {
@@ -593,10 +641,10 @@
     {
       "id": "topic_research",
       "status": "done",
-      "next_action": "B8/A8의 데이터·LLM/기존 도구 대비 추가 가치 예비 검증",
+      "next_action": "공식 과제에 직접 연결된 B8/A8의 핵심 가정 비교 검증",
       "evidence": {
-        "path": "기획/주제후보_재비교.md",
-        "sha256": "e92998e3b6e1369148ad730b28acb3c63d384b8d51042e22999b59fb5ccf8cb9"
+        "path": "기획/공식과제_기준_후보정리.md",
+        "sha256": "5e954371391007fbf13205e2c67e1b50c7ddd9b3d418061ecde902eddc807f78"
       }
     },
     {
@@ -726,6 +774,6 @@
     "executor": "current Codex conversation",
     "topic": null,
     "standalone_model_api_verified": false,
-    "comparison": "기획/주제후보_재비교.md"
+    "comparison": "기획/공식과제_기준_후보정리.md"
   }
 }
