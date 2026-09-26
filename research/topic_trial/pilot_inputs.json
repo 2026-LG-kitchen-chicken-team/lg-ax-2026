@@ -1,0 +1,37 @@
+{
+  "provenance": "Inputs and concept seeds authored by Codex in the current conversation from sources.json. Functional tags are curated. Events, task times and adversarial features are synthetic. No consumer interview or device measurement.",
+  "a4": {
+    "target_scope": "KR_unspecified_model",
+    "concepts": [
+      {"id":"load_review","human_task":"큰 식기의 배치와 분사암·투입부 간섭 확인","source_ids":["S7"],"proposed_function":"confirm_loading_clearance","concept_seed":"적재 직전 모델별 제약과 사용자 확인을 연결하는 보조 서비스","hypothesis":"적재 확인을 사용 흐름에 연결하면 재배치 판단 수고를 줄일 가능성이 있다."},
+      {"id":"readiness","human_task":"세척 종료 후 필요한 식기의 상태와 사용 준비 확인","source_ids":["S8"],"proposed_function":"confirm_dish_readiness","concept_seed":"기기 종료와 사용자가 확인한 식기 준비 상태를 구분하는 서비스","hypothesis":"사람이 직접 확인해야 하는 완료 조건을 구분할 가치가 있을 수 있다."},
+      {"id":"auto_cycle","human_task":"세척 조건 결정","source_ids":["S10"],"proposed_function":"choose_wash_parameters","concept_seed":"오염도에 따라 세척 조건을 자동 조절하는 기능","hypothesis":"이미 발표된 기능인지 먼저 확인해야 한다."},
+      {"id":"cycle_notice","human_task":"기기 종료 시점 확인","source_ids":["S12"],"proposed_function":"notify_cycle_end","concept_seed":"기기가 끝났을 때 알림을 보내는 기능","hypothesis":"이미 상용 안내에 포함된 기능인지 확인해야 한다."}
+    ],
+    "features": [
+      {"id":"lg_senseclean","source_ids":["S10"],"scope":"EU_2026_lineup","functions":["choose_wash_parameters"],"kind":"real_public_announcement"},
+      {"id":"bosch_notice","source_ids":["S12"],"scope":"US_bosch_model_dependent","functions":["notify_cycle_end"],"kind":"real_public_product_page"}
+    ]
+  },
+  "b1": {
+    "source_ids":["S7","S8","S4"],
+    "capabilities":{"person":["load","confirm","unload"],"dishwasher":["wash"]},
+    "profile_kind":"synthetic_design_profile_not_real_api_support",
+    "deadline":80,
+    "flow":[
+      {"id":"load","device":"person","action":"load","start":0,"duration":5},
+      {"id":"wash","device":"dishwasher","action":"wash","start":5,"duration":60,"after":["load"]},
+      {"id":"confirm","device":"person","action":"confirm","start":65,"duration":2,"after":["wash"]},
+      {"id":"unload","device":"person","action":"unload","start":67,"duration":5,"after":["confirm"]}
+    ]
+  },
+  "b5": {
+    "source_ids":["S8","S15","S16"],
+    "event_kind":"synthetic_user_event_not_sensor_measurement",
+    "cycle_complete":true,
+    "readiness":"unknown",
+    "model_known":false,
+    "goal":"now",
+    "user_available":true
+  }
+}

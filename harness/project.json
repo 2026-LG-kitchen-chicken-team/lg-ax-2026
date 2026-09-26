@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "deadline": "2026-09-28T18:00:00+09:00",
-  "environment": "PC·웹만 사용 가능 (사용자 확인, 2026-09-27)",
+  "environment": "현재 확보: PC·웹. 핵심 Agent 시연은 PC에서 완결; 제안할 가전·서비스 형태를 웹으로 한정하지 않음",
   "sources": [
     {
       "id": "S1",
@@ -90,6 +90,46 @@
       "id": "S11",
       "limitations": "개별 사용자의 니즈 미측정",
       "title": "LG Design for All"
+    },
+    {
+      "id": "S12",
+      "title": "Bosch Home Connect dishwasher",
+      "locator": "https://www.bosch-home.com/us/products/dishwashers/homeconnect/",
+      "checked_at": "2026-09-27",
+      "supports": "Smart Cycle, 세척 종료 후 꺼낼 때를 알리는 푸시 알림, 생활 루틴·예약 기능을 소개한다.",
+      "limitations": "알림만 제공하는 아이디어와의 중복 근거. 모든 모델에 적용하거나 실제 식기 준비 상태를 센서로 보증한다고 해석하지 않음. 범위: US product/app overview; exact functions depend on model"
+    },
+    {
+      "id": "S13",
+      "title": "Dovetail customer experience",
+      "locator": "https://dovetail.com/roles/customer-experience/",
+      "checked_at": "2026-09-27",
+      "supports": "고객 피드백 통합·자동 군집·반복 불만 탐색과 AI 문서 생성을 소개한다.",
+      "limitations": "사용성·우월성 실측 아님. 일반 VOC 요약과 기획 문서 생성만으로는 충분한 차별점이 아님. 범위: vendor product description"
+    },
+    {
+      "id": "S14",
+      "title": "Figma Make official help",
+      "locator": "https://help.figma.com/hc/en-us/articles/31304485164695-Create-a-Figma-Make-file",
+      "checked_at": "2026-09-27",
+      "supports": "자연어로 기능을 갖춘 프로토타입·웹 앱을 만들고 대화를 통해 수정할 수 있다.",
+      "limitations": "일반 화면/흐름 생성과의 중복 근거. 주방 물리 제약까지 검증한다는 뜻은 아님. 범위: vendor help documentation"
+    },
+    {
+      "id": "S15",
+      "title": "LG checking dishware types",
+      "locator": "https://www.lg.com/us/support/help-library/lg-dishwasher-dishes-are-not-clean-after-washing--20155101652263",
+      "checked_at": "2026-09-27",
+      "supports": "식기세척기 사용 가능 식기를 확인하도록 안내하며 일부 재질과 내열 조건을 구분한다.",
+      "limitations": "모든 플라스틱의 허용/금지 판단에 사용하지 않음. 식기 제조사 표시와 해당 기기 설명서 확인 필요. 범위: generic support updated 2026-03-30, model differences explicitly noted"
+    },
+    {
+      "id": "S16",
+      "title": "LG online manual safety instructions",
+      "locator": "https://gscs-manual.lge.com/CDZ/MFL71467502/en-us/topics/topic_3.html",
+      "checked_at": "2026-09-27",
+      "supports": "플라스틱은 식기세척기 사용 가능 표시 또는 동등한 표시를 확인하도록 한다.",
+      "limitations": "범용 지원문서와 조건 표현이 다를 수 있음. 대상 모델이 식별되지 않아 이 지침을 개별 제품 권고로 바로 적용하지 않음. 범위: manual MFL71467502 en-US; model mapping not established in this pilot"
     }
   ],
   "candidates": [
@@ -162,9 +202,10 @@
       ],
       "feasibility": "reviewed",
       "feasibility_evidence": {
-        "path": "기획/추천안_구현검토.md",
-        "sha256": "1c9111194694d5cc93b99e9018368712fe4e17e1a6781e6530ffd23b66a866d5"
-      }
+        "path": "기획/주제검증_결과.md",
+        "sha256": "445c3d82a02db25e97013f6e5332ffdd0534951ddde8d4d38a9b8b99520b46dc"
+      },
+      "validation_level": "limited_curated_input_skill_probes; no LLM API or user validation"
     },
     {
       "id": "B2",
@@ -201,23 +242,34 @@
     },
     {
       "risks": [
-        "일반 RAG와 차별성",
-        "수요 검증"
+        "모델 API·비용 미검증",
+        "원문 추출·기능 의미 대응 미검증",
+        "수요·기획자 유용성 미검증",
+        "지역·모델 범위 혼합",
+        "제한된 신규성 조사"
       ],
       "id": "A4",
       "evidence": [
         "S2",
         "S7",
         "S8",
-        "S9",
-        "S10"
+        "S10",
+        "S12",
+        "S13",
+        "S15",
+        "S16"
       ],
       "user": "상품기획자",
       "theme": "A",
-      "mvp": "지원문서→잔여수고→기존기능 반박→근거 있는 기획카드",
-      "feasibility": "conditional",
+      "mvp": "문서와 범위 입력→사람 작업 추출→기존 기능 대조→기회 가설·기획 카드→새 근거로 재검토",
+      "feasibility": "reviewed",
       "problem": "사람에게 남은 작업을 신제품 기회로 연결(가설)",
-      "name": "주방 잔여수고 발굴 Agent"
+      "name": "Kitchen Gap — 주방 잔여수고 발굴 AI 상품기획 Agent",
+      "feasibility_evidence": {
+        "path": "기획/주제검증_결과.md",
+        "sha256": "445c3d82a02db25e97013f6e5332ffdd0534951ddde8d4d38a9b8b99520b46dc"
+      },
+      "validation_level": "limited_curated_input_skill_probes; no LLM API or user validation"
     },
     {
       "risks": [
@@ -268,9 +320,14 @@
       "user": "주방 UX 설계자",
       "theme": "B",
       "mvp": "사용목표·상태→사람/기기 단계→실패 분기→UX",
-      "feasibility": "conditional",
+      "feasibility": "reviewed",
       "problem": "기기 종료 후 사용 준비까지의 잔여작업(가설)",
-      "name": "Dish-to-Done"
+      "name": "Dish-to-Done",
+      "feasibility_evidence": {
+        "path": "기획/주제검증_결과.md",
+        "sha256": "445c3d82a02db25e97013f6e5332ffdd0534951ddde8d4d38a9b8b99520b46dc"
+      },
+      "validation_level": "limited_curated_input_skill_probes; no LLM API or user validation"
     },
     {
       "risks": [
@@ -291,11 +348,17 @@
     }
   ],
   "decision": {
-    "status": "exploring",
-    "candidate_id": null,
-    "confirmed_by": null,
-    "confirmed_at": null,
-    "rationale": "사용자가 B1 확정 대신 다른 후보 추가 검토를 요청함. A4/B4/B5 등 추가 비교, 최종 선택 전."
+    "status": "confirmed",
+    "candidate_id": "A4",
+    "confirmed_by": "Codex (사용자의 명시적 선정 위임)",
+    "confirmed_at": "2026-09-27T02:13:13+09:00",
+    "rationale": "A4/B1/B5의 공개 근거·경쟁 기능과 9개 최소 Skill 입력 실행을 비교. 상품기획 직무 적합성, 실제 근거 기반의 기존 기능 반박, 한 가전으로 제한 가능한 범위를 근거로 Kitchen Gap 선정. 모델 API·추출/생성 성능·실사용 효용은 미검증.",
+    "authority": {
+      "kind": "user_delegation",
+      "instruction": "최종 주제 하나 선정해줘 너가 판단해서 → 1번 2번 진행해",
+      "selected_by": "Codex",
+      "not_direct_user_approval_of_candidate": true
+    }
   },
   "stages": [
     {
@@ -310,40 +373,44 @@
     {
       "id": "harness",
       "status": "done",
-      "next_action": "구현 기술 확정 후 필요한 검사만 추가",
+      "next_action": "관리 검사와 제한된 후보 Skill 실행 유지. 자동 모델 실행기는 아직 없음",
       "evidence": {
         "path": "docs/하네스_검증기록.md",
-        "sha256": "496651a0b227e2219b7fab9a40a3770c030b81653f87ad59b50592efb6b4dd06"
+        "sha256": "31d7928bebf1ae7025b7ada5159865bc366bccfaddbc11d799a8041a54b76b63"
       }
     },
     {
       "id": "topic_research",
       "status": "done",
-      "next_action": "추가 후보 A4/B4/B5 중심 논의",
+      "next_action": "선정 완료. 추가 수요·기획자 검증은 구현 단계에서 수행",
       "evidence": {
-        "sha256": "0fb380af7e9d2db63622ffc8f98178f8d964da482dfe279a52fd126ce99a91fe",
-        "path": "기획/추가아이디어_비교.md"
+        "path": "기획/주제검증_결과.md",
+        "sha256": "445c3d82a02db25e97013f6e5332ffdd0534951ddde8d4d38a9b8b99520b46dc"
       }
     },
     {
       "id": "topic_decision",
-      "status": "pending",
-      "next_action": "사용자 선택 반영, topic gate"
+      "status": "done",
+      "next_action": "Theme A Kitchen Gap 범위로 공식 원고 작성",
+      "evidence": {
+        "path": "기획/최종주제_선정.md",
+        "sha256": "df7d7589ce7b0d22ccba7614f3fabd15b4cbfb1dc7eefc6a9da4fa19ea2f980d"
+      }
     },
     {
       "id": "proposal",
       "status": "pending",
-      "next_action": "새 주제 선택 후 공식 6항목 작성. B1은 참고 초안만 보관"
+      "next_action": "선정안 Kitchen Gap의 공식 6항목·HWP 작성. 기존 B1 원고는 보관용"
     },
     {
       "id": "submission",
       "status": "pending",
-      "next_action": "팀 정보·서명·HWP 검토·실제 접수"
+      "next_action": "9/27 오늘 목표. 팀 정보·서명·HWP 검토·온라인 신청·증빙"
     },
     {
       "id": "implementation",
       "status": "pending",
-      "next_action": "선정안 모델 연결과 MVP"
+      "next_action": "Kitchen Gap 모델 실제 호출·원문 추출·대조·기획 카드 연결, 이후 UI"
     },
     {
       "id": "evaluation",
@@ -397,5 +464,25 @@
       "id": "team_review",
       "status": "pending"
     }
-  ]
+  ],
+  "submission_target_date": "2026-09-27",
+  "topic_trial": {
+    "mode": "Codex-assisted research and deterministic Skill execution",
+    "case_count": 9,
+    "regression_test_count": 32,
+    "model_api_run": false,
+    "user_research_run": false,
+    "protocol": {
+      "path": "research/topic_trial/protocol.md",
+      "sha256": "05129f73f1a7119333d915267e11755bc1aa43ab09679c305cfe81a5336cfd24"
+    },
+    "outputs": {
+      "path": "research/topic_trial/pilot_outputs.json",
+      "sha256": "4aa98d126c012c7540e0d3951e476181f68eda11c75dfae86731220ebc358867"
+    },
+    "result": {
+      "path": "기획/주제검증_결과.md",
+      "sha256": "445c3d82a02db25e97013f6e5332ffdd0534951ddde8d4d38a9b8b99520b46dc"
+    }
+  }
 }
