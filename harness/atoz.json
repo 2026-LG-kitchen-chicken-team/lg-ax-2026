@@ -1,0 +1,19 @@
+{
+  "version":1,
+  "executor":"Current Codex conversation; sequential roles, no separate model key or background agent required",
+  "objective":"쉽게 설계·완주할 수 있으면서 공식 평가 기준에 대한 경쟁력이 높은 주제를 탐색하고, 참가작 Agent와 제출물까지 연결한다.",
+  "stages":[
+    {"id":"brief","title":"목표·제약 정렬","needs":[],"fields":["objective","constraints","unknowns","success_criteria"],"actions":["최신 사용자 목표와 공식 요건을 구분하라.","PC는 현재 가용 환경이다. 특정 가전·테마를 선결정하지 마라.","수상 확률은 알 수 없다. 공식 5개 평가 항목과 설계 난도·검증 가능성을 함께 사용하라."]},
+    {"id":"research","title":"문제·경쟁·자료 탐색","needs":["brief"],"fields":["sources","problem_spaces","competitors","unknowns"],"actions":["공식 자료와 1차 출처를 도구로 실제 읽고 URL·적용범위·한계를 남겨라.","보관·준비·조리·세척 등 최소 3개 영역과 A/B 양쪽 직무의 업무를 탐색하라.","제조사 안내와 사용자 수요를 구분하고 기존 기능과 새 기획 기회를 분리하라."]},
+    {"id":"ideate","title":"후보 발산","needs":["research"],"fields":["candidates","excluded_patterns"],"actions":["A/B 각각 최소 3개, 총 6개 이상 서로 다른 후보를 도출하라.","각 후보에 사용자·문제·입력→도구→판단→출력·차별점·가장 어려운 부분·1분 시연을 적어라.","기존 후보를 이름만 바꿔 나열하지 말고 왜 Agent가 필요한지 설명하라."]},
+    {"id":"screen","title":"경쟁력·설계 부담 비교","needs":["ideate"],"fields":["assessments","shortlist","tradeoffs"],"actions":["같은 기준으로 전 후보를 비교하라. 공식 문제·인사이트·Agent 과정·구현·재사용 기준과 설계/평가 난도를 사용하라.","점수는 근거를 붙인 내부 판단이다. 공식 배점·수상 확률로 표시하지 마라.","없는 장치/데이터 의존, 중복 기능, 확인 불가능한 효과를 감점 또는 제외하고 2~3개를 남겨라."]},
+    {"id":"probe","title":"핵심 위험 실행 검증","needs":["screen"],"fields":["runs","limitations","findings"],"actions":["후보마다 가장 어려운 가정을 작게 실행하라. 정답을 하드코딩한 통과 개수로 순위를 정하지 마라.","실자료/Codex 생성/규칙 코드/합성 데이터/실제 모델 API/실기기 실행을 구분하라.","정상·조건변경·누락·반례를 기록하고 실패하면 범위를 줄이거나 이전 단계로 돌아가라."]},
+    {"id":"select","title":"주제 결정","needs":["probe"],"fields":["candidate_id","rationale","rejected_alternatives","uncertainties","authority"],"actions":["사용자가 위임한 범위에서 하나를 선정하되 문제 근거·설계 부담·시연 차이로 설명하라.","반대 평가와 아직 검증하지 않은 부분을 기록하라. 데이터가 쉬운 가전이라는 이유만으로 선택하지 마라.","다른 후보보다 낫다는 판단과 수상 확률이 검증됐다는 주장을 구분하라."]},
+    {"id":"design","title":"Agent 설계·평가 계획","needs":["select"],"fields":["candidate_id","input_output","tools","execution_loop","failure_paths","evaluation_cases","implementation_backlog"],"actions":["입출력 스키마, 각 Skill 계약, 모델/코드 역할, 최대 반복수·실패 종료·실행 로그를 설계하라.","한 모델과 필요한 최소 도구로 시작하라. RAG·다중 Agent·실기기는 필요가 입증될 때만 넣어라.","독립 평가 케이스·단순 프롬프트 기준선·비용/지연 측정 계획과 세로 기능 단위 구현 작업을 남겨라."]},
+    {"id":"proposal","title":"접수 서류 작성","needs":["design"],"fields":["official_sections","artifacts","missing_team_items","review"],"actions":["공식 6항목, 10쪽 이내 HWP를 원본 구조대로 작성하라.","계획과 실측을 구분하고 팀 정보·서명·원본 열림·업로드 조건을 확인하라.","개인정보는 private/에 보관하고 팀원의 동의·서명을 대행하지 마라."]},
+    {"id":"submission","title":"온라인 접수 확인","needs":["proposal"],"fields":["receipt","submitted_at","files","confirmation"],"actions":["사용자가 승인한 제출 범위와 서명 완비 여부를 확인하고 실제 접수하라.","신청 완료 화면·제출본·시각을 private/에 보관하라. 점검 통과만으로 접수 완료라 하지 마라."]},
+    {"id":"build","title":"Agent 구현","needs":["design"],"fields":["code","live_model_evidence","integration_run","limitations"],"actions":["입력→실제 모델→도구→검사→수정→출력의 작은 세로 기능을 먼저 실행하라.","그다음 UI·저장·실패 복구를 붙여라. API 키·예산이 없으면 그 사실을 기록하고 독립 작업을 진행하라.","모델 대역 테스트를 실제 모델 실행으로 표시하지 마라."]},
+    {"id":"evaluate","title":"성능·사용성 검증","needs":["build"],"fields":["heldout_cases","baseline","measurements","failures","limitations"],"actions":["개발에 쓰지 않은 케이스로 출처·제약·실행 성공과 비용·지연을 측정하라.","같은 모델/입력의 단순 생성과 비교하고 실패 사례도 보존하라.","합성 사용자의 반응을 실제 사람의 수요나 사용성 결과로 대체하지 마라."]},
+    {"id":"present","title":"시연·발표·최종 제출","needs":["evaluate"],"fields":["deck","demo","qa","final_delivery"],"actions":["공식 분량에 맞춰 문제→근거→Agent→시연→결과→재사용을 보여라.","5분 시연·5분 발표·Q&A와 오프라인 재현 경로를 준비하라.","최종 제출 증빙을 남기고 검증된 수치만 사용하라."]}
+  ]
+}

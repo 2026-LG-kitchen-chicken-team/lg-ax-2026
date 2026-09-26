@@ -130,6 +130,30 @@
       "checked_at": "2026-09-27",
       "supports": "플라스틱은 식기세척기 사용 가능 표시 또는 동등한 표시를 확인하도록 한다.",
       "limitations": "범용 지원문서와 조건 표현이 다를 수 있음. 대상 모델이 식별되지 않아 이 지침을 개별 제품 권고로 바로 적용하지 않음. 범위: manual MFL71467502 en-US; model mapping not established in this pilot"
+    },
+    {
+      "id": "S17",
+      "title": "S17 AtoZ primary research",
+      "locator": "https://gscs-b2c.lge.com/open/downloadFile?fileId=tYJHqI7Nk3lkQwrvv6IRQ",
+      "checked_at": "2026-09-27",
+      "supports": "WSED7613*/WS7D7610*, MFL71927512 Rev.07, pp22-23: 기기측 원격시작 준비와 통신 지연 조건",
+      "limitations": "해당 모델군의 문서; 물리 실행이나 실패 빈도 실측 아님"
+    },
+    {
+      "id": "S18",
+      "title": "S18 AtoZ primary research",
+      "locator": "https://www.lg.com/us/support/help-library/enabling-wifi-and-the-lg-thinq-app-for-a-compatible-lg-refrigerator--20152715544610",
+      "checked_at": "2026-09-27",
+      "supports": "냉장고 ThinQ 연결·등록 절차",
+      "limitations": "모델별 확인 필요, 장애 빈도·모든 API 지원을 입증하지 않음"
+    },
+    {
+      "id": "S19",
+      "title": "S19 AtoZ primary research",
+      "locator": "https://www.figma.com/solutions/ux-flow-generator/",
+      "checked_at": "2026-09-27",
+      "supports": "화면·상태·사용자 흐름의 AI 생성",
+      "limitations": "주방별 실패 계약 검증까지 지원/미지원한다고 단정하지 않음"
     }
   ],
   "candidates": [
@@ -203,7 +227,7 @@
       "feasibility": "reviewed",
       "feasibility_evidence": {
         "path": "기획/주제검증_결과.md",
-        "sha256": "445c3d82a02db25e97013f6e5332ffdd0534951ddde8d4d38a9b8b99520b46dc"
+        "sha256": "1541a903647a7be3a51bcc11d55d1a9cb4b831f6e65f308ce3571c556f09ea3a"
       },
       "validation_level": "limited_curated_input_skill_probes; no LLM API or user validation"
     },
@@ -267,7 +291,7 @@
       "name": "Kitchen Gap — 주방 잔여수고 발굴 AI 상품기획 Agent",
       "feasibility_evidence": {
         "path": "기획/주제검증_결과.md",
-        "sha256": "445c3d82a02db25e97013f6e5332ffdd0534951ddde8d4d38a9b8b99520b46dc"
+        "sha256": "1541a903647a7be3a51bcc11d55d1a9cb4b831f6e65f308ce3571c556f09ea3a"
       },
       "validation_level": "limited_curated_input_skill_probes; no LLM API or user validation"
     },
@@ -325,7 +349,7 @@
       "name": "Dish-to-Done",
       "feasibility_evidence": {
         "path": "기획/주제검증_결과.md",
-        "sha256": "445c3d82a02db25e97013f6e5332ffdd0534951ddde8d4d38a9b8b99520b46dc"
+        "sha256": "1541a903647a7be3a51bcc11d55d1a9cb4b831f6e65f308ce3571c556f09ea3a"
       },
       "validation_level": "limited_curated_input_skill_probes; no LLM API or user validation"
     },
@@ -345,17 +369,42 @@
       "feasibility": "conditional",
       "problem": "가전 첫 사용 적응의 어려움(가설)",
       "name": "First Kitchen"
+    },
+    {
+      "id": "B7",
+      "theme": "B",
+      "name": "Kitchen Recovery",
+      "user": "주방 서비스 UX 설계자",
+      "problem": "정상 흐름에 비해 실패·미응답·미확인 분기가 누락될 가능성(수요 가설)",
+      "mvp": "상황·기능 계약→UX 그래프→실패 사건 검사→최대 2회 모델 수정→화면 명세·근거·미해결 출력",
+      "risks": [
+        "현업 수요 미검증",
+        "모델 JSON 생성·비용 미검증",
+        "검사 규칙의 물리 동작 일반화 금지",
+        "일반 UX 생성 도구 대비 효용 검증"
+      ],
+      "evidence": [
+        "S2",
+        "S17",
+        "S18",
+        "S19"
+      ],
+      "feasibility": "reviewed",
+      "feasibility_evidence": {
+        "path": "기획/AtoZ_재선정과_Agent설계.md",
+        "sha256": "85c572cfd27d618eb12c9327c57e62a2529135953aa979c6042845dad4a0f02a"
+      },
+      "validation_level": "development graph audit + architecture review; not standalone LLM or device validation"
     }
   ],
   "decision": {
     "status": "confirmed",
-    "candidate_id": "A4",
-    "confirmed_by": "Codex (사용자의 명시적 선정 위임)",
-    "confirmed_at": "2026-09-27T02:13:13+09:00",
-    "rationale": "A4/B1/B5의 공개 근거·경쟁 기능과 9개 최소 Skill 입력 실행을 비교. 상품기획 직무 적합성, 실제 근거 기반의 기존 기능 반박, 한 가전으로 제한 가능한 범위를 근거로 Kitchen Gap 선정. 모델 API·추출/생성 성능·실사용 효용은 미검증.",
+    "candidate_id": "B7",
+    "confirmed_by": "Codex (사용자 선정 위임, 최신 목표 반영)",
+    "confirmed_at": "2026-09-27T03:27:10+09:00",
+    "rationale": "7개 후보를 쉬운 설계·명확한 실패 검사·시연·공식 직무 적합성으로 비교. Kitchen Recovery로 출력 범위를 좁혀 구조화·검사·수정 과정을 보여주기로 선정. 수상 확률과 실제 모델/사용자 효용은 미검증.",
     "authority": {
       "kind": "user_delegation",
-      "instruction": "최종 주제 하나 선정해줘 너가 판단해서 → 1번 2번 진행해",
       "selected_by": "Codex",
       "not_direct_user_approval_of_candidate": true
     }
@@ -373,34 +422,34 @@
     {
       "id": "harness",
       "status": "done",
-      "next_action": "관리 검사와 제한된 후보 Skill 실행 유지. 자동 모델 실행기는 아직 없음",
+      "next_action": "AtoZ 자연어 실행: ax_workflow next→Codex 작업→finish→validate",
       "evidence": {
         "path": "docs/하네스_검증기록.md",
-        "sha256": "31d7928bebf1ae7025b7ada5159865bc366bccfaddbc11d799a8041a54b76b63"
+        "sha256": "54b37e6f6d8f67b7ff5e302d2c721de2a3a281a94a02c26e8c8fa41e2d9462bc"
       }
     },
     {
       "id": "topic_research",
       "status": "done",
-      "next_action": "선정 완료. 추가 수요·기획자 검증은 구현 단계에서 수행",
+      "next_action": "Kitchen Recovery 선정·설계 완료, 공식 원고 준비",
       "evidence": {
-        "path": "기획/주제검증_결과.md",
-        "sha256": "445c3d82a02db25e97013f6e5332ffdd0534951ddde8d4d38a9b8b99520b46dc"
+        "path": "기획/AtoZ_재선정과_Agent설계.md",
+        "sha256": "85c572cfd27d618eb12c9327c57e62a2529135953aa979c6042845dad4a0f02a"
       }
     },
     {
       "id": "topic_decision",
       "status": "done",
-      "next_action": "Theme A Kitchen Gap 범위로 공식 원고 작성",
+      "next_action": "Kitchen Recovery 선정·설계 완료, 공식 원고 준비",
       "evidence": {
-        "path": "기획/최종주제_선정.md",
-        "sha256": "df7d7589ce7b0d22ccba7614f3fabd15b4cbfb1dc7eefc6a9da4fa19ea2f980d"
+        "path": "기획/AtoZ_재선정과_Agent설계.md",
+        "sha256": "85c572cfd27d618eb12c9327c57e62a2529135953aa979c6042845dad4a0f02a"
       }
     },
     {
       "id": "proposal",
       "status": "pending",
-      "next_action": "선정안 Kitchen Gap의 공식 6항목·HWP 작성. 기존 B1 원고는 보관용"
+      "next_action": "Kitchen Recovery 공식 6항목/HWP 작성"
     },
     {
       "id": "submission",
@@ -410,7 +459,7 @@
     {
       "id": "implementation",
       "status": "pending",
-      "next_action": "Kitchen Gap 모델 실제 호출·원문 추출·대조·기획 카드 연결, 이후 UI"
+      "next_action": "Kitchen Recovery 실제 모델 JSON·검사·수정 연결 후 UI"
     },
     {
       "id": "evaluation",
@@ -482,7 +531,30 @@
     },
     "result": {
       "path": "기획/주제검증_결과.md",
-      "sha256": "445c3d82a02db25e97013f6e5332ffdd0534951ddde8d4d38a9b8b99520b46dc"
+      "sha256": "1541a903647a7be3a51bcc11d55d1a9cb4b831f6e65f308ce3571c556f09ea3a"
+    },
+    "historical": true
+  },
+  "decision_history": [
+    {
+      "status": "confirmed",
+      "candidate_id": "A4",
+      "confirmed_by": "Codex (사용자의 명시적 선정 위임)",
+      "confirmed_at": "2026-09-27T02:13:13+09:00",
+      "rationale": "A4/B1/B5의 공개 근거·경쟁 기능과 9개 최소 Skill 입력 실행을 비교. 상품기획 직무 적합성, 실제 근거 기반의 기존 기능 반박, 한 가전으로 제한 가능한 범위를 근거로 Kitchen Gap 선정. 모델 API·추출/생성 성능·실사용 효용은 미검증.",
+      "authority": {
+        "kind": "user_delegation",
+        "instruction": "최종 주제 하나 선정해줘 너가 판단해서 → 1번 2번 진행해",
+        "selected_by": "Codex",
+        "not_direct_user_approval_of_candidate": true
+      }
     }
+  ],
+  "atoz": {
+    "config": "harness/atoz.json",
+    "state": "harness/atoz_state.json",
+    "executor": "current Codex conversation",
+    "topic": "B7",
+    "standalone_model_api_verified": false
   }
 }

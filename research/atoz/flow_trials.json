@@ -1,0 +1,281 @@
+{
+  "known_sources": [
+    "S17",
+    "S18"
+  ],
+  "provenance": "Codex-authored development fixtures, deliberately flawed before graphs and authored fixes. Abstract events; no API or appliance calls. The caller-authored requirements are reviewed assumptions, not automatically inferred physical laws.",
+  "cases": [
+    {
+      "id": "oven_remote_request",
+      "before": {
+        "start": "confirm",
+        "nodes": [
+          {
+            "id": "confirm",
+            "kind": "ask_user",
+            "sources": [
+              "S17"
+            ],
+            "on": {
+              "confirmed": "request",
+              "timeout": "done"
+            }
+          },
+          {
+            "id": "request",
+            "kind": "command",
+            "sources": [
+              "S17"
+            ],
+            "requires": [
+              "model_support",
+              "local_ready",
+              "network_ready"
+            ],
+            "on": {
+              "ack": "done",
+              "timeout": "done"
+            }
+          },
+          {
+            "id": "done",
+            "kind": "done",
+            "on": {}
+          },
+          {
+            "id": "wait",
+            "kind": "pending",
+            "on": {}
+          }
+        ],
+        "requirements": [
+          {
+            "node": "confirm",
+            "event": "timeout",
+            "allowed_kinds": [
+              "pending"
+            ]
+          },
+          {
+            "node": "request",
+            "event": "offline",
+            "allowed_kinds": [
+              "pending"
+            ]
+          },
+          {
+            "node": "request",
+            "event": "timeout",
+            "allowed_kinds": [
+              "pending"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "start": "confirm",
+        "nodes": [
+          {
+            "id": "confirm",
+            "kind": "ask_user",
+            "sources": [
+              "S17"
+            ],
+            "on": {
+              "confirmed": "request",
+              "timeout": "wait"
+            }
+          },
+          {
+            "id": "request",
+            "kind": "command",
+            "sources": [
+              "S17"
+            ],
+            "requires": [
+              "model_support",
+              "local_ready",
+              "network_ready"
+            ],
+            "on": {
+              "ack": "done",
+              "timeout": "wait",
+              "offline": "wait"
+            }
+          },
+          {
+            "id": "done",
+            "kind": "done",
+            "on": {}
+          },
+          {
+            "id": "wait",
+            "kind": "pending",
+            "on": {}
+          }
+        ],
+        "requirements": [
+          {
+            "node": "confirm",
+            "event": "timeout",
+            "allowed_kinds": [
+              "pending"
+            ]
+          },
+          {
+            "node": "request",
+            "event": "offline",
+            "allowed_kinds": [
+              "pending"
+            ]
+          },
+          {
+            "node": "request",
+            "event": "timeout",
+            "allowed_kinds": [
+              "pending"
+            ]
+          }
+        ]
+      },
+      "traces": [
+        {
+          "events": [
+            "confirmed",
+            "ack"
+          ],
+          "expected": "done"
+        },
+        {
+          "events": [
+            "confirmed",
+            "offline"
+          ],
+          "expected": "pending"
+        },
+        {
+          "events": [
+            "confirmed",
+            "timeout"
+          ],
+          "expected": "pending"
+        },
+        {
+          "events": [
+            "timeout"
+          ],
+          "expected": "pending"
+        }
+      ]
+    },
+    {
+      "id": "fridge_status_unknown",
+      "before": {
+        "start": "query",
+        "nodes": [
+          {
+            "id": "query",
+            "kind": "ask_user",
+            "sources": [
+              "S18"
+            ],
+            "on": {
+              "known": "done",
+              "offline": "done",
+              "unknown": "done"
+            }
+          },
+          {
+            "id": "done",
+            "kind": "done",
+            "on": {}
+          },
+          {
+            "id": "wait",
+            "kind": "pending",
+            "on": {}
+          }
+        ],
+        "requirements": [
+          {
+            "node": "query",
+            "event": "offline",
+            "allowed_kinds": [
+              "pending"
+            ]
+          },
+          {
+            "node": "query",
+            "event": "unknown",
+            "allowed_kinds": [
+              "pending"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "start": "query",
+        "nodes": [
+          {
+            "id": "query",
+            "kind": "ask_user",
+            "sources": [
+              "S18"
+            ],
+            "on": {
+              "known": "done",
+              "offline": "wait",
+              "unknown": "wait"
+            }
+          },
+          {
+            "id": "done",
+            "kind": "done",
+            "on": {}
+          },
+          {
+            "id": "wait",
+            "kind": "pending",
+            "on": {}
+          }
+        ],
+        "requirements": [
+          {
+            "node": "query",
+            "event": "offline",
+            "allowed_kinds": [
+              "pending"
+            ]
+          },
+          {
+            "node": "query",
+            "event": "unknown",
+            "allowed_kinds": [
+              "pending"
+            ]
+          }
+        ]
+      },
+      "traces": [
+        {
+          "events": [
+            "known"
+          ],
+          "expected": "done"
+        },
+        {
+          "events": [
+            "offline"
+          ],
+          "expected": "pending"
+        },
+        {
+          "events": [
+            "unknown"
+          ],
+          "expected": "pending"
+        }
+      ]
+    }
+  ]
+}

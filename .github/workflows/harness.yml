@@ -16,3 +16,5 @@ jobs:
       - run: python -m unittest discover -s tests -v
       - run: python scripts/scenario_spike.py
       - run: python scripts/topic_trial.py --check
+      - run: python scripts/ax_workflow.py validate
+      - run: python scripts/flow_audit.py --check

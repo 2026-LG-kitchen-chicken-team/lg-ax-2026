@@ -1,0 +1,46 @@
+{
+  "stage": "probe",
+  "content": {
+    "runs": [
+      {
+        "candidate_id": "B7",
+        "mode": "Codex-created deliberate-fault fixtures + Python audit",
+        "result": "오븐 4개/냉장고 3개 문제 검출, 수정본 해당 위반 0개, 7개 사건 경로 확인",
+        "artifact": "research/atoz/flow_results.json"
+      },
+      {
+        "candidate_id": "A4",
+        "mode": "previous curated-input deterministic probe reused",
+        "result": "기존 기능 대조·출처 누락 보류·범위 구분",
+        "artifact": "research/topic_trial/pilot_outputs.json"
+      },
+      {
+        "candidate_id": "B1",
+        "mode": "previous synthetic-schedule probe reused",
+        "result": "의존/자원 충돌과 미지원 동작 검사",
+        "artifact": "research/topic_trial/pilot_outputs.json"
+      }
+    ],
+    "limitations": [
+      "실제 모델 API·생성 정확도·사용자 효용·물리 동작 미검증",
+      "결함 주입 실험이며 모델 오류율 실험 아님"
+    ],
+    "findings": [
+      "B7은 검증할 실패 조건과 출력 구조를 좁혀 설계 가능",
+      "A4의 개방형 가치 평가 부담은 코드 대조로 해결되지 않음",
+      "B1의 범용 일정/화면 범위 축소 필요"
+    ]
+  },
+  "evidence_paths": [
+    "research/atoz/flow_results.json",
+    "research/atoz/flow_trials.json",
+    "scripts/flow_audit.py",
+    "research/topic_trial/pilot_outputs.json"
+  ],
+  "review": {
+    "by": "Codex in current conversation; not independent evaluator",
+    "limitations": [
+      "개발용 반례 검증을 수상 확률이나 모델 품질로 표현하지 않음"
+    ]
+  }
+}
