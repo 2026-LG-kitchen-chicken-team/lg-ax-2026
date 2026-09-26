@@ -7,6 +7,7 @@ from pathlib import Path
 from copy import deepcopy
 import json
 import re
+import base64
 from lxml import etree as E
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -83,17 +84,60 @@ for i,m in enumerate(team['members']):
     for c,key in enumerate(('name','department','year','student_id','phone','role')):
         fill(cell(6+i,c),m[key],small_c)
 
-# Add generic handwriting name text to the original signature cells.
+# Embed separately prepared handwriting assets when the private manifest exists.
+signature_manifest=ROOT/'private/서명/manifest.json'
+signatures=json.loads(signature_manifest.read_text(encoding='utf-8')) if signature_manifest.exists() else None
+if signatures:
+    binaries=E.Element('BINDATALIST',Count=str(len(signatures['members'])))
+    mapping.insert(0,binaries)
+    storage=E.Element('BINDATASTORAGE')
+    root.find('TAIL').insert(0,storage)
+    for i,item in enumerate(signatures['members'],1):
+        item['bin_id']=str(i)
+        data=(ROOT/item['path']).read_bytes()
+        E.SubElement(binaries,'BINITEM',Type='Embedding',BinData=str(i),Format='png')
+        E.SubElement(storage,'BINDATA',Id=str(i),Size=str(len(data)),Encoding='Base64',Compress='false').text=base64.b64encode(data).decode('ascii')
+
+def signature_overlay(cell,item,serial,table_index,member_index):
+    """Put transparent ink in front of the unchanged original signature label."""
+    width=item.get('width_hwp',4800)
+    height=round(width*item['height']/item['width'])
+    centers={0:(464.91,[547.24,569.92,592.60]),2:(482.31,[628.10,642.86,657.74]),3:(473.91,[581.66,602.18,622.70])}
+    cx,ys=centers[table_index]
+    left=round(cx*100-width/2)
+    top=round(ys[member_index]*100-height/2-220)
+    pic=E.Element('PICTURE',Reverse='false')
+    shape=E.SubElement(pic,'SHAPEOBJECT',InstId=str(1800000000+serial),Lock='false',NumberingType='Figure',TextWrap='InFrontOfText',ZOrder=str(20+serial))
+    E.SubElement(shape,'SIZE',Width=str(width),Height=str(height),WidthRelTo='Absolute',HeightRelTo='Absolute',Protect='false')
+    E.SubElement(shape,'POSITION',TreatAsChar='false',AffectLSpacing='false',VertRelTo='Paper',VertAlign='Top',HorzRelTo='Paper',HorzAlign='Left',VertOffset=str(top),HorzOffset=str(left),FlowWithText='false',AllowOverlap='true',HoldAnchorAndSO='false')
+    E.SubElement(shape,'OUTSIDEMARGIN',Left='0',Right='0',Top='0',Bottom='0')
+    component=E.SubElement(pic,'SHAPECOMPONENT',XPos='0',YPos='0',GroupLevel='0',OriWidth=str(width),OriHeight=str(height),CurWidth=str(width),CurHeight=str(height),HorzFlip='false',VertFlip='false',InstID=str(1810000000+serial))
+    E.SubElement(component,'ROTATIONINFO',Angle='0',CenterX=str(width//2),CenterY=str(height//2))
+    render=E.SubElement(component,'RENDERINGINFO')
+    for tag in ('TRANSMATRIX','SCAMATRIX','ROTMATRIX'):
+        E.SubElement(render,tag,E1='1',E2='0',E3='0',E4='0',E5='1',E6='0')
+    E.SubElement(pic,'LINESHAPE',Color='0',Width='0',Style='None',EndCap='Round',HeadStyle='Normal',TailStyle='Normal',HeadSize='SmallSmall',TailSize='SmallSmall',OutlineStyle='Normal',Alpha='0')
+    E.SubElement(pic,'IMAGERECT',X0='0',Y0='0',X1=str(width),Y1='0',X2=str(width),Y2=str(height),X3='0',Y3=str(height))
+    E.SubElement(pic,'IMAGECLIP',Left='0',Top='0',Right=str(item['width']*75),Bottom=str(item['height']*75))
+    E.SubElement(pic,'INSIDEMARGIN',Left='0',Right='0',Top='0',Bottom='0')
+    E.SubElement(pic,'IMAGE',BinItem=item['bin_id'],Bright='0',Contrast='0',Effect='RealPic',Alpha='0')
+    cell.find('PARALIST/P/TEXT').append(pic)
+
+# Keep (서명/인) in place and overlay the corresponding distinct handwriting.
 for ti in (0,2,3):
     sig=tables[ti].findall('.//TABLE')[-1]
-    for row,m in zip(sig.findall('ROW'),team['members']):
+    for mi,(row,m) in enumerate(zip(sig.findall('ROW'),team['members'])):
         cells=row.findall('CELL')
         if ti==0:
             fill(cells[0],m['role'],small_c)
-            fill(cells[1],m['name'],sig_c)
         else:
             fill(cells[1],m['name'],body_c)
-            fill(cells[2],m['name'],sig_c)
+        target=cells[1 if ti==0 else 2]
+        if signatures:
+            item=next(x for x in signatures['members'] if x['name']==m['name'])
+            signature_overlay(target,item,ti*3+mi,ti,mi)
+        else:
+            fill(target,m['name'],sig_c)
     for char in tables[ti].findall('.//CHAR'):
         if re.fullmatch(r'2026년\s*월\s*일',char.text or ''):
             char.text=team['date']
