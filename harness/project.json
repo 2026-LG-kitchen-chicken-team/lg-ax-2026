@@ -1,0 +1,401 @@
+{
+  "schema_version": 1,
+  "deadline": "2026-09-28T18:00:00+09:00",
+  "environment": "PC·웹만 사용 가능 (사용자 확인, 2026-09-27)",
+  "sources": [
+    {
+      "id": "S1",
+      "title": "대회 공식 신청 상세",
+      "locator": "https://anchor.changwon.ac.kr/main/menu?gc=Program&do=sinform&spod=s1&program_id=VUlvrXMnryLR&psin_id=VUlvrXN53VEd",
+      "checked_at": "2026-09-27",
+      "supports": "접수 9/28 18:00, 제안서 10쪽, 선발 후 Agent 구현, 발표 20쪽",
+      "limitations": "업로드 상세 조건과 후속 운영 안내는 별도 확인"
+    },
+    {
+      "id": "S2",
+      "title": "LG 키친솔루션 주제 자료",
+      "locator": "자료/공식/04_LG키친솔루션_해커톤주제.pdf",
+      "checked_at": "2026-09-27",
+      "supports": "19~20쪽 A/B 역할, 29~31쪽 산출물과 평가",
+      "limitations": "이미지 기반, 핵심 페이지 시각 확인; 배점 미공개"
+    },
+    {
+      "id": "S3",
+      "title": "LG IFA 2026 AI Home 및 ThinQ Claw 발표",
+      "locator": "https://www.lg.com/global/newsroom/news/home-appliance-solution/lg-electronics-unveils-the-next-evolution-of-ai-home-at-ifa-2026/",
+      "checked_at": "2026-09-27",
+      "supports": "이미 공개된 상황 이해·가전/서비스 연결 방향과의 중복 검토",
+      "limitations": "제조사 발표이며 사용자 불편 빈도·내부 설계 도구·모든 시장 출시를 입증하지 않음"
+    },
+    {
+      "id": "S4",
+      "title": "ThinQ Connect 공식 MCP",
+      "locator": "https://github.com/thinq-connect/thinqconnect-mcp",
+      "checked_at": "2026-09-27",
+      "supports": "토큰/국가 코드, 장치 상태 및 프로필에 따른 지원 제어",
+      "limitations": "우리 계정·실기기 접근 미확인, 특정 모델 전체 기능 지원을 보증하지 않음"
+    },
+    {
+      "id": "S5",
+      "title": "공식 참가신청서와 제안서 양식",
+      "locator": "자료/공식/02_참가신청서.hwp",
+      "checked_at": "2026-09-27",
+      "supports": "6항목, HWP 10쪽, 신청·동의·서약 양식",
+      "limitations": "작성과 전원 서명은 별도 필요"
+    },
+    {
+      "id": "S6",
+      "title": "harness-100 역할 및 산출물 구조 참고",
+      "locator": "https://github.com/jeongiryang/harness-100/tree/main/ko",
+      "checked_at": "2026-09-27",
+      "supports": "46-product-manager, 41-llm-app-builder의 역할·단계 구성 참고",
+      "limitations": "대회 규정 아님, 원 템플릿을 그대로 구현하지 않음"
+    },
+    {
+      "checked_at": "2026-09-27",
+      "supports": "사람이 확인하는 배치·간섭 조건",
+      "locator": "https://www.lg.com/us/support/help-library/lg-dishwasher-loading-the-dishwasher--20151129117242",
+      "id": "S7",
+      "limitations": "빈도와 수요를 입증하지 않음",
+      "title": "LG 식기 적재 안내"
+    },
+    {
+      "checked_at": "2026-09-27",
+      "supports": "재질·배치·환경별 조건",
+      "locator": "https://www.lg.com/us/support/help-library/lg-dios-dishwasher-there-is-water-left-on-the-dishes-even-after-dry-has-finished--20154848491113",
+      "id": "S8",
+      "limitations": "모델 공통 안내, 최신 모델에 일반화 금지",
+      "title": "LG 건조 후 물 잔류 안내"
+    },
+    {
+      "checked_at": "2026-09-27",
+      "supports": "필터·분사부 관리 작업",
+      "locator": "https://www.lg.com/us/support/help-library/lg-dishwasher-maintenance--1433962981524",
+      "id": "S9",
+      "limitations": "고객 수요 통계 아님",
+      "title": "LG 식기세척기 유지관리"
+    },
+    {
+      "checked_at": "2026-09-27",
+      "supports": "기존 자동 세척·건조 기능과 중복 검토",
+      "locator": "https://www.lg.com/global/newsroom/news/home-appliance-solution/lg-electronics-to-showcase-new-dishwasher-lineup-at-eurocucina-2026/",
+      "id": "S10",
+      "limitations": "유럽 발표 제품, 전 모델 기능 아님",
+      "title": "LG EuroCucina 2026 식기세척기"
+    },
+    {
+      "checked_at": "2026-09-27",
+      "supports": "쉬운 안내·학습의 기존 활동",
+      "locator": "https://www.lg.com/global/sustainability/design-for-all/",
+      "id": "S11",
+      "limitations": "개별 사용자의 니즈 미측정",
+      "title": "LG Design for All"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "A1",
+      "theme": "A",
+      "name": "Kitchen NeedMap",
+      "user": "상품기획자",
+      "problem": "분산된 고객 불편을 제품 기회로 연결하는 수고(가설)",
+      "mvp": "VOC 입력→근거 군집→기능 비교→콘셉트 카드",
+      "risks": [
+        "자료 표본",
+        "일반 요약과 차별성"
+      ],
+      "evidence": [
+        "S2",
+        "S3"
+      ],
+      "feasibility": "conditional"
+    },
+    {
+      "id": "A2",
+      "theme": "A",
+      "name": "Cross-Tech Scout",
+      "user": "상품기획자",
+      "problem": "타 산업 기술의 키친 적용 근거 탐색(가설)",
+      "mvp": "문제→논문/특허 탐색→기능 대응표",
+      "risks": [
+        "원문 접근",
+        "신규성 과장"
+      ],
+      "evidence": [
+        "S2"
+      ],
+      "feasibility": "conditional"
+    },
+    {
+      "id": "A3",
+      "theme": "A",
+      "name": "Compact Kitchen Gap",
+      "user": "상품기획자",
+      "problem": "작은 주방 공간과 기능의 상충(가설)",
+      "mvp": "공간·요구 입력→제약 분석→콘셉트",
+      "risks": [
+        "하드웨어 현실성",
+        "실제 공간 자료"
+      ],
+      "evidence": [
+        "S2"
+      ],
+      "feasibility": "conditional"
+    },
+    {
+      "id": "B1",
+      "theme": "B",
+      "name": "Kitchen Rehearsal",
+      "user": "주방 UX 기획자",
+      "problem": "상황 변화마다 연결 시나리오와 실패 경로 재설계(가설)",
+      "mvp": "조건→시나리오→규칙 검사→수정→흐름/검증 기록",
+      "risks": [
+        "모델 사용 환경 미확인",
+        "현업 수요 가설",
+        "모의 검사와 실제 UX의 차이"
+      ],
+      "evidence": [
+        "S1",
+        "S2",
+        "S3",
+        "S4"
+      ],
+      "feasibility": "reviewed",
+      "feasibility_evidence": {
+        "path": "기획/추천안_구현검토.md",
+        "sha256": "1c9111194694d5cc93b99e9018368712fe4e17e1a6781e6530ffd23b66a866d5"
+      }
+    },
+    {
+      "id": "B2",
+      "theme": "B",
+      "name": "Leftover Meal Agent",
+      "user": "주방 사용자",
+      "problem": "남은 재료 기반 식사 계획 부담(가설)",
+      "mvp": "재고→메뉴→가전 흐름",
+      "risks": [
+        "기존 기능 중복",
+        "식품 상태 판단"
+      ],
+      "evidence": [
+        "S2",
+        "S3"
+      ],
+      "feasibility": "conditional"
+    },
+    {
+      "id": "B3",
+      "theme": "B",
+      "name": "Easy Kitchen UX",
+      "user": "UX 기획자",
+      "problem": "다양한 능력의 사용자용 안내 설계(가설)",
+      "mvp": "사용자 조건→안내 흐름→접근성 점검",
+      "risks": [
+        "사용자 검증",
+        "효과 과장"
+      ],
+      "evidence": [
+        "S2"
+      ],
+      "feasibility": "conditional"
+    },
+    {
+      "risks": [
+        "일반 RAG와 차별성",
+        "수요 검증"
+      ],
+      "id": "A4",
+      "evidence": [
+        "S2",
+        "S7",
+        "S8",
+        "S9",
+        "S10"
+      ],
+      "user": "상품기획자",
+      "theme": "A",
+      "mvp": "지원문서→잔여수고→기존기능 반박→근거 있는 기획카드",
+      "feasibility": "conditional",
+      "problem": "사람에게 남은 작업을 신제품 기회로 연결(가설)",
+      "name": "주방 잔여수고 발굴 Agent"
+    },
+    {
+      "risks": [
+        "대표성",
+        "하드웨어 타당성"
+      ],
+      "id": "A5",
+      "evidence": [
+        "S2",
+        "S3"
+      ],
+      "user": "상품기획자",
+      "theme": "A",
+      "mvp": "상황조건→명세 대조→공백→제품 제안",
+      "feasibility": "conditional",
+      "problem": "가구·생활조건별 기능 공백 탐색(가설)",
+      "name": "생활조건별 기능 공백 탐색"
+    },
+    {
+      "risks": [
+        "사용자 수요",
+        "일반 체크리스트와 차별성"
+      ],
+      "id": "B4",
+      "evidence": [
+        "S2",
+        "S3"
+      ],
+      "user": "주방 UX 설계자",
+      "theme": "B",
+      "mvp": "역할·기기 상태→인계 UX→변형과 검증",
+      "feasibility": "conditional",
+      "problem": "사람 간 주방 작업 인계 실패(가설)",
+      "name": "Kitchen Relay"
+    },
+    {
+      "risks": [
+        "모델별 안내",
+        "사용자 목적 검증"
+      ],
+      "id": "B5",
+      "evidence": [
+        "S2",
+        "S7",
+        "S8",
+        "S10"
+      ],
+      "user": "주방 UX 설계자",
+      "theme": "B",
+      "mvp": "사용목표·상태→사람/기기 단계→실패 분기→UX",
+      "feasibility": "conditional",
+      "problem": "기기 종료 후 사용 준비까지의 잔여작업(가설)",
+      "name": "Dish-to-Done"
+    },
+    {
+      "risks": [
+        "기존 안내와 중복",
+        "이해도 검증"
+      ],
+      "id": "B6",
+      "evidence": [
+        "S2",
+        "S11"
+      ],
+      "user": "주방 UX 설계자",
+      "theme": "B",
+      "mvp": "설명서·경험→상황별 안내→선택에 따른 수정",
+      "feasibility": "conditional",
+      "problem": "가전 첫 사용 적응의 어려움(가설)",
+      "name": "First Kitchen"
+    }
+  ],
+  "decision": {
+    "status": "exploring",
+    "candidate_id": null,
+    "confirmed_by": null,
+    "confirmed_at": null,
+    "rationale": "사용자가 B1 확정 대신 다른 후보 추가 검토를 요청함. A4/B4/B5 등 추가 비교, 최종 선택 전."
+  },
+  "stages": [
+    {
+      "id": "requirements",
+      "status": "done",
+      "next_action": "변경 공지 발생 시 갱신",
+      "evidence": {
+        "path": "docs/대회요건.md",
+        "sha256": "872ab29c15b9e8d7d1b9e9f6de7f96b64b9a5737a227a6e781c8fcc3a3777d48"
+      }
+    },
+    {
+      "id": "harness",
+      "status": "done",
+      "next_action": "구현 기술 확정 후 필요한 검사만 추가",
+      "evidence": {
+        "path": "docs/하네스_검증기록.md",
+        "sha256": "496651a0b227e2219b7fab9a40a3770c030b81653f87ad59b50592efb6b4dd06"
+      }
+    },
+    {
+      "id": "topic_research",
+      "status": "done",
+      "next_action": "추가 후보 A4/B4/B5 중심 논의",
+      "evidence": {
+        "sha256": "0fb380af7e9d2db63622ffc8f98178f8d964da482dfe279a52fd126ce99a91fe",
+        "path": "기획/추가아이디어_비교.md"
+      }
+    },
+    {
+      "id": "topic_decision",
+      "status": "pending",
+      "next_action": "사용자 선택 반영, topic gate"
+    },
+    {
+      "id": "proposal",
+      "status": "pending",
+      "next_action": "새 주제 선택 후 공식 6항목 작성. B1은 참고 초안만 보관"
+    },
+    {
+      "id": "submission",
+      "status": "pending",
+      "next_action": "팀 정보·서명·HWP 검토·실제 접수"
+    },
+    {
+      "id": "implementation",
+      "status": "pending",
+      "next_action": "선정안 모델 연결과 MVP"
+    },
+    {
+      "id": "evaluation",
+      "status": "pending",
+      "next_action": "별도 평가 케이스·성능·사용성 측정"
+    },
+    {
+      "id": "presentation",
+      "status": "pending",
+      "next_action": "20쪽 이내 자료·5분 시연·질의응답"
+    }
+  ],
+  "submission_checks": [
+    {
+      "id": "team",
+      "status": "pending"
+    },
+    {
+      "id": "eligibility",
+      "status": "pending"
+    },
+    {
+      "id": "application",
+      "status": "pending"
+    },
+    {
+      "id": "proposal_hwp",
+      "status": "pending"
+    },
+    {
+      "id": "page_limit",
+      "status": "pending"
+    },
+    {
+      "id": "consents",
+      "status": "pending"
+    },
+    {
+      "id": "pledge",
+      "status": "pending"
+    },
+    {
+      "id": "file_open",
+      "status": "pending"
+    },
+    {
+      "id": "upload_requirements",
+      "status": "pending"
+    },
+    {
+      "id": "team_review",
+      "status": "pending"
+    }
+  ]
+}
