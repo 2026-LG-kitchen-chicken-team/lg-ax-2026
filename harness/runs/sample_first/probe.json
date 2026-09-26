@@ -1,0 +1,48 @@
+{
+  "stage": "probe",
+  "content": {
+    "runs": [
+      {
+        "mode": "review_existing_results_no_new_execution",
+        "inputs": "research/theme_selection/probe_inputs.json",
+        "outputs": "research/theme_selection/probe_results.json",
+        "finding": "합성 공간·작업 시간·자원과 가전 사용 불가 조건을 사용한 기존 코드 실험이 존재. 새 UX/Agent 전체 성능이 아님"
+      },
+      {
+        "mode": "review_existing_protocol_and_results_no_new_execution",
+        "inputs": "research/topic_trial/protocol.md",
+        "outputs": "research/topic_trial/pilot_outputs.json",
+        "finding": "기능 추가·자료 누락·완료 이벤트를 합성 입력으로 구분한 기존 규칙 실험. 모델 생성·실기기 결과와 분리"
+      }
+    ],
+    "limitations": [
+      "후보 난도·서류 설득력은 정성적 판단이며 합격 확률·공식 점수가 아니다.",
+      "합성 자료는 시연 동작의 입력이며 실제 고객 수요·기술 효과·실기기 제어 증거가 아니다.",
+      "기존 저장된 코드 실험을 재검토했고 새 모델 호출·샘플 자료집·모의 API 구현은 하지 않았다.",
+      "선정은 기존 위임에 따른 Codex 판단이다. 이번 사용자가 승인한 것은 샘플을 고려하는 방식이며 후보 직접 승인과 구분한다."
+    ],
+    "findings": [
+      "공개 리뷰 수집을 시연 완성의 필수 선행조건에서 제외",
+      "대체 가능한 외부 입력과 실제 실행해야 할 핵심 과정을 분리",
+      "같은 샘플 전제로 모든 후보의 난도를 재평가했으며 새 성능 검증은 수행하지 않음"
+    ]
+  },
+  "evidence_paths": [
+    "기획/샘플데이터_기준_재검토.md",
+    "docs/대회요건.md",
+    "research/two_axis_reassessment/sources.json",
+    "research/theme_selection/probe_inputs.json",
+    "research/theme_selection/probe_results.json",
+    "research/topic_trial/protocol.md",
+    "research/topic_trial/pilot_outputs.json"
+  ],
+  "review": {
+    "by": "Codex; no independent reviewer",
+    "limitations": [
+      "후보 난도·서류 설득력은 정성적 판단이며 합격 확률·공식 점수가 아니다.",
+      "합성 자료는 시연 동작의 입력이며 실제 고객 수요·기술 효과·실기기 제어 증거가 아니다.",
+      "기존 저장된 코드 실험을 재검토했고 새 모델 호출·샘플 자료집·모의 API 구현은 하지 않았다.",
+      "선정은 기존 위임에 따른 Codex 판단이다. 이번 사용자가 승인한 것은 샘플을 고려하는 방식이며 후보 직접 승인과 구분한다."
+    ]
+  }
+}

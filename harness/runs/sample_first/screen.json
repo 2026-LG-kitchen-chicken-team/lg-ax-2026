@@ -1,0 +1,138 @@
+{
+  "stage": "screen",
+  "content": {
+    "assessments": [
+      {
+        "id": "RESET_A_EVIDENCE",
+        "implementation_difficulty": "낮음~중간",
+        "first_stage_document_persuasiveness": "중상",
+        "rationale": "샘플 작성으로 수집 의존성을 낮춘다. 텍스트·표의 근거 대조와 기획안으로 업무를 끝내는 범위가 작음",
+        "scale": "qualitative comparison under common sample/mock assumptions; not official score"
+      },
+      {
+        "id": "RESET_A_FORM",
+        "implementation_difficulty": "낮음~중간",
+        "first_stage_document_persuasiveness": "중상",
+        "rationale": "가상 명세를 쓰면 A 상품기획과 비슷한 난도로 내려온다. 형태 도식과 수치 결과를 함께 맞추는 작업이 남음",
+        "scale": "qualitative comparison under common sample/mock assumptions; not official score"
+      },
+      {
+        "id": "RESET_A_TECH",
+        "implementation_difficulty": "중간",
+        "first_stage_document_persuasiveness": "중간~중상",
+        "rationale": "실시간 기술 수집을 생략할 수 있다. 기술 적용의 타당성은 가상 성능으로 입증할 수 없어 검토 부담이 남음",
+        "scale": "qualitative comparison under common sample/mock assumptions; not official score"
+      },
+      {
+        "id": "RESET_B_FLOW",
+        "implementation_difficulty": "낮음~중간",
+        "first_stage_document_persuasiveness": "중간",
+        "rationale": "샘플과 UI 템플릿으로 작게 구현 가능. 일반 생성 도구와의 중복 설명은 계속 필요",
+        "scale": "qualitative comparison under common sample/mock assumptions; not official score"
+      },
+      {
+        "id": "RESET_B_LINK",
+        "implementation_difficulty": "중간",
+        "first_stage_document_persuasiveness": "중상",
+        "rationale": "실기기와 실측 시간 수집 부담은 제거. 모의 환경에서도 여러 산출물의 일관성·변경 처리 구현이 남음",
+        "scale": "qualitative comparison under common sample/mock assumptions; not official score"
+      },
+      {
+        "id": "RESET_B_POLICY",
+        "implementation_difficulty": "낮음~중간",
+        "first_stage_document_persuasiveness": "중간",
+        "rationale": "실제 조리 실험을 기본 의무로 두지 않으면 범위를 줄일 수 있다. 개인화 서비스와 구분할 업무 설명은 필요",
+        "scale": "qualitative comparison under common sample/mock assumptions; not official score"
+      }
+    ],
+    "shortlist": [
+      "RESET_A_EVIDENCE",
+      "RESET_A_FORM",
+      "RESET_B_LINK"
+    ],
+    "tradeoffs": [
+      "샘플 공통 적용으로 폼팩터 A와 개인화 B도 낮음~중간, 연계 B는 중간으로 보정",
+      "서류에서 문제 배경·효과를 설명할 실제 근거는 샘플 동작 자료와 분리",
+      "선정 A와 폼팩터 A의 난도 차이가 크다고 주장하지 않음. A의 텍스트/표 업무 범위를 기준으로 선택 유지"
+    ],
+    "official_mapping": [
+      {
+        "id": "RESET_A_EVIDENCE",
+        "theme": "A",
+        "optional_rows": [
+          1,
+          6
+        ],
+        "kitchen_concept": "기존 기능으로 남는 보관·조리·관리의 불편을 줄이는 제품 기능·관리 서비스"
+      },
+      {
+        "id": "RESET_A_FORM",
+        "theme": "A",
+        "optional_rows": [
+          1,
+          2,
+          6
+        ],
+        "kitchen_concept": "공간·접근·수납 요구에 맞는 가전 구조"
+      },
+      {
+        "id": "RESET_A_TECH",
+        "theme": "A",
+        "optional_rows": [
+          3,
+          4,
+          6
+        ],
+        "kitchen_concept": "타산업 기술로 보관·관리 부담을 줄이는 주방 기능"
+      },
+      {
+        "id": "RESET_B_FLOW",
+        "theme": "B",
+        "optional_rows": [
+          1,
+          4,
+          6
+        ],
+        "kitchen_concept": "준비·조리·관리의 안내를 연결하는 키친 경험"
+      },
+      {
+        "id": "RESET_B_LINK",
+        "theme": "B",
+        "optional_rows": [
+          1,
+          4,
+          6
+        ],
+        "kitchen_concept": "가전과 사람이 식사 준비 순서·변경 안내를 공유하는 경험"
+      },
+      {
+        "id": "RESET_B_POLICY",
+        "theme": "B",
+        "optional_rows": [
+          2,
+          4,
+          6
+        ],
+        "kitchen_concept": "공통 조리와 개인별 옵션을 나누는 식사 경험"
+      }
+    ]
+  },
+  "evidence_paths": [
+    "기획/샘플데이터_기준_재검토.md",
+    "docs/대회요건.md",
+    "research/two_axis_reassessment/sources.json",
+    "research/theme_selection/probe_inputs.json",
+    "research/theme_selection/probe_results.json",
+    "research/topic_trial/protocol.md",
+    "research/topic_trial/pilot_outputs.json"
+  ],
+  "review": {
+    "by": "Codex; no independent reviewer",
+    "limitations": [
+      "후보 난도·서류 설득력은 정성적 판단이며 합격 확률·공식 점수가 아니다.",
+      "합성 자료는 시연 동작의 입력이며 실제 고객 수요·기술 효과·실기기 제어 증거가 아니다.",
+      "기존 저장된 코드 실험을 재검토했고 새 모델 호출·샘플 자료집·모의 API 구현은 하지 않았다.",
+      "선정은 기존 위임에 따른 Codex 판단이다. 이번 사용자가 승인한 것은 샘플을 고려하는 방식이며 후보 직접 승인과 구분한다."
+    ]
+  }
+}

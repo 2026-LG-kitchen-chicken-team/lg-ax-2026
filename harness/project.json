@@ -1163,9 +1163,9 @@
       "user": "키친 가전 상품기획자",
       "problem": "리뷰의 불편을 실제 기능·잔여 불편과 대조하고 검토 가능한 개선 콘셉트로 바꾸는 수고",
       "loop": "리뷰/제품 자료 조회 → 불편-기능 대조 → 콘셉트 → 근거 검사 → 재조회/수정",
-      "hardest": "모델별 원자료 확보와 기능 존재·사용 불편의 구분",
+      "hardest": "불편·기능·기획안 사이의 근거 연결과 수정",
       "demo": "같은 요청에 잘못된 모델 자료를 넣으면 근거 부족으로 표시하고 자료를 교체해 제안을 수정",
-      "mvp": "한 제품군 3~5제품·30~50리뷰 목표, 자료 미확보. 업로드/검토된 자료집과 텍스트·표 산출물",
+      "mvp": "샘플 리뷰 CSV·가상 제품 기능표를 준비하고 조회·대조·제안·검사/수정을 실행. 예: 3~5제품, 30~50리뷰는 향후 제작 목표",
       "sources": [
         "S2",
         "JD1",
@@ -1190,15 +1190,17 @@
         "DA2"
       ],
       "risks": [
-        "모델별 원자료 확보와 기능 존재·사용 불편의 구분",
-        "모델 성능·직접 사용자 수요·LLM 대비 이득 미검증"
+        "불편·기능·기획안 사이의 근거 연결과 수정",
+        "합성 동작 검증과 실제 수요·기술 효과를 구분",
+        "모델 성능·기준선 비교 미검증"
       ],
       "feasibility": "reviewed",
       "feasibility_evidence": {
-        "path": "기획/두조건_원점재검토.md",
-        "sha256": "505bd4f91e5657f1a2294c945abd80b7e5de6faaca14353ba2ffb57053996e0d"
+        "path": "기획/샘플데이터_기준_재검토.md",
+        "sha256": "2c27d57465b4b819d33d9773914f4044b4cf439ffd6f5de492a47f2bcacb192b"
       },
-      "feasibility_scope": "선정에 필요한 구현 범위·자료 의존성 검토. 작동하는 Agent나 모델 성능 완료가 아님"
+      "feasibility_scope": "선정에 필요한 구현 범위·자료 의존성 검토. 작동하는 Agent나 모델 성능 완료가 아님",
+      "demo_policy": "project.demo_policy"
     },
     {
       "id": "RESET_A_FORM",
@@ -1207,9 +1209,9 @@
       "user": "가전 선행 상품기획자",
       "problem": "생활 요구를 형태·구조 대안과 비교 조건으로 바꾸는 수고",
       "loop": "생활 조건 → 제품 치수/기능 조회 → 형태 후보 → 상충 조건 검토",
-      "hardest": "형태 제안의 사용성·구조 타당성을 뒷받침하는 자료",
+      "hardest": "치수 검사와 새 형태 제안의 연결",
       "demo": "공간과 수납 요구를 바꾸면 후보와 충족되지 않은 조건을 수정",
-      "mvp": "한 제품군·공개 치수·개념 스케치; CAD/제조 검증은 제외",
+      "mvp": "가상 제품 치수·공간·생활 조건과 2D 도식. 개념 제안·제약 계산을 실행하며 제조 설계는 약속하지 않음",
       "sources": [
         "S2",
         "JD1",
@@ -1229,10 +1231,12 @@
         "R1"
       ],
       "risks": [
-        "형태 제안의 사용성·구조 타당성을 뒷받침하는 자료",
-        "모델 성능·직접 사용자 수요·LLM 대비 이득 미검증"
+        "치수 검사와 새 형태 제안의 연결",
+        "합성 동작 검증과 실제 수요·기술 효과를 구분",
+        "모델 성능·기준선 비교 미검증"
       ],
-      "feasibility": "conditional"
+      "feasibility": "conditional",
+      "demo_policy": "project.demo_policy"
     },
     {
       "id": "RESET_A_TECH",
@@ -1241,9 +1245,9 @@
       "user": "선행 기술·상품기획자",
       "problem": "외부 기술의 가정용 적용 조건과 불확실성을 검토하는 수고",
       "loop": "고객 문제 → 기술 문헌 → 적용 조건 대조 → 콘셉트/실험 과제",
-      "hardest": "논문 실험 조건과 가정용 사용 조건의 차이 검토",
+      "hardest": "원문 조건과 새 용도 사이의 적용 논리",
       "demo": "적용 환경을 바꾸면 효능 보장 대신 미검증 조건을 반환",
-      "mvp": "검토된 기술 문헌 한 묶음",
+      "mvp": "선별 기술 문헌 묶음 또는 명시적 가상 시험 입력으로 조건 추출·적용 제약·검증 과제 작성",
       "sources": [
         "S2",
         "T1",
@@ -1263,10 +1267,12 @@
         "T2"
       ],
       "risks": [
-        "논문 실험 조건과 가정용 사용 조건의 차이 검토",
-        "모델 성능·직접 사용자 수요·LLM 대비 이득 미검증"
+        "원문 조건과 새 용도 사이의 적용 논리",
+        "합성 동작 검증과 실제 수요·기술 효과를 구분",
+        "모델 성능·기준선 비교 미검증"
       ],
-      "feasibility": "conditional"
+      "feasibility": "conditional",
+      "demo_policy": "project.demo_policy"
     },
     {
       "id": "RESET_B_FLOW",
@@ -1275,9 +1281,9 @@
       "user": "키친 UX/UI 설계자",
       "problem": "주방 서비스의 정상/예외 흐름과 기본 화면을 반복 작성하는 수고",
       "loop": "요구 → 상황/예외 시나리오 → 고정 구성 화면 → 연결 검사/수정",
-      "hardest": "기존 생성 도구와 구별할 결과 평가",
+      "hardest": "상황 변경 후 흐름과 화면의 연결",
       "demo": "가전 사용 불가 조건을 넣으면 예외 흐름과 안내 화면 갱신",
-      "mvp": "고정 UI 구성요소; 이미지 생성·실기기·물리 시뮬레이터 제외",
+      "mvp": "샘플 사용자 상황·가전 기능과 고정 UI 구성요소로 시나리오·화면 생성 및 연결 검사",
       "sources": [
         "S2",
         "JD4"
@@ -1295,10 +1301,12 @@
         "JD4"
       ],
       "risks": [
-        "기존 생성 도구와 구별할 결과 평가",
-        "모델 성능·직접 사용자 수요·LLM 대비 이득 미검증"
+        "상황 변경 후 흐름과 화면의 연결",
+        "합성 동작 검증과 실제 수요·기술 효과를 구분",
+        "모델 성능·기준선 비교 미검증"
       ],
-      "feasibility": "conditional"
+      "feasibility": "conditional",
+      "demo_policy": "project.demo_policy"
     },
     {
       "id": "RESET_B_LINK",
@@ -1307,9 +1315,9 @@
       "user": "키친 서비스 기획자",
       "problem": "여러 가전·사람의 작업과 예외를 일관된 서비스로 설계하는 수고",
       "loop": "사용 목표 → 작업/가전 기능 → 상태/시간 계획 → UX 흐름/화면 → 충돌 검사/수정",
-      "hardest": "자료·상태·시간·화면 간 일관성",
+      "hardest": "상태·자원·사용자 역할·화면 산출물의 일관성",
       "demo": "가전 하나를 쓸 수 없게 되면 불가능 조건과 남은 작업의 대안 표시",
-      "mvp": "가전 2종·사람 1명·6~8작업·고정 화면. 물리 시뮬레이션 제외",
+      "mvp": "가상 2종 가전·작업/시간 표·모의 상태 API와 화면 템플릿. 상태/충돌 검사와 계획/안내 수정을 실제 실행",
       "sources": [
         "S2",
         "JD4"
@@ -1327,10 +1335,12 @@
         "JD4"
       ],
       "risks": [
-        "자료·상태·시간·화면 간 일관성",
-        "모델 성능·직접 사용자 수요·LLM 대비 이득 미검증"
+        "상태·자원·사용자 역할·화면 산출물의 일관성",
+        "합성 동작 검증과 실제 수요·기술 효과를 구분",
+        "모델 성능·기준선 비교 미검증"
       ],
-      "feasibility": "conditional"
+      "feasibility": "conditional",
+      "demo_policy": "project.demo_policy"
     },
     {
       "id": "RESET_B_POLICY",
@@ -1339,9 +1349,9 @@
       "user": "개인화 키친 서비스 기획자",
       "problem": "시간·취향·분량 조건의 우선순위와 예외를 설계하는 수고",
       "loop": "가족 조건 → 정책표 → 조리 흐름/화면 → 충돌 검사/수정",
-      "hardest": "요리 변경 타당성 자료와 기존 개인화 기능 대비 설명",
+      "hardest": "규칙 충돌의 해소와 안내 흐름 연결",
       "demo": "시간·분량 조건 충돌 때 불가능 조건과 선택지 반환",
-      "mvp": "검토된 요리 소수·시간/취향/분량; 의학적 판단 제외",
+      "mvp": "샘플 가족 조건·가상 레시피/시간/분량 표로 우선순위·충돌·예외 안내를 실행",
       "sources": [
         "S2",
         "JD4",
@@ -1361,10 +1371,12 @@
         "R7"
       ],
       "risks": [
-        "요리 변경 타당성 자료와 기존 개인화 기능 대비 설명",
-        "모델 성능·직접 사용자 수요·LLM 대비 이득 미검증"
+        "규칙 충돌의 해소와 안내 흐름 연결",
+        "합성 동작 검증과 실제 수요·기술 효과를 구분",
+        "모델 성능·기준선 비교 미검증"
       ],
-      "feasibility": "conditional"
+      "feasibility": "conditional",
+      "demo_policy": "project.demo_policy"
     }
   ],
   "decision": {
@@ -1372,18 +1384,20 @@
     "candidate_id": "RESET_A_EVIDENCE",
     "confirmed_by": "Codex (사용자의 기존 선정 위임에 따른 최신 두 조건 재선정)",
     "confirmed_at": "2026-09-27T07:54:07+09:00",
-    "rationale": "구현 난도와 1차 제안서 설득력만으로 6개 범위를 재비교. 자료 준비를 포함한 텍스트·표 기반 업무의 완주 가능성과 근거-콘셉트 연결을 근거로 Theme A 선정. 합격·모델 성능·사용자 효용 미검증.",
+    "rationale": "모든 후보에 샘플 데이터·가상 명세·모의 연동을 공통 적용해 난도를 보정했다. 폼팩터 A와 연계 B의 부담 감소를 인정하고도 텍스트/표 중심의 좁은 대조·기획·수정 업무를 이유로 기존 A를 유지한다. 합격률·Agent 성능 검증 아님.",
     "authority": {
       "kind": "user_delegation",
       "instruction": "최종 주제 하나 선정해줘 너가 판단해서 → 1번 2번 진행해; 최신 지시: 구현난이도 쉽고, 1차 서류 합격 한다는 이 두 가지 조건만 비교해서 원점에서 재검토해봐",
       "selected_by": "Codex",
       "not_direct_user_approval_of_candidate": true,
-      "scope": "one submission theme and topic; not submission authorization or evidence of completion"
+      "scope": "one submission theme and topic; not submission authorization or evidence of completion",
+      "latest_constraint_instruction": "리뷰 확보는 우리가 만든 샘플로 시연할 수 있으며, 다른 후보의 제품 정보·사용자 조건·가전 상태 등에도 같은 원칙을 적용한다."
     },
     "evidence": {
-      "path": "기획/두조건_원점재검토.md",
-      "sha256": "505bd4f91e5657f1a2294c945abd80b7e5de6faaca14353ba2ffb57053996e0d"
-    }
+      "path": "기획/샘플데이터_기준_재검토.md",
+      "sha256": "2c27d57465b4b819d33d9773914f4044b4cf439ffd6f5de492a47f2bcacb192b"
+    },
+    "revalidated_at": "2026-09-27T08:03:43+09:00"
   },
   "stages": [
     {
@@ -1407,19 +1421,19 @@
     {
       "id": "topic_research",
       "status": "done",
-      "next_action": "두 조건 재검토·Codex 위임 선정 완료. 상세 설계와 공식 6항목 제안서로 진행",
+      "next_action": "샘플/모의 연동 공통 적용 재검토 완료, A 유지. 다음은 상세 설계·제안서",
       "evidence": {
-        "path": "기획/두조건_원점재검토.md",
-        "sha256": "505bd4f91e5657f1a2294c945abd80b7e5de6faaca14353ba2ffb57053996e0d"
+        "path": "기획/샘플데이터_기준_재검토.md",
+        "sha256": "2c27d57465b4b819d33d9773914f4044b4cf439ffd6f5de492a47f2bcacb192b"
       }
     },
     {
       "id": "topic_decision",
       "status": "done",
-      "next_action": "두 조건 재검토·Codex 위임 선정 완료. 상세 설계와 공식 6항목 제안서로 진행",
+      "next_action": "샘플/모의 연동 공통 적용 재검토 완료, A 유지. 다음은 상세 설계·제안서",
       "evidence": {
-        "path": "기획/두조건_원점재검토.md",
-        "sha256": "505bd4f91e5657f1a2294c945abd80b7e5de6faaca14353ba2ffb57053996e0d"
+        "path": "기획/샘플데이터_기준_재검토.md",
+        "sha256": "2c27d57465b4b819d33d9773914f4044b4cf439ffd6f5de492a47f2bcacb192b"
       }
     },
     {
@@ -1435,7 +1449,7 @@
     {
       "id": "implementation",
       "status": "pending",
-      "next_action": "선정안 상세 설계→제품군별 자료 선별→실제 모델/도구 연결→반복 실행 및 기준선 비교"
+      "next_action": "샘플 입력·모의 외부 환경을 포함한 상세 설계→자료집 준비→실제 분석/대조/수정 Agent→변경/실패 사례 검증"
     },
     {
       "id": "evaluation",
@@ -1611,6 +1625,28 @@
         ]
       },
       "reason": "구현 난도가 쉽고 1차 서류를 설득력 있게 제출할 수 있는가, 이 두 조건만으로 원점에서 재검토한다. 기존 최종 선정 위임에 따라 Codex가 출품 방향 하나를 선정한다."
+    },
+    {
+      "status": "retained_after_sample_policy_correction",
+      "previous_decision": {
+        "status": "confirmed",
+        "candidate_id": "RESET_A_EVIDENCE",
+        "confirmed_by": "Codex (사용자의 기존 선정 위임에 따른 최신 두 조건 재선정)",
+        "confirmed_at": "2026-09-27T07:54:07+09:00",
+        "rationale": "구현 난도와 1차 제안서 설득력만으로 6개 범위를 재비교. 자료 준비를 포함한 텍스트·표 기반 업무의 완주 가능성과 근거-콘셉트 연결을 근거로 Theme A 선정. 합격·모델 성능·사용자 효용 미검증.",
+        "authority": {
+          "kind": "user_delegation",
+          "instruction": "최종 주제 하나 선정해줘 너가 판단해서 → 1번 2번 진행해; 최신 지시: 구현난이도 쉽고, 1차 서류 합격 한다는 이 두 가지 조건만 비교해서 원점에서 재검토해봐",
+          "selected_by": "Codex",
+          "not_direct_user_approval_of_candidate": true,
+          "scope": "one submission theme and topic; not submission authorization or evidence of completion"
+        },
+        "evidence": {
+          "path": "기획/두조건_원점재검토.md",
+          "sha256": "505bd4f91e5657f1a2294c945abd80b7e5de6faaca14353ba2ffb57053996e0d"
+        }
+      },
+      "correction": "리뷰 확보는 우리가 만든 샘플로 시연할 수 있으며, 다른 후보의 제품 정보·사용자 조건·가전 상태 등에도 같은 원칙을 적용한다."
     }
   ],
   "atoz": {
@@ -1619,21 +1655,36 @@
     "executor": "current Codex conversation",
     "topic": "RESET_A_EVIDENCE",
     "standalone_model_api_verified": false,
-    "comparison": "기획/두조건_원점재검토.md"
+    "comparison": "기획/샘플데이터_기준_재검토.md"
   },
   "theme_recommendations": {
     "status": "superseded_by_single_topic_selection",
     "selected": "RESET_A_EVIDENCE",
     "theme": "A",
     "evidence": {
-      "path": "기획/두조건_원점재검토.md",
-      "sha256": "505bd4f91e5657f1a2294c945abd80b7e5de6faaca14353ba2ffb57053996e0d"
+      "path": "기획/샘플데이터_기준_재검토.md",
+      "sha256": "2c27d57465b4b819d33d9773914f4044b4cf439ffd6f5de492a47f2bcacb192b"
     },
     "limits": [
-      "1차 전용 배점·경쟁 팀·합격 확률 미확인; 상대적 기획 판단이다.",
-      "실제 모델·강한 LLM 기준선·현업 사용자 평가 미실행.",
-      "데이터 접근 실험은 비대표적 해외 표본이며 대상 제품군 자료 확보 완료가 아니다.",
-      "선정은 Codex의 위임 실행이며 사용자의 이 후보 직접 승인으로 기록하지 않는다."
+      "후보 난도·서류 설득력은 정성적 판단이며 합격 확률·공식 점수가 아니다.",
+      "합성 자료는 시연 동작의 입력이며 실제 고객 수요·기술 효과·실기기 제어 증거가 아니다.",
+      "기존 저장된 코드 실험을 재검토했고 새 모델 호출·샘플 자료집·모의 API 구현은 하지 않았다.",
+      "선정은 기존 위임에 따른 Codex 판단이다. 이번 사용자가 승인한 것은 샘플을 고려하는 방식이며 후보 직접 승인과 구분한다."
     ]
+  },
+  "demo_policy": {
+    "instruction": "리뷰 확보는 우리가 만든 샘플로 시연할 수 있으며, 다른 후보의 제품 정보·사용자 조건·가전 상태 등에도 같은 원칙을 적용한다.",
+    "applies_to": "all Theme A/B candidates",
+    "default_demo_inputs": "curated or synthetic fixtures, virtual product specifications, mocked device/API states",
+    "must_execute": [
+      "retrieval over supplied fixtures",
+      "actual analysis and calculations",
+      "validation and revision when input changes"
+    ],
+    "evidence_separation": [
+      "synthetic demo/test inputs",
+      "real problem and effect evidence"
+    ],
+    "automatic_collection_or_real_device_required": false
   }
 }

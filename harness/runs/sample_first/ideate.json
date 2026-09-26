@@ -1,0 +1,190 @@
+{
+  "stage": "ideate",
+  "content": {
+    "candidates": [
+      {
+        "id": "RESET_A_EVIDENCE",
+        "theme": "A",
+        "name": "고객 불편·기존 제품 대조 기반 키친 상품기획 Agent",
+        "user": "키친 가전 상품기획자",
+        "problem": "리뷰의 불편을 실제 기능·잔여 불편과 대조하고 검토 가능한 개선 콘셉트로 바꾸는 수고",
+        "loop": "리뷰/제품 자료 조회 → 불편-기능 대조 → 콘셉트 → 근거 검사 → 재조회/수정",
+        "hardest": "불편·기능·기획안 사이의 근거 연결과 수정",
+        "demo": "같은 요청에 잘못된 모델 자료를 넣으면 근거 부족으로 표시하고 자료를 교체해 제안을 수정",
+        "mvp": "샘플 리뷰 CSV·가상 제품 기능표를 준비하고 조회·대조·제안·검사/수정을 실행. 예: 3~5제품, 30~50리뷰는 향후 제작 목표",
+        "sources": [
+          "S2",
+          "JD1",
+          "JD2",
+          "JD3",
+          "DA1",
+          "DA2"
+        ],
+        "official_rows_as_material": [
+          1,
+          6
+        ],
+        "kitchen_concept": "기존 기능으로 남는 보관·조리·관리의 불편을 줄이는 제품 기능·관리 서비스",
+        "rerun_trigger": "새 기획 요청·자료 추가·조건 변경",
+        "novelty_limit": "좁은 업무 자동화 제안이며 강한 LLM/기존 도구 대비 우월성은 미검증",
+        "demo_inputs": "prepared synthetic/curated sample",
+        "demo_runtime": "actual generation/check/revision against sample inputs; not prerecorded output"
+      },
+      {
+        "id": "RESET_A_FORM",
+        "theme": "A",
+        "name": "생활 조건별 폼팩터 기획 Agent",
+        "user": "가전 선행 상품기획자",
+        "problem": "생활 요구를 형태·구조 대안과 비교 조건으로 바꾸는 수고",
+        "loop": "생활 조건 → 제품 치수/기능 조회 → 형태 후보 → 상충 조건 검토",
+        "hardest": "치수 검사와 새 형태 제안의 연결",
+        "demo": "공간과 수납 요구를 바꾸면 후보와 충족되지 않은 조건을 수정",
+        "mvp": "가상 제품 치수·공간·생활 조건과 2D 도식. 개념 제안·제약 계산을 실행하며 제조 설계는 약속하지 않음",
+        "sources": [
+          "S2",
+          "JD1",
+          "R1"
+        ],
+        "official_rows_as_material": [
+          1,
+          2,
+          6
+        ],
+        "kitchen_concept": "공간·접근·수납 요구에 맞는 가전 구조",
+        "rerun_trigger": "새 기획 요청·자료 추가·조건 변경",
+        "novelty_limit": "좁은 업무 자동화 제안이며 강한 LLM/기존 도구 대비 우월성은 미검증",
+        "demo_inputs": "prepared synthetic/curated sample",
+        "demo_runtime": "actual generation/check/revision against sample inputs; not prerecorded output"
+      },
+      {
+        "id": "RESET_A_TECH",
+        "theme": "A",
+        "name": "타산업 기술의 키친 적용 기획 Agent",
+        "user": "선행 기술·상품기획자",
+        "problem": "외부 기술의 가정용 적용 조건과 불확실성을 검토하는 수고",
+        "loop": "고객 문제 → 기술 문헌 → 적용 조건 대조 → 콘셉트/실험 과제",
+        "hardest": "원문 조건과 새 용도 사이의 적용 논리",
+        "demo": "적용 환경을 바꾸면 효능 보장 대신 미검증 조건을 반환",
+        "mvp": "선별 기술 문헌 묶음 또는 명시적 가상 시험 입력으로 조건 추출·적용 제약·검증 과제 작성",
+        "sources": [
+          "S2",
+          "T1",
+          "T2"
+        ],
+        "official_rows_as_material": [
+          3,
+          4,
+          6
+        ],
+        "kitchen_concept": "타산업 기술로 보관·관리 부담을 줄이는 주방 기능",
+        "rerun_trigger": "새 기획 요청·자료 추가·조건 변경",
+        "novelty_limit": "좁은 업무 자동화 제안이며 강한 LLM/기존 도구 대비 우월성은 미검증",
+        "demo_inputs": "prepared synthetic/curated sample",
+        "demo_runtime": "actual generation/check/revision against sample inputs; not prerecorded output"
+      },
+      {
+        "id": "RESET_B_FLOW",
+        "theme": "B",
+        "name": "키친 사용자 흐름·와이어프레임 설계 Agent",
+        "user": "키친 UX/UI 설계자",
+        "problem": "주방 서비스의 정상/예외 흐름과 기본 화면을 반복 작성하는 수고",
+        "loop": "요구 → 상황/예외 시나리오 → 고정 구성 화면 → 연결 검사/수정",
+        "hardest": "상황 변경 후 흐름과 화면의 연결",
+        "demo": "가전 사용 불가 조건을 넣으면 예외 흐름과 안내 화면 갱신",
+        "mvp": "샘플 사용자 상황·가전 기능과 고정 UI 구성요소로 시나리오·화면 생성 및 연결 검사",
+        "sources": [
+          "S2",
+          "JD4"
+        ],
+        "official_rows_as_material": [
+          1,
+          4,
+          6
+        ],
+        "kitchen_concept": "준비·조리·관리의 안내를 연결하는 키친 경험",
+        "rerun_trigger": "새 기획 요청·자료 추가·조건 변경",
+        "novelty_limit": "좁은 업무 자동화 제안이며 강한 LLM/기존 도구 대비 우월성은 미검증",
+        "demo_inputs": "prepared synthetic/curated sample",
+        "demo_runtime": "actual generation/check/revision against sample inputs; not prerecorded output"
+      },
+      {
+        "id": "RESET_B_LINK",
+        "theme": "B",
+        "name": "가전 연계 서비스 설계·검사 Agent",
+        "user": "키친 서비스 기획자",
+        "problem": "여러 가전·사람의 작업과 예외를 일관된 서비스로 설계하는 수고",
+        "loop": "사용 목표 → 작업/가전 기능 → 상태/시간 계획 → UX 흐름/화면 → 충돌 검사/수정",
+        "hardest": "상태·자원·사용자 역할·화면 산출물의 일관성",
+        "demo": "가전 하나를 쓸 수 없게 되면 불가능 조건과 남은 작업의 대안 표시",
+        "mvp": "가상 2종 가전·작업/시간 표·모의 상태 API와 화면 템플릿. 상태/충돌 검사와 계획/안내 수정을 실제 실행",
+        "sources": [
+          "S2",
+          "JD4"
+        ],
+        "official_rows_as_material": [
+          1,
+          4,
+          6
+        ],
+        "kitchen_concept": "가전과 사람이 식사 준비 순서·변경 안내를 공유하는 경험",
+        "rerun_trigger": "새 기획 요청·자료 추가·조건 변경",
+        "novelty_limit": "좁은 업무 자동화 제안이며 강한 LLM/기존 도구 대비 우월성은 미검증",
+        "demo_inputs": "prepared synthetic/curated sample",
+        "demo_runtime": "actual generation/check/revision against sample inputs; not prerecorded output"
+      },
+      {
+        "id": "RESET_B_POLICY",
+        "theme": "B",
+        "name": "가구별 조리 정책·예외 흐름 설계 Agent",
+        "user": "개인화 키친 서비스 기획자",
+        "problem": "시간·취향·분량 조건의 우선순위와 예외를 설계하는 수고",
+        "loop": "가족 조건 → 정책표 → 조리 흐름/화면 → 충돌 검사/수정",
+        "hardest": "규칙 충돌의 해소와 안내 흐름 연결",
+        "demo": "시간·분량 조건 충돌 때 불가능 조건과 선택지 반환",
+        "mvp": "샘플 가족 조건·가상 레시피/시간/분량 표로 우선순위·충돌·예외 안내를 실행",
+        "sources": [
+          "S2",
+          "JD4",
+          "R7"
+        ],
+        "official_rows_as_material": [
+          2,
+          4,
+          6
+        ],
+        "kitchen_concept": "공통 조리와 개인별 옵션을 나누는 식사 경험",
+        "rerun_trigger": "새 기획 요청·자료 추가·조건 변경",
+        "novelty_limit": "좁은 업무 자동화 제안이며 강한 LLM/기존 도구 대비 우월성은 미검증",
+        "demo_inputs": "prepared synthetic/curated sample",
+        "demo_runtime": "actual generation/check/revision against sample inputs; not prerecorded output"
+      }
+    ],
+    "excluded_patterns": [
+      "포함 가능 과제 한 행을 독립 출품 부문으로 강제",
+      "B에 이미지 생성·실가전 시뮬레이션을 필수 가정",
+      "A에 제조 설계·CAD를 필수 가정",
+      "전체 웹 자동 수집부터 구현하는 범위",
+      "이미 기능이 있으면 고객 불편이 해결됐다고 단정",
+      "실자료를 아직 수집하지 않았다는 이유만으로 시연 구현 불가 판정",
+      "A만 샘플 허용하고 B에는 실기기/실측을 요구하는 비교"
+    ]
+  },
+  "evidence_paths": [
+    "기획/샘플데이터_기준_재검토.md",
+    "docs/대회요건.md",
+    "research/two_axis_reassessment/sources.json",
+    "research/theme_selection/probe_inputs.json",
+    "research/theme_selection/probe_results.json",
+    "research/topic_trial/protocol.md",
+    "research/topic_trial/pilot_outputs.json"
+  ],
+  "review": {
+    "by": "Codex; no independent reviewer",
+    "limitations": [
+      "후보 난도·서류 설득력은 정성적 판단이며 합격 확률·공식 점수가 아니다.",
+      "합성 자료는 시연 동작의 입력이며 실제 고객 수요·기술 효과·실기기 제어 증거가 아니다.",
+      "기존 저장된 코드 실험을 재검토했고 새 모델 호출·샘플 자료집·모의 API 구현은 하지 않았다.",
+      "선정은 기존 위임에 따른 Codex 판단이다. 이번 사용자가 승인한 것은 샘플을 고려하는 방식이며 후보 직접 승인과 구분한다."
+    ]
+  }
+}
