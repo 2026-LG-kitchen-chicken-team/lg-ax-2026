@@ -1,0 +1,60 @@
+{
+  "stage": "probe",
+  "content": {
+    "runs": [
+      {
+        "candidate": "ROW_A2",
+        "source": "official product dimensions manually transcribed",
+        "case_count": 8,
+        "result": "제약 초과·정보 누락·시장 불일치 처리 확인",
+        "output": "research/theme_selection/probe_results.json"
+      },
+      {
+        "candidate": "ROW_B4",
+        "source": "synthetic 6-task graph, one oven and one person",
+        "case_count": 6,
+        "result": "정상·변경·누락·불가능 조건·순환 탐지. 생성된 일정 제약 독립 검사",
+        "output": "research/theme_selection/probe_results.json"
+      }
+    ],
+    "limitations": [
+      "합격 확률·공식 배점이 아닌 현재 증거에 따른 상대 판단",
+      "현업 인터뷰·독립 심사·LLM 비교 미실행",
+      "상위 두 후보의 제한된 코드 실행이며 완성 Agent·실기기 연동 아님",
+      "테마별 두 후보 선정 완료; 전체 출품 테마 1개 선택과 접수는 별도",
+      "Measurements transcribed by Codex from official two-page spec sheets; raw-document extraction not automated",
+      "Old US models demonstrate source availability only; not a current Korean small-household market sample",
+      "Only three explicitly defined envelope constraints screened; no depth, delivery path, plumbing, drawer, side-wall geometry or physical installation certification",
+      "No quantified customer demand, new product feasibility or LLM benchmark",
+      "Synthetic integer time units, not measured recipe times",
+      "At most eight tasks, single-capacity resources, no preemption, no temperature or safety model",
+      "Replans from the start under changed assumptions; in-progress task freezing is not implemented",
+      "Compares code schedules only; no claim of LLM advantage or real cooking-time savings"
+    ],
+    "findings": [
+      "제품 웹 표 자동 추출을 필수로 두지 않고 검토된 자료에서 시작",
+      "B4 계산 기능은 가능하나 진행 중 작업 고정·두 가전 연계·UX/LLM은 미구현",
+      "실험 통과 개수로 후보 순위를 정하지 않음. 미검증 가정을 보고서에 남기고 테마별 선정"
+    ]
+  },
+  "evidence_paths": [
+    "기획/테마별_최종후보_평가.md",
+    "research/theme_selection/evaluation.json",
+    "research/theme_selection/sources.json",
+    "research/twelve_topics/topics.json",
+    "research/twelve_topics/sources.json",
+    "research/theme_selection/probe_inputs.json",
+    "research/theme_selection/probe_results.json",
+    "scripts/finalist_probe.py",
+    "tests/test_finalist_probe.py"
+  ],
+  "review": {
+    "by": "Codex; same author, no independent evaluator",
+    "limitations": [
+      "합격 확률·공식 배점이 아닌 현재 증거에 따른 상대 판단",
+      "현업 인터뷰·독립 심사·LLM 비교 미실행",
+      "상위 두 후보의 제한된 코드 실행이며 완성 Agent·실기기 연동 아님",
+      "테마별 두 후보 선정 완료; 전체 출품 테마 1개 선택과 접수는 별도"
+    ]
+  }
+}

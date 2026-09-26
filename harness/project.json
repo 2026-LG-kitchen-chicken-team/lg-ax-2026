@@ -314,6 +314,30 @@
       "checked_at": "2026-09-27",
       "supports": "성분 및 주의 표시를 확인할 필요",
       "limitations": "미국 안내이며 국내 규정 전체를 대신하지 않음; 경고 부재를 안전으로 판단할 수 없음"
+    },
+    {
+      "id": "F1",
+      "title": "LMXS28596_ official LG spec sheet",
+      "supports": "2쪽의 치수·간격·문 열림 폭을 수동 구조화해 제한된 수치 검사",
+      "limitations": "구형 미국 모델. 국내 소형 가구 수요·설치 승인·자동 원문 추출을 입증하지 않음",
+      "checked_at": "2026-09-27",
+      "locator": "https://www.lg.com/us/business/download/resources/CT00021979/LMXS28596_%20LG%20Builder%20Spec%20Sheet%5B20220402_054345%5D.pdf"
+    },
+    {
+      "id": "F2",
+      "title": "LSXS26366_ official LG spec sheet",
+      "supports": "2쪽의 치수·간격·문 열림 폭을 수동 구조화해 제한된 수치 검사",
+      "limitations": "구형 미국 모델. 국내 소형 가구 수요·설치 승인·자동 원문 추출을 입증하지 않음",
+      "checked_at": "2026-09-27",
+      "locator": "https://www.lg.com/us/business/download/resources/CT00021979/LSXS26366_%20LG%20Builder%20Spec%20Sheet%5B20220108_003404%5D.pdf"
+    },
+    {
+      "id": "F3",
+      "title": "Samsung connected cooking recipe announcement",
+      "supports": "여러 메뉴·조리 시간·온도·SmartThings 연결의 기존 경쟁 방향",
+      "limitations": "제조사 발표이며 독립 수요 증거 아님. 모든 세부 재계획 기능 존재/부재는 판단 불가",
+      "checked_at": "2026-09-27",
+      "locator": "https://news.samsung.com/uk/samsung-partners-with-jamie-oliver-to-create-new-recipe-range-on-bespoke-ai-appliances"
     }
   ],
   "candidates": [
@@ -916,7 +940,7 @@
     "candidate_id": null,
     "confirmed_by": null,
     "confirmed_at": null,
-    "rationale": "공식 표 12개 항목 각각의 대표안을 선정해 비교했으며 공모전 최종 주제는 미확정. 공식 행 B4/A2 우선 검토는 기존 B8/A8의 연속."
+    "rationale": "테마별 선별 완료: A는 ROW_A2, B는 ROW_B4. 사용자 요청 범위는 각 테마 1개이며 최종 출품 테마 1개는 별도 선택."
   },
   "stages": [
     {
@@ -940,16 +964,16 @@
     {
       "id": "topic_research",
       "status": "done",
-      "next_action": "12개 대표안 검토 후 상위 후보의 데이터·기준선 비교",
+      "next_action": "테마별 선정 완료. 출품안 결정 후 대상 자료·LLM 기준선·현업 가치 검증",
       "evidence": {
-        "path": "기획/공식과제별_12개_대표주제.md",
-        "sha256": "0ca8896131d5f82ab23a9939bd52717488fa2d3f809ef16f0b7a0a9840b71cec"
+        "path": "기획/테마별_최종후보_평가.md",
+        "sha256": "258aac16debb92258e29b2a3b233f3a08addf0c0515ce7cd4e16117cfd751d38"
       }
     },
     {
       "id": "topic_decision",
-      "status": "pending",
-      "next_action": "복수 후보 비교 결과를 의논하고 검증 후 주제 확정"
+      "status": "in_progress",
+      "next_action": "A②/B④ 각 테마 선별 완료; 출품 테마 1개 결정"
     },
     {
       "id": "proposal",
@@ -1065,6 +1089,24 @@
         "selected_by": "Codex",
         "not_direct_user_approval_of_candidate": true
       }
+    },
+    {
+      "status": "theme_finalists_selected",
+      "selected": {
+        "A": "ROW_A2",
+        "B": "ROW_B4"
+      },
+      "authority": {
+        "kind": "user_delegation",
+        "instruction": "기존 12개를 1차 서류 설득력·선발 후 실제 구현 난도·실사용 가치·데이터·차별성·검증 가능성으로 평가해 Theme A와 B에서 각각 하나를 선별한다.",
+        "selected_by": "Codex",
+        "not_direct_user_approval_of_candidate": true,
+        "scope": "one finalist in each theme; not a single submission topic"
+      },
+      "evidence": {
+        "path": "기획/테마별_최종후보_평가.md",
+        "sha256": "258aac16debb92258e29b2a3b233f3a08addf0c0515ce7cd4e16117cfd751d38"
+      }
     }
   ],
   "atoz": {
@@ -1073,6 +1115,30 @@
     "executor": "current Codex conversation",
     "topic": null,
     "standalone_model_api_verified": false,
-    "comparison": "기획/공식과제별_12개_대표주제.md"
+    "comparison": "기획/테마별_최종후보_평가.md"
+  },
+  "theme_finalists": {
+    "status": "selected_for_each_theme",
+    "selected": {
+      "A": "ROW_A2",
+      "B": "ROW_B4"
+    },
+    "authority": {
+      "kind": "user_delegation",
+      "instruction": "기존 12개를 1차 서류 설득력·선발 후 실제 구현 난도·실사용 가치·데이터·차별성·검증 가능성으로 평가해 Theme A와 B에서 각각 하나를 선별한다.",
+      "selected_by": "Codex",
+      "not_direct_user_approval_of_candidate": true,
+      "scope": "one finalist in each theme; not a single submission topic"
+    },
+    "evidence": {
+      "path": "기획/테마별_최종후보_평가.md",
+      "sha256": "258aac16debb92258e29b2a3b233f3a08addf0c0515ce7cd4e16117cfd751d38"
+    },
+    "limitations": [
+      "합격 확률·공식 배점이 아닌 현재 증거에 따른 상대 판단",
+      "현업 인터뷰·독립 심사·LLM 비교 미실행",
+      "상위 두 후보의 제한된 코드 실행이며 완성 Agent·실기기 연동 아님",
+      "테마별 두 후보 선정 완료; 전체 출품 테마 1개 선택과 접수는 별도"
+    ]
   }
 }

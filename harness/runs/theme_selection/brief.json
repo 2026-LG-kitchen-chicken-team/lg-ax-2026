@@ -1,0 +1,47 @@
+{
+  "stage": "brief",
+  "content": {
+    "objective": "기존 12개를 1차 서류 설득력·선발 후 실제 구현 난도·실사용 가치·데이터·차별성·검증 가능성으로 평가해 Theme A와 B에서 각각 하나를 선별한다.",
+    "constraints": [
+      "각 테마 1개씩 선별",
+      "공식 12개 모두 같은 기준",
+      "PC 시연, 실기기·내부 자료 필수 가정 없음",
+      "가전 제조가 아니라 반복 기획/설계 Agent 구현 난도"
+    ],
+    "unknowns": [
+      "합격 확률·공식 배점이 아닌 현재 증거에 따른 상대 판단",
+      "현업 인터뷰·독립 심사·LLM 비교 미실행",
+      "상위 두 후보의 제한된 코드 실행이며 완성 Agent·실기기 연동 아님",
+      "테마별 두 후보 선정 완료; 전체 출품 테마 1개 선택과 접수는 별도"
+    ],
+    "success_criteria": [
+      "공식 과제/직무 적합성",
+      "1차 서류 설득력",
+      "실제 구현 난도",
+      "자료와 외부 의존성",
+      "직접 사용자 반복 사용",
+      "강한 LLM/기존 도구 대비 가치",
+      "검사·시연 가능성"
+    ]
+  },
+  "evidence_paths": [
+    "기획/테마별_최종후보_평가.md",
+    "research/theme_selection/evaluation.json",
+    "research/theme_selection/sources.json",
+    "research/twelve_topics/topics.json",
+    "research/twelve_topics/sources.json",
+    "research/theme_selection/probe_inputs.json",
+    "research/theme_selection/probe_results.json",
+    "scripts/finalist_probe.py",
+    "tests/test_finalist_probe.py"
+  ],
+  "review": {
+    "by": "Codex; same author, no independent evaluator",
+    "limitations": [
+      "합격 확률·공식 배점이 아닌 현재 증거에 따른 상대 판단",
+      "현업 인터뷰·독립 심사·LLM 비교 미실행",
+      "상위 두 후보의 제한된 코드 실행이며 완성 Agent·실기기 연동 아님",
+      "테마별 두 후보 선정 완료; 전체 출품 테마 1개 선택과 접수는 별도"
+    ]
+  }
+}

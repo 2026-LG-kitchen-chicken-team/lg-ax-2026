@@ -1,0 +1,153 @@
+{
+  "as_of": "2026-09-27",
+  "criteria": [
+    "공식 과제/직무 적합성",
+    "1차 서류 설득력",
+    "실제 구현 난도",
+    "자료와 외부 의존성",
+    "직접 사용자 반복 사용",
+    "강한 LLM/기존 도구 대비 가치",
+    "검사·시연 가능성"
+  ],
+  "scale": "qualitative ordinal; no official weights or estimated acceptance probabilities",
+  "assessments": [
+    {
+      "id": "ROW_A1",
+      "document_persuasiveness": "중",
+      "implementation_difficulty": "중",
+      "professional_repeat_use_hypothesis": "높음",
+      "data_readiness": "미확보",
+      "baseline_differentiation_hypothesis": "낮음~중",
+      "demonstrability": "중",
+      "reason": "실제 리뷰 미확보와 기존 고객 분석 도구 대비 차별성"
+    },
+    {
+      "id": "ROW_A2",
+      "document_persuasiveness": "높음·조건부",
+      "implementation_difficulty": "중",
+      "professional_repeat_use_hypothesis": "높음",
+      "data_readiness": "일부 확인",
+      "baseline_differentiation_hypothesis": "중",
+      "demonstrability": "높음",
+      "reason": "수치 제약과 근거를 연결 가능; 국내 대상 모델·수요 검증 필요"
+    },
+    {
+      "id": "ROW_A3",
+      "document_persuasiveness": "중",
+      "implementation_difficulty": "높음",
+      "professional_repeat_use_hypothesis": "중",
+      "data_readiness": "공개 경로",
+      "baseline_differentiation_hypothesis": "중",
+      "demonstrability": "낮음~중",
+      "reason": "문헌의 실험 조건을 가정용 제품으로 전용하는 검증 부담"
+    },
+    {
+      "id": "ROW_A4",
+      "document_persuasiveness": "중",
+      "implementation_difficulty": "중",
+      "professional_repeat_use_hypothesis": "중",
+      "data_readiness": "표준 경로",
+      "baseline_differentiation_hypothesis": "낮음~중",
+      "demonstrability": "중",
+      "reason": "기존 재고 앱 중복과 가정 내 기록 부담"
+    },
+    {
+      "id": "ROW_A5",
+      "document_persuasiveness": "중~높음",
+      "implementation_difficulty": "높음",
+      "professional_repeat_use_hypothesis": "중",
+      "data_readiness": "데이터 경로",
+      "baseline_differentiation_hypothesis": "중",
+      "demonstrability": "중",
+      "reason": "인식 오류와 실제 동작 완료의 차이; 실제 모델 미실행"
+    },
+    {
+      "id": "ROW_A6",
+      "document_persuasiveness": "중",
+      "implementation_difficulty": "중~높음",
+      "professional_repeat_use_hypothesis": "중",
+      "data_readiness": "수요 미확보",
+      "baseline_differentiation_hypothesis": "낮음~중",
+      "demonstrability": "중",
+      "reason": "기존 용기 대비 가치·세척 부담·제조 가능성"
+    },
+    {
+      "id": "ROW_B1",
+      "document_persuasiveness": "중~높음",
+      "implementation_difficulty": "높음",
+      "professional_repeat_use_hypothesis": "중~높음",
+      "data_readiness": "기능별 확인 필요",
+      "baseline_differentiation_hypothesis": "중",
+      "demonstrability": "중",
+      "reason": "보관·조리·세척 전체의 상태·사람 개입·미지원 기능 범위"
+    },
+    {
+      "id": "ROW_B2",
+      "document_persuasiveness": "중",
+      "implementation_difficulty": "중",
+      "professional_repeat_use_hypothesis": "중",
+      "data_readiness": "레시피 검토 필요",
+      "baseline_differentiation_hypothesis": "낮음~중",
+      "demonstrability": "중",
+      "reason": "개인화 서비스 중복과 레시피 변형의 타당성"
+    },
+    {
+      "id": "ROW_B3",
+      "document_persuasiveness": "중~높음",
+      "implementation_difficulty": "높음",
+      "professional_repeat_use_hypothesis": "중~높음",
+      "data_readiness": "표시 검토 필요",
+      "baseline_differentiation_hypothesis": "중",
+      "demonstrability": "중",
+      "reason": "표시 변경·누락·교차접촉 등 해석 신뢰성"
+    },
+    {
+      "id": "ROW_B4",
+      "document_persuasiveness": "높음·조건부",
+      "implementation_difficulty": "중",
+      "professional_repeat_use_hypothesis": "높음",
+      "data_readiness": "작업 데이터 필요",
+      "baseline_differentiation_hypothesis": "중",
+      "demonstrability": "높음",
+      "reason": "충돌·변경·불가능 조건 검사 가능; 계산기 대비 Agent 기여 미검증"
+    },
+    {
+      "id": "ROW_B5",
+      "document_persuasiveness": "중",
+      "implementation_difficulty": "낮음~중",
+      "professional_repeat_use_hypothesis": "중",
+      "data_readiness": "수량 검토 필요",
+      "baseline_differentiation_hypothesis": "낮음",
+      "demonstrability": "높음",
+      "reason": "구현은 쉬우나 기존 재료 활용·식단 기능과 중복"
+    },
+    {
+      "id": "ROW_B6",
+      "document_persuasiveness": "중",
+      "implementation_difficulty": "중~높음",
+      "professional_repeat_use_hypothesis": "낮음~중",
+      "data_readiness": "가상 제품",
+      "baseline_differentiation_hypothesis": "중",
+      "demonstrability": "낮음~중",
+      "reason": "가정한 제품의 실현성·현업 반복 업무 증거 부족"
+    }
+  ],
+  "selected_by_theme": {
+    "A": "ROW_A2",
+    "B": "ROW_B4"
+  },
+  "authority": {
+    "kind": "user_delegation",
+    "instruction": "기존 12개를 1차 서류 설득력·선발 후 실제 구현 난도·실사용 가치·데이터·차별성·검증 가능성으로 평가해 Theme A와 B에서 각각 하나를 선별한다.",
+    "selected_by": "Codex",
+    "not_direct_user_approval_of_candidate": true,
+    "scope": "one finalist in each theme; not a single submission topic"
+  },
+  "limitations": [
+    "합격 확률·공식 배점이 아닌 현재 증거에 따른 상대 판단",
+    "현업 인터뷰·독립 심사·LLM 비교 미실행",
+    "상위 두 후보의 제한된 코드 실행이며 완성 Agent·실기기 연동 아님",
+    "테마별 두 후보 선정 완료; 전체 출품 테마 1개 선택과 접수는 별도"
+  ],
+  "report": "기획/테마별_최종후보_평가.md"
+}
