@@ -338,6 +338,54 @@
       "limitations": "제조사 발표이며 독립 수요 증거 아님. 모든 세부 재계획 기능 존재/부재는 판단 불가",
       "checked_at": "2026-09-27",
       "locator": "https://news.samsung.com/uk/samsung-partners-with-jamie-oliver-to-create-new-recipe-range-on-bespoke-ai-appliances"
+    },
+    {
+      "id": "JD1",
+      "title": "LG 고객 경험 디자인의 역할",
+      "supports": "고객 조사와 제품 기획 초기의 디자인·엔지니어 협업",
+      "limitations": "LG 자체 설명. 현재 우리 도구의 수요·효과를 입증하지 않음",
+      "checked_at": "2026-09-27",
+      "locator": "https://www.lg.com/global/newsroom/insights/executive-corner/executive-corner-perfecting-the-customer-experience-through-design1/"
+    },
+    {
+      "id": "JD2",
+      "title": "Dovetail AI Agents",
+      "supports": "고객 자료 기반 반복 분석·출처 추적·Skill 활용의 기존 경쟁 기능",
+      "limitations": "공급자 설명. 우리 도구와의 실행 비교 아님",
+      "checked_at": "2026-09-27",
+      "locator": "https://dovetail.com/product/ai-agents/"
+    },
+    {
+      "id": "JD3",
+      "title": "Dovetail의 Breville 고객 사례",
+      "supports": "키친 가전 기업의 고객 근거 공유 및 상품·UX 기획 활용",
+      "limitations": "공급자 사례 소개. 우리 Agent 채택·절감·LG 업무 빈도 근거 아님",
+      "checked_at": "2026-09-27",
+      "locator": "https://dovetail.com/customers/breville/"
+    },
+    {
+      "id": "JD4",
+      "title": "Figma Make 공식 안내",
+      "supports": "대화로 작동하는 프로토타입·웹 UI 생성과 수정 가능",
+      "limitations": "가전 제약 검사 여부·모든 세부 기능 존재/부재를 단정하지 않음",
+      "checked_at": "2026-09-27",
+      "locator": "https://help.figma.com/hc/en-us/articles/31304485164695-Create-a-Figma-Make-file"
+    },
+    {
+      "id": "JD5",
+      "title": "NN/g 서비스 블루프린트 실무 조사",
+      "supports": "97명 실무자 조사에서 역할·과정·기술의 관계를 검토하는 서비스 설계 업무",
+      "limitations": "2019년 여러 산업 표본. LG 키친 실무·우리 제품 수요 조사 아님",
+      "checked_at": "2026-09-27",
+      "locator": "https://www.nngroup.com/articles/service-blueprinting-practice/"
+    },
+    {
+      "id": "JD6",
+      "title": "NN/g 서비스 설계 범위 선정",
+      "supports": "통제 가능하고 자료가 있는 작은 경험부터 범위 선정하는 설계 방법",
+      "limitations": "일반 방법론으로 참고. 공모전 규정·구현 기간 보증 아님",
+      "checked_at": "2026-09-27",
+      "locator": "https://www.nngroup.com/articles/service-blueprints-choose-what-experience/"
     }
   ],
   "candidates": [
@@ -933,6 +981,164 @@
       "feasibility": "conditional",
       "official_task": "새로운 제품·서비스가 적용된 미래 키친 생활 시나리오",
       "official_row": 6
+    },
+    {
+      "id": "ROLE_A_OPPORTUNITY",
+      "theme": "A",
+      "name": "고객 근거 기반 제품 개선 기획 Agent",
+      "user": "키친 가전 상품기획자",
+      "problem": "고객 의견을 실제 개선 기회와 기존 기능으로 해결되는 문제로 나누고 기획 과제를 작성하는 수고",
+      "mvp": "검토된 고객 원문 30개 내외와 한 제품군; 원문 아직 미확보",
+      "risks": [
+        "Dovetail 등과 겹치는 자료 요약을 넘어 제품별 반증의 추가 가치",
+        "직접 사용자 채택·강한 LLM 대비 효용 미검증"
+      ],
+      "evidence": [
+        "JD1",
+        "JD2",
+        "JD3",
+        "R10"
+      ],
+      "feasibility": "conditional",
+      "official_rows_as_material": [
+        1,
+        2,
+        6
+      ],
+      "kitchen_concept": "준비·조리·관리 사이의 반복 작업을 줄이는 제품 기능·관리 서비스"
+    },
+    {
+      "id": "ROLE_A_FORM",
+      "theme": "A",
+      "name": "생활 방식·가구 특성 기반 가전 폼팩터 기획 Agent",
+      "user": "가전 상품기획자·선행기획 담당자",
+      "problem": "생활 요구를 검토 가능한 제품 형태·구조 조건으로 바꾸고 상충 대안을 비교하는 수고",
+      "mvp": "한 제품군 약 5모델·조건 3~4종·서로 다른 브리프 2개 목표. 작은 공간은 첫 사례",
+      "risks": [
+        "고객 요구→새 콘셉트의 타당성. 제조·인체공학 검증과 단순 제품 추천을 구분",
+        "직접 사용자 채택·강한 LLM 대비 효용 미검증"
+      ],
+      "evidence": [
+        "JD1",
+        "JD2",
+        "JD3",
+        "R1",
+        "R2"
+      ],
+      "feasibility": "conditional",
+      "official_rows_as_material": [
+        1,
+        2,
+        3,
+        4,
+        6
+      ],
+      "kitchen_concept": "공간·저장량·접근 방식 등 요구에 맞춘 크기·수납·개폐·배치 구성"
+    },
+    {
+      "id": "ROLE_A_TECH",
+      "theme": "A",
+      "name": "타산업 기술 적용 기획 Agent",
+      "user": "선행 상품기획자",
+      "problem": "고객 문제에 맞는 기술을 찾아 가정용 적용 조건과 실험 과제를 검토하는 수고",
+      "mvp": "기술군 하나와 검토된 문헌 자료집",
+      "risks": [
+        "원문 실험 조건의 전용과 전문가 평가 부담",
+        "직접 사용자 채택·강한 LLM 대비 효용 미검증"
+      ],
+      "evidence": [
+        "JD1",
+        "T1",
+        "T2"
+      ],
+      "feasibility": "conditional",
+      "official_rows_as_material": [
+        1,
+        3,
+        4,
+        6
+      ],
+      "kitchen_concept": "보관·준비·관리 부담을 줄이는 다른 산업의 기술을 주방 기능으로 적용"
+    },
+    {
+      "id": "ROLE_B_SERVICE",
+      "theme": "B",
+      "name": "키친 가전 연계 서비스 설계·검증 Agent",
+      "user": "키친 서비스 기획자·UX/UI 시나리오 설계자",
+      "problem": "고객 목표를 사람·가전·앱 역할로 나누고 조건이 바뀔 때 흐름·화면·예외 처리를 함께 수정하는 수고",
+      "mvp": "가전 2종·작업자 1명·6~8작업·고정 화면 요소. 첫 사례는 식사 준비",
+      "risks": [
+        "작업/기능 원자료와 생성한 UX 산출물의 일관성. 계산기·화면 생성기 대비 추가 가치",
+        "직접 사용자 채택·강한 LLM 대비 효용 미검증"
+      ],
+      "evidence": [
+        "JD1",
+        "JD4",
+        "JD5",
+        "JD6",
+        "O1",
+        "S4",
+        "R6"
+      ],
+      "feasibility": "conditional",
+      "official_rows_as_material": [
+        1,
+        2,
+        4,
+        6
+      ],
+      "kitchen_concept": "식사 준비 계획을 가전과 사람이 공유하고 변경 시 남은 안내와 선택지를 일관되게 갱신하는 경험"
+    },
+    {
+      "id": "ROLE_B_POLICY",
+      "theme": "B",
+      "name": "가구별 조리 서비스 정책·예외 흐름 설계 Agent",
+      "user": "개인화 키친 서비스 기획자",
+      "problem": "가족별 조건 조합의 우선순위와 불가능 조건을 정책·화면으로 일관되게 만드는 수고",
+      "mvp": "검토된 요리 소수·취향/시간/분량. 의학적 적합성/안전 판정 제외",
+      "risks": [
+        "기존 개인화 서비스와 중복·요리 변형 타당성·기획자용 도구 수요",
+        "직접 사용자 채택·강한 LLM 대비 효용 미검증"
+      ],
+      "evidence": [
+        "JD4",
+        "JD5",
+        "O2",
+        "R7"
+      ],
+      "feasibility": "conditional",
+      "official_rows_as_material": [
+        2,
+        4,
+        5,
+        6
+      ],
+      "kitchen_concept": "공통 조리와 개인별 옵션을 나누고 충돌 시 대안을 선택하는 식사 서비스"
+    },
+    {
+      "id": "ROLE_B_HANDOFF",
+      "theme": "B",
+      "name": "가족 작업 인계·공동사용 경험 설계 Agent",
+      "user": "키친 UX 설계자",
+      "problem": "가족 간 담당자 변경 때 확인·알림·미완료·중복 처리를 설계하는 수고",
+      "mvp": "역할 2개·공동 작업 1종·가상 상태. 실제 계정/권한 제어 별도",
+      "risks": [
+        "가족 공동사용 수요·기기 역할/권한 명세가 아직 부족",
+        "직접 사용자 채택·강한 LLM 대비 효용 미검증"
+      ],
+      "evidence": [
+        "JD1",
+        "JD5",
+        "JD6",
+        "S4"
+      ],
+      "feasibility": "conditional",
+      "official_rows_as_material": [
+        1,
+        4,
+        6
+      ],
+      "kitchen_concept": "여러 사람이 준비·조리·정리를 나눠 맡을 때 상태를 공유하고 인계를 확인하는 경험"
     }
   ],
   "decision": {
@@ -940,7 +1146,7 @@
     "candidate_id": null,
     "confirmed_by": null,
     "confirmed_at": null,
-    "rationale": "테마별 선별 완료: A는 ROW_A2, B는 ROW_B4. 사용자 요청 범위는 각 테마 1개이며 최종 출품 테마 1개는 별도 선택."
+    "rationale": "직무 기준 재탐색 결과 A-형태/B-연계 추천. 공식 행별 최종 후보 선정은 이전 기록. 단일 출품 테마는 미확정."
   },
   "stages": [
     {
@@ -949,7 +1155,7 @@
       "next_action": "변경 공지 발생 시 갱신",
       "evidence": {
         "path": "docs/대회요건.md",
-        "sha256": "872ab29c15b9e8d7d1b9e9f6de7f96b64b9a5737a227a6e781c8fcc3a3777d48"
+        "sha256": "920f94158f65a39a8d295d7104b0ac4a14f1314c2196bbee7eaffe5100b4929f"
       }
     },
     {
@@ -964,16 +1170,16 @@
     {
       "id": "topic_research",
       "status": "done",
-      "next_action": "테마별 선정 완료. 출품안 결정 후 대상 자료·LLM 기준선·현업 가치 검증",
+      "next_action": "직무 기준 6개 비교 완료. A-형태/B-연계의 기준선·산출물 품질 검증",
       "evidence": {
-        "path": "기획/테마별_최종후보_평가.md",
-        "sha256": "258aac16debb92258e29b2a3b233f3a08addf0c0515ce7cd4e16117cfd751d38"
+        "path": "기획/직무기준_주제재탐색.md",
+        "sha256": "322df40d6eeaffb6727687d724eacc426f9aee6d66561b7c31adde652de9ad81"
       }
     },
     {
       "id": "topic_decision",
       "status": "in_progress",
-      "next_action": "A②/B④ 각 테마 선별 완료; 출품 테마 1개 결정"
+      "next_action": "직무 기준 추천은 A-형태/B-연계. 최종 출품 테마 하나는 미확정"
     },
     {
       "id": "proposal",
@@ -1107,6 +1313,28 @@
         "path": "기획/테마별_최종후보_평가.md",
         "sha256": "258aac16debb92258e29b2a3b233f3a08addf0c0515ce7cd4e16117cfd751d38"
       }
+    },
+    {
+      "status": "reopened_after_role_reframing",
+      "instruction": "Theme A/B의 직접 사용자·반복 업무·수행 범위·산출물을 기준으로 다시 탐색하고 후보를 도출한다. 기존 12개는 선택 부문이 아닌 기능·자료·사례 재료로 활용한다.",
+      "new_recommendations": {
+        "status": "proposed_after_role_discovery",
+        "by_theme": {
+          "A": "ROLE_A_FORM",
+          "B": "ROLE_B_SERVICE"
+        },
+        "verification_priority": [
+          "ROLE_B_SERVICE",
+          "ROLE_A_FORM"
+        ],
+        "selected_by": "Codex",
+        "direct_user_approval": false,
+        "scope": "업무 후보 추천; 최종 출품 테마 확정 아님"
+      },
+      "evidence": {
+        "path": "기획/직무기준_주제재탐색.md",
+        "sha256": "322df40d6eeaffb6727687d724eacc426f9aee6d66561b7c31adde652de9ad81"
+      }
     }
   ],
   "atoz": {
@@ -1115,30 +1343,30 @@
     "executor": "current Codex conversation",
     "topic": null,
     "standalone_model_api_verified": false,
-    "comparison": "기획/테마별_최종후보_평가.md"
+    "comparison": "기획/직무기준_주제재탐색.md"
   },
-  "theme_finalists": {
-    "status": "selected_for_each_theme",
-    "selected": {
-      "A": "ROW_A2",
-      "B": "ROW_B4"
+  "theme_recommendations": {
+    "status": "proposed_after_role_discovery",
+    "by_theme": {
+      "A": "ROLE_A_FORM",
+      "B": "ROLE_B_SERVICE"
     },
-    "authority": {
-      "kind": "user_delegation",
-      "instruction": "기존 12개를 1차 서류 설득력·선발 후 실제 구현 난도·실사용 가치·데이터·차별성·검증 가능성으로 평가해 Theme A와 B에서 각각 하나를 선별한다.",
-      "selected_by": "Codex",
-      "not_direct_user_approval_of_candidate": true,
-      "scope": "one finalist in each theme; not a single submission topic"
-    },
+    "verification_priority": [
+      "ROLE_B_SERVICE",
+      "ROLE_A_FORM"
+    ],
+    "selected_by": "Codex",
+    "direct_user_approval": false,
+    "scope": "업무 후보 추천; 최종 출품 테마 확정 아님",
     "evidence": {
-      "path": "기획/테마별_최종후보_평가.md",
-      "sha256": "258aac16debb92258e29b2a3b233f3a08addf0c0515ce7cd4e16117cfd751d38"
+      "path": "기획/직무기준_주제재탐색.md",
+      "sha256": "322df40d6eeaffb6727687d724eacc426f9aee6d66561b7c31adde652de9ad81"
     },
     "limitations": [
-      "합격 확률·공식 배점이 아닌 현재 증거에 따른 상대 판단",
-      "현업 인터뷰·독립 심사·LLM 비교 미실행",
-      "상위 두 후보의 제한된 코드 실행이며 완성 Agent·실기기 연동 아님",
-      "테마별 두 후보 선정 완료; 전체 출품 테마 1개 선택과 접수는 별도"
+      "현업 채택·수요·합격 확률·LLM 우월성 미검증",
+      "기존 일부 코드 실험을 확장된 직무 전체의 검증으로 사용하지 않음",
+      "초기 표본 수·기능 수는 계획이며 확보·구현 완료가 아님",
+      "이번 범위는 재탐색·도출. 단일 출품 주제 확정·접수는 별도"
     ]
   }
 }
