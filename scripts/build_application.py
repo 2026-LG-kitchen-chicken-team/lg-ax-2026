@@ -8,6 +8,7 @@ from copy import deepcopy
 import json
 import re
 import base64
+from PIL import Image
 from lxml import etree as E
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -55,6 +56,7 @@ for face in mapping.findall('FACENAMELIST/FONTFACE'):
 body_p,_=add_shape('PARASHAPE',0,{'Align':'Justify','SnapToGrid':'false','WidowOrphan':'true'},LineSpacing=140,Prev=0,Next=400)
 subhead_p,_=add_shape('PARASHAPE',0,{'Align':'Left','KeepWithNext':'true','SnapToGrid':'false'},LineSpacing=145,Prev=450,Next=350)
 center_p,_=add_shape('PARASHAPE',0,{'Align':'Center','SnapToGrid':'false'},LineSpacing=130,Prev=0,Next=0)
+image_p,_=add_shape('PARASHAPE',0,{'Align':'Center','SnapToGrid':'false'},LineSpacing=100,Prev=300,Next=600)
 reference_p,_=add_shape('PARASHAPE',0,{'Align':'Left','SnapToGrid':'false'},LineSpacing=140,Prev=0,Next=400)
 page_p,_=add_shape('PARASHAPE',19,{'PageBreakBefore':'true'})
 
@@ -97,6 +99,23 @@ if signatures:
         data=(ROOT/item['path']).read_bytes()
         E.SubElement(binaries,'BINITEM',Type='Embedding',BinData=str(i),Format='png')
         E.SubElement(storage,'BINDATA',Id=str(i),Size=str(len(data)),Encoding='Base64',Compress='false').text=base64.b64encode(data).decode('ascii')
+
+def embed_image(path):
+    binaries=mapping.find('BINDATALIST')
+    if binaries is None:
+        binaries=E.Element('BINDATALIST',Count='0')
+        mapping.insert(0,binaries)
+    storage=root.find('TAIL/BINDATASTORAGE')
+    if storage is None:
+        storage=E.Element('BINDATASTORAGE')
+        root.find('TAIL').insert(0,storage)
+    idx=str(max([int(n.get('BinData')) for n in binaries]+[0])+1)
+    data=path.read_bytes()
+    E.SubElement(binaries,'BINITEM',Type='Embedding',BinData=idx,Format='png')
+    binaries.set('Count',str(len(binaries)))
+    E.SubElement(storage,'BINDATA',Id=idx,Size=str(len(data)),Encoding='Base64',Compress='false').text=base64.b64encode(data).decode('ascii')
+    with Image.open(path) as im: w,h=im.size
+    return {'bin_id':idx,'width':w,'height':h}
 
 def signature_overlay(cell,item,serial,table_index,member_index):
     """Put transparent ink in front of the unchanged original signature label."""
@@ -142,37 +161,81 @@ for ti in (0,2,3):
         if re.fullmatch(r'2026년\s*월\s*일',char.text or ''):
             char.text=team['date']
 
+def inline_image(path,serial):
+    item=embed_image(path)
+    width=42600
+    height=round(width*item['height']/item['width'])
+    # Reuse the proven native picture structure, with inline flow positioning.
+    dummy=E.Element('CELL')
+    E.SubElement(dummy,'PARALIST').append(para(''))
+    signature_overlay(dummy,item,serial,0,0)
+    pic=dummy.find('.//PICTURE')
+    shape=pic.find('SHAPEOBJECT')
+    shape.set('TextWrap','TopAndBottom')
+    size=shape.find('SIZE')
+    size.set('Width',str(width));size.set('Height',str(height))
+    pos=shape.find('POSITION')
+    for k,v in {'TreatAsChar':'true','AffectLSpacing':'true','VertRelTo':'Para','HorzRelTo':'Para','VertOffset':'0','HorzOffset':'0','AllowOverlap':'false'}.items():pos.set(k,v)
+    comp=pic.find('SHAPECOMPONENT')
+    for k,v in {'OriWidth':width,'CurWidth':width,'OriHeight':height,'CurHeight':height}.items():comp.set(k,str(v))
+    rot=comp.find('ROTATIONINFO')
+    rot.set('CenterX',str(width//2));rot.set('CenterY',str(height//2))
+    rect=pic.find('IMAGERECT')
+    for k,v in {'X0':0,'Y0':0,'X1':width,'Y1':0,'X2':width,'Y2':height,'X3':0,'Y3':height}.items():rect.set(k,str(v))
+    p=para('',shape=image_p)
+    p.find('TEXT').append(pic)
+    return p
+
 # Keep original consent choices unchecked pending separate confirmation.
 sections=re.split(r'(?m)^## \d+\. ',md)[1:]
 prop=tables[1]
 prows=prop.findall('ROW')
 fill(prows[2].findall('CELL')[1],title,small_c)
+section_chunks={}
+image_serial=100
 for i,content in enumerate(sections):
     heading,body=content.split('\n',1)
     c=prows[4+i*2].find('CELL')
     ps=c.find('PARALIST')
     ps.set('VertAlign','Top')
     for p in list(ps):ps.remove(p)
+    chunks=[[]]
     for block in body.strip().split('\n\n'):
         for line in block.splitlines():
-            if line.startswith('### '):ps.append(para(line[4:],bold_c,subhead_p))
-            elif line:ps.append(para(line,small_c,reference_p) if line.startswith('[') else para(line))
+            if line=='<!-- pagebreak -->':
+                chunks.append([])
+            elif line.startswith('!['):
+                match=re.fullmatch(r'!\[([^]]+)\]\(([^)]+)\)',line)
+                if not match:raise ValueError('Invalid diagram reference')
+                chunks[-1].append(inline_image(ROOT/'기획'/match.group(2),image_serial))
+                image_serial+=1
+            elif line.startswith('### '):chunks[-1].append(para(line[4:],bold_c,subhead_p))
+            elif line:chunks[-1].append(para(line,small_c,reference_p) if line.startswith('[') else para(line))
+    section_chunks[i]=chunks
+    for p in chunks[0]:ps.append(deepcopy(p))
     c.set('Height','1000')
     c.set('HasMargin','true')
     c.find('CELLMARGIN').set('Top','600')
     c.find('CELLMARGIN').set('Bottom','500')
 
-# Group the six original sections into five deliberate proposal pages.
+# Keep official sections; each example gets a deliberately paginated continuation.
 anchor=prop.getparent().getparent()
 insert_at=list(section).index(anchor)
-for page_index,group in enumerate(((0,1),(2,),(3,),(4,),(5,))):
+pages=[(i,ci) for i in range(len(sections)) for ci in range(len(section_chunks[i]))]
+for page_index,(i,chunk_index) in enumerate(pages):
     page=deepcopy(anchor)
     page.set('ParaShape',page_p)
     table=page.find('TEXT/TABLE')
     existing=table.findall('ROW')
-    keep=([0,1,2] if page_index==0 else [])+[v for i in group for v in (3+2*i,4+2*i)]
+    keep=([0,1,2] if page_index==0 else [])+[3+2*i,4+2*i]
     for ri,row in enumerate(existing):
         if ri not in keep:table.remove(row)
+    content_cell=existing[4+2*i].find('CELL/PARALIST')
+    for p in list(content_cell):content_cell.remove(p)
+    for p in section_chunks[i][chunk_index]:content_cell.append(deepcopy(p))
+    if chunk_index:
+        heading_char=existing[3+2*i].find('.//CHAR')
+        heading_char.text=(heading_char.text or '')+' (계속)'
     table.set('RowCount',str(len(table.findall('ROW'))))
     if page_index:
         table.set('ColCount','1')
