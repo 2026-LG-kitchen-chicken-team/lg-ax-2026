@@ -121,7 +121,10 @@ def signature_overlay(cell,item,serial,table_index,member_index):
     """Put transparent ink in front of the unchanged original signature label."""
     width=item.get('width_hwp',4800)
     height=round(width*item['height']/item['width'])
-    centers={0:(464.91,[547.24,569.92,592.60]),2:(482.31,[628.10,642.86,657.74]),3:(473.91,[581.66,602.18,622.70])}
+    if table_index==2 and height>1400:
+        width=round(width*1400/height)
+        height=1400
+    centers={0:(464.91,[547.24,569.92,592.60,615.28,637.96]),2:(482.31,[637.10,651.98,666.74,681.62,696.38]),3:(473.91,[581.66,602.18,622.70,643.22,663.74])}
     cx,ys=centers[table_index]
     left=round(cx*100-width/2)
     top=round(ys[member_index]*100-height/2-220)
@@ -152,14 +155,24 @@ for ti in (0,2,3):
         else:
             fill(cells[1],m['name'],body_c)
         target=cells[1 if ti==0 else 2]
+        if not m.get('signature_insertion_authorized',True):
+            continue
         if signatures:
             item=next(x for x in signatures['members'] if x['name']==m['name'])
-            signature_overlay(target,item,ti*3+mi,ti,mi)
+            signature_overlay(target,item,ti*5+mi,ti,mi)
         else:
             fill(target,m['name'],sig_c)
     for char in tables[ti].findall('.//CHAR'):
         if re.fullmatch(r'2026년\s*월\s*일',char.text or ''):
             char.text=team['date']
+
+# Keep the consent footer clear after the additional member row is populated.
+consent_paragraphs=tables[2].findall('ROW/CELL/PARALIST/P')
+for index,p in enumerate(consent_paragraphs):
+    if ''.join(p.itertext()).strip()=='국립창원대학교 인공지능원장 귀하' and index:
+        previous=consent_paragraphs[index-1]
+        if not ''.join(previous.itertext()).strip() and previous.find('.//TABLE') is None:
+            previous.getparent().remove(previous)
 
 def inline_image(path,serial):
     item=embed_image(path)
@@ -186,7 +199,7 @@ def inline_image(path,serial):
     p.find('TEXT').append(pic)
     return p
 
-# Mark only choices explicitly confirmed by the user for all three members.
+# Mark only choices explicitly confirmed by the user for every current member.
 for nested in tables[2].findall('.//TABLE'):
     for row in nested.findall('ROW'):
         cells=row.findall('CELL')
