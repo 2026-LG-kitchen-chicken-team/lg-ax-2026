@@ -71,12 +71,19 @@ def workflow(c):
  line(c,430,92,430,40);arrow(c,430,40,244,40);text(c,312,23,'검사를 거친 제안 전달',9.2,color=MUTED)
 
 def fridge(c,x,y):
+ # Open refrigerator: insulated cabinet, shelves, crisper, and door bins.
  rect(c,x,y,60,87,'#FFFFFF','#646970',1);rect(c,x+5,y+5,50,75,'#FFFFFF',LINE)
+ rect(c,x+8,y+8,44,17,PALE,'#7A7E84');line(c,x+24,y+21,x+36,y+21,'#7A7E84',1.5)
+ line(c,x+9,y+83,x+51,y+83,'#7A7E84',1.2)
+ for bx in (13,34):
+  rect(c,x+bx,y+59,7,18,'#FFFFFF','#7A7E84');rect(c,x+bx+2,y+77,3,3,PALE,'#7A7E84')
+ polygon(c,[(x+60,y),(x+81,y+8),(x+81,y+87),(x+60,y+87)],'#F7F8F9','#646970')
+ for by in (18,51,72):
+  polygon(c,[(x+64,y+by),(x+77,y+by+4),(x+77,y+by+12),(x+64,y+by+8)],'#E4E7EA','#8B9096')
+ line(c,x+79,y+36,x+79,y+59,'#646970',1.7)
  line(c,x+5,y+29,x+55,y+29,'#7A7E84');line(c,x+5,y+57,x+55,y+57,'#7A7E84')
- for dx in (10,31):
-  rect(c,x+dx,y+59,15,14,PALE,'#7A7E84');line(c,x+dx+4,y+68,x+dx+11,y+68,'#7A7E84')
  rect(c,x+10,y+32,16,15,PALE,'#7A7E84');c.setDash(2,2);rect(c,x+31,y+32,18,15,None,ACCENT);c.setDash()
- arrow(c,x+50,y+39,x+74,y+39,ACCENT)
+ arrow(c,x+50,y+39,x+85,y+39,ACCENT)
  p=c.beginPath()
  for i,pt in enumerate([(x+77,y+26),(x+102,y+26),(x+112,y+35),(x+112,y+51),(x+87,y+51),(x+77,y+42)]):
   (p.moveTo if i==0 else p.lineTo)(*pt)
@@ -86,35 +93,87 @@ def fridge(c,x,y):
   (q.moveTo if i==0 else q.lineTo)(*pt)
  q.close();c.setFillColor(HexColor('#FFFFFF'));c.drawPath(q,fill=1,stroke=1)
  line(c,x+77,y+42,x+102,y+42,ACCENT);line(c,x+102,y+42,x+112,y+51,ACCENT);line(c,x+102,y+26,x+102,y+42,ACCENT)
- text(c,x+7,y-15,'냉장고 내부',8.7,color=MUTED);text(c,x+76,y+8,'탈착 트레이',8.7,True,ACCENT)
+ text(c,x+7,y-15,'냉장고 내부',8.7,color=MUTED);text(c,x+84,y+8,'탈착 트레이',7.8,True,ACCENT)
+
+def polygon(c,points,fill,stroke=LINE):
+ p=c.beginPath();p.moveTo(*points[0])
+ for pt in points[1:]:p.lineTo(*pt)
+ p.close();c.setFillColor(HexColor(fill));c.setStrokeColor(HexColor(stroke));c.setLineWidth(.8);c.drawPath(p,fill=1,stroke=1)
+
+def dishwasher(c):
+ # Front-open appliance, control strip, two wire racks, plates and a pot.
+ rect(c,24,95,105,69,'#FFFFFF','#646970',1)
+ rect(c,29,100,95,50,'#E9ECEF','#8B9096')
+ rect(c,29,153,95,7,PALE,LINE)
+ for x in (34,40,46):c.setStrokeColor(HexColor(MUTED));c.circle(x,156.5,1,stroke=1,fill=0)
+ rect(c,105,155,13,3,'#646970','#646970')
+ for yy in (126,105):
+  rect(c,34,yy,85,19,'#FFFFFF','#8B9096')
+  for xx in range(39,119,8):line(c,xx,yy,xx,yy+18,LINE,.5)
+  line(c,34,yy+6,119,yy+6,LINE,.5)
+ for xx in (43,54,65):
+  c.setStrokeColor(HexColor(ACCENT));c.setLineWidth(1);c.ellipse(xx,108,xx+7,122,stroke=1,fill=0)
+ rect(c,84,111,21,10,PALE,ACCENT);line(c,80,118,84,118,ACCENT);line(c,105,118,109,118,ACCENT)
+ for xx in (43,65,87):rect(c,xx,131,12,10,PALE,'#7A7E84')
+ polygon(c,[(24,95),(129,95),(144,78),(9,78)],'#ECEFF1','#646970')
+ rect(c,58,82,30,5,'#FFFFFF','#8B9096')
+ text(c,26,65,'식기세척기 · 열린 문과 바구니',8.1,color=MUTED)
+
+def microwave(c):
+ # Familiar countertop silhouette, door handle, keypad and glass turntable.
+ rect(c,12,105,138,55,'#FFFFFF','#646970',1.1)
+ rect(c,17,111,96,43,'#DEE3E7','#646970')
+ rect(c,23,116,78,32,'#F5F7F8','#A3A8AD')
+ c.setStrokeColor(HexColor('#8B9096'));c.ellipse(30,119,94,128,stroke=1,fill=0)
+ c.ellipse(42,123,83,136,stroke=1,fill=0);line(c,43,128,48,122,'#8B9096');line(c,82,128,77,122,'#8B9096')
+ line(c,107,121,107,145,'#646970',2.5)
+ rect(c,119,142,24,11,'#303940','#303940');text(c,122,145,'1:30',6.5,color='#FFFFFF')
+ for yy in (136,130,124):
+  for xx in (122,130,138):rect(c,xx,yy,4,3,PALE,'#8B9096',.5)
+ rect(c,120,115,22,5,WASH,ACCENT)
+ rect(c,23,102,14,3,'#646970','#646970');rect(c,125,102,14,3,'#646970','#646970')
+ text(c,20,89,'전자레인지 · 저장/호출 조작부',8.2,color=MUTED)
+ rect(c,18,67,129,15,'#FFFFFF',ACCENT)
+ text(c,26,71,'설정 저장 후보 → 중복 제외',8.3,True,ACCENT)
 
 def example(c):
- title(c,354,'3','사용 예시 1: 냉장고 청소를 더 간편하게')
- rect(c,2,289,436,39,PALE,PALE);text(c,12,312,'기획자 요청',9.3,True,ACCENT)
- text(c,12,296,'“냉장고를 청소할 때 느끼는 불편을 줄일 기능을 찾아줘.”',10.5,True)
- text(c,2,270,'고객 리뷰',10,True);lines(c,2,251,['“음료를 쏟으면 선반 위 식품을','모두 꺼내고 청소해야 해요.”'],10,16)
- text(c,246,270,'제품 설명서',10,True);lines(c,246,251,['선반을 분리해서','세척할 수 있는 기능 제공'],10,16)
- line(c,215,232,215,274);line(c,102,225,102,213,ACCENT);line(c,337,225,337,213,ACCENT)
- line(c,102,213,337,213,ACCENT);arrow(c,220,213,220,198,ACCENT)
- rect(c,2,167,436,29,WASH,WASH);text(c,13,176,'남은 불편',9.5,True,ACCENT)
- text(c,79,176,'선반은 분리돼도, 식품을 모두 옮기는 부담은 남는다.',10,True)
- arrow(c,220,163,220,148,ACCENT)
- fridge(c,15,52);text(c,165,133,'제안 콘셉트',9.5,True,ACCENT);text(c,165,111,'구획별 탈착 트레이',14,True)
- lines(c,165,90,['오염된 구획만 따로 꺼내 세척하는 구조','식품 전체를 옮기는 번거로움을 줄이는 방향'],10,17)
- text(c,165,50,'설계 요구사항  용량 · 탈착 편의 · 세척성',9.5,color=MUTED)
- line(c,2,25,438,25);text(c,2,8,'새 자료에 같은 기능이 있다면',9.4,True)
- arrow(c,168,11,184,11,ACCENT);text(c,194,8,'기존 기능과 겹치는 후보를 제외하고 다시 제안',9.4,color=ACCENT)
+ example_header(c,'3','사용 예시 1: 냉장고 청소를 더 간편하게',
+  '“냉장고를 청소할 때 느끼는 불편을 줄일 기능을 찾아줘.”',
+  ['“음료를 쏟으면 선반 위 식품을','모두 꺼내고 청소해야 해요.”'],
+  ['선반을 분리해서','세척할 수 있는 기능 제공'],
+  '분리 기능이 있어도 식품을 모두 옮기는 부담은 남는다.')
+ fridge(c,16,80)
+ text(c,165,152,'02  Agent가 콘셉트·요구사항 작성',9.4,True,ACCENT)
+ text(c,165,130,'구획별 탈착 트레이',14,True)
+ lines(c,165,109,['오염된 구획만 꺼내 세척하는 구조를 제안','전체 식품을 옮기는 부담을 줄이는 방향'],9.8,16)
+ text(c,165,72,'검토할 요구사항  용량 · 탈착 편의 · 세척성',9.1,color=MUTED)
+ example_footer(c,'새 자료와 겹치면 후보를 제외하고 다시 제안',
+  '근거·설계 조건을 확인하고 콘셉트 채택·보완')
 
 def example_header(c,number,label,request,review,spec,conclusion):
  title(c,354,number,label)
- rect(c,2,289,436,39,PALE,PALE);text(c,12,312,'기획자 요청',9.3,True,ACCENT)
+ rect(c,2,289,436,39,PALE,PALE);text(c,12,312,'기획자 입력  |  요청과 자료 제공',9.3,True)
  text(c,12,296,request,10.5,True)
  text(c,2,270,'고객 리뷰',10,True);lines(c,2,251,review,10,16)
  text(c,246,270,'제품 설명서',10,True);lines(c,246,251,spec,10,16)
- line(c,215,232,215,274);line(c,102,225,102,213,ACCENT);line(c,337,225,337,213,ACCENT)
- line(c,102,213,337,213,ACCENT);arrow(c,220,213,220,198,ACCENT)
- rect(c,2,167,436,29,WASH,WASH);text(c,13,176,'Agent 판단',9.5,True,ACCENT)
- text(c,91,176,conclusion,10,True);arrow(c,220,163,220,148,ACCENT)
+ line(c,215,232,215,274)
+ line(c,102,232,102,226);line(c,337,232,337,226)
+ line(c,102,226,337,226);arrow(c,220,226,220,218,ACCENT)
+ rect(c,2,38,436,178,WASH,ACCENT,1)
+ rect(c,2,195,436,21,ACCENT,ACCENT)
+ text(c,12,201,'AGENT 수행 구간',11,True,'#FFFFFF')
+ text(c,151,202,'자료 대조 → 기획안 작성 → 검사·수정',9.6,color='#FFFFFF')
+ text(c,12,179,'01  분석·대조',9.3,True,ACCENT)
+ text(c,95,179,conclusion,9.5,True)
+ line(c,12,171,428,171,'#D9B8C3')
+
+def example_footer(c,revision,review):
+ line(c,12,61,428,61,'#D9B8C3')
+ text(c,12,46,'03  검사·수정',9.3,True,ACCENT)
+ text(c,95,46,revision,9.4)
+ arrow(c,220,34,220,23,ACCENT)
+ text(c,2,8,'기획자 검토',9.5,True)
+ text(c,87,8,review,9.4,color=MUTED)
 
 def loading_guide(c):
  example_header(c,'4','사용 예시 2: 식기 조합에 맞는 적재 안내',
@@ -122,24 +181,13 @@ def loading_guide(c):
   ['“큰 접시와 냄비를 같이 넣을 때','어디에 놓아야 할지 모르겠어요.”'],
   ['기본 적재 그림과','자동 세척 코스 제공'],
   '기본 예시만으로는 내 식기 조합을 배치하기 어렵다.')
- # A plate/pot selection feeding a compact arrangement guide.
- rect(c,10,63,56,68,'#FFFFFF','#7A7E84')
- for y in (115,97):
-  c.setStrokeColor(HexColor('#7A7E84'));c.setLineWidth(.8);c.circle(25,y,7,fill=0,stroke=1)
-  line(c,40,y,56,y)
- c.setStrokeColor(HexColor(ACCENT));c.circle(25,77,7,fill=0,stroke=1)
- line(c,16,77,13,77,ACCENT);line(c,34,77,37,77,ACCENT)
- text(c,15,48,'식기 조합',9,color=MUTED)
- arrow(c,69,96,84,96,ACCENT)
- rect(c,90,60,58,74,'#FFFFFF','#7A7E84');line(c,95,122,143,122)
- for x in (100,108,116):line(c,x,98,x,116,ACCENT,1.4)
- c.setStrokeColor(HexColor(ACCENT));c.circle(130,82,9,fill=0,stroke=1)
- line(c,96,67,142,67);text(c,98,45,'배치 안내',9,True,ACCENT)
- text(c,170,133,'제안 서비스',9.5,True,ACCENT);text(c,170,111,'식기 조합별 배치 가이드',13,True)
- lines(c,170,90,['식기의 종류·크기에 맞는 적재 순서 안내','큰 식기 배치와 회전 날개 간섭 확인'],9.8,17)
- text(c,170,50,'설계 요구사항  조합 입력 · 모델별 배치 규칙',9.2,color=MUTED)
- line(c,2,25,438,25);text(c,2,8,'식기·제품 조건이 바뀌면',9.4,True)
- arrow(c,154,11,170,11,ACCENT);text(c,183,8,'안내 콘셉트와 필요한 기능을 다시 검토',9.4,color=ACCENT)
+ dishwasher(c)
+ text(c,170,152,'02  Agent가 서비스·요구사항 작성',9.4,True,ACCENT)
+ text(c,170,130,'식기 조합별 배치 가이드',13,True)
+ lines(c,170,109,['종류·크기별 적재 순서를 안내하는 서비스','큰 식기·회전 날개 간섭 확인 기능을 제안'],9.4,16)
+ text(c,170,72,'검토할 요구사항  조합 입력 · 모델별 배치 규칙',8.9,color=MUTED)
+ example_footer(c,'식기·제품 조건이 바뀌면 안내 기능을 재검토',
+  '서비스 흐름과 필요한 기능을 확인하고 채택·보완')
 
 def duplicate_filter(c):
  example_header(c,'5','사용 예시 3: 이미 있는 기능은 걸러내기',
@@ -147,16 +195,13 @@ def duplicate_filter(c):
   ['“매일 같은 음식을 데우는데','시간과 출력을 다시 입력해요.”'],
   ['내 설정 저장과','원터치 호출 기능 제공'],
   '‘자주 쓰는 설정 저장’은 이미 제공되는 기능이다.')
- # A document comparison instead of inventing another appliance feature.
- rect(c,11,63,137,75,'#FFFFFF','#7A7E84');text(c,21,120,'검토 중인 후보',9,color=MUTED)
- text(c,21,101,'자주 쓰는 설정 저장',10,True)
- line(c,19,95,138,95,ACCENT,1.1)
- rect(c,22,72,113,16,WASH,WASH);text(c,35,76,'기존 기능과 중복',8.6,True,ACCENT)
- text(c,170,133,'검토 결과',9.5,True,ACCENT);text(c,170,111,'중복 후보 제외 · 추가 확인',13,True)
- lines(c,170,90,['저장 기능을 알고 사용해 봤는가?', '등록 과정이나 호출 위치가 불편한가?'],10,17)
- text(c,170,50,'다음 기획 방향  사용 과정에서 남은 불편 확인',9.2,color=MUTED)
- line(c,2,25,438,25);text(c,2,8,'추가 리뷰·조건을 확인하면',9.4,True)
- arrow(c,164,11,180,11,ACCENT);text(c,194,8,'실제로 남은 불편에 맞춰 다시 기획',9.4,color=ACCENT)
+ microwave(c)
+ text(c,170,152,'02  Agent가 중복 제외·확인 질문 작성',9.2,True,ACCENT)
+ text(c,170,130,'중복 후보 제외 · 추가 확인',13,True)
+ lines(c,170,109,['저장 기능을 알고 사용해 봤는가?', '등록 과정이나 호출 위치가 불편한가?'],9.8,16)
+ text(c,170,72,'다음 기획 방향  사용 과정에서 남은 불편 확인',8.9,color=MUTED)
+ example_footer(c,'추가 리뷰·조건을 반영해 남은 불편을 다시 분석',
+  '추가 확인할 질문을 검토하고 자료·조건 보완')
 
 def save(name,height,draw):
  pdf=TMP/(name+'.pdf');c=canvas.Canvas(str(pdf),pagesize=(440,height));c.setTitle(name);draw(c);c.showPage();c.save()
