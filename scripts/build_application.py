@@ -186,7 +186,18 @@ def inline_image(path,serial):
     p.find('TEXT').append(pic)
     return p
 
-# Keep original consent choices unchecked pending separate confirmation.
+# Mark only choices explicitly confirmed by the user for all three members.
+for nested in tables[2].findall('.//TABLE'):
+    for row in nested.findall('ROW'):
+        cells=row.findall('CELL')
+        if len(cells)==5 and ''.join(cells[1].itertext()).strip()=='동의함':
+            label=''.join(cells[0].itertext()).strip()
+            key='personal_information' if label.startswith('개인정보') else 'portrait_use'
+            choice=team.get('consent_choices',{}).get(key)
+            if choice is not None:
+                cells[2].find('.//CHAR').text='( ○ )' if choice else '(    )'
+                cells[4].find('.//CHAR').text='(    )' if choice else '( ○ )'
+
 sections=re.split(r'(?m)^## \d+\. ',md)[1:]
 prop=tables[1]
 prows=prop.findall('ROW')

@@ -1395,7 +1395,7 @@
     },
     "evidence": {
       "path": "기획/채택안_Agent설계.md",
-      "sha256": "25b84db35280017e52e498649e20e3d4f5a4c4f5cc23f35df8890989eff4fea9"
+      "sha256": "a66cac0776540a1b900e76aa5d908b119d2dfd1672ee7ddb6fff02028f280ff8"
     },
     "revalidated_at": "2026-09-27T08:03:43+09:00"
   },
@@ -1433,22 +1433,22 @@
       "next_action": "사용자 직접 채택. 상세 설계와 6항목 원고 작성.",
       "evidence": {
         "path": "기획/채택안_Agent설계.md",
-        "sha256": "25b84db35280017e52e498649e20e3d4f5a4c4f5cc23f35df8890989eff4fea9"
+        "sha256": "a66cac0776540a1b900e76aa5d908b119d2dfd1672ee7ddb6fff02028f280ff8"
       }
     },
     {
       "id": "proposal",
       "status": "in_progress",
-      "next_action": "사용 예시 3종·팀명·학번 반영, 제안서 8쪽·전체 11쪽 검수 완료. 남은 이메일·자격·동의 선택·팀 검토·업로드 조건 확인.",
+      "next_action": "최종점검본: 필수 정보·동의 선택 반영, HWP 재열기·11쪽 시각 검수 완료. 최신 제안서·서약 팀 검토와 업로드 조건 확인 남음.",
       "draft_evidence": {
         "path": "기획/제출제안서_원고.md",
-        "sha256": "152f528b813f7d34034898949b82a8c074089048f763941868e440e291d9b363"
+        "sha256": "bd288a1beebd693d8f759c3887d759967d63182b901c0add0598ea1d26ff6eb2"
       }
     },
     {
       "id": "submission",
       "status": "pending",
-      "next_action": "9/27 오늘 목표. 팀 정보·서명·HWP 검토·온라인 신청·증빙"
+      "next_action": "9/27 목표. 팀 최종 검토→로그인 후 첨부 조건 확인→실제 신청→증빙 보관. 접수 미완료."
     },
     {
       "id": "implementation",
@@ -1469,62 +1469,81 @@
   "submission_checks": [
     {
       "id": "team",
-      "status": "in_progress",
-      "note": "알려진 정보와 사용자 요청 필기체 표기 반영. 빈칸·동의 선택·팀 검토 남음."
+      "status": "done",
+      "note": "신청서 필수 팀 정보 취합·반영 완료. 개인정보는 private/에만 보관.",
+      "evidence": {
+        "path": "docs/제출전_최종점검_2026-09-27.md",
+        "sha256": "f621cad25f2d654d444a95eb64c2fed6abd8c0226f021231112c385cd3a8fe03"
+      }
     },
     {
       "id": "eligibility",
-      "status": "pending"
+      "status": "done",
+      "note": "사용자가 세 명 모두 창원캠퍼스 재학생이라고 확인. 학부 3학년 3명.",
+      "evidence": {
+        "path": "docs/제출전_최종점검_2026-09-27.md",
+        "sha256": "f621cad25f2d654d444a95eb64c2fed6abd8c0226f021231112c385cd3a8fe03"
+      }
     },
     {
       "id": "application",
-      "status": "in_progress",
-      "note": "알려진 정보와 사용자 요청 필기체 표기 반영. 빈칸·동의 선택·팀 검토 남음."
+      "status": "done",
+      "note": "Theme A·팀명·아이디어명·팀장·3인 필수 정보를 HWP/PDF에서 대조.",
+      "evidence": {
+        "path": "docs/제출전_최종점검_2026-09-27.md",
+        "sha256": "f621cad25f2d654d444a95eb64c2fed6abd8c0226f021231112c385cd3a8fe03"
+      }
     },
     {
       "id": "proposal_hwp",
       "status": "done",
       "evidence": {
-        "path": "docs/서류검수_2026-09-27.md",
-        "sha256": "e35b39da0efea9f7fd9cf7e90f0236aacdf88c6a85826a4585efd990314053d0"
+        "path": "docs/제출전_최종점검_2026-09-27.md",
+        "sha256": "f621cad25f2d654d444a95eb64c2fed6abd8c0226f021231112c385cd3a8fe03"
       },
-      "note": "검토본 기준. 최종 빈칸 변경 후 재검수 필요."
+      "note": "공식 6항목·출처·5개 시각자료 포함, 원본 안내 삭제, 최종점검본 검수."
     },
     {
       "id": "page_limit",
       "status": "done",
       "evidence": {
-        "path": "docs/서류검수_2026-09-27.md",
-        "sha256": "e35b39da0efea9f7fd9cf7e90f0236aacdf88c6a85826a4585efd990314053d0"
+        "path": "docs/제출전_최종점검_2026-09-27.md",
+        "sha256": "f621cad25f2d654d444a95eb64c2fed6abd8c0226f021231112c385cd3a8fe03"
       },
-      "note": "검토본 기준. 최종 빈칸 변경 후 재검수 필요."
+      "note": "제안서 8쪽, 행정 서류 포함 전체 11쪽. 공식 제한은 제안서 10쪽."
     },
     {
       "id": "consents",
-      "status": "in_progress",
-      "note": "알려진 정보와 사용자 요청 필기체 표기 반영. 빈칸·동의 선택·팀 검토 남음."
+      "status": "done",
+      "note": "전원 두 항목 동의를 사용자 답변으로 확인. 동의 원 2개와 서명 3개 반영.",
+      "evidence": {
+        "path": "docs/제출전_최종점검_2026-09-27.md",
+        "sha256": "f621cad25f2d654d444a95eb64c2fed6abd8c0226f021231112c385cd3a8fe03"
+      }
     },
     {
       "id": "pledge",
       "status": "in_progress",
-      "note": "알려진 정보와 사용자 요청 필기체 표기 반영. 빈칸·동의 선택·팀 검토 남음."
+      "note": "원본 서약 문구·날짜·세 명 이름·사용자 요청 서명 반영. 최신 제안서와 서약의 팀 최종 검토는 미확인."
     },
     {
       "id": "file_open",
       "status": "done",
       "evidence": {
-        "path": "docs/서류검수_2026-09-27.md",
-        "sha256": "e35b39da0efea9f7fd9cf7e90f0236aacdf88c6a85826a4585efd990314053d0"
+        "path": "docs/제출전_최종점검_2026-09-27.md",
+        "sha256": "f621cad25f2d654d444a95eb64c2fed6abd8c0226f021231112c385cd3a8fe03"
       },
-      "note": "검토본 기준. 최종 빈칸 변경 후 재검수 필요."
+      "note": "저장된 최종 HWP를 한글에서 재열기해 11쪽·전체 텍스트 일치 확인. PDF 전 페이지 시각 검수."
     },
     {
       "id": "upload_requirements",
-      "status": "pending"
+      "status": "pending",
+      "note": "공개 페이지에서 HWP 요건·로그인 필요 확인. 실제 첨부칸의 개수·용량·허용 확장자는 로그인 후 확인."
     },
     {
       "id": "team_review",
-      "status": "pending"
+      "status": "pending",
+      "note": "최신 제안서·서약에 대한 전원 최종 검토 완료 근거 필요. 동의 두 항목 확인과 구분."
     }
   ],
   "submission_target_date": "2026-09-27",
@@ -1749,23 +1768,24 @@
     "private_details": "private/team.json",
     "student_ids": "세 명 확인·반영 완료; 값과 확인 근거는 private/team.json",
     "team_name": "키친에서치킨먹기",
-    "email": "미확인",
-    "campus_eligibility": "미확인",
-    "team_name_source": "2026-09-27 사용자 직접 지정"
+    "email": "확인·작성본 반영; 값은 private/team.json",
+    "campus_eligibility": "세 명 모두 창원캠퍼스 재학생, 사용자 확인 2026-09-27",
+    "team_name_source": "2026-09-27 사용자 직접 지정",
+    "consent_choices": "전원 개인정보·초상권 동의, 사용자 확인 및 양식 반영 2026-09-27"
   },
   "application_draft": {
-    "status": "review_draft",
+    "status": "document_audit_complete_team_review_pending",
     "evidence": {
-      "path": "docs/서류검수_2026-09-27.md",
-      "sha256": "e35b39da0efea9f7fd9cf7e90f0236aacdf88c6a85826a4585efd990314053d0"
+      "path": "docs/제출전_최종점검_2026-09-27.md",
+      "sha256": "f621cad25f2d654d444a95eb64c2fed6abd8c0226f021231112c385cd3a8fe03"
     },
     "private_directory": "private/제출준비/",
     "proposal_pages": 8,
     "total_pages": 11,
     "submitted": false,
     "signature_revision": "서로 다른 기존 필체 유지·획 굵기 보정·원본 문구 위 9곳",
-    "private_hwp": "private/제출준비/LG_AX_참가신청서_사용예시3종.hwp",
-    "private_pdf": "private/제출준비/LG_AX_참가신청서_사용예시3종.pdf",
+    "private_hwp": "private/제출준비/LG_AX_키친에서치킨먹기_최종점검본.hwp",
+    "private_pdf": "private/제출준비/LG_AX_키친에서치킨먹기_최종점검본.pdf",
     "visuals": "기획/시각자료/; 개요·작동 방식 2장과 냉장고/식기세척기/전자레인지 사용 예시 3장. 비교 평가 이미지와 긴 그림 주석 제거."
   }
 }
