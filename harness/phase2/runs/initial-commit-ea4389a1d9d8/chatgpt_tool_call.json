@@ -1,0 +1,71 @@
+{
+  "check_id": "chatgpt_tool_call",
+  "recorded_by": "Codex within directly authorized PM bootstrap work",
+  "observed_at": "2026-10-03T18:53:47+00:00",
+  "result": "pass",
+  "execution_kind": "live_client",
+  "conversation_url": "https://chatgpt.com/c/6ac14c22-d778-83e8-a04a-868c4c2d3c39",
+  "endpoint": "https://eryang-lab.tailb7c3c1.ts.net/lg-ax/mcp",
+  "observations": [
+    "Actual account connector discovery and three tool calls observed in browser and MCP server logs",
+    "list_products returns five synthetic product models",
+    "search_evidence(q=청소, model_id=FRIDGE-A, document_version=1.0, limit=3) returns three items, total four",
+    "get_evidence(MANUAL-001) returns FRIDGE-A, version 1.0, page 1, section 선반 분리 with source text matching dataset",
+    "Claude calls used one-time approval; ChatGPT personal plugin selected in conversation"
+  ],
+  "limitations": [
+    "Synthetic read-only evidence; actual planning judgment/concept/revision Agent is not implemented",
+    "User account test only; not proof of all teammate accounts or marketplace distribution",
+    "Public path currently depends on this PC and running Tailscale/MCP service"
+  ],
+  "code_versions": [
+    {
+      "path": "apps/mcp/src/lgax_mcp/server.py",
+      "sha256": "a9a37314850569506aba32bff6b0585022f578d103163e96407682175850258e",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d"
+    },
+    {
+      "path": "packages/core/src/lgax_core/store.py",
+      "sha256": "211f2dcd55ad28d8273175e5d9410df99aecf64b69338e76ac1b67e5d757ee38",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d"
+    },
+    {
+      "path": "uv.lock",
+      "sha256": "5a4604fca47f39e78f3679f7c4a68ac306b0d708ab4b8d391b54f71126b58e6b",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "data/demo/dataset.json",
+      "sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d"
+    },
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "sha256": "31f864a91a42e08c3ddcdb8d2a70f04e437cce4c56bc77e94163da048cfb283f",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d"
+    }
+  ],
+  "models": [],
+  "checks": [
+    {
+      "name": "actual browser account tool calls and output observation",
+      "passed": true,
+      "evidence": {
+        "path": "evals/bootstrap-connections/chatgpt-observed.txt",
+        "sha256": "716bc2f5ea5b360bc8862d4d4cf7bdad44032267a05b050434e4b074a5ec9a1d"
+      }
+    },
+    {
+      "name": "final account result screenshot",
+      "passed": true,
+      "evidence": {
+        "path": "evals/bootstrap-connections/chatgpt.png",
+        "sha256": "0aafd130cac74d5c6abee7dae86a6653f970783e4e09936b4c00167d8886db31"
+      }
+    }
+  ],
+  "content_snapshot_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d",
+  "snapshot_note": "Source bytes match the recorded actual initial merge commit. This preserves historical bootstrap evidence; new application/integration work needs its own current-version runs."
+}

@@ -1,0 +1,71 @@
+{
+  "check_id": "framework_ci_configured",
+  "execution_kind": "deterministic",
+  "result": "pass",
+  "recorded_by": "Codex acting within directly authorized PM bootstrap scope",
+  "observed_at": "2026-10-03T19:27:40+00:00",
+  "tested_commit": "7377d1b09bc3db713ef2fa901b95eaffbccef2c8",
+  "run_url": "https://github.com/jeongiryang/lg-ax-2026/actions/runs/37147862767",
+  "observations": [
+    "Actual GitHub Ubuntu Python/contract/harness/MCP/model-manifest and web tests/build all passed for exact recorded head SHA"
+  ],
+  "limitations": [
+    "CI checks deterministic scaffolding and recorded evidence integrity; GPU models and account tool calls have separate proofs",
+    "Not the complete planning Agent or submission"
+  ],
+  "code_versions": [
+    {
+      "path": ".github/workflows/harness.yml",
+      "git_commit": "7377d1b09bc3db713ef2fa901b95eaffbccef2c8",
+      "sha256": "9a263af439d4b68fb56baacdd65107d8e022bc6f6c2751670ac12a6c98dd0ff6"
+    },
+    {
+      "path": "scripts/phase2.py",
+      "git_commit": "7377d1b09bc3db713ef2fa901b95eaffbccef2c8",
+      "sha256": "5542dcad0e59ecc1af3337351a213fa216f8432440870d62fc5e568116c8e949"
+    },
+    {
+      "path": "uv.lock",
+      "git_commit": "7377d1b09bc3db713ef2fa901b95eaffbccef2c8",
+      "sha256": "5a4604fca47f39e78f3679f7c4a68ac306b0d708ab4b8d391b54f71126b58e6b"
+    },
+    {
+      "path": "apps/web/package-lock.json",
+      "git_commit": "7377d1b09bc3db713ef2fa901b95eaffbccef2c8",
+      "sha256": "a87b14e2a2a0c1de26953fad51a8d85cd9511661d66c68496cd6d90b2add56f9"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "data/demo/dataset.json",
+      "git_commit": "7377d1b09bc3db713ef2fa901b95eaffbccef2c8",
+      "sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0"
+    },
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "git_commit": "7377d1b09bc3db713ef2fa901b95eaffbccef2c8",
+      "sha256": "31f864a91a42e08c3ddcdb8d2a70f04e437cce4c56bc77e94163da048cfb283f"
+    }
+  ],
+  "checks": [
+    {
+      "name": "Actual GitHub workflow jobs and head SHA",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/github-ci-37147862767/run.json",
+        "sha256": "4ef59d1c7123532b18e73cb567a2d259531ea4717ad428e6b1503fdf5476e07e"
+      }
+    },
+    {
+      "name": "Actual GitHub command outputs",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/github-ci-37147862767/log.txt",
+        "sha256": "ef35147fa6fe268a511df4860e842be9038b7550583517aaf13b268c7093c27a"
+      }
+    }
+  ],
+  "models": [],
+  "content_snapshot_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d",
+  "snapshot_note": "Source bytes match the recorded actual initial merge commit. This preserves historical bootstrap evidence; new application/integration work needs its own current-version runs."
+}

@@ -1,0 +1,82 @@
+{
+  "check_id": "framework_backlogs_ready",
+  "recorded_by": "Codex within user-authorized PM bootstrap work",
+  "observed_at": "2026-10-03T18:57:36+00:00",
+  "result": "pass",
+  "execution_kind": "deterministic",
+  "observations": [
+    "21 actual linked tasks and31 requirements; all4 have ready required work; two proposals remain inactive",
+    "Re-executed after authorized LF normalization and current dataset-manifest hash update; original a/b/c and failed d records preserved."
+  ],
+  "limitations": [
+    "Local framework evidence only, not product completion or human PM approval",
+    "Actual remote CI is pending and previous runs are preserved as history"
+  ],
+  "code_versions": [
+    {
+      "path": "scripts/phase2.py",
+      "sha256": "5542dcad0e59ecc1af3337351a213fa216f8432440870d62fc5e568116c8e949",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d"
+    },
+    {
+      "path": "tests/test_phase2.py",
+      "sha256": "d3a76b24931c19588606a4940007af10646286e1c41fc93eaa7c79dd76af5163",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "harness/phase2/runs/bootstrap-local-20261004e/requirements-snapshot.json",
+      "sha256": "aa8050b4da52db8e7f40ace4f989c57dd164d0f06223486130251ad389240a55",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d"
+    },
+    {
+      "path": "harness/phase2/runs/bootstrap-local-20261004e/workflow-snapshot.json",
+      "sha256": "28d3d5665b04689aa2f10c070de54f9522c94a90a95443d4f853794fc8272df2",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d"
+    },
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "sha256": "31f864a91a42e08c3ddcdb8d2a70f04e437cce4c56bc77e94163da048cfb283f",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d"
+    },
+    {
+      "path": "data/demo/dataset.json",
+      "sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d"
+    },
+    {
+      "path": "data/demo/manifest.json",
+      "sha256": "71aa5b05e3e7e86140aac22782e1b5c33f9183efc2b417a9721fb41a80765470",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d"
+    },
+    {
+      "path": "harness/phase2/runs/bootstrap-local-20261004e/github-snapshot.json",
+      "sha256": "43c71c5a8fb7983f50a9bdb7163b0e9bd2b9939996152854a7bab97de395cf3a",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d"
+    },
+    {
+      "path": "harness/phase2/tasks/P2-DATA-005.json",
+      "sha256": "d0f48a21d278b815188b176c23f31e0668ff17330ee1b4c914b6637eba7091c7",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d"
+    },
+    {
+      "path": "harness/phase2/tasks/P2-WEB-005.json",
+      "sha256": "d882804fbf26d46512729ea59a022f99984715732cb840dd2443f109ca78e874",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d"
+    }
+  ],
+  "checks": [
+    {
+      "name": "current backlog and inactive-extension assertions",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/bootstrap-local-20261004e/backlog-check.txt",
+        "sha256": "2130f8a4dddcef127d8913c7c7790276a1cfbb3212487049fea0b764ffdb28f7"
+      }
+    }
+  ],
+  "models": [],
+  "content_snapshot_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d",
+  "snapshot_note": "Source bytes match the recorded actual initial merge commit. This preserves historical bootstrap evidence; new application/integration work needs its own current-version runs."
+}
