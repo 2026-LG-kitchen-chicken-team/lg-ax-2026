@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:lgax:skill:product_compare:input:1",
+  "type": "object",
+  "properties": {
+    "model_id": {
+      "$ref": "#/$defs/ID"
+    },
+    "document_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "needs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Need"
+      },
+      "uniqueItems": true,
+      "minItems": 1
+    },
+    "feature_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "evidence_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true,
+      "minItems": 1
+    }
+  },
+  "required": [
+    "model_id",
+    "document_version",
+    "needs",
+    "feature_ids",
+    "evidence_ids"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "ID": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+    },
+    "Need": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+        },
+        "model_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+        },
+        "situation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pain": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "uncertainties": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id",
+        "model_id",
+        "situation",
+        "pain",
+        "evidence_ids",
+        "uncertainties"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

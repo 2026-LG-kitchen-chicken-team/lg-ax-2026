@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:lgax:skill:concept_draft:input:1",
+  "type": "object",
+  "properties": {
+    "model_id": {
+      "$ref": "#/$defs/ID"
+    },
+    "document_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "needs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Need"
+      },
+      "uniqueItems": true,
+      "minItems": 1
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Gap"
+      },
+      "uniqueItems": true,
+      "minItems": 1
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "max_concepts": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3
+    }
+  },
+  "required": [
+    "model_id",
+    "document_version",
+    "needs",
+    "gaps",
+    "constraints"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "ID": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+    },
+    "Need": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+        },
+        "model_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+        },
+        "situation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pain": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "uncertainties": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id",
+        "model_id",
+        "situation",
+        "pain",
+        "evidence_ids",
+        "uncertainties"
+      ],
+      "additionalProperties": false
+    },
+    "Gap": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+        },
+        "need_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+        },
+        "model_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+        },
+        "feature_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "support_status": {
+          "enum": [
+            "supported",
+            "unsupported",
+            "insufficient_evidence"
+          ]
+        },
+        "remaining_pain": {
+          "type": "string"
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "questions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id",
+        "need_id",
+        "model_id",
+        "feature_ids",
+        "support_status",
+        "remaining_pain",
+        "evidence_ids",
+        "questions"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

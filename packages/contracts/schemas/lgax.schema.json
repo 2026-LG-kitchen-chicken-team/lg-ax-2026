@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://lgax.local/contracts/0.1.0/lgax.schema.json",
   "title": "LG AX shared contracts 0.1.0",
-  "description": "Future analysis types define interfaces only. Bootstrap implements synthetic read-only evidence retrieval.",
+  "description": "Future analysis types define interfaces only. Bootstrap implements synthetic read-only evidence retrieval. Additive authenticated workspace contracts preserve source-scoped inputs and immutable run history; planning remains unimplemented.",
   "x-contract-version": "0.1.0",
   "$defs": {
     "SourceKind": {
@@ -563,7 +563,13 @@
             "NOT_IMPLEMENTED",
             "VALIDATION_FAILED",
             "INSUFFICIENT_EVIDENCE",
-            "MODEL_UNAVAILABLE"
+            "MODEL_UNAVAILABLE",
+            "UNAUTHORIZED",
+            "FORBIDDEN",
+            "NOT_FOUND",
+            "DATASET_MISMATCH",
+            "CONNECTION_FAILED",
+            "CONTRACT_MISMATCH"
           ]
         },
         "message": {
@@ -972,6 +978,356 @@
             "reviews",
             "features",
             "evidence",
+            "contract_version"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    "WorkspaceProjectCreateRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "request": {
+          "$ref": "#/$defs/PlanningRequest"
+        },
+        "document_versions": {
+          "type": "object",
+          "minProperties": 1,
+          "maxProperties": 50,
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+          },
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          }
+        }
+      },
+      "required": [
+        "name",
+        "request",
+        "document_versions"
+      ],
+      "additionalProperties": false
+    },
+    "WorkspaceRunCreateRequest": {
+      "type": "object",
+      "properties": {
+        "request": {
+          "$ref": "#/$defs/PlanningRequest"
+        },
+        "previous_run_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unconfirmed": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        }
+      },
+      "required": [
+        "request",
+        "previous_run_id",
+        "unconfirmed"
+      ],
+      "additionalProperties": false
+    },
+    "WorkspaceProjectSnapshot": {
+      "type": "object",
+      "properties": {
+        "project": {
+          "$ref": "#/$defs/Project"
+        },
+        "owner_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+        },
+        "document_versions": {
+          "type": "object",
+          "minProperties": 1,
+          "maxProperties": 50,
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+          },
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          }
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "dataset_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "project",
+        "owner_id",
+        "document_versions",
+        "created_at",
+        "dataset_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "WorkspaceRunSnapshot": {
+      "type": "object",
+      "properties": {
+        "run": {
+          "$ref": "#/$defs/Run"
+        },
+        "request": {
+          "$ref": "#/$defs/PlanningRequest"
+        },
+        "previous_run_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "request_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "actor_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+        },
+        "client": {
+          "enum": [
+            "api",
+            "web",
+            "mcp",
+            "skill"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "document_versions": {
+          "type": "object",
+          "minProperties": 1,
+          "maxProperties": 50,
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+          },
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          }
+        },
+        "dataset_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "unconfirmed": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "output": {
+          "type": [
+            "object",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "run",
+        "request",
+        "previous_run_id",
+        "request_revision",
+        "actor_id",
+        "client",
+        "created_at",
+        "document_versions",
+        "dataset_sha256",
+        "unconfirmed",
+        "output"
+      ],
+      "additionalProperties": false
+    },
+    "WorkspaceProjectResponse": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "data": {
+          "$ref": "#/$defs/WorkspaceProjectSnapshot"
+        }
+      },
+      "required": [
+        "ok",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    "WorkspaceRunResponse": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "data": {
+          "$ref": "#/$defs/WorkspaceRunSnapshot"
+        }
+      },
+      "required": [
+        "ok",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    "WorkspaceProjectsResponse": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "projects": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/WorkspaceProjectSnapshot"
+              }
+            },
+            "contract_version": {
+              "const": "0.1.0"
+            }
+          },
+          "required": [
+            "projects",
+            "contract_version"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    "WorkspaceRunsResponse": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "runs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/WorkspaceRunSnapshot"
+              }
+            },
+            "contract_version": {
+              "const": "0.1.0"
+            }
+          },
+          "required": [
+            "runs",
+            "contract_version"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    "WorkspaceEvidenceResponse": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "project_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+            },
+            "dataset_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "search": {
+              "$ref": "#/$defs/EvidenceSearchResponse"
+            },
+            "contract_version": {
+              "const": "0.1.0"
+            }
+          },
+          "required": [
+            "project_id",
+            "dataset_sha256",
+            "search",
             "contract_version"
           ],
           "additionalProperties": false

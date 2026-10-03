@@ -1,0 +1,473 @@
+{
+  "status": "pass",
+  "execution_kind": "live_service",
+  "protocol": "2025-11-25",
+  "project_id": "project-81643f56471e4594a84ae7e3654ced18",
+  "web_run_id": "run-078ed7fc634e42cb9634e7af4cd85045",
+  "mcp_run_id": "run-56cb7716b458413ab214cf986d5df56e",
+  "tools": [
+    "create_workspace_project",
+    "create_workspace_run",
+    "get_workspace_project",
+    "get_workspace_run",
+    "list_workspace_projects",
+    "list_workspace_runs",
+    "search_workspace_evidence"
+  ],
+  "authorization_http_statuses": {
+    "missing_auth": 401,
+    "invalid_auth": 401,
+    "viewer_read": 200,
+    "viewer_write": 403
+  },
+  "same_server_and_ids": true,
+  "original_input_unchanged": true,
+  "analysis_implemented": false,
+  "limitations": [
+    "SDK stdio MCP and actual TypeScript HTTP adapter; not a ChatGPT/Claude workspace OAuth test",
+    "Planning/core/semantic Skills remain unimplemented"
+  ],
+  "calls": [
+    {
+      "tool": "get_workspace_project",
+      "result": {
+        "ok": true,
+        "data": {
+          "created_at": "2026-10-03T20:38:16.019648Z",
+          "dataset_sha256": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03",
+          "document_versions": {
+            "FRIDGE-A": "1.0",
+            "FRIDGE-B": "1.0",
+            "FRIDGE-C": "1.0"
+          },
+          "owner_id": "planner-demo",
+          "project": {
+            "dataset_version": "0.1.0",
+            "id": "project-81643f56471e4594a84ae7e3654ced18",
+            "name": "PM 웹·MCP 공통 실행 검증",
+            "request": {
+              "dataset_version": "0.1.0",
+              "exclusions": [
+                "실기기 제어",
+                "제조용 CAD",
+                "물리 시뮬레이션"
+              ],
+              "improvement_task": "청소 불편과 기존 기능을 대조하고 기회 후보를 검토",
+              "model_ids": [
+                "FRIDGE-A",
+                "FRIDGE-B",
+                "FRIDGE-C"
+              ],
+              "product_group": "fridge",
+              "target_customer": "키친 상품기획자",
+              "use_situation": "냉장고 수납·정리·청소"
+            },
+            "status": "draft"
+          }
+        }
+      }
+    },
+    {
+      "tool": "get_workspace_run",
+      "result": {
+        "ok": true,
+        "data": {
+          "actor_id": "planner-demo",
+          "client": "web",
+          "created_at": "2026-10-03T20:38:16.048225Z",
+          "dataset_sha256": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03",
+          "document_versions": {
+            "FRIDGE-A": "1.0",
+            "FRIDGE-B": "1.0",
+            "FRIDGE-C": "1.0"
+          },
+          "output": null,
+          "previous_run_id": null,
+          "request": {
+            "dataset_version": "0.1.0",
+            "exclusions": [
+              "실기기 제어",
+              "제조용 CAD",
+              "물리 시뮬레이션"
+            ],
+            "improvement_task": "청소 불편과 기존 기능을 대조하고 기회 후보를 검토",
+            "model_ids": [
+              "FRIDGE-A",
+              "FRIDGE-B",
+              "FRIDGE-C"
+            ],
+            "product_group": "fridge",
+            "target_customer": "키친 상품기획자",
+            "use_situation": "냉장고 수납·정리·청소"
+          },
+          "request_revision": 0,
+          "run": {
+            "concepts": [],
+            "contract_version": "0.1.0",
+            "dataset_version": "0.1.0",
+            "events": [
+              {
+                "evidence_ids": [],
+                "stage": "plan",
+                "summary": "기획 요청과 자료 범위를 저장했습니다. 분석은 실행하지 않았습니다.",
+                "tool": null
+              }
+            ],
+            "evidence_ids": [],
+            "id": "run-078ed7fc634e42cb9634e7af4cd85045",
+            "max_revisions": 2,
+            "project_id": "project-81643f56471e4594a84ae7e3654ced18",
+            "revision_count": 0,
+            "stage": "plan",
+            "status": "not_implemented",
+            "unresolved": [
+              "트레이 수납 용량 확인 필요",
+              "상품기획 Agent 분석·콘셉트 생성·검사·수정은 아직 구현되지 않았습니다."
+            ]
+          },
+          "unconfirmed": [
+            "트레이 수납 용량 확인 필요"
+          ]
+        }
+      }
+    },
+    {
+      "tool": "create_workspace_run",
+      "result": {
+        "ok": true,
+        "data": {
+          "run": {
+            "id": "run-56cb7716b458413ab214cf986d5df56e",
+            "project_id": "project-81643f56471e4594a84ae7e3654ced18",
+            "dataset_version": "0.1.0",
+            "contract_version": "0.1.0",
+            "status": "not_implemented",
+            "stage": "plan",
+            "revision_count": 0,
+            "max_revisions": 2,
+            "concepts": [],
+            "unresolved": [
+              "탈착 후 수납 용량을 확인해야 함",
+              "상품기획 Agent 분석·콘셉트 생성·검사·수정은 아직 구현되지 않았습니다."
+            ],
+            "evidence_ids": [],
+            "events": [
+              {
+                "stage": "plan",
+                "summary": "기획 요청과 자료 범위를 저장했습니다. 분석은 실행하지 않았습니다.",
+                "tool": null,
+                "evidence_ids": []
+              }
+            ]
+          },
+          "request": {
+            "product_group": "fridge",
+            "target_customer": "키친 상품기획자",
+            "use_situation": "냉장고 수납·정리·청소",
+            "improvement_task": "청소 불편과 기존 기능을 대조하고 기회 후보를 검토",
+            "exclusions": [
+              "전체 선반 교체 제외"
+            ],
+            "model_ids": [
+              "FRIDGE-A",
+              "FRIDGE-B",
+              "FRIDGE-C"
+            ],
+            "dataset_version": "0.1.0"
+          },
+          "previous_run_id": "run-078ed7fc634e42cb9634e7af4cd85045",
+          "request_revision": 1,
+          "actor_id": "planner-demo",
+          "client": "mcp",
+          "created_at": "2026-10-03T20:38:17.929138Z",
+          "document_versions": {
+            "FRIDGE-A": "1.0",
+            "FRIDGE-B": "1.0",
+            "FRIDGE-C": "1.0"
+          },
+          "dataset_sha256": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03",
+          "unconfirmed": [
+            "탈착 후 수납 용량을 확인해야 함"
+          ],
+          "output": null
+        }
+      }
+    },
+    {
+      "tool": "get_workspace_run",
+      "result": {
+        "ok": true,
+        "data": {
+          "actor_id": "planner-demo",
+          "client": "web",
+          "created_at": "2026-10-03T20:38:16.048225Z",
+          "dataset_sha256": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03",
+          "document_versions": {
+            "FRIDGE-A": "1.0",
+            "FRIDGE-B": "1.0",
+            "FRIDGE-C": "1.0"
+          },
+          "output": null,
+          "previous_run_id": null,
+          "request": {
+            "dataset_version": "0.1.0",
+            "exclusions": [
+              "실기기 제어",
+              "제조용 CAD",
+              "물리 시뮬레이션"
+            ],
+            "improvement_task": "청소 불편과 기존 기능을 대조하고 기회 후보를 검토",
+            "model_ids": [
+              "FRIDGE-A",
+              "FRIDGE-B",
+              "FRIDGE-C"
+            ],
+            "product_group": "fridge",
+            "target_customer": "키친 상품기획자",
+            "use_situation": "냉장고 수납·정리·청소"
+          },
+          "request_revision": 0,
+          "run": {
+            "concepts": [],
+            "contract_version": "0.1.0",
+            "dataset_version": "0.1.0",
+            "events": [
+              {
+                "evidence_ids": [],
+                "stage": "plan",
+                "summary": "기획 요청과 자료 범위를 저장했습니다. 분석은 실행하지 않았습니다.",
+                "tool": null
+              }
+            ],
+            "evidence_ids": [],
+            "id": "run-078ed7fc634e42cb9634e7af4cd85045",
+            "max_revisions": 2,
+            "project_id": "project-81643f56471e4594a84ae7e3654ced18",
+            "revision_count": 0,
+            "stage": "plan",
+            "status": "not_implemented",
+            "unresolved": [
+              "트레이 수납 용량 확인 필요",
+              "상품기획 Agent 분석·콘셉트 생성·검사·수정은 아직 구현되지 않았습니다."
+            ]
+          },
+          "unconfirmed": [
+            "트레이 수납 용량 확인 필요"
+          ]
+        }
+      }
+    },
+    {
+      "tool": "list_workspace_runs",
+      "result": {
+        "ok": true,
+        "data": {
+          "runs": [
+            {
+              "actor_id": "planner-demo",
+              "client": "web",
+              "created_at": "2026-10-03T20:38:16.048225Z",
+              "dataset_sha256": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03",
+              "document_versions": {
+                "FRIDGE-A": "1.0",
+                "FRIDGE-B": "1.0",
+                "FRIDGE-C": "1.0"
+              },
+              "output": null,
+              "previous_run_id": null,
+              "request": {
+                "dataset_version": "0.1.0",
+                "exclusions": [
+                  "실기기 제어",
+                  "제조용 CAD",
+                  "물리 시뮬레이션"
+                ],
+                "improvement_task": "청소 불편과 기존 기능을 대조하고 기회 후보를 검토",
+                "model_ids": [
+                  "FRIDGE-A",
+                  "FRIDGE-B",
+                  "FRIDGE-C"
+                ],
+                "product_group": "fridge",
+                "target_customer": "키친 상품기획자",
+                "use_situation": "냉장고 수납·정리·청소"
+              },
+              "request_revision": 0,
+              "run": {
+                "concepts": [],
+                "contract_version": "0.1.0",
+                "dataset_version": "0.1.0",
+                "events": [
+                  {
+                    "evidence_ids": [],
+                    "stage": "plan",
+                    "summary": "기획 요청과 자료 범위를 저장했습니다. 분석은 실행하지 않았습니다.",
+                    "tool": null
+                  }
+                ],
+                "evidence_ids": [],
+                "id": "run-078ed7fc634e42cb9634e7af4cd85045",
+                "max_revisions": 2,
+                "project_id": "project-81643f56471e4594a84ae7e3654ced18",
+                "revision_count": 0,
+                "stage": "plan",
+                "status": "not_implemented",
+                "unresolved": [
+                  "트레이 수납 용량 확인 필요",
+                  "상품기획 Agent 분석·콘셉트 생성·검사·수정은 아직 구현되지 않았습니다."
+                ]
+              },
+              "unconfirmed": [
+                "트레이 수납 용량 확인 필요"
+              ]
+            },
+            {
+              "actor_id": "planner-demo",
+              "client": "mcp",
+              "created_at": "2026-10-03T20:38:17.929138Z",
+              "dataset_sha256": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03",
+              "document_versions": {
+                "FRIDGE-A": "1.0",
+                "FRIDGE-B": "1.0",
+                "FRIDGE-C": "1.0"
+              },
+              "output": null,
+              "previous_run_id": "run-078ed7fc634e42cb9634e7af4cd85045",
+              "request": {
+                "dataset_version": "0.1.0",
+                "exclusions": [
+                  "전체 선반 교체 제외"
+                ],
+                "improvement_task": "청소 불편과 기존 기능을 대조하고 기회 후보를 검토",
+                "model_ids": [
+                  "FRIDGE-A",
+                  "FRIDGE-B",
+                  "FRIDGE-C"
+                ],
+                "product_group": "fridge",
+                "target_customer": "키친 상품기획자",
+                "use_situation": "냉장고 수납·정리·청소"
+              },
+              "request_revision": 1,
+              "run": {
+                "concepts": [],
+                "contract_version": "0.1.0",
+                "dataset_version": "0.1.0",
+                "events": [
+                  {
+                    "evidence_ids": [],
+                    "stage": "plan",
+                    "summary": "기획 요청과 자료 범위를 저장했습니다. 분석은 실행하지 않았습니다.",
+                    "tool": null
+                  }
+                ],
+                "evidence_ids": [],
+                "id": "run-56cb7716b458413ab214cf986d5df56e",
+                "max_revisions": 2,
+                "project_id": "project-81643f56471e4594a84ae7e3654ced18",
+                "revision_count": 0,
+                "stage": "plan",
+                "status": "not_implemented",
+                "unresolved": [
+                  "탈착 후 수납 용량을 확인해야 함",
+                  "상품기획 Agent 분석·콘셉트 생성·검사·수정은 아직 구현되지 않았습니다."
+                ]
+              },
+              "unconfirmed": [
+                "탈착 후 수납 용량을 확인해야 함"
+              ]
+            }
+          ],
+          "contract_version": "0.1.0"
+        }
+      }
+    },
+    {
+      "tool": "search_workspace_evidence",
+      "result": {
+        "ok": true,
+        "data": {
+          "project_id": "project-81643f56471e4594a84ae7e3654ced18",
+          "dataset_sha256": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03",
+          "search": {
+            "ok": true,
+            "data": {
+              "query": "청소",
+              "model_id": "FRIDGE-A",
+              "document_version": "1.0",
+              "items": [
+                {
+                  "id": "REVIEW-EVIDENCE-001",
+                  "model_id": "FRIDGE-A",
+                  "text": "음료를 쏟으면 선반 위 식품을 모두 옮겨 청소해야 해서 번거로워요.",
+                  "source_kind": "synthetic",
+                  "source_type": "review",
+                  "document_version": "1.0",
+                  "source_id": "REVIEWS-CSV-v1.0",
+                  "locator": {
+                    "row": 2
+                  },
+                  "feature_ids": []
+                },
+                {
+                  "id": "REVIEW-EVIDENCE-006",
+                  "model_id": "FRIDGE-A",
+                  "text": "나는 선반을 쉽게 꺼내서 청소하고 있어서 크게 불편하지 않아요.",
+                  "source_kind": "synthetic",
+                  "source_type": "review",
+                  "document_version": "1.0",
+                  "source_id": "REVIEWS-CSV-v1.0",
+                  "locator": {
+                    "row": 7
+                  },
+                  "feature_ids": []
+                },
+                {
+                  "id": "REVIEW-EVIDENCE-008",
+                  "model_id": "FRIDGE-A",
+                  "text": "우유를 흘린 구역만 빠르게 청소하고 싶어요.",
+                  "source_kind": "synthetic",
+                  "source_type": "review",
+                  "document_version": "1.0",
+                  "source_id": "REVIEWS-CSV-v1.0",
+                  "locator": {
+                    "row": 9
+                  },
+                  "feature_ids": []
+                },
+                {
+                  "id": "REVIEW-EVIDENCE-009",
+                  "model_id": "FRIDGE-A",
+                  "text": "냉장고 안 식품이 많으면 청소를 미루게 돼요.",
+                  "source_kind": "synthetic",
+                  "source_type": "review",
+                  "document_version": "1.0",
+                  "source_id": "REVIEWS-CSV-v1.0",
+                  "locator": {
+                    "row": 10
+                  },
+                  "feature_ids": []
+                }
+              ],
+              "total": 4,
+              "contract_version": "0.1.0",
+              "search_method": "literal_token_count"
+            }
+          },
+          "contract_version": "0.1.0"
+        }
+      }
+    },
+    {
+      "tool": "get_workspace_run",
+      "result": {
+        "ok": false,
+        "error": {
+          "code": "INVALID_ARGUMENT",
+          "message": "프로젝트/실행 ID 형식을 확인해 주세요.",
+          "details": {}
+        }
+      }
+    }
+  ]
+}
