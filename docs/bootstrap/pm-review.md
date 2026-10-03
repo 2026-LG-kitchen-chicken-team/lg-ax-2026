@@ -37,3 +37,11 @@ PM은 실제 추가 배정 시 `phase2.py adopt`로 채택 근거를 기록한�
 root가 실제 ChatGPT·Claude 도구 호출과 모델 실험을 별도 증빙으로 등록한다. 이 독립 검토는 해당 원격 서비스를 다시 조작하거나 제출·GitHub 병합을 실행하지 않았다. 호스트 UI 성공, 모델 revision/라이선스/실측, 실제 GitHub CI·통합·평가·배포/제출 증거는 각각의 gate에 연결한다.
 
 기존 phase1 JSON·state·실행 결과 12개는 보존되고 legacy stale 9단계는 숨기지 않았다. 민감한 개인 서류 원본은 private/에 남으며 Git/Notion에 이전하지 않았다.
+
+## 추가 독립 검토와 보완
+
+서버 재실행과 Project 상태 동기화를 추가 검토했다. Doing도 재개 가능한 작업으로 반환되는 하네스 특성 때문에 Project의 Doing을 Ready로 되돌릴 수 있었고, Ready 표시를 pending/ready에 한정해 수정했다. Doing 유지·완료 선행 pending 활성화·미채택 확장 보류·Done/증빙 동기화 4가지 격리 검사가 통과했다.
+
+초기 launcher의 약한 소유 검사·GPU 점유 검사 누락·정상 기동 확인 부족을 찾아 보완했다. 새 guard는 UID/실행 파일/cwd/전용 캐시/정확한 listener PID를 확인하고 GPU0의 다른 작업을 거부한다. 종료/포트 해제와 새 PID의 health 성공을 확인한 뒤에만 PID를 저장한다. 독립 격리 9조건 검사에서 다른 GPU 작업이 있으면 SIGTERM 호출도 발생하지 않았다. 모델 담당의 Linux/Windows mock 6개와 실제 LG 서버 재시작 9단계도 통과했으며 원본 실험과 수정 이전 소스는 history에 보존했다. 전역 종료나 GPU 초기화 경로는 없다.
+
+이 검토도 독립 AI 사전 검토다. 실제 원격 CI·GitHub 병합·병합 commit 통합 검증은 정이량 PM의 실행 기록과 연결한다.

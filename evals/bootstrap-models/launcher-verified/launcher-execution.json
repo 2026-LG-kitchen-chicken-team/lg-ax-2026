@@ -1,0 +1,78 @@
+{
+  "status": "passed",
+  "timestamp_utc": "2026-10-03T19:18:42.541536+00:00",
+  "scope": "LG launcher safety and actual restart; prior expensive model experiments preserved",
+  "source_versions": {
+    "services/inference/launcher_guard.py": "b9e6d993009494ffb3fcf4e3d95dfee0322a3bddcd83a545a17be8c0e05c5198",
+    "services/inference/ollama_start.sh": "c4aafd80dca7c3fd7c62dd8d10337a87c0cdd22b1f66e0b23637ce8d8b23f57b",
+    "services/inference/lab_server_start.sh": "cc23843fd796d153921f6470589b8482a7648f812c197071711a88f9bcb8804a",
+    "services/inference/test_launcher_guard.py": "38fd7c8a1c9ee1d002d18e2ad512cc95669f9fbab8973f89f775e20da1dc5d6d"
+  },
+  "checks": [
+    {
+      "name": "linux_guard_regressions",
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "test_cache_exe_and_cwd_are_independent_guards (test_launcher_guard.LauncherGuardTests.test_cache_exe_and_cwd_are_independent_guards) ... ok\ntest_failed_bind_never_saves_pid_or_calls_health (test_launcher_guard.LauncherGuardTests.test_failed_bind_never_saves_pid_or_calls_health) ... ok\ntest_other_gpu_work_is_blocked (test_launcher_guard.LauncherGuardTests.test_other_gpu_work_is_blocked) ... ok\ntest_port_owner_must_be_visible_and_loopback (test_launcher_guard.LauncherGuardTests.test_port_owner_must_be_visible_and_loopback) ... ok\ntest_unreleased_port_causes_failure (test_launcher_guard.LauncherGuardTests.test_unreleased_port_causes_failure) ... ok\ntest_wrong_port_pid_is_never_killed (test_launcher_guard.LauncherGuardTests.test_wrong_port_pid_is_never_killed) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.006s\n\nOK\n"
+    },
+    {
+      "name": "occupied_port_blocks_default_start",
+      "expected_exit_code": 2,
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "BLOCKED: Port 18864 is occupied; no verified --restart-own request\n"
+    },
+    {
+      "name": "legacy_wrong_cwd_blocks_public_restart",
+      "expected_exit_code": 2,
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "BLOCKED: Process cwd differs from the dedicated LG workspace\n"
+    },
+    {
+      "name": "one_time_verified_legacy_migration",
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "stdout": "{\"status\": \"legacy_lg_process_verified_and_stopped\", \"pid\": 588883, \"checks\": [\"uid\", \"exe\", \"original_home_cwd\", \"exact_cache\", \"exact_endpoint\", \"actual_port_owner\", \"GPU0_no_foreign_work\"], \"other_services_changed\": false}\n",
+      "stderr": ""
+    },
+    {
+      "name": "ollama_start_verified",
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "stdout": "{\"status\": \"prepared\", \"service\": \"ollama\", \"port\": 18864}\n{\"status\": \"started_and_verified\", \"service\": \"ollama\", \"pid\": 593385, \"port\": 18864, \"identity\": \"uid+executable+cwd+environment+port_owner\", \"health\": {\"version\": \"0.34.0\"}}\nStarted and verified LG-only Ollama on loopback:18864, CUDA GPU 0.\n",
+      "stderr": ""
+    },
+    {
+      "name": "ollama_own_restart_verified",
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "stdout": "{\"status\": \"prepared\", \"service\": \"ollama\", \"port\": 18864}\n{\"status\": \"started_and_verified\", \"service\": \"ollama\", \"pid\": 593597, \"port\": 18864, \"identity\": \"uid+executable+cwd+environment+port_owner\", \"health\": {\"version\": \"0.34.0\"}}\nStarted and verified LG-only Ollama on loopback:18864, CUDA GPU 0.\n",
+      "stderr": ""
+    },
+    {
+      "name": "api_own_restart_verified",
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "stdout": "{\"status\": \"prepared\", \"service\": \"lab\", \"port\": 18865}\n{\"status\": \"started_and_verified\", \"service\": \"lab\", \"pid\": 593802, \"port\": 18865, \"identity\": \"uid+executable+cwd+environment+port_owner\", \"health\": {\"service\": \"lgax-private-lab\", \"generation_status\": \"ready\", \"models\": [\"qwen3:8b\"], \"expected_model_digest\": \"500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41\", \"source_sha256\": \"8ae9d68fe1a9f19ba0235e688ca8ddb2873a622cfe9b7d749065edbb085a3490\", \"agent_implemented\": false, \"access_boundary\": \"loopback-only\", \"authentication\": \"not_configured\", \"public_mcp_connected\": false}}\nStarted and verified LG-only API on loopback:18865.\n",
+      "stderr": ""
+    },
+    {
+      "name": "post_restart_service_smoke",
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "stdout": "{\"status\": \"passed\", \"statuses\": {\"health\": 200, \"retrieval_results\": 200, \"generation\": 200, \"invalid_prompt\": 422}}\n",
+      "stderr": ""
+    },
+    {
+      "name": "post_restart_inventory",
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "stdout": "{\"status\": \"observed\", \"lg_process_count\": 3, \"root_available_bytes\": 15215292416}\n",
+      "stderr": ""
+    }
+  ],
+  "other_services_changed": false,
+  "agent_requirements_complete": false
+}

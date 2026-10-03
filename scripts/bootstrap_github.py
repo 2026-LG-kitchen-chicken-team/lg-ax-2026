@@ -163,7 +163,7 @@ def main():
     links={'repo':REPO,'governance':gov['html_url'],'project':project,'epics':{p:x['html_url'] for p,x in epics.items()},
            'tasks':{p:x['html_url'] for p,x in task_issues.items()},'items':items,'updated_at':'2026-10-04',
            'invitation_pending':[p for p,(login,_,_) in TEAM.items() if login not in collaborators]}
-    (ROOT/'harness/phase2/github.json').write_text(json.dumps(links,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+    (ROOT/'harness/phase2/github.json').write_text(json.dumps(links,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
     print(json.dumps({'governance':links['governance'],'project':project['url'],'issues':len(allissues)},ensure_ascii=False),flush=True)
 
 if __name__=='__main__':

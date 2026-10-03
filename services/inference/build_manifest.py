@@ -8,6 +8,7 @@ from pathlib import Path
 
 DIRECTORY = Path("evals/bootstrap-models")
 TARGET = DIRECTORY / "models-manifest.json"
+HISTORY = DIRECTORY / "history/20261003T190903Z-before-launcher-repair"
 
 
 def digest(path):
@@ -37,6 +38,16 @@ def validate_sources():
         raise ValueError("Actual running API source differs")
     if read("service-smoke.json")["status"] != "passed":
         raise ValueError("Private API smoke failed")
+    execution = read("launcher-verified/launcher-execution.json")
+    if execution["status"] != "passed" or any(row["exit_code"] != row["expected_exit_code"] for row in execution["checks"]):
+        raise ValueError("Actual launcher verification failed")
+    for source, expected in execution["source_versions"].items():
+        if digest(source) != expected:
+            raise ValueError(f"Actually verified launcher source differs: {source}")
+    history = json.loads((HISTORY / "snapshot-index.json").read_text("utf-8"))
+    for artifact in history["files"]:
+        if digest(HISTORY / artifact["path"]) != artifact["sha256"]:
+            raise ValueError(f"Original historical bytes differ: {artifact['path']}")
 
 
 def build():
@@ -52,13 +63,19 @@ def build():
     sources = ["scripts/model_benchmark.py", "services/inference/server.py", "services/inference/generation_benchmark.py",
                "services/inference/ocr_benchmark.py", "services/inference/service_smoke.py", "services/inference/server_inventory.py",
                "services/inference/lab_setup.sh", "services/inference/ocr_setup.sh", "services/inference/run_lab.sh",
-               "services/inference/ollama_start.sh", "services/inference/lab_server_start.sh", "services/inference/requirements-cpu.txt"]
+               "services/inference/ollama_start.sh", "services/inference/lab_server_start.sh", "services/inference/launcher_guard.py",
+               "services/inference/test_launcher_guard.py", "services/inference/build_manifest.py", "services/inference/requirements-cpu.txt"]
     artifacts = [DIRECTORY / name for name in ["input-dataset.json", "input-queries.json", "retrieval-results.json", "generation-results.json", "ocr-results.json",
-                                               "service-smoke.json", "server-inventory.json", "ocr/korean-text-1.png", "ocr/korean-text-2.png"]]
+                                               "service-smoke.json", "server-inventory.json", "ocr/korean-text-1.png", "ocr/korean-text-2.png", "launcher-verified/launcher-execution.json",
+                                               "history/20261003T190903Z-before-launcher-repair/snapshot-index.json"]]
     generation_checks = ["schema_shape_ok", "allowed_evidence_ids_only", "model_id_matches", "feature_presence_matches_fixture", "done"]
     return {"schema_version": "1.0", "status": "executed_bootstrap", "confirmed_at_utc": datetime.now(UTC).isoformat(),
             "scope": "Actual lab retrieval, Korean textline OCR, structured generation and private API smoke; not full Agent",
             "agent_requirements_complete": False, "production_model_adoption_decided": False,
+            "history": {"original_snapshot": HISTORY.as_posix(), "source_git_commit": "752edad170c8a20f95a761ddb5876e5ff10f862c",
+                        "original_model_manifest_sha256": digest(HISTORY / "evals/bootstrap-models/models-manifest.json"),
+                        "model_experiments_reexecuted_for_launcher_revision": False,
+                        "new_evidence": ["launcher-verified/launcher-execution.json", "service-smoke.json", "server-inventory.json"]},
             "models": models, "source_versions": {path: digest(path) for path in sources},
             "artifacts": [{"path": path.as_posix(), "sha256": digest(path)} for path in artifacts],
             "inputs": {"dataset_snapshot": "evals/bootstrap-models/input-dataset.json", "dataset_sha256": digest(DIRECTORY / "input-dataset.json"),

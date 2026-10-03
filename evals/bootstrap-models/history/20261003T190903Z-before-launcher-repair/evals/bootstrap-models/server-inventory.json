@@ -1,0 +1,95 @@
+{
+  "status": "observed",
+  "timestamp_utc": "2026-10-03T18:54:43.114675+00:00",
+  "os": "Linux-6.8.0-124-generic-x86_64-with-glibc2.35",
+  "python": "3.11.17",
+  "distribution": {
+    "ID": "ubuntu",
+    "PRETTY_NAME": "Ubuntu 22.04.5 LTS",
+    "VERSION_ID": "22.04"
+  },
+  "inventory_source_sha256": "e106e9cc93b9511bbe76b985f01146b85110d7d2f80bb414ed34c582f5f68368",
+  "uv_version": "uv 0.12.23 (x86_64-unknown-linux-gnu)",
+  "packages": {
+    "torch": "2.8.0+cpu",
+    "transformers": "4.57.1",
+    "huggingface-hub": "0.36.0",
+    "fastapi": "0.142.2",
+    "uvicorn": "0.54.0"
+  },
+  "gpus": [
+    {
+      "index": 0,
+      "name": "NVIDIA RTX A6000",
+      "memory_total_mib": 49140,
+      "memory_used_mib": 5672,
+      "allocation": "lg_bootstrap"
+    },
+    {
+      "index": 1,
+      "name": "NVIDIA RTX A6000",
+      "memory_total_mib": 49140,
+      "memory_used_mib": 18510,
+      "allocation": "protected_existing_service"
+    },
+    {
+      "index": 2,
+      "name": "NVIDIA RTX A6000",
+      "memory_total_mib": 49140,
+      "memory_used_mib": 16,
+      "allocation": "not_allocated"
+    },
+    {
+      "index": 3,
+      "name": "NVIDIA RTX A6000",
+      "memory_total_mib": 49140,
+      "memory_used_mib": 17,
+      "allocation": "not_allocated"
+    }
+  ],
+  "disks": {
+    "/": {
+      "total_bytes": 3935210397696,
+      "available_bytes": 15134179328
+    },
+    "/dev/shm": {
+      "total_bytes": 135037243392,
+      "available_bytes": 114105487360
+    }
+  },
+  "storage": "Dedicated tmpfs cache/environment; lost on reboot",
+  "persistent_workspace": "${HOME}/lg-ax-2026",
+  "lg_processes": [
+    {
+      "pid": 588883,
+      "parent_pid": 1,
+      "name": "ollama",
+      "args": "${VERIFIED_OLLAMA_BINARY} serve"
+    },
+    {
+      "pid": 591802,
+      "parent_pid": 1,
+      "name": "python",
+      "args": "/dev/shm/lg-ax-${USER}/venv/bin/python services/inference/server.py --port 18865"
+    },
+    {
+      "pid": 591987,
+      "parent_pid": 588883,
+      "name": "llama-server",
+      "args": "${VERIFIED_OLLAMA_LIB}/llama-server --model /dev/shm/lg-ax-${USER}/ollama/blobs/sha256-a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f --port 34307 --host 127.0.0.1 --no-webui --offline -c 4096 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --flash-attn auto -b 512 -ub 512 --context-shift --keep 4"
+    }
+  ],
+  "ports": {
+    "ollama": {
+      "host": "127.0.0.1",
+      "port": 18864
+    },
+    "lab_api": {
+      "host": "127.0.0.1",
+      "port": 18865
+    }
+  },
+  "public_mcp_connected": false,
+  "agent_implemented": false,
+  "other_services_changed": false
+}

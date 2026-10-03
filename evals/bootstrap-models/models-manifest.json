@@ -1,10 +1,21 @@
 {
   "schema_version": "1.0",
   "status": "executed_bootstrap",
-  "confirmed_at_utc": "2026-10-03T18:57:25.408789+00:00",
+  "confirmed_at_utc": "2026-10-03T19:23:07.128308+00:00",
   "scope": "Actual lab retrieval, Korean textline OCR, structured generation and private API smoke; not full Agent",
   "agent_requirements_complete": false,
   "production_model_adoption_decided": false,
+  "history": {
+    "original_snapshot": "evals/bootstrap-models/history/20261003T190903Z-before-launcher-repair",
+    "source_git_commit": "752edad170c8a20f95a761ddb5876e5ff10f862c",
+    "original_model_manifest_sha256": "4cd05d12151ffe236bee208983ae20567c0bcd4d30589995f07d3b97b6e084ba",
+    "model_experiments_reexecuted_for_launcher_revision": false,
+    "new_evidence": [
+      "launcher-verified/launcher-execution.json",
+      "service-smoke.json",
+      "server-inventory.json"
+    ]
+  },
   "models": [
     {
       "model_id": "BAAI/bge-m3",
@@ -68,8 +79,11 @@
     "services/inference/lab_setup.sh": "249fd6831ee9028a7c1bf96912b42af5a690bf6d962c45fb0fda2bfbdfb2a1eb",
     "services/inference/ocr_setup.sh": "98d257b41d98ed004ee4832c44f52d8595d5f20f4ad190d288f5690d7c25e2ec",
     "services/inference/run_lab.sh": "8672bc5dbfe0660f68ccd651e0568556cc44a09390b52a6ad8b259e7bf26308d",
-    "services/inference/ollama_start.sh": "9c338e4c1b1ae1b0c0f353b19bf7513ea077e2054d7354aff26133a448a0398d",
-    "services/inference/lab_server_start.sh": "f4489f0e0b618250b98c8b4826e27f43f7794aedfb43df6105d1665538405bd8",
+    "services/inference/ollama_start.sh": "c4aafd80dca7c3fd7c62dd8d10337a87c0cdd22b1f66e0b23637ce8d8b23f57b",
+    "services/inference/lab_server_start.sh": "cc23843fd796d153921f6470589b8482a7648f812c197071711a88f9bcb8804a",
+    "services/inference/launcher_guard.py": "b9e6d993009494ffb3fcf4e3d95dfee0322a3bddcd83a545a17be8c0e05c5198",
+    "services/inference/test_launcher_guard.py": "38fd7c8a1c9ee1d002d18e2ad512cc95669f9fbab8973f89f775e20da1dc5d6d",
+    "services/inference/build_manifest.py": "3e25108f9e4e2fb0f99d53189badf3ee8f1c18e6d2a0c74c31b37ccca8ade631",
     "services/inference/requirements-cpu.txt": "2ce69fcee7cf6a9b19bef44bc7d56ea01508297759b2352a910a1191711624c1"
   },
   "artifacts": [
@@ -95,11 +109,11 @@
     },
     {
       "path": "evals/bootstrap-models/service-smoke.json",
-      "sha256": "a2e09ffcd4b56f569b90e1a704a7c028e3ce2a33a84891710473ca0bb08c19ef"
+      "sha256": "2b9ff9c137fe35687b58e1e0f23c1590526f101cda1851743dcb0fedff0f3020"
     },
     {
       "path": "evals/bootstrap-models/server-inventory.json",
-      "sha256": "dfb90dc86933eff24296d3625362d609844156b2b0ccb23a89d9a25ab1b15e34"
+      "sha256": "1140f562edaa95636749469a1a4c12e132d5752c19996a9fe29f78b0f1cbd676"
     },
     {
       "path": "evals/bootstrap-models/ocr/korean-text-1.png",
@@ -108,6 +122,14 @@
     {
       "path": "evals/bootstrap-models/ocr/korean-text-2.png",
       "sha256": "89891c7c2f8f51eb285dbbe5855330067234b5a718c40e7c0322cce7247d8b50"
+    },
+    {
+      "path": "evals/bootstrap-models/launcher-verified/launcher-execution.json",
+      "sha256": "ad6fd4ed9d11947759782498b6e28715841b095db261bd651ab7026af42095eb"
+    },
+    {
+      "path": "evals/bootstrap-models/history/20261003T190903Z-before-launcher-repair/snapshot-index.json",
+      "sha256": "bba3583a8d57878121eed24eba807661c8080dc837ab660880fd11285788142a"
     }
   ],
   "inputs": {

@@ -6,7 +6,7 @@
 
 Ubuntu 22.04.5에서 전용 Python 3.11.17 환경을 만들었다. CPU 검색은 torch 2.8.0+cpu와 Transformers 4.57.1, 생성은 Ollama 0.34.0을 사용했다. 한국어 OCR은 별도 환경에 PaddlePaddle 3.0.0·PaddleOCR 3.2.0·PaddleX 3.2.0을 설치했다. Python·패키지·모델 파일은 전용 `/dev/shm/lg-ax-${USER}` 아래에 두었고 시스템 Python·시스템 패키지는 변경하지 않았다.
 
-2026-10-04 03:55 KST 기록에서 A6000은 4장, 각 49,140MiB다. GPU 0은 LG Qwen 실험에 5,672MiB를 사용했다. GPU 1의 기존 작업은 18,510MiB로 유지됐으며, GPU 2·3은 할당하지 않았다. root 디스크 여유는 15,134,179,328바이트(약 14.1GiB), tmpfs 여유는 약 106GiB다. root 공간을 아끼기 위해 16GB BF16 모델 대신 약 5.2GB Q4_K_M 모델을 사용했다. 임의로 기존 작업을 중지하거나 다른 프로젝트의 모델 캐시를 재사용하지 않았다. 자세한 관측값은 [server-inventory.json](../../evals/bootstrap-models/server-inventory.json)에 있다.
+2026-10-04 04:18 KST 기록에서 A6000은 4장, 각 49,140MiB다. GPU 0은 LG Qwen service smoke에 5,672MiB를 사용했다. GPU 1의 기존 작업은 18,510MiB로 유지됐으며, GPU 2·3은 할당하지 않았다. root 디스크 여유는 15,215,292,416바이트(약 14.2GiB), tmpfs 여유는 약 106GiB다. root 공간을 아끼기 위해 16GB BF16 모델 대신 약 5.2GB Q4_K_M 모델을 사용했다. 임의로 기존 작업을 중지하거나 다른 프로젝트의 모델 캐시를 재사용하지 않았다. 자세한 관측값은 [server-inventory.json](../../evals/bootstrap-models/server-inventory.json)에 있다.
 
 ## 실제 실행한 모델
 
@@ -45,11 +45,11 @@ Qwen3:8b에는 냉장고·식기세척기·전자레인지·문서에 없는 기
 
 ## 실제 서비스와 프로세스
 
-- `ollama serve`: loopback `127.0.0.1:18864`, GPU 0, cloud 비활성화, 병렬 1개. 관측 PID 588883.
-- `llama-server`: 위 전용 Ollama의 자식 생성 runner. 관측 PID 591987, 임시 loopback port 34307. 유휴 5분 뒤 내려갈 수 있으므로 PID와 포트를 고정값으로 사용하지 않는다.
-- `python services/inference/server.py --port 18865`: private API. 관측 PID 591802, loopback `127.0.0.1:18865`.
+- `ollama serve`: loopback `127.0.0.1:18864`, GPU 0, cloud 비활성화, 병렬 1개. 관측 PID 593597.
+- `llama-server`: 위 전용 Ollama의 자식 생성 runner. 관측 PID 593856, 임시 loopback port 43573. 유휴 5분 뒤 내려갈 수 있으므로 PID와 포트를 고정값으로 사용하지 않는다.
+- `python services/inference/server.py --port 18865`: private API. 관측 PID 593802, loopback `127.0.0.1:18865`.
 
-PID는 03:55 KST 관측값이며 재시작 후 달라진다. 모델 다운로드·검색·생성·OCR 실험 프로세스는 완료됐고 상주 작업은 위 LG 서비스들이다. 기존 서비스는 변경하지 않았다.
+PID는 04:18 KST 관측값이며 재시작 후 달라진다. 모델 다운로드·검색·구조화 생성·OCR 실험 프로세스는 완료됐고 상주 작업은 위 LG 서비스들이다. 이번 launcher 수정에는 고비용 모델 비교를 다시 실행하지 않았다. 기존의 다른 프로젝트 서비스는 변경하지 않았다.
 
 전용 API의 실제 `health`, 검색 결과 조회, 생성 호출은 200으로 응답했다. 생성은 실제로 “전자레인지”를 반환했고, 빈 prompt는 422로 거부했다. health와 생성은 확인한 Qwen digest가 다르면 실행을 막는다. 실행 중인 API 소스 해시도 응답에서 확인했다. [service-smoke.json](../../evals/bootstrap-models/service-smoke.json)은 이 결과를 보존한다.
 
@@ -59,7 +59,11 @@ PID는 03:55 KST 관측값이며 재시작 후 달라진다. 모델 다운로드
 
 실행은 [services/inference/README.md](../../services/inference/README.md)를 따른다. 코드와 결과는 전용 `~/lg-ax-2026`에 남지만 Python 환경과 모델 캐시는 tmpfs라 재부팅하면 사라진다. 재부팅 후 전용 설정과 모델 다운로드를 다시 수행해야 한다. 원본 가중치를 제출 ZIP에 포함한 상태가 아니다.
 
-`lab_server_start.sh`와 `ollama_start.sh`는 기존 포트가 점유됐으면 중단하며, 자체 PID의 작업 경로 또는 전용 endpoint 환경을 확인한 경우만 `--restart-own`을 허용한다. 종료할 때도 `runtime/lab.pid`·`runtime/ollama.pid`에 기록된 PID가 지금 LG 프로세스인지 확인하고 그 프로세스만 종료한다. 전체 Python/Ollama 종료나 GPU 초기화는 하지 않는다.
+`lab_server_start.sh`와 `ollama_start.sh`는 기존 포트가 점유됐으면 중단하며, UID·실행 파일·전용 cwd·캐시·endpoint 환경·실제 포트 소유 PID를 모두 확인한 경우만 `--restart-own`을 허용한다. GPU 0에 외부 compute 프로세스가 있으면 Ollama 시작을 거부한다. 종료·포트 해제·새 프로세스의 bind와 실제 HTTP health가 확인된 뒤에만 PID를 저장하고 시작 성공을 표시한다. 20초 이내 확인되지 않으면 실패 원인을 반환한다. 전체 Python/Ollama 종료나 GPU 초기화는 하지 않는다.
+
+최초 LG Ollama가 계정 home을 cwd로 사용하던 상태를 새 guard가 실제로 거부했다. 최초 LG PID 588883만 별도의 1회 migration에서 UID·실행 파일·원래 cwd·전용 캐시·endpoint·실제 포트 소유·GPU 점유를 모두 확인해 종료했다. 이후 전용 cwd에서 시작하고 두 서비스의 own restart를 실제로 검증했다. 기본 중복 start 거부, legacy cwd 거부, migration, 두 서비스의 시작/재시작, 실제 API smoke·inventory 등 9단계가 통과했다. [launcher-execution.json](../../evals/bootstrap-models/launcher-verified/launcher-execution.json)에 원시 결과가 있다.
+
+실패 조건 회귀검사 6개는 stdlib mock으로 GPU·서비스·SSH 없이 실행되며 Windows와 서버 Linux에서 통과했다. CI에서는 `uv run python -m unittest discover -s services/inference -p test_launcher_guard.py -v`로 실행할 수 있다.
 
 ## 근거 일치 확인과 다음 작업
 
@@ -70,5 +74,7 @@ uv run python services/inference/build_manifest.py --check
 ```
 
 이 검사는 CPU·GPU 모델을 재실행하지 않고 입력·소스·결과의 일치를 검사한다. models.lock 및 phase2 server/model 체크 등록은 PM가 담당한다. 자동 검사 통과와 실제 Agent 요구사항 완료는 분리한다.
+
+수정 전 manifest·소스·launcher·입력·원시 실측 결과·보고서를 [원본 snapshot index](../../evals/bootstrap-models/history/20261003T190903Z-before-launcher-repair/snapshot-index.json)로 보존했다. 원본 모델 manifest SHA는 `4cd05d12151ffe236bee208983ae20567c0bcd4d30589995f07d3b97b6e084ba`이며 최초 Git commit `752edad170c8a20f95a761ddb5876e5ff10f862c`도 남아 있다. 새 manifest 검사는 원본 byte 해시까지 확인한다. 검색·구조화 생성·OCR 실측은 원본 그대로이며, launcher 수정 이후 서비스 smoke와 inventory만 새 실행으로 갱신했다.
 
 다음 구현은 모델 라이브러리를 프로젝트 저장 상태·5개 Skill과 연결하고, 근거 부족·제품/버전 혼입·중복 기능·지시문 오염 등 실패 사례를 평가하는 일이다. PDF 자료 수집과 원문 locator, Agent의 검사·수정, 3개 사례 전체 실행, 일반 LLM 기준선 비교, 기획자 효용 측정, 웹·MCP 동일 코어 연결은 남아 있다. 이번 실험 결과를 제출 기능 완료로 바꾸지 않는다.

@@ -29,6 +29,7 @@ jobs:
       - name: Regression, phase2 integrity and contract tests
         run: |
           uv run python -m unittest discover -s tests -v
+          uv run python -m unittest discover -s services/inference -p test_launcher_guard.py -v
           uv run python scripts/check_contracts.py
           uv run python services/inference/build_manifest.py --check
       - name: Actual local MCP transport smoke (no live-model claim)
