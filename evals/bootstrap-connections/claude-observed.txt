@@ -1,0 +1,215 @@
+- complementary "사이드바":
+  - link "홈":
+    - /url: /new
+    - img "Claude"
+  - button "사이드바 숨기기":
+    - generic: 
+  - button "검색":
+    - generic: 
+  - link "새로 생성":
+    - /url: /new
+    - generic: 
+    - generic: 새로 생성
+    - generic: Ctrl
+    - generic: +
+    - generic: Shift
+    - generic: +
+    - generic: O
+  - link "프로젝트":
+    - /url: /projects
+    - generic: 
+    - generic: 프로젝트
+  - link "Artifacts":
+    - /url: /artifacts
+    - generic: 
+    - generic: Artifacts
+  - link "코드 업그레이드":
+    - /url: /upgrade?feature=code&returnTo=%2Fcode
+    - generic: 
+    - generic: 코드
+    - generic: 업그레이드
+  - link "사용자 지정":
+    - /url: /customize
+    - generic: 
+    - generic: 사용자 지정
+  - button "고정됨" [expanded]:
+    - generic: 고정됨
+    - generic: 
+  - generic: 
+  - generic: 드래그하여 고정
+  - button "채팅 및 작업" [expanded]:
+    - generic: 채팅 및 작업
+    - generic: 
+  - button "View all":
+    - generic: 
+  - button "그룹화 및 정렬":
+    - generic: 
+  - button "메모리 가져오기 시도":
+    - generic: 
+    - generic: 메모리 가져오기
+    - generic: 시도
+  - button "이 제안 닫기":
+    - generic: 
+  - link "유휴 LG AX 주방 증거 연결 검증":
+    - /url: /chat/00575822-2612-405f-9158-e326a381fb99
+    - img "유휴"
+    - generic: LG AX 주방 증거 연결 검증
+  - button "LG AX 주방 증거 연결 검증에 대한 더 많은 옵션":
+    - generic: 
+  - button "정이량 Free":
+    - img: 정
+    - generic: 정이량
+    - generic: ·
+    - generic: Free
+    - generic: 
+  - link "앱 및 확장 프로그램 다운로드":
+    - /url: /downloads
+    - generic: 
+  - separator "사이드바 크기 조정"
+- main:
+  - button "LG AX 주방 증거 연결 검증, 채팅 이름 바꾸기":
+    - generic: LG AX 주방 증거 연결 검증
+  - button "LG AX 주방 증거 연결 검증에 대한 더 많은 옵션":
+    - generic: 
+  - text: 무료 플랜
+  - link "업그레이드":
+    - /url: /upgrade
+  - button "업그레이드 배너 닫기":
+  - button "공유":
+    - generic: 공유
+  - status: Claude가 응답을 완료했습니다
+  - feed "채팅 메시지":
+    - paragraph: 위아래 화살표 키를 사용하여 메시지 간에 이동하세요.
+    - article "2개 메시지 중 1번째":
+      - 'heading "보낸 메시지: LG AX Kitchen Evidence 연결 검증만 해줘." [level=2]'
+      - paragraph: LG AX Kitchen Evidence 연결 검증만 해줘. list_products를 실제 호출하고 FRIDGE-A가 포함됐는지 확인해. 이어 search_evidence(q="청소", model_id="FRIDGE-A", document_version="1.0", limit=3)를 실제 호출해. MANUAL-001은 get_evidence로 조회해서 원문 위치·모델·문서 버전을 알려줘. 직접 도구 실행 결과를 확인하고, 상품기획 판단은 하지 마.
+      - toolbar "메시지 작업":
+        - time: 4분 전
+        - button "재시도":
+          - generic: 
+        - button "편집":
+          - generic: 
+        - button "복사":
+          - generic: 
+        - status
+      - status
+    - article "2개 메시지 중 2번째":
+      - 'heading "Claude 응답: MCP 연결은 정상이고, 요청하신 도구 3개를 모두 실제로 호출해 확인했습니다." [level=2]'
+      - generic: LG AX Kitchen Evidence 통합 사용함, 로드된 도구
+      - button "LG AX Kitchen Evidence 통합 사용함, 로드된 도구":
+        - generic: 
+      - status: LG AX Kitchen Evidence 통합 사용함, 로드된 도구
+      - paragraph: MCP 연결은 정상이고, 요청하신 도구 3개를 모두 실제로 호출해 확인했습니다.
+      - paragraph:
+        - strong: 1. list_products
+      - list:
+        - text: 호출이 성공했고(
+        - code: "ok: true"
+        - text: ", contract_version 0.1.0), 총 5개 모델이 반환됐습니다."
+        - strong: FRIDGE-A가 포함돼 있습니다.
+        - text: 이름은 "가상 냉장고 A", 그룹은 fridge, 문서 버전은 1.0, source_kind는 synthetic입니다.
+        - listitem: 나머지 모델은 FRIDGE-B, FRIDGE-C, DISHWASHER-A, MICROWAVE-A입니다.
+      - paragraph:
+        - strong: 2. search_evidence
+        - text: (q="청소", model_id="FRIDGE-A", document_version="1.0", limit=3)
+      - list:
+        - text: 호출이 성공했고,
+        - code: items
+        - text: 는 limit대로 3건 반환됐습니다.
+        - code: total
+        - text: 은 4로, 조건에 맞는 결과가 1건 더 있습니다.
+        - text: search_method는
+        - code: literal_token_count
+        - text: 입니다.
+      - table:
+        - rowgroup:
+          - row "id 출처 위치 원문":
+            - columnheader "id"
+            - columnheader "출처"
+            - columnheader "위치"
+            - columnheader "원문"
+        - rowgroup:
+          - row "REVIEW-EVIDENCE-001 REVIEWS-CSV-v1.0 (review) row 2 음료를 쏟으면 선반 위 식품을 모두 옮겨 청소해야 해서 번거로워요.":
+            - cell "REVIEW-EVIDENCE-001"
+            - cell "REVIEWS-CSV-v1.0 (review)"
+            - cell "row 2"
+            - cell "음료를 쏟으면 선반 위 식품을 모두 옮겨 청소해야 해서 번거로워요."
+          - row "REVIEW-EVIDENCE-006 REVIEWS-CSV-v1.0 (review) row 7 나는 선반을 쉽게 꺼내서 청소하고 있어서 크게 불편하지 않아요.":
+            - cell "REVIEW-EVIDENCE-006"
+            - cell "REVIEWS-CSV-v1.0 (review)"
+            - cell "row 7"
+            - cell "나는 선반을 쉽게 꺼내서 청소하고 있어서 크게 불편하지 않아요."
+          - row "REVIEW-EVIDENCE-008 REVIEWS-CSV-v1.0 (review) row 9 우유를 흘린 구역만 빠르게 청소하고 싶어요.":
+            - cell "REVIEW-EVIDENCE-008"
+            - cell "REVIEWS-CSV-v1.0 (review)"
+            - cell "row 9"
+            - cell "우유를 흘린 구역만 빠르게 청소하고 싶어요."
+      - paragraph: 세 건 모두 model_id는 FRIDGE-A, document_version은 1.0, source_kind는 synthetic입니다.
+      - paragraph:
+        - strong: 3. get_evidence
+        - text: (MANUAL-001)
+      - list:
+        - listitem: 호출이 성공했습니다.
+        - strong: "원문 위치:"
+        - text: 출처 문서
+        - code: FRIDGE-A-MANUAL-v1.0
+        - text: ", page 1, section \"선반 분리\""
+        - strong: "모델:"
+        - text: FRIDGE-A
+        - strong: "문서 버전:"
+        - text: "1.0"
+        - listitem: 출처 유형은 manual, source_kind는 synthetic입니다. 연결된 feature_ids는 FEATURE-001입니다.
+        - listitem: "원문: \"선반은 분리하여 세척할 수 있습니다. 선반을 분리하기 전에 위의 식품을 모두 옮겨 주세요.\""
+      - paragraph: 요청하신 대로 상품기획 판단은 하지 않았습니다.
+      - group "제안된 작업":
+        - button "스프레드시트 만들기":
+          - generic: 
+          - text: 스프레드시트 만들기
+      - toolbar "메시지 작업":
+        - button "복사":
+          - generic: 
+        - status
+        - button "소리 내어 읽기":
+          - generic: 
+        - button "좋은 답변":
+          - generic: 
+        - button "나쁜 응답":
+          - generic: 
+        - button "재시도":
+          - generic: 
+        - time: 2분 전
+  - button:
+    - generic: 
+  - generic: Cowork으로 백그라운드에서 실행하기
+  - generic: Cowork은 LG AX Kitchen Evidence 전반에 걸친 복잡한 작업을 직접 지켜보지 않아도 처리할 수 있습니다. 맡겨두고 결과만 확인하세요.
+  - button "데스크톱 앱 받기":
+    - generic: 데스크톱 앱 받기
+  - button "닫기":
+    - generic: 
+  - status
+  - status
+  - status
+  - generic: 메시지를 입력하세요…
+  - textbox "Claude에게 프롬프트를 입력하세요.":
+    - paragraph
+  - status
+  - button "파일, 커넥터 등 추가":
+    - generic: 
+  - button "받아쓰기":
+    - generic: 
+  - group "음성 모드 시작":
+    - button "음성 모드 시작":
+    - button "마이크":
+      - generic: 
+  - note:
+    - link "Claude는 AI이므로 실수를 할 수 있습니다. 응답을 다시 한번 확인해 주세요.":
+      - /url: https://support.anthropic.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on
+      - text: Claude는 AI이므로 실수를 할 수 있습니다.
+      - generic: 응답을 다시 한번 확인해 주세요.
+  - 'button "모델: Sonnet 5.5 중간"':
+    - text: Sonnet 5.5
+    - generic: 중간
+  - status
+- status
+- status
+- region "Notifications"

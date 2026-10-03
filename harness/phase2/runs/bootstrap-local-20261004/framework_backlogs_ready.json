@@ -1,0 +1,49 @@
+{
+  "check_id": "framework_backlogs_ready",
+  "recorded_by": "Codex within user-authorized PM bootstrap work",
+  "observed_at": "2026-10-03T18:34:41+00:00",
+  "result": "pass",
+  "execution_kind": "deterministic",
+  "observations": [
+    "21 task links, exact31 requirements and ready work for all4 configured members observed"
+  ],
+  "limitations": [
+    "Record and development environment verification only; no product completion, PM approval, merge, host UI connection or market validation",
+    "GitHub links are an observed bootstrap manifest snapshot; actual repository CI run is pending"
+  ],
+  "code_versions": [
+    {
+      "path": "scripts/phase2.py",
+      "sha256": "05096c0a4b71029e7a611cc698706bf80922435b75bf2e1c525c35fe9892bdd5"
+    },
+    {
+      "path": "tests/test_phase2.py",
+      "sha256": "2e98fac2c69e96ed46aefed79bb8240a757fafdecf9c0edbc90651bfe982a4fb"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "harness/phase2/runs/bootstrap-local-20261004/requirements-snapshot.json",
+      "sha256": "aa8050b4da52db8e7f40ace4f989c57dd164d0f06223486130251ad389240a55"
+    },
+    {
+      "path": "harness/phase2/runs/bootstrap-local-20261004/workflow-snapshot.json",
+      "sha256": "28d3d5665b04689aa2f10c070de54f9522c94a90a95443d4f853794fc8272df2"
+    },
+    {
+      "path": "harness/phase2/runs/bootstrap-local-20261004/github-snapshot.json",
+      "sha256": "a886e84c2e61bfdee6cb77bd5efca239bcaa031b6a3ff8482fdfd1337e1ecafe"
+    }
+  ],
+  "checks": [
+    {
+      "name": "backlog readiness and GitHub link assertions",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/bootstrap-local-20261004/backlog-check.txt",
+        "sha256": "82cac291e2ffca4c18d17aa6fa490df053cefd928636c722e26b72aad9d134b2"
+      }
+    }
+  ],
+  "models": []
+}

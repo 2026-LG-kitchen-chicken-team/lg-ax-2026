@@ -1,0 +1,24 @@
+name: 시연·제출 산출물
+description: 발표·영상·코드·Skill·재현·접수 확인을 연결합니다.
+title: "[제출] "
+labels: ["delivery"]
+body:
+  - type: textarea
+    id: artifact
+    attributes:
+      label: 산출물·관련 요구·공식 규격·미확정
+    validations:
+      required: true
+  - type: textarea
+    id: replay
+    attributes:
+      label: 코드 commit·자료/모델 버전·깨끗한 환경 재현 방법
+    validations:
+      required: true
+  - type: textarea
+    id: review
+    attributes:
+      label: 전수검수·PM 승인·최신 첨부본·증빙
+      description: 제출 준비와 실제 제출을 구분하며 접수 개인정보는 private에 보관합니다.
+    validations:
+      required: true

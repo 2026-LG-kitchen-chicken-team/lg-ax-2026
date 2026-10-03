@@ -1,0 +1,69 @@
+{
+  "check_id": "framework_contracts_valid",
+  "recorded_by": "Codex within user-authorized PM bootstrap work",
+  "observed_at": "2026-10-03T18:34:41+00:00",
+  "result": "pass",
+  "execution_kind": "deterministic",
+  "observations": [
+    "91 regression tests, canonical contract/schema and phase2 record validation passed"
+  ],
+  "limitations": [
+    "Record and development environment verification only; no product completion, PM approval, merge, host UI connection or market validation",
+    "GitHub links are an observed bootstrap manifest snapshot; actual repository CI run is pending"
+  ],
+  "code_versions": [
+    {
+      "path": "scripts/phase2.py",
+      "sha256": "05096c0a4b71029e7a611cc698706bf80922435b75bf2e1c525c35fe9892bdd5"
+    },
+    {
+      "path": "tests/test_phase2.py",
+      "sha256": "2e98fac2c69e96ed46aefed79bb8240a757fafdecf9c0edbc90651bfe982a4fb"
+    },
+    {
+      "path": "scripts/check_contracts.py",
+      "sha256": "de1e1c635f6d57bf597b76534b2f3dd55de3ef49cfec34f648e840beb147fdd6"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "harness/phase2/runs/bootstrap-local-20261004/requirements-snapshot.json",
+      "sha256": "aa8050b4da52db8e7f40ace4f989c57dd164d0f06223486130251ad389240a55"
+    },
+    {
+      "path": "harness/phase2/runs/bootstrap-local-20261004/workflow-snapshot.json",
+      "sha256": "28d3d5665b04689aa2f10c070de54f9522c94a90a95443d4f853794fc8272df2"
+    },
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "sha256": "aab5fabdbc3cadea6cf3de292cb2408d865f9796e233320fde277a0233472bcc"
+    }
+  ],
+  "checks": [
+    {
+      "name": "unittest",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/bootstrap-local-20261004/unittest.txt",
+        "sha256": "4d3765c63fc14635bfabfa61fdd0b189f25f9049ebe1d6f22cb9bfe1934f90cb"
+      }
+    },
+    {
+      "name": "contracts",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/bootstrap-local-20261004/contracts.txt",
+        "sha256": "af19e91501d9e3e482a7fac01a27f53b5f7b40ba9a899f30e6a5c513dedf9964"
+      }
+    },
+    {
+      "name": "phase2-validate",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/bootstrap-local-20261004/phase2-validate.txt",
+        "sha256": "d317a21dd45f7ba744ee367bef25c8bb9da5e341a35170b850ac6eb515a7670e"
+      }
+    }
+  ],
+  "models": []
+}

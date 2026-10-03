@@ -1,0 +1,65 @@
+{
+  "check_id": "local_mcp_smoke",
+  "recorded_by": "Codex within user-authorized PM bootstrap work",
+  "observed_at": "2026-10-03T18:34:41+00:00",
+  "result": "pass",
+  "execution_kind": "live_service",
+  "observations": [
+    "Actual local MCP subprocess initialize/list/call completed with synthetic data"
+  ],
+  "limitations": [
+    "Record and development environment verification only; no product completion, PM approval, merge, host UI connection or market validation",
+    "GitHub links are an observed bootstrap manifest snapshot; actual repository CI run is pending"
+  ],
+  "code_versions": [
+    {
+      "path": "scripts/phase2.py",
+      "sha256": "05096c0a4b71029e7a611cc698706bf80922435b75bf2e1c525c35fe9892bdd5"
+    },
+    {
+      "path": "tests/test_phase2.py",
+      "sha256": "2e98fac2c69e96ed46aefed79bb8240a757fafdecf9c0edbc90651bfe982a4fb"
+    },
+    {
+      "path": "apps/mcp/src/lgax_mcp/server.py",
+      "sha256": "a9a37314850569506aba32bff6b0585022f578d103163e96407682175850258e"
+    },
+    {
+      "path": "packages/core/src/lgax_core/store.py",
+      "sha256": "34d8b91b6f5533fda5a1fad8e9df66c0199ebaec47bd96b283873f1ac35e923c"
+    },
+    {
+      "path": "scripts/smoke_mcp.py",
+      "sha256": "521ff32b2db613970e868188d221efc4b3d758ec02b49e53138922389f6e4afd"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "harness/phase2/runs/bootstrap-local-20261004/requirements-snapshot.json",
+      "sha256": "aa8050b4da52db8e7f40ace4f989c57dd164d0f06223486130251ad389240a55"
+    },
+    {
+      "path": "harness/phase2/runs/bootstrap-local-20261004/workflow-snapshot.json",
+      "sha256": "28d3d5665b04689aa2f10c070de54f9522c94a90a95443d4f853794fc8272df2"
+    },
+    {
+      "path": "data/demo/dataset.json",
+      "sha256": "e56f8a40047bd9a3f3063576b63266d783278a2dc2a780f118636e487c7c436d"
+    },
+    {
+      "path": "data/demo/manifest.json",
+      "sha256": "090abd0f195e7bcfaf219bec38656e688ef22ddb2dbeeff2a17dbd2eef46b85e"
+    }
+  ],
+  "checks": [
+    {
+      "name": "mcp-stdio",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/bootstrap-local-20261004/mcp-stdio.txt",
+        "sha256": "865d6575961f075a71e591bb1b7aab430db289ca41916424bdab4c1b546a8bcb"
+      }
+    }
+  ],
+  "models": []
+}

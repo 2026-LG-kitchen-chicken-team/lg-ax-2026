@@ -1,0 +1,28 @@
+name: 모델·비교 실험
+description: 모델/GPU 사용을 실제 성능·비용·오류 근거로 평가합니다.
+title: "[실험] "
+labels: ["experiment"]
+body:
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: 목적·가설·관련 R/E 요구
+    validations:
+      required: true
+  - type: textarea
+    id: protocol
+    attributes:
+      label: 데이터 분리·기준선·지표·반복수·중단 조건
+    validations:
+      required: true
+  - type: textarea
+    id: resources
+    attributes:
+      label: 모델 ID·revision·라이선스·실행 설정·GPU 할당
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 결과·실패·미측정·근거 ID
+      description: 계획치와 실측을 구분하고 불리한 결과도 보존합니다.

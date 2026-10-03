@@ -1,0 +1,42 @@
+{
+  "check_id": "framework_rules_synced",
+  "recorded_by": "Codex within user-authorized PM bootstrap work",
+  "observed_at": "2026-10-03T18:57:36+00:00",
+  "result": "pass",
+  "execution_kind": "deterministic",
+  "observations": [
+    "Current AGENTS.md/CLAUDE.md are identical full contents; equality is not human approval",
+    "Re-executed after authorized LF normalization and current dataset-manifest hash update; original a/b/c and failed d records preserved."
+  ],
+  "limitations": [
+    "Local framework evidence only, not product completion or human PM approval",
+    "Actual remote CI is pending and previous runs are preserved as history"
+  ],
+  "code_versions": [
+    {
+      "path": "scripts/sync_agent_rules.py",
+      "sha256": "599d71a80e54ee9dd0548c647b00764d5d648ea163ba108ee5ad6e637d18f767"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "05baa4e7d77bacac5d85f1062fc0c92988ec50dad553dac9fb54ddf3848c7b07"
+    },
+    {
+      "path": "CLAUDE.md",
+      "sha256": "05baa4e7d77bacac5d85f1062fc0c92988ec50dad553dac9fb54ddf3848c7b07"
+    }
+  ],
+  "checks": [
+    {
+      "name": "rules-synced",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/bootstrap-local-20261004e/rules-synced.txt",
+        "sha256": "b9e74cee31c25e013c178c85d409311ba91ca9a9325d730b964a6e93b2fb22cc"
+      }
+    }
+  ],
+  "models": []
+}

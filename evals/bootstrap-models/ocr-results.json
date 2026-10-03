@@ -1,0 +1,64 @@
+{
+  "status": "executed",
+  "experiment_kind": "bootstrap_korean_textline_ocr",
+  "timestamp_utc": "2026-10-03T18:53:08.527028+00:00",
+  "benchmark_source_sha256": "543197eacafd3a7f88298ff479f7b7c95dfc7845b2a2d518400b92892f79061b",
+  "model": {
+    "model_id": "PaddlePaddle/korean_PP-OCRv5_mobile_rec",
+    "revision": "c02ecaf1f22bfd1c618cce154fd19185b47e663a",
+    "license": "apache-2.0",
+    "source": "https://huggingface.co/PaddlePaddle/korean_PP-OCRv5_mobile_rec",
+    "downloaded_size_bytes": 13885563,
+    "downloaded_weight_files": {
+      "config.json": "c86a49d6301e6c4ff3398a87a2a1926b3521a46e90042833e18bbfa8ba6165c2",
+      "inference.json": "562404e3c590c50c93778d5f0a94df21b47b5ab8f3ea6d47c7f8a7930c3bc844",
+      "inference.pdiparams": "cac3e5f12cf04aaa77f6a5bc704e4e736ef2908476551891d84b41b4e9090462",
+      "inference.yml": "f757fa1c40e99edcf27e9cce879b93eb2a51fa46f5ef39095689b8c37dd75998"
+    }
+  },
+  "device": "cpu",
+  "model_load_seconds": 1.152,
+  "font": "NotoSansCJK-Regular.ttc (system font, not redistributed)",
+  "settings": {
+    "font_px": 42,
+    "cpu_threads": 4,
+    "enable_mkldnn": false
+  },
+  "runtime_versions": {
+    "paddlepaddle": "3.0.0",
+    "paddleocr": "3.2.0",
+    "paddlex": "3.2.0",
+    "pillow": "11.3.0",
+    "numpy": "1.26.4"
+  },
+  "results": [
+    {
+      "image": "evals/bootstrap-models/ocr/korean-text-1.png",
+      "image_sha256": "0c9199b901858287e3a55e9b361d1ac790c144c45e99ac34a6c7a2a3ff958253",
+      "expected": "선반을 분리하기 전에 식품을 모두 옮겨 주세요",
+      "recognized": "선반을 분리하기 전에 식품을 모두 옮겨 주세요",
+      "rec_score": 0.9749295711517334,
+      "character_error_rate": 0.0,
+      "character_error_rate_without_spaces": 0.0,
+      "latency_ms": 304.754,
+      "exact_match": true
+    },
+    {
+      "image": "evals/bootstrap-models/ocr/korean-text-2.png",
+      "image_sha256": "89891c7c2f8f51eb285dbbe5855330067234b5a718c40e7c0322cce7247d8b50",
+      "expected": "전자레인지에 금속 용기를 넣지 마세요",
+      "recognized": "전자레인지에 금속 용기를 넣지 마세요",
+      "rec_score": 0.9813221096992493,
+      "character_error_rate": 0.0,
+      "character_error_rate_without_spaces": 0.0,
+      "latency_ms": 124.031,
+      "exact_match": true
+    }
+  ],
+  "agent_implemented": false,
+  "limits": [
+    "2 clean synthetic Korean text-line images; not held-out OCR accuracy",
+    "No text detection, page layout, tables, scans or document evidence integration tested",
+    "Recognition confidence is model output, not verified semantic accuracy"
+  ]
+}

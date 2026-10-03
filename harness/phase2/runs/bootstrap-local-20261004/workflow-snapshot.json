@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "phase": "phase2",
+  "objective": "신청 PDF의 R01~R28·E01~E03 전체를 실제 Agent·Skill·웹·MCP로 구현하고 독립 평가·재현·2차 제출로 검증한다.",
+  "pm": {
+    "name": "정이량",
+    "account": "jeongiryang",
+    "authority": "2026-10-04 사용자 직접 지정"
+  },
+  "roles": [
+    {
+      "name": "정이량",
+      "account": "jeongiryang",
+      "role": "PM·MCP·통합·재현·제출"
+    },
+    {
+      "name": "황대겸",
+      "account": "unknownamed",
+      "role": "핵심 판단·대조·콘셉트·검사·수정"
+    },
+    {
+      "name": "신진하",
+      "account": "ginaginaring",
+      "role": "자료·제품·근거·기술 조사"
+    },
+    {
+      "name": "최길웅",
+      "account": "choigilung",
+      "role": "기획 검토 웹 작업실"
+    }
+  ],
+  "statuses": [
+    "pending",
+    "ready",
+    "doing",
+    "individual_verified",
+    "pm_review_requested",
+    "pm_approved",
+    "merged",
+    "integration_verified",
+    "done",
+    "blocked",
+    "deferred"
+  ],
+  "execution_kinds": [
+    "deterministic",
+    "fixture",
+    "live_service",
+    "live_model",
+    "live_client"
+  ],
+  "gates": {
+    "setup_framework": [
+      "framework_rules_synced",
+      "framework_contracts_valid",
+      "framework_backlogs_ready",
+      "framework_ci_configured",
+      "local_mcp_smoke"
+    ],
+    "setup_external": [
+      "server_inventory",
+      "model_service_live",
+      "chatgpt_tool_call",
+      "claude_tool_call"
+    ],
+    "setup": [
+      "setup_framework",
+      "setup_external"
+    ],
+    "integration": [
+      "three_products_live",
+      "six_failure_types",
+      "shared_state_auth",
+      "five_skills_replay"
+    ],
+    "evaluation": [
+      "heldout_baseline",
+      "blind_review_metrics"
+    ],
+    "release": [
+      "source_code_zip",
+      "clean_environment_replay",
+      "video_commit_match"
+    ],
+    "submission": [
+      "submission_receipt"
+    ]
+  },
+  "gate_dependencies": {
+    "setup_framework": [],
+    "setup_external": [],
+    "setup": [
+      "setup_framework",
+      "setup_external"
+    ],
+    "integration": [
+      "setup"
+    ],
+    "evaluation": [
+      "integration"
+    ],
+    "release": [
+      "evaluation"
+    ],
+    "submission": [
+      "release"
+    ]
+  },
+  "deadline": {
+    "date": "2026-10-20",
+    "timezone": "Asia/Seoul",
+    "exact_time": null,
+    "submission_channel": null,
+    "unknown": [
+      "정확한 시각",
+      "제출 경로",
+      "파일 용량",
+      "영상 길이",
+      "가산점 세부"
+    ]
+  },
+  "notice": "프레임워크 구조 검증과 외부 환경·참가작 구현 성공을 구분한다. CLI의 actor는 기록이며 계정 인증을 대신하지 않는다."
+}

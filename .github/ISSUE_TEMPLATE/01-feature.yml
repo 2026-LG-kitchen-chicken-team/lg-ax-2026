@@ -1,0 +1,43 @@
+name: 기능 구현
+description: 신청 요구와 검증 가능한 사용자 작업을 연결합니다.
+title: "[기능] "
+labels: ["feature"]
+body:
+  - type: input
+    id: task
+    attributes:
+      label: Phase2 작업 ID
+      placeholder: P2-CORE-002
+    validations:
+      required: true
+  - type: input
+    id: requirements
+    attributes:
+      label: R/E 요구 ID와 담당자
+      placeholder: R09·R15 / 황대겸
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: 기획자의 요청·의도와 실제 산출물
+      description: 명시된 지시와 구현자의 해석을 구분합니다.
+    validations:
+      required: true
+  - type: textarea
+    id: contract
+    attributes:
+      label: 입출력 계약·자료/모델 버전·편집 범위
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 완료 조건·재현 입력·실행/실패 검사
+      description: fixture와 실제 모델·서버·호스트 결과를 구분합니다.
+    validations:
+      required: true
+  - type: textarea
+    id: dependency
+    attributes:
+      label: 의존 작업·근거 ID·다음 Ready 작업

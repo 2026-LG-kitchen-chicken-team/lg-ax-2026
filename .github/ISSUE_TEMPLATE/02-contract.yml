@@ -1,0 +1,29 @@
+name: 공통 계약 변경
+description: 다른 담당자의 입력과 결과에 영향을 주는 변경을 관리합니다.
+title: "[계약] "
+labels: ["contract"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: 기존 버전 → 제안 버전
+    validations:
+      required: true
+  - type: textarea
+    id: diff
+    attributes:
+      label: 변경 이유·이전/이후 형식
+    validations:
+      required: true
+  - type: textarea
+    id: consumers
+    attributes:
+      label: 영향을 받는 API·MCP·웹·자료·Skill
+    validations:
+      required: true
+  - type: textarea
+    id: migration
+    attributes:
+      label: 호환·마이그레이션·소비자 검증·되돌리기
+    validations:
+      required: true

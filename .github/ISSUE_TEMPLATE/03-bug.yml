@@ -1,0 +1,28 @@
+name: 통합 오류
+description: 동일 입력·코드·모델 버전으로 재현하는 오류를 기록합니다.
+title: "[오류] "
+labels: ["bug"]
+body:
+  - type: input
+    id: versions
+    attributes:
+      label: 코드 commit·모델 revision·자료/계약 버전
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 재현 입력·실행 명령·환경
+      description: 비밀번호·키·개인정보를 넣지 않습니다.
+    validations:
+      required: true
+  - type: textarea
+    id: expected_actual
+    attributes:
+      label: 예상 결과·실제 결과·실행 근거
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: 영향 요구 ID·우회 경로·담당자

@@ -1,0 +1,71 @@
+# 2차 개발 시작 안내
+
+2026-10-04 사용자 승인 계획을 단일 저장소 `jeongiryang/lg-ax-2026`에 적용한다. 이 문서는 개발 기반 안내이며 참가작 전체 구현 완료를 뜻하지 않는다.
+
+## 팀이 시작할 곳
+
+| 담당 | 업무 | 첫 Issue | 편집 영역 |
+|---|---|---|---|
+| 정이량 / jeongiryang | PM, 공통 계약, 연결, 통합·검수·병합·제출 | [PM 초기 설정 #17](https://github.com/jeongiryang/lg-ax-2026/issues/17), [실제 연결 #18](https://github.com/jeongiryang/lg-ax-2026/issues/18) | 계약, API/MCP, 하네스, CI, 운영 문서 |
+| 황대겸 / unknownamed | 핵심 판단·대조·콘셉트·검사·수정 | [판단 계약 #7](https://github.com/jeongiryang/lg-ax-2026/issues/7) | 공통 코어의 판단 구현, 관련 Skill·평가 |
+| 신진하 / ginaginaring | 자료 처리·검색·원문 근거·모델 비교 | [세 제품 자료팩 #12](https://github.com/jeongiryang/lg-ax-2026/issues/12) | data, 자료/검색 코어, 모델 서비스·평가 |
+| 최길웅 / choigilung | 웹 기획 작업실·사용자 검토·수정 이력 | [웹 작업실 #23](https://github.com/jeongiryang/lg-ax-2026/issues/23) | apps/web, 웹 검증·사용 안내 |
+
+[고정 운영 Issue #28](https://github.com/jeongiryang/lg-ax-2026/issues/28) · [2차 개발 Project](https://github.com/users/jeongiryang/projects/3).
+모두 자기 `docs/작업기록/{성명}.md`와 `docs/작업근거/{성명}.md`를 읽고 사용자 지시·AI 해석·실제 수행·증빙·다음 행동을 기록한다. 이 초기 설정은 PM의 AI가 수행한 공통 작업이다. 각 팀원이 수행했다고 대신 기록하지 않는다.
+
+## 구조와 공통 계약
+
+- `apps/web`: React·TypeScript·Vite 기획 작업실. 자료 조회와 미구현 분석 상태를 표시한다.
+- `apps/api`: 웹용 Python API. `apps/mcp`: 동일 코어의 읽기 MCP 도구.
+- `packages/core`: 제품·근거 저장/조회와 후속 판단 구현. `packages/contracts`: JSON Schema Draft 2020-12 원본, Python 검증, TypeScript/Ajv 검증.
+- `services/inference`: 연구실 공개 모델 실험/실행 환경. `data/demo`: 합성 냉장고·식기세척기·전자레인지 자료팩.
+- `skills`: 기존 Skill 보존 및 후속 재실행 Skill. `evals`: 실제 모델 비교와 후속 독립 평가.
+- `harness/phase2`: 31개 요구사항·21개 작업·검증 근거·검수/병합/통합 상태. 이전 선정/접수 AtoZ는 역사 상태로 보존한다.
+
+현재 자동 상품기획 판단은 구현하지 않았다. `POST /api/planning-requests`는 `501 NOT_IMPLEMENTED`를 반환하며 고정된 성공 결과를 돌려주지 않는다. 콘셉트·수정 이력 화면도 구현 상태를 분명히 표시한다. 전체 신청서 구현은 #7~#27에서 이어간다.
+
+## 로컬 설치와 실행
+
+Python 3.11과 uv, Node 22 이상 및 npm이 필요하다. Windows 한글 경로에서 editable import는 `dev-mode-exact`를 사용한다. 실행 파일이 Windows 정책에 막히면 아래 Python 모듈 명령을 사용한다. 정책을 변경하지 않는다.
+
+```powershell
+uv sync --locked --dev
+npm ci --prefix apps/web
+uv run python -m lgax_api.server --host 127.0.0.1 --port 18867
+uv run python -m lgax_mcp.server --transport streamable-http --host 127.0.0.1 --port 18866
+npm run dev --prefix apps/web -- --host 127.0.0.1 --port 5173
+```
+
+각 서비스는 별도 터미널에서 실행한다. 웹 http://127.0.0.1:5173 , API http://127.0.0.1:18867/api/bootstrap , MCP http://127.0.0.1:18866/mcp .
+
+```powershell
+uv run python scripts/sync_agent_rules.py --check
+uv run python scripts/check_contracts.py
+uv run python scripts/phase2.py validate
+uv run python -m unittest discover -s tests -v
+uv run python scripts/smoke_mcp.py --transport stdio
+uv run python scripts/smoke_mcp.py --url http://127.0.0.1:18866/mcp
+npm run test --prefix apps/web
+npm run build --prefix apps/web
+```
+
+## 자연어 지시와 개발 하네스
+
+AI는 하네스 키워드 없이 작업 지시를 받으면 담당 패킷을 읽고 실제 작업을 수행한다. 하네스가 AI나 서버를 자동으로 대신 실행하지 않는다.
+
+```powershell
+uv run python scripts/phase2.py status
+uv run python scripts/phase2.py next --member 황대겸
+uv run python scripts/phase2.py packet P2-CORE-001
+uv run python scripts/phase2.py gate setup_framework
+uv run python scripts/phase2.py gate setup_external
+```
+
+준비→개발→개별 검증→PM 검수→실제 병합→병합 후 통합 확인→완료를 구분한다. 상태 명령에 이름을 적는 것은 인증·사람의 승인 증명이 아니다. 실제 GitHub PR·실행 결과·commit을 연결한다. 확장 기능은 필수 31요구와 구분하고 PM 배정 후 시작한다.
+
+## 연결과 제출
+
+공개 읽기 MCP는 `https://eryang-lab.tailb7c3c1.ts.net/lg-ax/mcp`이다. PC 서비스와 Tailscale이 실행 중이어야 한다. 합성자료 조회만 제공하며 개인정보·서버 제어·비용 발생 모델 실행 도구를 공개하지 않는다. ChatGPT/Claude의 실제 호출 여부는 [연결 검증](connections.md)에 기록한다.
+
+공통 요구·모델 revision·근거 계약 변경은 PM에게 영향과 마이그레이션을 먼저 제시한다. 타인 영역이 필요하면 Issue에서 편집 범위를 조정한다. 10/6 오전 컨설팅 일정 확인, 10/20 발표자료·영상·README/Skill 포함 코드 ZIP 준비는 후속 작업이다. 정확한 제출 시각·경로·용량·영상 길이는 공식 확인 전이다.
