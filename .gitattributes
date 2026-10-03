@@ -1,3 +1,5 @@
+# Keep evidence hashes identical across Windows and Linux checkouts.
+* text=auto eol=lf
 # Preserve downloaded source files byte for byte.
 *.md text eol=lf
 *.json text eol=lf
@@ -5,3 +7,7 @@
 *.yml text eol=lf
 자료/공식/** -text -whitespace
 자료/*.html -text -whitespace
+# Execution artifacts are immutable byte records, including failed historical runs.
+harness/phase2/runs/** -text -whitespace
+evals/bootstrap-connections/** -text -whitespace
+evals/bootstrap-models/** -text -whitespace

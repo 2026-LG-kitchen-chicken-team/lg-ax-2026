@@ -1,0 +1,65 @@
+{
+  "stage": "select",
+  "content": {
+    "candidate_id": "RESET_A_EVIDENCE",
+    "rationale": [
+      "샘플·모의 연동을 모두에게 공통 적용한 뒤에도 텍스트·표 중심의 대조와 기획안 수정으로 좁은 업무를 완결할 수 있어 A 선정 유지",
+      "A만 자료 준비가 쉽다는 이유나 B가 실기기를 요구한다는 이유를 사용하지 않음",
+      "폼팩터 A의 비슷한 난도와 연계 B의 줄어든 부담을 인정하며, 큰 난도 격차나 높은 합격 확률을 주장하지 않음"
+    ],
+    "rejected_alternatives": [
+      {
+        "id": "RESET_A_FORM",
+        "reason": "가상 명세를 쓰면 A 상품기획과 비슷한 난도로 내려온다. 형태 도식과 수치 결과를 함께 맞추는 작업이 남음"
+      },
+      {
+        "id": "RESET_A_TECH",
+        "reason": "실시간 기술 수집을 생략할 수 있다. 기술 적용의 타당성은 가상 성능으로 입증할 수 없어 검토 부담이 남음"
+      },
+      {
+        "id": "RESET_B_FLOW",
+        "reason": "샘플과 UI 템플릿으로 작게 구현 가능. 일반 생성 도구와의 중복 설명은 계속 필요"
+      },
+      {
+        "id": "RESET_B_LINK",
+        "reason": "실기기와 실측 시간 수집 부담은 제거. 모의 환경에서도 여러 산출물의 일관성·변경 처리 구현이 남음"
+      },
+      {
+        "id": "RESET_B_POLICY",
+        "reason": "실제 조리 실험을 기본 의무로 두지 않으면 범위를 줄일 수 있다. 개인화 서비스와 구분할 업무 설명은 필요"
+      }
+    ],
+    "uncertainties": [
+      "후보 난도·서류 설득력은 정성적 판단이며 합격 확률·공식 점수가 아니다.",
+      "합성 자료는 시연 동작의 입력이며 실제 고객 수요·기술 효과·실기기 제어 증거가 아니다.",
+      "기존 저장된 코드 실험을 재검토했고 새 모델 호출·샘플 자료집·모의 API 구현은 하지 않았다.",
+      "선정은 기존 위임에 따른 Codex 판단이다. 이번 사용자가 승인한 것은 샘플을 고려하는 방식이며 후보 직접 승인과 구분한다."
+    ],
+    "authority": {
+      "kind": "user_delegation",
+      "instruction": "최종 주제 하나 선정해줘 너가 판단해서 → 1번 2번 진행해; 최신 지시: 구현난이도 쉽고, 1차 서류 합격 한다는 이 두 가지 조건만 비교해서 원점에서 재검토해봐",
+      "selected_by": "Codex",
+      "not_direct_user_approval_of_candidate": true,
+      "scope": "one submission theme and topic; not submission authorization or evidence of completion",
+      "latest_constraint_instruction": "리뷰 확보는 우리가 만든 샘플로 시연할 수 있으며, 다른 후보의 제품 정보·사용자 조건·가전 상태 등에도 같은 원칙을 적용한다."
+    }
+  },
+  "evidence_paths": [
+    "기획/샘플데이터_기준_재검토.md",
+    "docs/대회요건.md",
+    "research/two_axis_reassessment/sources.json",
+    "research/theme_selection/probe_inputs.json",
+    "research/theme_selection/probe_results.json",
+    "research/topic_trial/protocol.md",
+    "research/topic_trial/pilot_outputs.json"
+  ],
+  "review": {
+    "by": "Codex; no independent reviewer",
+    "limitations": [
+      "후보 난도·서류 설득력은 정성적 판단이며 합격 확률·공식 점수가 아니다.",
+      "합성 자료는 시연 동작의 입력이며 실제 고객 수요·기술 효과·실기기 제어 증거가 아니다.",
+      "기존 저장된 코드 실험을 재검토했고 새 모델 호출·샘플 자료집·모의 API 구현은 하지 않았다.",
+      "선정은 기존 위임에 따른 Codex 판단이다. 이번 사용자가 승인한 것은 샘플을 고려하는 방식이며 후보 직접 승인과 구분한다."
+    ]
+  }
+}

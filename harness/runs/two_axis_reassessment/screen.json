@@ -1,0 +1,137 @@
+{
+  "stage": "screen",
+  "content": {
+    "assessments": [
+      {
+        "id": "RESET_A_EVIDENCE",
+        "implementation_difficulty": "낮음~중간",
+        "first_stage_document_persuasiveness": "중상",
+        "rationale": "문제-근거-기능 대조-기획안의 연결을 좁은 범위로 설명할 수 있음",
+        "scale": "relative Codex judgment, not measured probability or official score"
+      },
+      {
+        "id": "RESET_A_FORM",
+        "implementation_difficulty": "중간",
+        "first_stage_document_persuasiveness": "중상",
+        "rationale": "콘셉트는 선명하지만 수치 통과만으로 사용성·형태 타당성을 입증할 수 없음",
+        "scale": "relative Codex judgment, not measured probability or official score"
+      },
+      {
+        "id": "RESET_A_TECH",
+        "implementation_difficulty": "중간~높음",
+        "first_stage_document_persuasiveness": "중간~중상",
+        "rationale": "주목도는 있어도 전용 타당성 자료와 전문 검토 비용이 큼",
+        "scale": "relative Codex judgment, not measured probability or official score"
+      },
+      {
+        "id": "RESET_B_FLOW",
+        "implementation_difficulty": "낮음~중간",
+        "first_stage_document_persuasiveness": "중간",
+        "rationale": "A와 비슷하게 쉬울 수 있으나 Figma Make/LLM 대비 주방 특화 가치 설명이 약함",
+        "scale": "relative Codex judgment, not measured probability or official score"
+      },
+      {
+        "id": "RESET_B_LINK",
+        "implementation_difficulty": "중간~높음",
+        "first_stage_document_persuasiveness": "중상",
+        "rationale": "기획-검사의 역할은 선명하나 최소한의 현실성까지 입증할 자료와 구현물이 많음",
+        "scale": "relative Codex judgment, not measured probability or official score"
+      },
+      {
+        "id": "RESET_B_POLICY",
+        "implementation_difficulty": "중간",
+        "first_stage_document_persuasiveness": "중간",
+        "rationale": "규칙은 단순화할 수 있지만 조리 결과의 적절성을 보일 자료가 필요",
+        "scale": "relative Codex judgment, not measured probability or official score"
+      }
+    ],
+    "shortlist": [
+      "RESET_A_EVIDENCE",
+      "RESET_B_FLOW",
+      "RESET_A_FORM"
+    ],
+    "tradeoffs": [
+      "간단한 B는 A와 비슷하게 쉽지만 특화된 검증 근거가 약함",
+      "형태 A는 직관적인 산출물 대신 구조·사용성 근거 부담",
+      "선정 A도 원자료 선별과 기존 분석 도구 중복의 약점이 있음"
+    ],
+    "official_mapping": [
+      {
+        "id": "RESET_A_EVIDENCE",
+        "theme": "A",
+        "optional_rows": [
+          1,
+          6
+        ],
+        "kitchen_concept": "기존 기능으로 남는 보관·조리·관리의 불편을 줄이는 제품 기능·관리 서비스"
+      },
+      {
+        "id": "RESET_A_FORM",
+        "theme": "A",
+        "optional_rows": [
+          1,
+          2,
+          6
+        ],
+        "kitchen_concept": "공간·접근·수납 요구에 맞는 가전 구조"
+      },
+      {
+        "id": "RESET_A_TECH",
+        "theme": "A",
+        "optional_rows": [
+          3,
+          4,
+          6
+        ],
+        "kitchen_concept": "타산업 기술로 보관·관리 부담을 줄이는 주방 기능"
+      },
+      {
+        "id": "RESET_B_FLOW",
+        "theme": "B",
+        "optional_rows": [
+          1,
+          4,
+          6
+        ],
+        "kitchen_concept": "준비·조리·관리의 안내를 연결하는 키친 경험"
+      },
+      {
+        "id": "RESET_B_LINK",
+        "theme": "B",
+        "optional_rows": [
+          1,
+          4,
+          6
+        ],
+        "kitchen_concept": "가전과 사람이 식사 준비 순서·변경 안내를 공유하는 경험"
+      },
+      {
+        "id": "RESET_B_POLICY",
+        "theme": "B",
+        "optional_rows": [
+          2,
+          4,
+          6
+        ],
+        "kitchen_concept": "공통 조리와 개인별 옵션을 나누는 식사 경험"
+      }
+    ]
+  },
+  "evidence_paths": [
+    "기획/두조건_원점재검토.md",
+    "research/two_axis_reassessment/sources.json",
+    "research/two_axis_reassessment/candidates.json",
+    "research/two_axis_reassessment/assessment.json",
+    "research/two_axis_reassessment/data_access_probe.json",
+    "docs/대회요건.md"
+  ],
+  "review": {
+    "by": "Codex; independent evaluation not performed",
+    "limitations": [
+      "1차 전용 배점·경쟁 팀·합격 확률 미확인; 상대적 기획 판단이다.",
+      "실제 모델·강한 LLM 기준선·현업 사용자 평가 미실행.",
+      "데이터 접근 실험은 비대표적 해외 표본이며 대상 제품군 자료 확보 완료가 아니다.",
+      "선정은 Codex의 위임 실행이며 사용자의 이 후보 직접 승인으로 기록하지 않는다."
+    ]
+  }
+}

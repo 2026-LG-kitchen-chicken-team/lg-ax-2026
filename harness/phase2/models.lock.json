@@ -1,0 +1,332 @@
+{
+  "schema_version": 1,
+  "models": [
+    {
+      "model_id": "BAAI/bge-m3",
+      "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+      "license": "MIT",
+      "source": "https://huggingface.co/BAAI/bge-m3",
+      "revision_kind": "huggingface_commit",
+      "device": "cpu",
+      "status": "executed_bootstrap_candidate",
+      "evidence": "evals/bootstrap-models/retrieval-results.json",
+      "runtime": {
+        "python": "3.11.17",
+        "torch": "2.8.0+cpu",
+        "device": "cpu"
+      },
+      "settings": {
+        "max_length": 256,
+        "batch_size": 8,
+        "embedding": "normalized_cls_dense",
+        "rerank_top": 10,
+        "torch_threads": 4
+      },
+      "observed_resource_usage": {
+        "generation_gpu0_mib": 5672,
+        "protected_existing_gpu1_mib": 18510,
+        "measurements": {
+          "retrieval_query_count": 6,
+          "retrieval_summary": {
+            "bm25_unfiltered": {
+              "recall_at_3": 0.66667,
+              "model_mix_rate_at_3": 0.5,
+              "version_mix_rate_at_3": 0.11111,
+              "latency_ms": 0.83183
+            },
+            "bm25_filtered": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 0.83183
+            },
+            "bge_m3_unfiltered": {
+              "recall_at_3": 0.66667,
+              "model_mix_rate_at_3": 0.33333,
+              "version_mix_rate_at_3": 0.11111,
+              "latency_ms": 161.41983
+            },
+            "bge_m3_filtered": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 161.41983
+            },
+            "bge_m3_filtered_reranker": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 707.38067
+            }
+          },
+          "generation_case_count": 4,
+          "generation_fixture_checks_passed": 4,
+          "generation_latency_ms": {
+            "fridge": 5507.714,
+            "dishwasher": 1171.816,
+            "microwave": 1356.095,
+            "unmentioned_feature": 1214.929
+          },
+          "ocr_case_count": 2,
+          "ocr_exact_matches": 2,
+          "ocr_latency_ms": [
+            304.754,
+            124.031
+          ]
+        }
+      }
+    },
+    {
+      "model_id": "BAAI/bge-reranker-v2-m3",
+      "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+      "license": "Apache-2.0",
+      "source": "https://huggingface.co/BAAI/bge-reranker-v2-m3",
+      "revision_kind": "huggingface_commit",
+      "device": "cpu",
+      "status": "executed_bootstrap_candidate",
+      "evidence": "evals/bootstrap-models/retrieval-results.json",
+      "runtime": {
+        "python": "3.11.17",
+        "torch": "2.8.0+cpu",
+        "device": "cpu"
+      },
+      "settings": {
+        "max_length": 256,
+        "batch_size": 8,
+        "embedding": "normalized_cls_dense",
+        "rerank_top": 10,
+        "torch_threads": 4
+      },
+      "observed_resource_usage": {
+        "generation_gpu0_mib": 5672,
+        "protected_existing_gpu1_mib": 18510,
+        "measurements": {
+          "retrieval_query_count": 6,
+          "retrieval_summary": {
+            "bm25_unfiltered": {
+              "recall_at_3": 0.66667,
+              "model_mix_rate_at_3": 0.5,
+              "version_mix_rate_at_3": 0.11111,
+              "latency_ms": 0.83183
+            },
+            "bm25_filtered": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 0.83183
+            },
+            "bge_m3_unfiltered": {
+              "recall_at_3": 0.66667,
+              "model_mix_rate_at_3": 0.33333,
+              "version_mix_rate_at_3": 0.11111,
+              "latency_ms": 161.41983
+            },
+            "bge_m3_filtered": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 161.41983
+            },
+            "bge_m3_filtered_reranker": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 707.38067
+            }
+          },
+          "generation_case_count": 4,
+          "generation_fixture_checks_passed": 4,
+          "generation_latency_ms": {
+            "fridge": 5507.714,
+            "dishwasher": 1171.816,
+            "microwave": 1356.095,
+            "unmentioned_feature": 1214.929
+          },
+          "ocr_case_count": 2,
+          "ocr_exact_matches": 2,
+          "ocr_latency_ms": [
+            304.754,
+            124.031
+          ]
+        }
+      }
+    },
+    {
+      "model_id": "qwen3:8b",
+      "revision": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "revision_kind": "ollama_manifest_digest",
+      "size_bytes": 5225388164,
+      "quantization": "Q4_K_M",
+      "parameter_size": "8.2B",
+      "license": "Apache-2.0",
+      "license_text_sha256": "d18a5cc71b84bc4af394a31116bd3932b42241de70c77d2b76d69a314ec8aa12",
+      "upstream": "https://huggingface.co/Qwen/Qwen3-8B",
+      "device": "cuda:0",
+      "status": "executed_bootstrap_candidate",
+      "evidence": "evals/bootstrap-models/generation-results.json",
+      "runtime": {
+        "ollama": "0.34.0",
+        "device": "cuda:0"
+      },
+      "settings": {
+        "think": false,
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 4096,
+        "num_predict": 512
+      },
+      "observed_resource_usage": {
+        "generation_gpu0_mib": 5672,
+        "protected_existing_gpu1_mib": 18510,
+        "measurements": {
+          "retrieval_query_count": 6,
+          "retrieval_summary": {
+            "bm25_unfiltered": {
+              "recall_at_3": 0.66667,
+              "model_mix_rate_at_3": 0.5,
+              "version_mix_rate_at_3": 0.11111,
+              "latency_ms": 0.83183
+            },
+            "bm25_filtered": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 0.83183
+            },
+            "bge_m3_unfiltered": {
+              "recall_at_3": 0.66667,
+              "model_mix_rate_at_3": 0.33333,
+              "version_mix_rate_at_3": 0.11111,
+              "latency_ms": 161.41983
+            },
+            "bge_m3_filtered": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 161.41983
+            },
+            "bge_m3_filtered_reranker": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 707.38067
+            }
+          },
+          "generation_case_count": 4,
+          "generation_fixture_checks_passed": 4,
+          "generation_latency_ms": {
+            "fridge": 5507.714,
+            "dishwasher": 1171.816,
+            "microwave": 1356.095,
+            "unmentioned_feature": 1214.929
+          },
+          "ocr_case_count": 2,
+          "ocr_exact_matches": 2,
+          "ocr_latency_ms": [
+            304.754,
+            124.031
+          ]
+        }
+      }
+    },
+    {
+      "model_id": "PaddlePaddle/korean_PP-OCRv5_mobile_rec",
+      "revision": "c02ecaf1f22bfd1c618cce154fd19185b47e663a",
+      "license": "Apache-2.0",
+      "source": "https://huggingface.co/PaddlePaddle/korean_PP-OCRv5_mobile_rec",
+      "downloaded_size_bytes": 13885563,
+      "downloaded_weight_files": {
+        "config.json": "c86a49d6301e6c4ff3398a87a2a1926b3521a46e90042833e18bbfa8ba6165c2",
+        "inference.json": "562404e3c590c50c93778d5f0a94df21b47b5ab8f3ea6d47c7f8a7930c3bc844",
+        "inference.pdiparams": "cac3e5f12cf04aaa77f6a5bc704e4e736ef2908476551891d84b41b4e9090462",
+        "inference.yml": "f757fa1c40e99edcf27e9cce879b93eb2a51fa46f5ef39095689b8c37dd75998"
+      },
+      "revision_kind": "huggingface_commit",
+      "device": "cpu",
+      "status": "executed_bootstrap_candidate",
+      "evidence": "evals/bootstrap-models/ocr-results.json",
+      "runtime": {
+        "python": "3.11.17",
+        "paddlepaddle": "3.0.0",
+        "paddleocr": "3.2.0",
+        "paddlex": "3.2.0",
+        "pillow": "11.3.0",
+        "numpy": "1.26.4",
+        "device": "cpu"
+      },
+      "settings": {
+        "font_px": 42,
+        "cpu_threads": 4,
+        "enable_mkldnn": false
+      },
+      "observed_resource_usage": {
+        "generation_gpu0_mib": 5672,
+        "protected_existing_gpu1_mib": 18510,
+        "measurements": {
+          "retrieval_query_count": 6,
+          "retrieval_summary": {
+            "bm25_unfiltered": {
+              "recall_at_3": 0.66667,
+              "model_mix_rate_at_3": 0.5,
+              "version_mix_rate_at_3": 0.11111,
+              "latency_ms": 0.83183
+            },
+            "bm25_filtered": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 0.83183
+            },
+            "bge_m3_unfiltered": {
+              "recall_at_3": 0.66667,
+              "model_mix_rate_at_3": 0.33333,
+              "version_mix_rate_at_3": 0.11111,
+              "latency_ms": 161.41983
+            },
+            "bge_m3_filtered": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 161.41983
+            },
+            "bge_m3_filtered_reranker": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 707.38067
+            }
+          },
+          "generation_case_count": 4,
+          "generation_fixture_checks_passed": 4,
+          "generation_latency_ms": {
+            "fridge": 5507.714,
+            "dishwasher": 1171.816,
+            "microwave": 1356.095,
+            "unmentioned_feature": 1214.929
+          },
+          "ocr_case_count": 2,
+          "ocr_exact_matches": 2,
+          "ocr_latency_ms": [
+            304.754,
+            124.031
+          ]
+        }
+      }
+    }
+  ],
+  "status": "executed_bootstrap_candidates",
+  "required_when_live": [
+    "model_id",
+    "revision",
+    "license",
+    "runtime",
+    "settings",
+    "observed_resource_usage"
+  ],
+  "note": "Actual fixed-revision candidate executions; not Agent completion or production model selection.",
+  "manifest": {
+    "path": "evals/bootstrap-models/models-manifest.json",
+    "sha256": "921adf4644555e9ac8aeb31453d6615501a86104e44045d0eefcb15a6907331e"
+  },
+  "production_adoption_decided": false
+}

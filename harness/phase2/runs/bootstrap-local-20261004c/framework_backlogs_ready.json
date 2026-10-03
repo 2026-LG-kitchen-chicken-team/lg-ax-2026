@@ -1,0 +1,69 @@
+{
+  "check_id": "framework_backlogs_ready",
+  "recorded_by": "Codex within user-authorized PM bootstrap work",
+  "observed_at": "2026-10-03T18:47:22+00:00",
+  "result": "pass",
+  "execution_kind": "deterministic",
+  "observations": [
+    "21 actual linked tasks and31 requirements; all4 have ready required work; two proposals remain inactive"
+  ],
+  "limitations": [
+    "Local framework evidence only, not product completion or human PM approval",
+    "Actual remote CI is pending and previous runs are preserved as history"
+  ],
+  "code_versions": [
+    {
+      "path": "scripts/phase2.py",
+      "sha256": "5542dcad0e59ecc1af3337351a213fa216f8432440870d62fc5e568116c8e949"
+    },
+    {
+      "path": "tests/test_phase2.py",
+      "sha256": "d3a76b24931c19588606a4940007af10646286e1c41fc93eaa7c79dd76af5163"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "harness/phase2/runs/bootstrap-local-20261004c/requirements-snapshot.json",
+      "sha256": "aa8050b4da52db8e7f40ace4f989c57dd164d0f06223486130251ad389240a55"
+    },
+    {
+      "path": "harness/phase2/runs/bootstrap-local-20261004c/workflow-snapshot.json",
+      "sha256": "28d3d5665b04689aa2f10c070de54f9522c94a90a95443d4f853794fc8272df2"
+    },
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "sha256": "aab5fabdbc3cadea6cf3de292cb2408d865f9796e233320fde277a0233472bcc"
+    },
+    {
+      "path": "data/demo/dataset.json",
+      "sha256": "e56f8a40047bd9a3f3063576b63266d783278a2dc2a780f118636e487c7c436d"
+    },
+    {
+      "path": "data/demo/manifest.json",
+      "sha256": "090abd0f195e7bcfaf219bec38656e688ef22ddb2dbeeff2a17dbd2eef46b85e"
+    },
+    {
+      "path": "harness/phase2/runs/bootstrap-local-20261004c/github-snapshot.json",
+      "sha256": "307ac88152355bec1e57092cff2dc9f88f87646cdb4c6a0a6c516a1e729c15fe"
+    },
+    {
+      "path": "harness/phase2/tasks/P2-DATA-005.json",
+      "sha256": "d0f48a21d278b815188b176c23f31e0668ff17330ee1b4c914b6637eba7091c7"
+    },
+    {
+      "path": "harness/phase2/tasks/P2-WEB-005.json",
+      "sha256": "d882804fbf26d46512729ea59a022f99984715732cb840dd2443f109ca78e874"
+    }
+  ],
+  "checks": [
+    {
+      "name": "current backlog and inactive-extension assertions",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/bootstrap-local-20261004c/backlog-check.txt",
+        "sha256": "31f407a302ec79bb975448b98de9f73245849daf2102200a4312b1c8a3f698b6"
+      }
+    }
+  ],
+  "models": []
+}

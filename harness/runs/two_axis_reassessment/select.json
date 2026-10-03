@@ -1,0 +1,63 @@
+{
+  "stage": "select",
+  "content": {
+    "candidate_id": "RESET_A_EVIDENCE",
+    "rationale": [
+      "텍스트·표·조회·검사 중심으로 최소 업무 완주 범위가 작다",
+      "불편→기존 기능 대조→개선 콘셉트의 근거 연결을 제안서에서 설명하기 쉽다",
+      "자료 선별 비용을 인정한 제한된 첫 구현으로 약속을 통제한다"
+    ],
+    "rejected_alternatives": [
+      {
+        "id": "RESET_A_FORM",
+        "reason": "콘셉트는 선명하지만 수치 통과만으로 사용성·형태 타당성을 입증할 수 없음"
+      },
+      {
+        "id": "RESET_A_TECH",
+        "reason": "주목도는 있어도 전용 타당성 자료와 전문 검토 비용이 큼"
+      },
+      {
+        "id": "RESET_B_FLOW",
+        "reason": "A와 비슷하게 쉬울 수 있으나 Figma Make/LLM 대비 주방 특화 가치 설명이 약함"
+      },
+      {
+        "id": "RESET_B_LINK",
+        "reason": "기획-검사의 역할은 선명하나 최소한의 현실성까지 입증할 자료와 구현물이 많음"
+      },
+      {
+        "id": "RESET_B_POLICY",
+        "reason": "규칙은 단순화할 수 있지만 조리 결과의 적절성을 보일 자료가 필요"
+      }
+    ],
+    "uncertainties": [
+      "1차 전용 배점·경쟁 팀·합격 확률 미확인; 상대적 기획 판단이다.",
+      "실제 모델·강한 LLM 기준선·현업 사용자 평가 미실행.",
+      "데이터 접근 실험은 비대표적 해외 표본이며 대상 제품군 자료 확보 완료가 아니다.",
+      "선정은 Codex의 위임 실행이며 사용자의 이 후보 직접 승인으로 기록하지 않는다."
+    ],
+    "authority": {
+      "kind": "user_delegation",
+      "instruction": "최종 주제 하나 선정해줘 너가 판단해서 → 1번 2번 진행해; 최신 지시: 구현난이도 쉽고, 1차 서류 합격 한다는 이 두 가지 조건만 비교해서 원점에서 재검토해봐",
+      "selected_by": "Codex",
+      "not_direct_user_approval_of_candidate": true,
+      "scope": "one submission theme and topic; not submission authorization or evidence of completion"
+    }
+  },
+  "evidence_paths": [
+    "기획/두조건_원점재검토.md",
+    "research/two_axis_reassessment/sources.json",
+    "research/two_axis_reassessment/candidates.json",
+    "research/two_axis_reassessment/assessment.json",
+    "research/two_axis_reassessment/data_access_probe.json",
+    "docs/대회요건.md"
+  ],
+  "review": {
+    "by": "Codex; independent evaluation not performed",
+    "limitations": [
+      "1차 전용 배점·경쟁 팀·합격 확률 미확인; 상대적 기획 판단이다.",
+      "실제 모델·강한 LLM 기준선·현업 사용자 평가 미실행.",
+      "데이터 접근 실험은 비대표적 해외 표본이며 대상 제품군 자료 확보 완료가 아니다.",
+      "선정은 Codex의 위임 실행이며 사용자의 이 후보 직접 승인으로 기록하지 않는다."
+    ]
+  }
+}

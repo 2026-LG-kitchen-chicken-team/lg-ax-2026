@@ -1,0 +1,141 @@
+{
+  "check_id": "local_mcp_smoke",
+  "recorded_by": "Codex within user-authorized PM bootstrap work",
+  "observed_at": "2026-10-03T18:39:58+00:00",
+  "result": "pass",
+  "execution_kind": "live_service",
+  "observations": [
+    "Actual stdio MCP initialize/list/call passed after core document-version guard fix"
+  ],
+  "limitations": [
+    "Local development readiness only; no product completion, host UI, market or actual GitHub CI claim",
+    "Previous bootstrap-local-20261004 outputs preserved as history; a changed source required this new run"
+  ],
+  "code_versions": [
+    {
+      "path": "apps/api/src/lgax_api/__init__.py",
+      "sha256": "52f6b2d68c0942f14c547de7d996a832cff0aec2da6c9620f908a19639b3c13e"
+    },
+    {
+      "path": "apps/api/src/lgax_api/server.py",
+      "sha256": "698ad5461a246685b3e60e4b2027dc6ad3615b771e30bd241e6e72a8a0e566e3"
+    },
+    {
+      "path": "apps/mcp/src/lgax_mcp/__init__.py",
+      "sha256": "563da2b7d1a76c6fa70e3a1fa70b884c0aba825addce511ff7cd5f9c82dafabd"
+    },
+    {
+      "path": "apps/mcp/src/lgax_mcp/server.py",
+      "sha256": "a9a37314850569506aba32bff6b0585022f578d103163e96407682175850258e"
+    },
+    {
+      "path": "packages/contracts/src/lgax_contracts/__init__.py",
+      "sha256": "b96b5c730ef30272ade0804e239e08a54ca06c07da6053e6400c3948f1897efd"
+    },
+    {
+      "path": "packages/contracts/src/lgax_contracts/validation.py",
+      "sha256": "a7a244b042a6cd69cc973171526938189bebbb8e6b0e762e1d55409295f70826"
+    },
+    {
+      "path": "packages/core/src/lgax_core/__init__.py",
+      "sha256": "c6a157cc20ad9f057548201a233a0b45d5d7817561bb91c68802f009d563e4a3"
+    },
+    {
+      "path": "packages/core/src/lgax_core/errors.py",
+      "sha256": "0e56b28514892fc717529a068ce315ae5d5a9ed85b3f40df101be86bc4f32847"
+    },
+    {
+      "path": "packages/core/src/lgax_core/store.py",
+      "sha256": "211f2dcd55ad28d8273175e5d9410df99aecf64b69338e76ac1b67e5d757ee38"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "47433f6bcd288f55a6120f2875582375f25f2cd5122a404fab00f8117ed53a43"
+    },
+    {
+      "path": "scripts/check_contracts.py",
+      "sha256": "de1e1c635f6d57bf597b76534b2f3dd55de3ef49cfec34f648e840beb147fdd6"
+    },
+    {
+      "path": "scripts/phase2.py",
+      "sha256": "05096c0a4b71029e7a611cc698706bf80922435b75bf2e1c525c35fe9892bdd5"
+    },
+    {
+      "path": "scripts/smoke_mcp.py",
+      "sha256": "521ff32b2db613970e868188d221efc4b3d758ec02b49e53138922389f6e4afd"
+    },
+    {
+      "path": "tests/test_ax_workflow.py",
+      "sha256": "c1a703a1572400e7054c9ecc907e818ae32d0b741e0b8eb2cb647291db9fd729"
+    },
+    {
+      "path": "tests/test_contracts.py",
+      "sha256": "0aa705c377f6ebef2310b4473263da0c93c016666daa9918a73d09d230528531"
+    },
+    {
+      "path": "tests/test_core.py",
+      "sha256": "d81edfddda104c38114eb75b24a863edd837c12e1391602375f43e46c9fcf2dc"
+    },
+    {
+      "path": "tests/test_finalist_probe.py",
+      "sha256": "f131f546abdd026084c8f346ebfd3770377b83c1e86ba6be5b12eb31f6f694b8"
+    },
+    {
+      "path": "tests/test_harness.py",
+      "sha256": "80e340ef6d33acb2ea9c335afa13f15e8f6c26e688420364792b2bd64abf8030"
+    },
+    {
+      "path": "tests/test_mcp.py",
+      "sha256": "28d1875e8a921e45f137ebb33f97818fa73e5b9aba3f4d23bfd6586eeb889641"
+    },
+    {
+      "path": "tests/test_phase2.py",
+      "sha256": "2e98fac2c69e96ed46aefed79bb8240a757fafdecf9c0edbc90651bfe982a4fb"
+    },
+    {
+      "path": "tests/test_scenario_spike.py",
+      "sha256": "2aca4c03d061a154dd8fe9af8c61428cac42917fb11caab5114b62d6da018dd1"
+    },
+    {
+      "path": "tests/test_topic_trial.py",
+      "sha256": "f8791058c64235e3db3ae18e37f0c972ca0cf58938f5813c546311518bcf8c1a"
+    },
+    {
+      "path": "uv.lock",
+      "sha256": "5a4604fca47f39e78f3679f7c4a68ac306b0d708ab4b8d391b54f71126b58e6b"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "harness/phase2/runs/bootstrap-local-20261004b/workflow-snapshot.json",
+      "sha256": "28d3d5665b04689aa2f10c070de54f9522c94a90a95443d4f853794fc8272df2"
+    },
+    {
+      "path": "harness/phase2/runs/bootstrap-local-20261004b/requirements-snapshot.json",
+      "sha256": "aa8050b4da52db8e7f40ace4f989c57dd164d0f06223486130251ad389240a55"
+    },
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "sha256": "aab5fabdbc3cadea6cf3de292cb2408d865f9796e233320fde277a0233472bcc"
+    },
+    {
+      "path": "data/demo/dataset.json",
+      "sha256": "e56f8a40047bd9a3f3063576b63266d783278a2dc2a780f118636e487c7c436d"
+    },
+    {
+      "path": "data/demo/manifest.json",
+      "sha256": "090abd0f195e7bcfaf219bec38656e688ef22ddb2dbeeff2a17dbd2eef46b85e"
+    }
+  ],
+  "checks": [
+    {
+      "name": "mcp-stdio",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/bootstrap-local-20261004b/mcp-stdio.txt",
+        "sha256": "865d6575961f075a71e591bb1b7aab430db289ca41916424bdab4c1b546a8bcb"
+      }
+    }
+  ],
+  "models": []
+}

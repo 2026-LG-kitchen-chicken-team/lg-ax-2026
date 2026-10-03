@@ -1,0 +1,58 @@
+{
+  "stage": "brief",
+  "content": {
+    "objective": "구현 난도와 1차 서류 설득력의 두 조건을 유지하되 모든 후보에 자체 제작 샘플·가상 명세·모의 연동을 공통 적용하여 기존 비교와 선정 근거를 보정한다.",
+    "constraints": [
+      "가용 PC·웹, 실기기·ThinQ·기업 자료 필수 가정 금지",
+      "두 축 외 별도 가점 금지; A/B 모두 최소 구현 비교",
+      "첫 구현은 좁게, 주제 전체를 특정 가전으로 고정하지 않음",
+      "오늘 접수 목표 유지; 실제 접수는 미완료",
+      "리뷰 확보는 우리가 만든 샘플로 시연할 수 있으며, 다른 후보의 제품 정보·사용자 조건·가전 상태 등에도 같은 원칙을 적용한다.",
+      "직접 만든 리뷰를 실제 소비자 통계로, 모의 API를 실가전 제어로 보고하지 않음"
+    ],
+    "unknowns": [
+      "후보 난도·서류 설득력은 정성적 판단이며 합격 확률·공식 점수가 아니다.",
+      "합성 자료는 시연 동작의 입력이며 실제 고객 수요·기술 효과·실기기 제어 증거가 아니다.",
+      "기존 저장된 코드 실험을 재검토했고 새 모델 호출·샘플 자료집·모의 API 구현은 하지 않았다.",
+      "선정은 기존 위임에 따른 Codex 판단이다. 이번 사용자가 승인한 것은 샘플을 고려하는 방식이며 후보 직접 승인과 구분한다."
+    ],
+    "success_criteria": [
+      "여섯 후보에 샘플/모의 입력의 같은 완화 적용",
+      "실제로 구현할 생성·검사·수정 업무로 난도 재평가",
+      "기존 주제 유지/변경과 사용자 방법 정정을 구분해 기록"
+    ],
+    "demo_policy": {
+      "instruction": "리뷰 확보는 우리가 만든 샘플로 시연할 수 있으며, 다른 후보의 제품 정보·사용자 조건·가전 상태 등에도 같은 원칙을 적용한다.",
+      "applies_to": "all Theme A/B candidates",
+      "default_demo_inputs": "curated or synthetic fixtures, virtual product specifications, mocked device/API states",
+      "must_execute": [
+        "retrieval over supplied fixtures",
+        "actual analysis and calculations",
+        "validation and revision when input changes"
+      ],
+      "evidence_separation": [
+        "synthetic demo/test inputs",
+        "real problem and effect evidence"
+      ],
+      "automatic_collection_or_real_device_required": false
+    }
+  },
+  "evidence_paths": [
+    "기획/샘플데이터_기준_재검토.md",
+    "docs/대회요건.md",
+    "research/two_axis_reassessment/sources.json",
+    "research/theme_selection/probe_inputs.json",
+    "research/theme_selection/probe_results.json",
+    "research/topic_trial/protocol.md",
+    "research/topic_trial/pilot_outputs.json"
+  ],
+  "review": {
+    "by": "Codex; no independent reviewer",
+    "limitations": [
+      "후보 난도·서류 설득력은 정성적 판단이며 합격 확률·공식 점수가 아니다.",
+      "합성 자료는 시연 동작의 입력이며 실제 고객 수요·기술 효과·실기기 제어 증거가 아니다.",
+      "기존 저장된 코드 실험을 재검토했고 새 모델 호출·샘플 자료집·모의 API 구현은 하지 않았다.",
+      "선정은 기존 위임에 따른 Codex 판단이다. 이번 사용자가 승인한 것은 샘플을 고려하는 방식이며 후보 직접 승인과 구분한다."
+    ]
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "recorded_by": "Codex within user-authorized PM bootstrap work",
+  "observed_at": "2026-10-03T19:24:42+00:00",
+  "result": "pass",
+  "source_versions": [
+    {
+      "path": "evals/bootstrap-models/input-dataset.json",
+      "sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0"
+    },
+    {
+      "path": "evals/bootstrap-models/input-queries.json",
+      "sha256": "e0d82f8aaf0169c300995c1bac86342bfa5d5a7c436727413703e91b9c63ff3f"
+    }
+  ],
+  "limitations": [
+    "Tiny synthetic fixtures; no market demand, general accuracy or user benefit conclusion",
+    "BM25 with model/version filters matched dense/reranker recall; no embedding superiority established",
+    "BGE CPU dense normalized CLS only; sparse/multi-vector and GPU throughput not tested",
+    "Qwen Ollama digest identifies the quantized distribution, not an upstream HF commit",
+    "OCR text-line recognition only; document detection/layout/table/PDF ingestion not implemented",
+    "API loopback boundary is not authentication; requires access controls before shared/public integration",
+    "No submitted 5-Skill, 31-requirement workflow or 3-case end-to-end completion claim"
+  ],
+  "check_id": "server_inventory",
+  "execution_kind": "live_service",
+  "code_versions": [
+    {
+      "path": "services/inference/server_inventory.py",
+      "sha256": "e106e9cc93b9511bbe76b985f01146b85110d7d2f80bb414ed34c582f5f68368"
+    },
+    {
+      "path": "services/inference/server.py",
+      "sha256": "8ae9d68fe1a9f19ba0235e688ca8ddb2873a622cfe9b7d749065edbb085a3490"
+    }
+  ],
+  "models": [],
+  "observations": [
+    "Actual Ubuntu lab connection, four A6000 GPUs, disk/runtime inventory and dedicated loopback API confirmed; existing service preserved"
+  ],
+  "checks": [
+    {
+      "name": "actual lab observation: server-inventory.json",
+      "passed": true,
+      "evidence": {
+        "path": "evals/bootstrap-models/server-inventory.json",
+        "sha256": "1140f562edaa95636749469a1a4c12e132d5752c19996a9fe29f78b0f1cbd676"
+      }
+    },
+    {
+      "name": "actual lab observation: service-smoke.json",
+      "passed": true,
+      "evidence": {
+        "path": "evals/bootstrap-models/service-smoke.json",
+        "sha256": "2b9ff9c137fe35687b58e1e0f23c1590526f101cda1851743dcb0fedff0f3020"
+      }
+    },
+    {
+      "name": "actual lab observation: launcher-verified/launcher-execution.json",
+      "passed": true,
+      "evidence": {
+        "path": "evals/bootstrap-models/launcher-verified/launcher-execution.json",
+        "sha256": "ad6fd4ed9d11947759782498b6e28715841b095db261bd651ab7026af42095eb"
+      }
+    }
+  ]
+}

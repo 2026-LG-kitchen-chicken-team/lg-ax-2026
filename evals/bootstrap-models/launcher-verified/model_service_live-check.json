@@ -1,0 +1,457 @@
+{
+  "recorded_by": "Codex within user-authorized PM bootstrap work",
+  "observed_at": "2026-10-03T19:24:42+00:00",
+  "result": "pass",
+  "source_versions": [
+    {
+      "path": "evals/bootstrap-models/input-dataset.json",
+      "sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0"
+    },
+    {
+      "path": "evals/bootstrap-models/input-queries.json",
+      "sha256": "e0d82f8aaf0169c300995c1bac86342bfa5d5a7c436727413703e91b9c63ff3f"
+    }
+  ],
+  "limitations": [
+    "Tiny synthetic fixtures; no market demand, general accuracy or user benefit conclusion",
+    "BM25 with model/version filters matched dense/reranker recall; no embedding superiority established",
+    "BGE CPU dense normalized CLS only; sparse/multi-vector and GPU throughput not tested",
+    "Qwen Ollama digest identifies the quantized distribution, not an upstream HF commit",
+    "OCR text-line recognition only; document detection/layout/table/PDF ingestion not implemented",
+    "API loopback boundary is not authentication; requires access controls before shared/public integration",
+    "No submitted 5-Skill, 31-requirement workflow or 3-case end-to-end completion claim"
+  ],
+  "check_id": "model_service_live",
+  "execution_kind": "live_model",
+  "code_versions": [
+    {
+      "path": "scripts/model_benchmark.py",
+      "sha256": "6eff19cdede306f64519da1facfabbf4961e7c84031fce1f314a3479b3707a20"
+    },
+    {
+      "path": "services/inference/server.py",
+      "sha256": "8ae9d68fe1a9f19ba0235e688ca8ddb2873a622cfe9b7d749065edbb085a3490"
+    },
+    {
+      "path": "services/inference/generation_benchmark.py",
+      "sha256": "56d74168207e5d01edd9536f48b78bae5ab8397a9b056f765bafcf3996fcf80b"
+    },
+    {
+      "path": "services/inference/ocr_benchmark.py",
+      "sha256": "543197eacafd3a7f88298ff479f7b7c95dfc7845b2a2d518400b92892f79061b"
+    },
+    {
+      "path": "services/inference/service_smoke.py",
+      "sha256": "6f0be3b0670a5f43654b1490d1e6485ddf4aef4ebccf8e4e7b8bb74272c06c89"
+    },
+    {
+      "path": "services/inference/server_inventory.py",
+      "sha256": "e106e9cc93b9511bbe76b985f01146b85110d7d2f80bb414ed34c582f5f68368"
+    },
+    {
+      "path": "services/inference/lab_setup.sh",
+      "sha256": "249fd6831ee9028a7c1bf96912b42af5a690bf6d962c45fb0fda2bfbdfb2a1eb"
+    },
+    {
+      "path": "services/inference/ocr_setup.sh",
+      "sha256": "98d257b41d98ed004ee4832c44f52d8595d5f20f4ad190d288f5690d7c25e2ec"
+    },
+    {
+      "path": "services/inference/run_lab.sh",
+      "sha256": "8672bc5dbfe0660f68ccd651e0568556cc44a09390b52a6ad8b259e7bf26308d"
+    },
+    {
+      "path": "services/inference/ollama_start.sh",
+      "sha256": "c4aafd80dca7c3fd7c62dd8d10337a87c0cdd22b1f66e0b23637ce8d8b23f57b"
+    },
+    {
+      "path": "services/inference/lab_server_start.sh",
+      "sha256": "cc23843fd796d153921f6470589b8482a7648f812c197071711a88f9bcb8804a"
+    },
+    {
+      "path": "services/inference/launcher_guard.py",
+      "sha256": "b9e6d993009494ffb3fcf4e3d95dfee0322a3bddcd83a545a17be8c0e05c5198"
+    },
+    {
+      "path": "services/inference/test_launcher_guard.py",
+      "sha256": "38fd7c8a1c9ee1d002d18e2ad512cc95669f9fbab8973f89f775e20da1dc5d6d"
+    },
+    {
+      "path": "services/inference/build_manifest.py",
+      "sha256": "3e25108f9e4e2fb0f99d53189badf3ee8f1c18e6d2a0c74c31b37ccca8ade631"
+    },
+    {
+      "path": "services/inference/requirements-cpu.txt",
+      "sha256": "2ce69fcee7cf6a9b19bef44bc7d56ea01508297759b2352a910a1191711624c1"
+    }
+  ],
+  "models": [
+    {
+      "model_id": "BAAI/bge-m3",
+      "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+      "license": "MIT",
+      "source": "https://huggingface.co/BAAI/bge-m3",
+      "revision_kind": "huggingface_commit",
+      "device": "cpu",
+      "status": "executed_bootstrap_candidate",
+      "evidence": "evals/bootstrap-models/retrieval-results.json",
+      "runtime": {
+        "python": "3.11.17",
+        "torch": "2.8.0+cpu",
+        "device": "cpu"
+      },
+      "settings": {
+        "max_length": 256,
+        "batch_size": 8,
+        "embedding": "normalized_cls_dense",
+        "rerank_top": 10,
+        "torch_threads": 4
+      },
+      "observed_resource_usage": {
+        "generation_gpu0_mib": 5672,
+        "protected_existing_gpu1_mib": 18510,
+        "measurements": {
+          "retrieval_query_count": 6,
+          "retrieval_summary": {
+            "bm25_unfiltered": {
+              "recall_at_3": 0.66667,
+              "model_mix_rate_at_3": 0.5,
+              "version_mix_rate_at_3": 0.11111,
+              "latency_ms": 0.83183
+            },
+            "bm25_filtered": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 0.83183
+            },
+            "bge_m3_unfiltered": {
+              "recall_at_3": 0.66667,
+              "model_mix_rate_at_3": 0.33333,
+              "version_mix_rate_at_3": 0.11111,
+              "latency_ms": 161.41983
+            },
+            "bge_m3_filtered": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 161.41983
+            },
+            "bge_m3_filtered_reranker": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 707.38067
+            }
+          },
+          "generation_case_count": 4,
+          "generation_fixture_checks_passed": 4,
+          "generation_latency_ms": {
+            "fridge": 5507.714,
+            "dishwasher": 1171.816,
+            "microwave": 1356.095,
+            "unmentioned_feature": 1214.929
+          },
+          "ocr_case_count": 2,
+          "ocr_exact_matches": 2,
+          "ocr_latency_ms": [
+            304.754,
+            124.031
+          ]
+        }
+      }
+    },
+    {
+      "model_id": "BAAI/bge-reranker-v2-m3",
+      "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+      "license": "Apache-2.0",
+      "source": "https://huggingface.co/BAAI/bge-reranker-v2-m3",
+      "revision_kind": "huggingface_commit",
+      "device": "cpu",
+      "status": "executed_bootstrap_candidate",
+      "evidence": "evals/bootstrap-models/retrieval-results.json",
+      "runtime": {
+        "python": "3.11.17",
+        "torch": "2.8.0+cpu",
+        "device": "cpu"
+      },
+      "settings": {
+        "max_length": 256,
+        "batch_size": 8,
+        "embedding": "normalized_cls_dense",
+        "rerank_top": 10,
+        "torch_threads": 4
+      },
+      "observed_resource_usage": {
+        "generation_gpu0_mib": 5672,
+        "protected_existing_gpu1_mib": 18510,
+        "measurements": {
+          "retrieval_query_count": 6,
+          "retrieval_summary": {
+            "bm25_unfiltered": {
+              "recall_at_3": 0.66667,
+              "model_mix_rate_at_3": 0.5,
+              "version_mix_rate_at_3": 0.11111,
+              "latency_ms": 0.83183
+            },
+            "bm25_filtered": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 0.83183
+            },
+            "bge_m3_unfiltered": {
+              "recall_at_3": 0.66667,
+              "model_mix_rate_at_3": 0.33333,
+              "version_mix_rate_at_3": 0.11111,
+              "latency_ms": 161.41983
+            },
+            "bge_m3_filtered": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 161.41983
+            },
+            "bge_m3_filtered_reranker": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 707.38067
+            }
+          },
+          "generation_case_count": 4,
+          "generation_fixture_checks_passed": 4,
+          "generation_latency_ms": {
+            "fridge": 5507.714,
+            "dishwasher": 1171.816,
+            "microwave": 1356.095,
+            "unmentioned_feature": 1214.929
+          },
+          "ocr_case_count": 2,
+          "ocr_exact_matches": 2,
+          "ocr_latency_ms": [
+            304.754,
+            124.031
+          ]
+        }
+      }
+    },
+    {
+      "model_id": "qwen3:8b",
+      "revision": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "revision_kind": "ollama_manifest_digest",
+      "size_bytes": 5225388164,
+      "quantization": "Q4_K_M",
+      "parameter_size": "8.2B",
+      "license": "Apache-2.0",
+      "license_text_sha256": "d18a5cc71b84bc4af394a31116bd3932b42241de70c77d2b76d69a314ec8aa12",
+      "upstream": "https://huggingface.co/Qwen/Qwen3-8B",
+      "device": "cuda:0",
+      "status": "executed_bootstrap_candidate",
+      "evidence": "evals/bootstrap-models/generation-results.json",
+      "runtime": {
+        "ollama": "0.34.0",
+        "device": "cuda:0"
+      },
+      "settings": {
+        "think": false,
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 4096,
+        "num_predict": 512
+      },
+      "observed_resource_usage": {
+        "generation_gpu0_mib": 5672,
+        "protected_existing_gpu1_mib": 18510,
+        "measurements": {
+          "retrieval_query_count": 6,
+          "retrieval_summary": {
+            "bm25_unfiltered": {
+              "recall_at_3": 0.66667,
+              "model_mix_rate_at_3": 0.5,
+              "version_mix_rate_at_3": 0.11111,
+              "latency_ms": 0.83183
+            },
+            "bm25_filtered": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 0.83183
+            },
+            "bge_m3_unfiltered": {
+              "recall_at_3": 0.66667,
+              "model_mix_rate_at_3": 0.33333,
+              "version_mix_rate_at_3": 0.11111,
+              "latency_ms": 161.41983
+            },
+            "bge_m3_filtered": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 161.41983
+            },
+            "bge_m3_filtered_reranker": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 707.38067
+            }
+          },
+          "generation_case_count": 4,
+          "generation_fixture_checks_passed": 4,
+          "generation_latency_ms": {
+            "fridge": 5507.714,
+            "dishwasher": 1171.816,
+            "microwave": 1356.095,
+            "unmentioned_feature": 1214.929
+          },
+          "ocr_case_count": 2,
+          "ocr_exact_matches": 2,
+          "ocr_latency_ms": [
+            304.754,
+            124.031
+          ]
+        }
+      }
+    },
+    {
+      "model_id": "PaddlePaddle/korean_PP-OCRv5_mobile_rec",
+      "revision": "c02ecaf1f22bfd1c618cce154fd19185b47e663a",
+      "license": "Apache-2.0",
+      "source": "https://huggingface.co/PaddlePaddle/korean_PP-OCRv5_mobile_rec",
+      "downloaded_size_bytes": 13885563,
+      "downloaded_weight_files": {
+        "config.json": "c86a49d6301e6c4ff3398a87a2a1926b3521a46e90042833e18bbfa8ba6165c2",
+        "inference.json": "562404e3c590c50c93778d5f0a94df21b47b5ab8f3ea6d47c7f8a7930c3bc844",
+        "inference.pdiparams": "cac3e5f12cf04aaa77f6a5bc704e4e736ef2908476551891d84b41b4e9090462",
+        "inference.yml": "f757fa1c40e99edcf27e9cce879b93eb2a51fa46f5ef39095689b8c37dd75998"
+      },
+      "revision_kind": "huggingface_commit",
+      "device": "cpu",
+      "status": "executed_bootstrap_candidate",
+      "evidence": "evals/bootstrap-models/ocr-results.json",
+      "runtime": {
+        "python": "3.11.17",
+        "paddlepaddle": "3.0.0",
+        "paddleocr": "3.2.0",
+        "paddlex": "3.2.0",
+        "pillow": "11.3.0",
+        "numpy": "1.26.4",
+        "device": "cpu"
+      },
+      "settings": {
+        "font_px": 42,
+        "cpu_threads": 4,
+        "enable_mkldnn": false
+      },
+      "observed_resource_usage": {
+        "generation_gpu0_mib": 5672,
+        "protected_existing_gpu1_mib": 18510,
+        "measurements": {
+          "retrieval_query_count": 6,
+          "retrieval_summary": {
+            "bm25_unfiltered": {
+              "recall_at_3": 0.66667,
+              "model_mix_rate_at_3": 0.5,
+              "version_mix_rate_at_3": 0.11111,
+              "latency_ms": 0.83183
+            },
+            "bm25_filtered": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 0.83183
+            },
+            "bge_m3_unfiltered": {
+              "recall_at_3": 0.66667,
+              "model_mix_rate_at_3": 0.33333,
+              "version_mix_rate_at_3": 0.11111,
+              "latency_ms": 161.41983
+            },
+            "bge_m3_filtered": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 161.41983
+            },
+            "bge_m3_filtered_reranker": {
+              "recall_at_3": 1.0,
+              "model_mix_rate_at_3": 0.0,
+              "version_mix_rate_at_3": 0.0,
+              "latency_ms": 707.38067
+            }
+          },
+          "generation_case_count": 4,
+          "generation_fixture_checks_passed": 4,
+          "generation_latency_ms": {
+            "fridge": 5507.714,
+            "dishwasher": 1171.816,
+            "microwave": 1356.095,
+            "unmentioned_feature": 1214.929
+          },
+          "ocr_case_count": 2,
+          "ocr_exact_matches": 2,
+          "ocr_latency_ms": [
+            304.754,
+            124.031
+          ]
+        }
+      }
+    }
+  ],
+  "observations": [
+    "Actual fixed-revision BGE-M3/reranker/BM25 six-query comparison, Qwen four structured cases and Korean OCR two text lines executed",
+    "Filtered BM25 and dense/reranker recall@3=1.0 on this tiny synthetic sample; no dense superiority established",
+    "Qwen fixture predicates four of four and OCR exact text two of two passed; not full Agent evaluation"
+  ],
+  "checks": [
+    {
+      "name": "actual lab observation: retrieval-results.json",
+      "passed": true,
+      "evidence": {
+        "path": "evals/bootstrap-models/retrieval-results.json",
+        "sha256": "56a95da1b7a5bcce7c8a5e6627a65c6d8ae177d32f019075baefad11eb5e22d4"
+      }
+    },
+    {
+      "name": "actual lab observation: generation-results.json",
+      "passed": true,
+      "evidence": {
+        "path": "evals/bootstrap-models/generation-results.json",
+        "sha256": "e9b4940d04b7782f37c503eb2fff484574d35db08254201c398031f8a8e79e49"
+      }
+    },
+    {
+      "name": "actual lab observation: ocr-results.json",
+      "passed": true,
+      "evidence": {
+        "path": "evals/bootstrap-models/ocr-results.json",
+        "sha256": "26674ad88ac550186de87155a950fc7045e9f7a12489305edb55fd07c85614c8"
+      }
+    },
+    {
+      "name": "actual lab observation: service-smoke.json",
+      "passed": true,
+      "evidence": {
+        "path": "evals/bootstrap-models/service-smoke.json",
+        "sha256": "2b9ff9c137fe35687b58e1e0f23c1590526f101cda1851743dcb0fedff0f3020"
+      }
+    },
+    {
+      "name": "actual lab observation: models-manifest.json",
+      "passed": true,
+      "evidence": {
+        "path": "evals/bootstrap-models/models-manifest.json",
+        "sha256": "921adf4644555e9ac8aeb31453d6615501a86104e44045d0eefcb15a6907331e"
+      }
+    },
+    {
+      "name": "actual lab observation: launcher-verified/launcher-execution.json",
+      "passed": true,
+      "evidence": {
+        "path": "evals/bootstrap-models/launcher-verified/launcher-execution.json",
+        "sha256": "ad6fd4ed9d11947759782498b6e28715841b095db261bd651ab7026af42095eb"
+      }
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "check_id": "claude_tool_call",
+  "recorded_by": "Codex within directly authorized PM bootstrap work",
+  "observed_at": "2026-10-03T18:53:47+00:00",
+  "result": "pass",
+  "execution_kind": "live_client",
+  "conversation_url": "https://claude.ai/chat/00575822-2612-405f-9158-e326a381fb99",
+  "endpoint": "https://eryang-lab.tailb7c3c1.ts.net/lg-ax/mcp",
+  "observations": [
+    "Actual account connector discovery and three tool calls observed in browser and MCP server logs",
+    "list_products returns five synthetic product models",
+    "search_evidence(q=청소, model_id=FRIDGE-A, document_version=1.0, limit=3) returns three items, total four",
+    "get_evidence(MANUAL-001) returns FRIDGE-A, version 1.0, page 1, section 선반 분리 with source text matching dataset",
+    "Claude calls used one-time approval; ChatGPT personal plugin selected in conversation"
+  ],
+  "limitations": [
+    "Synthetic read-only evidence; actual planning judgment/concept/revision Agent is not implemented",
+    "User account test only; not proof of all teammate accounts or marketplace distribution",
+    "Public path currently depends on this PC and running Tailscale/MCP service"
+  ],
+  "code_versions": [
+    {
+      "path": "apps/mcp/src/lgax_mcp/server.py",
+      "sha256": "a9a37314850569506aba32bff6b0585022f578d103163e96407682175850258e"
+    },
+    {
+      "path": "packages/core/src/lgax_core/store.py",
+      "sha256": "211f2dcd55ad28d8273175e5d9410df99aecf64b69338e76ac1b67e5d757ee38"
+    },
+    {
+      "path": "uv.lock",
+      "sha256": "5a4604fca47f39e78f3679f7c4a68ac306b0d708ab4b8d391b54f71126b58e6b"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "data/demo/dataset.json",
+      "sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0"
+    },
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "sha256": "31f864a91a42e08c3ddcdb8d2a70f04e437cce4c56bc77e94163da048cfb283f"
+    }
+  ],
+  "models": [],
+  "checks": [
+    {
+      "name": "actual browser account tool calls and output observation",
+      "passed": true,
+      "evidence": {
+        "path": "evals/bootstrap-connections/claude-observed.txt",
+        "sha256": "b2f3475b1f1e36a87bee70776c6b92dcbd85a8e0d56af40dc1d1859356a4823b"
+      }
+    },
+    {
+      "name": "final account result screenshot",
+      "passed": true,
+      "evidence": {
+        "path": "evals/bootstrap-connections/claude.png",
+        "sha256": "a40659fa80694b19f7f1034ea663e419119e4910758676bd6a7cb22a6fc73d18"
+      }
+    }
+  ]
+}

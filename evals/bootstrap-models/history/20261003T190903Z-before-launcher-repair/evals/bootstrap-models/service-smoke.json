@@ -1,0 +1,75 @@
+{
+  "status": "passed",
+  "timestamp_utc": "2026-10-03T18:53:40.992408+00:00",
+  "benchmark_source_sha256": "6f0be3b0670a5f43654b1490d1e6485ddf4aef4ebccf8e4e7b8bb74272c06c89",
+  "endpoint": "loopback:18865",
+  "checks": {
+    "health": {
+      "status_code": 200,
+      "body": {
+        "service": "lgax-private-lab",
+        "generation_status": "ready",
+        "models": [
+          "qwen3:8b"
+        ],
+        "expected_model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+        "source_sha256": "8ae9d68fe1a9f19ba0235e688ca8ddb2873a622cfe9b7d749065edbb085a3490",
+        "agent_implemented": false,
+        "access_boundary": "loopback-only",
+        "authentication": "not_configured",
+        "public_mcp_connected": false
+      },
+      "latency_ms": 41.313
+    },
+    "retrieval_results": {
+      "status_code": 200,
+      "body": {
+        "status": "executed",
+        "experiment_kind": "bootstrap_synthetic_retrieval",
+        "query_count": 6,
+        "dataset_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0"
+      },
+      "latency_ms": 6.362
+    },
+    "generation": {
+      "status_code": 200,
+      "body": {
+        "model": "qwen3:8b",
+        "response": "전자레인지",
+        "done": true,
+        "verified_model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+        "prompt_eval_count": 30,
+        "eval_count": 4,
+        "total_duration_ns": 180968737,
+        "agent_implemented": false
+      },
+      "latency_ms": 189.321
+    },
+    "invalid_prompt": {
+      "status_code": 422,
+      "body": {
+        "detail": [
+          {
+            "type": "string_too_short",
+            "loc": [
+              "body",
+              "prompt"
+            ],
+            "msg": "String should have at least 1 character",
+            "input": "",
+            "ctx": {
+              "min_length": 1
+            }
+          }
+        ]
+      },
+      "latency_ms": 1.327
+    }
+  },
+  "authentication": "not_configured",
+  "agent_implemented": false,
+  "limits": [
+    "Private transport/readiness/input validation smoke only",
+    "No public MCP connection or 31-requirement Agent coverage"
+  ]
+}

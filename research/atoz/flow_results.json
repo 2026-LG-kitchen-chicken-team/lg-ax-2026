@@ -1,0 +1,133 @@
+{
+  "mode": "Codex_authored_and_revised_graphs_with_executed_python_audit",
+  "not_measured": [
+    "standalone model API",
+    "held-out generation quality",
+    "physical device behavior",
+    "real user benefit"
+  ],
+  "results": [
+    {
+      "id": "oven_remote_request",
+      "before": [
+        "confirm:timeout:wrong_outcome",
+        "request:offline:missing_branch",
+        "request:timeout:wrong_outcome",
+        "wait:unreachable"
+      ],
+      "after": [],
+      "traces": [
+        {
+          "events": [
+            "confirmed",
+            "ack"
+          ],
+          "expected": "done",
+          "actual": {
+            "status": "done",
+            "path": [
+              "confirm",
+              "request",
+              "done"
+            ]
+          }
+        },
+        {
+          "events": [
+            "confirmed",
+            "offline"
+          ],
+          "expected": "pending",
+          "actual": {
+            "status": "pending",
+            "path": [
+              "confirm",
+              "request",
+              "wait"
+            ]
+          }
+        },
+        {
+          "events": [
+            "confirmed",
+            "timeout"
+          ],
+          "expected": "pending",
+          "actual": {
+            "status": "pending",
+            "path": [
+              "confirm",
+              "request",
+              "wait"
+            ]
+          }
+        },
+        {
+          "events": [
+            "timeout"
+          ],
+          "expected": "pending",
+          "actual": {
+            "status": "pending",
+            "path": [
+              "confirm",
+              "wait"
+            ]
+          }
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "fridge_status_unknown",
+      "before": [
+        "query:offline:wrong_outcome",
+        "query:unknown:wrong_outcome",
+        "wait:unreachable"
+      ],
+      "after": [],
+      "traces": [
+        {
+          "events": [
+            "known"
+          ],
+          "expected": "done",
+          "actual": {
+            "status": "done",
+            "path": [
+              "query",
+              "done"
+            ]
+          }
+        },
+        {
+          "events": [
+            "offline"
+          ],
+          "expected": "pending",
+          "actual": {
+            "status": "pending",
+            "path": [
+              "query",
+              "wait"
+            ]
+          }
+        },
+        {
+          "events": [
+            "unknown"
+          ],
+          "expected": "pending",
+          "actual": {
+            "status": "pending",
+            "path": [
+              "query",
+              "wait"
+            ]
+          }
+        }
+      ],
+      "pass": true
+    }
+  ]
+}

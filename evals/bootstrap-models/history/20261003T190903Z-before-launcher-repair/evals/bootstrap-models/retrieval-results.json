@@ -1,0 +1,481 @@
+{
+  "status": "executed",
+  "experiment_kind": "bootstrap_synthetic_retrieval",
+  "timestamp_utc": "2026-10-03T18:53:11.346337+00:00",
+  "benchmark_source_sha256": "6eff19cdede306f64519da1facfabbf4961e7c84031fce1f314a3479b3707a20",
+  "device": "cpu",
+  "torch_threads": 4,
+  "torch_version": "2.8.0+cpu",
+  "transformers_version": "4.57.1",
+  "models": [
+    {
+      "model_id": "BAAI/bge-m3",
+      "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+      "license": "mit",
+      "source": "https://huggingface.co/BAAI/bge-m3"
+    },
+    {
+      "model_id": "BAAI/bge-reranker-v2-m3",
+      "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+      "license": "apache-2.0",
+      "source": "https://huggingface.co/BAAI/bge-reranker-v2-m3"
+    }
+  ],
+  "settings": {
+    "max_length": 256,
+    "batch_size": 8,
+    "embedding": "normalized_cls_dense",
+    "rerank_top": 10
+  },
+  "dataset_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+  "queries_sha256": "e0d82f8aaf0169c300995c1bac86342bfa5d5a7c436727413703e91b9c63ff3f",
+  "model_load_seconds": {
+    "embedding": 3.248,
+    "reranker": 0.866
+  },
+  "index_seconds": 2.063,
+  "query_count": 6,
+  "summary": {
+    "bm25_unfiltered": {
+      "recall_at_3": 0.66667,
+      "model_mix_rate_at_3": 0.5,
+      "version_mix_rate_at_3": 0.11111,
+      "latency_ms": 0.83183
+    },
+    "bm25_filtered": {
+      "recall_at_3": 1.0,
+      "model_mix_rate_at_3": 0.0,
+      "version_mix_rate_at_3": 0.0,
+      "latency_ms": 0.83183
+    },
+    "bge_m3_unfiltered": {
+      "recall_at_3": 0.66667,
+      "model_mix_rate_at_3": 0.33333,
+      "version_mix_rate_at_3": 0.11111,
+      "latency_ms": 161.41983
+    },
+    "bge_m3_filtered": {
+      "recall_at_3": 1.0,
+      "model_mix_rate_at_3": 0.0,
+      "version_mix_rate_at_3": 0.0,
+      "latency_ms": 161.41983
+    },
+    "bge_m3_filtered_reranker": {
+      "recall_at_3": 1.0,
+      "model_mix_rate_at_3": 0.0,
+      "version_mix_rate_at_3": 0.0,
+      "latency_ms": 707.38067
+    }
+  },
+  "results": [
+    {
+      "query": {
+        "id": "Q1",
+        "query": "냉장고를 청소할 때 선반을 꺼내려면 음식부터 모두 옮겨야 하나요?",
+        "model_id": "FRIDGE-A",
+        "document_version": "1.0",
+        "relevant_evidence_ids": [
+          "MANUAL-001"
+        ]
+      },
+      "methods": {
+        "bm25_unfiltered": {
+          "recall_at_3": 0.0,
+          "model_mix_rate_at_3": 0.6666666666666666,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-005",
+            "REVIEW-EVIDENCE-015",
+            "REVIEW-EVIDENCE-025"
+          ],
+          "latency_ms": 1.042
+        },
+        "bm25_filtered": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-005",
+            "MANUAL-001",
+            "REVIEW-EVIDENCE-003"
+          ],
+          "latency_ms": 1.042
+        },
+        "bge_m3_unfiltered": {
+          "recall_at_3": 0.0,
+          "model_mix_rate_at_3": 0.6666666666666666,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-001",
+            "REVIEW-EVIDENCE-011",
+            "REVIEW-EVIDENCE-021"
+          ],
+          "latency_ms": 176.666
+        },
+        "bge_m3_filtered": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-001",
+            "MANUAL-001",
+            "REVIEW-EVIDENCE-009"
+          ],
+          "latency_ms": 176.666
+        },
+        "bge_m3_filtered_reranker": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "MANUAL-001",
+            "REVIEW-EVIDENCE-001",
+            "REVIEW-EVIDENCE-002"
+          ],
+          "latency_ms": 1048.255
+        }
+      }
+    },
+    {
+      "query": {
+        "id": "Q2",
+        "query": "바구니를 씻기 전에 보관한 내용물을 비워야 하는지 확인해 주세요.",
+        "model_id": "FRIDGE-B",
+        "document_version": "1.0",
+        "relevant_evidence_ids": [
+          "MANUAL-002"
+        ]
+      },
+      "methods": {
+        "bm25_unfiltered": {
+          "recall_at_3": 0.0,
+          "model_mix_rate_at_3": 1.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "MANUAL-001",
+            "REVIEW-EVIDENCE-031",
+            "REVIEW-EVIDENCE-005"
+          ],
+          "latency_ms": 0.806
+        },
+        "bm25_filtered": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-015",
+            "MANUAL-002",
+            "REVIEW-EVIDENCE-011"
+          ],
+          "latency_ms": 0.806
+        },
+        "bge_m3_unfiltered": {
+          "recall_at_3": 0.0,
+          "model_mix_rate_at_3": 0.6666666666666666,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-005",
+            "REVIEW-EVIDENCE-015",
+            "REVIEW-EVIDENCE-025"
+          ],
+          "latency_ms": 178.359
+        },
+        "bge_m3_filtered": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-015",
+            "MANUAL-002",
+            "REVIEW-EVIDENCE-019"
+          ],
+          "latency_ms": 178.359
+        },
+        "bge_m3_filtered_reranker": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-015",
+            "MANUAL-002",
+            "REVIEW-EVIDENCE-019"
+          ],
+          "latency_ms": 967.41
+        }
+      }
+    },
+    {
+      "query": {
+        "id": "Q3",
+        "query": "수납 구역 표시가 있으면 선반 탈착 방법도 제공된다고 봐도 되나요?",
+        "model_id": "FRIDGE-C",
+        "document_version": "1.0",
+        "relevant_evidence_ids": [
+          "MANUAL-003"
+        ]
+      },
+      "methods": {
+        "bm25_unfiltered": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.6666666666666666,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "MANUAL-003",
+            "REVIEW-EVIDENCE-003",
+            "REVIEW-EVIDENCE-013"
+          ],
+          "latency_ms": 0.73
+        },
+        "bm25_filtered": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "MANUAL-003",
+            "REVIEW-EVIDENCE-023",
+            "REVIEW-EVIDENCE-024"
+          ],
+          "latency_ms": 0.73
+        },
+        "bge_m3_unfiltered": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.3333333333333333,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "MANUAL-003",
+            "REVIEW-EVIDENCE-014",
+            "REVIEW-EVIDENCE-024"
+          ],
+          "latency_ms": 158.037
+        },
+        "bge_m3_filtered": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "MANUAL-003",
+            "REVIEW-EVIDENCE-024",
+            "REVIEW-EVIDENCE-022"
+          ],
+          "latency_ms": 158.037
+        },
+        "bge_m3_filtered_reranker": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "MANUAL-003",
+            "REVIEW-EVIDENCE-024",
+            "REVIEW-EVIDENCE-030"
+          ],
+          "latency_ms": 901.026
+        }
+      }
+    },
+    {
+      "query": {
+        "id": "Q4",
+        "query": "식기세척기에 큰 그릇을 넣을 때 회전하는 날개를 막지 않도록 하는 안내가 있나요?",
+        "model_id": "DISHWASHER-A",
+        "document_version": "1.0",
+        "relevant_evidence_ids": [
+          "MANUAL-004"
+        ]
+      },
+      "methods": {
+        "bm25_unfiltered": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "MANUAL-004",
+            "REVIEW-EVIDENCE-031",
+            "REVIEW-EVIDENCE-033"
+          ],
+          "latency_ms": 0.815
+        },
+        "bm25_filtered": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "MANUAL-004",
+            "REVIEW-EVIDENCE-031",
+            "REVIEW-EVIDENCE-033"
+          ],
+          "latency_ms": 0.815
+        },
+        "bge_m3_unfiltered": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "MANUAL-004",
+            "REVIEW-EVIDENCE-033",
+            "REVIEW-EVIDENCE-031"
+          ],
+          "latency_ms": 151.924
+        },
+        "bge_m3_filtered": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "MANUAL-004",
+            "REVIEW-EVIDENCE-033",
+            "REVIEW-EVIDENCE-031"
+          ],
+          "latency_ms": 151.924
+        },
+        "bge_m3_filtered_reranker": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "MANUAL-004",
+            "REVIEW-EVIDENCE-033",
+            "REVIEW-EVIDENCE-031"
+          ],
+          "latency_ms": 486.929
+        }
+      }
+    },
+    {
+      "query": {
+        "id": "Q5",
+        "query": "전자레인지에서 늘 쓰는 가열 시간과 출력을 기억해 뒀다가 버튼으로 불러올 수 있나요?",
+        "model_id": "MICROWAVE-A",
+        "document_version": "1.0",
+        "relevant_evidence_ids": [
+          "MANUAL-005"
+        ]
+      },
+      "methods": {
+        "bm25_unfiltered": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.3333333333333333,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "MANUAL-005",
+            "REVIEW-EVIDENCE-034",
+            "REVIEW-EVIDENCE-002"
+          ],
+          "latency_ms": 0.81
+        },
+        "bm25_filtered": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "MANUAL-005",
+            "REVIEW-EVIDENCE-034",
+            "REVIEW-EVIDENCE-035"
+          ],
+          "latency_ms": 0.81
+        },
+        "bge_m3_unfiltered": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "MANUAL-005",
+            "REVIEW-EVIDENCE-034",
+            "REVIEW-EVIDENCE-036"
+          ],
+          "latency_ms": 150.617
+        },
+        "bge_m3_filtered": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "MANUAL-005",
+            "REVIEW-EVIDENCE-034",
+            "REVIEW-EVIDENCE-036"
+          ],
+          "latency_ms": 150.617
+        },
+        "bge_m3_filtered_reranker": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "MANUAL-005",
+            "REVIEW-EVIDENCE-034",
+            "REVIEW-EVIDENCE-036"
+          ],
+          "latency_ms": 455.61
+        }
+      }
+    },
+    {
+      "query": {
+        "id": "Q6",
+        "query": "새 냉장고 문서에서 더러워진 부분만 떼어 청소할 수 있는 구조가 추가됐나요?",
+        "model_id": "FRIDGE-A",
+        "document_version": "2.0",
+        "relevant_evidence_ids": [
+          "MANUAL-006"
+        ]
+      },
+      "methods": {
+        "bm25_unfiltered": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.3333333333333333,
+          "version_mix_rate_at_3": 0.6666666666666666,
+          "evidence_ids": [
+            "MANUAL-006",
+            "MANUAL-003",
+            "REVIEW-EVIDENCE-009"
+          ],
+          "latency_ms": 0.788
+        },
+        "bm25_filtered": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "MANUAL-006"
+          ],
+          "latency_ms": 0.788
+        },
+        "bge_m3_unfiltered": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.3333333333333333,
+          "version_mix_rate_at_3": 0.6666666666666666,
+          "evidence_ids": [
+            "MANUAL-006",
+            "REVIEW-EVIDENCE-009",
+            "REVIEW-EVIDENCE-019"
+          ],
+          "latency_ms": 152.916
+        },
+        "bge_m3_filtered": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "MANUAL-006"
+          ],
+          "latency_ms": 152.916
+        },
+        "bge_m3_filtered_reranker": {
+          "recall_at_3": 1.0,
+          "model_mix_rate_at_3": 0.0,
+          "version_mix_rate_at_3": 0.0,
+          "evidence_ids": [
+            "MANUAL-006"
+          ],
+          "latency_ms": 385.054
+        }
+      }
+    }
+  ],
+  "limits": [
+    "6 hand-written synthetic queries; not independent full Agent evaluation",
+    "No claimed market demand or time savings",
+    "Model/version filtering removes mix by policy",
+    "Cold load/download and indexing excluded from query latency",
+    "CPU bootstrap does not demonstrate GPU BGE throughput"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "stage": "design",
+  "content": {
+    "candidate_id": "RESET_A_EVIDENCE",
+    "input_output": "Brief + Review + ProductDocument → Need + Comparison + Concept + Run; 필드·검사 계약은 기획/채택안_Agent설계.md",
+    "tools": [
+      "evidence_lookup",
+      "need_extract",
+      "product_compare",
+      "concept_draft",
+      "review_revision"
+    ],
+    "execution_loop": "계획→조회→구조화→기능 대조→콘셉트→검사→최대 2회 수정→결과/보류. 한 모델, Python 실행기, CSV·텍스트, 웹 UI.",
+    "failure_paths": [
+      "모델/버전 혼동 분리",
+      "원문 부족 보류",
+      "상충 의견 병기",
+      "자료의 지시문 비실행",
+      "API 오류 명시",
+      "상한 초과 결론 보류"
+    ],
+    "evaluation_cases": "독립 12사례×3회/방식. 동일 모델·자료의 강한 단일 프롬프트 기준선. 출처·모델 오류/근거 없는 단정/중복/수정 시간/지연/비용, 팀 내부 평가 한계 명시.",
+    "implementation_backlog": [
+      "샘플과 입력 계약",
+      "실제 모델 조회-대조-기획",
+      "검사·수정·변경 처리",
+      "웹 UI·기록",
+      "독립 평가",
+      "재사용·시연 안내"
+    ]
+  },
+  "evidence_paths": [
+    "기획/채택안_Agent설계.md",
+    "기획/제출제안서_원고.md"
+  ],
+  "review": {
+    "by": "Codex",
+    "limitations": [
+      "설계와 평가 계획이며 모델 연결·샘플 자료집·성능 검증은 아직 실행하지 않음.",
+      "팀별 세부 개발 역할은 미확정."
+    ]
+  }
+}

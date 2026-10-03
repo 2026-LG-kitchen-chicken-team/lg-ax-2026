@@ -1,0 +1,654 @@
+{
+  "execution_mode": "curated_inputs_and_deterministic_skills_no_llm_api",
+  "input_author": "Codex in current conversation; not an independent evaluator",
+  "case_count": 9,
+  "passed": 9,
+  "runs": [
+    {
+      "candidate": "A4",
+      "case": "baseline_real_sources",
+      "output": [
+        {
+          "id": "load_review",
+          "human_task": "큰 식기의 배치와 분사암·투입부 간섭 확인",
+          "concept_seed": "적재 직전 모델별 제약과 사용자 확인을 연결하는 보조 서비스",
+          "decision": "investigate_hypothesis",
+          "source_ids": [
+            "S7"
+          ],
+          "counterevidence": [],
+          "target_coverage": "unverified",
+          "novelty": "not_established",
+          "demand": "unmeasured",
+          "next_validation": "실제 사용자에게 수고·대처 행동을 확인하고 더 넓은 제품 기능 조사"
+        },
+        {
+          "id": "readiness",
+          "human_task": "세척 종료 후 필요한 식기의 상태와 사용 준비 확인",
+          "concept_seed": "기기 종료와 사용자가 확인한 식기 준비 상태를 구분하는 서비스",
+          "decision": "investigate_hypothesis",
+          "source_ids": [
+            "S8"
+          ],
+          "counterevidence": [],
+          "target_coverage": "unverified",
+          "novelty": "not_established",
+          "demand": "unmeasured",
+          "next_validation": "실제 사용자에게 수고·대처 행동을 확인하고 더 넓은 제품 기능 조사"
+        },
+        {
+          "id": "auto_cycle",
+          "human_task": "세척 조건 결정",
+          "concept_seed": "오염도에 따라 세척 조건을 자동 조절하는 기능",
+          "decision": "deprioritize_existing_function",
+          "source_ids": [
+            "S10"
+          ],
+          "counterevidence": [
+            {
+              "feature_id": "lg_senseclean",
+              "source_ids": [
+                "S10"
+              ],
+              "scope": "EU_2026_lineup",
+              "kind": "real_public_announcement"
+            }
+          ],
+          "target_coverage": "unverified",
+          "novelty": "not_established",
+          "demand": "unmeasured",
+          "next_validation": "기존 기능과 다른 추가 가치가 있는지 다시 정의"
+        },
+        {
+          "id": "cycle_notice",
+          "human_task": "기기 종료 시점 확인",
+          "concept_seed": "기기가 끝났을 때 알림을 보내는 기능",
+          "decision": "deprioritize_existing_function",
+          "source_ids": [
+            "S12"
+          ],
+          "counterevidence": [
+            {
+              "feature_id": "bosch_notice",
+              "source_ids": [
+                "S12"
+              ],
+              "scope": "US_bosch_model_dependent",
+              "kind": "real_public_product_page"
+            }
+          ],
+          "target_coverage": "unverified",
+          "novelty": "not_established",
+          "demand": "unmeasured",
+          "next_validation": "기존 기능과 다른 추가 가치가 있는지 다시 정의"
+        }
+      ],
+      "checks": {
+        "existing_cycle_not_new": true,
+        "existing_notification_not_new": true,
+        "remaining_tasks_are_hypotheses": true,
+        "foreign_feature_not_local_support": true
+      },
+      "pass": true
+    },
+    {
+      "candidate": "A4",
+      "case": "synthetic_counterevidence_added",
+      "output": [
+        {
+          "id": "load_review",
+          "human_task": "큰 식기의 배치와 분사암·투입부 간섭 확인",
+          "concept_seed": "적재 직전 모델별 제약과 사용자 확인을 연결하는 보조 서비스",
+          "decision": "deprioritize_existing_function",
+          "source_ids": [
+            "S7"
+          ],
+          "counterevidence": [
+            {
+              "feature_id": "synthetic_loading_feature",
+              "source_ids": [
+                "TEST_ONLY"
+              ],
+              "scope": "KR_unspecified_model",
+              "kind": "synthetic_adversarial_counterexample_not_market_fact"
+            }
+          ],
+          "target_coverage": "listed_in_matching_scope",
+          "novelty": "not_established",
+          "demand": "unmeasured",
+          "next_validation": "기존 기능과 다른 추가 가치가 있는지 다시 정의"
+        },
+        {
+          "id": "readiness",
+          "human_task": "세척 종료 후 필요한 식기의 상태와 사용 준비 확인",
+          "concept_seed": "기기 종료와 사용자가 확인한 식기 준비 상태를 구분하는 서비스",
+          "decision": "investigate_hypothesis",
+          "source_ids": [
+            "S8"
+          ],
+          "counterevidence": [],
+          "target_coverage": "unverified",
+          "novelty": "not_established",
+          "demand": "unmeasured",
+          "next_validation": "실제 사용자에게 수고·대처 행동을 확인하고 더 넓은 제품 기능 조사"
+        },
+        {
+          "id": "auto_cycle",
+          "human_task": "세척 조건 결정",
+          "concept_seed": "오염도에 따라 세척 조건을 자동 조절하는 기능",
+          "decision": "deprioritize_existing_function",
+          "source_ids": [
+            "S10"
+          ],
+          "counterevidence": [
+            {
+              "feature_id": "lg_senseclean",
+              "source_ids": [
+                "S10"
+              ],
+              "scope": "EU_2026_lineup",
+              "kind": "real_public_announcement"
+            }
+          ],
+          "target_coverage": "unverified",
+          "novelty": "not_established",
+          "demand": "unmeasured",
+          "next_validation": "기존 기능과 다른 추가 가치가 있는지 다시 정의"
+        },
+        {
+          "id": "cycle_notice",
+          "human_task": "기기 종료 시점 확인",
+          "concept_seed": "기기가 끝났을 때 알림을 보내는 기능",
+          "decision": "deprioritize_existing_function",
+          "source_ids": [
+            "S12"
+          ],
+          "counterevidence": [
+            {
+              "feature_id": "bosch_notice",
+              "source_ids": [
+                "S12"
+              ],
+              "scope": "US_bosch_model_dependent",
+              "kind": "real_public_product_page"
+            }
+          ],
+          "target_coverage": "unverified",
+          "novelty": "not_established",
+          "demand": "unmeasured",
+          "next_validation": "기존 기능과 다른 추가 가치가 있는지 다시 정의"
+        }
+      ],
+      "checks": {
+        "changes_judgment": true,
+        "scope_preserved": true
+      },
+      "pass": true
+    },
+    {
+      "candidate": "A4",
+      "case": "missing_source",
+      "output": [
+        {
+          "id": "load_review",
+          "human_task": "큰 식기의 배치와 분사암·투입부 간섭 확인",
+          "concept_seed": "적재 직전 모델별 제약과 사용자 확인을 연결하는 보조 서비스",
+          "decision": "hold_missing_evidence",
+          "source_ids": [],
+          "counterevidence": [],
+          "target_coverage": "unverified",
+          "novelty": "not_established",
+          "demand": "unmeasured",
+          "next_validation": "실제 사용자에게 수고·대처 행동을 확인하고 더 넓은 제품 기능 조사"
+        },
+        {
+          "id": "readiness",
+          "human_task": "세척 종료 후 필요한 식기의 상태와 사용 준비 확인",
+          "concept_seed": "기기 종료와 사용자가 확인한 식기 준비 상태를 구분하는 서비스",
+          "decision": "investigate_hypothesis",
+          "source_ids": [
+            "S8"
+          ],
+          "counterevidence": [],
+          "target_coverage": "unverified",
+          "novelty": "not_established",
+          "demand": "unmeasured",
+          "next_validation": "실제 사용자에게 수고·대처 행동을 확인하고 더 넓은 제품 기능 조사"
+        },
+        {
+          "id": "auto_cycle",
+          "human_task": "세척 조건 결정",
+          "concept_seed": "오염도에 따라 세척 조건을 자동 조절하는 기능",
+          "decision": "deprioritize_existing_function",
+          "source_ids": [
+            "S10"
+          ],
+          "counterevidence": [
+            {
+              "feature_id": "lg_senseclean",
+              "source_ids": [
+                "S10"
+              ],
+              "scope": "EU_2026_lineup",
+              "kind": "real_public_announcement"
+            }
+          ],
+          "target_coverage": "unverified",
+          "novelty": "not_established",
+          "demand": "unmeasured",
+          "next_validation": "기존 기능과 다른 추가 가치가 있는지 다시 정의"
+        },
+        {
+          "id": "cycle_notice",
+          "human_task": "기기 종료 시점 확인",
+          "concept_seed": "기기가 끝났을 때 알림을 보내는 기능",
+          "decision": "deprioritize_existing_function",
+          "source_ids": [
+            "S12"
+          ],
+          "counterevidence": [
+            {
+              "feature_id": "bosch_notice",
+              "source_ids": [
+                "S12"
+              ],
+              "scope": "US_bosch_model_dependent",
+              "kind": "real_public_product_page"
+            }
+          ],
+          "target_coverage": "unverified",
+          "novelty": "not_established",
+          "demand": "unmeasured",
+          "next_validation": "기존 기능과 다른 추가 가치가 있는지 다시 정의"
+        }
+      ],
+      "checks": {
+        "abstains": true
+      },
+      "pass": true
+    },
+    {
+      "candidate": "B1",
+      "case": "baseline_synthetic_profile",
+      "output": {
+        "status": "consistent_synthetic_schedule",
+        "before": [],
+        "after": [],
+        "flow": [
+          {
+            "id": "load",
+            "device": "person",
+            "action": "load",
+            "start": 0,
+            "duration": 5
+          },
+          {
+            "id": "wash",
+            "device": "dishwasher",
+            "action": "wash",
+            "start": 5,
+            "duration": 60,
+            "after": [
+              "load"
+            ]
+          },
+          {
+            "id": "confirm",
+            "device": "person",
+            "action": "confirm",
+            "start": 65,
+            "duration": 2,
+            "after": [
+              "wash"
+            ]
+          },
+          {
+            "id": "unload",
+            "device": "person",
+            "action": "unload",
+            "start": 67,
+            "duration": 5,
+            "after": [
+              "confirm"
+            ]
+          }
+        ],
+        "finish": 72,
+        "deadline": 80,
+        "profile_kind": "synthetic_design_profile_not_real_api_support",
+        "limitation": "Neither task durations nor UX usefulness validated on real users or devices."
+      },
+      "checks": {
+        "consistent": true
+      },
+      "pass": true
+    },
+    {
+      "candidate": "B1",
+      "case": "dependency_and_resource_conflict",
+      "output": {
+        "status": "consistent_synthetic_schedule",
+        "before": [
+          "wash+second_wash:resource_overlap",
+          "wash:dependency_not_finished"
+        ],
+        "after": [],
+        "flow": [
+          {
+            "id": "load",
+            "device": "person",
+            "action": "load",
+            "start": 0,
+            "duration": 5
+          },
+          {
+            "id": "wash",
+            "device": "dishwasher",
+            "action": "wash",
+            "start": 5,
+            "duration": 60,
+            "after": [
+              "load"
+            ]
+          },
+          {
+            "id": "confirm",
+            "device": "person",
+            "action": "confirm",
+            "start": 65,
+            "duration": 2,
+            "after": [
+              "wash"
+            ]
+          },
+          {
+            "id": "unload",
+            "device": "person",
+            "action": "unload",
+            "start": 67,
+            "duration": 5,
+            "after": [
+              "confirm"
+            ]
+          },
+          {
+            "id": "second_wash",
+            "device": "dishwasher",
+            "action": "wash",
+            "start": 65,
+            "duration": 5
+          }
+        ],
+        "finish": 72,
+        "deadline": 80,
+        "profile_kind": "synthetic_design_profile_not_real_api_support",
+        "limitation": "Neither task durations nor UX usefulness validated on real users or devices."
+      },
+      "checks": {
+        "detects_conflict": true,
+        "repair_consistent": true
+      },
+      "pass": true
+    },
+    {
+      "candidate": "B1",
+      "case": "capability_removed",
+      "output": {
+        "status": "needs_designer_input",
+        "before": [
+          "wash:unsupported_action"
+        ],
+        "after": [
+          "wash:unsupported_action"
+        ],
+        "flow": [
+          {
+            "id": "load",
+            "device": "person",
+            "action": "load",
+            "start": 0,
+            "duration": 5
+          },
+          {
+            "id": "wash",
+            "device": "dishwasher",
+            "action": "wash",
+            "start": 5,
+            "duration": 60,
+            "after": [
+              "load"
+            ]
+          },
+          {
+            "id": "confirm",
+            "device": "person",
+            "action": "confirm",
+            "start": 65,
+            "duration": 2,
+            "after": [
+              "wash"
+            ]
+          },
+          {
+            "id": "unload",
+            "device": "person",
+            "action": "unload",
+            "start": 67,
+            "duration": 5,
+            "after": [
+              "confirm"
+            ]
+          }
+        ],
+        "profile_kind": "synthetic_design_profile_not_real_api_support"
+      },
+      "checks": {
+        "asks_instead_of_inventing": true
+      },
+      "pass": true
+    },
+    {
+      "candidate": "B5",
+      "case": "cycle_end_readiness_unknown",
+      "output": {
+        "status": "draft_ux_requires_user_validation",
+        "source_ids": [
+          "S8",
+          "S15",
+          "S16"
+        ],
+        "entry": "ask_readiness",
+        "emphasis": "needed_items_first",
+        "ready": false,
+        "nodes": [
+          {
+            "id": "await_cycle",
+            "label": "기기 종료 확인 대기",
+            "next": "ask_readiness"
+          },
+          {
+            "id": "await_user",
+            "label": "사용자 확인 대기",
+            "next": "ask_readiness"
+          },
+          {
+            "id": "ask_readiness",
+            "label": "필요한 식기의 상태를 직접 확인해 주세요",
+            "branches": {
+              "unknown": "await_user",
+              "wet": "user_decides_next_action",
+              "ready": "confirm_storage"
+            }
+          },
+          {
+            "id": "user_decides_next_action",
+            "label": "모델·식기 안내를 확인하고 다음 행동을 선택",
+            "branches": {
+              "defer": "await_user",
+              "recheck": "ask_readiness"
+            }
+          },
+          {
+            "id": "confirm_storage",
+            "label": "사용 준비·정리 완료를 사용자가 확인",
+            "next": "done"
+          },
+          {
+            "id": "done",
+            "label": "사용자가 완료 확인"
+          }
+        ],
+        "unknowns": [
+          "model_specific_guidance"
+        ],
+        "device_commands": [],
+        "event_kind": "synthetic_user_event_not_sensor_measurement",
+        "limitation": "User statements are inputs; no sensor inference, sterilization claim, or measured UX benefit."
+      },
+      "checks": {
+        "cycle_end_not_ready": true,
+        "asks_user": true
+      },
+      "pass": true
+    },
+    {
+      "candidate": "B5",
+      "case": "user_reports_water",
+      "output": {
+        "status": "draft_ux_requires_user_validation",
+        "source_ids": [
+          "S8",
+          "S15",
+          "S16"
+        ],
+        "entry": "user_decides_next_action",
+        "emphasis": "needed_items_first",
+        "ready": false,
+        "nodes": [
+          {
+            "id": "await_cycle",
+            "label": "기기 종료 확인 대기",
+            "next": "ask_readiness"
+          },
+          {
+            "id": "await_user",
+            "label": "사용자 확인 대기",
+            "next": "ask_readiness"
+          },
+          {
+            "id": "ask_readiness",
+            "label": "필요한 식기의 상태를 직접 확인해 주세요",
+            "branches": {
+              "unknown": "await_user",
+              "wet": "user_decides_next_action",
+              "ready": "confirm_storage"
+            }
+          },
+          {
+            "id": "user_decides_next_action",
+            "label": "모델·식기 안내를 확인하고 다음 행동을 선택",
+            "branches": {
+              "defer": "await_user",
+              "recheck": "ask_readiness"
+            }
+          },
+          {
+            "id": "confirm_storage",
+            "label": "사용 준비·정리 완료를 사용자가 확인",
+            "next": "done"
+          },
+          {
+            "id": "done",
+            "label": "사용자가 완료 확인"
+          }
+        ],
+        "unknowns": [
+          "model_specific_guidance"
+        ],
+        "device_commands": [],
+        "event_kind": "synthetic_user_event_not_sensor_measurement",
+        "limitation": "User statements are inputs; no sensor inference, sterilization claim, or measured UX benefit."
+      },
+      "checks": {
+        "does_not_force_ready": true,
+        "retains_model_unknown": true,
+        "no_invented_device_action": true
+      },
+      "pass": true
+    },
+    {
+      "candidate": "B5",
+      "case": "goal_changed_user_absent",
+      "output": {
+        "status": "draft_ux_requires_user_validation",
+        "source_ids": [
+          "S8",
+          "S15",
+          "S16"
+        ],
+        "entry": "await_user",
+        "emphasis": "later_review",
+        "ready": false,
+        "nodes": [
+          {
+            "id": "await_cycle",
+            "label": "기기 종료 확인 대기",
+            "next": "ask_readiness"
+          },
+          {
+            "id": "await_user",
+            "label": "사용자 확인 대기",
+            "next": "ask_readiness"
+          },
+          {
+            "id": "ask_readiness",
+            "label": "필요한 식기의 상태를 직접 확인해 주세요",
+            "branches": {
+              "unknown": "await_user",
+              "wet": "user_decides_next_action",
+              "ready": "confirm_storage"
+            }
+          },
+          {
+            "id": "user_decides_next_action",
+            "label": "모델·식기 안내를 확인하고 다음 행동을 선택",
+            "branches": {
+              "defer": "await_user",
+              "recheck": "ask_readiness"
+            }
+          },
+          {
+            "id": "confirm_storage",
+            "label": "사용 준비·정리 완료를 사용자가 확인",
+            "next": "done"
+          },
+          {
+            "id": "done",
+            "label": "사용자가 완료 확인"
+          }
+        ],
+        "unknowns": [
+          "model_specific_guidance"
+        ],
+        "device_commands": [],
+        "event_kind": "synthetic_user_event_not_sensor_measurement",
+        "limitation": "User statements are inputs; no sensor inference, sterilization claim, or measured UX benefit."
+      },
+      "checks": {
+        "changes_flow_emphasis": true,
+        "unanswered_remains_pending": true
+      },
+      "pass": true
+    }
+  ],
+  "limitations": [
+    "Development probes, not a model benchmark or held-out evaluation",
+    "Passing rules does not establish demand, novelty or commercial value",
+    "No model cost, latency, generation accuracy or device measurements"
+  ],
+  "input_sha256": {
+    "research/topic_trial/pilot_inputs.json": "5a7345621dc147becff3489937dc8c4c406dc1cc43aca64041b446dfb1d41cf9",
+    "research/topic_trial/sources.json": "4e5b24684ba2b4ece2d5a0946afa96358fb6a6e9d5c57a04f7eeb6ba4020fb4a",
+    "scripts/topic_trial.py": "2bd7a9bb4f1b63a7de23843c0e811a4ba25b63bc369930ffc4a6b7ed76414794"
+  }
+}

@@ -1,0 +1,244 @@
+{
+  "schema_version": 1,
+  "checks": [
+    {
+      "id": "framework_rules_synced",
+      "group": "setup_framework",
+      "allowed_execution_kinds": [
+        "deterministic"
+      ],
+      "description": "AGENTS.md·CLAUDE.md 전체 바이트 일치",
+      "evidence": {
+        "path": "harness/phase2/runs/bootstrap-local-20261004e/framework_rules_synced.json",
+        "sha256": "376ee72dbc33222a587701c4cdf8eaa99aa525bb6495b7ad28b34c4c15d33243"
+      },
+      "status": "verified",
+      "block_reason": null
+    },
+    {
+      "id": "framework_contracts_valid",
+      "group": "setup_framework",
+      "allowed_execution_kinds": [
+        "deterministic",
+        "fixture"
+      ],
+      "description": "31요구·계약·상태·스키마 검사",
+      "evidence": {
+        "path": "harness/phase2/runs/bootstrap-local-20261004e/framework_contracts_valid.json",
+        "sha256": "3ef0cab08abe1747c6ba713f55d1d8cccd3e309674ba8c2b2f938ad70e7ee866"
+      },
+      "status": "verified",
+      "block_reason": null
+    },
+    {
+      "id": "framework_backlogs_ready",
+      "group": "setup_framework",
+      "allowed_execution_kinds": [
+        "deterministic"
+      ],
+      "description": "네 담당 Ready 이슈·PM 검수·실제 이슈 링크",
+      "evidence": {
+        "path": "harness/phase2/runs/bootstrap-local-20261004e/framework_backlogs_ready.json",
+        "sha256": "b39ec3fc266d7625639234a2451564dd70a4250ac4a513ee36853b27e99abffb"
+      },
+      "status": "verified",
+      "block_reason": null
+    },
+    {
+      "id": "framework_ci_configured",
+      "group": "setup_framework",
+      "allowed_execution_kinds": [
+        "deterministic"
+      ],
+      "description": "Python·계약·웹 회귀 CI 실제 통과",
+      "evidence": null,
+      "status": "pending",
+      "block_reason": null
+    },
+    {
+      "id": "local_mcp_smoke",
+      "group": "setup_framework",
+      "allowed_execution_kinds": [
+        "live_service"
+      ],
+      "description": "로컬 initialize·tools/list·실제 tool 호출",
+      "evidence": {
+        "path": "harness/phase2/runs/bootstrap-local-20261004e/local_mcp_smoke.json",
+        "sha256": "e1099cc960af1e9b961951eef09fe78a17c79948501f645606bb54ac4b14b217"
+      },
+      "status": "verified",
+      "block_reason": null
+    },
+    {
+      "id": "server_inventory",
+      "group": "setup_external",
+      "allowed_execution_kinds": [
+        "live_service"
+      ],
+      "description": "승인된 연구실 서버 OS/CUDA/GPU·점유·저장·네트워크 확인",
+      "evidence": {
+        "path": "evals/bootstrap-models/launcher-verified/server_inventory-check.json",
+        "sha256": "3a0525c61b1a196b379e7571e869ce084b5892b3f48a907fd1afde096ff4118b"
+      },
+      "status": "verified",
+      "block_reason": null
+    },
+    {
+      "id": "model_service_live",
+      "group": "setup_external",
+      "allowed_execution_kinds": [
+        "live_model"
+      ],
+      "description": "revision 고정 실모델 실행·지연·오류·VRAM 기록",
+      "evidence": {
+        "path": "evals/bootstrap-models/launcher-verified/model_service_live-check.json",
+        "sha256": "81c18b2a2f08b2237a917b1fdb950fedcef12236f9bf5d03ed38f1c8556eb2b7"
+      },
+      "status": "verified",
+      "block_reason": null
+    },
+    {
+      "id": "chatgpt_tool_call",
+      "group": "setup_external",
+      "allowed_execution_kinds": [
+        "live_client"
+      ],
+      "description": "실제 ChatGPT 계정 MCP 도구 발견·호출",
+      "evidence": {
+        "path": "evals/bootstrap-connections/chatgpt-check.json",
+        "sha256": "4a27691b7d368a23e40565dda7e002f81d565c3432478acb43c9ce9363f5b1db"
+      },
+      "status": "verified",
+      "block_reason": null
+    },
+    {
+      "id": "claude_tool_call",
+      "group": "setup_external",
+      "allowed_execution_kinds": [
+        "live_client"
+      ],
+      "description": "실제 Claude 계정 MCP 도구 발견·호출",
+      "evidence": {
+        "path": "evals/bootstrap-connections/claude-check.json",
+        "sha256": "842455bdfbd1d7d91e85033b88cab3cfb7179537ab1b8ee59d237b521e0161b2"
+      },
+      "status": "verified",
+      "block_reason": null
+    },
+    {
+      "id": "three_products_live",
+      "group": "integration",
+      "allowed_execution_kinds": [
+        "live_model"
+      ],
+      "description": "냉장고·식기세척기·전자레인지 실제 실행",
+      "evidence": null,
+      "status": "pending",
+      "block_reason": null
+    },
+    {
+      "id": "six_failure_types",
+      "group": "integration",
+      "allowed_execution_kinds": [
+        "live_model"
+      ],
+      "description": "독립 6유형·최대 2회 수정·보류",
+      "evidence": null,
+      "status": "pending",
+      "block_reason": null
+    },
+    {
+      "id": "shared_state_auth",
+      "group": "integration",
+      "allowed_execution_kinds": [
+        "live_service",
+        "live_client"
+      ],
+      "description": "MCP↔웹 같은 실행·자료·이력·권한",
+      "evidence": null,
+      "status": "pending",
+      "block_reason": null
+    },
+    {
+      "id": "five_skills_replay",
+      "group": "integration",
+      "allowed_execution_kinds": [
+        "live_service",
+        "live_model"
+      ],
+      "description": "5업무 SKILL.md와 다른 입력 재실행",
+      "evidence": null,
+      "status": "pending",
+      "block_reason": null
+    },
+    {
+      "id": "heldout_baseline",
+      "group": "evaluation",
+      "allowed_execution_kinds": [
+        "live_model"
+      ],
+      "description": "독립 사례·같은 모델/자료의 강한 기준선",
+      "evidence": null,
+      "status": "pending",
+      "block_reason": null
+    },
+    {
+      "id": "blind_review_metrics",
+      "group": "evaluation",
+      "allowed_execution_kinds": [
+        "live_model",
+        "live_service"
+      ],
+      "description": "가린 검토·인용·모델오류·중복·수정 시간·토큰·지연·비용",
+      "evidence": null,
+      "status": "pending",
+      "block_reason": null
+    },
+    {
+      "id": "source_code_zip",
+      "group": "release",
+      "allowed_execution_kinds": [
+        "live_service"
+      ],
+      "description": "소스 ZIP·README·Skill·라이선스·모델/자료 버전",
+      "evidence": null,
+      "status": "pending",
+      "block_reason": null
+    },
+    {
+      "id": "clean_environment_replay",
+      "group": "release",
+      "allowed_execution_kinds": [
+        "live_service",
+        "live_model"
+      ],
+      "description": "깨끗한 환경 재실행",
+      "evidence": null,
+      "status": "pending",
+      "block_reason": null
+    },
+    {
+      "id": "video_commit_match",
+      "group": "release",
+      "allowed_execution_kinds": [
+        "deterministic",
+        "live_service"
+      ],
+      "description": "발표·영상과 제출 코드 commit 일치",
+      "evidence": null,
+      "status": "pending",
+      "block_reason": null
+    },
+    {
+      "id": "submission_receipt",
+      "group": "submission",
+      "allowed_execution_kinds": [
+        "live_client"
+      ],
+      "description": "최신 파일 실제 제출·첨부본 대조·시각 증빙",
+      "evidence": null,
+      "status": "pending",
+      "block_reason": null
+    }
+  ]
+}

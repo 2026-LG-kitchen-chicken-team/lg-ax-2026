@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "deadline": "2026-09-28T18:00:00+09:00",
-  "environment": "PC·웹만 사용 가능 (사용자 확인, 2026-09-27)",
+  "environment": "현재 확보: PC·웹. 핵심 Agent 시연은 PC에서 완결; 제안할 가전·서비스 형태를 웹으로 한정하지 않음",
   "sources": [
     {
       "id": "S1",
@@ -90,6 +90,326 @@
       "id": "S11",
       "limitations": "개별 사용자의 니즈 미측정",
       "title": "LG Design for All"
+    },
+    {
+      "id": "S12",
+      "title": "Bosch Home Connect dishwasher",
+      "locator": "https://www.bosch-home.com/us/products/dishwashers/homeconnect/",
+      "checked_at": "2026-09-27",
+      "supports": "Smart Cycle, 세척 종료 후 꺼낼 때를 알리는 푸시 알림, 생활 루틴·예약 기능을 소개한다.",
+      "limitations": "알림만 제공하는 아이디어와의 중복 근거. 모든 모델에 적용하거나 실제 식기 준비 상태를 센서로 보증한다고 해석하지 않음. 범위: US product/app overview; exact functions depend on model"
+    },
+    {
+      "id": "S13",
+      "title": "Dovetail customer experience",
+      "locator": "https://dovetail.com/roles/customer-experience/",
+      "checked_at": "2026-09-27",
+      "supports": "고객 피드백 통합·자동 군집·반복 불만 탐색과 AI 문서 생성을 소개한다.",
+      "limitations": "사용성·우월성 실측 아님. 일반 VOC 요약과 기획 문서 생성만으로는 충분한 차별점이 아님. 범위: vendor product description"
+    },
+    {
+      "id": "S14",
+      "title": "Figma Make official help",
+      "locator": "https://help.figma.com/hc/en-us/articles/31304485164695-Create-a-Figma-Make-file",
+      "checked_at": "2026-09-27",
+      "supports": "자연어로 기능을 갖춘 프로토타입·웹 앱을 만들고 대화를 통해 수정할 수 있다.",
+      "limitations": "일반 화면/흐름 생성과의 중복 근거. 주방 물리 제약까지 검증한다는 뜻은 아님. 범위: vendor help documentation"
+    },
+    {
+      "id": "S15",
+      "title": "LG checking dishware types",
+      "locator": "https://www.lg.com/us/support/help-library/lg-dishwasher-dishes-are-not-clean-after-washing--20155101652263",
+      "checked_at": "2026-09-27",
+      "supports": "식기세척기 사용 가능 식기를 확인하도록 안내하며 일부 재질과 내열 조건을 구분한다.",
+      "limitations": "모든 플라스틱의 허용/금지 판단에 사용하지 않음. 식기 제조사 표시와 해당 기기 설명서 확인 필요. 범위: generic support updated 2026-03-30, model differences explicitly noted"
+    },
+    {
+      "id": "S16",
+      "title": "LG online manual safety instructions",
+      "locator": "https://gscs-manual.lge.com/CDZ/MFL71467502/en-us/topics/topic_3.html",
+      "checked_at": "2026-09-27",
+      "supports": "플라스틱은 식기세척기 사용 가능 표시 또는 동등한 표시를 확인하도록 한다.",
+      "limitations": "범용 지원문서와 조건 표현이 다를 수 있음. 대상 모델이 식별되지 않아 이 지침을 개별 제품 권고로 바로 적용하지 않음. 범위: manual MFL71467502 en-US; model mapping not established in this pilot"
+    },
+    {
+      "id": "S17",
+      "title": "S17 AtoZ primary research",
+      "locator": "https://gscs-b2c.lge.com/open/downloadFile?fileId=tYJHqI7Nk3lkQwrvv6IRQ",
+      "checked_at": "2026-09-27",
+      "supports": "WSED7613*/WS7D7610*, MFL71927512 Rev.07, pp22-23: 기기측 원격시작 준비와 통신 지연 조건",
+      "limitations": "해당 모델군의 문서; 물리 실행이나 실패 빈도 실측 아님"
+    },
+    {
+      "id": "S18",
+      "title": "S18 AtoZ primary research",
+      "locator": "https://www.lg.com/us/support/help-library/enabling-wifi-and-the-lg-thinq-app-for-a-compatible-lg-refrigerator--20152715544610",
+      "checked_at": "2026-09-27",
+      "supports": "냉장고 ThinQ 연결·등록 절차",
+      "limitations": "모델별 확인 필요, 장애 빈도·모든 API 지원을 입증하지 않음"
+    },
+    {
+      "id": "S19",
+      "title": "S19 AtoZ primary research",
+      "locator": "https://www.figma.com/solutions/ux-flow-generator/",
+      "checked_at": "2026-09-27",
+      "supports": "화면·상태·사용자 흐름의 AI 생성",
+      "limitations": "주방별 실패 계약 검증까지 지원/미지원한다고 단정하지 않음"
+    },
+    {
+      "id": "R1",
+      "title": "LG 설치 확인 안내",
+      "locator": "https://www.lg.com/us/support/help-library/lg-refrigerator-prepurchase-installation-checklist--20154752570350",
+      "checked_at": "2026-09-27",
+      "supports": "설치 공간·문 열림·반입 경로를 따로 확인할 필요",
+      "limitations": "특정 모델 치수와 수요 빈도를 제공하는 자료가 아님"
+    },
+    {
+      "id": "R2",
+      "title": "LG 구매 가이드",
+      "locator": "https://www.lg.com/us/refrigerator-buying-guide",
+      "checked_at": "2026-09-27",
+      "supports": "Zero Clearance 등 기존 공간 대응 기능 존재",
+      "limitations": "신규 아이디어나 모든 국가/모델 지원을 입증하지 않음"
+    },
+    {
+      "id": "R3",
+      "title": "W3C 목표물 크기",
+      "locator": "https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html",
+      "checked_at": "2026-09-27",
+      "supports": "웹 조작 대상 크기·간격 및 예외의 검토 기준",
+      "limitations": "가전 물리 버튼 기준으로 전용 불가; 전체 접근성 인증 아님"
+    },
+    {
+      "id": "R4",
+      "title": "W3C 명암 대비",
+      "locator": "https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html",
+      "checked_at": "2026-09-27",
+      "supports": "웹 텍스트 대비 계산 기준",
+      "limitations": "실사용 이해도·접근성 전체를 보증하지 않음"
+    },
+    {
+      "id": "R5",
+      "title": "Deque Axe",
+      "locator": "https://www.deque.com/axe/devtools/",
+      "checked_at": "2026-09-27",
+      "supports": "자동·AI 접근성 검사 경쟁 기능 존재",
+      "limitations": "주방 특화 설계 흐름의 부재를 입증하지 않음"
+    },
+    {
+      "id": "R6",
+      "title": "Google OR-Tools 작업 일정",
+      "locator": "https://developers.google.com/optimization/scheduling/job_shop",
+      "checked_at": "2026-09-27",
+      "supports": "선후관계·동시 자원 사용 제한 일정 계산 방법",
+      "limitations": "조리 시간과 현실 적합성은 별도 자료가 필요; 자체 신규 알고리즘 아님"
+    },
+    {
+      "id": "R7",
+      "title": "Samsung Food",
+      "locator": "https://samsungfood.com/",
+      "checked_at": "2026-09-27",
+      "supports": "레시피 저장·식단 계획·장보기 기능 존재",
+      "limitations": "세부 다중 조리 최적화 지원 여부는 이번 조사로 단정하지 않음"
+    },
+    {
+      "id": "R8",
+      "title": "ENERGY STAR 데이터 도구",
+      "locator": "https://www.energystar.gov/products/productstr",
+      "checked_at": "2026-09-27",
+      "supports": "제품 데이터 내려받기·API 제공",
+      "limitations": "이번에 전체 자료 수집·정제·계산을 실행하지 않음"
+    },
+    {
+      "id": "R9",
+      "title": "ENERGY STAR 냉장고 목록",
+      "locator": "https://www.energystar.gov/most-efficient/me-certified-refrigerators/results?is_most_efficient_filter=Most+Efficient",
+      "checked_at": "2026-09-27",
+      "supports": "용량·연간 에너지 사용 항목을 확인할 수 있음",
+      "limitations": "미국 인증 표본이며 전체 시장·한국 실사용 전력과 다름"
+    },
+    {
+      "id": "R10",
+      "title": "Dovetail",
+      "locator": "https://dovetail.com/",
+      "checked_at": "2026-09-27",
+      "supports": "피드백 분석·출처 연결·기획 문서 생성 Agent의 경쟁 기능",
+      "limitations": "제조사 자체 설명; 우리 분석 도구의 차별성을 보장하지 않음"
+    },
+    {
+      "id": "O1",
+      "title": "LG IFA 2026 AI Home",
+      "locator": "https://www.lg.com/global/newsroom/news/home-appliance-solution/lg-electronics-unveils-the-next-evolution-of-ai-home-at-ifa-2026/",
+      "checked_at": "2026-09-27",
+      "supports": "식재료 기반 레시피와 가전 연결의 기존 발표",
+      "limitations": "우리 서비스와 세부 기능 전체의 일치/미지원 판단은 불가. 모델·국가별 제공 범위 별도"
+    },
+    {
+      "id": "O2",
+      "title": "Samsung Food+ 기능 안내",
+      "locator": "https://support.samsungfood.com/hc/en-us/articles/32709269852052-What-s-Included-in-Your-Samsung-Food-Subscription",
+      "checked_at": "2026-09-27",
+      "supports": "Use It Up 잔여 재료 활용 기능 존재",
+      "limitations": "모든 지속가능 키친 서비스가 구현되어 있다는 뜻 아님"
+    },
+    {
+      "id": "T1",
+      "title": "NASA 에틸렌 제거 기술 사례",
+      "locator": "https://www.nasa.gov/technology/tech-transfer-spinoffs/at-home-nasa-spinoffs-create-a-breath-of-fresh-air/",
+      "checked_at": "2026-09-27",
+      "supports": "보관 문제에 관련된 우주 기술의 이전 사례",
+      "limitations": "이미 소개된 기술로 신규 발명/효능 보증이 아니며 가정용 조건은 별도"
+    },
+    {
+      "id": "T2",
+      "title": "WIPO PATENTSCOPE",
+      "locator": "https://www.wipo.int/en/web/patentscope",
+      "checked_at": "2026-09-27",
+      "supports": "특허 문헌 탐색 경로",
+      "limitations": "권리 판단·전체 신규성 조사·자동 수집 권한 확인은 수행하지 않음"
+    },
+    {
+      "id": "T3",
+      "title": "GS1 추적 표준",
+      "locator": "https://www.gs1.org/standards/gs1-global-traceability-standard/current-standard",
+      "checked_at": "2026-09-27",
+      "supports": "물체·장소·사건 이력 관리 원리",
+      "limitations": "국제 유통 표준을 가정용 서비스에 적용하는 안은 우리의 제안"
+    },
+    {
+      "id": "T4",
+      "title": "GS1 농산물 이력 안내",
+      "locator": "https://www.gs1.org/standards/fresh-fruit-and-vegetable-traceability-guideline/current-standard",
+      "checked_at": "2026-09-27",
+      "supports": "농산물 유통 사건과 식품 이력 구조",
+      "limitations": "섭취 안전이나 가정용 실효성 보증 아님"
+    },
+    {
+      "id": "T5",
+      "title": "EPIC-KITCHENS",
+      "locator": "https://epic-kitchens.github.io/",
+      "checked_at": "2026-09-27",
+      "supports": "주방 동작 영상 데이터셋과 연구 과제 존재",
+      "limitations": "다운로드·라이선스·특정 동작의 필요 표본 수·우리 모델 성능은 미검증"
+    },
+    {
+      "id": "T6",
+      "title": "EPIC-SOUNDS",
+      "locator": "https://epic-kitchens.github.io/epic-sounds/site",
+      "checked_at": "2026-09-27",
+      "supports": "주방 행동 소리 구간 주석 데이터 존재",
+      "limitations": "음향만으로 조리 완료/안전 판정 불가; 이번에 학습·평가 실행 안 함"
+    },
+    {
+      "id": "T7",
+      "title": "LG 식품 보관 안내",
+      "locator": "https://www.lg.com/us/support/help-library/lg-refrigerator-storage-im-curious-about-how-to-store-different-foods--20154629492130",
+      "checked_at": "2026-09-27",
+      "supports": "소량으로 나눠 보관하는 안내의 존재",
+      "limitations": "1회분 모듈 수요·기존 제품 대비 이득이나 안전 보증의 증거 아님"
+    },
+    {
+      "id": "T8",
+      "title": "FDA 알레르기 표시 안내",
+      "locator": "https://www.fda.gov/consumers/consumer-updates/have-food-allergies-read-label",
+      "checked_at": "2026-09-27",
+      "supports": "성분 및 주의 표시를 확인할 필요",
+      "limitations": "미국 안내이며 국내 규정 전체를 대신하지 않음; 경고 부재를 안전으로 판단할 수 없음"
+    },
+    {
+      "id": "F1",
+      "title": "LMXS28596_ official LG spec sheet",
+      "supports": "2쪽의 치수·간격·문 열림 폭을 수동 구조화해 제한된 수치 검사",
+      "limitations": "구형 미국 모델. 국내 소형 가구 수요·설치 승인·자동 원문 추출을 입증하지 않음",
+      "checked_at": "2026-09-27",
+      "locator": "https://www.lg.com/us/business/download/resources/CT00021979/LMXS28596_%20LG%20Builder%20Spec%20Sheet%5B20220402_054345%5D.pdf"
+    },
+    {
+      "id": "F2",
+      "title": "LSXS26366_ official LG spec sheet",
+      "supports": "2쪽의 치수·간격·문 열림 폭을 수동 구조화해 제한된 수치 검사",
+      "limitations": "구형 미국 모델. 국내 소형 가구 수요·설치 승인·자동 원문 추출을 입증하지 않음",
+      "checked_at": "2026-09-27",
+      "locator": "https://www.lg.com/us/business/download/resources/CT00021979/LSXS26366_%20LG%20Builder%20Spec%20Sheet%5B20220108_003404%5D.pdf"
+    },
+    {
+      "id": "F3",
+      "title": "Samsung connected cooking recipe announcement",
+      "supports": "여러 메뉴·조리 시간·온도·SmartThings 연결의 기존 경쟁 방향",
+      "limitations": "제조사 발표이며 독립 수요 증거 아님. 모든 세부 재계획 기능 존재/부재는 판단 불가",
+      "checked_at": "2026-09-27",
+      "locator": "https://news.samsung.com/uk/samsung-partners-with-jamie-oliver-to-create-new-recipe-range-on-bespoke-ai-appliances"
+    },
+    {
+      "id": "JD1",
+      "title": "LG 고객 경험 디자인의 역할",
+      "supports": "고객 조사와 제품 기획 초기의 디자인·엔지니어 협업",
+      "limitations": "LG 자체 설명. 현재 우리 도구의 수요·효과를 입증하지 않음",
+      "checked_at": "2026-09-27",
+      "locator": "https://www.lg.com/global/newsroom/insights/executive-corner/executive-corner-perfecting-the-customer-experience-through-design1/"
+    },
+    {
+      "id": "JD2",
+      "title": "Dovetail AI Agents",
+      "supports": "고객 자료 기반 반복 분석·출처 추적·Skill 활용의 기존 경쟁 기능",
+      "limitations": "공급자 설명. 우리 도구와의 실행 비교 아님",
+      "checked_at": "2026-09-27",
+      "locator": "https://dovetail.com/product/ai-agents/"
+    },
+    {
+      "id": "JD3",
+      "title": "Dovetail의 Breville 고객 사례",
+      "supports": "키친 가전 기업의 고객 근거 공유 및 상품·UX 기획 활용",
+      "limitations": "공급자 사례 소개. 우리 Agent 채택·절감·LG 업무 빈도 근거 아님",
+      "checked_at": "2026-09-27",
+      "locator": "https://dovetail.com/customers/breville/"
+    },
+    {
+      "id": "JD4",
+      "title": "Figma Make 공식 안내",
+      "supports": "대화로 작동하는 프로토타입·웹 UI 생성과 수정 가능",
+      "limitations": "가전 제약 검사 여부·모든 세부 기능 존재/부재를 단정하지 않음",
+      "checked_at": "2026-09-27",
+      "locator": "https://help.figma.com/hc/en-us/articles/31304485164695-Create-a-Figma-Make-file"
+    },
+    {
+      "id": "JD5",
+      "title": "NN/g 서비스 블루프린트 실무 조사",
+      "supports": "97명 실무자 조사에서 역할·과정·기술의 관계를 검토하는 서비스 설계 업무",
+      "limitations": "2019년 여러 산업 표본. LG 키친 실무·우리 제품 수요 조사 아님",
+      "checked_at": "2026-09-27",
+      "locator": "https://www.nngroup.com/articles/service-blueprinting-practice/"
+    },
+    {
+      "id": "JD6",
+      "title": "NN/g 서비스 설계 범위 선정",
+      "supports": "통제 가능하고 자료가 있는 작은 경험부터 범위 선정하는 설계 방법",
+      "limitations": "일반 방법론으로 참고. 공모전 규정·구현 기간 보증 아님",
+      "checked_at": "2026-09-27",
+      "locator": "https://www.nngroup.com/articles/service-blueprints-choose-what-experience/"
+    },
+    {
+      "id": "DA1",
+      "title": "Amazon Reviews 2023 공식 프로젝트",
+      "supports": "리뷰와 제품 메타데이터, parent_asin 연결 필드 및 분류별 데이터 접근 경로",
+      "limitations": "2023년까지의 해외 리뷰. 국내/LG 수요·제품군별 충분한 표본·현재 제품 정보·우리 분석 성능을 입증하지 않음",
+      "checked_at": "2026-09-27",
+      "locator": "https://amazon-reviews-2023.github.io/"
+    },
+    {
+      "id": "DA2",
+      "title": "McAuley Lab Amazon Reviews 2023 공식 데이터 카드",
+      "supports": "리뷰·메타데이터 구조와 수집 기간 확인",
+      "limitations": "본 연구의 대상 제품 표본과 공식 제조사 문서 대응은 별도. 라이선스 일반 보증이나 원문 재배포 허가로 해석하지 않음",
+      "checked_at": "2026-09-27",
+      "locator": "https://huggingface.co/datasets/McAuley-Lab/Amazon-Reviews-2023"
+    },
+    {
+      "id": "S20",
+      "title": "2차 과제 제출 및 평가 안내",
+      "locator": "자료/공식/05_2차과제_제출및평가안내.pdf",
+      "checked_at": "2026-10-03",
+      "supports": "발표자료·시연 영상·소스코드 ZIP, 기본 배점 20/20/10/30/20, SKILL.md 필수, 실제 과정 시연, 바이브 코딩 허용",
+      "limitations": "사용자 제공 주최 측 안내, 발행일 미표시. 제출 시각·경로·용량·영상 길이·발표 분량 변경·가산점 세부 미기재"
     }
   ],
   "candidates": [
@@ -162,9 +482,10 @@
       ],
       "feasibility": "reviewed",
       "feasibility_evidence": {
-        "path": "기획/추천안_구현검토.md",
-        "sha256": "1c9111194694d5cc93b99e9018368712fe4e17e1a6781e6530ffd23b66a866d5"
-      }
+        "path": "기획/주제검증_결과.md",
+        "sha256": "1541a903647a7be3a51bcc11d55d1a9cb4b831f6e65f308ce3571c556f09ea3a"
+      },
+      "validation_level": "limited_curated_input_skill_probes; no LLM API or user validation"
     },
     {
       "id": "B2",
@@ -201,23 +522,34 @@
     },
     {
       "risks": [
-        "일반 RAG와 차별성",
-        "수요 검증"
+        "모델 API·비용 미검증",
+        "원문 추출·기능 의미 대응 미검증",
+        "수요·기획자 유용성 미검증",
+        "지역·모델 범위 혼합",
+        "제한된 신규성 조사"
       ],
       "id": "A4",
       "evidence": [
         "S2",
         "S7",
         "S8",
-        "S9",
-        "S10"
+        "S10",
+        "S12",
+        "S13",
+        "S15",
+        "S16"
       ],
       "user": "상품기획자",
       "theme": "A",
-      "mvp": "지원문서→잔여수고→기존기능 반박→근거 있는 기획카드",
-      "feasibility": "conditional",
+      "mvp": "문서와 범위 입력→사람 작업 추출→기존 기능 대조→기회 가설·기획 카드→새 근거로 재검토",
+      "feasibility": "reviewed",
       "problem": "사람에게 남은 작업을 신제품 기회로 연결(가설)",
-      "name": "주방 잔여수고 발굴 Agent"
+      "name": "Kitchen Gap — 주방 잔여수고 발굴 AI 상품기획 Agent",
+      "feasibility_evidence": {
+        "path": "기획/주제검증_결과.md",
+        "sha256": "1541a903647a7be3a51bcc11d55d1a9cb4b831f6e65f308ce3571c556f09ea3a"
+      },
+      "validation_level": "limited_curated_input_skill_probes; no LLM API or user validation"
     },
     {
       "risks": [
@@ -268,9 +600,14 @@
       "user": "주방 UX 설계자",
       "theme": "B",
       "mvp": "사용목표·상태→사람/기기 단계→실패 분기→UX",
-      "feasibility": "conditional",
+      "feasibility": "reviewed",
       "problem": "기기 종료 후 사용 준비까지의 잔여작업(가설)",
-      "name": "Dish-to-Done"
+      "name": "Dish-to-Done",
+      "feasibility_evidence": {
+        "path": "기획/주제검증_결과.md",
+        "sha256": "1541a903647a7be3a51bcc11d55d1a9cb4b831f6e65f308ce3571c556f09ea3a"
+      },
+      "validation_level": "limited_curated_input_skill_probes; no LLM API or user validation"
     },
     {
       "risks": [
@@ -288,14 +625,787 @@
       "feasibility": "conditional",
       "problem": "가전 첫 사용 적응의 어려움(가설)",
       "name": "First Kitchen"
+    },
+    {
+      "id": "B7",
+      "theme": "B",
+      "name": "Kitchen Recovery",
+      "user": "주방 서비스 UX 설계자",
+      "problem": "정상 흐름에 비해 실패·미응답·미확인 분기가 누락될 가능성(수요 가설)",
+      "mvp": "상황·기능 계약→UX 그래프→실패 사건 검사→최대 2회 모델 수정→화면 명세·근거·미해결 출력",
+      "risks": [
+        "현업 수요 미검증",
+        "모델 JSON 생성·비용 미검증",
+        "검사 규칙의 물리 동작 일반화 금지",
+        "일반 UX 생성 도구 대비 효용 검증"
+      ],
+      "evidence": [
+        "S2",
+        "S17",
+        "S18",
+        "S19"
+      ],
+      "feasibility": "reviewed",
+      "feasibility_evidence": {
+        "path": "기획/AtoZ_재선정과_Agent설계.md",
+        "sha256": "85c572cfd27d618eb12c9327c57e62a2529135953aa979c6042845dad4a0f02a"
+      },
+      "validation_level": "development graph audit + architecture review; not standalone LLM or device validation",
+      "official_alignment": {
+        "official_task": "새로운 제품·서비스가 적용된 미래 키친 생활 시나리오(간접 연결)",
+        "kitchen_concept": "현재는 일반 실패 대응 흐름으로 구체적 키친 콘셉트 부족",
+        "agent_job": "실패 상태 그래프 생성·검사·수정",
+        "output": "실패 흐름과 검사 기록",
+        "verdict": "독립 주제에서 제외",
+        "reason": "선정 서비스의 연결 실패·미응답 보조 검사로 활용 가능"
+      }
+    },
+    {
+      "id": "B8",
+      "theme": "B",
+      "name": "동시 조리 흐름 설계 Agent",
+      "user": "주방 서비스 UX 기획자",
+      "problem": "여러 요리의 사람·기기 사용과 완료 시점을 맞춘 안내를 설계하기 어려움",
+      "mvp": "검토된 3개 요리·10개 안팎 작업, 2종 기기, 한 명. 고정·범위 시간 가정과 미확인 표시. 물리 제어·식품 안전 판정 제외",
+      "risks": [
+        "레시피 추천만 하면 기존 서비스와 중복. Theme B의 UX 설계 결과가 필요",
+        "실제 조리 시간 변동, 사람의 주의가 필요한 구간, 조건 구조화 정확도"
+      ],
+      "evidence": [
+        "R6",
+        "R7"
+      ],
+      "feasibility": "conditional",
+      "official_alignment": {
+        "official_task": "가전 간 연계를 통한 AI 기반 키친 서비스",
+        "kitchen_concept": "여러 가전과 사람의 작업을 조율해 식사 준비를 맞추고 지연 때 안내를 바꾸는 경험",
+        "agent_job": "UX 기획자의 상황·기기·작업 조건을 구조화하고 일정 도구로 검사해 시나리오를 재설계",
+        "output": "정상/지연/기기 부족 UX 흐름, 타임라인, 화면·알림 명세와 검사 근거",
+        "verdict": "우선 검증·현재 추천",
+        "reason": "공식 항목과 직접 연결되고 계산 결과를 시연 가능. 현실 작업 데이터와 기준선 비교는 필요"
+      }
+    },
+    {
+      "id": "A8",
+      "theme": "A",
+      "name": "공간 제약 기반 주방 가전 기획 Agent",
+      "user": "가전 상품기획자",
+      "problem": "작은 주방의 공간·문 열림·설치 조건을 기존 제품 명세와 함께 대조하기 번거로움",
+      "mvp": "냉장고 한 제품군 5~10모델·명시적 공간 3사례, 2D 수치 검토. 임의 3D CAD·사진 자동 측정 제외",
+      "risks": [
+        "추천 쇼핑몰로 끝나면 Theme A 약함. 표본 부재는 시장 공백/제조 가능성을 입증하지 않음",
+        "모델별 문 열림·설치 여유 자료 확보와 정확한 추출"
+      ],
+      "evidence": [
+        "R1",
+        "R2"
+      ],
+      "feasibility": "conditional",
+      "official_alignment": {
+        "official_task": "미래 라이프스타일과 가구 형태 변화에 따른 가전 및 폼팩터 제안",
+        "kitchen_concept": "작은 주방·가구 조건에서 미충족 요구를 찾아 제품/배치 지원 서비스 개선안을 제안",
+        "agent_job": "상품기획자의 공간 조건·제품 자료를 대조해 제약 계산, 기존 기능 반증, 콘셉트 생성",
+        "output": "제약 근거표, 고객 요구, 기존 대안과 차이, 제품·서비스 콘셉트 카드",
+        "verdict": "우선 검증·대안",
+        "reason": "공식 항목과 직접 연결. 모델별 데이터와 미충족 수요 증거가 관건"
+      }
+    },
+    {
+      "id": "B9",
+      "theme": "B",
+      "name": "사용하기 쉬운 주방 앱 화면 설계 Agent",
+      "user": "주방 앱 UX 디자이너",
+      "problem": "예약·취소·상태 확인 화면을 읽고 조작하기 쉽게 바꾸면서 기능을 유지해야 함",
+      "mvp": "직접 만든 예약/취소 웹 화면 3개·고정 컴포넌트·제한된 검사. 모든 앱/스크린샷 자동 재설계 제외",
+      "risks": [
+        "Axe 등과 겹침. 고령자·장애 당사자 사용성은 실제 검토 없이 주장 불가",
+        "검사 통과와 실제 사용성의 차이, 일반 개발 도구와 경쟁"
+      ],
+      "evidence": [
+        "R3",
+        "R4",
+        "R5"
+      ],
+      "feasibility": "conditional",
+      "official_alignment": {
+        "official_task": "새로운 제품·서비스가 적용된 미래 키친 생활 시나리오(간접 연결)",
+        "kitchen_concept": "현재는 일반 접근성 화면 검사로 구체적 키친 콘셉트 부족",
+        "agent_job": "화면 생성·접근성 검사·수정",
+        "output": "화면과 검사 기록",
+        "verdict": "독립 주제에서 제외",
+        "reason": "선정 서비스의 보조 화면 검증 기능으로 활용 가능"
+      }
+    },
+    {
+      "id": "A9",
+      "theme": "A",
+      "name": "용량·에너지 균형 상품기획 Agent",
+      "user": "주방 가전 상품기획자",
+      "problem": "같은 제품군에서 용량과 에너지 등 상충 목표를 비교해 설계 목표를 정하기 번거로움",
+      "mvp": "미국 인증 냉장고 한 유형·용량/연간 에너지 2축. 국내 요금 예측·신제품 실제 성능 예측 제외",
+      "risks": [
+        "단순 차트는 혁신성이 약함. 데이터 빈 곳은 수요·기술 실현성을 뜻하지 않음",
+        "표본 편향·모델 중복·비교 가능한 제품 분류"
+      ],
+      "evidence": [
+        "R8",
+        "R9"
+      ],
+      "feasibility": "conditional",
+      "official_alignment": {
+        "official_task": "발견한 고객 니즈와 기술을 결합한 신규 제품·서비스 콘셉트 제안",
+        "kitchen_concept": "목표 고객의 용량·에너지 요구에 맞춘 제품 콘셉트가 필요하나 현재 근거 부족",
+        "agent_job": "공개 제품 수치 비교와 요구사항 후보 생성",
+        "output": "현재는 비교표 중심; 고객 근거와 콘셉트 보완 필요",
+        "verdict": "보류",
+        "reason": "데이터 분석만으로 공식 산출물 충족을 주장하기 어려움"
+      }
+    },
+    {
+      "id": "A10",
+      "theme": "A",
+      "name": "고객 불편을 검증하는 상품기획 Agent",
+      "user": "상품기획자·고객 조사 담당자",
+      "problem": "고객 의견을 실제 제품 한계·사용 오류·이미 개선된 기능으로 구분하기 번거로움",
+      "mvp": "사용 허가한 실제 의견 30~50개와 제품 2종. 대규모 크롤링·빈도 일반화 제외",
+      "risks": [
+        "합성 후기를 실제 수요처럼 쓸 수 없음; 기존 고객 분석 제품과 강하게 겹침",
+        "권한 있는 실제 고객 자료와 해석 정답 확보"
+      ],
+      "evidence": [
+        "R10",
+        "R1",
+        "R2"
+      ],
+      "feasibility": "conditional",
+      "official_alignment": {
+        "official_task": "SNS·검색 트렌드·제품 리뷰를 활용한 숨은 고객 니즈 발굴",
+        "kitchen_concept": "실제 보관·조작 불편을 모델별 기존 기능과 대조해 개선 기능을 제안",
+        "agent_job": "허가된 고객 원문 분류·중복 처리·공식 자료 반증·개선 기획",
+        "output": "출처/반증이 붙은 개선 요구사항과 콘셉트",
+        "verdict": "조건부 후순위",
+        "reason": "공식 항목은 직접 부합. 실제 고객 코퍼스 미확보와 기존 도구 중복"
+      }
+    },
+    {
+      "id": "ROW_A1",
+      "theme": "A",
+      "name": "리뷰 속 조리 후 청소 부담을 찾아 개선 기능을 기획하는 Agent",
+      "user": "상품기획자",
+      "problem": "조리 뒤 분해·닦기·건조·정리에 남는 수고를 줄이는 제품 기능이나 관리 서비스",
+      "mvp": "실제 사용 권한이 있는 의견 30~50개, 2개 제품군 이내. 초기 목표 수량이며 아직 확보한 데이터가 아님",
+      "risks": [
+        "실제 원문 확보·대표성·기존 기능 중복"
+      ],
+      "evidence": [
+        "R10",
+        "S7",
+        "S9"
+      ],
+      "feasibility": "conditional",
+      "official_task": "SNS·검색 트렌드·제품 리뷰를 활용한 숨은 고객 니즈 발굴",
+      "official_row": 1
+    },
+    {
+      "id": "ROW_A2",
+      "theme": "A",
+      "name": "1~2인 가구의 작은 주방에 맞는 가전 형태를 기획하는 Agent",
+      "user": "상품기획자",
+      "problem": "좁은 설치 공간과 필요한 용량·문 열림을 함께 만족하는 제품 형태 또는 배치 지원 서비스",
+      "mvp": "한 제품군 5~10모델, 검토된 공간 사례 3개, 2D 수치 비교",
+      "risks": [
+        "모델별 설치·문 열림 자료와 실제 수요. 제조 가능성 별도"
+      ],
+      "evidence": [
+        "R1",
+        "R2"
+      ],
+      "feasibility": "conditional",
+      "official_task": "미래 라이프스타일과 가구 형태 변화에 따른 가전 및 폼팩터 제안",
+      "official_row": 2
+    },
+    {
+      "id": "ROW_A3",
+      "theme": "A",
+      "name": "농업·우주 분야에서 식재료 보관 기술을 찾는 기술 탐색 Agent",
+      "user": "상품기획자",
+      "problem": "가정용 보관 모듈에 검토할 만한 선도 유지 기술 후보와 적용 조건",
+      "mvp": "사람이 검토한 기술 문헌 10개 내외의 작은 자료집. 출처·수치·검증 조건 비교",
+      "risks": [
+        "원문 이해·실험 조건 전용·특허 권리 및 제조 가능성 미확인"
+      ],
+      "evidence": [
+        "T1",
+        "T2"
+      ],
+      "feasibility": "conditional",
+      "official_task": "논문·특허·기술 뉴스를 활용한 타 산업 기술 탐색",
+      "official_row": 3
+    },
+    {
+      "id": "ROW_A4",
+      "theme": "A",
+      "name": "농산물 유통의 재고·이력 관리 원리를 가정용 보관 서비스로 옮기는 Agent",
+      "user": "상품기획자",
+      "problem": "보관 위치·입고/개봉 기록·표시 기한을 묶어 먼저 확인하고 사용할 항목을 안내하는 냉장고/보관함 서비스",
+      "mvp": "수동/QR 입력한 재고·위치·표시 기한, 예시 보관함 3개. 자동 센싱과 실제 신선도 추정 제외",
+      "risks": [
+        "사용자 기록 부담과 기존 재고 앱 대비 가치. 날짜만으로 섭취 안전을 판단하지 않음"
+      ],
+      "evidence": [
+        "T3",
+        "T4",
+        "O2"
+      ],
+      "feasibility": "conditional",
+      "official_task": "자동차·의료·로봇·항공·농업 등 타 산업 기술의 키친 적용",
+      "official_row": 4
+    },
+    {
+      "id": "ROW_A5",
+      "theme": "A",
+      "name": "조리 동작 인식으로 레시피 진행 안내 기능을 기획하는 Agent",
+      "user": "상품기획자",
+      "problem": "사용자가 매 단계 화면을 넘기지 않아도 관찰된 동작을 바탕으로 다음 안내를 제안하는 주방 보조 기능",
+      "mvp": "영상 우선, 3개 동작, 허가·라이선스 확인한 짧은 클립 20~30개 목표. 새 모델 학습 없이 기존 멀티모달 모델/도구 검토",
+      "risks": [
+        "행동과 레시피 완료는 다름. 가림·동시 행동·환경 변화 및 실제 모델 성능 미검증"
+      ],
+      "evidence": [
+        "T5",
+        "T6"
+      ],
+      "feasibility": "conditional",
+      "official_task": "이미지·영상·음향 등을 활용한 음식 및 조리 상태 인식",
+      "official_row": 5
+    },
+    {
+      "id": "ROW_A6",
+      "theme": "A",
+      "name": "소량 조리 가구를 위한 1회분 보관 모듈·재고 연동 서비스를 기획하는 Agent",
+      "user": "상품기획자",
+      "problem": "한 번에 쓸 양으로 나누는 용기/구획과 재고 정보를 연결하는 제품·서비스 결합 콘셉트",
+      "mvp": "식재료 3종의 대표 사용 시나리오, 수동 입력/QR 기반 서비스 목업과 모듈 요구사항",
+      "risks": [
+        "실제 니즈·기존 용기 차별성·세척/보관 부담·제조 실현성 미검증"
+      ],
+      "evidence": [
+        "T7",
+        "R10",
+        "O2"
+      ],
+      "feasibility": "conditional",
+      "official_task": "발견한 고객 니즈와 기술을 결합한 신규 제품·서비스 콘셉트 제안",
+      "official_row": 6
+    },
+    {
+      "id": "ROW_B1",
+      "theme": "B",
+      "name": "보관→조리→정리를 잇는 최소 조작 주방 시나리오 설계 Agent",
+      "user": "UX/UI 시나리오 설계자",
+      "problem": "한 끼 과정에서 기기·앱마다 반복하는 확인/설정을 줄이고 다음 단계로 정보를 넘기는 경험",
+      "mvp": "보관·조리·정리 3단계, 검토된 기능 계약, 사람 개입을 표시한 웹 상태 목업",
+      "risks": [
+        "기기 API와 실제 자동화 범위. 손으로 해야 하는 작업을 자동 완료로 처리하면 안 됨"
+      ],
+      "evidence": [
+        "O1",
+        "S4"
+      ],
+      "feasibility": "conditional",
+      "official_task": "보관·조리·세척을 연결하는 Zero-Touch Kitchen",
+      "official_row": 1
+    },
+    {
+      "id": "ROW_B2",
+      "theme": "B",
+      "name": "가족별 취향과 식사 조건을 함께 맞추는 조리 경험 설계 Agent",
+      "user": "UX/UI 시나리오 설계자",
+      "problem": "공통 조리와 개인별 옵션을 나눠 메뉴·준비 과정을 조정하는 가족 식사 경험",
+      "mvp": "가족 2~3명, 검토된 요리 3개, 취향/양/시간 우선. 건강 조건은 명시 입력만 전달하고 의학적 적합성 판단 제외",
+      "risks": [
+        "기존 맞춤 식단과 중복·레시피 변형 타당성. 알레르기 무해성 보증 불가"
+      ],
+      "evidence": [
+        "O2",
+        "R7"
+      ],
+      "feasibility": "conditional",
+      "official_task": "사용자의 취향·건강·상황을 고려한 개인 맞춤형 조리",
+      "official_row": 2
+    },
+    {
+      "id": "ROW_B3",
+      "theme": "B",
+      "name": "식재료 교체 때 알레르기 정보 재확인을 요구하는 UX 설계 Agent",
+      "user": "UX/UI 시나리오 설계자",
+      "problem": "메뉴·제품이 바뀌었을 때 기존 확인을 그대로 재사용하지 않고 성분 정보와 미확인 항목을 다시 검토하는 경험",
+      "mvp": "검토된 예시 제품 표시 10개 목표, 교체/누락/표시 변경 사건의 UX 목업. 임상·식품 안전 시스템 아님",
+      "risks": [
+        "제품 표시·교차접촉·국가별 정보 차이. 경고가 없다는 이유로 안전 판정 불가"
+      ],
+      "evidence": [
+        "T8"
+      ],
+      "feasibility": "conditional",
+      "official_task": "식재료의 신선도·알레르기·안전을 관리하는 스마트 키친",
+      "official_row": 3
+    },
+    {
+      "id": "ROW_B4",
+      "theme": "B",
+      "name": "가전 자원과 조리 지연에 맞춰 다시 계획하는 식사 준비 UX 설계 Agent",
+      "user": "UX/UI 시나리오 설계자",
+      "problem": "여러 요리를 준비할 때 기기와 사람 작업의 충돌을 줄이고 지연 발생 후 남은 안내를 조정하는 경험",
+      "mvp": "검토된 요리 3개, 기기 2종, 작업자 1명. 실물 제어 없이 가정된 상태 변화로 시연",
+      "risks": [
+        "실제 작업 시간·능동 작업 구간·계산기 대비 AI 기여"
+      ],
+      "evidence": [
+        "R6",
+        "O1"
+      ],
+      "feasibility": "conditional",
+      "official_task": "가전 간 연계를 통한 AI 기반 키친 서비스",
+      "official_row": 4
+    },
+    {
+      "id": "ROW_B5",
+      "theme": "B",
+      "name": "남는 재료와 인분 변화를 반영하는 한 끼 분량 UX 설계 Agent",
+      "user": "UX/UI 시나리오 설계자",
+      "problem": "집에 있는 재료·포장 단위·먹을 인원으로 사용할 양과 남을 양을 보여주고 다음 식사에 재료를 이어 쓰는 경험",
+      "mvp": "재료 10종·레시피 3개 목표, 명시 수량·단위. 실제 폐기/물/전력 절감 수치 미주장",
+      "risks": [
+        "입력 유지 부담과 기존 Use It Up/식단 앱 대비 차별성. 레시피 양의 단순 선형 확대 한계"
+      ],
+      "evidence": [
+        "O2",
+        "R7"
+      ],
+      "feasibility": "conditional",
+      "official_task": "식재료·물·에너지 사용을 최적화하는 지속가능한 키친",
+      "official_row": 5
+    },
+    {
+      "id": "ROW_B6",
+      "theme": "B",
+      "name": "이사·동거로 생활이 바뀔 때 적응하는 모듈형 주방 UX 설계 Agent",
+      "user": "UX/UI 시나리오 설계자",
+      "problem": "보관·조리 모듈을 재배치/추가하는 미래 제품을 가정하고 가족·공간 변화에 따라 설정과 일상을 다시 연결하는 경험",
+      "mvp": "가정된 보관/조리 모듈 2종, 이사·동거 2사건, 명시된 지원 기능만 사용하는 웹 목업",
+      "risks": [
+        "가상 제품의 과도한 능력 가정·실수요·제품 실현성"
+      ],
+      "evidence": [
+        "O1",
+        "R1",
+        "R2"
+      ],
+      "feasibility": "conditional",
+      "official_task": "새로운 제품·서비스가 적용된 미래 키친 생활 시나리오",
+      "official_row": 6
+    },
+    {
+      "id": "ROLE_A_OPPORTUNITY",
+      "theme": "A",
+      "name": "고객 근거 기반 제품 개선 기획 Agent",
+      "user": "키친 가전 상품기획자",
+      "problem": "고객 의견을 실제 개선 기회와 기존 기능으로 해결되는 문제로 나누고 기획 과제를 작성하는 수고",
+      "mvp": "검토된 고객 원문 30개 내외와 한 제품군; 원문 아직 미확보",
+      "risks": [
+        "Dovetail 등과 겹치는 자료 요약을 넘어 제품별 반증의 추가 가치",
+        "직접 사용자 채택·강한 LLM 대비 효용 미검증"
+      ],
+      "evidence": [
+        "JD1",
+        "JD2",
+        "JD3",
+        "R10"
+      ],
+      "feasibility": "conditional",
+      "official_rows_as_material": [
+        1,
+        2,
+        6
+      ],
+      "kitchen_concept": "준비·조리·관리 사이의 반복 작업을 줄이는 제품 기능·관리 서비스"
+    },
+    {
+      "id": "ROLE_A_FORM",
+      "theme": "A",
+      "name": "생활 방식·가구 특성 기반 가전 폼팩터 기획 Agent",
+      "user": "가전 상품기획자·선행기획 담당자",
+      "problem": "생활 요구를 검토 가능한 제품 형태·구조 조건으로 바꾸고 상충 대안을 비교하는 수고",
+      "mvp": "한 제품군 약 5모델·조건 3~4종·서로 다른 브리프 2개 목표. 작은 공간은 첫 사례",
+      "risks": [
+        "고객 요구→새 콘셉트의 타당성. 제조·인체공학 검증과 단순 제품 추천을 구분",
+        "직접 사용자 채택·강한 LLM 대비 효용 미검증"
+      ],
+      "evidence": [
+        "JD1",
+        "JD2",
+        "JD3",
+        "R1",
+        "R2"
+      ],
+      "feasibility": "conditional",
+      "official_rows_as_material": [
+        1,
+        2,
+        3,
+        4,
+        6
+      ],
+      "kitchen_concept": "공간·저장량·접근 방식 등 요구에 맞춘 크기·수납·개폐·배치 구성"
+    },
+    {
+      "id": "ROLE_A_TECH",
+      "theme": "A",
+      "name": "타산업 기술 적용 기획 Agent",
+      "user": "선행 상품기획자",
+      "problem": "고객 문제에 맞는 기술을 찾아 가정용 적용 조건과 실험 과제를 검토하는 수고",
+      "mvp": "기술군 하나와 검토된 문헌 자료집",
+      "risks": [
+        "원문 실험 조건의 전용과 전문가 평가 부담",
+        "직접 사용자 채택·강한 LLM 대비 효용 미검증"
+      ],
+      "evidence": [
+        "JD1",
+        "T1",
+        "T2"
+      ],
+      "feasibility": "conditional",
+      "official_rows_as_material": [
+        1,
+        3,
+        4,
+        6
+      ],
+      "kitchen_concept": "보관·준비·관리 부담을 줄이는 다른 산업의 기술을 주방 기능으로 적용"
+    },
+    {
+      "id": "ROLE_B_SERVICE",
+      "theme": "B",
+      "name": "키친 가전 연계 서비스 설계·검증 Agent",
+      "user": "키친 서비스 기획자·UX/UI 시나리오 설계자",
+      "problem": "고객 목표를 사람·가전·앱 역할로 나누고 조건이 바뀔 때 흐름·화면·예외 처리를 함께 수정하는 수고",
+      "mvp": "가전 2종·작업자 1명·6~8작업·고정 화면 요소. 첫 사례는 식사 준비",
+      "risks": [
+        "작업/기능 원자료와 생성한 UX 산출물의 일관성. 계산기·화면 생성기 대비 추가 가치",
+        "직접 사용자 채택·강한 LLM 대비 효용 미검증"
+      ],
+      "evidence": [
+        "JD1",
+        "JD4",
+        "JD5",
+        "JD6",
+        "O1",
+        "S4",
+        "R6"
+      ],
+      "feasibility": "conditional",
+      "official_rows_as_material": [
+        1,
+        2,
+        4,
+        6
+      ],
+      "kitchen_concept": "식사 준비 계획을 가전과 사람이 공유하고 변경 시 남은 안내와 선택지를 일관되게 갱신하는 경험"
+    },
+    {
+      "id": "ROLE_B_POLICY",
+      "theme": "B",
+      "name": "가구별 조리 서비스 정책·예외 흐름 설계 Agent",
+      "user": "개인화 키친 서비스 기획자",
+      "problem": "가족별 조건 조합의 우선순위와 불가능 조건을 정책·화면으로 일관되게 만드는 수고",
+      "mvp": "검토된 요리 소수·취향/시간/분량. 의학적 적합성/안전 판정 제외",
+      "risks": [
+        "기존 개인화 서비스와 중복·요리 변형 타당성·기획자용 도구 수요",
+        "직접 사용자 채택·강한 LLM 대비 효용 미검증"
+      ],
+      "evidence": [
+        "JD4",
+        "JD5",
+        "O2",
+        "R7"
+      ],
+      "feasibility": "conditional",
+      "official_rows_as_material": [
+        2,
+        4,
+        5,
+        6
+      ],
+      "kitchen_concept": "공통 조리와 개인별 옵션을 나누고 충돌 시 대안을 선택하는 식사 서비스"
+    },
+    {
+      "id": "ROLE_B_HANDOFF",
+      "theme": "B",
+      "name": "가족 작업 인계·공동사용 경험 설계 Agent",
+      "user": "키친 UX 설계자",
+      "problem": "가족 간 담당자 변경 때 확인·알림·미완료·중복 처리를 설계하는 수고",
+      "mvp": "역할 2개·공동 작업 1종·가상 상태. 실제 계정/권한 제어 별도",
+      "risks": [
+        "가족 공동사용 수요·기기 역할/권한 명세가 아직 부족",
+        "직접 사용자 채택·강한 LLM 대비 효용 미검증"
+      ],
+      "evidence": [
+        "JD1",
+        "JD5",
+        "JD6",
+        "S4"
+      ],
+      "feasibility": "conditional",
+      "official_rows_as_material": [
+        1,
+        4,
+        6
+      ],
+      "kitchen_concept": "여러 사람이 준비·조리·정리를 나눠 맡을 때 상태를 공유하고 인계를 확인하는 경험"
+    },
+    {
+      "id": "RESET_A_EVIDENCE",
+      "theme": "A",
+      "name": "고객 불편·기존 제품 대조 기반 키친 상품기획 Agent",
+      "user": "키친 가전 상품기획자",
+      "problem": "리뷰의 불편을 실제 기능·잔여 불편과 대조하고 검토 가능한 개선 콘셉트로 바꾸는 수고",
+      "loop": "리뷰/제품 자료 조회 → 불편-기능 대조 → 콘셉트 → 근거 검사 → 재조회/수정",
+      "hardest": "불편·기능·기획안 사이의 근거 연결과 수정",
+      "demo": "같은 요청에 잘못된 모델 자료를 넣으면 근거 부족으로 표시하고 자료를 교체해 제안을 수정",
+      "mvp": "샘플 리뷰 CSV·가상 제품 기능표를 준비하고 조회·대조·제안·검사/수정을 실행. 예: 3~5제품, 30~50리뷰는 향후 제작 목표",
+      "sources": [
+        "S2",
+        "JD1",
+        "JD2",
+        "JD3",
+        "DA1",
+        "DA2"
+      ],
+      "official_rows_as_material": [
+        1,
+        6
+      ],
+      "kitchen_concept": "기존 기능으로 남는 보관·조리·관리의 불편을 줄이는 제품 기능·관리 서비스",
+      "rerun_trigger": "새 기획 요청·자료 추가·조건 변경",
+      "novelty_limit": "좁은 업무 자동화 제안이며 강한 LLM/기존 도구 대비 우월성은 미검증",
+      "evidence": [
+        "S2",
+        "JD1",
+        "JD2",
+        "JD3",
+        "DA1",
+        "DA2"
+      ],
+      "risks": [
+        "불편·기능·기획안 사이의 근거 연결과 수정",
+        "합성 동작 검증과 실제 수요·기술 효과를 구분",
+        "모델 성능·기준선 비교 미검증"
+      ],
+      "feasibility": "reviewed",
+      "feasibility_evidence": {
+        "path": "기획/샘플데이터_기준_재검토.md",
+        "sha256": "2c27d57465b4b819d33d9773914f4044b4cf439ffd6f5de492a47f2bcacb192b"
+      },
+      "feasibility_scope": "선정에 필요한 구현 범위·자료 의존성 검토. 작동하는 Agent나 모델 성능 완료가 아님",
+      "demo_policy": "project.demo_policy"
+    },
+    {
+      "id": "RESET_A_FORM",
+      "theme": "A",
+      "name": "생활 조건별 폼팩터 기획 Agent",
+      "user": "가전 선행 상품기획자",
+      "problem": "생활 요구를 형태·구조 대안과 비교 조건으로 바꾸는 수고",
+      "loop": "생활 조건 → 제품 치수/기능 조회 → 형태 후보 → 상충 조건 검토",
+      "hardest": "치수 검사와 새 형태 제안의 연결",
+      "demo": "공간과 수납 요구를 바꾸면 후보와 충족되지 않은 조건을 수정",
+      "mvp": "가상 제품 치수·공간·생활 조건과 2D 도식. 개념 제안·제약 계산을 실행하며 제조 설계는 약속하지 않음",
+      "sources": [
+        "S2",
+        "JD1",
+        "R1"
+      ],
+      "official_rows_as_material": [
+        1,
+        2,
+        6
+      ],
+      "kitchen_concept": "공간·접근·수납 요구에 맞는 가전 구조",
+      "rerun_trigger": "새 기획 요청·자료 추가·조건 변경",
+      "novelty_limit": "좁은 업무 자동화 제안이며 강한 LLM/기존 도구 대비 우월성은 미검증",
+      "evidence": [
+        "S2",
+        "JD1",
+        "R1"
+      ],
+      "risks": [
+        "치수 검사와 새 형태 제안의 연결",
+        "합성 동작 검증과 실제 수요·기술 효과를 구분",
+        "모델 성능·기준선 비교 미검증"
+      ],
+      "feasibility": "conditional",
+      "demo_policy": "project.demo_policy"
+    },
+    {
+      "id": "RESET_A_TECH",
+      "theme": "A",
+      "name": "타산업 기술의 키친 적용 기획 Agent",
+      "user": "선행 기술·상품기획자",
+      "problem": "외부 기술의 가정용 적용 조건과 불확실성을 검토하는 수고",
+      "loop": "고객 문제 → 기술 문헌 → 적용 조건 대조 → 콘셉트/실험 과제",
+      "hardest": "원문 조건과 새 용도 사이의 적용 논리",
+      "demo": "적용 환경을 바꾸면 효능 보장 대신 미검증 조건을 반환",
+      "mvp": "선별 기술 문헌 묶음 또는 명시적 가상 시험 입력으로 조건 추출·적용 제약·검증 과제 작성",
+      "sources": [
+        "S2",
+        "T1",
+        "T2"
+      ],
+      "official_rows_as_material": [
+        3,
+        4,
+        6
+      ],
+      "kitchen_concept": "타산업 기술로 보관·관리 부담을 줄이는 주방 기능",
+      "rerun_trigger": "새 기획 요청·자료 추가·조건 변경",
+      "novelty_limit": "좁은 업무 자동화 제안이며 강한 LLM/기존 도구 대비 우월성은 미검증",
+      "evidence": [
+        "S2",
+        "T1",
+        "T2"
+      ],
+      "risks": [
+        "원문 조건과 새 용도 사이의 적용 논리",
+        "합성 동작 검증과 실제 수요·기술 효과를 구분",
+        "모델 성능·기준선 비교 미검증"
+      ],
+      "feasibility": "conditional",
+      "demo_policy": "project.demo_policy"
+    },
+    {
+      "id": "RESET_B_FLOW",
+      "theme": "B",
+      "name": "키친 사용자 흐름·와이어프레임 설계 Agent",
+      "user": "키친 UX/UI 설계자",
+      "problem": "주방 서비스의 정상/예외 흐름과 기본 화면을 반복 작성하는 수고",
+      "loop": "요구 → 상황/예외 시나리오 → 고정 구성 화면 → 연결 검사/수정",
+      "hardest": "상황 변경 후 흐름과 화면의 연결",
+      "demo": "가전 사용 불가 조건을 넣으면 예외 흐름과 안내 화면 갱신",
+      "mvp": "샘플 사용자 상황·가전 기능과 고정 UI 구성요소로 시나리오·화면 생성 및 연결 검사",
+      "sources": [
+        "S2",
+        "JD4"
+      ],
+      "official_rows_as_material": [
+        1,
+        4,
+        6
+      ],
+      "kitchen_concept": "준비·조리·관리의 안내를 연결하는 키친 경험",
+      "rerun_trigger": "새 기획 요청·자료 추가·조건 변경",
+      "novelty_limit": "좁은 업무 자동화 제안이며 강한 LLM/기존 도구 대비 우월성은 미검증",
+      "evidence": [
+        "S2",
+        "JD4"
+      ],
+      "risks": [
+        "상황 변경 후 흐름과 화면의 연결",
+        "합성 동작 검증과 실제 수요·기술 효과를 구분",
+        "모델 성능·기준선 비교 미검증"
+      ],
+      "feasibility": "conditional",
+      "demo_policy": "project.demo_policy"
+    },
+    {
+      "id": "RESET_B_LINK",
+      "theme": "B",
+      "name": "가전 연계 서비스 설계·검사 Agent",
+      "user": "키친 서비스 기획자",
+      "problem": "여러 가전·사람의 작업과 예외를 일관된 서비스로 설계하는 수고",
+      "loop": "사용 목표 → 작업/가전 기능 → 상태/시간 계획 → UX 흐름/화면 → 충돌 검사/수정",
+      "hardest": "상태·자원·사용자 역할·화면 산출물의 일관성",
+      "demo": "가전 하나를 쓸 수 없게 되면 불가능 조건과 남은 작업의 대안 표시",
+      "mvp": "가상 2종 가전·작업/시간 표·모의 상태 API와 화면 템플릿. 상태/충돌 검사와 계획/안내 수정을 실제 실행",
+      "sources": [
+        "S2",
+        "JD4"
+      ],
+      "official_rows_as_material": [
+        1,
+        4,
+        6
+      ],
+      "kitchen_concept": "가전과 사람이 식사 준비 순서·변경 안내를 공유하는 경험",
+      "rerun_trigger": "새 기획 요청·자료 추가·조건 변경",
+      "novelty_limit": "좁은 업무 자동화 제안이며 강한 LLM/기존 도구 대비 우월성은 미검증",
+      "evidence": [
+        "S2",
+        "JD4"
+      ],
+      "risks": [
+        "상태·자원·사용자 역할·화면 산출물의 일관성",
+        "합성 동작 검증과 실제 수요·기술 효과를 구분",
+        "모델 성능·기준선 비교 미검증"
+      ],
+      "feasibility": "conditional",
+      "demo_policy": "project.demo_policy"
+    },
+    {
+      "id": "RESET_B_POLICY",
+      "theme": "B",
+      "name": "가구별 조리 정책·예외 흐름 설계 Agent",
+      "user": "개인화 키친 서비스 기획자",
+      "problem": "시간·취향·분량 조건의 우선순위와 예외를 설계하는 수고",
+      "loop": "가족 조건 → 정책표 → 조리 흐름/화면 → 충돌 검사/수정",
+      "hardest": "규칙 충돌의 해소와 안내 흐름 연결",
+      "demo": "시간·분량 조건 충돌 때 불가능 조건과 선택지 반환",
+      "mvp": "샘플 가족 조건·가상 레시피/시간/분량 표로 우선순위·충돌·예외 안내를 실행",
+      "sources": [
+        "S2",
+        "JD4",
+        "R7"
+      ],
+      "official_rows_as_material": [
+        2,
+        4,
+        6
+      ],
+      "kitchen_concept": "공통 조리와 개인별 옵션을 나누는 식사 경험",
+      "rerun_trigger": "새 기획 요청·자료 추가·조건 변경",
+      "novelty_limit": "좁은 업무 자동화 제안이며 강한 LLM/기존 도구 대비 우월성은 미검증",
+      "evidence": [
+        "S2",
+        "JD4",
+        "R7"
+      ],
+      "risks": [
+        "규칙 충돌의 해소와 안내 흐름 연결",
+        "합성 동작 검증과 실제 수요·기술 효과를 구분",
+        "모델 성능·기준선 비교 미검증"
+      ],
+      "feasibility": "conditional",
+      "demo_policy": "project.demo_policy"
     }
   ],
   "decision": {
-    "status": "exploring",
-    "candidate_id": null,
-    "confirmed_by": null,
-    "confirmed_at": null,
-    "rationale": "사용자가 B1 확정 대신 다른 후보 추가 검토를 요청함. A4/B4/B5 등 추가 비교, 최종 선택 전."
+    "status": "confirmed",
+    "candidate_id": "RESET_A_EVIDENCE",
+    "confirmed_by": "사용자 직접 채택",
+    "confirmed_at": "2026-09-27T08:30:44+09:00",
+    "rationale": "사용자가 최종 추천 Theme A를 직접 채택했다. 쉬운 구현과 1차 서류 설득력 기준의 이전 선정 근거를 유지하고 입력·대조·기획·검사·수정 구조와 평가 계획을 구체화했다.",
+    "authority": {
+      "kind": "user_direct_approval",
+      "instruction": "그걸로 채택했다. 제출 준비하자 서류",
+      "selected_by": "Codex (이전 위임 선정)",
+      "approved_by": "사용자",
+      "not_direct_user_approval_of_candidate": false,
+      "scope": "주제 채택과 제출 서류 준비. 실제 온라인 접수 완료 증거는 아님."
+    },
+    "evidence": {
+      "path": "기획/채택안_Agent설계.md",
+      "sha256": "a66cac0776540a1b900e76aa5d908b119d2dfd1672ee7ddb6fff02028f280ff8"
+    },
+    "revalidated_at": "2026-09-27T08:03:43+09:00"
   },
   "stages": [
     {
@@ -304,98 +1414,667 @@
       "next_action": "변경 공지 발생 시 갱신",
       "evidence": {
         "path": "docs/대회요건.md",
-        "sha256": "872ab29c15b9e8d7d1b9e9f6de7f96b64b9a5737a227a6e781c8fcc3a3777d48"
+        "sha256": "7e37f2562dd87156106881bd2540c9cefb12eb76c00a66d5011bd45de7b30b41"
       }
     },
     {
       "id": "harness",
       "status": "done",
-      "next_action": "구현 기술 확정 후 필요한 검사만 추가",
+      "next_action": "AtoZ 자연어 실행: ax_workflow next→Codex 작업→finish→validate",
       "evidence": {
         "path": "docs/하네스_검증기록.md",
-        "sha256": "496651a0b227e2219b7fab9a40a3770c030b81653f87ad59b50592efb6b4dd06"
+        "sha256": "54b37e6f6d8f67b7ff5e302d2c721de2a3a281a94a02c26e8c8fa41e2d9462bc"
       }
     },
     {
       "id": "topic_research",
       "status": "done",
-      "next_action": "추가 후보 A4/B4/B5 중심 논의",
+      "next_action": "샘플/모의 연동 공통 적용 재검토 완료, A 유지. 다음은 상세 설계·제안서",
       "evidence": {
-        "sha256": "0fb380af7e9d2db63622ffc8f98178f8d964da482dfe279a52fd126ce99a91fe",
-        "path": "기획/추가아이디어_비교.md"
+        "path": "기획/샘플데이터_기준_재검토.md",
+        "sha256": "2c27d57465b4b819d33d9773914f4044b4cf439ffd6f5de492a47f2bcacb192b"
       }
     },
     {
       "id": "topic_decision",
-      "status": "pending",
-      "next_action": "사용자 선택 반영, topic gate"
+      "status": "done",
+      "next_action": "사용자 직접 채택. 상세 설계와 6항목 원고 작성.",
+      "evidence": {
+        "path": "기획/채택안_Agent설계.md",
+        "sha256": "a66cac0776540a1b900e76aa5d908b119d2dfd1672ee7ddb6fff02028f280ff8"
+      }
     },
     {
       "id": "proposal",
-      "status": "pending",
-      "next_action": "새 주제 선택 후 공식 6항목 작성. B1은 참고 초안만 보관"
+      "status": "done",
+      "next_action": "황대겸 팀장 명의 수정 PDF 11쪽·제안서 8쪽 검토 완료. 새 접수내역에 첨부된 PDF와 대조할 것.",
+      "draft_evidence": {
+        "path": "기획/제출제안서_원고.md",
+        "sha256": "4c8be44fc3d8a648fe1702860c7f4e7815f83ed77a86b5a42547697ea6b61d54"
+      },
+      "evidence": {
+        "path": "docs/온라인접수_2026-09-27.md",
+        "sha256": "a852e6fa32c96de2dbfd269de6458013263350acd59c980848635c99c8a68c04"
+      },
+      "note": "9/27 정이량 팀장 명의 PDF는 검수·접수 확인 후 취소됨(사용자 보고). 9/28 황대겸 팀장 명의 PDF는 검토했으나 새 서버 첨부본은 미확인."
     },
     {
       "id": "submission",
-      "status": "pending",
-      "next_action": "팀 정보·서명·HWP 검토·실제 접수"
+      "status": "done",
+      "next_action": "9/28 황대겸 명의 재신청은 사용자 보고. 새 계정의 접수상태·4명·첨부 PDF를 서버에서 확인하고 다운로드 파일을 대조할 것.",
+      "note": "2026-09-27 10:57 KST 정이량 명의 신청 상태·4명·첨부 PDF를 확인했으나 이후 취소됨(사용자 보고). 황대겸 명의 재신청은 사용자 보고이며 직접 확인 전.",
+      "evidence": {
+        "path": "docs/온라인접수_2026-09-27.md",
+        "sha256": "a852e6fa32c96de2dbfd269de6458013263350acd59c980848635c99c8a68c04"
+      }
     },
     {
       "id": "implementation",
       "status": "pending",
-      "next_action": "선정안 모델 연결과 MVP"
+      "next_action": "10/2 1차 선정 및 컨설팅 희망 시간표 제출(사용자 보고). 10/6 오전 실제 일정 확인과 샘플 자료집→실제 모델/도구 연결→검사·수정→웹 UI→독립 평가"
     },
     {
       "id": "evaluation",
       "status": "pending",
-      "next_action": "별도 평가 케이스·성능·사용성 측정"
+      "next_action": "2차 공식 20/20/10/30/20 기준으로 독립 케이스·오류 대응·효과 근거·재실행 및 토큰 절감 검증"
     },
     {
       "id": "presentation",
       "status": "pending",
-      "next_action": "20쪽 이내 자료·5분 시연·질의응답"
+      "next_action": "10/20까지 발표자료·시연 영상·전체 코드 ZIP(실행 README·Skill) 준비; 기존 20쪽 제한 유지·후속 확인"
     }
   ],
   "submission_checks": [
     {
       "id": "team",
-      "status": "pending"
+      "status": "done",
+      "note": "정이량·신진하·최길웅·황대겸 4인 필수 정보 취합·반영. 개인 값은 private/.",
+      "evidence": {
+        "path": "docs/4인팀_서류검수_2026-09-27.md",
+        "sha256": "b788416d919121cb63627e40323df84f80520ebfe443f569e8e6020132229006"
+      }
     },
     {
       "id": "eligibility",
-      "status": "pending"
+      "status": "done",
+      "note": "황대겸 포함 네 명 모두 창원캠퍼스 재학생이라는 사용자 확인. 학부 3학년 4명.",
+      "evidence": {
+        "path": "docs/4인팀_서류검수_2026-09-27.md",
+        "sha256": "b788416d919121cb63627e40323df84f80520ebfe443f569e8e6020132229006"
+      }
     },
     {
       "id": "application",
-      "status": "pending"
+      "status": "done",
+      "note": "네 명의 이름·학과·학년·학번·연락처와 팀장 정보 HWP/PDF 대조.",
+      "evidence": {
+        "path": "docs/4인팀_서류검수_2026-09-27.md",
+        "sha256": "b788416d919121cb63627e40323df84f80520ebfe443f569e8e6020132229006"
+      }
     },
     {
       "id": "proposal_hwp",
-      "status": "pending"
+      "status": "done",
+      "evidence": {
+        "path": "docs/시각자료_보완검수_2026-09-27.md",
+        "sha256": "cd4f2e6482863b8816bcff8b52a853a634f7240aac8182b20d9e484ac354f7f0"
+      },
+      "note": "시각보완본 HWP 재열기·전체 11쪽/제안서 8쪽·본문 일치; 변경 3쪽 시각 검수 및 나머지 8쪽 렌더 일치."
     },
     {
       "id": "page_limit",
-      "status": "pending"
+      "status": "done",
+      "evidence": {
+        "path": "docs/시각자료_보완검수_2026-09-27.md",
+        "sha256": "cd4f2e6482863b8816bcff8b52a853a634f7240aac8182b20d9e484ac354f7f0"
+      },
+      "note": "시각보완본 HWP 재열기·전체 11쪽/제안서 8쪽·본문 일치; 변경 3쪽 시각 검수 및 나머지 8쪽 렌더 일치."
     },
     {
       "id": "consents",
-      "status": "pending"
+      "status": "done",
+      "note": "황대겸 추가 동의·서명 승인 확인. 두 동의 원과 네 명 이름·서명 반영.",
+      "evidence": {
+        "path": "docs/4인팀_서류검수_2026-09-27.md",
+        "sha256": "b788416d919121cb63627e40323df84f80520ebfe443f569e8e6020132229006"
+      }
     },
     {
       "id": "pledge",
-      "status": "pending"
+      "status": "done",
+      "note": "원문 서약 유지·4인 서명 완비, 사용자 최신 문서 최종 제출 승인.",
+      "evidence": {
+        "path": "docs/온라인접수_2026-09-27.md",
+        "sha256": "a852e6fa32c96de2dbfd269de6458013263350acd59c980848635c99c8a68c04"
+      }
     },
     {
       "id": "file_open",
-      "status": "pending"
+      "status": "done",
+      "evidence": {
+        "path": "docs/시각자료_보완검수_2026-09-27.md",
+        "sha256": "cd4f2e6482863b8816bcff8b52a853a634f7240aac8182b20d9e484ac354f7f0"
+      },
+      "note": "시각보완본 HWP 재열기·전체 11쪽/제안서 8쪽·본문 일치; 변경 3쪽 시각 검수 및 나머지 8쪽 렌더 일치."
     },
     {
       "id": "upload_requirements",
-      "status": "pending"
+      "status": "done",
+      "note": "로그인 후 PDF 한 파일·학번_이름 안내 확인. 최신본과 동일한 첨부본 선택; 페이지 용량 제한 미표시.",
+      "evidence": {
+        "path": "docs/온라인접수_2026-09-27.md",
+        "sha256": "a852e6fa32c96de2dbfd269de6458013263350acd59c980848635c99c8a68c04"
+      }
     },
     {
       "id": "team_review",
-      "status": "pending"
+      "status": "done",
+      "note": "사용자가 시각보완본 승인 및 최종 제출 지시. 다른 팀원의 개별 열람 여부를 추정하지 않음.",
+      "evidence": {
+        "path": "docs/온라인접수_2026-09-27.md",
+        "sha256": "a852e6fa32c96de2dbfd269de6458013263350acd59c980848635c99c8a68c04"
+      }
     }
-  ]
+  ],
+  "submission_target_date": "2026-09-27",
+  "topic_trial": {
+    "mode": "Codex-assisted research and deterministic Skill execution",
+    "case_count": 9,
+    "regression_test_count": 32,
+    "model_api_run": false,
+    "user_research_run": false,
+    "protocol": {
+      "path": "research/topic_trial/protocol.md",
+      "sha256": "05129f73f1a7119333d915267e11755bc1aa43ab09679c305cfe81a5336cfd24"
+    },
+    "outputs": {
+      "path": "research/topic_trial/pilot_outputs.json",
+      "sha256": "4aa98d126c012c7540e0d3951e476181f68eda11c75dfae86731220ebc358867"
+    },
+    "result": {
+      "path": "기획/주제검증_결과.md",
+      "sha256": "1541a903647a7be3a51bcc11d55d1a9cb4b831f6e65f308ce3571c556f09ea3a"
+    },
+    "historical": true
+  },
+  "decision_history": [
+    {
+      "status": "confirmed",
+      "candidate_id": "A4",
+      "confirmed_by": "Codex (사용자의 명시적 선정 위임)",
+      "confirmed_at": "2026-09-27T02:13:13+09:00",
+      "rationale": "A4/B1/B5의 공개 근거·경쟁 기능과 9개 최소 Skill 입력 실행을 비교. 상품기획 직무 적합성, 실제 근거 기반의 기존 기능 반박, 한 가전으로 제한 가능한 범위를 근거로 Kitchen Gap 선정. 모델 API·추출/생성 성능·실사용 효용은 미검증.",
+      "authority": {
+        "kind": "user_delegation",
+        "instruction": "최종 주제 하나 선정해줘 너가 판단해서 → 1번 2번 진행해",
+        "selected_by": "Codex",
+        "not_direct_user_approval_of_candidate": true
+      }
+    },
+    {
+      "status": "confirmed",
+      "candidate_id": "B7",
+      "confirmed_by": "Codex (사용자 선정 위임, 최신 목표 반영)",
+      "confirmed_at": "2026-09-27T03:27:10+09:00",
+      "rationale": "7개 후보를 쉬운 설계·명확한 실패 검사·시연·공식 직무 적합성으로 비교. Kitchen Recovery로 출력 범위를 좁혀 구조화·검사·수정 과정을 보여주기로 선정. 수상 확률과 실제 모델/사용자 효용은 미검증.",
+      "authority": {
+        "kind": "user_delegation",
+        "selected_by": "Codex",
+        "not_direct_user_approval_of_candidate": true
+      }
+    },
+    {
+      "status": "theme_finalists_selected",
+      "selected": {
+        "A": "ROW_A2",
+        "B": "ROW_B4"
+      },
+      "authority": {
+        "kind": "user_delegation",
+        "instruction": "기존 12개를 1차 서류 설득력·선발 후 실제 구현 난도·실사용 가치·데이터·차별성·검증 가능성으로 평가해 Theme A와 B에서 각각 하나를 선별한다.",
+        "selected_by": "Codex",
+        "not_direct_user_approval_of_candidate": true,
+        "scope": "one finalist in each theme; not a single submission topic"
+      },
+      "evidence": {
+        "path": "기획/테마별_최종후보_평가.md",
+        "sha256": "258aac16debb92258e29b2a3b233f3a08addf0c0515ce7cd4e16117cfd751d38"
+      }
+    },
+    {
+      "status": "reopened_after_role_reframing",
+      "instruction": "Theme A/B의 직접 사용자·반복 업무·수행 범위·산출물을 기준으로 다시 탐색하고 후보를 도출한다. 기존 12개는 선택 부문이 아닌 기능·자료·사례 재료로 활용한다.",
+      "new_recommendations": {
+        "status": "proposed_after_role_discovery",
+        "by_theme": {
+          "A": "ROLE_A_FORM",
+          "B": "ROLE_B_SERVICE"
+        },
+        "verification_priority": [
+          "ROLE_B_SERVICE",
+          "ROLE_A_FORM"
+        ],
+        "selected_by": "Codex",
+        "direct_user_approval": false,
+        "scope": "업무 후보 추천; 최종 출품 테마 확정 아님"
+      },
+      "evidence": {
+        "path": "기획/직무기준_주제재탐색.md",
+        "sha256": "322df40d6eeaffb6727687d724eacc426f9aee6d66561b7c31adde652de9ad81"
+      }
+    },
+    {
+      "status": "superseded_by_two_axis_reset",
+      "previous_decision": {
+        "status": "exploring",
+        "candidate_id": null,
+        "confirmed_by": null,
+        "confirmed_at": null,
+        "rationale": "직무 기준 재탐색 결과 A-형태/B-연계 추천. 공식 행별 최종 후보 선정은 이전 기록. 단일 출품 테마는 미확정."
+      },
+      "previous_recommendations": {
+        "status": "proposed_after_role_discovery",
+        "by_theme": {
+          "A": "ROLE_A_FORM",
+          "B": "ROLE_B_SERVICE"
+        },
+        "verification_priority": [
+          "ROLE_B_SERVICE",
+          "ROLE_A_FORM"
+        ],
+        "selected_by": "Codex",
+        "direct_user_approval": false,
+        "scope": "업무 후보 추천; 최종 출품 테마 확정 아님",
+        "evidence": {
+          "path": "기획/직무기준_주제재탐색.md",
+          "sha256": "322df40d6eeaffb6727687d724eacc426f9aee6d66561b7c31adde652de9ad81"
+        },
+        "limitations": [
+          "현업 채택·수요·합격 확률·LLM 우월성 미검증",
+          "기존 일부 코드 실험을 확장된 직무 전체의 검증으로 사용하지 않음",
+          "초기 표본 수·기능 수는 계획이며 확보·구현 완료가 아님",
+          "이번 범위는 재탐색·도출. 단일 출품 주제 확정·접수는 별도"
+        ]
+      },
+      "reason": "구현 난도가 쉽고 1차 서류를 설득력 있게 제출할 수 있는가, 이 두 조건만으로 원점에서 재검토한다. 기존 최종 선정 위임에 따라 Codex가 출품 방향 하나를 선정한다."
+    },
+    {
+      "status": "retained_after_sample_policy_correction",
+      "previous_decision": {
+        "status": "confirmed",
+        "candidate_id": "RESET_A_EVIDENCE",
+        "confirmed_by": "Codex (사용자의 기존 선정 위임에 따른 최신 두 조건 재선정)",
+        "confirmed_at": "2026-09-27T07:54:07+09:00",
+        "rationale": "구현 난도와 1차 제안서 설득력만으로 6개 범위를 재비교. 자료 준비를 포함한 텍스트·표 기반 업무의 완주 가능성과 근거-콘셉트 연결을 근거로 Theme A 선정. 합격·모델 성능·사용자 효용 미검증.",
+        "authority": {
+          "kind": "user_delegation",
+          "instruction": "최종 주제 하나 선정해줘 너가 판단해서 → 1번 2번 진행해; 최신 지시: 구현난이도 쉽고, 1차 서류 합격 한다는 이 두 가지 조건만 비교해서 원점에서 재검토해봐",
+          "selected_by": "Codex",
+          "not_direct_user_approval_of_candidate": true,
+          "scope": "one submission theme and topic; not submission authorization or evidence of completion"
+        },
+        "evidence": {
+          "path": "기획/두조건_원점재검토.md",
+          "sha256": "505bd4f91e5657f1a2294c945abd80b7e5de6faaca14353ba2ffb57053996e0d"
+        }
+      },
+      "correction": "리뷰 확보는 우리가 만든 샘플로 시연할 수 있으며, 다른 후보의 제품 정보·사용자 조건·가전 상태 등에도 같은 원칙을 적용한다."
+    },
+    {
+      "status": "confirmed",
+      "candidate_id": "RESET_A_EVIDENCE",
+      "confirmed_by": "Codex (사용자의 기존 선정 위임에 따른 최신 두 조건 재선정)",
+      "confirmed_at": "2026-09-27T07:54:07+09:00",
+      "rationale": "모든 후보에 샘플 데이터·가상 명세·모의 연동을 공통 적용해 난도를 보정했다. 폼팩터 A와 연계 B의 부담 감소를 인정하고도 텍스트/표 중심의 좁은 대조·기획·수정 업무를 이유로 기존 A를 유지한다. 합격률·Agent 성능 검증 아님.",
+      "authority": {
+        "kind": "user_delegation",
+        "instruction": "최종 주제 하나 선정해줘 너가 판단해서 → 1번 2번 진행해; 최신 지시: 구현난이도 쉽고, 1차 서류 합격 한다는 이 두 가지 조건만 비교해서 원점에서 재검토해봐",
+        "selected_by": "Codex",
+        "not_direct_user_approval_of_candidate": true,
+        "scope": "one submission theme and topic; not submission authorization or evidence of completion",
+        "latest_constraint_instruction": "리뷰 확보는 우리가 만든 샘플로 시연할 수 있으며, 다른 후보의 제품 정보·사용자 조건·가전 상태 등에도 같은 원칙을 적용한다."
+      },
+      "evidence": {
+        "path": "기획/샘플데이터_기준_재검토.md",
+        "sha256": "2c27d57465b4b819d33d9773914f4044b4cf439ffd6f5de492a47f2bcacb192b"
+      },
+      "revalidated_at": "2026-09-27T08:03:43+09:00"
+    }
+  ],
+  "atoz": {
+    "config": "harness/atoz.json",
+    "state": "harness/atoz_state.json",
+    "executor": "current Codex conversation",
+    "topic": "RESET_A_EVIDENCE",
+    "standalone_model_api_verified": false,
+    "comparison": "기획/샘플데이터_기준_재검토.md"
+  },
+  "theme_recommendations": {
+    "status": "superseded_by_single_topic_selection",
+    "selected": "RESET_A_EVIDENCE",
+    "theme": "A",
+    "evidence": {
+      "path": "기획/샘플데이터_기준_재검토.md",
+      "sha256": "2c27d57465b4b819d33d9773914f4044b4cf439ffd6f5de492a47f2bcacb192b"
+    },
+    "limits": [
+      "후보 난도·서류 설득력은 정성적 판단이며 합격 확률·공식 점수가 아니다.",
+      "합성 자료는 시연 동작의 입력이며 실제 고객 수요·기술 효과·실기기 제어 증거가 아니다.",
+      "기존 저장된 코드 실험을 재검토했고 새 모델 호출·샘플 자료집·모의 API 구현은 하지 않았다.",
+      "선정은 기존 위임에 따른 Codex 판단이다. 이번 사용자가 승인한 것은 샘플을 고려하는 방식이며 후보 직접 승인과 구분한다."
+    ]
+  },
+  "demo_policy": {
+    "instruction": "리뷰 확보는 우리가 만든 샘플로 시연할 수 있으며, 다른 후보의 제품 정보·사용자 조건·가전 상태 등에도 같은 원칙을 적용한다.",
+    "applies_to": "all Theme A/B candidates",
+    "default_demo_inputs": "curated or synthetic fixtures, virtual product specifications, mocked device/API states",
+    "must_execute": [
+      "retrieval over supplied fixtures",
+      "actual analysis and calculations",
+      "validation and revision when input changes"
+    ],
+    "evidence_separation": [
+      "synthetic demo/test inputs",
+      "real problem and effect evidence"
+    ],
+    "automatic_collection_or_real_device_required": false
+  },
+  "team_confirmed": {
+    "leader": "황대겸",
+    "members": [
+      {
+        "name": "정이량",
+        "year": 3
+      },
+      {
+        "name": "신진하",
+        "year": 3
+      },
+      {
+        "name": "최길웅",
+        "year": 3
+      },
+      {
+        "name": "황대겸",
+        "year": 3
+      }
+    ],
+    "private_details": "private/team.json",
+    "student_ids": "네 명 확인·반영 완료; 값과 근거는 private/team.json",
+    "team_name": "키친에서치킨먹기",
+    "email": "황대겸 팀장 명의 수정 PDF 기재값을 private/team.json에 반영; 새 접수내역 대조 전",
+    "campus_eligibility": "네 명 모두 창원캠퍼스 재학생, 황대겸 포함 사용자 확인 2026-09-27",
+    "team_name_source": "2026-09-27 사용자 직접 지정",
+    "consent_choices": "네 명 전원 개인정보·초상권 동의, 황대겸 추가 확인 및 양식 반영 2026-09-27",
+    "membership_change": "황대겸 LG 팀 추가 2026-09-27, 팀장 정이량→황대겸 변경 2026-09-28; 모두 사용자 직접 지시"
+  },
+  "first_selection": {
+    "status": "selected_user_confirmed",
+    "date": "2026-10-02",
+    "source_note": "사용자 직접 확인. 주최 측 10/2 12:00 메일은 결과 확인 경로와 선정팀 컨설팅 안내를 제공하지만 본문에 팀별 결과는 없음.",
+    "evidence": {
+      "path": "docs/1차선정_2026-10-02.md",
+      "sha256": "c8d7437d2db8a09b776cd33e090c6de313dd74218dd6004d29717cfc57462a1c"
+    },
+    "consultation_availability_reply_due": "2026-10-02T15:00:00+09:00",
+    "consultation_reply_sent": true,
+    "consultation_reply_source": "2026-10-02 사용자 보고; 발송본·수신은 직접 대조하지 않음",
+    "consultation_schedule_notice_expected_by": "2026-10-06 오전 KST (사용자 보고)",
+    "online_consultation_time_confirmed": false
+  },
+  "application_draft": {
+    "status": "resubmitted_user_report_pending_receipt_verification",
+    "evidence": {
+      "path": "docs/시각자료_보완검수_2026-09-27.md",
+      "sha256": "cd4f2e6482863b8816bcff8b52a853a634f7240aac8182b20d9e484ac354f7f0"
+    },
+    "private_directory": "private/제출준비/",
+    "proposal_pages": 8,
+    "total_pages": 11,
+    "submitted": true,
+    "signature_revision": "기존 세 명 필체 유지, 황대겸의 구별되는 새 필기체 추가, 총 12곳. 동의서 행 간 크기·정렬 보정.",
+    "private_hwp": null,
+    "previous_private_hwp": "private/제출준비/LG_AX_키친에서치킨먹기_시각보완본.hwp",
+    "previous_private_pdf": "private/제출준비/LG_AX_키친에서치킨먹기_시각보완본.pdf",
+    "private_pdf": "private/제출준비/LG_AX_키친에서치킨먹기_황대겸팀장_재신청본.pdf",
+    "visuals": "그림 3~5 Agent 수행 구간 강조; 냉장고·식기세척기·전자레인지 제품 형태 구체화. 총 5장.",
+    "submission_evidence": {
+      "path": "docs/온라인접수_2026-09-27.md",
+      "sha256": "a852e6fa32c96de2dbfd269de6458013263350acd59c980848635c99c8a68c04"
+    },
+    "receipt_private": "private/접수증빙/접수완료.json",
+    "receipt_note": "이 증빙은 취소 전 2026-09-27 정이량 명의 신청에 해당한다.",
+    "resubmission": {
+      "reported_by_user": "2026-09-28 정이량 명의 신청취소 후 황대겸 명의 재신청",
+      "pdf_reviewed": true,
+      "pdf_sha256": "cca260fabbd8b7ed2a25550927b550edb90a8bc6f579ca9362112db3b100cd94",
+      "new_receipt_verified": false,
+      "evidence_path": "docs/팀장변경_재신청_2026-09-28.md"
+    }
+  },
+  "second_stage_requirements": {
+    "checked_at": "2026-10-03",
+    "source_id": "S20",
+    "source_sha256": "c61fec7064674dbb4f4a6006a299c34c870ef2240b3a0f5d2e941c355777af24",
+    "evidence": {
+      "path": "docs/2차제출_평가안내_2026-10-03.md",
+      "sha256": "50473c4ead38b0e567bcde43905e44da329f54a7edad61bbda17cb90bfbd767f"
+    },
+    "deliverables": [
+      "발표자료(PPT/PDF/HTML 등)",
+      "시연 영상",
+      "전체 소스코드 ZIP 및 실행 README.md"
+    ],
+    "skill_required_file": "skills/{skill-name}/SKILL.md",
+    "base_scores": {
+      "customer_problem_and_result": 20,
+      "agent_structure": 20,
+      "demo": 10,
+      "core_features_and_skills": 30,
+      "impact_and_extension": 20
+    },
+    "token_saving_bonus": {
+      "eligible": true,
+      "score_and_method_confirmed": false
+    },
+    "vibe_coding_allowed": true,
+    "actual_input_judgment_tool_result_flow_required": true,
+    "submission_due_date_existing_notice": "2026-10-20",
+    "unknown": [
+      "exact submission time",
+      "submission channel",
+      "file size",
+      "video duration",
+      "presentation page limit update",
+      "bonus score and method"
+    ],
+    "notion_synced": true,
+    "agent_completed": false
+  },
+  "implementation_strategy_review": {
+    "checked_at": "2026-10-04",
+    "status": "analysis_completed_recommendations_pending_user_decision",
+    "evidence": {
+      "path": "기획/구현전략_플러그인웹_4인협업_2026-10-04.md",
+      "sha256": "c8e61290303ee595cabe1e9322de95160ea4c10736b851a387e2440f28026141"
+    },
+    "proposal_sha256": "cca260fabbd8b7ed2a25550927b550edb90a8bc6f579ca9362112db3b100cd94",
+    "second_guidance_sha256": "c61fec7064674dbb4f4a6006a299c34c870ef2240b3a0f5d2e941c355777af24",
+    "coverage_ids": [
+      "R01",
+      "R02",
+      "R03",
+      "R04",
+      "R05",
+      "R06",
+      "R07",
+      "R08",
+      "R09",
+      "R10",
+      "R11",
+      "R12",
+      "R13",
+      "R14",
+      "R15",
+      "R16",
+      "R17",
+      "R18",
+      "R19",
+      "R20",
+      "R21",
+      "R22",
+      "R23",
+      "R24",
+      "R25",
+      "R26",
+      "R27",
+      "R28",
+      "E01",
+      "E02",
+      "E03"
+    ],
+    "recommended_repo_strategy": "monorepo_shared_core_web_mcp_inference",
+    "architecture_approved": false,
+    "repos_created": false,
+    "phase2_harness_built": false,
+    "agent_completed": false,
+    "resources_user_report": {
+      "team_members": 4,
+      "paid_ai_tools_per_member": true,
+      "rtx_a6000_cards": 4,
+      "server_access_verified": false
+    },
+    "legacy_atoz_validation": "blocked_stale_artifacts_dependencies",
+    "next_actions": [
+      "decide_repo_and_architecture",
+      "migrate_harness_preserving_phase1_evidence",
+      "lock_shared_contracts",
+      "verify_server_and_two_host_connections",
+      "run_actual_end_to_end_flow"
+    ],
+    "notion_synced": true,
+    "notion_verified_at": "2026-10-04",
+    "validation": {
+      "record_structure": "pass",
+      "legacy_atoz": "blocked_stale_artifact_dependencies",
+      "git_diff_check": "pass",
+      "actual_model_or_gpu_run": false
+    }
+  },
+  "team_workflow": {
+    "confirmed_at": "2026-10-04",
+    "source": "user_direct_instruction_current_conversation",
+    "pm_required": true,
+    "pm_assignee": "정이량",
+    "pm_responsibilities": [
+      "assign_followup_work_to_early_finishers",
+      "review_deliverables",
+      "take_responsibility_for_merges"
+    ],
+    "completion_requires": [
+      "individual_execution_evidence",
+      "pm_review",
+      "merge",
+      "integrated_execution_verification"
+    ],
+    "status": "operating_rules_recorded_assignment_and_automation_pending",
+    "evidence": {
+      "path": "docs/팀운영_PM과검수_2026-10-04.md",
+      "sha256": "0320b6723e14885979df0fde92c394253f29415260a488fe742a6684bc6621f8"
+    },
+    "role_assignment_confirmed": false,
+    "projects_configured": false,
+    "phase2_harness_built": false,
+    "notion_synced": true,
+    "notion_verified_at": "2026-10-04",
+    "pm_assignment_source": "user_direct_instruction",
+    "hardest_work_assignee": "황대겸",
+    "hardest_work_assignment_source": "user_direct_instruction",
+    "detailed_assignment_source": "Codex_allocation_under_user_request"
+  },
+  "team_agent_reporting": {
+    "confirmed_at": "2026-10-04",
+    "source": "user_direct_instruction",
+    "purpose": "preserve_user_intent_interpretation_actual_work_evidence_and_resume_context_between_team_AI_agents",
+    "status": "instruction_and_document_framework_verified",
+    "pm": "정이량",
+    "member_files": [
+      {
+        "member": "정이량",
+        "work_log": "docs/작업기록/정이량.md",
+        "evidence_log": "docs/작업근거/정이량.md"
+      },
+      {
+        "member": "황대겸",
+        "work_log": "docs/작업기록/황대겸.md",
+        "evidence_log": "docs/작업근거/황대겸.md"
+      },
+      {
+        "member": "신진하",
+        "work_log": "docs/작업기록/신진하.md",
+        "evidence_log": "docs/작업근거/신진하.md"
+      },
+      {
+        "member": "최길웅",
+        "work_log": "docs/작업기록/최길웅.md",
+        "evidence_log": "docs/작업근거/최길웅.md"
+      }
+    ],
+    "guide_evidence": {
+      "path": "docs/작업기록/README.md",
+      "sha256": "989812f0fe9516914276b3ee29f761bf1ef09c4ddf2ce5c380435ae3863f0982"
+    },
+    "root_rules": {
+      "path": "AGENTS.md",
+      "sha256": "6538b69674fc92b4bc2665fe8c07e088f78cb1191b1bb8890cb1fb3a7af88570"
+    },
+    "claude_rules": {
+      "path": "CLAUDE.md",
+      "sha256": "6538b69674fc92b4bc2665fe8c07e088f78cb1191b1bb8890cb1fb3a7af88570"
+    },
+    "rule_bytes_identical": true,
+    "sync_command": "python scripts/sync_agent_rules.py --check",
+    "record_points": [
+      "request_start",
+      "meaningful_progress_or_change",
+      "failure_or_interruption",
+      "before_completion_or_review_request"
+    ],
+    "report_must_separate": [
+      "user_request",
+      "AI_interpretation",
+      "planned_actions",
+      "actual_work",
+      "evidence",
+      "individual_verification",
+      "PM_merge_and_integration"
+    ],
+    "other_members_actual_work_confirmed": false,
+    "agent_implementation_completed": false,
+    "phase2_harness_built": false,
+    "notion_synced": true,
+    "notion_verified_at": "2026-10-04",
+    "validation": {
+      "identical_rule_bytes": "pass",
+      "reporting_docs": 9,
+      "markdown_references_inspected": 31,
+      "record_structure": "pass",
+      "existing_submission_gate": "pass",
+      "git_diff_check": "pass",
+      "legacy_atoz": "blocked_stale_artifact_dependencies",
+      "remote_ci_run": false
+    }
+  },
+  "active_phase": "phase2",
+  "phase2_runtime": {
+    "state": "harness/phase2/state.json",
+    "tasks": "harness/phase2/tasks",
+    "requirements": "harness/phase2/requirements.json",
+    "guide": "docs/bootstrap/README.md",
+    "governance_issue": "https://github.com/jeongiryang/lg-ax-2026/issues/28",
+    "project": "https://github.com/users/jeongiryang/projects/3",
+    "initial_setup": "in_progress",
+    "entrypoint": "uv run python scripts/phase2.py status",
+    "application_agent_complete": false
+  }
 }

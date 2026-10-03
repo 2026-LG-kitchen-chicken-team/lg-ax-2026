@@ -1,0 +1,73 @@
+- link "콘텐츠로 바로 가기":
+  - /url: "#_r_gf_"
+- complementary:
+  - navigation "앱 탐색":
+    - button "홈":
+      - generic: 홈
+    - button "스페이스":
+      - generic: 스페이스
+    - button "예약":
+      - generic: 예약
+    - button "플러그인":
+      - generic: 플러그인
+    - button "탐색":
+      - generic: 탐색
+    - button "프로필 메뉴 열기"
+  - navigation "홈"
+- main [active]:
+  - button "새 채팅":
+  - button "공유":
+    - text: 공유
+  - button "더보기":
+  - button "요약 고정/해제":
+  - button "12s 동안 처리함" [expanded]
+  - generic: 12s 동안 처리함
+  - paragraph: LG AX 주방가전 모델과 청소·매뉴얼 근거 확인
+  - heading "ChatGPT 답변:" [level=4]
+  - paragraph: 연결 검증 결과만 정리합니다.
+  - list:
+    - paragraph: "list_products 실제 호출: 성공"
+    - list:
+      - listitem: FRIDGE-A 포함 확인
+      - listitem: "모델명: 가상 냉장고 A"
+      - listitem: "product_group: fridge"
+      - listitem: "document_version: 1.0"
+    - paragraph: "search_evidence(q=\"청소\", model_id=\"FRIDGE-A\", document_version=\"1.0\", limit=3) 실제 호출: 성공"
+    - list:
+      - listitem: "총 검색 결과 수: 4"
+      - listitem: limit에 따라 3건 반환
+      - text: "반환 ID:"
+      - list:
+        - listitem: REVIEW-EVIDENCE-001 — REVIEWS-CSV-v1.0, row 2
+        - listitem: REVIEW-EVIDENCE-006 — REVIEWS-CSV-v1.0, row 7
+        - listitem: REVIEW-EVIDENCE-008 — REVIEWS-CSV-v1.0, row 9
+      - listitem: "검색 방식: literal_token_count"
+    - paragraph: "get_evidence(evidence_id=\"MANUAL-001\") 실제 호출: 성공"
+    - list:
+      - listitem: "모델: FRIDGE-A"
+      - listitem: "문서 버전: 1.0"
+      - listitem: "원문 소스: FRIDGE-A-MANUAL-v1.0"
+      - listitem: "원문 위치: page 1, section \"선반 분리\""
+      - text: "원문:"
+      - blockquote:
+        - paragraph: 선반은 분리하여 세척할 수 있습니다. 선반을 분리하기 전에 위의 식품을 모두 옮겨 주세요.
+  - paragraph: 결론적으로 플러그인 연결과 list_products → search_evidence → get_evidence 호출 모두 정상 동작했습니다. 상품기획 판단은 수행하지 않았습니다.
+  - button "복사":
+  - button "응답 평가":
+  - button "공유":
+  - button "소리 내어 읽기":
+  - button "추가 액션":
+  - generic: ChatGPT는 실수할 수 있습니다. 중요한 정보는 확인하세요.
+  - button:
+  - heading "최신 응답" [level=4]
+  - status
+  - button "파일 등 추가":
+  - textbox "ChatGPT에게 물어보세요":
+    - paragraph: ChatGPT에게 물어보세요
+  - button "ChatGPT 모델 선택":
+    - generic: Instant
+  - button "음성 입력":
+  - button "음성 대화 시작":
+- status
+- status
+- status: 응답이 완료되었습니다

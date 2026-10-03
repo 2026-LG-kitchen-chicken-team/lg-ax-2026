@@ -1,0 +1,24 @@
+{
+  "mode": "real published product dimensions; synthetic space and scheduling scenarios; no LLM or device run",
+  "products": [
+    {"id": "LMXS28596_", "market": "US", "document_revision": "3/22", "unit": "inch", "width": 35.75, "height": 69.75, "side_gap": 0.125, "top_gap": 1, "open_width": 44.25, "source": "https://www.lg.com/us/business/download/resources/CT00021979/LMXS28596_%20LG%20Builder%20Spec%20Sheet%5B20220402_054345%5D.pdf", "page": 2},
+    {"id": "LSXS26366_", "market": "US", "document_revision": "5/21", "unit": "inch", "width": 35.9375, "height": 70.25, "side_gap": 0.125, "top_gap": 1, "open_width": 44.25, "source": "https://www.lg.com/us/business/download/resources/CT00021979/LSXS26366_%20LG%20Builder%20Spec%20Sheet%5B20220108_003404%5D.pdf", "page": 2}
+  ],
+  "space_cases": [
+    {"id": "width_height_boundary", "unit": "inch", "market": "US", "width_limit": 36, "height_limit": 71, "open_width_limit": 45},
+    {"id": "door_envelope_too_narrow", "unit": "inch", "market": "US", "width_limit": 37, "height_limit": 72, "open_width_limit": 40},
+    {"id": "missing_opening_information", "unit": "inch", "market": "US", "width_limit": 37, "height_limit": 72},
+    {"id": "different_market", "unit": "inch", "market": "KR", "width_limit": 37, "height_limit": 72, "open_width_limit": 45}
+  ],
+  "space_limitations": ["Measurements transcribed by Codex from official two-page spec sheets; raw-document extraction not automated", "Old US models demonstrate source availability only; not a current Korean small-household market sample", "Only three explicitly defined envelope constraints screened; no depth, delivery path, plumbing, drawer, side-wall geometry or physical installation certification", "No quantified customer demand, new product feasibility or LLM benchmark"],
+  "resources": ["person", "oven"],
+  "tasks": [
+    {"id": "prep_a", "duration": 4, "resources": ["person"], "after": []},
+    {"id": "heat_a", "duration": 12, "resources": ["oven"], "after": ["prep_a"]},
+    {"id": "finish_a", "duration": 2, "resources": ["person"], "after": ["heat_a"]},
+    {"id": "prep_b", "duration": 3, "resources": ["person"], "after": []},
+    {"id": "heat_b", "duration": 8, "resources": ["oven"], "after": ["prep_b"]},
+    {"id": "finish_b", "duration": 2, "resources": ["person"], "after": ["heat_b"]}
+  ],
+  "schedule_limitations": ["Synthetic integer time units, not measured recipe times", "At most eight tasks, single-capacity resources, no preemption, no temperature or safety model", "Replans from the start under changed assumptions; in-progress task freezing is not implemented", "Compares code schedules only; no claim of LLM advantage or real cooking-time savings"]
+}

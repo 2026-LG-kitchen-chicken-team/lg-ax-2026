@@ -1,0 +1,348 @@
+{
+  "mode": "real published product dimensions; synthetic space and scheduling scenarios; no LLM or device run",
+  "space": [
+    {
+      "case": "width_height_boundary",
+      "model": "LMXS28596_",
+      "result": {
+        "status": "limited_screen_pass",
+        "violations": [],
+        "missing": [],
+        "required": {
+          "width_limit": 36.0,
+          "height_limit": 70.75,
+          "open_width_limit": 44.25
+        },
+        "installation_approval": false
+      }
+    },
+    {
+      "case": "width_height_boundary",
+      "model": "LSXS26366_",
+      "result": {
+        "status": "reject_constraints",
+        "violations": [
+          {
+            "field": "width_limit",
+            "required": 36.1875,
+            "available": 36
+          },
+          {
+            "field": "height_limit",
+            "required": 71.25,
+            "available": 71
+          }
+        ],
+        "missing": [],
+        "required": {
+          "width_limit": 36.1875,
+          "height_limit": 71.25,
+          "open_width_limit": 44.25
+        },
+        "installation_approval": false
+      }
+    },
+    {
+      "case": "door_envelope_too_narrow",
+      "model": "LMXS28596_",
+      "result": {
+        "status": "reject_constraints",
+        "violations": [
+          {
+            "field": "open_width_limit",
+            "required": 44.25,
+            "available": 40
+          }
+        ],
+        "missing": [],
+        "required": {
+          "width_limit": 36.0,
+          "height_limit": 70.75,
+          "open_width_limit": 44.25
+        },
+        "installation_approval": false
+      }
+    },
+    {
+      "case": "door_envelope_too_narrow",
+      "model": "LSXS26366_",
+      "result": {
+        "status": "reject_constraints",
+        "violations": [
+          {
+            "field": "open_width_limit",
+            "required": 44.25,
+            "available": 40
+          }
+        ],
+        "missing": [],
+        "required": {
+          "width_limit": 36.1875,
+          "height_limit": 71.25,
+          "open_width_limit": 44.25
+        },
+        "installation_approval": false
+      }
+    },
+    {
+      "case": "missing_opening_information",
+      "model": "LMXS28596_",
+      "result": {
+        "status": "hold_missing_information",
+        "violations": [],
+        "missing": [
+          "open_width_limit"
+        ],
+        "required": {
+          "width_limit": 36.0,
+          "height_limit": 70.75,
+          "open_width_limit": 44.25
+        },
+        "installation_approval": false
+      }
+    },
+    {
+      "case": "missing_opening_information",
+      "model": "LSXS26366_",
+      "result": {
+        "status": "hold_missing_information",
+        "violations": [],
+        "missing": [
+          "open_width_limit"
+        ],
+        "required": {
+          "width_limit": 36.1875,
+          "height_limit": 71.25,
+          "open_width_limit": 44.25
+        },
+        "installation_approval": false
+      }
+    },
+    {
+      "case": "different_market",
+      "model": "LMXS28596_",
+      "result": {
+        "status": "hold_market_mismatch",
+        "violations": []
+      }
+    },
+    {
+      "case": "different_market",
+      "model": "LSXS26366_",
+      "result": {
+        "status": "hold_market_mismatch",
+        "violations": []
+      }
+    }
+  ],
+  "schedule": [
+    {
+      "case": "normal",
+      "result": {
+        "makespan": 25,
+        "schedule": [
+          {
+            "id": "prep_b",
+            "resources": [
+              "person"
+            ],
+            "start": 0,
+            "end": 3
+          },
+          {
+            "id": "heat_b",
+            "resources": [
+              "oven"
+            ],
+            "start": 3,
+            "end": 11
+          },
+          {
+            "id": "prep_a",
+            "resources": [
+              "person"
+            ],
+            "start": 3,
+            "end": 7
+          },
+          {
+            "id": "finish_b",
+            "resources": [
+              "person"
+            ],
+            "start": 11,
+            "end": 13
+          },
+          {
+            "id": "heat_a",
+            "resources": [
+              "oven"
+            ],
+            "start": 11,
+            "end": 23
+          },
+          {
+            "id": "finish_a",
+            "resources": [
+              "person"
+            ],
+            "start": 23,
+            "end": 25
+          }
+        ],
+        "status": "feasible"
+      },
+      "constraint_errors": []
+    },
+    {
+      "case": "longer_task",
+      "result": {
+        "makespan": 33,
+        "schedule": [
+          {
+            "id": "prep_b",
+            "resources": [
+              "person"
+            ],
+            "start": 0,
+            "end": 3
+          },
+          {
+            "id": "heat_b",
+            "resources": [
+              "oven"
+            ],
+            "start": 3,
+            "end": 11
+          },
+          {
+            "id": "prep_a",
+            "resources": [
+              "person"
+            ],
+            "start": 3,
+            "end": 7
+          },
+          {
+            "id": "finish_b",
+            "resources": [
+              "person"
+            ],
+            "start": 11,
+            "end": 13
+          },
+          {
+            "id": "heat_a",
+            "resources": [
+              "oven"
+            ],
+            "start": 11,
+            "end": 31
+          },
+          {
+            "id": "finish_a",
+            "resources": [
+              "person"
+            ],
+            "start": 31,
+            "end": 33
+          }
+        ],
+        "status": "deadline_unmet"
+      },
+      "constraint_errors": []
+    },
+    {
+      "case": "oven_unavailable",
+      "result": {
+        "status": "unavailable_resource",
+        "task": "heat_a"
+      },
+      "constraint_errors": null
+    },
+    {
+      "case": "missing_duration",
+      "result": {
+        "status": "needs_duration",
+        "task": "prep_a"
+      },
+      "constraint_errors": null
+    },
+    {
+      "case": "impossible_deadline",
+      "result": {
+        "makespan": 25,
+        "schedule": [
+          {
+            "id": "prep_b",
+            "resources": [
+              "person"
+            ],
+            "start": 0,
+            "end": 3
+          },
+          {
+            "id": "heat_b",
+            "resources": [
+              "oven"
+            ],
+            "start": 3,
+            "end": 11
+          },
+          {
+            "id": "prep_a",
+            "resources": [
+              "person"
+            ],
+            "start": 3,
+            "end": 7
+          },
+          {
+            "id": "finish_b",
+            "resources": [
+              "person"
+            ],
+            "start": 11,
+            "end": 13
+          },
+          {
+            "id": "heat_a",
+            "resources": [
+              "oven"
+            ],
+            "start": 11,
+            "end": 23
+          },
+          {
+            "id": "finish_a",
+            "resources": [
+              "person"
+            ],
+            "start": 23,
+            "end": 25
+          }
+        ],
+        "status": "deadline_unmet"
+      },
+      "constraint_errors": []
+    },
+    {
+      "case": "dependency_cycle",
+      "result": {
+        "status": "dependency_cycle"
+      },
+      "constraint_errors": null
+    }
+  ],
+  "serial_duration": 31,
+  "limitations": [
+    "Measurements transcribed by Codex from official two-page spec sheets; raw-document extraction not automated",
+    "Old US models demonstrate source availability only; not a current Korean small-household market sample",
+    "Only three explicitly defined envelope constraints screened; no depth, delivery path, plumbing, drawer, side-wall geometry or physical installation certification",
+    "No quantified customer demand, new product feasibility or LLM benchmark",
+    "Synthetic integer time units, not measured recipe times",
+    "At most eight tasks, single-capacity resources, no preemption, no temperature or safety model",
+    "Replans from the start under changed assumptions; in-progress task freezing is not implemented",
+    "Compares code schedules only; no claim of LLM advantage or real cooking-time savings"
+  ]
+}

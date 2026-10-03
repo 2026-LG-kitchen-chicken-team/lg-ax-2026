@@ -1,0 +1,74 @@
+{
+  "stage": "design",
+  "content": {
+    "candidate_id": "B7",
+    "input_output": {
+      "input": [
+        "goal",
+        "context",
+        "model/region capabilities with sources",
+        "known_state",
+        "failure_events"
+      ],
+      "output": [
+        "nodes/transitions/guards",
+        "screen_specs",
+        "assumptions",
+        "unresolved",
+        "execution_log"
+      ]
+    },
+    "tools": [
+      "조건 조회",
+      "JSON/그래프 검사",
+      "이벤트 경로 실행",
+      "결과·오류 이력 렌더링"
+    ],
+    "execution_loop": {
+      "model_count": 1,
+      "max_revisions": 2,
+      "steps": [
+        "조건 정리",
+        "그래프 생성",
+        "코드 검사",
+        "모델 수정",
+        "성공 또는 미해결 보고"
+      ],
+      "device_control": false
+    },
+    "failure_paths": [
+      "API 실패→한도 후 중단·입력 보관",
+      "unknown→질문/보류",
+      "검사 실패→최대 2회 수정 후 미해결",
+      "미응답→완료 처리 금지",
+      "모델 범위 불일치→보류"
+    ],
+    "evaluation_cases": [
+      "정상 응답",
+      "offline",
+      "unknown state",
+      "timeout",
+      "기능/모델 불일치",
+      "개발에 없던 추가 사건"
+    ],
+    "implementation_backlog": [
+      "실제 모델 JSON 한 번 연결·비용 측정",
+      "동작 전제와 상태 guard 검사 추가",
+      "생성→검사→수정 통합",
+      "한 화면 입력·흐름·기록",
+      "독립 평가와 단순 생성 기준선",
+      "시연·발표"
+    ]
+  },
+  "evidence_paths": [
+    "기획/AtoZ_재선정과_Agent설계.md",
+    "scripts/flow_audit.py"
+  ],
+  "review": {
+    "by": "Codex in current conversation; not independent evaluator",
+    "limitations": [
+      "설계서 완료, 실제 Agent 모델/UI 미구현",
+      "팀 경험·API 예산 미확인"
+    ]
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "criteria": [
+    "공식 직무 흐름과 산출물",
+    "서류 문제·근거·차별성",
+    "실제 자료 확보",
+    "구현·평가 부담",
+    "기존 도구/강한 LLM 대비 가치",
+    "조건 변경 시 재사용",
+    "구체적 키친 콘셉트"
+  ],
+  "scale": "qualitative internal judgment; no official weights",
+  "assessments": [
+    {
+      "id": "ROLE_A_OPPORTUNITY",
+      "document_persuasiveness": "중",
+      "bounded_mvp_difficulty": "중",
+      "repeat_use_hypothesis": "높음·가설",
+      "decisive_risk": "고객 원문 확보·기존 분석 Agent 중복"
+    },
+    {
+      "id": "ROLE_A_FORM",
+      "document_persuasiveness": "중~높음",
+      "bounded_mvp_difficulty": "중~상",
+      "repeat_use_hypothesis": "중~높음·가설",
+      "decisive_risk": "고객 요구와 형태의 타당성·물리 검증"
+    },
+    {
+      "id": "ROLE_A_TECH",
+      "document_persuasiveness": "중~높음",
+      "bounded_mvp_difficulty": "높음",
+      "repeat_use_hypothesis": "중·가설",
+      "decisive_risk": "전문 기술 적용 타당성 평가"
+    },
+    {
+      "id": "ROLE_B_SERVICE",
+      "document_persuasiveness": "중~높음",
+      "bounded_mvp_difficulty": "중",
+      "repeat_use_hypothesis": "중~높음·가설",
+      "decisive_risk": "근거/상태/화면 일관성과 추가 가치"
+    },
+    {
+      "id": "ROLE_B_POLICY",
+      "document_persuasiveness": "중",
+      "bounded_mvp_difficulty": "중",
+      "repeat_use_hypothesis": "중·가설",
+      "decisive_risk": "기존 서비스 중복·요리 조건 타당성"
+    },
+    {
+      "id": "ROLE_B_HANDOFF",
+      "document_persuasiveness": "중",
+      "bounded_mvp_difficulty": "중",
+      "repeat_use_hypothesis": "중·가설",
+      "decisive_risk": "직접 수요·역할/권한 명세"
+    }
+  ],
+  "recommendations": {
+    "status": "proposed_after_role_discovery",
+    "by_theme": {
+      "A": "ROLE_A_FORM",
+      "B": "ROLE_B_SERVICE"
+    },
+    "verification_priority": [
+      "ROLE_B_SERVICE",
+      "ROLE_A_FORM"
+    ],
+    "selected_by": "Codex",
+    "direct_user_approval": false,
+    "scope": "업무 후보 추천; 최종 출품 테마 확정 아님"
+  },
+  "limitations": [
+    "현업 채택·수요·합격 확률·LLM 우월성 미검증",
+    "기존 일부 코드 실험을 확장된 직무 전체의 검증으로 사용하지 않음",
+    "초기 표본 수·기능 수는 계획이며 확보·구현 완료가 아님",
+    "이번 범위는 재탐색·도출. 단일 출품 주제 확정·접수는 별도"
+  ]
+}

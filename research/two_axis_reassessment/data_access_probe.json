@@ -1,0 +1,111 @@
+{
+  "checked_at": "2026-09-27",
+  "method": "Python urllib bounded gzip stream retrieval, JSON parse, parent_asin equality join, title inspection by Codex",
+  "initial_access": [
+    {
+      "kind": "reviews",
+      "url": "https://mcauleylab.ucsd.edu/public_datasets/data/amazon_2023/raw/review_categories/Appliances.jsonl.gz",
+      "compressed_bytes_read": 262144,
+      "parsed_rows": 1491,
+      "fields": [
+        "rating",
+        "title",
+        "text",
+        "parent_asin",
+        "timestamp"
+      ],
+      "payload_sha256": "40ff5e6916a15b82467af80e08e0e476dacf241a679ade70b901b036f5183b08",
+      "retained_user_id": false
+    },
+    {
+      "kind": "metadata",
+      "url": "https://mcauleylab.ucsd.edu/public_datasets/data/amazon_2023/raw/meta_categories/meta_Appliances.jsonl.gz",
+      "compressed_bytes_read": 262144,
+      "parsed_rows": 310,
+      "fields": [
+        "title",
+        "parent_asin",
+        "features",
+        "description",
+        "categories"
+      ],
+      "payload_sha256": "f158e5ae05bdb130b6bf2a2cce8870038bb65b9e26800aa42e8beb8a807d38d7",
+      "retained_user_id": false
+    }
+  ],
+  "initial_join": {
+    "review_rows": 1491,
+    "metadata_rows": 310,
+    "joined_reviews": 13,
+    "joined_products": 6,
+    "kitchen_keyword_joined": 0,
+    "sampling": "first 256 KiB of each compressed category stream; not representative or product-specific"
+  },
+  "expanded_join": {
+    "review_rows": 1491,
+    "metadata_rows": 2578,
+    "joined_reviews": 71,
+    "joined_products": 51,
+    "roughly_filtered_kitchen_products": [
+      {
+        "id": "B003BIGD4U",
+        "title": "GE WB44K5012 Genuine OEM Bake Element for GE Electric Ovens",
+        "review_count": 1
+      },
+      {
+        "id": "B07S9VQ3CJ",
+        "title": "Premium Gas Range Oven Spark Electrode Igniter - 4 Pack, Universal Fit for GE, Hotpoint, and Kenmore - Range/Stove WB13K10014 AP3779012 1085568",
+        "review_count": 1
+      },
+      {
+        "id": "B08JR287K7",
+        "title": "SOLTRONICS Portable Ice Maker 28LBS/24H, Countertop Ice Maker Machine with Ice Scoop and Basket for Home/Office/Bar/KTV, 9 Ice Cubes Ready in 6 Minutes, black",
+        "review_count": 1
+      },
+      {
+        "id": "B08KW644VX",
+        "title": "Adjustable Washing Machine Stand with 4×2 Locking Rubber Swivel Wheels and 4 Strong Feet for Washing Machine, Dryer and Refrigerator (white, 4 wheels 4 legs)",
+        "review_count": 1
+      },
+      {
+        "id": "B09Z2CBDDP",
+        "title": "Egg Storage Container, Realife Automatic Rolling Egg Organizer Clear Plastic Holder for Refrigerator, 1 Layer",
+        "review_count": 1
+      },
+      {
+        "id": "B0BG5J27Q7",
+        "title": "SPACY MAYA Egg Storage Container for Refrigerator,60 Egg Holder for Refrigerator,Egg Organizer for Refrigerator Door,Egg Storage,Egg Tray,Large Capacity&Space Saver Egg Fridge Organizer",
+        "review_count": 1
+      },
+      {
+        "id": "B0BYZBBDPN",
+        "title": "HiCOZY Nugget Ice Makers Countertop, Compact Crushed Ice Maker, Produce Ice in 5 Mins, 55LB Per Day, Self-Cleaning and Automatic Water Refill, Suitable for Home, Office (MBBS1/Black)",
+        "review_count": 2
+      }
+    ],
+    "sampling": "first 256 KiB review stream and first 2 MiB metadata stream; nonrepresentative prefix; title filter not manual eligibility review",
+    "metadata_compressed_sha256": "7cbd8d52bb01d44f9501083ae3574cfbc5c95d4bae73968cb1536cc192afdad5"
+  },
+  "manual_title_review": {
+    "core_appliance_ids": [
+      "B08JR287K7",
+      "B0BYZBBDPN"
+    ],
+    "matched_review_count": 3,
+    "note": "제빙기 본체 제목 확인만 수행. 7개 단어 필터 결과 중 나머지 5개는 부품/받침대/보관용품. 제품 문서 대응·리뷰 내용의 필요성·대표성 검증은 수행하지 않음"
+  },
+  "raw_review_text_committed": false,
+  "model_api_executed": false,
+  "appliance_executed": false,
+  "conclusions": [
+    "공개 자료 접근과 제품 식별자 연결은 실행 가능",
+    "Appliances 분류만으로 키친 가전 리뷰 표본이 완성되지 않음",
+    "작은 제품군별 선별 자료집부터 시작하고 자료 준비 시간을 난도에 포함"
+  ],
+  "limitations": [
+    "1차 전용 배점·경쟁 팀·합격 확률 미확인; 상대적 기획 판단이다.",
+    "실제 모델·강한 LLM 기준선·현업 사용자 평가 미실행.",
+    "데이터 접근 실험은 비대표적 해외 표본이며 대상 제품군 자료 확보 완료가 아니다.",
+    "선정은 Codex의 위임 실행이며 사용자의 이 후보 직접 승인으로 기록하지 않는다."
+  ]
+}
