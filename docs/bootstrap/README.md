@@ -10,6 +10,8 @@
 
 P2-PM-003/004는 전체 완료 조건이 남아 있으므로 Done으로 바꾸지 않는다. 황대겸 #8/#9, 최길웅 #24/#25와 정이량 통합 후 재개한다. 참가작31요구 verified0을 유지한다.
 
+선행 코드와 규격은 [PR #31](https://github.com/jeongiryang/lg-ax-2026/pull/31)로 main에 병합했다. [실제 CI·병합 commit·공통 기록 재확인](../../evals/pm-workspace/20261004/delivery/checks.json)과 PM의 정이량-20261004-003/E004에서 확인한다. 이 PR 병합은 PM 두 과제의 전체 완료와 별개다.
+
 | 담당 | 업무 | 첫 Issue | 편집 영역 |
 |---|---|---|---|
 | 정이량 / jeongiryang | PM, 공통 계약, 연결, 통합·검수·병합·제출 | [공동 실행/이력 #19](https://github.com/jeongiryang/lg-ax-2026/issues/19), [다섯 Skill #20](https://github.com/jeongiryang/lg-ax-2026/issues/20) | 계약, API/MCP, 하네스, CI, 운영 문서 |
