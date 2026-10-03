@@ -6,7 +6,7 @@
 
 | 담당 | 업무 | 첫 Issue | 편집 영역 |
 |---|---|---|---|
-| 정이량 / jeongiryang | PM, 공통 계약, 연결, 통합·검수·병합·제출 | [PM 초기 설정 #17](https://github.com/jeongiryang/lg-ax-2026/issues/17), [실제 연결 #18](https://github.com/jeongiryang/lg-ax-2026/issues/18) | 계약, API/MCP, 하네스, CI, 운영 문서 |
+| 정이량 / jeongiryang | PM, 공통 계약, 연결, 통합·검수·병합·제출 | [공동 실행/이력 #19](https://github.com/jeongiryang/lg-ax-2026/issues/19), [다섯 Skill #20](https://github.com/jeongiryang/lg-ax-2026/issues/20) | 계약, API/MCP, 하네스, CI, 운영 문서 |
 | 황대겸 / unknownamed | 핵심 판단·대조·콘셉트·검사·수정 | [판단 계약 #7](https://github.com/jeongiryang/lg-ax-2026/issues/7) | 공통 코어의 판단 구현, 관련 Skill·평가 |
 | 신진하 / ginaginaring | 자료 처리·검색·원문 근거·모델 비교 | [세 제품 자료팩 #12](https://github.com/jeongiryang/lg-ax-2026/issues/12) | data, 자료/검색 코어, 모델 서비스·평가 |
 | 최길웅 / choigilung | 웹 기획 작업실·사용자 검토·수정 이력 | [웹 작업실 #23](https://github.com/jeongiryang/lg-ax-2026/issues/23) | apps/web, 웹 검증·사용 안내 |
@@ -69,3 +69,13 @@ uv run python scripts/phase2.py gate setup_external
 공개 읽기 MCP는 `https://eryang-lab.tailb7c3c1.ts.net/lg-ax/mcp`이다. PC 서비스와 Tailscale이 실행 중이어야 한다. 합성자료 조회만 제공하며 개인정보·서버 제어·비용 발생 모델 실행 도구를 공개하지 않는다. ChatGPT/Claude의 실제 호출 여부는 [연결 검증](connections.md)에 기록한다.
 
 공통 요구·모델 revision·근거 계약 변경은 PM에게 영향과 마이그레이션을 먼저 제시한다. 타인 영역이 필요하면 Issue에서 편집 범위를 조정한다. 10/6 오전 컨설팅 일정 확인, 10/20 발표자료·영상·README/Skill 포함 코드 ZIP 준비는 후속 작업이다. 정확한 제출 시각·경로·용량·영상 길이는 공식 확인 전이다.
+
+## 초기 설정 완료와 지금의 배정
+
+초기 설정·실제 연결은 [PR #29](https://github.com/jeongiryang/lg-ax-2026/pull/29)로 병합했다. 실제 GitHub CI([최종 구현 검사](https://github.com/jeongiryang/lg-ax-2026/actions/runs/37147862767))와 병합 commit `ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d`의 별도 깨끗한 작업 공간에서 Python 기본93·서버 운영6·웹11시험, 타입/빌드, 계약/기록, stdio/공개HTTPS MCP 호출이 통과했다. 근거는 `harness/phase2/runs/post-merge-ea4389a1d9d8/`다.
+
+P2-PM-001·002 두 작업만 Done이다. 참가작31요구의 verified는 0개이고 전체 Agent·다섯 업무 Skill·독립 평가·제출 ZIP은 다음 작업이다. 현재 우선 배정은 PM #19(공동 실행/이력; #20 Skill도 병렬 가능), 황대겸 #7(판단 계약), 신진하 #12(자료팩), 최길웅 #23(웹 작업실)이다. 다음 작업의 입출력/범위/완료 조건은 각 Issue와 packet을 따른다.
+
+초기9체크의 코드/자료 원본은 실제 병합 commit의 바이트와 일치하는 스냅샷으로 고정했다. gate PASS는 기록된 초기 버전의 검증이며 현재 서버 생존을 감시하는 기능이 아니다. 새 기능·모델·자료 변경은 담당 작업의 새 run/현재 버전/실행 증거로 검사한다. 공통 data/demo와 bootstrap 실험의 원본을 덮어 쓰지 않는다.
+
+LG Notion 페이지와 공모전 대시보드를 10/4 실제 결과로 갱신·재조회했다. 상세 로그/민감정보는 옮기지 않았고 다른 공모전 내용은 수정하지 않았다. 신진하는 초대 수락 대기다. 10/6 실제 컨설팅 일정·10/20 제출 세부는 여전히 확인 과제다.

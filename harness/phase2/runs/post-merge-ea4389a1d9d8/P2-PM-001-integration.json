@@ -1,0 +1,157 @@
+{
+  "task_id": "P2-PM-001",
+  "pm": "정이량",
+  "individual_evidence_sha256": "b5e5b62e8b4f6273bd9b76fd4df30246fa38fd8a19e099ae7ab1ecaa3e33a6f7",
+  "observations": [
+    "Actual user-authorized GitHub PR29 merge observed and exact merged commit verified in separate clean checkout"
+  ],
+  "pull_request_url": "https://github.com/jeongiryang/lg-ax-2026/pull/29",
+  "tested_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d",
+  "result": "pass",
+  "execution_kind": "deterministic",
+  "code_versions": [
+    {
+      "path": "scripts/phase2.py",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d",
+      "sha256": "5542dcad0e59ecc1af3337351a213fa216f8432440870d62fc5e568116c8e949"
+    },
+    {
+      "path": "apps/mcp/src/lgax_mcp/server.py",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d",
+      "sha256": "a9a37314850569506aba32bff6b0585022f578d103163e96407682175850258e"
+    },
+    {
+      "path": "packages/core/src/lgax_core/store.py",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d",
+      "sha256": "211f2dcd55ad28d8273175e5d9410df99aecf64b69338e76ac1b67e5d757ee38"
+    },
+    {
+      "path": "services/inference/launcher_guard.py",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d",
+      "sha256": "b9e6d993009494ffb3fcf4e3d95dfee0322a3bddcd83a545a17be8c0e05c5198"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "data/demo/dataset.json",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d",
+      "sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0"
+    },
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d",
+      "sha256": "31f864a91a42e08c3ddcdb8d2a70f04e437cce4c56bc77e94163da048cfb283f"
+    }
+  ],
+  "checks": [
+    {
+      "name": "uv-sync",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/post-merge-ea4389a1d9d8/uv-sync.txt",
+        "sha256": "52ce956cb82fcd401679d310e120dbf7e0b8e1cafb4df76539a509520a25713a"
+      }
+    },
+    {
+      "name": "python-tests",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/post-merge-ea4389a1d9d8/python-tests.txt",
+        "sha256": "04da2972d78b56ff91edd58d8987c285bf5e5be0e0ce275735f1c63c293d2bd1"
+      }
+    },
+    {
+      "name": "launcher-tests",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/post-merge-ea4389a1d9d8/launcher-tests.txt",
+        "sha256": "b0bfad887a438612d274e4400a62f06e261ba53268b8dd7c1d2dd73c29bf3cb4"
+      }
+    },
+    {
+      "name": "contracts",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/post-merge-ea4389a1d9d8/contracts.txt",
+        "sha256": "c3b9f4ede3e3ca0135d6de0bea25692ce5223411f02d6e18e40faacb446e0bcb"
+      }
+    },
+    {
+      "name": "rules",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/post-merge-ea4389a1d9d8/rules.txt",
+        "sha256": "b43602b797b6f0074bf8b8cdfce401ca336495b968951149a54d0490d2c409b0"
+      }
+    },
+    {
+      "name": "harness",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/post-merge-ea4389a1d9d8/harness.txt",
+        "sha256": "bce434078faf732368fa452d648f8d4e1b80c1263f6920769a4b89e6ed9e2a6f"
+      }
+    },
+    {
+      "name": "phase2",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/post-merge-ea4389a1d9d8/phase2.txt",
+        "sha256": "dbf4fa89172b6af261b23107f787aac450dc45ff49a6994409a0726e8229f879"
+      }
+    },
+    {
+      "name": "models-manifest",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/post-merge-ea4389a1d9d8/models-manifest.txt",
+        "sha256": "128d92e30fd9a40dac48040ea2acb34c46c98a22b8414491a70c68b31381c47f"
+      }
+    },
+    {
+      "name": "mcp-stdio",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/post-merge-ea4389a1d9d8/mcp-stdio.txt",
+        "sha256": "203b377b30adf0f1fbf0e18b3e597ada77abe299f18c6ce6ba3fea52b1bb1fd0"
+      }
+    },
+    {
+      "name": "mcp-public",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/post-merge-ea4389a1d9d8/mcp-public.txt",
+        "sha256": "0390083defffd8d3a79056d1dd73a1aaa80ba0fccf53282815ce2e2a6a1d2a9c"
+      }
+    },
+    {
+      "name": "web-install",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/post-merge-ea4389a1d9d8/web-install.txt",
+        "sha256": "ec99cfeda5098c8dfa6f95f8a68e0eccba25febe12ffd5a8e97704b64884077d"
+      }
+    },
+    {
+      "name": "web-tests",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/post-merge-ea4389a1d9d8/web-tests.txt",
+        "sha256": "a65415b5cac1b5112cf47c928cd02946262a650fae101d0d4351096871415459"
+      }
+    },
+    {
+      "name": "web-build",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/post-merge-ea4389a1d9d8/web-build.txt",
+        "sha256": "9c1e60e076a62d59a1b7733286375df2f1f89eec56d269da6c0839cfee9c2db0"
+      }
+    }
+  ],
+  "models": [],
+  "limitations": [
+    "Initial setup and read-only connection verification only; full Agent/5 skills/independent evaluation/submission remain pending"
+  ],
+  "observed_at": "2026-10-03T19:28:57+00:00"
+}

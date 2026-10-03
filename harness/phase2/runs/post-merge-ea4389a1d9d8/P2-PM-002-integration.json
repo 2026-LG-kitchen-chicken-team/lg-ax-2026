@@ -1,0 +1,85 @@
+{
+  "task_id": "P2-PM-002",
+  "pm": "정이량",
+  "individual_evidence_sha256": "eec1c7b49c1ca604eaa12cb2efe35180c0859e365b15ea5356fecd7fb126575b",
+  "observations": [
+    "Actual user-authorized GitHub PR29 merge observed and exact merged commit verified in separate clean checkout"
+  ],
+  "pull_request_url": "https://github.com/jeongiryang/lg-ax-2026/pull/29",
+  "tested_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d",
+  "result": "pass",
+  "execution_kind": "live_service",
+  "code_versions": [
+    {
+      "path": "scripts/phase2.py",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d",
+      "sha256": "5542dcad0e59ecc1af3337351a213fa216f8432440870d62fc5e568116c8e949"
+    },
+    {
+      "path": "apps/mcp/src/lgax_mcp/server.py",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d",
+      "sha256": "a9a37314850569506aba32bff6b0585022f578d103163e96407682175850258e"
+    },
+    {
+      "path": "packages/core/src/lgax_core/store.py",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d",
+      "sha256": "211f2dcd55ad28d8273175e5d9410df99aecf64b69338e76ac1b67e5d757ee38"
+    },
+    {
+      "path": "services/inference/launcher_guard.py",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d",
+      "sha256": "b9e6d993009494ffb3fcf4e3d95dfee0322a3bddcd83a545a17be8c0e05c5198"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "data/demo/dataset.json",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d",
+      "sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0"
+    },
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "git_commit": "ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d",
+      "sha256": "31f864a91a42e08c3ddcdb8d2a70f04e437cce4c56bc77e94163da048cfb283f"
+    }
+  ],
+  "checks": [
+    {
+      "name": "contracts",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/post-merge-ea4389a1d9d8/contracts.txt",
+        "sha256": "c3b9f4ede3e3ca0135d6de0bea25692ce5223411f02d6e18e40faacb446e0bcb"
+      }
+    },
+    {
+      "name": "models-manifest",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/post-merge-ea4389a1d9d8/models-manifest.txt",
+        "sha256": "128d92e30fd9a40dac48040ea2acb34c46c98a22b8414491a70c68b31381c47f"
+      }
+    },
+    {
+      "name": "mcp-stdio",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/post-merge-ea4389a1d9d8/mcp-stdio.txt",
+        "sha256": "203b377b30adf0f1fbf0e18b3e597ada77abe299f18c6ce6ba3fea52b1bb1fd0"
+      }
+    },
+    {
+      "name": "mcp-public",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/post-merge-ea4389a1d9d8/mcp-public.txt",
+        "sha256": "0390083defffd8d3a79056d1dd73a1aaa80ba0fccf53282815ce2e2a6a1d2a9c"
+      }
+    }
+  ],
+  "models": [],
+  "limitations": [
+    "Initial setup and read-only connection verification only; full Agent/5 skills/independent evaluation/submission remain pending"
+  ],
+  "observed_at": "2026-10-03T19:28:59+00:00"
+}

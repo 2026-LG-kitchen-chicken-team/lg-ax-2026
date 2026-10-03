@@ -1,0 +1,89 @@
+{
+  "task_id": "P2-PM-002",
+  "owner": "정이량",
+  "result": "pass",
+  "execution_kind": "live_client",
+  "observed_at": "2026-10-03T19:27:42+00:00",
+  "observations": [
+    "Actual authorized lab OS/GPU/disk/runtime and private API health confirmed",
+    "ChatGPT and Claude discovery and three real read-only tool calls observed; exact IDs/version/text matched shared source"
+  ],
+  "limitations": [
+    "Synthetic evidence read-only; no full Agent/marketplace/all teammate accounts completion claim",
+    "Lab loopback is not authentication and tmpfs environment needs reboot rebuild"
+  ],
+  "code_versions": [
+    {
+      "path": "apps/mcp/src/lgax_mcp/server.py",
+      "git_commit": "7377d1b09bc3db713ef2fa901b95eaffbccef2c8",
+      "sha256": "a9a37314850569506aba32bff6b0585022f578d103163e96407682175850258e"
+    },
+    {
+      "path": "packages/core/src/lgax_core/store.py",
+      "git_commit": "7377d1b09bc3db713ef2fa901b95eaffbccef2c8",
+      "sha256": "211f2dcd55ad28d8273175e5d9410df99aecf64b69338e76ac1b67e5d757ee38"
+    },
+    {
+      "path": "services/inference/server.py",
+      "git_commit": "7377d1b09bc3db713ef2fa901b95eaffbccef2c8",
+      "sha256": "8ae9d68fe1a9f19ba0235e688ca8ddb2873a622cfe9b7d749065edbb085a3490"
+    },
+    {
+      "path": "services/inference/launcher_guard.py",
+      "git_commit": "7377d1b09bc3db713ef2fa901b95eaffbccef2c8",
+      "sha256": "b9e6d993009494ffb3fcf4e3d95dfee0322a3bddcd83a545a17be8c0e05c5198"
+    },
+    {
+      "path": "uv.lock",
+      "git_commit": "7377d1b09bc3db713ef2fa901b95eaffbccef2c8",
+      "sha256": "5a4604fca47f39e78f3679f7c4a68ac306b0d708ab4b8d391b54f71126b58e6b"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "data/demo/dataset.json",
+      "git_commit": "7377d1b09bc3db713ef2fa901b95eaffbccef2c8",
+      "sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0"
+    },
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "git_commit": "7377d1b09bc3db713ef2fa901b95eaffbccef2c8",
+      "sha256": "31f864a91a42e08c3ddcdb8d2a70f04e437cce4c56bc77e94163da048cfb283f"
+    }
+  ],
+  "checks": [
+    {
+      "name": "Actual account observation: chatgpt",
+      "passed": true,
+      "evidence": {
+        "path": "evals/bootstrap-connections/chatgpt-observed.txt",
+        "sha256": "716bc2f5ea5b360bc8862d4d4cf7bdad44032267a05b050434e4b074a5ec9a1d"
+      }
+    },
+    {
+      "name": "Actual account observation: claude",
+      "passed": true,
+      "evidence": {
+        "path": "evals/bootstrap-connections/claude-observed.txt",
+        "sha256": "b2f3475b1f1e36a87bee70776c6b92dcbd85a8e0d56af40dc1d1859356a4823b"
+      }
+    },
+    {
+      "name": "Actual lab GPU/runtime inventory",
+      "passed": true,
+      "evidence": {
+        "path": "evals/bootstrap-models/server-inventory.json",
+        "sha256": "1140f562edaa95636749469a1a4c12e132d5752c19996a9fe29f78b0f1cbd676"
+      }
+    },
+    {
+      "name": "Actual lab API health/generation/error and guarded restart",
+      "passed": true,
+      "evidence": {
+        "path": "evals/bootstrap-models/service-smoke.json",
+        "sha256": "2b9ff9c137fe35687b58e1e0f23c1590526f101cda1851743dcb0fedff0f3020"
+      }
+    }
+  ],
+  "models": []
+}
