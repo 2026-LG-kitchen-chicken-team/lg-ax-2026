@@ -4,6 +4,12 @@
 
 ## 팀이 시작할 곳
 
+### PM 공통 연결 진행 (10/4)
+
+정이량 #19/#20의 선행 구현: [공통 작업실 API·저장·권한](../pm/workspace.md), [구조화 모델 어댑터](../pm/model-adapters.md), [다섯 Skill 실행 계약](../pm/skills.md). SQLite 원입력/변경 이력과 인증된 loopback API·MCP stdio·웹용 TS 클라이언트를 실제 연결했다. 서버 재시작 보존과 Lab/Ollama 실제 호출도 확인했다. 실제 화면 연결·코어 결과 저장·네 판단 Skill의 실모델 반복 실행은 후속 통합이다. 기존 공개3도구의 계정 검증을 새 작업실 OAuth 검증으로 확대하지 않는다.
+
+P2-PM-003/004는 전체 완료 조건이 남아 있으므로 Done으로 바꾸지 않는다. 황대겸 #8/#9, 최길웅 #24/#25와 정이량 통합 후 재개한다. 참가작31요구 verified0을 유지한다.
+
 | 담당 | 업무 | 첫 Issue | 편집 영역 |
 |---|---|---|---|
 | 정이량 / jeongiryang | PM, 공통 계약, 연결, 통합·검수·병합·제출 | [공동 실행/이력 #19](https://github.com/jeongiryang/lg-ax-2026/issues/19), [다섯 Skill #20](https://github.com/jeongiryang/lg-ax-2026/issues/20) | 계약, API/MCP, 하네스, CI, 운영 문서 |

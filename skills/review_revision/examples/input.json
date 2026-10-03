@@ -1,0 +1,45 @@
+{
+  "model_id": "FRIDGE-A",
+  "document_version": "1.0",
+  "needs": [
+    {
+      "id": "NEED-EXAMPLE-001",
+      "model_id": "FRIDGE-A",
+      "situation": "냉장고 선반을 청소할 때",
+      "pain": "선반 위의 식품을 모두 옮기는 번거로움",
+      "evidence_ids": [
+        "REVIEW-EVIDENCE-001"
+      ],
+      "uncertainties": [
+        "실제 수요와 설계 가능성은 미검증"
+      ]
+    }
+  ],
+  "gaps": [
+    {
+      "id": "GAP-EXAMPLE-001",
+      "need_id": "NEED-EXAMPLE-001",
+      "model_id": "FRIDGE-A",
+      "feature_ids": [
+        "FEATURE-001"
+      ],
+      "support_status": "supported",
+      "remaining_pain": "선반은 분리되지만 식품을 옮기는 부담이 남는지 검토",
+      "evidence_ids": [
+        "MANUAL-001",
+        "REVIEW-EVIDENCE-001"
+      ],
+      "questions": [
+        "구획별 분리가 실제로 도움이 되는가?"
+      ]
+    }
+  ],
+  "concepts": [],
+  "violations": [
+    "조건 변경 뒤 근거 연결 재검토"
+  ],
+  "changed_evidence_ids": [
+    "MANUAL-001"
+  ],
+  "revision_count": 0
+}
