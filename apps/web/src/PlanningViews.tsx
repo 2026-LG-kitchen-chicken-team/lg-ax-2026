@@ -3,6 +3,7 @@ import type { FormEvent } from 'react';
 import { ApiError } from './api';
 import { evidenceLocation } from './domain';
 import type { Evidence } from './domain';
+import { ExecutionPanel } from './JudgementViews';
 import { runStatusView } from './liveWorkspace';
 import { editSummary, END_RULE, START_RULE } from './measurement';
 import type { EditSummary, ModificationMeasurement } from './measurement';
@@ -268,6 +269,7 @@ export function ConceptsView({ mode, runs, selected, onSelect, features, evidenc
       <ComparisonTable snapshot={selected} features={features} evidence={evidenceById} />
       <ScopeNotice snapshot={selected} features={features} evidence={evidence} />
     </section>
+    <ExecutionPanel snapshot={selected} />
     <section className="panel planning-panel">
       <div className="planning-head"><div><p className="eyebrow">CANDIDATES</p><h3>콘셉트 후보 <span className="count">{selected.run.concepts.length} / 3</span></h3></div><ExportActions mode={mode} snapshot={selected} features={features} evidence={evidence} runs={runs} /></div>
       {selected.run.concepts.length ? <div className="concept-grid">{selected.run.concepts.map(concept => <article key={concept.id} className={`concept-card ${concept.status}`}>
@@ -370,7 +372,7 @@ function RerunPanel({ mode, selected, original, onRerun, busy, measure }: { mode
   return <form className="panel planning-panel condition-form" onSubmit={submit} aria-label="후보·조건 선택 후 재실행">
     <p className="eyebrow">RERUN</p><h3>후보와 조건을 고르고 다시 실행</h3>
     <MeasureBar measure={measure} baseRunId={selected.run.id} />
-    <p className="hint">{selected.run.id}의 요청을 바탕으로 새 실행을 연결합니다. {mode === 'fixture' ? '현재는 브라우저 안의 초안이며 결과는 not_implemented로 남습니다.' : '작업실 서버에 새 실행으로 저장합니다. 판단 Agent가 연결되기 전까지 분석은 실행되지 않습니다.'}</p>
+    <p className="hint">{selected.run.id}의 요청을 바탕으로 새 실행을 연결합니다. {mode === 'fixture' ? '현재는 브라우저 안의 초안이며 결과는 not_implemented로 남습니다.' : '작업실 서버에 새 실행으로 저장합니다. 기존 실행은 유지됩니다.'}</p>
     <h4 className="sub">후보 선택</h4>
     {concepts.length ? <ul className="choice-list">{concepts.map(concept => <li key={concept.id}>
       <span><span className="id">{concept.id} · {statusLabel(concept.status)}</span>{concept.title}</span>
@@ -437,6 +439,7 @@ export function HistoryView({ mode, runs, selected, onSelect, features, evidence
         {selected.run.events.length ? <><h4 className="sub">판단 순서와 사용한 Skill</h4><ol className="events">{selected.run.events.map((item, index) => <li key={`${item.stage}-${index}`}><span className="stage">{item.stage}</span><span>{item.summary}</span>{item.tool ? <code>{item.tool}</code> : null}</li>)}</ol></> : null}
         {selected.unconfirmed.length ? <div className="unresolved"><strong>미확인 사항</strong><ul>{selected.unconfirmed.map(item => <li key={item}>{item}</li>)}</ul></div> : null}
       </section>
+      <ExecutionPanel snapshot={selected} />
       <RerunPanel key={selected.run.id} mode={mode} selected={selected} original={original} onRerun={onRerun} busy={busy} measure={measure} />
     </div>
   </div>;

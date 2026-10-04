@@ -1,0 +1,309 @@
+{
+  "input": {
+    "request": {
+      "product_group": "dishwasher",
+      "target_customer": "주방 가전을 사용하는 가구",
+      "use_situation": "자료에 적힌 같은 모델과 사용 조건을 검토한다.",
+      "improvement_task": "세제가 남았는지 확인하려면 문을 열어 식기를 꺼내야 해서 외부 확인 방식을 검토하고 싶다.",
+      "exclusions": [
+        "다른 모델 기능 혼용",
+        "근거 없는 효과 단정"
+      ],
+      "model_ids": [
+        "SEM-06-MODEL"
+      ],
+      "dataset_version": "SEM-06-independent-v2"
+    },
+    "product": {
+      "model_id": "SEM-06-MODEL",
+      "name": "독립 평가용 가상 dishwasher",
+      "product_group": "dishwasher",
+      "document_version": "2.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "SEM-06-REVIEW",
+        "model_id": "SEM-06-MODEL",
+        "document_version": "2.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "SEM-06-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "세제가 남았는지 확인하려면 문을 열어 식기를 꺼내야 해서 외부 확인 방식을 검토하고 싶다.",
+        "feature_ids": []
+      },
+      {
+        "id": "SEM-06-MANUAL",
+        "model_id": "SEM-06-MODEL",
+        "document_version": "2.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "SEM-06-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능 및 사용 조건"
+        },
+        "text": "투명한 외부 표시창에 잔여 세제 검사 완료/재헹굼 필요 상태를 표시한다. 전용 센서 검사 코스를 사용한다.",
+        "feature_ids": [
+          "SEM-06-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "SEM-06-FEATURE",
+        "model_id": "SEM-06-MODEL",
+        "document_version": "2.0",
+        "name": "설명서의 제공 기능",
+        "description": "투명한 외부 표시창에 잔여 세제 검사 완료/재헹굼 필요 상태를 표시한다. 전용 센서 검사 코스를 사용한다.",
+        "conditions": [
+          "전용 센서 검사 코스에서 검사 상태를 표시한다."
+        ],
+        "evidence_ids": [
+          "SEM-06-MANUAL"
+        ]
+      }
+    ],
+    "revision_count": 0,
+    "max_concepts": 3,
+    "changed_evidence_ids": [
+      "SEM-06-REVIEW",
+      "SEM-06-MANUAL"
+    ]
+  },
+  "dataset": {
+    "manifest": {
+      "dataset_id": "SEM-06-MODEL",
+      "version": "SEM-06-independent-v2",
+      "description": "Independent synthetic semantic evaluation input; no expected model output",
+      "source_kind": "synthetic",
+      "model_count": 1,
+      "review_count": 1,
+      "analysis_implemented": false
+    },
+    "products": [
+      {
+        "model_id": "SEM-06-MODEL",
+        "name": "독립 평가용 가상 dishwasher",
+        "product_group": "dishwasher",
+        "document_version": "2.0",
+        "source_kind": "synthetic"
+      }
+    ],
+    "reviews": [
+      {
+        "id": "ROW-SEM-06-REVIEW",
+        "evidence_id": "SEM-06-REVIEW",
+        "model_id": "SEM-06-MODEL",
+        "document_version": "2.0",
+        "text": "세제가 남았는지 확인하려면 문을 열어 식기를 꺼내야 해서 외부 확인 방식을 검토하고 싶다.",
+        "source_id": "SEM-06-CSV",
+        "locator": {
+          "row": 2
+        },
+        "source_kind": "synthetic"
+      }
+    ],
+    "evidence": [
+      {
+        "id": "SEM-06-REVIEW",
+        "model_id": "SEM-06-MODEL",
+        "document_version": "2.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "SEM-06-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "세제가 남았는지 확인하려면 문을 열어 식기를 꺼내야 해서 외부 확인 방식을 검토하고 싶다.",
+        "feature_ids": []
+      },
+      {
+        "id": "SEM-06-MANUAL",
+        "model_id": "SEM-06-MODEL",
+        "document_version": "2.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "SEM-06-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능 및 사용 조건"
+        },
+        "text": "투명한 외부 표시창에 잔여 세제 검사 완료/재헹굼 필요 상태를 표시한다. 전용 센서 검사 코스를 사용한다.",
+        "feature_ids": [
+          "SEM-06-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "SEM-06-FEATURE",
+        "model_id": "SEM-06-MODEL",
+        "document_version": "2.0",
+        "name": "설명서의 제공 기능",
+        "description": "투명한 외부 표시창에 잔여 세제 검사 완료/재헹굼 필요 상태를 표시한다. 전용 센서 검사 코스를 사용한다.",
+        "conditions": [
+          "전용 센서 검사 코스에서 검사 상태를 표시한다."
+        ],
+        "evidence_ids": [
+          "SEM-06-MANUAL"
+        ]
+      }
+    ]
+  },
+  "previous_input": {
+    "request": {
+      "product_group": "dishwasher",
+      "target_customer": "주방 가전을 사용하는 가구",
+      "use_situation": "자료에 적힌 같은 모델과 사용 조건을 검토한다.",
+      "improvement_task": "세제가 남았는지 확인하려면 문을 열어 식기를 꺼내야 해서 외부 확인 방식을 검토하고 싶다.",
+      "exclusions": [
+        "다른 모델 기능 혼용",
+        "근거 없는 효과 단정"
+      ],
+      "model_ids": [
+        "SEM-06-MODEL"
+      ],
+      "dataset_version": "SEM-06-independent-v1"
+    },
+    "product": {
+      "model_id": "SEM-06-MODEL",
+      "name": "독립 평가용 가상 dishwasher",
+      "product_group": "dishwasher",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "SEM-06-REVIEW",
+        "model_id": "SEM-06-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "SEM-06-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "세제가 남았는지 확인하려면 문을 열어 식기를 꺼내야 해서 외부 확인 방식을 검토하고 싶다.",
+        "feature_ids": []
+      },
+      {
+        "id": "SEM-06-MANUAL",
+        "model_id": "SEM-06-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "SEM-06-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능 및 사용 조건"
+        },
+        "text": "세척 완료 소리만 제공한다. 세제 잔여 여부는 사용자가 식기를 직접 확인한다.",
+        "feature_ids": [
+          "SEM-06-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "SEM-06-FEATURE",
+        "model_id": "SEM-06-MODEL",
+        "document_version": "1.0",
+        "name": "설명서의 제공 기능",
+        "description": "세척 완료 소리만 제공한다. 세제 잔여 여부는 사용자가 식기를 직접 확인한다.",
+        "conditions": [
+          "명시한 사용 조건을 충족해야 한다."
+        ],
+        "evidence_ids": [
+          "SEM-06-MANUAL"
+        ]
+      }
+    ],
+    "revision_count": 0,
+    "max_concepts": 3,
+    "changed_evidence_ids": []
+  },
+  "previous_dataset": {
+    "manifest": {
+      "dataset_id": "SEM-06-MODEL",
+      "version": "SEM-06-independent-v1",
+      "description": "Independent synthetic semantic evaluation input; no expected model output",
+      "source_kind": "synthetic",
+      "model_count": 1,
+      "review_count": 1,
+      "analysis_implemented": false
+    },
+    "products": [
+      {
+        "model_id": "SEM-06-MODEL",
+        "name": "독립 평가용 가상 dishwasher",
+        "product_group": "dishwasher",
+        "document_version": "1.0",
+        "source_kind": "synthetic"
+      }
+    ],
+    "reviews": [
+      {
+        "id": "ROW-SEM-06-REVIEW",
+        "evidence_id": "SEM-06-REVIEW",
+        "model_id": "SEM-06-MODEL",
+        "document_version": "1.0",
+        "text": "세제가 남았는지 확인하려면 문을 열어 식기를 꺼내야 해서 외부 확인 방식을 검토하고 싶다.",
+        "source_id": "SEM-06-CSV",
+        "locator": {
+          "row": 2
+        },
+        "source_kind": "synthetic"
+      }
+    ],
+    "evidence": [
+      {
+        "id": "SEM-06-REVIEW",
+        "model_id": "SEM-06-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "SEM-06-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "세제가 남았는지 확인하려면 문을 열어 식기를 꺼내야 해서 외부 확인 방식을 검토하고 싶다.",
+        "feature_ids": []
+      },
+      {
+        "id": "SEM-06-MANUAL",
+        "model_id": "SEM-06-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "SEM-06-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능 및 사용 조건"
+        },
+        "text": "세척 완료 소리만 제공한다. 세제 잔여 여부는 사용자가 식기를 직접 확인한다.",
+        "feature_ids": [
+          "SEM-06-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "SEM-06-FEATURE",
+        "model_id": "SEM-06-MODEL",
+        "document_version": "1.0",
+        "name": "설명서의 제공 기능",
+        "description": "세척 완료 소리만 제공한다. 세제 잔여 여부는 사용자가 식기를 직접 확인한다.",
+        "conditions": [
+          "명시한 사용 조건을 충족해야 한다."
+        ],
+        "evidence_ids": [
+          "SEM-06-MANUAL"
+        ]
+      }
+    ]
+  }
+}

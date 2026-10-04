@@ -1,0 +1,80 @@
+{
+  "manifest": {
+    "dataset_id": "EXCL-INDEPENDENT-05",
+    "version": "EXCL-INDEPENDENT-05-v1",
+    "description": "Independent synthetic condition inputs, no generated response",
+    "source_kind": "synthetic",
+    "model_count": 1,
+    "review_count": 1,
+    "analysis_implemented": false
+  },
+  "products": [
+    {
+      "model_id": "EXCL-INDEPENDENT-05-MODEL",
+      "name": "독립 제외 조건 검토용 가상 microwave",
+      "product_group": "microwave",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EXCL-INDEPENDENT-05-REVIEW",
+      "model_id": "EXCL-INDEPENDENT-05-MODEL",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "review",
+      "source_id": "EXCL-INDEPENDENT-05-REVIEW-SOURCE",
+      "locator": {
+        "row": 2
+      },
+      "text": "자동 가열 후 튄 소스를 바로 닦으려면 뜨거운 회전판을 기다려야 한다.",
+      "feature_ids": []
+    },
+    {
+      "id": "EXCL-INDEPENDENT-05-MANUAL",
+      "model_id": "EXCL-INDEPENDENT-05-MODEL",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "manual",
+      "source_id": "EXCL-INDEPENDENT-05-MANUAL-SOURCE",
+      "locator": {
+        "page": 3,
+        "section": "사용 조건"
+      },
+      "text": "뜨거운 회전판은 충분히 식힌 뒤 세척한다. 회전판은 분리할 수 있다.",
+      "feature_ids": [
+        "EXCL-INDEPENDENT-05-FEATURE"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "id": "EXCL-INDEPENDENT-05-FEATURE",
+      "model_id": "EXCL-INDEPENDENT-05-MODEL",
+      "document_version": "1.0",
+      "name": "현재 제공 기능",
+      "description": "뜨거운 회전판은 충분히 식힌 뒤 세척한다. 회전판은 분리할 수 있다.",
+      "conditions": [
+        "설명서의 사용 조건을 충족해야 함"
+      ],
+      "evidence_ids": [
+        "EXCL-INDEPENDENT-05-MANUAL"
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "id": "ROW-EXCL-INDEPENDENT-05-REVIEW",
+      "evidence_id": "EXCL-INDEPENDENT-05-REVIEW",
+      "model_id": "EXCL-INDEPENDENT-05-MODEL",
+      "document_version": "1.0",
+      "text": "자동 가열 후 튄 소스를 바로 닦으려면 뜨거운 회전판을 기다려야 한다.",
+      "source_id": "EXCL-INDEPENDENT-05-REVIEW-SOURCE",
+      "locator": {
+        "row": 2
+      },
+      "source_kind": "synthetic"
+    }
+  ]
+}

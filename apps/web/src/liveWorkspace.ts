@@ -58,7 +58,7 @@ export interface RunStatusView { label: string; detail: string; tone: 'done' | '
 
 export function runStatusView(status: RunSnapshot['run']['status']): RunStatusView {
   switch (status) {
-    case 'completed': return { label: '분석 완료', detail: 'Agent가 판단·검사를 마친 결과입니다.', tone: 'done' };
+    case 'completed': return { label: '분석 완료', detail: 'Agent 판단이 계약 검사를 통과해 저장된 결과입니다. 제외 조건 준수와 실현 가능성은 기획자가 원문과 함께 검토해야 합니다.', tone: 'done' };
     case 'held': return { label: '보류', detail: '근거가 부족하거나 확인이 필요해 결과를 보류했습니다.', tone: 'notice' };
     case 'failed': return { label: '실패', detail: '실행 중 오류가 발생했습니다. 미해결 항목을 확인해 주세요.', tone: 'error' };
     case 'not_implemented': return { label: '요청만 저장됨', detail: '판단 Agent가 아직 연결되지 않아 분석을 실행하지 않았습니다.', tone: 'notice' };

@@ -1,0 +1,29 @@
+{
+  "source": "사용자 2026-10-05 중단 재점검·PR 검수·남은 PM 작업과 팀 지시 요청; 정이량-20261005-003-PRROUND2/E016",
+  "deadline": "2026-10-05 18:00 KST까지 최소 인수물 또는 구체 막힘 보고; 전체 제출은10/20",
+  "assignment_id": "PM-20261005-WEB-003-TERMINAL-UX",
+  "task_id": "P2-WEB-003",
+  "purpose": "실제 보류·실패 기록과 조건 재실행의 화면/내보내기 마무리",
+  "instructions": [
+    "최신PR61 b0739b7와PM의선택인수/검수결함수정을확인하고최신main기준브랜치로이어간다. 기존cfb인수분을중복구현하지않는다.",
+    "evals/pm-review/20261005-round2의실제Qwen출력과원API snapshot으로 정상·보류·실패·후보0·조건변경을같은runID에서표시한다. decision=null 오류와 semantic_reviews의원질문/보류사유를잃거나화면을성공으로표현하지않는다.",
+    "잘못된 nested trace/model_calls/errors/의미검토형식은예외대신명시오류로표시한다. 유효한원출력이없는실행은후보선택/재실행이성공한것처럼진행하지않는다.",
+    "실제후보선택과추가조건→새실행/사용자변경회차→이전실행불변·비교/원문내보내기를브라우저에서확인한다. 실모델실행이보류되면시도/상태를기록하고fixture작동을실모델성공으로대체하지않는다.",
+    "검수대기에는#26JSON/문서내보내기의의미검토/종료사유·이력완전성과#27의미채택상태를확인한다. 새동향그래프기능은채택전구현하지않는다."
+  ],
+  "acceptance": [
+    "실제같은runID의화면·API/모델원본·이전실행불변·내보내기확인증거와코드head를제공한다. 미실행은미완료로표시한다.",
+    "자기012/013기록을보존하고새개인기록/근거·부분PR·자기보고ACK를연결한다."
+  ],
+  "next_action": "PM실제종료출력의웹표시·조건재실행과내보내기누락부터부분PR로검수요청한다.",
+  "requirement_ids": [
+    "R14",
+    "R21",
+    "R22",
+    "R25",
+    "R27"
+  ],
+  "pm_account": "jeongiryang",
+  "recipient_account": "choigilung",
+  "assignment_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25#issuecomment-5982758076"
+}

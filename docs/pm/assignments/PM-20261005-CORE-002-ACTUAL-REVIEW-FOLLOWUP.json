@@ -1,0 +1,33 @@
+{
+  "source": "사용자 2026-10-05 중단 재점검·PR 검수·남은 PM 작업과 팀 지시 요청; 정이량-20261005-003-PRROUND2/E016",
+  "deadline": "2026-10-05 18:00 KST까지 최소 인수물 또는 구체 막힘 보고; 전체 제출은10/20",
+  "assignment_id": "PM-20261005-CORE-002-ACTUAL-REVIEW-FOLLOWUP",
+  "task_id": "P2-CORE-002",
+  "purpose": "실제 Qwen 원 출력 기반 의미 품질·수정 Skill 연결 보완",
+  "instructions": [
+    "PR60 고정28788164의 코드와 개인 기록을 PM이 인수 중이다. PM의 원본 해시/이전 결정 잔류 수정과 PR55~57 선택 인수는 최신 main의 docs/pm/pr-round2-20261005.md를 먼저 확인하고 기존 작업을 되돌리지 않는다.",
+    "evals/pm-review/20261005-round2/live-lg-final의 실제 출력에서 조건 대신 설명서 사용조건을 인용하거나 일반 설계 미검증을 이유로 과도하게 보류한 경로를 분석한다. authored fixture 통과와 실모델 품질을 구분하고 원본을 수정하지 않는다.",
+    "조건별 original quote·verdict·질문, 중복/근거부족/0후보를 의미로 검수한다. 충분한 정상 입력까지 보류하지 않도록 판단 지시와 structured schema를 개선하되 근거없는 accept나 사례별 정답 하드코딩은 금지한다.",
+    "CORE003의 review_revision과 RevisionSession 연결 설계·최소 구현을 별도 부분 PR로 준비한다. 실패도 회차를 소비하며 현재 Agent와 합쳐 최대2회만 수정하고 회차를 이중 증가하거나 세션을 매번 재생성하지 않는다. 유효한 이전 분석 없는 초기 오류는 해당 단계 재실행을 유지한다.",
+    "지시문이 섞인 자료·잘못된모델/버전·상충·모호한 제외조건과 실제 모델의 위반 수정/보류/최대2회 종료 원본을 기록한다. 수정 결과는 별도 semantic_review 재검토를 거친다. 외부 모델 실행은 PM의 현재 승인 연결을 사용하며 인증정보를 Issue/docs에 쓰지 않는다."
+  ],
+  "acceptance": [
+    "현재main 기반 부분PR·재현입력/원응답/실제호출·수정회차·코드/모델digest/예산/자료해시를 제공한다. 실패도 포함한다.",
+    "개인 의도/해석/행동/근거와 자기 doing/blocked/review_requested ACK를 연결한다. 전체 CORE002/003 Done은 PM의실제통합판정 전까지 유지하지 않는다."
+  ],
+  "next_action": "실제 실패/보류 사례 분석 결과와 작은 수정 PR부터 공유하고 검수 대기에는 CORE003 연결 준비를 이어간다.",
+  "requirement_ids": [
+    "R09",
+    "R10",
+    "R11",
+    "R12",
+    "R15",
+    "R16",
+    "R18",
+    "R19",
+    "R20"
+  ],
+  "pm_account": "jeongiryang",
+  "recipient_account": "unknownamed",
+  "assignment_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/8#issuecomment-5982755886"
+}

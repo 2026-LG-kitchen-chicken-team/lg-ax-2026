@@ -1,0 +1,57 @@
+{
+  "execution_kind": "live_model",
+  "model_id": "qwen3:8b",
+  "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+  "all_results": [
+    {
+      "case": "development-normal",
+      "status": "failed",
+      "calls": 2,
+      "revisions": 0,
+      "concepts": 0,
+      "semantic_reviews": 0,
+      "review_hash_replay": [],
+      "errors": [
+        "MODEL_UNAVAILABLE"
+      ],
+      "elapsed_seconds": 47.88,
+      "input_file": "evals/core-contract/development/normal.input.json",
+      "dataset_file": "evals/core-planning/examples/dataset.json",
+      "output_file": "evals/pm-review/20261005-round2/live-lg/development-normal.json"
+    },
+    {
+      "case": "normal",
+      "status": "failed",
+      "calls": 2,
+      "revisions": 0,
+      "concepts": 0,
+      "semantic_reviews": 0,
+      "review_hash_replay": [],
+      "errors": [
+        "MODEL_UNAVAILABLE"
+      ],
+      "elapsed_seconds": 45.06,
+      "input_file": "evals/core-exclusions/independent/normal.input.json",
+      "dataset_file": "evals/core-exclusions/independent/normal.dataset.json",
+      "output_file": "evals/pm-review/20261005-round2/live-lg/normal.json"
+    },
+    {
+      "case": "changed_exclusion",
+      "status": "failed",
+      "calls": 3,
+      "revisions": 1,
+      "concepts": 0,
+      "semantic_reviews": 0,
+      "review_hash_replay": [],
+      "errors": [
+        "VALIDATION_FAILED",
+        "MODEL_UNAVAILABLE"
+      ],
+      "elapsed_seconds": 46.05,
+      "input_file": "evals/core-exclusions/independent/changed_exclusion.input.json",
+      "dataset_file": "evals/core-exclusions/independent/changed_exclusion.dataset.json",
+      "output_file": "evals/pm-review/20261005-round2/live-lg/changed_exclusion.json"
+    }
+  ],
+  "independent_quality_scored": false
+}

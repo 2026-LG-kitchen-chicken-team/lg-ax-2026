@@ -1,0 +1,165 @@
+{
+  "task_id": "P2-CORE-004",
+  "owner": "황대겸",
+  "result": "partial",
+  "execution_kind": "fixture",
+  "purpose": "Change-plan code and three synthetic input pairs; not CORE004 live_model finish evidence",
+  "observed_at": "2026-10-04T15:53:24.700968+00:00",
+  "tested_commit": "8165ff5b9f5f80f4db51bc9c1842adae9f33d11a",
+  "models": [],
+  "checks": [
+    {
+      "name": "contracts.txt",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core004-draft-20261005/contracts.txt",
+        "sha256": "1e1b81f4c2607b74aca9deb8fd8bf0f1b048508d317d21f36ed1b59fca45661b"
+      }
+    },
+    {
+      "name": "fixture-plans.json",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core004-draft-20261005/fixture-plans.json",
+        "sha256": "2c53196f68ff1a5fad209654d0f1757ae0d053ca836c2b72cdeb32c7b09e1a13"
+      }
+    },
+    {
+      "name": "lint.txt",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core004-draft-20261005/lint.txt",
+        "sha256": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0"
+      }
+    },
+    {
+      "name": "phase2.txt",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core004-draft-20261005/phase2.txt",
+        "sha256": "6e84f7ccf1d99593ee0bf819047eb956d33efeb0f2863bbecbebdca299bd1e42"
+      }
+    },
+    {
+      "name": "python-tests.txt",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core004-draft-20261005/python-tests.txt",
+        "sha256": "37e6375f4209115f418840e55af70d2032cf64ca589644bb52ac5e053aba0c46"
+      }
+    },
+    {
+      "name": "rules.txt",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core004-draft-20261005/rules.txt",
+        "sha256": "7e0a7002be1c8a6a929966a18bc7207035beabeef3065614f21a9b6265ca789d"
+      }
+    }
+  ],
+  "code_versions": [
+    {
+      "path": "packages/core/src/lgax_core/reexecution.py",
+      "sha256": "e613ae8e76ee0bb9f1a28c003f557a1e481a76721246a2bedebd7da7e61c05a0",
+      "git_commit": "8165ff5b9f5f80f4db51bc9c1842adae9f33d11a"
+    },
+    {
+      "path": "tests/test_reexecution.py",
+      "sha256": "4f335310f6522b17424467eaf4294aae06da392df19e7c70366f27748859634b",
+      "git_commit": "8165ff5b9f5f80f4db51bc9c1842adae9f33d11a"
+    },
+    {
+      "path": "evals/core-reexecution/plan_examples.py",
+      "sha256": "329fcf2e9d993f9b118030f8be41ecbfbc2e0b2f9b0204bccf52bafac5fea83c",
+      "git_commit": "8165ff5b9f5f80f4db51bc9c1842adae9f33d11a"
+    },
+    {
+      "path": "docs/core/reexecution-draft.md",
+      "sha256": "fdce797f5a2d96e0e62a93acb537baef9def837ce3a26c437c24a7466ec94e9e",
+      "git_commit": "8165ff5b9f5f80f4db51bc9c1842adae9f33d11a"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "sha256": "d7cf46d9a980b00ad786ec46feaf3d31e4094f56ff0899d8bab59bdf95a9bad5",
+      "git_commit": "8165ff5b9f5f80f4db51bc9c1842adae9f33d11a"
+    },
+    {
+      "path": "packages/core/src/lgax_core/judgement_contract.py",
+      "sha256": "db7560e7d61e81e8d228b439969d3a28293b0cd219b7560eddea12923a2b2c24",
+      "git_commit": "8165ff5b9f5f80f4db51bc9c1842adae9f33d11a"
+    },
+    {
+      "path": "evals/core-reexecution/examples/dishwasher.after.dataset.json",
+      "sha256": "19ff42f7786fec49d8c0a2fe3044ca92611a7f5dc5d20cbc7c85e9020d39d1fb",
+      "git_commit": "8165ff5b9f5f80f4db51bc9c1842adae9f33d11a"
+    },
+    {
+      "path": "evals/core-reexecution/examples/dishwasher.after.input.json",
+      "sha256": "8749b515093633484b02ba745dd2747135b6ffcf5b8b22b534c2a24ff8dd7bba",
+      "git_commit": "8165ff5b9f5f80f4db51bc9c1842adae9f33d11a"
+    },
+    {
+      "path": "evals/core-reexecution/examples/dishwasher.before.dataset.json",
+      "sha256": "8027ca91443e78574e8553929ef970ca2aac8645f8a2cb1ebf201f3af4def40b",
+      "git_commit": "8165ff5b9f5f80f4db51bc9c1842adae9f33d11a"
+    },
+    {
+      "path": "evals/core-reexecution/examples/dishwasher.before.input.json",
+      "sha256": "3bebc3f9c51a8ec0a7fac327891452fb8570d7eb164dea4a332edf3d378bac52",
+      "git_commit": "8165ff5b9f5f80f4db51bc9c1842adae9f33d11a"
+    },
+    {
+      "path": "evals/core-reexecution/examples/fridge.after.dataset.json",
+      "sha256": "a406d4ef69a7f52a63a5bb6a00c9a4656c80402a6fdd665109e9a5f87342d309",
+      "git_commit": "8165ff5b9f5f80f4db51bc9c1842adae9f33d11a"
+    },
+    {
+      "path": "evals/core-reexecution/examples/fridge.after.input.json",
+      "sha256": "9759bb8fd884604c004763a3b679854429cabfedf0cc73542468931188dea5be",
+      "git_commit": "8165ff5b9f5f80f4db51bc9c1842adae9f33d11a"
+    },
+    {
+      "path": "evals/core-reexecution/examples/fridge.before.dataset.json",
+      "sha256": "a406d4ef69a7f52a63a5bb6a00c9a4656c80402a6fdd665109e9a5f87342d309",
+      "git_commit": "8165ff5b9f5f80f4db51bc9c1842adae9f33d11a"
+    },
+    {
+      "path": "evals/core-reexecution/examples/fridge.before.input.json",
+      "sha256": "64767841152abde771b3bb85d2f2a07819c673b1eae20af55360755781042ae4",
+      "git_commit": "8165ff5b9f5f80f4db51bc9c1842adae9f33d11a"
+    },
+    {
+      "path": "evals/core-reexecution/examples/microwave.after.dataset.json",
+      "sha256": "c9971742ac2d395e1d2562c876015d1f39b1151136a36f0845556dc3f81cc7b4",
+      "git_commit": "8165ff5b9f5f80f4db51bc9c1842adae9f33d11a"
+    },
+    {
+      "path": "evals/core-reexecution/examples/microwave.after.input.json",
+      "sha256": "0620825ba5d16d2a1c76f95e53a1eacceeaf4e70eef40eaaf425d6adad452b56",
+      "git_commit": "8165ff5b9f5f80f4db51bc9c1842adae9f33d11a"
+    },
+    {
+      "path": "evals/core-reexecution/examples/microwave.before.dataset.json",
+      "sha256": "d92b72b0d14b6e54a3df2d18ef0708d19763700a8bb859be649a618b9ccd39a5",
+      "git_commit": "8165ff5b9f5f80f4db51bc9c1842adae9f33d11a"
+    },
+    {
+      "path": "evals/core-reexecution/examples/microwave.before.input.json",
+      "sha256": "f7ed0845c2f84b396f5eafc6befc688dcd4563781b091aba9f313aea87f7baf3",
+      "git_commit": "8165ff5b9f5f80f4db51bc9c1842adae9f33d11a"
+    }
+  ],
+  "observations": [
+    "21 new tests and337 total Python tests passed on independent main-based branch.",
+    "Three actual offline change plans created; six matching datasets loaded by tests.",
+    "Immutable old input; actual changed-ID calculation; counter-only budget reset rejected.",
+    "New project required for dataset content/scope changes; no Workspace write attempted."
+  ],
+  "limitations": [
+    "No LLM connection, live generation, semantic change quality or CORE004 completion.",
+    "PM handles actual model calls, #54/#55 integration and Workspace/API/MCP/web integration.",
+    "CORE003 dependency and formal live_model completion remain pending."
+  ]
+}

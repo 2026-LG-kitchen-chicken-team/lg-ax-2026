@@ -421,7 +421,7 @@ ${item}`))),
 }
 
 const STATUS_LABELS: Record<string, string> = {
-  supported: '기존 기능으로 해결', unsupported: '남은 불편 있음', insufficient_evidence: '근거 부족·보류',
+  supported: '기존 기능 제공', unsupported: '남은 불편 있음', insufficient_evidence: '근거 부족·보류',
   proposed: '제안', needs_review: '검토 필요', accepted: '채택', rejected: '제외',
 };
 

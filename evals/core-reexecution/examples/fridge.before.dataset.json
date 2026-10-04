@@ -1,0 +1,80 @@
+{
+  "manifest": {
+    "dataset_id": "CHANGE-FRIDGE",
+    "version": "CHANGE-FRIDGE-v1",
+    "description": "Synthetic re-execution handoff; no model output",
+    "source_kind": "synthetic",
+    "model_count": 1,
+    "review_count": 1,
+    "analysis_implemented": false
+  },
+  "products": [
+    {
+      "model_id": "CHANGE-FRIDGE-MODEL",
+      "name": "재실행 예제용 가상 fridge",
+      "product_group": "fridge",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "CHANGE-FRIDGE-REVIEW",
+      "model_id": "CHANGE-FRIDGE-MODEL",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "review",
+      "source_id": "CHANGE-FRIDGE-REVIEW-DOC",
+      "locator": {
+        "row": 2
+      },
+      "text": "국소 얼룩을 닦으려면 선반 위 용기를 모두 꺼내야 해 번거롭다.",
+      "feature_ids": []
+    },
+    {
+      "id": "CHANGE-FRIDGE-MANUAL",
+      "model_id": "CHANGE-FRIDGE-MODEL",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "manual",
+      "source_id": "CHANGE-FRIDGE-MANUAL-DOC",
+      "locator": {
+        "page": 3,
+        "section": "사용 조건"
+      },
+      "text": "선반 전체를 분리하여 세척할 수 있다. 분리 전에 식품을 모두 꺼낸다.",
+      "feature_ids": [
+        "CHANGE-FRIDGE-FEATURE"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "id": "CHANGE-FRIDGE-FEATURE",
+      "model_id": "CHANGE-FRIDGE-MODEL",
+      "document_version": "1.0",
+      "name": "설명서의 현재 지원 기능",
+      "description": "선반 전체를 분리하여 세척할 수 있다. 분리 전에 식품을 모두 꺼낸다.",
+      "conditions": [
+        "설명서의 사용 조건을 충족해야 함"
+      ],
+      "evidence_ids": [
+        "CHANGE-FRIDGE-MANUAL"
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "id": "ROW-CHANGE-FRIDGE-REVIEW",
+      "evidence_id": "CHANGE-FRIDGE-REVIEW",
+      "model_id": "CHANGE-FRIDGE-MODEL",
+      "text": "국소 얼룩을 닦으려면 선반 위 용기를 모두 꺼내야 해 번거롭다.",
+      "source_kind": "synthetic",
+      "document_version": "1.0",
+      "source_id": "CHANGE-FRIDGE-REVIEW-DOC",
+      "locator": {
+        "row": 2
+      }
+    }
+  ]
+}

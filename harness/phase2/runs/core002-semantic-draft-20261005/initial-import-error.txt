@@ -1,0 +1,21 @@
+test_semantic_review (unittest.loader._FailedTest.test_semantic_review) ... ERROR
+
+======================================================================
+ERROR: test_semantic_review (unittest.loader._FailedTest.test_semantic_review)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_semantic_review
+Traceback (most recent call last):
+  File "C:\Users\admin\AppData\Roaming\uv\python\cpython-3.11.17-windows-x86_64-none\Lib\unittest\loader.py", line 419, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\admin\AppData\Roaming\uv\python\cpython-3.11.17-windows-x86_64-none\Lib\unittest\loader.py", line 362, in _get_module_from_name
+    __import__(name)
+  File "C:\Users\admin\Documents\ChatGPT\LG 해커톤\lg-ax-2026\tests\test_semantic_review.py", line 12, in <module>
+    from lgax_core.judgement_contract import judgement_schema
+ImportError: cannot import name 'judgement_schema' from 'lgax_core.judgement_contract' (C:\Users\admin\Documents\ChatGPT\LG 해커톤\lg-ax-2026\packages\core\src\lgax_core\judgement_contract.py)
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)
