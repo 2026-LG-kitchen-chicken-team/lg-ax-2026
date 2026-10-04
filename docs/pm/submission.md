@@ -33,3 +33,9 @@ ZIP에는 전체 추적 소스와 `__submission__/manifest.json`, `__submission_
 이 도구에는 `--final`이나 최종 제출 모드가 없다. 모든 산출물은 `draft=true`, `submission_ready=false`이며 설치/재현 성공도 자동 주장하지 않는다. 발표자료·영상·촬영 commit 일치·31요구 검증·독립 평가·최종 ZIP 검수·실제 제출과 접수 증빙은 별도 완료 조건이다. 따라서 이 도구를 만들었다는 이유로 P2-PM-006이나 R28을 완료 처리하지 않는다.
 
 검사는 `uv run python -m unittest discover -s tests -p test_package_submission.py -v`로 실행한다. 시험의 위험 경로·키·DB·심볼릭 링크·악성 ZIP은 임시 Git 저장소의 합성 자료이며 실제 팀 개인정보·비밀키를 사용하지 않는다.
+
+## 10/4 실제 준비용 ZIP 재현
+
+코드 commit `124dbf0d2088101df6272334a00b9130bb98e77a`의 505개 tracked 파일을 포장하고 두 번 생성한 ZIP SHA·모든 원본 파일/모드가 같음을 확인했다. ZIP SHA256은 `1e6261e266071e64ccfa503f5e6347b89d38e55ee05576862441570c8ff625cc`다. 비공개 압축 해제 새 폴더에서 Python 설치·동일 지침·공통 계약·Skill21시험·실제 stdio MCP 호출·웹 설치/17시험/빌드의 8개 검사를 통과했다. [원본 실행 증빙](../../evals/pm-preparation/20261004/draft-replay/checks.json)을 따른다.
+
+네 판단 Skill은 여전히 미구현이며 그 오류를 정직하게 반환하는 기반을 재현한 것이다. 영상/완성 Agent/실모델 비교·최종 제출을 재현한 것이 아니다. 이 ZIP은 준비용이고 사용자에게 최신 완성 제출본으로 전달하지 않는다. 최종 촬영/제출 때는 그때의 실제 코드 commit으로 새 ZIP을 만든다.
