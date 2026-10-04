@@ -36,3 +36,5 @@ PM 계약은 `schema_version`, `independent_from_development`, `cases`와 사례
 [delivery-manifest.json](delivery-manifest.json)의 명시적 파일 목록을 부분 전달 후보로 묶는다. 이 문서·목록·작업기록·근거·실제 참고팩/진단 파일이 포함된 로컬 Git commit을 기준으로 검토한다. 실제 commit 결과는 사용자 보고와 로컬 commit receipt로 확인한다. 자체 commit SHA를 파일 안에 넣어 순환 참조를 만들지 않는다.
 
 기존 가상 모델/합성 리뷰 원문, 원본 PDF/이미지, private 자료, 환경 실행파일, 과거 선정 문서, 하네스의 정식 상태 변경은 새 전달 파일 목록에 포함하지 않는다. 게시용 제목/본문은 [partial-pr-description.md](partial-pr-description.md)에 준비했다. 게시 전에 사용자가 준비 범위와 막힘을 볼 수 있도록 보고하며 원격 게시하지 않는다.
+
+파일 표현 확인: 최초 Windows CRLF와 Git LF 차이는 저장소 규칙으로 정정했다. 수집 당시 원래 해시는 참고팩 verification.json 이력에 보존하고 전달 manifest는 현재 LF 바이트를 확인한다. 정보/원본 PDF/기존 자료 변경 없음.
