@@ -1,0 +1,44 @@
+{
+  "checked_at": "2026-10-04T12:22:44.924920+00:00",
+  "pull_request": 45,
+  "owner": "choigilung",
+  "reviewed_head": "0cde1d1b7a76efe23dbf5656cdac0b4e63980366",
+  "owner_tested_commit": "dbff065025c6e27d94fa03044192bd9797db6c68",
+  "actual_merge_commit": "143344d4eadde34c63ca83842bbe4aef6bf96972",
+  "review_url": "https://github.com/jeongiryang/lg-ax-2026/pull/45#pullrequestreview-5406041662",
+  "independent_review": {
+    "blockers": 0,
+    "matched_fingerprints": 17,
+    "execution": "read_only_review"
+  },
+  "owner_original_evidence": "evals/web/20261004/p2-web-review-fixes/individual-evidence.json",
+  "scope": "partial_code_review_only",
+  "formal_task_completion": false,
+  "limitations": [
+    "Retry failure test uses a mocked boundary; CUA verifies the normal App save path with real synthetic-source API.",
+    "Owner conditional E2E assertion is supplemented by an unconditional new-scope CUA check.",
+    "Real reasoning candidates and four reasoning Skills remain unavailable."
+  ],
+  "merged_source_checks": [
+    {
+      "path": "apps/web/src/App.tsx",
+      "sha256": "8676ab2f5650b0dbd37f4df543be2fec3ac338580f863cc5e04494e4f89dbcfa",
+      "matched": true
+    },
+    {
+      "path": "apps/web/src/liveWorkspace.ts",
+      "sha256": "8f799819ee6b8bae235fc9c14fb9663a233cf9d1ad2ecbe2df1405eb9ab8e6cf",
+      "matched": true
+    },
+    {
+      "path": "apps/web/src/liveWorkspace.state.test.ts",
+      "sha256": "e2f3126bdb8b50176db6796aee941f425d7f9e8ea77800708314b1adc169d8de",
+      "matched": true
+    },
+    {
+      "path": "apps/web/e2e/planner-flow.spec.ts",
+      "sha256": "77e0402fe6767ac692bf5b07bdf6663cee760116706ea705dddde06c0bf0bae2",
+      "matched": true
+    }
+  ]
+}

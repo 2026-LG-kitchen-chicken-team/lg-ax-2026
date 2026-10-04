@@ -1,0 +1,89 @@
+{
+  "result": "pass",
+  "tested_commit": "c7ad54af7af9d605998b176a10026ee9ae81a808",
+  "checked_at": "2026-10-04T12:12:48.580427+00:00",
+  "checks": [
+    {
+      "name": "web-live",
+      "exit_code": 0,
+      "command": [
+        "npm.cmd",
+        "test"
+      ],
+      "output_path": "evals/pm-web-review/20261004/web45/web-live.txt",
+      "output_sha256": "78c30e564737711a82f5dac23ebd5106cf97eac6427628ea5b00468e0d863357"
+    },
+    {
+      "name": "web-build",
+      "exit_code": 0,
+      "command": [
+        "npm.cmd",
+        "run",
+        "build"
+      ],
+      "output_path": "evals/pm-web-review/20261004/web45/web-build.txt",
+      "output_sha256": "d093e835a931ccc203151fd93ba5e4349d1ac076fd921efbc6173e30d71444e6"
+    },
+    {
+      "name": "contracts",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\user\\.codex\\worktrees\\pm-web-integration\\LG_해커톤\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "scripts/check_contracts.py"
+      ],
+      "output_path": "evals/pm-web-review/20261004/web45/contracts.txt",
+      "output_sha256": "6eeefba1598ed16cffaa688f144376cf5a072af5ec2d72e621cc6d504a38502e"
+    },
+    {
+      "name": "rules",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\user\\.codex\\worktrees\\pm-web-integration\\LG_해커톤\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "output_path": "evals/pm-web-review/20261004/web45/rules.txt",
+      "output_sha256": "56b21f915cb5a695479359f4ca6063582b0b9bcbdaee1869782a2a805a2a82cd"
+    },
+    {
+      "name": "phase2",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\user\\.codex\\worktrees\\pm-web-integration\\LG_해커톤\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "scripts/phase2.py",
+        "validate"
+      ],
+      "output_path": "evals/pm-web-review/20261004/web45/phase2.txt",
+      "output_sha256": "513ceac05d2694c95767b5e14a41edc7664eeb902b0bf91c1265be72d440ac6a"
+    }
+  ],
+  "code_files": [
+    {
+      "path": "apps/web/src/App.tsx",
+      "sha256": "8676ab2f5650b0dbd37f4df543be2fec3ac338580f863cc5e04494e4f89dbcfa"
+    },
+    {
+      "path": "apps/web/src/liveWorkspace.ts",
+      "sha256": "8f799819ee6b8bae235fc9c14fb9663a233cf9d1ad2ecbe2df1405eb9ab8e6cf"
+    },
+    {
+      "path": "apps/web/src/liveWorkspace.state.test.ts",
+      "sha256": "e2f3126bdb8b50176db6796aee941f425d7f9e8ea77800708314b1adc169d8de"
+    },
+    {
+      "path": "apps/web/e2e/planner-flow.spec.ts",
+      "sha256": "77e0402fe6767ac692bf5b07bdf6663cee760116706ea705dddde06c0bf0bae2"
+    }
+  ],
+  "limitations": [
+    "Actual HTTP tests use the existing private loopback service with synthetic inputs.",
+    "First-save failure is a mocked boundary regression, not a forced outage of the shared live service.",
+    "WEB003 and WEB004 remain incomplete until the real reasoning core is integrated."
+  ]
+}
