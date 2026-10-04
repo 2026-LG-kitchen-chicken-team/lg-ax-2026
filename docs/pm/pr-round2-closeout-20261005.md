@@ -39,3 +39,11 @@ LG Notion과 공모전 대시보드의 LG 항목 갱신 succeeded 후 재조회�
 이번 사용자 요청의 PM 검수·누락 점검·새 배정·기록 최신화는 완료했다. 참가작 개발/최종 제출은 미완료다. 다음 재개는 새 main에서 네 개인 기록 요약과 온라인 Project를 조회하고 황대겸 #8/#9, 신진하 #12, 최길웅 #25의 후속 인수/막힘 보고를 확인하는 것이다. [실제 응답 근거](../../evals/pm-review/20261005-round2/delivery-proof.json).
 
 활성 참조 점검: policy의 repo/project_id/project_url·github.json 운영 주소·AGENTS/CLAUDE·운영 CLI/서비스는 새 조직 Project1을 사용한다. github.json의 source_url과 policy의 approved_tasks는 과거 승인 commit/이관 원본을 보존한 기록이며 개인 주소를 새로운 운영 대상으로 사용하지 않는다. 서비스의 현재 정식 상태는 durable trusted_tasks와 실제 승인 main24032a8로 대조했다. 과거 수신증·원본 보고 링크는 해시/결과를 바꾸지 않고 유지했다.
+
+## 추가 발견: 미공유 로컬 프로필 기록 복구
+
+마지막 원 checkout 대조에서 docs/작업기록/정이량.md의 Identity01/02 추가16행과 docs/작업근거/정이량.md의 E01/E02 추가17행, assets/branding의 원 PNG·업로드 JPEG·생성 프롬프트가 원격에 포함되지 않은 것을 발견했다. 등록된 Project 보고49건의 이관 공백 누락0과는 별개인 미push 로컬 작업이다.
+
+원 dirty 전체 파일은 private/pm-local-recovery-20261005에 백업했다. 이전 문서 전체로 최신 PM 기록을 덮어쓰지 않고 추가4단락을 그대로 보존·합쳤으며 이미지/프롬프트3개를 byte 동일하게 복사했다. 이것은 과거 생성/프로필 업로드 기록의 인수이며 이미지 재생성·조직 설정 재변경은 수행하지 않았다. UI 증빙의 비공개 설정 필드는 private에 유지한다. [정확한 복구 출처](../../evals/pm-review/20261005-round2/local-recovery.json).
+
+복구 PR 병합 뒤 원 comparison 브랜치와 전체 SHA의 safety stash를 보존하고 local main을 최신 origin/main으로 전진한다. 원 기록4단락 각각1회·assets3해시·지침 동일·clean checkout을 확인한 다음 재개 완료로 보고한다. stash를 새 문서 위에 중복 적용하거나 이전 브랜치를 삭제하지 않는다.
