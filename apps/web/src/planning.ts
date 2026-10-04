@@ -238,13 +238,18 @@ export interface ExportDocument {
   requirements: { concept_id: string; requirement: string }[];
   assumptions: { source_id: string; assumption: string }[];
   unresolved: string[];
+  held: HeldItem[];
+  lineage: { run_id: string; previous_run_id: string | null; request_revision: number; status: Run['status']; created_at: string }[];
   evidence: { id: string; model_id: string; document_version: string; source_type: string; source_kind: string; source_id: string; location: string; text: string }[];
+  completeness: ExportCompleteness;
 }
+
+export interface ExportCompleteness { complete: boolean; missing_evidence: string[]; missing_requirements: string[]; missing_assumptions: string[]; missing_unresolved: string[]; missing_held: string[] }
 
 export const FIXTURE_NOTICE = '계약 fixture(모의) 예시입니다. Agent 출력이나 서버 응답이 아니며 실제 수요·성능을 입증하지 않습니다.';
 export const LIVE_NOTICE = '실제 서버 응답에서 내보낸 기록입니다.';
 
-export function buildExport(mode: DataMode, snapshot: RunSnapshot, features: Feature[], evidence: Evidence[], generatedAt: string): ExportDocument {
+export function buildExport(mode: DataMode, snapshot: RunSnapshot, features: Feature[], evidence: Evidence[], generatedAt: string, runs: RunSnapshot[] = [snapshot]): ExportDocument {
   const output = snapshot.output ?? { needs: [], gaps: [] };
   const rows = buildComparison(output, features, evidence);
   const cited = new Set([
@@ -254,7 +259,7 @@ export function buildExport(mode: DataMode, snapshot: RunSnapshot, features: Fea
     ...snapshot.run.concepts.flatMap(item => item.evidence_ids),
   ]);
   const evidenceById = new Map(evidence.map(item => [item.id, item]));
-  return {
+  const doc: ExportDocument = {
     meta: {
       mode, notice: mode === 'fixture' ? FIXTURE_NOTICE : LIVE_NOTICE, generated_at: generatedAt, run_id: snapshot.run.id,
       previous_run_id: snapshot.previous_run_id, run_status: snapshot.run.status, request_revision: snapshot.request_revision,
@@ -273,13 +278,45 @@ export function buildExport(mode: DataMode, snapshot: RunSnapshot, features: Fea
       ...snapshot.unconfirmed.map(assumption => ({ source_id: snapshot.run.id, assumption })),
     ],
     unresolved: snapshot.run.unresolved,
+    held: heldItems(snapshot).filter(item => item.kind === 'insufficient_evidence'),
+    lineage: runLineage(snapshot, runs).map(item => ({ run_id: item.run.id, previous_run_id: item.previous_run_id, request_revision: item.request_revision, status: item.run.status, created_at: item.created_at })),
     evidence: [...cited].sort().map(id => {
       const item = evidenceById.get(id);
       return item
         ? { id, model_id: item.model_id, document_version: item.document_version, source_type: item.source_type, source_kind: item.source_kind, source_id: item.source_id, location: evidenceLocation(item), text: item.text }
         : { id, model_id: '', document_version: '', source_type: '', source_kind: '', source_id: '', location: '자료 누락', text: '원문을 찾을 수 없습니다.' };
     }),
+    completeness: { complete: false, missing_evidence: [], missing_requirements: [], missing_assumptions: [], missing_unresolved: [], missing_held: [] },
   };
+  doc.completeness = exportCompleteness(doc, snapshot);
+  return doc;
+}
+
+/** Follows previous_run_id links back to the first run, so an export shows how the request evolved. */
+export function runLineage(snapshot: RunSnapshot, runs: RunSnapshot[]): RunSnapshot[] {
+  const byId = new Map(runs.map(item => [item.run.id, item]));
+  const chain: RunSnapshot[] = [];
+  for (let current: RunSnapshot | undefined = snapshot; current && !chain.includes(current); current = current.previous_run_id ? byId.get(current.previous_run_id) : undefined) chain.unshift(current);
+  return chain;
+}
+
+/** R27 self-check: everything the run cites or assumes must be present in the export, with source text for every citation. */
+export function exportCompleteness(doc: ExportDocument, snapshot: RunSnapshot): ExportCompleteness {
+  const output = snapshot.output ?? { needs: [], gaps: [] };
+  const cited = new Set([...snapshot.run.evidence_ids, ...output.needs.flatMap(item => item.evidence_ids), ...output.gaps.flatMap(item => item.evidence_ids), ...snapshot.run.concepts.flatMap(item => item.evidence_ids)]);
+  const withText = new Set(doc.evidence.filter(item => item.location !== '자료 누락').map(item => item.id));
+  const requirements = new Set(doc.requirements.map(item => `${item.concept_id}
+${item.requirement}`));
+  const assumptions = new Set(doc.assumptions.map(item => item.assumption));
+  const result = {
+    missing_evidence: [...cited].filter(id => !withText.has(id)),
+    missing_requirements: snapshot.run.concepts.flatMap(concept => concept.requirements.filter(item => !requirements.has(`${concept.id}
+${item}`))),
+    missing_assumptions: [...snapshot.run.concepts.flatMap(concept => concept.assumptions), ...snapshot.unconfirmed].filter(item => !assumptions.has(item)),
+    missing_unresolved: snapshot.run.unresolved.filter(item => !doc.unresolved.includes(item)),
+    missing_held: heldItems(snapshot).filter(item => item.kind === 'insufficient_evidence' && !doc.held.some(held => held.id === item.id)).map(item => item.id ?? item.text),
+  };
+  return { complete: Object.values(result).every(list => !list.length), ...result };
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -317,6 +354,10 @@ export function exportMarkdown(doc: ExportDocument): string {
   const runAssumptions = doc.assumptions.filter(item => item.source_id === doc.meta.run_id);
   lines.push('## 실행 단위 미확인 사항', '', ...(runAssumptions.length ? runAssumptions.map(item => `- ${item.assumption}`) : ['- 없음']), '');
   lines.push('## 미해결·보류', '', ...(doc.unresolved.length ? doc.unresolved.map(item => `- ${item}`) : ['- 없음']), '');
+  lines.push('## 근거 부족으로 보류한 불편', '', ...(doc.held.length ? doc.held.map(item => `- ${item.id}: ${item.text}${item.questions.length ? ` — 확인할 질문: ${item.questions.join(' / ')}` : ''}`) : ['- 없음']), '');
+  lines.push('## 실행 계보', '', ...doc.lineage.map(item => `- ${item.run_id} · 요청 회차 ${item.request_revision} · ${item.status} · ${item.created_at}${item.previous_run_id ? ` (← ${item.previous_run_id})` : ' (첫 실행)'}`), '');
+  const missing = Object.entries(doc.completeness).filter(([key, value]) => key !== 'complete' && Array.isArray(value) && value.length);
+  lines.push('## 내보내기 점검', '', doc.completeness.complete ? '- 인용 근거 원문·요구사항·가정·미확인·미해결·보류가 모두 포함되었습니다.' : '- **누락이 있습니다.**', ...missing.map(([key, value]) => `- ${key}: ${(value as string[]).join(', ')}`), '');
   lines.push('## 인용 근거 원문', '', ...doc.evidence.map(item => `- **${item.id}** (${item.model_id} · 문서 ${item.document_version} · ${item.location} · ${item.source_id}, ${item.source_kind}): ${item.text}`), '');
   return lines.join('\n');
 }

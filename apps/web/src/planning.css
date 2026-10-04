@@ -204,3 +204,20 @@
 .field-diff .removed strong { color: #a2574a; }
 .sub small { font-weight: 400; color: #a3ac96; margin-left: 6px; font-size: 9px; }
 @media (max-width: 960px) { .candidate-review { grid-template-columns: 1fr; } }
+
+/* Export check and modification-time measurement (P2-WEB-004) */
+.export-check { font-size: 9px; border-radius: 4px; padding: 3px 7px; }
+.export-check.ok { background: #e8f2e0; color: #4f7a3a; }
+.export-check.missing { background: #f7e9e6; color: #a2574a; font-weight: 600; }
+.measure-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 12px 0 4px; padding: 10px 12px; border: 1px dashed #d7e0cd; border-radius: 8px; background: #fbfcf8; }
+.measure-bar input { flex: 1; min-width: 180px; font-size: 11px; padding: 7px 10px; }
+.measure-bar.running { border-style: solid; border-color: #e6d9a8; background: #fffbea; color: #7a6a2c; }
+.measure-bar.running strong { display: block; font-size: 11px; }
+.measure-bar.running small { display: block; font-size: 9px; }
+.measure-clock { font-family: Manrope, Arial, sans-serif; font-size: 18px; font-weight: 700; min-width: 64px; }
+.measure-bar .form-error { flex-basis: 100%; margin: 0; }
+.measurement-log { margin-top: 16px; border-top: 1px solid #edf0e8; padding-top: 8px; }
+.measurement-log ul { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 6px; }
+.measurement-log li { font-size: 10px; color: #55654f; line-height: 1.6; }
+.measurement-log li strong { margin-right: 6px; color: #3e5338; font-family: Manrope, Arial, sans-serif; }
+.measurement-log li small { display: block; color: #9aa48c; font-size: 8px; }

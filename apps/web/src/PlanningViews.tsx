@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { ApiError } from './api';
 import { evidenceLocation } from './domain';
 import type { Evidence } from './domain';
 import { runStatusView } from './liveWorkspace';
+import { editSummary, END_RULE, START_RULE } from './measurement';
+import type { EditSummary, ModificationMeasurement } from './measurement';
 import type { ErrorView, EvidenceSearch, LiveWorkspace } from './liveWorkspace';
 import {
   buildComparison, buildExport, buildRerunRequest, candidateExclusion, conceptDetailChanges, exportMarkdown, FIXTURE_NOTICE, heldItems,
@@ -147,21 +149,24 @@ function ComparisonTable({ snapshot, features, evidence }: { snapshot: RunSnapsh
   </table></div>;
 }
 
-function download(name: string, type: string, content: string) {
+export function download(name: string, type: string, content: string) {
   const url = URL.createObjectURL(new Blob([content], { type }));
   const link = document.createElement('a');
   link.href = url; link.download = name; link.click();
   URL.revokeObjectURL(url);
 }
 
-function ExportActions({ mode, snapshot, features, evidence }: { mode: DataMode; snapshot: RunSnapshot; features: Feature[]; evidence: Evidence[] }) {
+function ExportActions({ mode, snapshot, features, evidence, runs }: { mode: DataMode; snapshot: RunSnapshot; features: Feature[]; evidence: Evidence[]; runs: RunSnapshot[] }) {
+  // The completeness check runs on the same document that will be downloaded, so the badge and the file always agree.
+  const check = buildExport(mode, snapshot, features, evidence, '', runs).completeness;
+  const missingCount = Object.values(check).filter(Array.isArray).reduce((sum: number, list) => sum + (list as string[]).length, 0);
   function exportAs(format: 'json' | 'md') {
-    const doc = buildExport(mode, snapshot, features, evidence, new Date().toISOString());
+    const doc = buildExport(mode, snapshot, features, evidence, new Date().toISOString(), runs);
     const base = `${snapshot.run.id}${mode === 'fixture' ? '-fixture' : ''}`;
     if (format === 'json') download(`${base}.json`, 'application/json', `${JSON.stringify(doc, null, 2)}\n`);
     else download(`${base}.md`, 'text/markdown', exportMarkdown(doc));
   }
-  return <div className="export-actions"><span>회의용 내보내기</span><button type="button" className="secondary-button" onClick={() => exportAs('json')}>JSON</button><button type="button" className="secondary-button" onClick={() => exportAs('md')}>문서(Markdown)</button></div>;
+  return <div className="export-actions"><span className={`export-check ${check.complete ? 'ok' : 'missing'}`} title="인용 근거 원문·요구사항·가정·미확인·미해결·보류 포함 여부">{check.complete ? '내보내기 점검: 누락 없음' : `내보내기 점검: 누락 ${missingCount}건`}</span><span>회의용 내보내기</span><button type="button" className="secondary-button" onClick={() => exportAs('json')}>JSON</button><button type="button" className="secondary-button" onClick={() => exportAs('md')}>문서(Markdown)</button></div>;
 }
 
 function RunPicker({ runs, selected, onSelect }: { runs: RunSnapshot[]; selected: RunSnapshot; onSelect: (id: string) => void }) {
@@ -239,7 +244,7 @@ export function ConceptsView({ mode, runs, selected, onSelect, features, evidenc
       <ComparisonTable snapshot={selected} features={features} evidence={evidenceById} />
     </section>
     <section className="panel planning-panel">
-      <div className="planning-head"><div><p className="eyebrow">CANDIDATES</p><h3>콘셉트 후보 <span className="count">{selected.run.concepts.length} / 3</span></h3></div><ExportActions mode={mode} snapshot={selected} features={features} evidence={evidence} /></div>
+      <div className="planning-head"><div><p className="eyebrow">CANDIDATES</p><h3>콘셉트 후보 <span className="count">{selected.run.concepts.length} / 3</span></h3></div><ExportActions mode={mode} snapshot={selected} features={features} evidence={evidence} runs={runs} /></div>
       {selected.run.concepts.length ? <div className="concept-grid">{selected.run.concepts.map(concept => <article key={concept.id} className={`concept-card ${concept.status}`}>
         <div className="concept-top"><span className="id">{concept.id} · {concept.kind}</span><span className={`status-pill ${concept.status}`}>{statusLabel(concept.status)}</span></div>
         <h4>{concept.title}</h4>
@@ -259,11 +264,59 @@ export function ConceptsView({ mode, runs, selected, onSelect, features, evidenc
   </div>;
 }
 
+export interface MeasureControls {
+  records: ModificationMeasurement[];
+  start: (goal: string, baseRunId: string) => void;
+  cancel: () => void;
+  exportRecords: () => void;
+  error: string;
+}
+
+function elapsed(since: string, now: number): string {
+  const seconds = Math.max(0, Math.floor((now - Date.parse(since)) / 1000));
+  return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+}
+
+/** E03: explicit goal and start; the clock stops when the rerun is saved. Nothing is measured implicitly. */
+function MeasureBar({ measure, baseRunId }: { measure: MeasureControls; baseRunId: string }) {
+  const running = measure.records.find(item => item.status === 'running');
+  const [goal, setGoal] = useState('');
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!running) return;
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, [running]);
+  if (running) {
+    return <div className="measure-bar running" role="status">
+      <span className="measure-clock" aria-label="경과 시간">{elapsed(running.started_at, now)}</span>
+      <span><strong>수정 시간 측정 중</strong><small>목표: {running.goal} · 기준 실행 {running.base_run_id} · 다시 실행 요청이 저장되면 멈춥니다</small></span>
+      <button type="button" className="text-button" onClick={measure.cancel}>측정 취소</button>
+    </div>;
+  }
+  return <div className="measure-bar">
+    <label className="sr-only" htmlFor="measure-goal">수정 목표</label>
+    <input id="measure-goal" value={goal} onChange={event => setGoal(event.target.value)} placeholder="수정 목표 (예: 중복 후보를 빼고 1인 가구 조건 추가)" />
+    <button type="button" className="secondary-button" onClick={() => { measure.start(goal, baseRunId); setGoal(''); }}>수정 시간 측정 시작</button>
+    {measure.error ? <p className="form-error" role="alert">{measure.error}</p> : null}
+  </div>;
+}
+
+function MeasurementLog({ measure }: { measure: MeasureControls }) {
+  if (!measure.records.length) return <p className="hint">수정 시간 측정 기록이 없습니다. 측정은 "다시 실행" 패널에서 시작합니다.</p>;
+  return <div className="measurement-log">
+    <h4 className="sub">수정 시간 기록 <small>{START_RULE} → {END_RULE}</small></h4>
+    <ul>{measure.records.map(item => <li key={item.measurement_id}><strong>{item.modification_seconds === null ? (item.status === 'running' ? '측정 중' : '미측정(취소)') : `${item.modification_seconds}초`}</strong><span>{item.goal}</span><small>{item.base_run_id} → {item.result_run_id ?? '-'}{item.edits ? ` · 후보 ${item.edits.candidates_changed} · 조건 +${item.edits.conditions_added}/−${item.edits.conditions_removed}` : ''}</small></li>)}</ul>
+    <button type="button" className="secondary-button" onClick={measure.exportRecords}>수정 시간 기록 내보내기(JSON)</button>
+  </div>;
+}
+
 /** Planner picks a role per candidate and corrects conditions; the preview shows the exact next request before rerun. */
-function RerunPanel({ mode, selected, original, onRerun, busy }: { mode: DataMode; selected: RunSnapshot; original: PlanningRequest; onRerun: (request: PlanningRequest) => Promise<void>; busy: boolean }) {
+function RerunPanel({ mode, selected, original, onRerun, busy, measure }: { mode: DataMode; selected: RunSnapshot; original: PlanningRequest; onRerun: (request: PlanningRequest, edits: EditSummary) => Promise<void>; busy: boolean; measure: MeasureControls }) {
   const concepts = selected.run.concepts;
   const { conditions: startConditions } = splitConditions(selected.request);
-  const [choices, setChoices] = useState<Record<string, CandidateChoice>>(() => Object.fromEntries(concepts.map(concept => [concept.id, selected.request.exclusions.includes(candidateExclusion(concept)) ? 'exclude' : 'keep'])));
+  const [initialChoices] = useState<Record<string, CandidateChoice>>(() => Object.fromEntries(concepts.map(concept => [concept.id, selected.request.exclusions.includes(candidateExclusion(concept)) ? 'exclude' : 'keep'])));
+  const [choices, setChoices] = useState<Record<string, CandidateChoice>>(initialChoices);
   const [conditions, setConditions] = useState<string[]>(startConditions);
   const [draft, setDraft] = useState('');
   const [error, setError] = useState('');
@@ -284,11 +337,12 @@ function RerunPanel({ mode, selected, original, onRerun, busy }: { mode: DataMod
     event.preventDefault();
     if (!preview) return;
     if (!changes.length) { setError('바뀐 조건이 없습니다. 후보 선택이나 조건을 수정한 뒤 다시 실행해 주세요.'); return; }
-    try { await onRerun(preview); setError(''); } catch (failure) { setError(failure instanceof ApiError ? failure.message : '새 실행을 만들지 못했습니다.'); }
+    try { await onRerun(preview, editSummary(initialChoices, choices, startConditions, splitConditions(preview).conditions)); setError(''); } catch (failure) { setError(failure instanceof ApiError ? failure.message : '새 실행을 만들지 못했습니다.'); }
   }
 
   return <form className="panel planning-panel condition-form" onSubmit={submit} aria-label="후보·조건 선택 후 재실행">
     <p className="eyebrow">RERUN</p><h3>후보와 조건을 고르고 다시 실행</h3>
+    <MeasureBar measure={measure} baseRunId={selected.run.id} />
     <p className="hint">{selected.run.id}의 요청을 바탕으로 새 실행을 연결합니다. {mode === 'fixture' ? '현재는 브라우저 안의 초안이며 결과는 not_implemented로 남습니다.' : '작업실 서버에 새 실행으로 저장합니다. 판단 Agent가 연결되기 전까지 분석은 실행되지 않습니다.'}</p>
     <h4 className="sub">후보 선택</h4>
     {concepts.length ? <ul className="choice-list">{concepts.map(concept => <li key={concept.id}>
@@ -325,7 +379,7 @@ function DetailChanges({ previous, selected }: { previous: RunSnapshot | undefin
   </li>)}</ul>;
 }
 
-export function HistoryView({ mode, runs, selected, onSelect, features, evidence, original, onRerun, busy = false }: PlanningProps & { original: PlanningRequest; onRerun: (request: PlanningRequest) => Promise<void>; busy?: boolean }) {
+export function HistoryView({ mode, runs, selected, onSelect, features, evidence, original, onRerun, busy = false, measure }: PlanningProps & { original: PlanningRequest; onRerun: (request: PlanningRequest, edits: EditSummary) => Promise<void>; busy?: boolean; measure: MeasureControls }) {
   const previous = runs.find(item => item.run.id === selected.previous_run_id);
   const changes = requestChanges(previous?.request ?? original, selected.request);
 
@@ -337,10 +391,11 @@ export function HistoryView({ mode, runs, selected, onSelect, features, evidence
         <small>{item.previous_run_id ? `← ${item.previous_run_id}` : '첫 실행'} · {mode === 'fixture' && item.actor_id !== 'local-draft' ? `fixture 예시(${item.run.status})` : runStatusView(item.run.status).label}{item.actor_id === 'local-draft' ? ' · 브라우저 초안' : ` · ${item.client}/${item.actor_id}`}</small>
       </button></li>)}</ol>
       <p className="hint">{mode === 'fixture' ? 'RUN-FX는 계약 fixture 예시이고, 추가한 초안은 새로고침하면 사라집니다.' : '작업실 서버에 저장된 실행 기록입니다. 기록은 수정되지 않고 새 실행으로만 이어집니다.'}</p>
+      <MeasurementLog measure={measure} />
     </section>
     <div className="planning-stack">
       <section className="panel planning-panel">
-        <div className="planning-head"><div><p className="eyebrow">BEFORE / AFTER</p><h3>{selected.run.id} 변경 전후</h3></div><ExportActions mode={mode} snapshot={selected} features={features} evidence={evidence} /></div>
+        <div className="planning-head"><div><p className="eyebrow">BEFORE / AFTER</p><h3>{selected.run.id} 변경 전후</h3></div><ExportActions mode={mode} snapshot={selected} features={features} evidence={evidence} runs={runs} /></div>
         <dl className="run-meta">
           <div><dt>이전 실행</dt><dd>{selected.previous_run_id ?? '없음(원 요청 기준)'}</dd></div>
           <div><dt>상태 / 단계</dt><dd>{selected.run.status} / {selected.run.stage}</dd></div>
@@ -355,7 +410,7 @@ export function HistoryView({ mode, runs, selected, onSelect, features, evidence
         {selected.run.events.length ? <><h4 className="sub">판단 순서와 사용한 Skill</h4><ol className="events">{selected.run.events.map((item, index) => <li key={`${item.stage}-${index}`}><span className="stage">{item.stage}</span><span>{item.summary}</span>{item.tool ? <code>{item.tool}</code> : null}</li>)}</ol></> : null}
         {selected.unconfirmed.length ? <div className="unresolved"><strong>미확인 사항</strong><ul>{selected.unconfirmed.map(item => <li key={item}>{item}</li>)}</ul></div> : null}
       </section>
-      <RerunPanel key={selected.run.id} mode={mode} selected={selected} original={original} onRerun={onRerun} busy={busy} />
+      <RerunPanel key={selected.run.id} mode={mode} selected={selected} original={original} onRerun={onRerun} busy={busy} measure={measure} />
     </div>
   </div>;
 }
