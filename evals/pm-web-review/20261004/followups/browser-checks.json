@@ -1,0 +1,43 @@
+{
+  "checked_at": "2026-10-04T10:59:58.942803+00:00",
+  "screenshot_commit": "9c3c4f60841b2781a1a410b5707899b8f77e88b0",
+  "manual_observation_code_commit": "a8e866e0a9017569eb4acdfc424968b6e13bce8a",
+  "method": "Actual in-app browser CUA; final authentication-expiry regression additionally uses React DOM tests",
+  "result": "pass",
+  "observations": [
+    {
+      "name": "fixture_condition_focus",
+      "result": "pass",
+      "value": "condition-0 retains active focus after typing; original condition survives"
+    },
+    {
+      "name": "fixture_candidate_and_conditions",
+      "result": "pass",
+      "value": "focus choice then two new request revisions; empty next output remains not_implemented, original selection intent retained"
+    },
+    {
+      "name": "mode_private_measurement_reset",
+      "result": "pass",
+      "value": "fixture goal and timing disappear after live-mode switch"
+    },
+    {
+      "name": "live_measurement_save",
+      "result": "pass",
+      "value": "0.332 seconds, same project/base/new run, request save only; no actual Agent output"
+    },
+    {
+      "name": "live_project_switch",
+      "result": "pass",
+      "value": "old modification goal hidden and current project measurement records empty"
+    }
+  ],
+  "screenshot": {
+    "path": "evals/pm-web-review/20261004/followups/workspace-final.png",
+    "sha256": "5746bb05f8255a06b8f63afff68e09e3f7b13a7eaf84a64edfa1b399bdf01ff0"
+  },
+  "limitations": [
+    "Browser actions are automated; participant_kind is unconfirmed.",
+    "No actual candidate generation or same-goal human timing comparison.",
+    "Owner handwritten timestamps are preserved but do not establish PM receive/run observation time."
+  ]
+}

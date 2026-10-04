@@ -17,15 +17,51 @@
     "사용자가 후보와 추가 조건을 선택하고 재실행할 수 있게 한다.",
     "원문과 판단·가정·보류를 함께 확인한다."
   ],
-  "status": "pending",
+  "status": "doing",
   "scope": "required",
   "issue_url": "https://github.com/jeongiryang/lg-ax-2026/issues/25",
   "branch": null,
-  "individual_evidence": null,
-  "pm_review": null,
+  "individual_evidence": {
+    "path": "evals/web/20261004/p2-web-003/individual-evidence.json",
+    "sha256": "d220e2a809e0351935a6acee82b25b20b2d2d20f6e1aa289900345c5a3029cea"
+  },
+  "pm_review": {
+    "path": "evals/pm-web-review/20261004/web003-partial-review.json",
+    "sha256": "52782d9d590de12686293be016b109d9e92113a6e5ff15d413b0405a74b2929b"
+  },
   "merge": null,
   "integration": null,
   "completion": null,
-  "block_reason": null,
-  "history": []
+  "block_reason": "후보·조건·내보내기/측정 선행 코드의 PM 수정·106시험/실HTTP2·빌드 검수 통과. 실제 판단 후보 생성·선택 재실행·WEB003 의존/동일 목표 평가는 미완료.",
+  "history": [
+    {
+      "at": "2026-10-04T10:39:46+00:00",
+      "action": "PM_receive_submission",
+      "status": "individual_verified"
+    },
+    {
+      "at": "2026-10-04T10:42:35+00:00",
+      "action": "review",
+      "status": "doing"
+    },
+    {
+      "at": "2026-10-04T10:42:35+00:00",
+      "action": "PM_remaining_work_checkpoint",
+      "status": "doing"
+    }
+  ],
+  "pm_intake": {
+    "path": "evals/pm-web-review/20261004/web003-intake.json",
+    "sha256": "b9d9bfee49180083e7b526f33d00d70c14df5c05ffa701ee86813465f64d0b2f"
+  },
+  "pm_checkpoint": {
+    "at": "2026-10-04T10:59:58.942803+00:00",
+    "pm": "정이량",
+    "scope": "reviewed/prepared code; task full completion withheld",
+    "source": "현재 사용자 PM 남은 작업 진행 지시와 실제 PR/API/모델 검수",
+    "code_review": {
+      "path": "evals/pm-web-review/20261004/followups/code-review.json",
+      "sha256": "3be2ba9f0b45a330e9c8d64005c93c6d151645a94654d25183b070874d4799e6"
+    }
+  }
 }
