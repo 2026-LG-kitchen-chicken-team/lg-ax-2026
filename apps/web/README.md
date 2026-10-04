@@ -113,7 +113,7 @@ fixture는 판단 Agent가 없을 때 화면 계약을 개발·시험하기 위�
 
 ## 알려진 사항
 
-- 공통 `WorkspaceClient`(`src/workspace.ts`)는 전달받은 transport를 객체 메서드로 호출합니다. 그래서 브라우저에서는 `window.fetch`를 그대로 넘기면 "Illegal invocation"이 납니다. 웹은 `liveWorkspace.ts`의 `browserFetch` 래퍼를 넘깁니다.
+- 공통 `WorkspaceClient`(`src/workspace.ts`)는 transport를 객체 메서드로 호출합니다. 브라우저의 `window.fetch`를 그대로 넘기면 "Illegal invocation"이 났었는데, PM이 기본값을 전역 호출 래퍼(`defaultTransport`)로 고쳤습니다(63112e6). 웹은 그 전부터 쓰던 `liveWorkspace.ts`의 `browserFetch` 래퍼를 계속 넘깁니다. 동작은 같습니다. 직접 transport를 넘길 때는 `fetch`를 메서드로 넘기지 말고 래퍼를 쓰세요.
 - 브라우저 초안 실행(fixture 모드)은 새로고침하면 사라집니다.
 
 ## 의존성 선택
