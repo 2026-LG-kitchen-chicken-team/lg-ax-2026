@@ -1,0 +1,1217 @@
+{
+  "queried_at_utc": "2026-10-04T16:27:53.412876+00:00",
+  "purpose": "Read-only reference comparison of original personal project and already copied organization project; not a pre-copy target snapshot.",
+  "query": "query {\n source:node(id:\"PVT_kwHODCN5Rc4BlmPN\"){... on ProjectV2{...Detail}}\n target:node(id:\"PVT_kwDOFCE5QM4Blr0A\"){... on ProjectV2{...Detail}}\n}\nfragment F on ProjectV2FieldConfiguration {\n ... on ProjectV2Field {id name dataType}\n ... on ProjectV2SingleSelectField{id name dataType options{id name}}\n ... on ProjectV2MultiSelectField{id name dataType}\n ... on ProjectV2IterationField{id name dataType}\n}\nfragment Detail on ProjectV2 {\n id number title url public closed viewerCanUpdate\n items(first:1){totalCount} fields(first:100){nodes{...F} totalCount}\n views(first:20){nodes{id name number layout filter configuration{visibleFields(first:100){nodes{...F}}} fields(first:100){nodes{...F}} groupByFields(first:100){nodes{...F}} verticalGroupByFields(first:100){nodes{...F}} sortByFields(first:100){nodes{direction field{...F}}}}}\n workflows(first:20){nodes{id name number enabled}}\n repositories(first:100){nodes{id nameWithOwner}}\n teams(first:100){nodes{id name slug}}\n}",
+  "raw": {
+    "data": {
+      "source": {
+        "id": "PVT_kwHODCN5Rc4BlmPN",
+        "number": 3,
+        "title": "LG AX 2026 · 2차 개발",
+        "url": "https://github.com/users/jeongiryang/projects/3",
+        "public": false,
+        "closed": false,
+        "viewerCanUpdate": true,
+        "items": {
+          "totalCount": 26
+        },
+        "fields": {
+          "nodes": [
+            {
+              "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+              "name": "Title",
+              "dataType": "TITLE"
+            },
+            {
+              "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtY",
+              "name": "Assignees",
+              "dataType": "ASSIGNEES"
+            },
+            {
+              "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+              "name": "Status",
+              "dataType": "SINGLE_SELECT",
+              "options": [
+                {
+                  "id": "f75ad846",
+                  "name": "Todo"
+                },
+                {
+                  "id": "47fc9ee4",
+                  "name": "In Progress"
+                },
+                {
+                  "id": "98236657",
+                  "name": "Done"
+                }
+              ]
+            },
+            {
+              "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtg",
+              "name": "Labels",
+              "dataType": "LABELS"
+            },
+            {
+              "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtk",
+              "name": "Linked pull requests",
+              "dataType": "LINKED_PULL_REQUESTS"
+            },
+            {
+              "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdto",
+              "name": "Milestone",
+              "dataType": "MILESTONE"
+            },
+            {
+              "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdts",
+              "name": "Repository",
+              "dataType": "REPOSITORY"
+            },
+            {
+              "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdt0",
+              "name": "Reviewers",
+              "dataType": "REVIEWERS"
+            },
+            {
+              "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdt4",
+              "name": "Parent issue",
+              "dataType": "PARENT_ISSUE"
+            },
+            {
+              "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdt8",
+              "name": "Sub-issues progress",
+              "dataType": "SUB_ISSUES_PROGRESS"
+            },
+            {
+              "id": "PVTF_lAHODCN5Rc4BlmPNzhkSduA",
+              "name": "Created",
+              "dataType": "CREATED"
+            },
+            {
+              "id": "PVTF_lAHODCN5Rc4BlmPNzhkSduE",
+              "name": "Updated",
+              "dataType": "UPDATED"
+            },
+            {
+              "id": "PVTF_lAHODCN5Rc4BlmPNzhkSduI",
+              "name": "Closed",
+              "dataType": "CLOSED"
+            },
+            {
+              "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+              "name": "담당자",
+              "dataType": "TEXT"
+            },
+            {
+              "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+              "name": "요구사항",
+              "dataType": "TEXT"
+            },
+            {
+              "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdw8",
+              "name": "의존 작업",
+              "dataType": "TEXT"
+            },
+            {
+              "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+              "name": "실행 증빙",
+              "dataType": "TEXT"
+            },
+            {
+              "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+              "name": "목표일",
+              "dataType": "DATE"
+            },
+            {
+              "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+              "name": "우선순위",
+              "dataType": "SINGLE_SELECT",
+              "options": [
+                {
+                  "id": "ab672556",
+                  "name": "P0"
+                },
+                {
+                  "id": "598279e3",
+                  "name": "P1"
+                },
+                {
+                  "id": "ada65f3d",
+                  "name": "P2"
+                }
+              ]
+            },
+            {
+              "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+              "name": "진행상태",
+              "dataType": "SINGLE_SELECT",
+              "options": [
+                {
+                  "id": "f2501d08",
+                  "name": "Ready"
+                },
+                {
+                  "id": "0177895d",
+                  "name": "Doing"
+                },
+                {
+                  "id": "09a0cf04",
+                  "name": "Individual verified"
+                },
+                {
+                  "id": "ab962352",
+                  "name": "PM review"
+                },
+                {
+                  "id": "cea8b576",
+                  "name": "PM approved"
+                },
+                {
+                  "id": "d3272aa8",
+                  "name": "Merged"
+                },
+                {
+                  "id": "d333c6fb",
+                  "name": "Integration verified"
+                },
+                {
+                  "id": "8f30a46b",
+                  "name": "Done"
+                },
+                {
+                  "id": "9068b3f7",
+                  "name": "Blocked"
+                },
+                {
+                  "id": "bbbc9363",
+                  "name": "Deferred"
+                }
+              ]
+            },
+            {
+              "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkVgkg",
+              "name": "팀원 보고",
+              "dataType": "SINGLE_SELECT",
+              "options": [
+                {
+                  "id": "8a5e2344",
+                  "name": "Doing"
+                },
+                {
+                  "id": "421f298b",
+                  "name": "Blocked"
+                },
+                {
+                  "id": "9808f8c6",
+                  "name": "Review requested"
+                }
+              ]
+            },
+            {
+              "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgkk",
+              "name": "최근 보고",
+              "dataType": "TEXT"
+            },
+            {
+              "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgko",
+              "name": "다음 행동",
+              "dataType": "TEXT"
+            },
+            {
+              "id": "PVTF_lAHODCN5Rc4BlmPNzhkVhHY",
+              "name": "최근 배정",
+              "dataType": "TEXT"
+            },
+            {
+              "id": "PVTF_lAHODCN5Rc4BlmPNzhkVhK0",
+              "name": "메일 안내",
+              "dataType": "TEXT"
+            }
+          ],
+          "totalCount": 25
+        },
+        "views": {
+          "nodes": [
+            {
+              "id": "PVTV_lAHODCN5Rc4BlmPNzgL5u9k",
+              "name": "View 1",
+              "number": 1,
+              "layout": "TABLE_LAYOUT",
+              "filter": "",
+              "configuration": {
+                "visibleFields": {
+                  "nodes": [
+                    {
+                      "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                      "name": "Title",
+                      "dataType": "TITLE"
+                    },
+                    {
+                      "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtY",
+                      "name": "Assignees",
+                      "dataType": "ASSIGNEES"
+                    },
+                    {
+                      "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                      "name": "Status",
+                      "dataType": "SINGLE_SELECT",
+                      "options": [
+                        {
+                          "id": "f75ad846",
+                          "name": "Todo"
+                        },
+                        {
+                          "id": "47fc9ee4",
+                          "name": "In Progress"
+                        },
+                        {
+                          "id": "98236657",
+                          "name": "Done"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                      "name": "진행상태",
+                      "dataType": "SINGLE_SELECT",
+                      "options": [
+                        {
+                          "id": "f2501d08",
+                          "name": "Ready"
+                        },
+                        {
+                          "id": "0177895d",
+                          "name": "Doing"
+                        },
+                        {
+                          "id": "09a0cf04",
+                          "name": "Individual verified"
+                        },
+                        {
+                          "id": "ab962352",
+                          "name": "PM review"
+                        },
+                        {
+                          "id": "cea8b576",
+                          "name": "PM approved"
+                        },
+                        {
+                          "id": "d3272aa8",
+                          "name": "Merged"
+                        },
+                        {
+                          "id": "d333c6fb",
+                          "name": "Integration verified"
+                        },
+                        {
+                          "id": "8f30a46b",
+                          "name": "Done"
+                        },
+                        {
+                          "id": "9068b3f7",
+                          "name": "Blocked"
+                        },
+                        {
+                          "id": "bbbc9363",
+                          "name": "Deferred"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkVgkg",
+                      "name": "팀원 보고",
+                      "dataType": "SINGLE_SELECT",
+                      "options": [
+                        {
+                          "id": "8a5e2344",
+                          "name": "Doing"
+                        },
+                        {
+                          "id": "421f298b",
+                          "name": "Blocked"
+                        },
+                        {
+                          "id": "9808f8c6",
+                          "name": "Review requested"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgkk",
+                      "name": "최근 보고",
+                      "dataType": "TEXT"
+                    },
+                    {
+                      "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgko",
+                      "name": "다음 행동",
+                      "dataType": "TEXT"
+                    },
+                    {
+                      "id": "PVTF_lAHODCN5Rc4BlmPNzhkVhHY",
+                      "name": "최근 배정",
+                      "dataType": "TEXT"
+                    },
+                    {
+                      "id": "PVTF_lAHODCN5Rc4BlmPNzhkVhK0",
+                      "name": "메일 안내",
+                      "dataType": "TEXT"
+                    },
+                    {
+                      "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtk",
+                      "name": "Linked pull requests",
+                      "dataType": "LINKED_PULL_REQUESTS"
+                    }
+                  ]
+                }
+              },
+              "fields": {
+                "nodes": [
+                  {
+                    "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                    "name": "Title",
+                    "dataType": "TITLE"
+                  },
+                  {
+                    "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtY",
+                    "name": "Assignees",
+                    "dataType": "ASSIGNEES"
+                  },
+                  {
+                    "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                    "name": "Status",
+                    "dataType": "SINGLE_SELECT",
+                    "options": [
+                      {
+                        "id": "f75ad846",
+                        "name": "Todo"
+                      },
+                      {
+                        "id": "47fc9ee4",
+                        "name": "In Progress"
+                      },
+                      {
+                        "id": "98236657",
+                        "name": "Done"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtk",
+                    "name": "Linked pull requests",
+                    "dataType": "LINKED_PULL_REQUESTS"
+                  },
+                  {
+                    "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                    "name": "진행상태",
+                    "dataType": "SINGLE_SELECT",
+                    "options": [
+                      {
+                        "id": "f2501d08",
+                        "name": "Ready"
+                      },
+                      {
+                        "id": "0177895d",
+                        "name": "Doing"
+                      },
+                      {
+                        "id": "09a0cf04",
+                        "name": "Individual verified"
+                      },
+                      {
+                        "id": "ab962352",
+                        "name": "PM review"
+                      },
+                      {
+                        "id": "cea8b576",
+                        "name": "PM approved"
+                      },
+                      {
+                        "id": "d3272aa8",
+                        "name": "Merged"
+                      },
+                      {
+                        "id": "d333c6fb",
+                        "name": "Integration verified"
+                      },
+                      {
+                        "id": "8f30a46b",
+                        "name": "Done"
+                      },
+                      {
+                        "id": "9068b3f7",
+                        "name": "Blocked"
+                      },
+                      {
+                        "id": "bbbc9363",
+                        "name": "Deferred"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkVgkg",
+                    "name": "팀원 보고",
+                    "dataType": "SINGLE_SELECT",
+                    "options": [
+                      {
+                        "id": "8a5e2344",
+                        "name": "Doing"
+                      },
+                      {
+                        "id": "421f298b",
+                        "name": "Blocked"
+                      },
+                      {
+                        "id": "9808f8c6",
+                        "name": "Review requested"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgkk",
+                    "name": "최근 보고",
+                    "dataType": "TEXT"
+                  },
+                  {
+                    "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgko",
+                    "name": "다음 행동",
+                    "dataType": "TEXT"
+                  },
+                  {
+                    "id": "PVTF_lAHODCN5Rc4BlmPNzhkVhHY",
+                    "name": "최근 배정",
+                    "dataType": "TEXT"
+                  },
+                  {
+                    "id": "PVTF_lAHODCN5Rc4BlmPNzhkVhK0",
+                    "name": "메일 안내",
+                    "dataType": "TEXT"
+                  }
+                ]
+              },
+              "groupByFields": {
+                "nodes": []
+              },
+              "verticalGroupByFields": {
+                "nodes": []
+              },
+              "sortByFields": {
+                "nodes": []
+              }
+            }
+          ]
+        },
+        "workflows": {
+          "nodes": [
+            {
+              "id": "PWF_lAHODCN5Rc4BlmPNzgcyHlM",
+              "name": "Auto-add sub-issues to project",
+              "number": 4,
+              "enabled": true
+            },
+            {
+              "id": "PWF_lAHODCN5Rc4BlmPNzgcyHlI",
+              "name": "Auto-close issue",
+              "number": 3,
+              "enabled": true
+            },
+            {
+              "id": "PWF_lAHODCN5Rc4BlmPNzgcyHlU",
+              "name": "Item added to project",
+              "number": 6,
+              "enabled": true
+            },
+            {
+              "id": "PWF_lAHODCN5Rc4BlmPNzgcyHlA",
+              "name": "Item closed",
+              "number": 1,
+              "enabled": true
+            },
+            {
+              "id": "PWF_lAHODCN5Rc4BlmPNzgcyHlQ",
+              "name": "Pull request linked to issue",
+              "number": 5,
+              "enabled": true
+            },
+            {
+              "id": "PWF_lAHODCN5Rc4BlmPNzgcyHlE",
+              "name": "Pull request merged",
+              "number": 2,
+              "enabled": true
+            }
+          ]
+        },
+        "repositories": {
+          "nodes": []
+        },
+        "teams": {
+          "nodes": []
+        }
+      },
+      "target": {
+        "id": "PVT_kwDOFCE5QM4Blr0A",
+        "number": 1,
+        "title": "LG AX 2026 · 2차 개발",
+        "url": "https://github.com/orgs/2026-LG-kitchen-chicken-team/projects/1",
+        "public": false,
+        "closed": false,
+        "viewerCanUpdate": true,
+        "items": {
+          "totalCount": 26
+        },
+        "fields": {
+          "nodes": [
+            {
+              "id": "PVTF_lADOFCE5QM4Blr0AzhkXp8s",
+              "name": "Title",
+              "dataType": "TITLE"
+            },
+            {
+              "id": "PVTF_lADOFCE5QM4Blr0AzhkXp8w",
+              "name": "Assignees",
+              "dataType": "ASSIGNEES"
+            },
+            {
+              "id": "PVTSSF_lADOFCE5QM4Blr0AzhkXp80",
+              "name": "Status",
+              "dataType": "SINGLE_SELECT",
+              "options": [
+                {
+                  "id": "f75ad846",
+                  "name": "Todo"
+                },
+                {
+                  "id": "47fc9ee4",
+                  "name": "In Progress"
+                },
+                {
+                  "id": "98236657",
+                  "name": "Done"
+                }
+              ]
+            },
+            {
+              "id": "PVTF_lADOFCE5QM4Blr0AzhkXp84",
+              "name": "Labels",
+              "dataType": "LABELS"
+            },
+            {
+              "id": "PVTF_lADOFCE5QM4Blr0AzhkXp88",
+              "name": "Linked pull requests",
+              "dataType": "LINKED_PULL_REQUESTS"
+            },
+            {
+              "id": "PVTF_lADOFCE5QM4Blr0AzhkXp9A",
+              "name": "Milestone",
+              "dataType": "MILESTONE"
+            },
+            {
+              "id": "PVTF_lADOFCE5QM4Blr0AzhkXp9E",
+              "name": "Repository",
+              "dataType": "REPOSITORY"
+            },
+            {
+              "id": "PVTF_lADOFCE5QM4Blr0AzhkXp9M",
+              "name": "Reviewers",
+              "dataType": "REVIEWERS"
+            },
+            {
+              "id": "PVTF_lADOFCE5QM4Blr0AzhkXp9Q",
+              "name": "Parent issue",
+              "dataType": "PARENT_ISSUE"
+            },
+            {
+              "id": "PVTF_lADOFCE5QM4Blr0AzhkXp9U",
+              "name": "Sub-issues progress",
+              "dataType": "SUB_ISSUES_PROGRESS"
+            },
+            {
+              "id": "PVTF_lADOFCE5QM4Blr0AzhkXp9Y",
+              "name": "Created",
+              "dataType": "CREATED"
+            },
+            {
+              "id": "PVTF_lADOFCE5QM4Blr0AzhkXp9c",
+              "name": "Updated",
+              "dataType": "UPDATED"
+            },
+            {
+              "id": "PVTF_lADOFCE5QM4Blr0AzhkXp9g",
+              "name": "Closed",
+              "dataType": "CLOSED"
+            },
+            {
+              "id": "PVTF_lADOFCE5QM4Blr0AzhkXp9k",
+              "name": "담당자",
+              "dataType": "TEXT"
+            },
+            {
+              "id": "PVTF_lADOFCE5QM4Blr0AzhkXp9o",
+              "name": "요구사항",
+              "dataType": "TEXT"
+            },
+            {
+              "id": "PVTF_lADOFCE5QM4Blr0AzhkXp9s",
+              "name": "의존 작업",
+              "dataType": "TEXT"
+            },
+            {
+              "id": "PVTF_lADOFCE5QM4Blr0AzhkXp9w",
+              "name": "실행 증빙",
+              "dataType": "TEXT"
+            },
+            {
+              "id": "PVTF_lADOFCE5QM4Blr0AzhkXp90",
+              "name": "목표일",
+              "dataType": "DATE"
+            },
+            {
+              "id": "PVTSSF_lADOFCE5QM4Blr0AzhkXp94",
+              "name": "우선순위",
+              "dataType": "SINGLE_SELECT",
+              "options": [
+                {
+                  "id": "ab672556",
+                  "name": "P0"
+                },
+                {
+                  "id": "598279e3",
+                  "name": "P1"
+                },
+                {
+                  "id": "ada65f3d",
+                  "name": "P2"
+                }
+              ]
+            },
+            {
+              "id": "PVTSSF_lADOFCE5QM4Blr0AzhkXp98",
+              "name": "진행상태",
+              "dataType": "SINGLE_SELECT",
+              "options": [
+                {
+                  "id": "f2501d08",
+                  "name": "Ready"
+                },
+                {
+                  "id": "0177895d",
+                  "name": "Doing"
+                },
+                {
+                  "id": "09a0cf04",
+                  "name": "Individual verified"
+                },
+                {
+                  "id": "ab962352",
+                  "name": "PM review"
+                },
+                {
+                  "id": "cea8b576",
+                  "name": "PM approved"
+                },
+                {
+                  "id": "d3272aa8",
+                  "name": "Merged"
+                },
+                {
+                  "id": "d333c6fb",
+                  "name": "Integration verified"
+                },
+                {
+                  "id": "8f30a46b",
+                  "name": "Done"
+                },
+                {
+                  "id": "9068b3f7",
+                  "name": "Blocked"
+                },
+                {
+                  "id": "bbbc9363",
+                  "name": "Deferred"
+                }
+              ]
+            },
+            {
+              "id": "PVTSSF_lADOFCE5QM4Blr0AzhkXp-A",
+              "name": "팀원 보고",
+              "dataType": "SINGLE_SELECT",
+              "options": [
+                {
+                  "id": "8a5e2344",
+                  "name": "Doing"
+                },
+                {
+                  "id": "421f298b",
+                  "name": "Blocked"
+                },
+                {
+                  "id": "9808f8c6",
+                  "name": "Review requested"
+                }
+              ]
+            },
+            {
+              "id": "PVTF_lADOFCE5QM4Blr0AzhkXp-E",
+              "name": "최근 보고",
+              "dataType": "TEXT"
+            },
+            {
+              "id": "PVTF_lADOFCE5QM4Blr0AzhkXp-I",
+              "name": "다음 행동",
+              "dataType": "TEXT"
+            },
+            {
+              "id": "PVTF_lADOFCE5QM4Blr0AzhkXp-M",
+              "name": "최근 배정",
+              "dataType": "TEXT"
+            },
+            {
+              "id": "PVTF_lADOFCE5QM4Blr0AzhkXp-Q",
+              "name": "메일 안내",
+              "dataType": "TEXT"
+            }
+          ],
+          "totalCount": 25
+        },
+        "views": {
+          "nodes": [
+            {
+              "id": "PVTV_lADOFCE5QM4Blr0AzgL6UUI",
+              "name": "View 1",
+              "number": 1,
+              "layout": "TABLE_LAYOUT",
+              "filter": "",
+              "configuration": {
+                "visibleFields": {
+                  "nodes": [
+                    {
+                      "id": "PVTF_lADOFCE5QM4Blr0AzhkXp8s",
+                      "name": "Title",
+                      "dataType": "TITLE"
+                    },
+                    {
+                      "id": "PVTF_lADOFCE5QM4Blr0AzhkXp8w",
+                      "name": "Assignees",
+                      "dataType": "ASSIGNEES"
+                    },
+                    {
+                      "id": "PVTSSF_lADOFCE5QM4Blr0AzhkXp80",
+                      "name": "Status",
+                      "dataType": "SINGLE_SELECT",
+                      "options": [
+                        {
+                          "id": "f75ad846",
+                          "name": "Todo"
+                        },
+                        {
+                          "id": "47fc9ee4",
+                          "name": "In Progress"
+                        },
+                        {
+                          "id": "98236657",
+                          "name": "Done"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "PVTSSF_lADOFCE5QM4Blr0AzhkXp98",
+                      "name": "진행상태",
+                      "dataType": "SINGLE_SELECT",
+                      "options": [
+                        {
+                          "id": "f2501d08",
+                          "name": "Ready"
+                        },
+                        {
+                          "id": "0177895d",
+                          "name": "Doing"
+                        },
+                        {
+                          "id": "09a0cf04",
+                          "name": "Individual verified"
+                        },
+                        {
+                          "id": "ab962352",
+                          "name": "PM review"
+                        },
+                        {
+                          "id": "cea8b576",
+                          "name": "PM approved"
+                        },
+                        {
+                          "id": "d3272aa8",
+                          "name": "Merged"
+                        },
+                        {
+                          "id": "d333c6fb",
+                          "name": "Integration verified"
+                        },
+                        {
+                          "id": "8f30a46b",
+                          "name": "Done"
+                        },
+                        {
+                          "id": "9068b3f7",
+                          "name": "Blocked"
+                        },
+                        {
+                          "id": "bbbc9363",
+                          "name": "Deferred"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "PVTSSF_lADOFCE5QM4Blr0AzhkXp-A",
+                      "name": "팀원 보고",
+                      "dataType": "SINGLE_SELECT",
+                      "options": [
+                        {
+                          "id": "8a5e2344",
+                          "name": "Doing"
+                        },
+                        {
+                          "id": "421f298b",
+                          "name": "Blocked"
+                        },
+                        {
+                          "id": "9808f8c6",
+                          "name": "Review requested"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "PVTF_lADOFCE5QM4Blr0AzhkXp-E",
+                      "name": "최근 보고",
+                      "dataType": "TEXT"
+                    },
+                    {
+                      "id": "PVTF_lADOFCE5QM4Blr0AzhkXp-I",
+                      "name": "다음 행동",
+                      "dataType": "TEXT"
+                    },
+                    {
+                      "id": "PVTF_lADOFCE5QM4Blr0AzhkXp-M",
+                      "name": "최근 배정",
+                      "dataType": "TEXT"
+                    },
+                    {
+                      "id": "PVTF_lADOFCE5QM4Blr0AzhkXp-Q",
+                      "name": "메일 안내",
+                      "dataType": "TEXT"
+                    },
+                    {
+                      "id": "PVTF_lADOFCE5QM4Blr0AzhkXp88",
+                      "name": "Linked pull requests",
+                      "dataType": "LINKED_PULL_REQUESTS"
+                    }
+                  ]
+                }
+              },
+              "fields": {
+                "nodes": [
+                  {
+                    "id": "PVTF_lADOFCE5QM4Blr0AzhkXp8s",
+                    "name": "Title",
+                    "dataType": "TITLE"
+                  },
+                  {
+                    "id": "PVTF_lADOFCE5QM4Blr0AzhkXp8w",
+                    "name": "Assignees",
+                    "dataType": "ASSIGNEES"
+                  },
+                  {
+                    "id": "PVTSSF_lADOFCE5QM4Blr0AzhkXp80",
+                    "name": "Status",
+                    "dataType": "SINGLE_SELECT",
+                    "options": [
+                      {
+                        "id": "f75ad846",
+                        "name": "Todo"
+                      },
+                      {
+                        "id": "47fc9ee4",
+                        "name": "In Progress"
+                      },
+                      {
+                        "id": "98236657",
+                        "name": "Done"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "PVTF_lADOFCE5QM4Blr0AzhkXp88",
+                    "name": "Linked pull requests",
+                    "dataType": "LINKED_PULL_REQUESTS"
+                  },
+                  {
+                    "id": "PVTSSF_lADOFCE5QM4Blr0AzhkXp98",
+                    "name": "진행상태",
+                    "dataType": "SINGLE_SELECT",
+                    "options": [
+                      {
+                        "id": "f2501d08",
+                        "name": "Ready"
+                      },
+                      {
+                        "id": "0177895d",
+                        "name": "Doing"
+                      },
+                      {
+                        "id": "09a0cf04",
+                        "name": "Individual verified"
+                      },
+                      {
+                        "id": "ab962352",
+                        "name": "PM review"
+                      },
+                      {
+                        "id": "cea8b576",
+                        "name": "PM approved"
+                      },
+                      {
+                        "id": "d3272aa8",
+                        "name": "Merged"
+                      },
+                      {
+                        "id": "d333c6fb",
+                        "name": "Integration verified"
+                      },
+                      {
+                        "id": "8f30a46b",
+                        "name": "Done"
+                      },
+                      {
+                        "id": "9068b3f7",
+                        "name": "Blocked"
+                      },
+                      {
+                        "id": "bbbc9363",
+                        "name": "Deferred"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "PVTSSF_lADOFCE5QM4Blr0AzhkXp-A",
+                    "name": "팀원 보고",
+                    "dataType": "SINGLE_SELECT",
+                    "options": [
+                      {
+                        "id": "8a5e2344",
+                        "name": "Doing"
+                      },
+                      {
+                        "id": "421f298b",
+                        "name": "Blocked"
+                      },
+                      {
+                        "id": "9808f8c6",
+                        "name": "Review requested"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "PVTF_lADOFCE5QM4Blr0AzhkXp-E",
+                    "name": "최근 보고",
+                    "dataType": "TEXT"
+                  },
+                  {
+                    "id": "PVTF_lADOFCE5QM4Blr0AzhkXp-I",
+                    "name": "다음 행동",
+                    "dataType": "TEXT"
+                  },
+                  {
+                    "id": "PVTF_lADOFCE5QM4Blr0AzhkXp-M",
+                    "name": "최근 배정",
+                    "dataType": "TEXT"
+                  },
+                  {
+                    "id": "PVTF_lADOFCE5QM4Blr0AzhkXp-Q",
+                    "name": "메일 안내",
+                    "dataType": "TEXT"
+                  }
+                ]
+              },
+              "groupByFields": {
+                "nodes": []
+              },
+              "verticalGroupByFields": {
+                "nodes": []
+              },
+              "sortByFields": {
+                "nodes": []
+              }
+            }
+          ]
+        },
+        "workflows": {
+          "nodes": [
+            {
+              "id": "PWF_lADOFCE5QM4Blr0Azgc0f-g",
+              "name": "Auto-add sub-issues to project",
+              "number": 4,
+              "enabled": true
+            },
+            {
+              "id": "PWF_lADOFCE5QM4Blr0Azgc0f-c",
+              "name": "Auto-close issue",
+              "number": 3,
+              "enabled": true
+            },
+            {
+              "id": "PWF_lADOFCE5QM4Blr0Azgc0f-o",
+              "name": "Item added to project",
+              "number": 6,
+              "enabled": true
+            },
+            {
+              "id": "PWF_lADOFCE5QM4Blr0Azgc0f-U",
+              "name": "Item closed",
+              "number": 1,
+              "enabled": true
+            },
+            {
+              "id": "PWF_lADOFCE5QM4Blr0Azgc0f-k",
+              "name": "Pull request linked to issue",
+              "number": 5,
+              "enabled": true
+            },
+            {
+              "id": "PWF_lADOFCE5QM4Blr0Azgc0f-Y",
+              "name": "Pull request merged",
+              "number": 2,
+              "enabled": true
+            }
+          ]
+        },
+        "repositories": {
+          "nodes": [
+            {
+              "id": "R_kgDOUtEZmg",
+              "nameWithOwner": "2026-LG-kitchen-chicken-team/lg-ax-2026"
+            }
+          ]
+        },
+        "teams": {
+          "nodes": []
+        }
+      }
+    }
+  },
+  "comparison": {
+    "source_view_configuration": [
+      {
+        "name": "View 1",
+        "number": 1,
+        "layout": "TABLE_LAYOUT",
+        "filter": "",
+        "visible_fields_in_order": [
+          [
+            "Title",
+            "TITLE"
+          ],
+          [
+            "Assignees",
+            "ASSIGNEES"
+          ],
+          [
+            "Status",
+            "SINGLE_SELECT"
+          ],
+          [
+            "진행상태",
+            "SINGLE_SELECT"
+          ],
+          [
+            "팀원 보고",
+            "SINGLE_SELECT"
+          ],
+          [
+            "최근 보고",
+            "TEXT"
+          ],
+          [
+            "다음 행동",
+            "TEXT"
+          ],
+          [
+            "최근 배정",
+            "TEXT"
+          ],
+          [
+            "메일 안내",
+            "TEXT"
+          ],
+          [
+            "Linked pull requests",
+            "LINKED_PULL_REQUESTS"
+          ]
+        ],
+        "group_by": [],
+        "vertical_group_by": [],
+        "sort_by": []
+      }
+    ],
+    "target_view_configuration": [
+      {
+        "name": "View 1",
+        "number": 1,
+        "layout": "TABLE_LAYOUT",
+        "filter": "",
+        "visible_fields_in_order": [
+          [
+            "Title",
+            "TITLE"
+          ],
+          [
+            "Assignees",
+            "ASSIGNEES"
+          ],
+          [
+            "Status",
+            "SINGLE_SELECT"
+          ],
+          [
+            "진행상태",
+            "SINGLE_SELECT"
+          ],
+          [
+            "팀원 보고",
+            "SINGLE_SELECT"
+          ],
+          [
+            "최근 보고",
+            "TEXT"
+          ],
+          [
+            "다음 행동",
+            "TEXT"
+          ],
+          [
+            "최근 배정",
+            "TEXT"
+          ],
+          [
+            "메일 안내",
+            "TEXT"
+          ],
+          [
+            "Linked pull requests",
+            "LINKED_PULL_REQUESTS"
+          ]
+        ],
+        "group_by": [],
+        "vertical_group_by": [],
+        "sort_by": []
+      }
+    ],
+    "view_configuration_equal": true,
+    "workflow_public_metadata_equal": true,
+    "source_item_count": 26,
+    "target_item_count_at_snapshot": 26,
+    "source_field_count": 25,
+    "target_field_count": 25
+  },
+  "api_limits": [
+    "View configuration currently exposes ordered visible fields; column widths are not exposed.",
+    "Workflow API exposes id/name/number/enabled/timestamps, not configured triggers/actions/target status mappings.",
+    "Project collaborator role lists, effective/base role and default repository are not exposed by the queried public GraphQL ProjectV2 schema."
+  ]
+}

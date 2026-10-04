@@ -9,7 +9,7 @@ import argparse
 import json
 import subprocess
 
-from bootstrap_github import OWNER, REPO, ROOT, TEAM, api, gh
+from bootstrap_github import PM_ACCOUNT, REPO, ROOT, TEAM, api, configured_project_owner, gh
 from phase2 import load, ready_tasks, validate
 from project_report_common import GitHub, load_policy
 
@@ -19,12 +19,13 @@ def main():
     parser.add_argument("--apply", action="store_true")
     args = parser.parse_args()
     links = json.loads((ROOT / "harness/phase2/github.json").read_text(encoding="utf-8"))
+    board_owner = configured_project_owner(links)
     tasks = [json.loads(p.read_text(encoding="utf-8")) for p in sorted((ROOT / "harness/phase2/tasks").glob("*.json"))]
     eligible = {t['id'] for t in ready_tasks(load(ROOT))}
     if not args.apply:
         print(json.dumps({"project": links["project"]["url"], "tasks": {t["id"]: t["status"] for t in tasks}}, ensure_ascii=True))
         return
-    if api('user')['login'] != OWNER:
+    if api('user')['login'] != PM_ACCOUNT:
         raise ValueError('authenticated PM account required for Project/approval sync')
     main_commit = api(f'repos/{REPO}/branches/main')['commit']['sha']
     head = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=ROOT, capture_output=True, check=True).stdout.decode().strip()
@@ -33,7 +34,7 @@ def main():
     if head != main_commit or dirty_tasks or validate(ROOT, load(ROOT)):
         raise ValueError('publish and verify exact main task/evidence records before PM-authorized sync')
     collaborators = {x["login"] for x in api(f"repos/{REPO}/collaborators?per_page=100")}
-    fields = gh("project", "field-list", str(links["project"]["number"]), "--owner", OWNER, "--format", "json")["fields"]
+    fields = gh("project", "field-list", str(links["project"]["number"]), "--owner", board_owner, "--format", "json")["fields"]
     progress = next(f for f in fields if f["name"] == "진행상태")
     default_status = next(f for f in fields if f["name"] == "Status")
     evidence_field = next(f for f in fields if f["name"] == "실행 증빙")
@@ -73,7 +74,7 @@ def main():
         body = '/lgax-sync\n```json\n' + json.dumps({'commit': main_commit}) + '\n```'
         path = f'repos/{REPO}/issues/{policy["governance_issue_number"]}/comments'
         comments = GitHub().pages(path)
-        if not any(c['user']['login'] == OWNER and c['body'] == body and
+        if not any(c['user']['login'] == PM_ACCOUNT and c['body'] == body and
                    c['created_at'] >= policy['accept_reports_after'] for c in comments):
             api(path, {'body': body}, 'POST')
     print(json.dumps({"updated_tasks": len(tasks), "pending_members": links["invitation_pending"]}, ensure_ascii=True))
