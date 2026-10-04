@@ -10,7 +10,7 @@ if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8')
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-REPO = 'jeongiryang/lg-ax-2026'
+REPO = '2026-LG-kitchen-chicken-team/lg-ax-2026'
 OWNER = 'jeongiryang'
 TITLE = 'LG AX 2026 · 2차 개발'
 TEAM = {

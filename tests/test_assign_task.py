@@ -12,7 +12,7 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import assign_task as assignments
 
-REPO = "jeongiryang/lg-ax-2026"
+REPO = "2026-LG-kitchen-chicken-team/lg-ax-2026"
 TASK = "P2-CORE-001"
 AID = "PM-20261004-core-start"
 MESSAGE = "a1234567890abcdef"

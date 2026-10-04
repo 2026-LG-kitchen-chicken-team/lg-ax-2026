@@ -1,6 +1,6 @@
 # 2차 개발 시작 안내
 
-2026-10-04 사용자 승인 계획을 단일 저장소 `jeongiryang/lg-ax-2026`에 적용한다. 이 문서는 개발 기반 안내이며 참가작 전체 구현 완료를 뜻하지 않는다.
+2026-10-04 사용자 승인 계획을 단일 저장소 `2026-LG-kitchen-chicken-team/lg-ax-2026`에 적용한다. 이 문서는 개발 기반 안내이며 참가작 전체 구현 완료를 뜻하지 않는다.
 
 ## 팀이 시작할 곳
 
@@ -10,16 +10,16 @@
 
 P2-PM-003/004는 전체 완료 조건이 남아 있으므로 Done으로 바꾸지 않는다. 황대겸 #8/#9, 최길웅 #24/#25와 정이량 통합 후 재개한다. 참가작31요구 verified0을 유지한다.
 
-선행 코드와 규격은 [PR #31](https://github.com/jeongiryang/lg-ax-2026/pull/31)로 main에 병합했다. [실제 CI·병합 commit·공통 기록 재확인](../../evals/pm-workspace/20261004/delivery/checks.json)과 PM의 정이량-20261004-003/E004에서 확인한다. 이 PR 병합은 PM 두 과제의 전체 완료와 별개다.
+선행 코드와 규격은 [PR #31](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/31)로 main에 병합했다. [실제 CI·병합 commit·공통 기록 재확인](../../evals/pm-workspace/20261004/delivery/checks.json)과 PM의 정이량-20261004-003/E004에서 확인한다. 이 PR 병합은 PM 두 과제의 전체 완료와 별개다.
 
 | 담당 | 업무 | 첫 Issue | 편집 영역 |
 |---|---|---|---|
-| 정이량 / jeongiryang | PM, 공통 계약, 연결, 통합·검수·병합·제출 | [공동 실행/이력 #19](https://github.com/jeongiryang/lg-ax-2026/issues/19), [다섯 Skill #20](https://github.com/jeongiryang/lg-ax-2026/issues/20) | 계약, API/MCP, 하네스, CI, 운영 문서 |
-| 황대겸 / unknownamed | 핵심 판단·대조·콘셉트·검사·수정 | [판단 계약 #7](https://github.com/jeongiryang/lg-ax-2026/issues/7) | 공통 코어의 판단 구현, 관련 Skill·평가 |
-| 신진하 / ginaginaring | 자료 처리·검색·원문 근거·모델 비교 | [세 제품 자료팩 #12](https://github.com/jeongiryang/lg-ax-2026/issues/12) | data, 자료/검색 코어, 모델 서비스·평가 |
-| 최길웅 / choigilung | 웹 기획 작업실·사용자 검토·수정 이력 | [웹 작업실 #23](https://github.com/jeongiryang/lg-ax-2026/issues/23) | apps/web, 웹 검증·사용 안내 |
+| 정이량 / jeongiryang | PM, 공통 계약, 연결, 통합·검수·병합·제출 | [공동 실행/이력 #19](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/19), [다섯 Skill #20](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/20) | 계약, API/MCP, 하네스, CI, 운영 문서 |
+| 황대겸 / unknownamed | 핵심 판단·대조·콘셉트·검사·수정 | [판단 계약 #7](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/7) | 공통 코어의 판단 구현, 관련 Skill·평가 |
+| 신진하 / ginaginaring | 자료 처리·검색·원문 근거·모델 비교 | [세 제품 자료팩 #12](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/12) | data, 자료/검색 코어, 모델 서비스·평가 |
+| 최길웅 / choigilung | 웹 기획 작업실·사용자 검토·수정 이력 | [웹 작업실 #23](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/23) | apps/web, 웹 검증·사용 안내 |
 
-[고정 운영 Issue #28](https://github.com/jeongiryang/lg-ax-2026/issues/28) · [2차 개발 Project](https://github.com/users/jeongiryang/projects/3).
+[고정 운영 Issue #28](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28) · [2차 개발 Project](https://github.com/users/jeongiryang/projects/3).
 
 대시보드 편집/관리는 정이량 PM만 한다. 세 팀원은 Project 조회 전용이고 자기 Issue/PR·작업기록으로 진행/검수 요청을 남긴다. 신진하의 새 저장소 초대 수락·Write 권한을 확인했고 자료 Epic #5·#12~#16 담당자로 지정했다. [실제 권한 변경·검증](../프로젝트권한_2026-10-04.md)을 따른다.
 모두 자기 `docs/작업기록/{성명}.md`와 `docs/작업근거/{성명}.md`를 읽고 사용자 지시·AI 해석·실제 수행·증빙·다음 행동을 기록한다. 이 초기 설정은 PM의 AI가 수행한 공통 작업이다. 각 팀원이 수행했다고 대신 기록하지 않는다.
@@ -98,7 +98,7 @@ uv run python scripts/phase2.py gate setup_external
 
 ## 초기 설정 완료와 지금의 배정
 
-초기 설정·실제 연결은 [PR #29](https://github.com/jeongiryang/lg-ax-2026/pull/29)로 병합했다. 실제 GitHub CI([최종 구현 검사](https://github.com/jeongiryang/lg-ax-2026/actions/runs/37147862767))와 병합 commit `ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d`의 별도 깨끗한 작업 공간에서 Python 기본93·서버 운영6·웹11시험, 타입/빌드, 계약/기록, stdio/공개HTTPS MCP 호출이 통과했다. 근거는 `harness/phase2/runs/post-merge-ea4389a1d9d8/`다.
+초기 설정·실제 연결은 [PR #29](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/29)로 병합했다. 실제 GitHub CI([최종 구현 검사](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/actions/runs/37147862767))와 병합 commit `ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d`의 별도 깨끗한 작업 공간에서 Python 기본93·서버 운영6·웹11시험, 타입/빌드, 계약/기록, stdio/공개HTTPS MCP 호출이 통과했다. 근거는 `harness/phase2/runs/post-merge-ea4389a1d9d8/`다.
 
 P2-PM-001·002 두 작업만 Done이다. 참가작31요구의 verified는 0개이고 전체 Agent·다섯 업무 Skill·독립 평가·제출 ZIP은 다음 작업이다. 현재 우선 배정은 PM #19(공동 실행/이력; #20 Skill도 병렬 가능), 황대겸 #7(판단 계약), 신진하 #12(자료팩), 최길웅 #23(웹 작업실)이다. 다음 작업의 입출력/범위/완료 조건은 각 Issue와 packet을 따른다.
 

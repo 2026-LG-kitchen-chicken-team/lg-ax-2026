@@ -47,7 +47,7 @@ else:
     )
     from project_report_common import GitHub
 
-REPO = "jeongiryang/lg-ax-2026"
+REPO = "2026-LG-kitchen-chicken-team/lg-ax-2026"
 PM_ACCOUNT = "jeongiryang"
 ALLOWED = {"ready", "pending", "doing", "blocked", "individual_verified"}
 

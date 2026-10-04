@@ -99,9 +99,12 @@ def intake_errors(root, bundle, task):
         errors.append("PM intake PR source object required")
         source = {}
     number = source.get("pull_request_number")
-    repo = "jeongiryang/lg-ax-2026"
+    # A transfer preserves Git objects and immutable intake receipts. Accept only
+    # the two explicitly verified identities of repository ID 1389435290.
+    repo = source.get("repo")
+    known_repos = {"jeongiryang/lg-ax-2026", "2026-LG-kitchen-chicken-team/lg-ax-2026"}
     if (not isinstance(number, int) or isinstance(number, bool) or number <= 0
-            or source.get("repo") != repo
+            or not isinstance(repo, str) or repo not in known_repos
             or source.get("pull_request_url") != f"https://github.com/{repo}/pull/{number}"
             or source.get("author") != role.get("account") or source.get("base_ref") != "main"
             or source.get("kind") != "GitHub PR API + immutable Git blobs"):

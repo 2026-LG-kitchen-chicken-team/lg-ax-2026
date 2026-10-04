@@ -1,0 +1,43 @@
+{
+  "DEV-normal": {
+    "action": "accept",
+    "rerun_from": null,
+    "codes": []
+  },
+  "DEV-duplicate": {
+    "action": "revise",
+    "rerun_from": "concepts",
+    "codes": [
+      "DUPLICATE_CONCEPT"
+    ]
+  },
+  "DEV-model_confusion": {
+    "action": "hold",
+    "rerun_from": null,
+    "codes": [
+      "SOURCE_SCOPE_MISMATCH"
+    ]
+  },
+  "DEV-conflicting_reviews": {
+    "action": "hold",
+    "rerun_from": null,
+    "codes": [
+      "REVIEW_CONFLICT"
+    ]
+  },
+  "DEV-missing_evidence": {
+    "action": "revise",
+    "rerun_from": "concepts",
+    "codes": [
+      "MISSING_EVIDENCE"
+    ]
+  },
+  "DEV-spec_change": {
+    "action": "revise",
+    "rerun_from": "plan",
+    "codes": [
+      "OUTPUT_SCOPE_MISMATCH",
+      "STALE_INPUT"
+    ]
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "observed_at": "2026-10-04T14:11:06.263673+00:00",
+  "tested_commit": "1fdc25f7a1198c8da46cf793679f0334a6dc1732",
+  "pull_request": {
+    "mergeCommit": {
+      "oid": "1fdc25f7a1198c8da46cf793679f0334a6dc1732"
+    },
+    "mergedAt": "2026-10-04T14:07:14Z",
+    "state": "MERGED",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-04T14:05:32Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/actions/runs/37207947227/job/111452993936",
+        "name": "python-and-harness",
+        "startedAt": "2026-10-04T14:05:03Z",
+        "status": "COMPLETED",
+        "workflowName": "Development and evidence checks"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-04T14:05:01Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/actions/runs/37207922201/job/111452917047",
+        "name": "python-and-harness",
+        "startedAt": "2026-10-04T14:04:37Z",
+        "status": "COMPLETED",
+        "workflowName": "Development and evidence checks"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-04T14:06:13Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/actions/runs/37207947227/job/111452993769",
+        "name": "web",
+        "startedAt": "2026-10-04T14:05:01Z",
+        "status": "COMPLETED",
+        "workflowName": "Development and evidence checks"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-04T14:05:48Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/actions/runs/37207922201/job/111452917307",
+        "name": "web",
+        "startedAt": "2026-10-04T14:04:36Z",
+        "status": "COMPLETED",
+        "workflowName": "Development and evidence checks"
+      }
+    ],
+    "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/49"
+  },
+  "main_ci": {
+    "id": 37208082881,
+    "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/actions/runs/37208082881",
+    "conclusion": "success",
+    "test_summaries": [
+      "2026-10-04T14:07:39.3552848Z Ran 284 tests in 8.936s",
+      "2026-10-04T14:07:39.5249435Z Ran 6 tests in 0.005s",
+      "2026-10-04T14:07:40.5727965Z ^[[2m Test Files ^[[22m ^[[1m^[[32m8 passed^[[39m^[[22m^[[90m (8)^[[39m"
+    ]
+  },
+  "post_merge_checks": [
+    {
+      "command": "python scripts/phase2.py validate",
+      "exit_code": 0,
+      "output": "{\n  \"valid\": true,\n  \"errors\": [],\n  \"meaning\": \"record structure/evidence integrity only\",\n  \"legacy\": \"stale\"\n}"
+    },
+    {
+      "command": "python scripts/sync_agent_rules.py --check",
+      "exit_code": 0,
+      "output": "PASS: AGENTS.md and CLAUDE.md are byte-identical"
+    },
+    {
+      "command": "python scripts/check_contracts.py",
+      "exit_code": 0,
+      "output": "{\"status\": \"pass\", \"definitions\": 30, \"models\": 5, \"reviews\": 36, \"planning_requests\": 3, \"analysis_implemented\": false}"
+    }
+  ],
+  "formal_sync_receipt": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28#issuecomment-5980876646",
+  "health": {
+    "at": "2026-10-04T14:10:38Z",
+    "main_commit": "1fdc25f7a1198c8da46cf793679f0334a6dc1732",
+    "accepted": 18,
+    "rejected": 2,
+    "mutations": [],
+    "published_main_commit": "1fdc25f7a1198c8da46cf793679f0334a6dc1732",
+    "trusted_main_commit": "1fdc25f7a1198c8da46cf793679f0334a6dc1732",
+    "unapproved_state_changes": [],
+    "authenticated_as": "jeongiryang",
+    "semantic_verification": false
+  },
+  "actual_report_receipt": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/19#issuecomment-5980857496",
+  "limitations": [
+    "Proposal implementation remains Done4 / 31 requirements verified0.",
+    "Claude GitHub App is not installed in the new organization; existing MCP connection differs from this app.",
+    "Private receipt content is not included in Git."
+  ]
+}
