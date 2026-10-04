@@ -25,11 +25,32 @@
       "revision_count": 0,
       "concept_count": 0,
       "code_sha256": "7b0fa8c2beb949853f5d61a5ed8563b86281567db7461995b3460594054fbeda"
+    },
+    {
+      "id": "prompt3",
+      "path": "evals/pm-integration/20261005/prompt3.json",
+      "sha256": "91fae77a6328c6fca6de29b26402cf058800aa7cacc9c8f931f70f69b53442af",
+      "tested_commit": "40bb51fbdb4fd5213763285bb097aed45997c7de",
+      "status": "failed",
+      "model_calls": 9,
+      "revision_count": 2,
+      "concept_count": 0
+    },
+    {
+      "id": "prompt4-thinking",
+      "path": "evals/pm-integration/20261005/prompt4-thinking.json",
+      "sha256": "4831722c6d77209cc43f91ba8ef2972eaeff589876b780f37f3c229236ceeefb",
+      "tested_commit": "4c7d0c5069d0250743a2749e3aa34dca629f29ea",
+      "status": "failed",
+      "model_calls": 2,
+      "revision_count": 0,
+      "concept_count": 0
     }
   ],
   "limitations": [
-    "Development example only; no independent quality/baseline/effect claim.",
-    "Prompt2 passed validation with zero concepts; its refusal is being examined without forcing a concept.",
-    "Initial failed completion is preserved."
+    "Synthetic development examples; no independent quality/baseline/effect claim.",
+    "All failed attempts and zero-candidate output are preserved.",
+    "Model output truncation does not provide complete token usage; absent usage is not zero.",
+    "API success shows execution, storage, lineage and shared MCP snapshots; changed run includes a candidate conflicting with an exclusion."
   ]
 }
