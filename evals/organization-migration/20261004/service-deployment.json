@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-04T13:59:22+00:00",
+  "service": "lgax-project-reports.service",
+  "deployment_kind": "live_systemd_user",
+  "poll_interval_seconds": 45,
+  "code_manifest_sha256": {
+    "worker.py": "2c0387fba14afc849e3c237b003da703019e68593561453f9b510b72e2aa66fa",
+    "project_report_common.py": "6b4b7a8cb8f73ce045f4aba6b11aef01e471aed4329b959ee72f8e19941d44d9",
+    "policy.json": "5e35637a9a947d050e6231d1904ae084a230621bf246ec4a587ca7a8a27c824b",
+    "lgax-project-reports.service": "baaff8923a4900455dc463da573af39fe0af9366db19383394bd2be838e1294b"
+  },
+  "approved_policy_commit": "bfb12bbe93636a89e1335dea387edf5af7a3ba82",
+  "host_key_policy": "known-host RejectPolicy",
+  "first_start": {
+    "service_active": true,
+    "service_enabled": true,
+    "credential_mode_0600": true,
+    "credential_owned_by_service_user": true,
+    "health": {
+      "at": "2026-10-04T13:59:18Z",
+      "published_main_commit": "e44fd4406666f156cc39ad3b661584fab9758a96",
+      "trusted_main_commit": "e44fd4406666f156cc39ad3b661584fab9758a96",
+      "unapproved_state_changes": [],
+      "accepted": 16,
+      "rejected": 2,
+      "authenticated_as": "jeongiryang",
+      "semantic_verification": false
+    },
+    "mutations_count": 0,
+    "durable_state": {
+      "trusted_commit": "e44fd4406666f156cc39ad3b661584fab9758a96",
+      "seen_count": 18,
+      "latest_count": 5,
+      "state_sha256": "d2ff1edbe7da245de4d0896f7f57459860be2abebe5fcb0e2a27ee1db87124f9"
+    }
+  },
+  "after_restart": {
+    "service_active": true,
+    "service_enabled": true,
+    "credential_mode_0600": true,
+    "credential_owned_by_service_user": true,
+    "health": {
+      "at": "2026-10-04T13:59:22Z",
+      "published_main_commit": "e44fd4406666f156cc39ad3b661584fab9758a96",
+      "trusted_main_commit": "e44fd4406666f156cc39ad3b661584fab9758a96",
+      "unapproved_state_changes": [],
+      "accepted": 16,
+      "rejected": 2,
+      "authenticated_as": "jeongiryang",
+      "semantic_verification": false
+    },
+    "mutations_count": 0,
+    "durable_state": {
+      "trusted_commit": "e44fd4406666f156cc39ad3b661584fab9758a96",
+      "seen_count": 18,
+      "latest_count": 5,
+      "state_sha256": "80dba27f4a493387f41a613e0065e4fa5eca9757df46120ec7a8af06a83b4d36"
+    }
+  },
+  "restart_preserved": {
+    "trusted_commit": true,
+    "seen_count": true,
+    "latest_count": true
+  },
+  "limitations": [
+    "No real teammate report was created by this deployment check.",
+    "Service deployment is not Agent implementation or model-quality verification.",
+    "Only this LG user service was changed; no GPU, public port or other service change."
+  ]
+}
