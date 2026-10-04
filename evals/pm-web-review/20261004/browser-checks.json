@@ -1,0 +1,79 @@
+{
+  "checked_at": "2026-10-04T10:26:20.848Z",
+  "execution_kind": "live_client",
+  "client": "Codex in-app browser",
+  "url": "http://127.0.0.1:5173/",
+  "checks": [
+    {
+      "name": "fixture_scope",
+      "passed": true,
+      "observation": "fixture has only FRIDGE-A; dishwasher/microwave controls visibly disabled"
+    },
+    {
+      "name": "real_connection",
+      "passed": true,
+      "observation": "authenticated existing local workspace reports two projects"
+    },
+    {
+      "name": "fixed_document_search",
+      "passed": true,
+      "observation": "actual server search returns project-bound FRIDGE-A document1.0 evidence"
+    },
+    {
+      "name": "empty_search",
+      "passed": true,
+      "observation": "actual workspace returns0 results, rendered as normal empty search"
+    },
+    {
+      "name": "request_change_saved",
+      "passed": true,
+      "run_id": "run-5bfd74df936244df8fa99d92347db97b",
+      "revision": 2,
+      "observed": "SAVED_NOT_IMPLEMENTED · 요청 저장 완료 · 분석 결과 아님"
+    },
+    {
+      "name": "unimplemented_does_not_fake_candidates",
+      "passed": true,
+      "observed": "not_implemented / 콘셉트 후보 0 / 3 / 대조 결과 없음"
+    },
+    {
+      "name": "immutable_history_chain",
+      "passed": true,
+      "previous_run_id": "run-5bfd74df936244df8fa99d92347db97b",
+      "new_run_id": "run-e524d80007fe41cc8c969a14b34f0387",
+      "revision": 3,
+      "observed": "이전 0/1/2회차 유지 · 추가 조건은 새 실행"
+    },
+    {
+      "name": "project_switch_clears_history",
+      "passed": true,
+      "observed": "다른 프로젝트는 별도 0/1회차만 표시"
+    },
+    {
+      "name": "disconnect_clears_protected_history",
+      "passed": true,
+      "observed": "연결 해제 뒤 프로젝트·저장 이력 숨김"
+    },
+    {
+      "name": "viewer_write_forbidden",
+      "passed": true,
+      "observed": "403 FORBIDDEN · 새 실행 저장 실패 안내"
+    },
+    {
+      "name": "invalid_credential_unauthorized",
+      "passed": true,
+      "observed": "401 UNAUTHORIZED · 재연결 안내"
+    },
+    {
+      "name": "dishwasher_source_scope",
+      "passed": true,
+      "observed": "DISHWASHER-A 4개 근거 / 냉장고 프로젝트 범위 밖 서버 검색 비활성"
+    },
+    {
+      "name": "microwave_source_scope",
+      "passed": true,
+      "observed": "MICROWAVE-A 4개 근거 / MANUAL-005 1.0 / 설정 저장과 호출"
+    }
+  ],
+  "analysis_implemented": false
+}
