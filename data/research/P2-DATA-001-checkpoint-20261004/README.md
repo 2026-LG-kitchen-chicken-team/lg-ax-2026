@@ -38,3 +38,17 @@ PM 계약은 `schema_version`, `independent_from_development`, `cases`와 사례
 기존 가상 모델/합성 리뷰 원문, 원본 PDF/이미지, private 자료, 환경 실행파일, 과거 선정 문서, 하네스의 정식 상태 변경은 새 전달 파일 목록에 포함하지 않는다. 게시용 제목/본문은 [partial-pr-description.md](partial-pr-description.md)에 준비했다. 게시 전에 사용자가 준비 범위와 막힘을 볼 수 있도록 보고하며 원격 게시하지 않는다.
 
 파일 표현 확인: 최초 Windows CRLF와 Git LF 차이는 저장소 규칙으로 정정했다. 수집 당시 원래 해시는 참고팩 verification.json 이력에 보존하고 전달 manifest는 현재 LF 바이트를 확인한다. 정보/원본 PDF/기존 자료 변경 없음.
+
+## 007-local 최신 실행·부분 전달 상태
+
+이번 검사 대상 코드는 `5fa1a62273c5f699d0619c2a088a2f5a35c7a128`이다. 원격 지침/Issue/PM CHECKPOINT 및 실행·평가 안내는 재조회했다. README/코어/API 일부 원격 파일은404여서 이번 최신 main 대조는 미확인이다. 이전 보고를 새 직접 확인과 구분하고 [remote-read-status.json](runs/20261004T134134Z/remote-read-status.json)에 성공/실패를 남겼다.
+
+새 [run-result.json](runs/20261004T134134Z/run-result.json)은 환경 사전조건 실패와 계약/회귀/HTTP 조회 미실행을 구분한다. 세 Python probing 및 .venv Python -V의 파일부재 오류가 실제 증거다. 프로젝트 내부 uv·Python3.11·잠금의존성 설치 승인 대기이며 전역/새 설치 없음. 기존20파일의 최초 재개 시 해시는 모두 일치했다. 이전 하네스 doing 변경과3개 미추적 연구/현황 파일을 보존하고 이번 전달 목록에서 제외한다.
+
+참고팩 수량은 직접 다시 읽어 사실60·공식9/SSG3·출처차이2·미확인7 그대로다. 이전 링크 대조 PASS는 기준커밋의 저장 증거이며 새 Schema/API 성공으로 표시하지 않는다. 냉장고 조회 입력은 기존 synthetic 자료로 고정하고 공개 실자료 sidecar를 합성 데모에 넣지 않는다. 업로드/파서 미구현은 환경 문제와 별도로 기록하며 #13 전체 구현으로 확장하지 않는다.
+
+게시 제안은 `jeongiryang/lg-ax-2026`의 `main`에 `codex/data001-lg-sourcepack-20261004` 부분 PR이다. [제목·본문 초안](partial-pr-description.md)과 [파일·해시 목록](delivery-manifest.json)을 검토한 뒤 실제 push/PR 생성은 사용자 승인으로 진행한다. 현재 원격 게시/PM 검수·병합·통합 없음.
+
+독립 평가 여섯 유형과 기대 대응은 여전히 미완료다. 최신 PM 계약과 구분 기준만 연결했고 개발·튜닝에 평가 정답을 넣지 않았다. 다음 작업 하나는 프로젝트 내부 설치 승인 후 기존 계약 검사·회귀 검사·냉장고 조회의 실제 결과를 확보하는 것이다.
+
+이번 전달 후보는 기존20파일을 기준으로 새run 증거8파일을 추가한 총28파일이다. 명시적 파일목록/해시는 delivery-manifest.json, 새실패/로컬검사 원문은 runs/20261004T134134Z/prepublication-check.json과각run파일에있다. 이 추가는수집이나#13구현이아니라버전/실행제한/검증증거기록이다.

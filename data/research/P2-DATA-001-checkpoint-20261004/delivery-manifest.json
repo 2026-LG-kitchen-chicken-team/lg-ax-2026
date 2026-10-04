@@ -1,20 +1,59 @@
 {
-  "prepared_at": "2026-10-04T22:25:01+09:00",
-  "scope": "local partial-PR candidate; not published, not individual/full task completion",
-  "base_commit": "755c3927667ae1787d177622f89b7a1d10c68c48",
+  "scope": "#12 partial delivery candidate; blocked runtime checks honestly included",
+  "baseline_delivery_commit": "5fa1a62273c5f699d0619c2a088a2f5a35c7a128",
+  "baseline_file_count": 20,
+  "implementation_code_commit": "5fa1a62273c5f699d0619c2a088a2f5a35c7a128",
   "branch": "codex/data001-lg-sourcepack-20261004",
+  "publication_target": {
+    "repository": "jeongiryang/lg-ax-2026",
+    "base": "main",
+    "head": "codex/data001-lg-sourcepack-20261004",
+    "push_or_pr_authorized": false
+  },
   "file_integrity": [
     {
       "path": "data/research/P2-DATA-001-checkpoint-20261004/README.md",
-      "sha256": "b725865f647d631d2b2025fbc9cc7e406838f9c4c6369120c3e58800b5f4c0f0"
+      "sha256": "f835046d87f5a43d7308ece2b7a0f8512555d2c6a1f9f85977201358fb28552f"
     },
     {
       "path": "data/research/P2-DATA-001-checkpoint-20261004/evaluation-readiness.json",
-      "sha256": "4d39628b5965526e8fc5092aa3972e4cbd027db16bcd5415730741e0b08b9a48"
+      "sha256": "1492e23f9a6b73291f982cabd9c9aa9c688f5b7ca5458ad727cd19a27a0ce8d3"
     },
     {
       "path": "data/research/P2-DATA-001-checkpoint-20261004/partial-pr-description.md",
-      "sha256": "1f647e19048b5e57ea08815d601433cefdbf1e4cc4bb42507e4de3512b3472c7"
+      "sha256": "8415c39ad535369db427fc2fbe755e3a12223f138129206bd51a8ac28555bc49"
+    },
+    {
+      "path": "data/research/P2-DATA-001-checkpoint-20261004/runs/20261004T134134Z/environment-check.json",
+      "sha256": "d6c5a10868f429fb46e5287e9dc17136657467c292c7bfa413928e87c21af73b"
+    },
+    {
+      "path": "data/research/P2-DATA-001-checkpoint-20261004/runs/20261004T134134Z/execution-preflight.json",
+      "sha256": "b1513b3d099b6851d065ee01924fc955dbfb9edffcaa9b843a34835ee72e34ce"
+    },
+    {
+      "path": "data/research/P2-DATA-001-checkpoint-20261004/runs/20261004T134134Z/prepublication-check.json",
+      "sha256": "9ba70dd83812f118b24bc5aab2e4313e4c7253b1daffc5362de93cffede4c6fa"
+    },
+    {
+      "path": "data/research/P2-DATA-001-checkpoint-20261004/runs/20261004T134134Z/query-input.json",
+      "sha256": "cee4f450b3440635958065b45ba04ff2d0ac0918a425e6dd5468f638548c8e15"
+    },
+    {
+      "path": "data/research/P2-DATA-001-checkpoint-20261004/runs/20261004T134134Z/remote-read-status.json",
+      "sha256": "6a5f77f187f7b1acf1afd26a47046c23f725aaebcc7801b65d6a7436617046b1"
+    },
+    {
+      "path": "data/research/P2-DATA-001-checkpoint-20261004/runs/20261004T134134Z/run-context.json",
+      "sha256": "f584c2beaaf25694d54c153b4b252074c4deec034dd6b193a0bc1cff366b5159"
+    },
+    {
+      "path": "data/research/P2-DATA-001-checkpoint-20261004/runs/20261004T134134Z/run-result.json",
+      "sha256": "ceff58b5ca9029af6f5121c0182106d1b191766a8e17c953f2e01f8535373dae"
+    },
+    {
+      "path": "data/research/P2-DATA-001-checkpoint-20261004/runs/20261004T134134Z/scope-and-manifest-check.json",
+      "sha256": "4636b145a408f9dffafeaaa9133dc42edf2a68463690c756d5f004992fb65f91"
     },
     {
       "path": "data/research/P2-DATA-001-checkpoint-20261004/traceability-check.json",
@@ -74,34 +113,24 @@
     },
     {
       "path": "docs/작업근거/신진하.md",
-      "sha256": "35af8f7db15fb1da912717c3e468a1c347b6ce88e4ebe184f0c57b66cca6f4fb"
+      "sha256": "290c344ed632aba00c45083626e23d88521bdcc0c5ada8f0d7743cee836e3763"
     },
     {
       "path": "docs/작업기록/신진하.md",
-      "sha256": "9c4352dd4be18866cc48f42bbfe7af26f53fbb2a0455d73f4d1166d6aa3f61f2"
+      "sha256": "386eec8061a70954f63ba6dc86835fbe6b17ce970b4702afeaf60e0c9a4df2e6"
     }
   ],
-  "self_reference_policy": "manifest excludes its own SHA256; delivery commit is the Git commit containing these same tree files, verified externally",
   "manifest_path": "data/research/P2-DATA-001-checkpoint-20261004/delivery-manifest.json",
-  "exclusions": [
-    "data/demo raw synthetic examples",
-    "official full PDFs/images",
-    "private credentials/data",
-    "installed runtimes/venv",
-    "old selection/inventory artifacts",
-    "harness formal status change"
-  ],
+  "self_reference_policy": "own manifest hash/commit SHA excluded; verify same delivery commit externally",
   "r03_met": false,
+  "runtime_contract_regression_query_executed": false,
   "independent_evaluation_ready": false,
-  "schema_runtime_verified": false,
   "remote_posted": false,
-  "pm_merge_integration_complete": false,
-  "basic_checks": {
-    "git_diff_check": "PASS",
-    "local_agent_rule_sync": "PASS",
-    "candidate_hash_and_json_read": "PASS",
-    "baseline_files_unchanged": 5,
-    "r03_or_http_or_schema_execution": false,
-    "line_endings": "LF per repository policy; original Windows collection hashes preserved in verification history"
+  "pm_review_merge_integration_complete": false,
+  "candidate_file_count": 28,
+  "local_basic_checks": {
+    "result": "PASS",
+    "evidence": "runs/20261004T134134Z/prepublication-check.json",
+    "schema_regression_api_executed": false
   }
 }
