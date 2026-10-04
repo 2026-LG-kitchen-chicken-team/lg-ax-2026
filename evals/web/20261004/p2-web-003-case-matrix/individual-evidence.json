@@ -1,0 +1,192 @@
+{
+  "task_id": "P2-WEB-003",
+  "owner": "최길웅",
+  "result": "pass",
+  "execution_kind": "live_service",
+  "requirement_ids": [
+    "R14",
+    "R21",
+    "R25"
+  ],
+  "branch": "claude/wonderful-thompson-vn9js7",
+  "tested_commit": "4279d647ab3d2d6f09073379efb034fcd037c3e1",
+  "scope": "배정 PM-20261004-WEB-003-CORE-INTEGRATION의 코어 대기 단계: 6유형(정상·지원됨·기능중복·근거부족·상충·문서갱신)×세 제품 계약 fixture 화면/입력 회귀와 검토 범위 밖 문서 버전 표시. P2-WEB-003 완료 근거가 아님(황대겸 #8/#9 실제 판단 코어 결과 없음).",
+  "recorded_at": "2026-10-04T23:05:00+09:00",
+  "performed_by": "Claude Code (클라우드 세션) for 최길웅",
+  "observations": [
+    "6사례 모두 WorkspaceRunSnapshot·Need·Gap·WorkspaceRunCreateRequest 계약 오류 0, 인용 근거·기능 ID 누락 0.",
+    "대조표 판단(supported/unsupported/insufficient_evidence), 후보 상태(proposed/needs_review/rejected), 상충 불확실성, 근거 부족 보류가 사례별 기대와 일치하고 실제 React DOM에 표시된다.",
+    "후보 상세 검토에서 각 인용 원문과 \"모델 · 문서 버전\"이 표시된다.",
+    "문서갱신 사례: 고정 범위(FRIDGE-A 1.0) 밖 MANUAL-006(문서 2.0)을 화면 안내·내보내기 scope_warnings로 드러내고, 빠지면 내보내기 점검이 missing_scope_warnings로 보고한다. 다른 5사례는 경고 0.",
+    "후보 제외/집중과 조건 추가는 원 실행을 바꾸지 않고 previous_run_id로 연결된 회차 1 초안(not_implemented, output null)을 만들며 원래 요청 문장·제외 조건을 보존한다.",
+    "실제 작업실 서버(127.0.0.1:18869, 새 DB)에 6사례 요청과 재실행 요청을 저장: 요청 원문·문서 버전·자료 SHA 그대로, 회차 0→1, getRun으로 첫 실행 불변 확인.",
+    "내보내기는 6사례 모두 누락·불일치 0."
+  ],
+  "code_versions": [
+    {
+      "path": "apps/web/src/fixtures/caseMatrix.fixture.ts",
+      "git_commit": "4279d647ab3d2d6f09073379efb034fcd037c3e1",
+      "sha256": "b8e3e1c622f942bdfc68c24eb880457540afec183c1137f06cb450875628c2ff"
+    },
+    {
+      "path": "apps/web/src/caseMatrix.test.ts",
+      "git_commit": "4279d647ab3d2d6f09073379efb034fcd037c3e1",
+      "sha256": "ca0445ca7f5e92e96ff1503a2df695878cbfada498ebf0ceb81039d40a469d80"
+    },
+    {
+      "path": "apps/web/src/liveCaseMatrix.test.ts",
+      "git_commit": "4279d647ab3d2d6f09073379efb034fcd037c3e1",
+      "sha256": "bf88493069fd9c4f9f7291b07271f3c95db233fdd66f72e952f2054286bab034"
+    },
+    {
+      "path": "apps/web/src/planning.ts",
+      "git_commit": "4279d647ab3d2d6f09073379efb034fcd037c3e1",
+      "sha256": "ecdfd7a8f669ecdd8f57d2111aefffa615e58326b7713b009ea1318194d0d5cb"
+    },
+    {
+      "path": "apps/web/src/PlanningViews.tsx",
+      "git_commit": "4279d647ab3d2d6f09073379efb034fcd037c3e1",
+      "sha256": "bbe31471252e3f7602613f62e7301dc40f9ce71147ba750d7074558741e41062"
+    },
+    {
+      "path": "apps/web/src/planning.css",
+      "git_commit": "4279d647ab3d2d6f09073379efb034fcd037c3e1",
+      "sha256": "7247f836e0a92bc5bdb5481d059076c7cfb05608ab16191b43f4c4a9396ea343"
+    },
+    {
+      "path": "apps/web/src/planning.test.ts",
+      "git_commit": "4279d647ab3d2d6f09073379efb034fcd037c3e1",
+      "sha256": "9b103745ecb5596f1004469e42dbf9ebc7dfba7ec2b964073fb49e9fa4be9b4a"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "git_commit": "4279d647ab3d2d6f09073379efb034fcd037c3e1",
+      "sha256": "d7cf46d9a980b00ad786ec46feaf3d31e4094f56ff0899d8bab59bdf95a9bad5"
+    },
+    {
+      "path": "data/demo/dataset.json",
+      "git_commit": "4279d647ab3d2d6f09073379efb034fcd037c3e1",
+      "sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0"
+    },
+    {
+      "path": "packages/core/src/lgax_core/workspace.py",
+      "git_commit": "4279d647ab3d2d6f09073379efb034fcd037c3e1",
+      "sha256": "7228331ae911484e9c8695e5ac731e80756c0673791938c02eed2f3f3d6a9888"
+    },
+    {
+      "path": "apps/api/src/lgax_api/workspace_server.py",
+      "git_commit": "4279d647ab3d2d6f09073379efb034fcd037c3e1",
+      "sha256": "8b4a2dd1d1b8c97ffcfa1a54295729a3b1ff38564e7998c826b403ae159d4720"
+    },
+    {
+      "path": "apps/web/package-lock.json",
+      "git_commit": "4279d647ab3d2d6f09073379efb034fcd037c3e1",
+      "sha256": "271f5c742de25ff68f71370684ca53218750e654ce75a62fa901a42e27953981"
+    },
+    {
+      "path": "apps/web/e2e/planner-flow.spec.ts",
+      "git_commit": "4279d647ab3d2d6f09073379efb034fcd037c3e1",
+      "sha256": "77e0402fe6767ac692bf5b07bdf6663cee760116706ea705dddde06c0bf0bae2"
+    }
+  ],
+  "models": [],
+  "checks": [
+    {
+      "name": "npm run test --prefix apps/web (142 passed, 3 skipped; 6사례 계약·대조·원문/문서 버전·가정·보류·재실행·내보내기·DOM 37건 포함)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-case-matrix/web-tests.txt",
+        "sha256": "23302b5ce9b69d2a610f2655682e391150830c4174957a672be9a64391303192"
+      }
+    },
+    {
+      "name": "npm run typecheck --prefix apps/web",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-case-matrix/web-typecheck.txt",
+        "sha256": "c028f37ff786c1cd330dfd4a41ef0492f01c33aeeec7ec353ad7d20ac783869c"
+      }
+    },
+    {
+      "name": "npm run build --prefix apps/web",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-case-matrix/web-build.txt",
+        "sha256": "8861203833c3abdf28b829d777d10a40aa044bbe6536c26445774115b83c283a"
+      }
+    },
+    {
+      "name": "실제 작업실 서버 opt-in vitest 12 passed (6사례 요청·후보/조건 재실행 저장 1 + 기존 흐름 11)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-case-matrix/live-workspace-test.txt",
+        "sha256": "dc390dc7e2cb811e960239b7d1751f305b945d12848afec2ce5f2b3fcc169745"
+      }
+    },
+    {
+      "name": "6사례 실서버 저장 산출(not_implemented, 원 실행 불변)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-case-matrix/live-case-requests.json",
+        "sha256": "cf87b567fcf501e9c49e680f7cb4e866ee83cde18866631721b604177b107d5f"
+      }
+    },
+    {
+      "name": "기존 실서버 흐름 산출",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-case-matrix/live-workspace-flow.json",
+        "sha256": "91e2827ca078530afe627ace9cd4c6e87ce3e823c94bfc5967e87cad7895f296"
+      }
+    },
+    {
+      "name": "npx playwright test 3 passed (fixture 2 + 실서버 1, 컨테이너 사전 설치 Chromium)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-case-matrix/e2e.txt",
+        "sha256": "61bd2b394c37bbf10d32badda15eb0ac3ddc9b98211148274e7da895b76833e4"
+      }
+    },
+    {
+      "name": "uv run python scripts/sync_agent_rules.py --check",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-case-matrix/rules.txt",
+        "sha256": "56b21f915cb5a695479359f4ca6063582b0b9bcbdaee1869782a2a805a2a82cd"
+      }
+    },
+    {
+      "name": "uv run python scripts/check_contracts.py",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-case-matrix/contracts.txt",
+        "sha256": "6eeefba1598ed16cffaa688f144376cf5a072af5ec2d72e621cc6d504a38502e"
+      }
+    },
+    {
+      "name": "uv run python scripts/phase2.py validate",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-case-matrix/phase2.txt",
+        "sha256": "513ceac05d2694c95767b5e14a41edc7664eeb902b0bf91c1265be72d440ac6a"
+      }
+    },
+    {
+      "name": "uv run python -m unittest discover -s tests (282 OK)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-case-matrix/python-tests.txt",
+        "sha256": "370444ebe335a58f42748209bd931af94a57bada82daac7799775e3cd5c0b999"
+      }
+    }
+  ],
+  "limitations": [
+    "6사례는 사람이 작성한 계약 fixture다. 실제 판단 코어가 이 사례들을 이렇게 판단한다는 증거가 아니며, 실제 Agent 후보가 있는 실행(배정 acceptance)은 아직 없다.",
+    "실서버 저장은 요청 기록 저장 성공일 뿐이며 모든 실행은 not_implemented다. 재실행 요청의 후보 라벨은 fixture 후보에서 만들었다.",
+    "E2E는 클라우드 컨테이너의 사전 설치 Chromium(1194)을 임시 설정(커밋하지 않음)으로 지정해 실행했다. 저장소 기본 설정(Chrome 채널)과 실행 브라우저가 다르다.",
+    "작업실 서버·자격증명은 이 세션에서 새로 만든 private/workspace-cloud(커밋하지 않음)이며 PC 작업실 DB와 별개다.",
+    "E03 수정 시간 효과·사람 사용성은 측정하지 않았다."
+  ]
+}

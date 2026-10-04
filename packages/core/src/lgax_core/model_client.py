@@ -125,8 +125,11 @@ class ModelConfig:
     max_response_bytes: int = 131072
     max_output_tokens: int = 256
     context_tokens: int = 4096
+    thinking: bool = False
 
     def __post_init__(self) -> None:
+        if not isinstance(self.thinking, bool):
+            raise _fail("INVALID_ARGUMENT", "invalid_thinking_setting")
         try:
             parsed = urlsplit(self.endpoint)
             address = ipaddress.ip_address(parsed.hostname or "")
@@ -271,6 +274,7 @@ class _ModelAdapter:
                                     "num_predict": self.config.max_output_tokens,
                                     "seed": 42 if self.adapter_name == "ollama" else None},
             "done_reason": output.get("done_reason") if isinstance(output.get("done_reason"), str) else None,
+            "thinking_enabled": self.config.thinking,
             **before,
         }
         for name in ("prompt_eval_count", "eval_count"):
@@ -308,6 +312,8 @@ class LabModelAdapter(_ModelAdapter):
         return {"service_source_sha256": source}
 
     def _generate(self, prompt: str, schema: dict[str, Any], deadline: float) -> dict[str, Any]:
+        if self.config.thinking:
+            raise _fail("INVALID_ARGUMENT", "lab_thinking_is_fixed_off")
         if (self.config.max_output_tokens, self.config.context_tokens) != (256, 4096):
             raise _fail("INVALID_ARGUMENT", "lab_generation_budget_is_fixed")
         return self._request("POST", "/generate", deadline, {"prompt": prompt})
@@ -334,7 +340,7 @@ class OllamaAdapter(_ModelAdapter):
     def _generate(self, prompt: str, schema: dict[str, Any], deadline: float) -> dict[str, Any]:
         return self._request("POST", "/api/generate", deadline, {
             "model": self.config.model_id, "prompt": prompt, "format": schema,
-            "stream": False, "think": False,
+            "stream": False, "think": self.config.thinking,
             "options": {"temperature": 0, "seed": 42, "num_ctx": self.config.context_tokens,
                         "num_predict": self.config.max_output_tokens},
             "keep_alive": "5m",
@@ -359,10 +365,13 @@ class StructuredModelClient:
             limit = int(values.get("LGAX_MODEL_MAX_RESPONSE_BYTES", "131072"))
             output_tokens = int(values.get("LGAX_MODEL_MAX_OUTPUT_TOKENS", "256"))
             context_tokens = int(values.get("LGAX_MODEL_CONTEXT_TOKENS", "4096"))
+            thinking_setting = values.get("LGAX_MODEL_THINK", "false")
+            if thinking_setting not in {"true", "false"}:
+                raise ValueError("invalid thinking setting")
         except (ValueError, TypeError):
             raise _fail("INVALID_ARGUMENT", "invalid_model_environment") from None
         config = ModelConfig(values[names[1]], values[names[2]], values[names[3]], timeout, limit,
-                             output_tokens, context_tokens)
+                             output_tokens, context_tokens, thinking=thinking_setting == "true")
         return cls((LabModelAdapter if kind == "lab" else OllamaAdapter)(config))
 
     def close(self) -> None:

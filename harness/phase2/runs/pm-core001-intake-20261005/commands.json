@@ -1,0 +1,253 @@
+[
+  {
+    "argv": [
+      "gh",
+      "api",
+      "user",
+      "--jq",
+      ".login"
+    ],
+    "started_at": "2026-10-04T15:21:15+00:00",
+    "completed_at": "2026-10-04T15:21:15+00:00",
+    "elapsed_ms": 344,
+    "exit_code": 0,
+    "output": {
+      "path": "harness/phase2/runs/pm-core001-intake-20261005/authenticated-pm.txt",
+      "sha256": "b050856e9039f332e96ddabf99d181bc6898d6cf4d6a26cbb4ebf4f2a4f1994b"
+    }
+  },
+  {
+    "argv": [
+      "gh",
+      "pr",
+      "view",
+      "51",
+      "--repo",
+      "2026-LG-kitchen-chicken-team/lg-ax-2026",
+      "--json",
+      "number,url,state,headRefOid,mergedAt,mergeCommit,statusCheckRollup"
+    ],
+    "started_at": "2026-10-04T15:21:15+00:00",
+    "completed_at": "2026-10-04T15:21:16+00:00",
+    "elapsed_ms": 671,
+    "exit_code": 0,
+    "output": {
+      "path": "harness/phase2/runs/pm-core001-intake-20261005/merge-api.json",
+      "sha256": "688716b9c91c2c80ede559a5b4d0a1df9b09b558cefc44a3e8bbf7a85ca705af"
+    }
+  },
+  {
+    "argv": [
+      "C:\\Users\\user\\.codex\\worktrees\\pm-web-integration\\LG_해커톤\\.venv\\Scripts\\python.exe",
+      "-X",
+      "utf8",
+      "scripts/phase2.py",
+      "validate"
+    ],
+    "started_at": "2026-10-04T15:21:16+00:00",
+    "completed_at": "2026-10-04T15:21:25+00:00",
+    "elapsed_ms": 9204,
+    "exit_code": 0,
+    "output": {
+      "path": "harness/phase2/runs/pm-core001-intake-20261005/pre-validate.json",
+      "sha256": "513ceac05d2694c95767b5e14a41edc7664eeb902b0bf91c1265be72d440ac6a"
+    }
+  },
+  {
+    "argv": [
+      "C:\\Users\\user\\.codex\\worktrees\\pm-web-integration\\LG_해커톤\\.venv\\Scripts\\python.exe",
+      "-X",
+      "utf8",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-p",
+      "test_judgement_contract.py",
+      "-v"
+    ],
+    "started_at": "2026-10-04T15:21:25+00:00",
+    "completed_at": "2026-10-04T15:21:25+00:00",
+    "elapsed_ms": 390,
+    "exit_code": 0,
+    "output": {
+      "path": "harness/phase2/runs/pm-core001-intake-20261005/contract-tests.txt",
+      "sha256": "13d4115206b2f13c6abb02251d28df175d7f85257a1263d566caf07e3e445e9b"
+    }
+  },
+  {
+    "argv": [
+      "C:\\Users\\user\\.codex\\worktrees\\pm-web-integration\\LG_해커톤\\.venv\\Scripts\\python.exe",
+      "-X",
+      "utf8",
+      "evals/core-contract/check_cases.py",
+      "--suite",
+      "evals/core-contract/development",
+      "--output",
+      "harness/phase2/runs/pm-core001-intake-20261005/development.json"
+    ],
+    "started_at": "2026-10-04T15:21:25+00:00",
+    "completed_at": "2026-10-04T15:21:26+00:00",
+    "elapsed_ms": 235,
+    "exit_code": 0,
+    "output": {
+      "path": "harness/phase2/runs/pm-core001-intake-20261005/development-stdout.txt",
+      "sha256": "410d8afaed0ec594924efacd962b3627e90e513229445e74d881afe790e57ce0"
+    }
+  },
+  {
+    "argv": [
+      "C:\\Users\\user\\.codex\\worktrees\\pm-web-integration\\LG_해커톤\\.venv\\Scripts\\python.exe",
+      "-X",
+      "utf8",
+      "evals/core-contract/check_cases.py",
+      "--suite",
+      "evals/core-contract/heldout",
+      "--output",
+      "harness/phase2/runs/pm-core001-intake-20261005/heldout.json"
+    ],
+    "started_at": "2026-10-04T15:21:26+00:00",
+    "completed_at": "2026-10-04T15:21:26+00:00",
+    "elapsed_ms": 375,
+    "exit_code": 0,
+    "output": {
+      "path": "harness/phase2/runs/pm-core001-intake-20261005/heldout-stdout.txt",
+      "sha256": "4b2255d3cfb2be27a8a8be954d26b71b5e8b24d11a6b1022b2ae198c4eb46d31"
+    }
+  },
+  {
+    "argv": [
+      "C:\\Users\\user\\.codex\\worktrees\\pm-web-integration\\LG_해커톤\\.venv\\Scripts\\python.exe",
+      "-X",
+      "utf8",
+      "scripts/check_contracts.py"
+    ],
+    "started_at": "2026-10-04T15:21:26+00:00",
+    "completed_at": "2026-10-04T15:21:26+00:00",
+    "elapsed_ms": 265,
+    "exit_code": 0,
+    "output": {
+      "path": "harness/phase2/runs/pm-core001-intake-20261005/canonical-contracts.txt",
+      "sha256": "6eeefba1598ed16cffaa688f144376cf5a072af5ec2d72e621cc6d504a38502e"
+    }
+  },
+  {
+    "argv": [
+      "C:\\Users\\user\\.codex\\worktrees\\pm-web-integration\\LG_해커톤\\.venv\\Scripts\\python.exe",
+      "-X",
+      "utf8",
+      "scripts/sync_agent_rules.py",
+      "--check"
+    ],
+    "started_at": "2026-10-04T15:21:26+00:00",
+    "completed_at": "2026-10-04T15:21:26+00:00",
+    "elapsed_ms": 94,
+    "exit_code": 0,
+    "output": {
+      "path": "harness/phase2/runs/pm-core001-intake-20261005/rules.txt",
+      "sha256": "56b21f915cb5a695479359f4ca6063582b0b9bcbdaee1869782a2a805a2a82cd"
+    }
+  },
+  {
+    "argv": [
+      "C:\\Users\\user\\.codex\\worktrees\\pm-web-integration\\LG_해커톤\\.venv\\Scripts\\python.exe",
+      "-X",
+      "utf8",
+      "scripts/phase2.py",
+      "review",
+      "P2-CORE-001",
+      "harness/phase2/runs/pm-core001-intake-20261005/review.json",
+      "--actor",
+      "정이량"
+    ],
+    "started_at": "2026-10-04T15:21:26+00:00",
+    "completed_at": "2026-10-04T15:21:28+00:00",
+    "elapsed_ms": 1453,
+    "exit_code": 0,
+    "output": {
+      "path": "harness/phase2/runs/pm-core001-intake-20261005/lifecycle-review.json",
+      "sha256": "329c7cc36adf43d81b197354bf52d6c6fc80f4b196e58e0b2fab1d67fe3d131f"
+    }
+  },
+  {
+    "argv": [
+      "C:\\Users\\user\\.codex\\worktrees\\pm-web-integration\\LG_해커톤\\.venv\\Scripts\\python.exe",
+      "-X",
+      "utf8",
+      "scripts/phase2.py",
+      "merge",
+      "P2-CORE-001",
+      "harness/phase2/runs/pm-core001-intake-20261005/merge.json",
+      "--actor",
+      "정이량"
+    ],
+    "started_at": "2026-10-04T15:21:28+00:00",
+    "completed_at": "2026-10-04T15:21:29+00:00",
+    "elapsed_ms": 1531,
+    "exit_code": 0,
+    "output": {
+      "path": "harness/phase2/runs/pm-core001-intake-20261005/lifecycle-merge.json",
+      "sha256": "577e295c89e372fe92a17634ec5866420fd8015f628733eaf26369760bdf6c1a"
+    }
+  },
+  {
+    "argv": [
+      "C:\\Users\\user\\.codex\\worktrees\\pm-web-integration\\LG_해커톤\\.venv\\Scripts\\python.exe",
+      "-X",
+      "utf8",
+      "scripts/phase2.py",
+      "verify",
+      "P2-CORE-001",
+      "harness/phase2/runs/pm-core001-intake-20261005/integration.json",
+      "--actor",
+      "정이량"
+    ],
+    "started_at": "2026-10-04T15:21:29+00:00",
+    "completed_at": "2026-10-04T15:21:32+00:00",
+    "elapsed_ms": 2969,
+    "exit_code": 0,
+    "output": {
+      "path": "harness/phase2/runs/pm-core001-intake-20261005/lifecycle-verify.json",
+      "sha256": "278778262370cb7be94e325ab1b6e7c24544a9b5b9c299a0198275b4b3ac538d"
+    }
+  },
+  {
+    "argv": [
+      "C:\\Users\\user\\.codex\\worktrees\\pm-web-integration\\LG_해커톤\\.venv\\Scripts\\python.exe",
+      "-X",
+      "utf8",
+      "scripts/phase2.py",
+      "complete",
+      "P2-CORE-001",
+      "harness/phase2/runs/pm-core001-intake-20261005/complete.json",
+      "--actor",
+      "정이량"
+    ],
+    "started_at": "2026-10-04T15:21:32+00:00",
+    "completed_at": "2026-10-04T15:21:34+00:00",
+    "elapsed_ms": 1547,
+    "exit_code": 0,
+    "output": {
+      "path": "harness/phase2/runs/pm-core001-intake-20261005/lifecycle-complete.json",
+      "sha256": "93e2ace2148dca34263cf914cb1c08829fa4a52355c1a8712df1610522d648bc"
+    }
+  },
+  {
+    "argv": [
+      "C:\\Users\\user\\.codex\\worktrees\\pm-web-integration\\LG_해커톤\\.venv\\Scripts\\python.exe",
+      "-X",
+      "utf8",
+      "scripts/phase2.py",
+      "validate"
+    ],
+    "started_at": "2026-10-04T15:21:34+00:00",
+    "completed_at": "2026-10-04T15:21:45+00:00",
+    "elapsed_ms": 10953,
+    "exit_code": 0,
+    "output": {
+      "path": "harness/phase2/runs/pm-core001-intake-20261005/post-validate.json",
+      "sha256": "513ceac05d2694c95767b5e14a41edc7664eeb902b0bf91c1265be72d440ac6a"
+    }
+  }
+]

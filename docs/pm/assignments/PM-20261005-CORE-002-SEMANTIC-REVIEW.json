@@ -1,0 +1,30 @@
+{
+  "assignment_id": "PM-20261005-CORE-002-SEMANTIC-REVIEW",
+  "task_id": "P2-CORE-002",
+  "purpose": "실모델 결과의 제외 조건 검사·기획 타당성·수정 보류 구현",
+  "instructions": [
+    "이전 PM-20261004-CORE-001-CHECKPOINT와 이번 docs/pm/pr-intake-20261005.md 및 정이량 PRINTAKE/E014를 읽는다. CORE001은 실제 인수/병합/통합 Done이며 CORE002를 진행할 수 있다. PM이 Draft54의 Qwen3:8B 실제 모델·API/MCP 연결을 인수했으므로 연결을 다시 만드는 대신 실제 판단 결함을 개선한다.",
+    "evals/pm-integration/20261005/workspace-live.json·semantic-review.json의 자동 세척 제외 위반을 원문으로 재현한다. 모든 후보를 원 제외 조건 각각과 비교해 준수/위반/불확실, 해당 조건/후보 원문과 판단 근거를 기록한다. 생성 모델의 distinct 선언만으로 준수를 확정하지 않는다.",
+    "위반은 해당 단계 수정, 모호한 장치/모드 조건은 질문/보류로 처리한다. 최대2회 뒤 미해결 후보를 정상 완료로 내보내지 않는다. 부정문/유사어/조건 충돌을 포함한 별도 평가 입력을 사용하고 고정 답·단순 제품별 금지어로 성공을 꾸미지 않는다.",
+    "후보가 작동 방식·현재 기능과의 차이·미검증 가정을 설명하도록 검사한다. 문서에서 근거 없는 실현성/효과 수치를 사실로 확정하지 않는다. Draft55 수정 session은 다음 CORE003 경로에 연결하는 후속으로 두고 PM과 수정 count/rerun_from을 조율한다. 공통 계약/API/웹 변경이 필요하면 영향·소비자·마이그레이션을 PR에 명시한다."
+  ],
+  "acceptance": [
+    "정상/변경/제외/부정문/모호 조건의 개발 예시와 분리된 실제 모델 출력·원 입력·모델digest·호출/수정/종료·코드 버전을 제출한다.",
+    "기존 자동 세척 제외 위반을 탐지하고 수정 또는 보류로 종료하는 실행과 실패 원본을 함께 보존한다.",
+    "기존 contract regression 유지, 원 모델/문서/근거 범위 및 정상0후보 사유 유지. CORE002/003 전체 완료는 PM의 실제 인수/검수/병합/통합 뒤 판정한다."
+  ],
+  "next_action": "원문 결함을 재현하고 조건별 검사 입출력/완료조건을 먼저 PR로 제시한 뒤 실제 판단 개선을 진행한다.",
+  "source": "직접 사용자 PM 작업 진행 요청; PRINTAKE/E014 실제 인수와 독립 의미 검수",
+  "requirement_ids": [
+    "R09",
+    "R10",
+    "R11",
+    "R12",
+    "R15",
+    "R16",
+    "R26"
+  ],
+  "pm_account": "jeongiryang",
+  "recipient_account": "unknownamed",
+  "assignment_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/8#issuecomment-5981903112"
+}

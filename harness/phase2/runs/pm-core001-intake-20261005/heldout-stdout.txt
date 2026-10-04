@@ -1,0 +1,161 @@
+{
+  "suite": "heldout",
+  "execution_kind": "fixture",
+  "source_kind": "synthetic",
+  "passed": true,
+  "cases": [
+    {
+      "case_id": "HELD-normal",
+      "type": "normal",
+      "passed": true,
+      "decision": {
+        "valid": true,
+        "action": "accept",
+        "revision_count": 0,
+        "next_revision_count": 0,
+        "rerun_from": null,
+        "violations": []
+      },
+      "expected": {
+        "action": "accept",
+        "rerun_from": null,
+        "codes": []
+      }
+    },
+    {
+      "case_id": "HELD-duplicate",
+      "type": "duplicate",
+      "passed": true,
+      "decision": {
+        "valid": false,
+        "action": "revise",
+        "revision_count": 0,
+        "next_revision_count": 1,
+        "rerun_from": "concepts",
+        "violations": [
+          {
+            "code": "DUPLICATE_CONCEPT",
+            "stage": "concepts"
+          }
+        ]
+      },
+      "expected": {
+        "action": "revise",
+        "rerun_from": "concepts",
+        "codes": [
+          "DUPLICATE_CONCEPT"
+        ]
+      }
+    },
+    {
+      "case_id": "HELD-model_confusion",
+      "type": "model_confusion",
+      "passed": true,
+      "decision": {
+        "valid": false,
+        "action": "hold",
+        "revision_count": 0,
+        "next_revision_count": 0,
+        "rerun_from": null,
+        "violations": [
+          {
+            "code": "SOURCE_SCOPE_MISMATCH",
+            "stage": "retrieve"
+          }
+        ]
+      },
+      "expected": {
+        "action": "hold",
+        "rerun_from": null,
+        "codes": [
+          "SOURCE_SCOPE_MISMATCH"
+        ]
+      }
+    },
+    {
+      "case_id": "HELD-conflicting_reviews",
+      "type": "conflicting_reviews",
+      "passed": true,
+      "decision": {
+        "valid": false,
+        "action": "hold",
+        "revision_count": 0,
+        "next_revision_count": 0,
+        "rerun_from": null,
+        "violations": [
+          {
+            "code": "REVIEW_CONFLICT",
+            "stage": "needs"
+          }
+        ]
+      },
+      "expected": {
+        "action": "hold",
+        "rerun_from": null,
+        "codes": [
+          "REVIEW_CONFLICT"
+        ]
+      }
+    },
+    {
+      "case_id": "HELD-missing_evidence",
+      "type": "missing_evidence",
+      "passed": true,
+      "decision": {
+        "valid": false,
+        "action": "revise",
+        "revision_count": 0,
+        "next_revision_count": 1,
+        "rerun_from": "concepts",
+        "violations": [
+          {
+            "code": "MISSING_EVIDENCE",
+            "stage": "concepts"
+          }
+        ]
+      },
+      "expected": {
+        "action": "revise",
+        "rerun_from": "concepts",
+        "codes": [
+          "MISSING_EVIDENCE"
+        ]
+      }
+    },
+    {
+      "case_id": "HELD-spec_change",
+      "type": "spec_change",
+      "passed": true,
+      "decision": {
+        "valid": false,
+        "action": "revise",
+        "revision_count": 0,
+        "next_revision_count": 1,
+        "rerun_from": "plan",
+        "violations": [
+          {
+            "code": "OUTPUT_SCOPE_MISMATCH",
+            "stage": "plan"
+          },
+          {
+            "code": "STALE_INPUT",
+            "stage": "plan"
+          }
+        ]
+      },
+      "expected": {
+        "action": "revise",
+        "rerun_from": "plan",
+        "codes": [
+          "OUTPUT_SCOPE_MISMATCH",
+          "STALE_INPUT"
+        ]
+      }
+    }
+  ],
+  "limitations": [
+    "Deterministic consistency of declared judgements only.",
+    "No model, semantic accuracy, user value or PM approval claim."
+  ]
+}
+

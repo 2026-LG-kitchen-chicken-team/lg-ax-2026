@@ -1,0 +1,56 @@
+{
+  "execution_kind": "live_model",
+  "data_kind": "synthetic",
+  "runs": [
+    {
+      "id": "initial-failure",
+      "path": "evals/pm-integration/20261005/model-initial-failure.json",
+      "sha256": "16f0f3b2f594950f8f14dd8dfaffcef4110646a6f19fb598ebc21ce4f5b8021d",
+      "observed_at": "2026-10-04T15:07:59.496743+00:00",
+      "tested_commit": "bd827442a660941a9adbc1d9a0e4a1905c60dde7",
+      "status": "failed",
+      "model_calls": 3,
+      "revision_count": 2,
+      "concept_count": 0,
+      "code_sha256": "f9274fdf070f4c2f1fde1b135186f5b1b94bda13f80e03f3d3e8bd74152fc1f6"
+    },
+    {
+      "id": "prompt2",
+      "path": "evals/pm-integration/20261005/model-prompt2.json",
+      "sha256": "8cdd9ae4e85b29eddb1ac27b534af107ab03047022032a54e490d509f54fd7a4",
+      "observed_at": "2026-10-04T15:21:16.825474+00:00",
+      "tested_commit": "f6e9c4a0a1b4ec53d56ee709d29547645a2547db",
+      "status": "completed",
+      "model_calls": 3,
+      "revision_count": 0,
+      "concept_count": 0,
+      "code_sha256": "7b0fa8c2beb949853f5d61a5ed8563b86281567db7461995b3460594054fbeda"
+    },
+    {
+      "id": "prompt3",
+      "path": "evals/pm-integration/20261005/prompt3.json",
+      "sha256": "91fae77a6328c6fca6de29b26402cf058800aa7cacc9c8f931f70f69b53442af",
+      "tested_commit": "40bb51fbdb4fd5213763285bb097aed45997c7de",
+      "status": "failed",
+      "model_calls": 9,
+      "revision_count": 2,
+      "concept_count": 0
+    },
+    {
+      "id": "prompt4-thinking",
+      "path": "evals/pm-integration/20261005/prompt4-thinking.json",
+      "sha256": "4831722c6d77209cc43f91ba8ef2972eaeff589876b780f37f3c229236ceeefb",
+      "tested_commit": "4c7d0c5069d0250743a2749e3aa34dca629f29ea",
+      "status": "failed",
+      "model_calls": 2,
+      "revision_count": 0,
+      "concept_count": 0
+    }
+  ],
+  "limitations": [
+    "Synthetic development examples; no independent quality/baseline/effect claim.",
+    "All failed attempts and zero-candidate output are preserved.",
+    "Model output truncation does not provide complete token usage; absent usage is not zero.",
+    "API success shows execution, storage, lineage and shared MCP snapshots; changed run includes a candidate conflicting with an exclusion."
+  ]
+}

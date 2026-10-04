@@ -28,11 +28,11 @@ class WorkspaceClient:
             raise ValueError("Invalid workspace client kind")
         self._url, self._token, self._kind, self._transport = url.rstrip("/"), token, client_kind, transport
 
-    def _request(self, method, path, definition, payload=None, params=None):
+    def _request(self, method, path, definition, payload=None, params=None, *, timeout=15):
         try:
             with httpx.Client(
                 base_url=self._url,
-                timeout=15,
+                timeout=timeout,
                 follow_redirects=False,
                 trust_env=False,
                 transport=self._transport,
@@ -74,7 +74,8 @@ class WorkspaceClient:
         payload = {"request": request, "previous_run_id": previous_run_id, "unconfirmed": unconfirmed or []}
         validate("WorkspaceRunCreateRequest", payload)
         return self._request(
-            "POST", f"/api/workspace/projects/{project_id}/runs", "WorkspaceRunResponse", payload
+            "POST", f"/api/workspace/projects/{project_id}/runs", "WorkspaceRunResponse", payload,
+            timeout=300,
         )
 
     def get_run(self, run_id):

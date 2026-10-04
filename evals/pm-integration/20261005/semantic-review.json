@@ -1,0 +1,30 @@
+{
+  "tested_commit": "56cfcb1b81d1a7650711659fed635cb827abcbed",
+  "source": {
+    "path": "evals/pm-integration/20261005/workspace-live.json",
+    "sha256": "e828e31ad76a05b6e5e000e3ea25e0f79c23211df515bf049d9d26a5c2521ee7"
+  },
+  "normal_run_id": "run-743b67de262246df95314b4017dd1684",
+  "changed_run_id": "run-2c4925b9660b410ebea335276a7b177a",
+  "transport_storage_mcp_pass": true,
+  "changed_request_semantic_pass": false,
+  "formal_requirement_completion": false,
+  "findings": [
+    {
+      "severity": "P1",
+      "scope": "unfinished CORE002/003 judgement",
+      "condition": "자동 세척 장치 제안",
+      "candidate_id": "CON-002",
+      "candidate_title": "자동 세척 모드 추가",
+      "reason": "후보는 선반 일부 자동 세척을 제안한다. 장치가 아닌 기존 소프트웨어 모드라는 근거는 없으며 최소한 충돌·불확실 판정이 필요하다.",
+      "input 전달": "세 번의 후보 생성 호출 모두 원 제외 조건을 받음",
+      "observed_decision": "accept at revision_count=2, violations=[]",
+      "next": "Every candidate against every exclusion: compliant/violation/uncertain with literal cited spans; block terminal acceptance until fixed or held."
+    }
+  ],
+  "limits": [
+    "Candidate operation, engineering feasibility and claimed effect are unverified.",
+    "Development fridge normal/changed only; no full 3-product/6-type live or independent evaluation.",
+    "Real TypeScript client HTTP and MCP stdio; no external ChatGPT/Claude workspace or browser live-candidate demonstration."
+  ]
+}
