@@ -1,0 +1,50 @@
+{
+  "checked_via": "GitHub connector read-only",
+  "issue_12": {
+    "url": "https://github.com/jeongiryang/lg-ax-2026/issues/12",
+    "title": "[P2-DATA-001] 세 제품 자료팩·원문·모델·버전 계약 준비",
+    "state": "open",
+    "updated_at": "2026-10-04T12:20:11Z",
+    "criteria_checked": false,
+    "body": "책임자: **신진하 / @ginaginaring**\n담당 Epic: https://github.com/jeongiryang/lg-ax-2026/issues/5\n작업 ID: `P2-DATA-001` · 초기 기술 상태: `ready` · PM: **정이량**\n\n## 작업 의도·편집 영역\n업무: 자료 처리·검색·원문/제품/버전 근거·공개 모델 비교. 허용 편집 영역은 root AGENTS.md/CLAUDE.md의 담당 경계를 따른다.\n- 가상 모델 3~5개·합성 리뷰 30~50개와 세 사례를 준비한다.\n- 원문 위치·모델·버전·자료 성격과 근거 ID를 검증한다.\n\n## 입출력·의존성\n- 입력: 연결된 요구사항·공통 JSON Schema·버전이 고정된 자료/계약과 PM 작업 패킷.\n- 출력: 검토 가능한 코드·재현 입력/명령·결과·실패/미해결·실행 증빙.\n의존 작업: 없음 — 바로 착수 가능\n\n## 완료 조건\n- [ ] **R03** 업로드·파싱·자료 검증·조회가 실제 작동한다\n- [ ] **R04** 결과에서 사용한 리뷰를 원문·같은 제품으로 추적한다\n- [ ] **R05** 각 기능 판단에서 해당 모델·자료 버전·페이지/행/문단 근거를 조회한다\n- [ ] **R06** 자료 메타데이터와 출력의 근거 연결에 자료 성격과 버전이 유지된다\n- [ ] **R07** 정해진 초기 자료집과 재실행 입력을 제공하며 분석 결과를 하드코딩하지 않는다\n- [ ] **R08** 냉장고 완주 후 식기세척기·전자레인지도 같은 도구 계약으로 실행한다\n- [ ] **R13** 주요 불편마다 유효한 리뷰 ID·근거 위치를 제공한다\n- [ ] 자기 작업기록·근거·재개 요약 갱신.\n- [ ] 실제 검증 근거와 PR 연결, PM 검수·병합 후 통합 확인.\n\n## 재개·검수\n`python scripts/phase2.py packet P2-DATA-001`\n다음 대기열: `python scripts/phase2.py next --member 신진하`\n개별 테스트나 fixture 성공은 참가작 전체 완료가 아니다.\n\n<!-- pm-participation-20261004 -->\n## 10/4 PM 최신 참여·배정 확인\n\n신진하 개발팀 합류·저장소 초대 수락 완료(10/4 사용자 확인·GitHub 실제 Write 조회). ginaginaring에게 자료 Epic #5·작업 #12~#16 담당자를 지정했다. 첫 작업 #12 자료팩·원문/제품/버전 계약부터 진행한다. Project Read/PM 단독 관리 유지.\n<!-- /pm-participation-20261004 -->"
+  },
+  "issue_13": {
+    "url": "https://github.com/jeongiryang/lg-ax-2026/issues/13",
+    "title": "[P2-DATA-002] 문서 등록·파싱·조회·모델/버전 필터 구현",
+    "state": "open",
+    "updated_at": "2026-10-04T08:19:42Z",
+    "body": "책임자: **신진하 / @ginaginaring**\n담당 Epic: https://github.com/jeongiryang/lg-ax-2026/issues/5\n작업 ID: `P2-DATA-002` · 초기 기술 상태: `pending` · PM: **정이량**\n\n## 작업 의도·편집 영역\n업무: 자료 처리·검색·원문/제품/버전 근거·공개 모델 비교. 허용 편집 영역은 root AGENTS.md/CLAUDE.md의 담당 경계를 따른다.\n- 미언급과 미지원, 다른 모델 자료를 구분한다.\n- 실제 API와 원문 연결을 재실행한다.\n\n## 입출력·의존성\n- 입력: 연결된 요구사항·공통 JSON Schema·버전이 고정된 자료/계약과 PM 작업 패킷.\n- 출력: 검토 가능한 코드·재현 입력/명령·결과·실패/미해결·실행 증빙.\n의존 작업: P2-DATA-001\n\n## 완료 조건\n- [ ] **R03** 업로드·파싱·자료 검증·조회가 실제 작동한다\n- [ ] **R04** 결과에서 사용한 리뷰를 원문·같은 제품으로 추적한다\n- [ ] **R05** 각 기능 판단에서 해당 모델·자료 버전·페이지/행/문단 근거를 조회한다\n- [ ] **R06** 자료 메타데이터와 출력의 근거 연결에 자료 성격과 버전이 유지된다\n- [ ] **R10** 다른 모델 자료 혼입을 검출·차단하고 부족한 조건을 요청한다\n- [ ] **R13** 주요 불편마다 유효한 리뷰 ID·근거 위치를 제공한다\n- [ ] 자기 작업기록·근거·재개 요약 갱신.\n- [ ] 실제 검증 근거와 PR 연결, PM 검수·병합 후 통합 확인.\n\n## 재개·검수\n`python scripts/phase2.py packet P2-DATA-002`\n다음 대기열: `python scripts/phase2.py next --member 신진하`\n개별 테스트나 fixture 성공은 참가작 전체 완료가 아니다."
+  },
+  "latest_pm_assignment": "LGAX-ASSIGNMENT PM-20261004-DATA-001-CHECKPOINT\nPM 정이량의 작업 배정 · `P2-DATA-001` · 신진하\n\n목적: 자료의 현재 진척과 세 제품·원문/버전 자료팩의 첫 인수물을 PM에게 전달한다\n\n작업 지시\n- 이전 배정 연결: PM-20261004-DATA-001-START. 기존 요청 범위를 유지하며 이번 지시는 현재 진척/부분 인수 순서를 구체화한다.\n- 기존 START를 이어가고 최신 main과 이미 있는 합성자료의 5모델·36리뷰·42근거를 먼저 검수한다. 새 보고가 없다는 이유로 미착수라고 단정하지 않는다.\n- 지금까지 한 범위·진행 중·막힘·다음 행동을 자기 Issue #12에 보고하고 공유 가능한 제품군/모델/문서버전/원문위치/근거ID 연결을 부분PR로 먼저 제출한다.\n- 개발 예시와 독립 평가 여섯 유형의 자료·기대 대응을 구분하고 PM 평가 manifest 계약과 연결한다. 합성자료 실험과 실제 수요 증명을 구분한다.\n- DATA001 검수 대기에는 기존 #13/#14의 독립 문서처리·검색/OCR 비교 준비·실험을 이어가며 formal 의존 해제/완료는 PM 검수 뒤 판정한다. 공개모델 revision/라이선스·GPU/저장점유를 실제 확인한다.\n\n검수 조건\n- 사용자 지시·AI 해석·실제 수행·검사·미완료·재개 위치를 자기 작업기록/근거에 분리한다.\n- 보고는 자기 인증 계정으로 공개된 동일commit의 개인 두 문서와 연결하고 ACCEPTED를 확인한다. 부분 PR은 전체 완료 제출로 표시하지 않는다.\n- 막힘에는 재현 조건·실제 오류·필요 결정·다음 행동을 명시한다. 아직 진행 중이면 그 사실과 첫 인수물을 보고한다.\n\n다음 행동: 현재 #12 진행/막힘을 인증 보고하고 세 제품의 자료/근거 계약을 부분PR로 전달한다. 개별완료 근거는 별도 전체검수 요청으로 제출한다.\n기한: 별도 작업 시한 미지정; 대회 제출 10/20 준비\n\n자기 의도·수행·근거 기록과 상태 보고를 연결하고, PR을 PM에게 검수 요청하세요. 최종 완료는 PM 판정입니다.",
+  "latest_agents_blob": "782259e8498c3e97205d2ec6e2a31915a8daf8a8",
+  "local_code_comparison": {
+    "pyproject.toml": {
+      "ref": "main",
+      "blob_sha": "2fd152895d23b04bd44bae5468e0cfff267bc886",
+      "local_blob_matches": true
+    },
+    "uv.lock": {
+      "ref": "main",
+      "blob_sha": "6ecd4fc1a8a753ef5c75661bafcccd302fe0fac4",
+      "local_blob_matches": true
+    },
+    "packages/core/src/lgax_core/store.py": {
+      "ref": "main",
+      "blob_sha": "881bc0e4d4302e32327e22ffc633d10fc60e00ec",
+      "local_blob_matches": true
+    },
+    "apps/api/src/lgax_api/server.py": {
+      "ref": "main",
+      "blob_sha": "46f0f8b4afc4a1104be221996f79725a50edafa7",
+      "local_blob_matches": true
+    },
+    "apps/api/src/lgax_api/workspace_server.py": {
+      "ref": "main",
+      "blob_sha": "5be4ac05301e6b68ca3c6780146942292e376643",
+      "local_blob_matches": true
+    }
+  },
+  "online_project_status": "not directly retrieved: no uv and local baseline lacks project_report.py",
+  "remote_mutations_performed": false,
+  "synthetic_examples_newly_posted": false
+}

@@ -1,0 +1,94 @@
+{
+  "checked_at": "2026-10-04T22:25:01+09:00",
+  "requirement_id": "R03",
+  "acceptance": "업로드·파싱·자료 검증·조회가 실제 작동한다",
+  "status": "not_met",
+  "r03_met": false,
+  "scope": "environment diagnosis and existing-route inspection only; execution awaiting install approval",
+  "case_model": "T876MEE1H1",
+  "document_version": "MFL71401557 Rev.00_032526",
+  "source_kind": "public",
+  "steps": [
+    {
+      "step": "upload",
+      "command_executed": null,
+      "input": "case-input.json / existing local official PDF",
+      "output": {
+        "document_id": null
+      },
+      "result": "not_executed",
+      "reason": "no existing document upload/registration route found in either API; runtime environment also unavailable",
+      "evidence": "implementation-inspection.json routes and github-snapshot.json same-code blobs"
+    },
+    {
+      "step": "parse",
+      "command_executed": null,
+      "input": {
+        "registered_document_id": null
+      },
+      "output": {
+        "parsed_evidence_ids": null
+      },
+      "result": "not_executed",
+      "reason": "no uploaded document or existing document parser; earlier standalone pdfplumber extraction is not this chain",
+      "evidence": "implementation-inspection.json"
+    },
+    {
+      "step": "validate",
+      "command_executed": null,
+      "input": {
+        "parsed_evidence": null
+      },
+      "output": {
+        "schema_result": null
+      },
+      "result": "not_executed",
+      "reason": "no parser output; project Python3.11/jsonschema environment unavailable",
+      "evidence": "environment-before.json contains actual core import exit1/traceback; this is a precondition failure, not a schema test"
+    },
+    {
+      "step": "query",
+      "command_executed": null,
+      "input": {
+        "q": "선반",
+        "model_id": "T876MEE1H1",
+        "document_version": "MFL71401557 Rev.00_032526"
+      },
+      "output": {
+        "response": null,
+        "document_id": null,
+        "evidence_ids": null
+      },
+      "result": "not_executed",
+      "reason": "environment absent and actual public document not registered; synthetic-only default retrieval cannot certify real-document ingestion",
+      "existing_query_path": "GET /api/evidence/search",
+      "evidence": "existing search implementation inspected; no runtime query result claimed"
+    }
+  ],
+  "metadata_preservation_in_runtime": {
+    "product_model": "not verified: no connected query response",
+    "document_id": "not verified: no connected query response",
+    "evidence_id": "not verified: no connected query response",
+    "original_locator": "not verified: no connected query response",
+    "document_version": "not verified: no connected query response",
+    "real_or_synthetic": "not verified: no connected query response"
+  },
+  "completed": [
+    "jsonschema declared+locked diagnosis",
+    "wrong interpreter and absent project environment distinguished",
+    "official fridge PDF fixed by SHA256",
+    "existing upload/parser route absence and #12/#13 boundaries recorded"
+  ],
+  "remaining": [
+    "explicit project-local installation approval",
+    "run existing validator/query in matching environment and preserve actual outputs as partial checks",
+    "document registration and text-PDF parsing plus validated storage/retrieval implementation under #13, with PM coordination for common API/schema",
+    "same-input end-to-end upload/parse/validate/query evidence"
+  ],
+  "next_action": "user confirmation of project-local environment installation; no global changes",
+  "issue_12_complete": false,
+  "issue_13_complete": false,
+  "pm_review_merge_integration_complete": false,
+  "phase2_formal_status_changed": false,
+  "remote_posted": false
+}

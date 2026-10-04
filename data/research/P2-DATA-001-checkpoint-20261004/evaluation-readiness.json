@@ -1,0 +1,96 @@
+{
+  "checked_at": "2026-10-04T22:18:57+09:00",
+  "artifact_kind": "readiness assessment, not a case manifest",
+  "development_materials": [
+    {
+      "path": "data/demo/dataset.json",
+      "role": "existing synthetic development fixture; unchanged and excluded from the new partial-PR data files"
+    },
+    {
+      "path": "data/research/P2-DATA-001-real-reference-20261004/reference-pack.json",
+      "role": "already researched public development/reference material; not independent evaluation"
+    },
+    {
+      "path": "data/research/R03-fridge-20261004/case-input.json",
+      "role": "R03 development/reproduction input; not independent evaluation"
+    }
+  ],
+  "independent_manifest_inventory": [],
+  "independence_confirmed": false,
+  "independent_cases_ready": false,
+  "private_evaluation_materials": "not inspected; not claimed absent globally",
+  "unit_test_fixture": "tests/test_prepare_evaluation.py dynamically builds fixture outputs; tool tests are not independent/live evaluation evidence",
+  "pm_manifest_contract": {
+    "url": "https://github.com/jeongiryang/lg-ax-2026/blob/main/docs/pm/evaluation.md",
+    "main_blob_sha": "e108f1a15411efd1722cf3dadc97fbcfc54d634d",
+    "root_fields": [
+      "schema_version",
+      "independent_from_development",
+      "cases"
+    ],
+    "case_fields": [
+      "case_id",
+      "category",
+      "request",
+      "data_path",
+      "output_contract_path"
+    ],
+    "required_categories": [
+      "normal",
+      "duplicate_feature",
+      "model_version_confusion",
+      "conflicting_reviews",
+      "missing_evidence",
+      "specification_change"
+    ],
+    "hashes": "original data and output contract bytes; canonical request JSON",
+    "runtime_conditions": "same model revision/digest, sampling, output budget, context length, adapter, format constraints; null for unmeasured values"
+  },
+  "category_readiness": [
+    {
+      "category": "normal",
+      "status": "not provided/verified in this checkpoint",
+      "case_id": null,
+      "data_path": null,
+      "expected_response": null
+    },
+    {
+      "category": "duplicate_feature",
+      "status": "not provided/verified in this checkpoint",
+      "case_id": null,
+      "data_path": null,
+      "expected_response": null
+    },
+    {
+      "category": "model_version_confusion",
+      "status": "not provided/verified in this checkpoint",
+      "case_id": null,
+      "data_path": null,
+      "expected_response": null
+    },
+    {
+      "category": "conflicting_reviews",
+      "status": "not provided/verified in this checkpoint",
+      "case_id": null,
+      "data_path": null,
+      "expected_response": null
+    },
+    {
+      "category": "missing_evidence",
+      "status": "not provided/verified in this checkpoint",
+      "case_id": null,
+      "data_path": null,
+      "expected_response": null
+    },
+    {
+      "category": "specification_change",
+      "status": "not provided/verified in this checkpoint",
+      "case_id": null,
+      "data_path": null,
+      "expected_response": null
+    }
+  ],
+  "evaluation_complete": false,
+  "model_comparison_executed": false,
+  "next_independent_material_work": "separately prepared six-category cases and expected responses; do not relabel development examples or unit-test fixtures as independent"
+}
