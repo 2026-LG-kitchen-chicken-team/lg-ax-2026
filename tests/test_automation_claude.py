@@ -219,6 +219,19 @@ class ClaudeWorkerTests(unittest.TestCase):
         run.assert_not_called()
         publish.assert_not_called()
 
+    def test_expired_authentication_halts_member_instead_of_draining_approved_queue(self):
+        job = {"job_id": "REVIEW-EXPIRED", "owner": "choigilung", "kind": "review",
+               "base_commit": "a" * 40, "review_head": "b" * 40, "lease_token": "fixture",
+               "timeout_seconds": 120}
+        client = SimpleNamespace(heartbeat=lambda job: True, request=lambda *args: {})
+        with patch("services.automation.worker.github_identity"), \
+                patch("services.automation.worker.validate_auth", side_effect=ValueError("login expired")), \
+                patch("services.automation.worker.run_bounded") as run:
+            observed = execute_job(self.config, client, job)
+        self.assertIs(observed["halt_worker"], True)
+        self.assertEqual(observed["state"], "blocked")
+        run.assert_not_called()
+
     def test_external_runtime_includes_both_engines_and_refuses_module_tamper(self):
         bundle = build(self.root / "fixed-runtime")
         self.assertEqual(set(bundle["dependency_manifest"]), {"worker.py", "process.py", "claude.py"})

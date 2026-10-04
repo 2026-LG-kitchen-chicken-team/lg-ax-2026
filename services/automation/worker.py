@@ -708,6 +708,10 @@ def execute_job(config, client, job):
         write_json(run_dir / "checkpoint.json", checkpoint)
         return checkpoint
     except Exception as exc:  # noqa: BLE001 - retain every failure and leave formal completion untouched.
+        if checkpoint["state"] in {"preflight", "agent_running"}:
+            # Expired auth, incompatible CLI, invalid output and stale packets
+            # must not drain every queued assignment on a broken worker.
+            checkpoint["halt_worker"] = True
         checkpoint.update(state="blocked", finished_at=now(), reason=str(exc)[:500])
         if (run_dir / "publication.json").exists():
             checkpoint["partial_publication"] = json.loads((run_dir / "publication.json").read_text(encoding="utf-8"))
