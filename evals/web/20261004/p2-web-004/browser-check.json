@@ -1,0 +1,17 @@
+{
+  "task_id": "P2-WEB-004",
+  "owner": "최길웅",
+  "checked_at": "2026-10-04T19:40:00+09:00",
+  "method": "Playwright E2E(설치된 Chrome, e2e.txt)와 Claude 데스크톱 내장 브라우저 확인. 담당 AI의 실행 확인이며 사람의 사용성·실제 수정 시간 측정이 아니다.",
+  "environment": {"web": "사용자 실행 dev server 5173(Playwright reuseExistingServer)", "api": "사용자 실행 18867", "workspace": "이 세션의 18869(로컬 테스트 자격증명)", "browser": "Google Chrome(channel chrome), @playwright/test 1.63.0"},
+  "observations": [
+    {"area": "E2E fixture", "result": "누락 질문(NEEDS_INFO) → 규격 통과(FIXTURE_ONLY) → 후보 비교표·원문/판단 패널(원문 문장, GAP-FX-002 보류) → '내보내기 점검: 누락 없음' → JSON 다운로드(mode fixture, completeness.complete true, lineage RUN-FX-001→002, held GAP-FX-002) → 수정 목표 입력·측정 시작 → 트레이 후보 제외·조건 추가 → 미리보기(후보 제외 문장, 요청 회차 2) → RUN-DRAFT-3 생성 → 측정 기록 '초'와 '후보 1 · 조건 +1/−0' → 측정 JSON(status completed, base RUN-FX-002, result RUN-DRAFT-3, modification_seconds 숫자, unmeasured 규칙 null) → 초안 Markdown('생성된 콘셉트가 없습니다', not_implemented, 계보)."},
+    {"area": "E2E 취소", "result": "목표 없이 측정 시작 시 경고, 목표 입력 후 시작→취소 시 '미측정(취소)'."},
+    {"area": "E2E live", "result": "토큰 연결(저장소 0개) → FRIDGE-C 체크·사용 상황 변경 후 저장('요청 저장 완료 · 분석 결과 아님') → 조건 추가 재실행 → 타임라인 1개 증가, '요청만 저장됨'."},
+    {"area": "내장 브라우저", "result": "측정 바 시계 00:02 진행, 목표·기준 실행 표시, 후보 선택·조건 교정 패널 배치 확인."}
+  ],
+  "limitations": [
+    "측정값은 AI가 자동화로 조작한 시간이므로 사람의 수정 시간이 아니다. 실제 E03 기록은 사람 참여자가 같은 목표로 측정해야 한다.",
+    "E2E는 CI 워크플로에 추가하지 않았다(.github는 PM 영역)."
+  ]
+}
