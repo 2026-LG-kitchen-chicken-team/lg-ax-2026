@@ -291,7 +291,7 @@ def update_fields(api, policy, snapshot, item, values):
 
 def load_policy(path):
     policy = json.loads(Path(path).read_text(encoding="utf-8"))
-    if policy["repo"] != "jeongiryang/lg-ax-2026" or not policy["tasks"]:
+    if policy["repo"] != "2026-LG-kitchen-chicken-team/lg-ax-2026" or not policy["tasks"]:
         raise ValueError("wrong or empty policy")
     if any(not re.fullmatch(r"P2-[A-Z]+-\d{3}", tid) for tid in policy["tasks"]):
         raise ValueError("invalid policy task ID")

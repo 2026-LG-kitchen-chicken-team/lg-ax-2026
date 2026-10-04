@@ -18,7 +18,7 @@ import project_report_common as common
 
 from services.project_reports import worker
 
-REPO = "jeongiryang/lg-ax-2026"
+REPO = "2026-LG-kitchen-chicken-team/lg-ax-2026"
 TASK = "P2-CORE-001"
 COMMIT = "a" * 40
 OTHER_COMMIT = "b" * 40

@@ -120,6 +120,25 @@ class SubmissionIntakeTests(unittest.TestCase):
         self.intake(apply=True)
         self.assertEqual(intake_errors(self.root, self.bundle, self.bundle["tasks"][self.tid]), [])
 
+    def test_transferred_repository_preserves_old_receipt_identity(self):
+        self.intake(apply=True)
+        receipt = read(self.root, self.receipt)
+        receipt["source"]["repo"] = "jeongiryang/lg-ax-2026"
+        receipt["source"]["pull_request_url"] = "https://github.com/jeongiryang/lg-ax-2026/pull/36"
+        write(self.root, self.receipt, receipt)
+        self.bundle["tasks"][self.tid]["pm_intake"] = fingerprint(self.root, self.receipt)
+        self.assertEqual(intake_errors(self.root, self.bundle, self.bundle["tasks"][self.tid]), [])
+
+    def test_transfer_history_does_not_allow_arbitrary_repository(self):
+        self.intake(apply=True)
+        receipt = read(self.root, self.receipt)
+        receipt["source"]["repo"] = "unrelated/lg-ax-2026"
+        receipt["source"]["pull_request_url"] = "https://github.com/unrelated/lg-ax-2026/pull/36"
+        write(self.root, self.receipt, receipt)
+        self.bundle["tasks"][self.tid]["pm_intake"] = fingerprint(self.root, self.receipt)
+        errors = intake_errors(self.root, self.bundle, self.bundle["tasks"][self.tid])
+        self.assertTrue(any("repository" in e for e in errors))
+
     def test_harness_detects_receipt_byte_tampering(self):
         self.intake(apply=True)
         with (self.root / self.receipt).open("ab") as output:
