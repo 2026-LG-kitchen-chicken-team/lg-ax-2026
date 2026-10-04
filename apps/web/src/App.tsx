@@ -7,7 +7,7 @@ import { FIXTURE_BOOTSTRAP, FIXTURE_ORIGINAL_REQUEST, FIXTURE_RUNS } from './fix
 import { ApplianceIcon, ArrowIcon, SearchIcon } from './icons';
 import { runStatusView, sameProjectScope, useLiveWorkspace } from './liveWorkspace';
 import type { WorkspaceProject } from './workspace';
-import { contractErrors, draftRunWithCondition, missingRequestQuestions, nextRequestRevision, requestChanges, requestWithCondition } from './planning';
+import { contractErrors, draftRunFromRequest, missingRequestQuestions, nextRequestRevision, requestChanges } from './planning';
 import type { DataMode, Feature, PlanningRequest, RunSnapshot } from './planning';
 import { ConceptsView, FixtureBanner, HistoryView, ModeSwitch, RequestInsights, ServerEvidenceSearch, WorkspaceBar } from './PlanningViews';
 
@@ -175,14 +175,14 @@ export default function App() {
   const planningProps = { mode, runs, selected: selectedRun, onSelect: setRunChoice, features: (data?.features ?? []) as unknown as Feature[], evidence: data?.evidence ?? [] };
   const originalRequest = mode === 'fixture' ? FIXTURE_ORIGINAL_REQUEST : workspace.project?.project.request as PlanningRequest | undefined;
 
-  async function addCondition(condition: string) {
+  async function rerun(request: PlanningRequest) {
     if (!selectedRun) return;
     if (mode === 'fixture') {
-      const draft = draftRunWithCondition(selectedRun, FIXTURE_ORIGINAL_REQUEST, condition, `RUN-DRAFT-${runs.length + 1}`, new Date().toISOString());
+      const draft = draftRunFromRequest(selectedRun, FIXTURE_ORIGINAL_REQUEST, request, `RUN-DRAFT-${runs.length + 1}`, new Date().toISOString());
       setDrafts(items => [...items, draft]); setRunChoice(draft.run.id);
       return;
     }
-    const saved = await workspace.addRun(requestWithCondition(selectedRun.request, condition), selectedRun.run.id);
+    const saved = await workspace.addRun(request, selectedRun.run.id);
     if (!saved) throw new ApiError('REQUEST_FAILED', '새 실행을 저장하지 못했습니다. 위쪽 작업실 안내를 확인해 주세요.');
     setRunChoice(saved.run.id);
   }
@@ -219,7 +219,7 @@ export default function App() {
             {active.status === 'loading' ? <div className="loading-state" role="status"><div className="skeleton" /><div className="skeleton" /><div className="skeleton" /><p>공통 API에서 근거를 불러오는 중입니다…</p></div> : !data ? <EmptyState title="API 연결이 필요합니다" text="서버가 연결되면 실제 자료와 근거를 확인할 수 있습니다." /> : !visibleEvidence.length ? <EmptyState title={allModelEvidence.length ? '검색 결과가 없습니다' : '등록된 근거가 없습니다'} text={allModelEvidence.length ? '검색어 또는 자료 유형을 바꿔 보세요.' : '이 모델에 리뷰와 제품 문서를 등록하면 여기에 표시됩니다.'} /> : <ul>{visibleEvidence.map(item => <li key={item.id}><button className={`evidence-card ${selected?.id === item.id ? 'selected' : ''}`} aria-pressed={selected?.id === item.id} onClick={() => setSelectedId(item.id)}><div className="evidence-card-top"><SourceBadge type={item.source_type} /><span>{evidenceLocation(item)}</span></div><p>{item.text}</p><div className="evidence-card-bottom"><span>{item.model_id} · {item.document_version}</span><ArrowIcon /></div></button></li>)}</ul>}
           </div><EvidenceDetail selected={selected} features={data?.features ?? []} /></div>
           <footer className="evidence-footer"><span className={`status-dot ${active.status}`} /><p>{data ? '원문 조회와 모델별 필터가 연결되어 있습니다. 자동 대조·판단은 구현 예정입니다.' : '공통 API가 연결되면 원문을 조회할 수 있습니다. 자동 대조·판단은 구현 예정입니다.'}</p></footer>
-        </section> : view === 'request' ? <RequestView key={`${group}-${mode}-${formSeed}`} data={data} group={group} modelId={modelId} mode={mode} live={mode === 'live' && workspace.connection === 'connected' ? { project: workspace.project, latest: workspace.runs[workspace.runs.length - 1] ?? null, save: (request, continueProject) => continueProject ? workspace.addRun(request, workspace.runs[workspace.runs.length - 1]?.run.id ?? null) : workspace.saveRequest(request, data?.products ?? []) } : undefined} /> : selectedRun && originalRequest && view === 'concepts' ? <ConceptsView {...planningProps} selected={selectedRun} /> : selectedRun && originalRequest ? <HistoryView {...planningProps} selected={selectedRun} original={originalRequest} onCondition={addCondition} busy={workspace.busy} /> : view === 'concepts' ? <section className="panel future-panel"><EmptyState type="future" title="근거를 갖춘 콘셉트를 이곳에서 검토합니다" text="콘셉트 생성과 중복·인용 검사는 아직 연결되지 않았습니다. 생성된 결과가 있을 때 후보별 차별점, 요구사항, 확인할 가정을 함께 표시할 예정입니다." /><div className="future-columns"><div><strong>콘셉트 비교</strong><span>최대 3개 타당한 후보 · 근거 부족 시 보류</span></div><div><strong>요구사항 확인</strong><span>연결된 원문 · 남은 불편 · 검토할 조건</span></div><div><strong>기획자 검토</strong><span>선택 · 수정 요청 · 추가 조건</span></div></div></section> : <section className="panel future-panel"><EmptyState type="future" title="아직 실행·수정 이력이 없습니다" text="Agent 실행과 기록 저장이 연결되면 동일 기획의 변경 전후, 사용한 자료 버전, 재검토 이유를 확인할 수 있습니다." /><div className="history-plan"><span>기획 요청</span><ArrowIcon /><span>근거·판단 기록</span><ArrowIcon /><span>새 자료로 재검토</span><ArrowIcon /><span>변경 전후 비교</span></div></section>}
+        </section> : view === 'request' ? <RequestView key={`${group}-${mode}-${formSeed}`} data={data} group={group} modelId={modelId} mode={mode} live={mode === 'live' && workspace.connection === 'connected' ? { project: workspace.project, latest: workspace.runs[workspace.runs.length - 1] ?? null, save: (request, continueProject) => continueProject ? workspace.addRun(request, workspace.runs[workspace.runs.length - 1]?.run.id ?? null) : workspace.saveRequest(request, data?.products ?? []) } : undefined} /> : selectedRun && originalRequest && view === 'concepts' ? <ConceptsView {...planningProps} selected={selectedRun} /> : selectedRun && originalRequest ? <HistoryView {...planningProps} selected={selectedRun} original={originalRequest} onRerun={rerun} busy={workspace.busy} /> : view === 'concepts' ? <section className="panel future-panel"><EmptyState type="future" title="근거를 갖춘 콘셉트를 이곳에서 검토합니다" text="콘셉트 생성과 중복·인용 검사는 아직 연결되지 않았습니다. 생성된 결과가 있을 때 후보별 차별점, 요구사항, 확인할 가정을 함께 표시할 예정입니다." /><div className="future-columns"><div><strong>콘셉트 비교</strong><span>최대 3개 타당한 후보 · 근거 부족 시 보류</span></div><div><strong>요구사항 확인</strong><span>연결된 원문 · 남은 불편 · 검토할 조건</span></div><div><strong>기획자 검토</strong><span>선택 · 수정 요청 · 추가 조건</span></div></div></section> : <section className="panel future-panel"><EmptyState type="future" title="아직 실행·수정 이력이 없습니다" text="Agent 실행과 기록 저장이 연결되면 동일 기획의 변경 전후, 사용한 자료 버전, 재검토 이유를 확인할 수 있습니다." /><div className="history-plan"><span>기획 요청</span><ArrowIcon /><span>근거·판단 기록</span><ArrowIcon /><span>새 자료로 재검토</span><ArrowIcon /><span>변경 전후 비교</span></div></section>}
         {mode === 'live' && view === 'evidence' && workspace.connection === 'connected' ? <ServerEvidenceSearch workspace={workspace} modelId={modelId} /> : null}
         {mode === 'live' && (view === 'concepts' || view === 'history') && !selectedRun ? <p className="hint">{workspace.connection === 'connected' ? '저장된 실행 기록이 없습니다. 기획 요청에서 작업실에 저장하면 여기에 표시됩니다.' : '작업실 서버에 연결하면 저장된 실제 실행 기록을 불러옵니다. 화면 예시는 상단의 계약 fixture에서 볼 수 있습니다.'}</p> : null}
         <footer className="page-footer"><span>키친에서치킨먹기 · LG AX 2026</span><span>반복 가능한 상품기획을 위한 첫 작업 공간</span></footer>

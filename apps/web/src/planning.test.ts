@@ -5,8 +5,8 @@ import { parseBootstrap } from './api';
 import type { Evidence } from './domain';
 import { FIXTURE_BOOTSTRAP, FIXTURE_DATASET_SHA256, FIXTURE_ORIGINAL_REQUEST, FIXTURE_RUNS } from './fixtures/planning.fixture';
 import {
-  buildComparison, buildExport, canonical, conceptChanges, contractErrors, draftRunWithCondition, exportMarkdown,
-  missingRequestQuestions, nextRequestRevision, requestChanges,
+  buildComparison, buildExport, buildRerunRequest, canonical, conceptChanges, conceptDetailChanges, contractErrors, draftRunFromRequest,
+  draftRunWithCondition, exportMarkdown, heldItems, missingRequestQuestions, nextRequestRevision, requestChanges, splitConditions,
 } from './planning';
 import type { Feature, PlanningRequest } from './planning';
 
@@ -104,6 +104,48 @@ describe('R21 additional condition creates a new linked run', () => {
   it('shows concept status changes between linked runs', () => {
     expect(conceptChanges(first, second)).toEqual([{ id: 'CONCEPT-FX-001', title: '오염 구획만 꺼내는 분리 청소 트레이', before: 'needs_review', after: 'rejected' }]);
     expect(conceptChanges(undefined, first).map(item => item.after)).toEqual(['needs_review', 'proposed']);
+  });
+});
+
+describe('P2-WEB-003 candidate choices, condition correction and combined review', () => {
+  const concepts = first.run.concepts;
+  it('writes excluded and focused candidates into the request within the shared contract', () => {
+    const next = buildRerunRequest(first.request, concepts, { 'CONCEPT-FX-001': 'exclude', 'CONCEPT-FX-002': 'focus' }, ['실기기 제어', '1인 가구 소형 모델만']);
+    expect(next.exclusions).toEqual(['실기기 제어', '1인 가구 소형 모델만', '후보 제외: 오염 구획만 꺼내는 분리 청소 트레이 (CONCEPT-FX-001)']);
+    expect(next.improvement_task).toBe(`${first.request.improvement_task} [집중 검토: 청소 전 식품 이동 범위 안내 (CONCEPT-FX-002)]`);
+    expect(next.model_ids).toEqual(first.request.model_ids);
+    expect(contractErrors('PlanningRequest', next)).toEqual([]);
+  });
+  it('is idempotent across reruns: focus suffix and candidate exclusions are replaced, not stacked', () => {
+    const once = buildRerunRequest(first.request, concepts, { 'CONCEPT-FX-001': 'exclude', 'CONCEPT-FX-002': 'focus' }, splitConditions(first.request).conditions);
+    const twice = buildRerunRequest(once, concepts, { 'CONCEPT-FX-001': 'keep', 'CONCEPT-FX-002': 'keep' }, splitConditions(once).conditions);
+    expect(twice.improvement_task).toBe(first.request.improvement_task);
+    expect(twice.exclusions).toEqual(first.request.exclusions);
+    expect(splitConditions(once)).toEqual({ conditions: first.request.exclusions, excludedCandidates: ['후보 제외: 오염 구획만 꺼내는 분리 청소 트레이 (CONCEPT-FX-001)'] });
+  });
+  it('corrects conditions: edits, removals and blanks are applied, duplicates collapse', () => {
+    const next = buildRerunRequest(first.request, [], {}, ['실기기 제어', '  ', '실기기 제어', '제조용 CAD 제외']);
+    expect(next.exclusions).toEqual(['실기기 제어', '제조용 CAD 제외']);
+    expect(requestChanges(first.request, next).map(item => item.field)).toEqual(['exclusions']);
+  });
+  it('shows what changed inside each candidate between linked runs', () => {
+    const changes = conceptDetailChanges(first, second);
+    expect(changes).toHaveLength(1);
+    expect(changes[0]).toMatchObject({ id: 'CONCEPT-FX-001', status: ['needs_review', 'rejected'] });
+    expect(changes[0].added.assumptions).toEqual(['추가 조건에 따라 문서 2.0 FEATURE-006과 중복 가능성이 있어 제외']);
+    expect(changes[0].removed).toEqual({ requirements: [], assumptions: [], evidence_ids: [] });
+  });
+  it('lists held items: insufficient-evidence gaps with their questions, then unresolved notes', () => {
+    const held = heldItems(second);
+    expect(held[0]).toMatchObject({ kind: 'insufficient_evidence', id: 'GAP-FX-002' });
+    expect(held[0].questions[0]).toContain('임시 보관');
+    expect(held.filter(item => item.kind === 'unresolved').map(item => item.text)).toEqual(second.run.unresolved);
+  });
+  it('creates a linked draft from a full rerun request in fixture mode', () => {
+    const next = buildRerunRequest(second.request, second.run.concepts, { 'CONCEPT-FX-002': 'focus' }, splitConditions(second.request).conditions);
+    const draft = draftRunFromRequest(second, FIXTURE_ORIGINAL_REQUEST, next, 'RUN-DRAFT-9', '2026-10-04T10:00:00.000Z');
+    expect(draft).toMatchObject({ previous_run_id: 'RUN-FX-002', request_revision: 2, output: null });
+    expect(draft.run.status).toBe('not_implemented');
   });
 });
 
