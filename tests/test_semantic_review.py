@@ -9,7 +9,7 @@ from jsonschema import Draft202012Validator
 from lgax_core.errors import DomainError
 from lgax_core.judgement_contract import input_digest, review_judgement
 from lgax_core.judgement_contract import schema_for as judgement_schema
-from lgax_core.semantic_review import review_semantics, schema_for_review
+from lgax_core.semantic_review import review_semantics, schema_for_review, semantic_feedback
 from lgax_core.store import DemoStore
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -43,7 +43,7 @@ class SemanticReviewTests(unittest.TestCase):
         self.report = declaration(self.payload, self.output)
         self.report["exclusion_assessments"][-1]["verdict"] = "violation"
         self.assertEqual(self.review()["action"], "revise")
-        self.assertEqual(self.review()["violations"][0]["details"]["concept_id"], "SECOND")
+        self.assertEqual(semantic_feedback(self.report)[0]["details"]["concept_id"], "SECOND")
 
     def test_replayed_wrong_hash_missing_duplicate_and_changed_literal_rows_are_rejected(self):
         original = deepcopy(self.report)
@@ -106,6 +106,14 @@ class SemanticReviewTests(unittest.TestCase):
         self.report = declaration(self.payload, self.output)
         self.assertEqual(self.report["exclusion_assessments"], [])
         self.assertEqual(self.review()["action"], "accept")
+
+    def test_public_decision_uses_core001_shape_while_feedback_preserves_literal_rows(self):
+        canonical = review_judgement(self.payload, self.output)
+        self.report["exclusion_assessments"][0]["verdict"] = "violation"
+        decision = self.review()
+        self.assertEqual(set(decision), set(canonical))
+        self.assertEqual(decision["violations"], [{"code": "EXCLUSION_VIOLATION", "stage": "concepts"}])
+        self.assertEqual(semantic_feedback(self.report)[0]["details"], self.report["exclusion_assessments"][0])
 
     def test_pm_original_contract_acceptance_replayed_and_independent_uncertain_declaration_blocks_it(self):
         raw = json.loads((ROOT / "evals/pm-integration/20261005/workspace-live.json").read_text("utf-8"))
@@ -186,6 +194,8 @@ class SemanticPipelineTests(unittest.TestCase):
         self.assertEqual([p["skill"] for p in transport.posts],
                          ["need_extract", "product_compare", "concept_draft", "semantic_review", "concept_draft", "semantic_review"])
         self.assertEqual(transport.posts[4]["context"]["feedback"][0]["code"], "EXCLUSION_VIOLATION")
+        self.assertEqual(transport.posts[4]["context"]["feedback"][0]["details"],
+                         result["semantic_reviews"][0]["report"]["exclusion_assessments"][0])
         self.assertEqual(case.payload, original)
 
     def test_persistent_violation_clears_candidates_after_two_shared_revisions(self):
@@ -228,6 +238,22 @@ class SemanticPipelineTests(unittest.TestCase):
         self.assertEqual(result["input"]["revision_count"], 2)
         self.assertEqual(result["output"]["concepts"], [])
         self.assertIn("INVALID_SEMANTIC_REVIEW", result["output"]["unresolved"])
+        self.assertEqual(result["decision"]["next_revision_count"], 2)
+        self.assertIsNone(result["decision"]["rerun_from"])
+        self.assertEqual(set(result["decision"]["violations"][0]), {"code", "stage"})
+
+    def test_generation_schema_failure_has_canonical_terminal_decision_and_detailed_retry(self):
+        def alter(skill, _context, value, _count):
+            if skill == "need_extract":
+                return "not JSON"
+            return value
+        case, agent, transport = self.fixture(alter)
+        result = agent.run(case.payload)
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(result["decision"]["next_revision_count"], 2)
+        self.assertIsNone(result["decision"]["rerun_from"])
+        self.assertEqual(set(result["decision"]["violations"][0]), {"code", "stage"})
+        self.assertTrue(transport.posts[1]["context"]["feedback"][0]["details"])
 
     def test_review_backend_failure_cannot_export_unreviewed_candidates(self):
         def alter(skill, _context, value, _count):

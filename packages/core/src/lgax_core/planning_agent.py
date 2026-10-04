@@ -19,7 +19,7 @@ from .errors import DomainError
 from .judgement_contract import input_digest, review_judgement
 from .judgement_contract import schema_for as judgement_schema
 from .model_client import StructuredModelClient
-from .semantic_review import INSTRUCTIONS, review_semantics, schema_for_review
+from .semantic_review import INSTRUCTIONS, review_semantics, schema_for_review, semantic_feedback
 from .skill_runner import SkillRuntime
 from .skill_runner import schema_for as skill_schema
 from .store import DemoStore
@@ -340,6 +340,7 @@ class PlanningAgent:
         begin = 0
         while True:
             failure = None
+            retry_feedback = None
             for i in range(begin, len(SKILLS)):
                 skill_id = SKILLS[i]
                 common = {"model_id": payload["product"]["model_id"],
@@ -381,10 +382,13 @@ class PlanningAgent:
                 result["output"] = None
                 if error["code"] not in ("VALIDATION_FAILED", "INVALID_EVIDENCE_ID"):
                     return fail(DomainError(error["code"], error["message"], error["details"]))
-                decision = {"valid": False, "action": "revise" if payload["revision_count"] < 2 else "unresolved",
-                            "revision_count": payload["revision_count"], "rerun_from": STAGE[SKILLS[index]],
-                            "violations": [{"code": error["code"], "stage": STAGE[SKILLS[index]],
-                                            "details": deepcopy(error["details"])}]}
+                revise = payload["revision_count"] < 2
+                decision = {"valid": False, "action": "revise" if revise else "unresolved",
+                            "revision_count": payload["revision_count"],
+                            "next_revision_count": payload["revision_count"] + int(revise),
+                            "rerun_from": STAGE[SKILLS[index]] if revise else None,
+                            "violations": [{"code": error["code"], "stage": STAGE[SKILLS[index]]}]}
+                retry_feedback = [{**decision["violations"][0], "details": deepcopy(error["details"])}]
                 result["errors"].append(error)
             else:
                 current = output()
@@ -402,6 +406,7 @@ class PlanningAgent:
                                             INSTRUCTIONS + json.dumps(context, ensure_ascii=False, separators=(",", ":")),
                                             schema_for_review(payload, current)).data
                         decision = review_semantics(payload, current, report)
+                        retry_feedback = semantic_feedback(report)
                         result["semantic_reviews"].append({"report": deepcopy(report), "decision": deepcopy(decision)})
                         result["output"]["questions"] = deepcopy(report["questions"])
                         event("review", "semantic_review", context, {"report": report, "decision": decision})
@@ -409,10 +414,13 @@ class PlanningAgent:
                         if error.code != "VALIDATION_FAILED":
                             return fail(error)
                         result["errors"].append(error.response()["error"])
-                        decision = {"valid": False, "action": "revise" if payload["revision_count"] < 2 else "unresolved",
-                                    "revision_count": payload["revision_count"], "rerun_from": "concepts",
-                                    "violations": [{"code": "INVALID_SEMANTIC_REVIEW", "stage": "concepts",
-                                                    "details": error.details}]}
+                        revise = payload["revision_count"] < 2
+                        decision = {"valid": False, "action": "revise" if revise else "unresolved",
+                                    "revision_count": payload["revision_count"],
+                                    "next_revision_count": payload["revision_count"] + int(revise),
+                                    "rerun_from": "concepts" if revise else None,
+                                    "violations": [{"code": "INVALID_SEMANTIC_REVIEW", "stage": "concepts"}]}
+                        retry_feedback = [{**decision["violations"][0], "details": deepcopy(error.details)}]
                         event("review", "semantic_review_error", context, error.response())
             result["decision"] = decision
             event("review", "review_decision", {"input_sha256": input_digest(payload)}, decision)
@@ -446,7 +454,7 @@ class PlanningAgent:
                 state.pop(key, None)
             payload["revision_count"] += 1
             result["input"] = deepcopy(payload)
-            feedback = deepcopy(decision["violations"])
+            feedback = deepcopy(decision["violations"] if retry_feedback is None else retry_feedback)
             event("review", "revise", {"rerun_from": stage}, {"revision_count": payload["revision_count"]})
 
 

@@ -71,6 +71,17 @@ def _strings(value: Any):
                 yield from _strings(item)
 
 
+def semantic_feedback(report: dict) -> list[dict]:
+    """Detailed retry context from a validated report, separate from the public decision."""
+    rows = [{"code": f"{category.upper()}_{row['verdict'].upper()}", "stage": "concepts", "details": row}
+            for category, items, passed in (("exclusion", report["exclusion_assessments"], "compliant"),
+                                            ("quality", report["quality_assessments"], "satisfied"))
+            for row in items if row["verdict"] != passed]
+    if report["questions"] and not rows:
+        rows.append({"code": "SEMANTIC_QUESTION", "stage": "concepts", "details": {"questions": report["questions"]}})
+    return rows
+
+
 def review_semantics(payload: dict, output: dict, report: Any) -> dict:
     """Bind the review to exact inputs/candidates; decide hold/retry within the same budget."""
     def invalid(reason: str):
@@ -82,7 +93,6 @@ def review_semantics(payload: dict, output: dict, report: Any) -> dict:
     sources = {s["id"]: s["text"] for s in payload["sources"]}
     conditions = payload["request"]["exclusions"]
     seen_exclusions, seen_quality = set(), set()
-    violations = []
     for category, rows in (("exclusion", report["exclusion_assessments"]), ("quality", report["quality_assessments"])):
         for row in rows:
             candidate = row["concept_id"]
@@ -104,21 +114,19 @@ def review_semantics(payload: dict, output: dict, report: Any) -> dict:
             for citation in row["source_quotes"]:
                 if citation["quote"] not in sources[citation["evidence_id"]]:
                     invalid("source_quote_not_literal")
-            if row["verdict"] != ("compliant" if category == "exclusion" else "satisfied"):
-                violations.append({"code": f"{category.upper()}_{row['verdict'].upper()}", "stage": "concepts",
-                                   "details": row})
     if seen_exclusions != {(c, n) for c in concepts for n in range(len(conditions))} or (
         seen_quality != {(c, q) for c in concepts for q in QUALITY}
     ):
         invalid("missing_review_pair")
+    violations = semantic_feedback(report)
     uncertain = any(v["code"].endswith("_UNCERTAIN") for v in violations)
     if uncertain and not report["questions"]:
         invalid("uncertain_requires_question")
-    if report["questions"] and not violations:
-        violations.append({"code": "SEMANTIC_QUESTION", "stage": "concepts", "details": {"questions": report["questions"]}})
     count = payload["revision_count"]
     action = "hold" if uncertain or report["questions"] else (
         "revise" if count < 2 else "unresolved") if violations else "accept"
     return {"valid": action == "accept", "action": action, "revision_count": count,
             "next_revision_count": count + int(action == "revise"),
-            "rerun_from": "concepts" if action == "revise" else None, "violations": violations}
+            "rerun_from": "concepts" if action == "revise" else None,
+            "violations": [{"code": code, "stage": stage}
+                           for code, stage in dict.fromkeys((v["code"], v["stage"]) for v in violations)]}
