@@ -17,7 +17,8 @@
 | 1차 선정 | **2026-10-02 선정(사용자 확인)**. 컨설팅 희망 시간 엑셀표 제출 완료(사용자 보고). 실제 시간은 미확정이며 **10/6 오전까지 안내 예정**. [선정·컨설팅 안내](docs/1차선정_2026-10-02.md) |
 | 개발 환경 | 단일 비공개 모노레포. React 웹·Python 공통 코어/API·MCP·JSON Schema·2차 하네스와 담당 이슈 구성. [개발 시작 안내](docs/bootstrap/README.md). 참가작 판단 Agent는 후속 구현 |
 | 구현 조건 | 웹·MCP에서 같은 합성자료를 조회. 연구실 공개 모델 실험과 호스트 연결 검증은 별도 증빙 관리. 전체 판단·수정 Agent/실사용 평가는 미완료 |
-| 10/4 PM 인수 | PR42의 실제 병합 코드에서 웹 요청·근거 화면/실제 API·이력 과제 WEB001/002 검증 완료. 초기 설정2와 합쳐 Done4, 신청서31요구 verified0. 후속 PR43 후보·내보내기 코드와 PR45 저장/회차 보완도 검수·병합(웹107·실HTTP2/CUA)했으며 실제 판단 코어·평가·최종 제출은 남음 |
+| 10/5 PM 인수 | PR58 실제 병합: 판단 계약 CORE001 인수 Done5/31요구 verified0. 실제 Qwen→API/저장/MCP 확인, 제외 조건 위반은 후속 개선. 조직 Project1·보고 서비스 이관과 새 배정 메일3건 Sent 대조. [이관](docs/프로젝트이관_2026-10-05.md)·[실제 모델 검수](docs/pm/pr-intake-20261005.md) |
+| 10/4 PM 인수(역사) | PR42의 실제 병합 코드에서 웹 요청·근거 화면/실제 API·이력 과제 WEB001/002 검증 완료. 초기 설정2와 합쳐 Done4, 신청서31요구 verified0. 후속 PR43 후보·내보내기 코드와 PR45 저장/회차 보완도 검수·병합(웹107·실HTTP2/CUA)했으며 실제 판단 코어·평가·최종 제출은 남음 |
 
 ## 지금 볼 문서
 
@@ -60,7 +61,7 @@
 - 신진하: [ginaginaring](https://github.com/ginaginaring), 개발팀 합류·초대 수락·저장소 Write 확인(10/4 사용자 확인·GitHub 직접 조회). 자료 Epic #5·#12~#16 담당자를 지정했다. [현재 배정](docs/pm/현재배정.md)의 #12부터 시작한다.
 - 황대겸: [unknownamed](https://github.com/unknownamed), 10/4 초대·수락·쓰기 권한 확인.
 - 최길웅: [choigilung](https://github.com/choigilung), 쓰기 권한 확인.
-- 역할 고정: [운영 Issue #28](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28), [2차 개발 Project](https://github.com/users/jeongiryang/projects/3).
+- 역할 고정: [운영 Issue #28](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28), [2차 개발 Project](https://github.com/orgs/2026-LG-kitchen-chicken-team/projects/1).
 - Project는 정이량 PM만 편집·관리하며 세 팀원은 Read다. 팀원 AI는 자기 인증 계정으로 자기 담당 Issue에 `doing`·`blocked`·`review_requested`를 보고한다. 10/4 실제 배포한 외부 PM 관리 서비스가 45초마다 검사해 `Status`·`팀원 보고`·`최근 보고`·`다음 행동`만 반영한다. [팀 협업 체계](docs/협업체계.md)와 [서비스 안내](services/project_reports/README.md)를 따른다.
 - 공식 상태는 PM이 검증한 배포 정책의 승인 스냅샷과 운영 Issue #28의 실제 PM `/lgax-sync` 승인을 따른다. 팀원이 main의 JSON을 바꾼 사실만으로 완료·의존 해제·확장 채택이 승인되지 않는다. 새 배정은 PM AI가 공용 배정 JSON·Issue·비공개 발송 대기를 만든 뒤 연결된 Gmail로 보내고 실제 Sent 메타데이터를 확인한다. 서비스 활성·재시작 보존과 첫 안내 메일 세 건의 실제 SENT 확인은 완료했다. 열람·개발 완료는 별도다.
 - 초대받은 계정으로 로그인한 뒤 [초대 수락 페이지](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/invitations)에서 수락한다.
@@ -82,4 +83,4 @@
 - [학교 모집공고와 첨부](https://www.changwon.ac.kr/mce/na/ntt/selectNttInfo.do?mi=18190&nttSn=1431443)
 - [LG 전용 노션 페이지](https://app.notion.com/p/3e7b3295f8cb81fdb730f6ef105a927c): 중요 진행·운영 안내를 확인하고 수동 갱신합니다. 자동 동기화가 설정된 것은 아닙니다.
 
-최신 개발 확인일: 2026-10-04. 공식 요건별 확인일은 각 근거 문서를 따릅니다. 일정은 운영기관의 후속 공지에 따라 변경될 수 있습니다.
+최신 개발 확인일: 2026-10-05. 공식 요건별 확인일은 각 근거 문서를 따릅니다. 일정은 운영기관의 후속 공지에 따라 변경될 수 있습니다.

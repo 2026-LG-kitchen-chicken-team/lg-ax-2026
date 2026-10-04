@@ -1,0 +1,20 @@
+{
+  "observed_date_kst": "2026-10-05",
+  "method": "live_cua_browser_ax_and_readonly_visible_dom",
+  "source_roles": {"choigilung":"Read","ginaginaring":"Read","unknownamed":"Read"},
+  "target_roles": {"jeongiryang":"Admin","choigilung":"Read","ginaginaring":"Read","unknownamed":"Read"},
+  "organization_base_role": {"initial":"Write","applied":"Read","visible_result":"Everyone in the organization can see this project."},
+  "target_visibility_ui":"Internal project",
+  "target_public_api":false,
+  "default_repository":"2026-LG-kitchen-chicken-team/lg-ax-2026",
+  "default_repository_saved_and_reloaded":true,
+  "enabled_workflows_compared": [
+    {"name":"Auto-add sub-issues to project","source_id":"120725075","target_id":"120881128","trigger":"When an item in the project has sub-issues","action":"Add sub-issues to the project","equal":true},
+    {"name":"Auto-close issue","source_id":"120725074","target_id":"120881127","trigger":"When the status is updated","value":"Status: Done","action":"Close the issue","equal":true},
+    {"name":"Item added to project","source_id":"120725077","target_id":"120881130","trigger":"When an item is added to the project (issue, pull request)","action":"Set value","value":"Status: Todo","equal":true},
+    {"name":"Item closed","source_id":"120725072","target_id":"120881125","trigger":"When an item is closed (issue, pull request)","action":"Set value","value":"Status: Done","equal":true},
+    {"name":"Pull request linked to issue","source_id":"120725076","target_id":"120881129","trigger":"When a pull request is linked to an issue","action":"Set value","value":"Status: In Progress","equal":true},
+    {"name":"Pull request merged","source_id":"120725073","target_id":"120881126","trigger":"When a pull request is merged","action":"Set value","value":"Status: Done","equal":true}
+  ],
+  "limits": ["Workflow enabled/config equality was observed before closing the source; closing disables legacy workflows.","Public GraphQL does not expose historical Insights/event migration or column widths; source history is retained.","Read roles do not prove that every teammate has logged in to view the new board."]
+}

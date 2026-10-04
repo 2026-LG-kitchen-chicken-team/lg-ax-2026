@@ -1,8 +1,10 @@
 """Idempotent, user-authorized LG team Issue/Project bootstrap. No credentials stored."""
 from __future__ import annotations
+
 import argparse
 import json
 import pathlib
+import re
 import subprocess
 import sys
 
@@ -11,7 +13,8 @@ if hasattr(sys.stdout, 'reconfigure'):
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 REPO = '2026-LG-kitchen-chicken-team/lg-ax-2026'
-OWNER = 'jeongiryang'
+PROJECT_OWNER = '2026-LG-kitchen-chicken-team'
+PM_ACCOUNT = 'jeongiryang'
 TITLE = 'LG AX 2026 · 2차 개발'
 TEAM = {
     '정이량': ('jeongiryang', 'PM·연결·통합·검수·병합·제출', 'PM'),
@@ -20,12 +23,25 @@ TEAM = {
     '최길웅': ('choigilung', '웹 기획 검토 작업실·교정·이력·내보내기', 'WEB'),
 }
 
+def configured_project_owner(links=None):
+    """Read the recorded board owner independently of the authenticated PM."""
+    if links is None:
+        path = ROOT / 'harness/phase2/github.json'
+        links = json.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
+    owner = links.get('project', {}).get('owner') or {}
+    login = owner.get('login') if isinstance(owner, dict) else owner
+    if login is None or login == '':
+        return PROJECT_OWNER
+    if not isinstance(login, str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9-]{0,38}', login):
+        raise ValueError('invalid recorded Project owner')
+    return login
+
 def gh(*args, data=None):
     command = ['gh', *args]
     if data is not None:
         command += ['--input', '-']
     r = subprocess.run(command, input=json.dumps(data, ensure_ascii=True).encode() if data is not None else None,
-                       stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=ROOT)
+                       capture_output=True, check=False, cwd=ROOT)
     if r.returncode:
         raise RuntimeError(r.stderr.decode('utf-8', 'replace'))
     out = r.stdout.decode('utf-8').strip()
@@ -42,9 +58,13 @@ def main():
     parser.add_argument('--apply', action='store_true')
     opts = parser.parse_args()
     tasks = [json.loads(p.read_text(encoding='utf-8')) for p in sorted((ROOT/'harness/phase2/tasks').glob('*.json'))]
+    board_owner = configured_project_owner()
     if not opts.apply:
-        print(json.dumps({'repo':REPO,'project':TITLE,'task_count':len(tasks),'team':TEAM},ensure_ascii=False,indent=2))
+        print(json.dumps({'repo':REPO,'project':TITLE,'project_owner':board_owner,'pm_account':PM_ACCOUNT,
+                          'task_count':len(tasks),'team':TEAM},ensure_ascii=False,indent=2))
         return
+    if api('user')['login'] != PM_ACCOUNT:
+        raise ValueError('authenticated PM account required for Issue/Project bootstrap')
     existing = api(f'repos/{REPO}/issues?state=all&per_page=100')
     by_title = {x['title']: x for x in existing if 'pull_request' not in x}
     collaborators = {x['login'] for x in api(f'repos/{REPO}/collaborators?per_page=100')}
@@ -120,22 +140,22 @@ def main():
                   '- 학번·연락처·서명·원본 작성본·비밀키는 private/에만 보관한다.',
                   '', '## 구현 흐름',
                   '요구사항→배정→개발→개별 검증→PM 검수→병합→통합 확인→평가→발표/영상/ZIP→제출 증빙']
-    gov=issue('팀 역할·작업 규칙·현재 배정', '\n'.join(gov_lines), ['type:governance','priority:P0'],OWNER)
+    gov=issue('팀 역할·작업 규칙·현재 배정', '\n'.join(gov_lines), ['type:governance','priority:P0'],PM_ACCOUNT)
     api('graphql', {'query':'mutation($id:ID!){pinIssue(input:{issueId:$id}){issue{id number}}}', 'variables':{'id':gov['node_id']}}, 'POST')
-    projects=gh('project','list','--owner',OWNER,'--limit','100','--format','json')['projects']
+    projects=gh('project','list','--owner',board_owner,'--limit','100','--format','json')['projects']
     project=next((x for x in projects if x['title']==TITLE and not x['closed']), None)
     project_created = project is None
     if project_created:
-        project=gh('project','create','--owner',OWNER,'--title',TITLE,'--format','json')
+        project=gh('project','create','--owner',board_owner,'--title',TITLE,'--format','json')
     number=str(project['number'])
-    gh('project','link',number,'--owner',OWNER,'--repo',REPO)
-    fields=gh('project','field-list',number,'--owner',OWNER,'--format','json')['fields']
+    gh('project','link',number,'--owner',board_owner,'--repo',REPO)
+    fields=gh('project','field-list',number,'--owner',board_owner,'--format','json')['fields']
     specs={'담당자':('TEXT',None),'요구사항':('TEXT',None),'의존 작업':('TEXT',None),'실행 증빙':('TEXT',None),
            '목표일':('DATE',None),'우선순위':('SINGLE_SELECT','P0,P1,P2'),
            '진행상태':('SINGLE_SELECT','Ready,Doing,Individual verified,PM review,PM approved,Merged,Integration verified,Done,Blocked,Deferred')}
     for name,(kind,options) in specs.items():
         if not any(x['name']==name for x in fields):
-            args=['project','field-create',number,'--owner',OWNER,'--name',name,'--data-type',kind,'--format','json']
+            args=['project','field-create',number,'--owner',board_owner,'--name',name,'--data-type',kind,'--format','json']
             if options:
                 args += ['--single-select-options',options]
             fields.append(gh(*args))
@@ -143,7 +163,7 @@ def main():
     items=[]
     allissues=[gov,*epics.values(),*task_issues.values()]
     for item in allissues:
-        projectitem=gh('project','item-add',number,'--owner',OWNER,'--url',item['html_url'],'--format','json')
+        projectitem=gh('project','item-add',number,'--owner',board_owner,'--url',item['html_url'],'--format','json')
         task=next((x for x in tasks if task_issues[x['id']]['number']==item['number']),None)
         person=task['owner'] if task else next((p for p,e in epics.items() if e['number']==item['number']),'정이량')
         updates={'담당자':person,'요구사항':', '.join(task['requirement_ids']) if task else '담당 Epic/운영 규칙',

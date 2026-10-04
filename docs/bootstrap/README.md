@@ -19,7 +19,7 @@ P2-PM-003/004는 전체 완료 조건이 남아 있으므로 Done으로 바꾸�
 | 신진하 / ginaginaring | 자료 처리·검색·원문 근거·모델 비교 | [세 제품 자료팩 #12](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/12) | data, 자료/검색 코어, 모델 서비스·평가 |
 | 최길웅 / choigilung | 웹 기획 작업실·사용자 검토·수정 이력 | [웹 작업실 #23](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/23) | apps/web, 웹 검증·사용 안내 |
 
-[고정 운영 Issue #28](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28) · [2차 개발 Project](https://github.com/users/jeongiryang/projects/3).
+[고정 운영 Issue #28](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28) · [2차 개발 Project](https://github.com/orgs/2026-LG-kitchen-chicken-team/projects/1).
 
 대시보드 편집/관리는 정이량 PM만 한다. 세 팀원은 Project 조회 전용이고 자기 Issue/PR·작업기록으로 진행/검수 요청을 남긴다. 신진하의 새 저장소 초대 수락·Write 권한을 확인했고 자료 Epic #5·#12~#16 담당자로 지정했다. [실제 권한 변경·검증](../프로젝트권한_2026-10-04.md)을 따른다.
 모두 자기 `docs/작업기록/{성명}.md`와 `docs/작업근거/{성명}.md`를 읽고 사용자 지시·AI 해석·실제 수행·증빙·다음 행동을 기록한다. 이 초기 설정은 PM의 AI가 수행한 공통 작업이다. 각 팀원이 수행했다고 대신 기록하지 않는다.
