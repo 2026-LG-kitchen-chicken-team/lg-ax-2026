@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "live_authenticated_project_display_recovery",
+  "observed_on": "2026-10-05 KST",
+  "failure": {
+    "field": "최근 보고",
+    "task": "P2-DATA-001",
+    "display_characters": 947,
+    "display_utf8_bytes": 1676,
+    "display_sha256": "0f45b88a0986ccd5596f43612a935101b29195bcc57e38545243ee71995fae18",
+    "graphql_error_type": "UNPROCESSABLE",
+    "graphql_error_message": "Column value must be a valid value for text column",
+    "source": "Live fixed-deployment update_fields diagnostic; raw source display is private."
+  },
+  "comparison": {
+    "same_field_bounded_to_at_most_1024_utf8_bytes": "accepted by live GitHub GraphQL",
+    "scope": "observed compatible display budget, not a claim about every GitHub field/API"
+  },
+  "fix": {
+    "display_only": true,
+    "whole_original_report_and_hash_preserved": true,
+    "source_url_kept_at_start": true,
+    "utf8_valid": true,
+    "formal_state_and_permission_rules_changed": false
+  },
+  "tests": {
+    "project_report_tests": 50,
+    "result": "pass",
+    "ruff": "pass",
+    "independent_review": "incoming_audit confirmed source/hash/whitelist/approval preservation"
+  },
+  "deployment_proof": "evals/automation/20261005/reports-recovery.json",
+  "actual_ack_and_source_hash_proof": "evals/automation/20261005/reports-recovery-acks.json",
+  "limitations": [
+    "Report delivery recovery does not complete participant implementation or model-quality evaluation.",
+    "Detailed raw request/result diagnostics remain in private/automation."
+  ]
+}
