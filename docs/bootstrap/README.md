@@ -24,6 +24,22 @@ P2-PM-003/004는 전체 완료 조건이 남아 있으므로 Done으로 바꾸�
 대시보드 편집/관리는 정이량 PM만 한다. 세 팀원은 Project 조회 전용이고 자기 Issue/PR·작업기록으로 진행/검수 요청을 남긴다. 신진하의 새 저장소 초대 수락·Write 권한을 확인했고 자료 Epic #5·#12~#16 담당자로 지정했다. [실제 권한 변경·검증](../프로젝트권한_2026-10-04.md)을 따른다.
 모두 자기 `docs/작업기록/{성명}.md`와 `docs/작업근거/{성명}.md`를 읽고 사용자 지시·AI 해석·실제 수행·증빙·다음 행동을 기록한다. 이 초기 설정은 PM의 AI가 수행한 공통 작업이다. 각 팀원이 수행했다고 대신 기록하지 않는다.
 
+### 자기보고와 PM의 공식 승인
+
+[협업 체계](../협업체계.md)와 [PM 관리 서비스](../../services/project_reports/README.md)를 따른다. 세 팀원은 Project Read를 유지하고 자기 인증 계정으로 자기 담당 Issue에 세 상태만 보고한다. 자기 기록·근거를 같은 전체 commit SHA로 commit·push한 뒤 사용한다.
+
+```powershell
+uv run python scripts/project_report.py status
+uv run python scripts/project_report.py status --member 신진하
+uv run python scripts/project_report.py report P2-DATA-001 --status doing --summary "세 제품의 문서·모델·버전 연결을 작성 중" --next-action "제품별 근거 ID와 원문 위치를 검사" --send --wait 60
+```
+
+blocked는 `--reason`, review_requested는 자기 열린 비초안 PR의 `--pr-url`을 추가한다. `--send`를 빼면 미리보기만 한다. 댓글 발송과 서비스의 ACCEPTED 수신 확인을 구분한다. 서비스가 반영하는 값은 자기 작업의 `Status`·`팀원 보고`·`최근 보고`·`다음 행동`뿐이며, 정식 `진행상태`·배정·우선순위·기한·완료는 PM 권한으로 남는다. 선행 작업 대기 중 부분 개발/검수 요청은 가능하나 보고만으로 의존을 해제하지 않는다.
+
+공식 근거는 PM이 검증한 배포 정책의 승인 스냅샷과 운영 Issue #28에 실제 PM 계정이 남긴 `/lgax-sync` 승인이다. PM은 정확한 현재 main commit·근거를 검증하고 `uv run python scripts/sync_github_phase2.py --apply`로 공식 필드와 승인 댓글을 게시한다. 팀원이 main 파일을 수정한 사실이나 로컬 조회의 착수 가능 표시만으로 Done·의존 해제·확장 채택을 확정하지 않는다.
+
+새 배정의 공용 JSON·Issue·비공개 발송 대기 → 연결된 Gmail 실제 발송 → Sent 메타데이터 확인·수신증 기록은 PM AI가 수행한다. 팀원 보고 서비스가 수동 GitHub 편집을 감시해 메일을 보내는 구조는 아니다. 2026-10-04 실제 배포·재시작 보존, PM 계정 보고/거절 시험과 세 메일 SENT 대조를 확인했다. 세 팀원 계정의 실보고·열람은 별도이며 최신 정이량006/E007과 evals/team-coordination/20261004/를 따른다.
+
 ## 구조와 공통 계약
 
 - `apps/web`: React·TypeScript·Vite 기획 작업실. 자료 조회와 미구현 분석 상태를 표시한다.

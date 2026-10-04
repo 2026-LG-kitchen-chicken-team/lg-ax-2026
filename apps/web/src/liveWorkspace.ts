@@ -1,5 +1,5 @@
 /** Live-mode connection to the authenticated workspace API (P2-WEB-002); credential stays in React memory only. */
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ApiError } from './api';
 import type { Evidence, Product } from './domain';
 import type { PlanningRequest, RunSnapshot } from './planning';
@@ -84,6 +84,7 @@ export interface LiveWorkspace {
   project: WorkspaceProject | null;
   runs: RunSnapshot[];
   busy: boolean;
+  scopeVersion: number;
   connect: (token: string) => Promise<void>;
   disconnect: () => void;
   selectProject: (id: string) => Promise<void>;
@@ -94,79 +95,151 @@ export interface LiveWorkspace {
 }
 
 export function useLiveWorkspace(): LiveWorkspace {
-  // The token lives in a ref so it never enters rendered state, storage or logs.
-  const token = useRef('');
-  // WorkspaceClient calls its transport as a method; browsers reject an unbound window.fetch ("Illegal invocation"),
-  // so the web passes a wrapper. Node tests did not expose this.
-  const client = useRef(new WorkspaceClient('', () => token.current, browserFetch));
-  const [connection, setConnection] = useState<ConnectionState>('disconnected');
-  const [error, setError] = useState<ErrorView | null>(null);
-  const [projects, setProjects] = useState<WorkspaceProject[]>([]);
-  const [project, setProject] = useState<WorkspaceProject | null>(null);
-  const [runs, setRuns] = useState<RunSnapshot[]>([]);
-  const [busy, setBusy] = useState(false);
+  // Each client captures one credential. A delayed operation cannot switch to a new login's token.
+  const client = useRef<WorkspaceClient | null>(null);
+  const selectedProject = useRef<WorkspaceProject | null>(null);
+  const connected = useRef(false);
+  const generation = useRef(0);
+  const pending = useRef(0);
+  const [state, setState] = useState({
+    connection: 'disconnected' as ConnectionState, error: null as ErrorView | null,
+    projects: [] as WorkspaceProject[], project: null as WorkspaceProject | null,
+    runs: [] as RunSnapshot[], busy: false, scopeVersion: 0,
+  });
 
-  async function guarded<T>(work: () => Promise<T>): Promise<T | null> {
-    setBusy(true); setError(null);
-    try { return await work(); } catch (failure) {
-      const view = errorView(failure);
-      setError(view);
-      if (view.code === 'UNAUTHORIZED') setConnection('error');
-      return null;
-    } finally { setBusy(false); }
+  useEffect(() => () => {
+    generation.current += 1;
+    pending.current = 0;
+    connected.current = false;
+    client.current = null;
+    selectedProject.current = null;
+  }, []);
+
+  function newScope(): number {
+    const scope = ++generation.current;
+    pending.current = 0;
+    selectedProject.current = null;
+    setState(value => ({ ...value, project: null, runs: [], busy: false, error: null, scopeVersion: scope }));
+    return scope;
   }
 
-  async function loadRuns(projectId: string) {
-    const result = await client.current.listRuns(projectId);
-    setRuns(result.runs as unknown as RunSnapshot[]);
+  async function guarded<T>(work: (api: WorkspaceClient, current: () => boolean) => Promise<T>, scope = generation.current): Promise<T | null> {
+    const api = client.current;
+    const current = () => scope === generation.current;
+    pending.current += 1;
+    setState(value => ({ ...value, busy: true, error: null }));
+    try {
+      if (!api) throw new ApiError('UNAUTHORIZED', '작업실 인증이 필요합니다.');
+      const result = await work(api, current);
+      return current() ? result : null;
+    } catch (failure) {
+      if (!current()) return null;
+      const view = errorView(failure);
+      if (view.code === 'UNAUTHORIZED') {
+        newScope();
+        connected.current = false;
+        client.current = null;
+        setState(value => ({ ...value, connection: 'error', projects: [], error: view }));
+      } else setState(value => ({ ...value, error: view }));
+      return null;
+    } finally {
+      if (current()) {
+        pending.current -= 1;
+        setState(value => ({ ...value, busy: pending.current > 0 }));
+      }
+    }
+  }
+
+  function requireProject(): WorkspaceProject {
+    if (!connected.current) throw new ApiError('UNAUTHORIZED', '작업실 인증이 필요합니다.');
+    if (!selectedProject.current) throw new ApiError('NOT_FOUND', '먼저 프로젝트를 선택해 주세요.');
+    return selectedProject.current;
+  }
+
+  function applyProject(project: WorkspaceProject, runs: RunSnapshot[]): void {
+    if (runs.some(item => item.run.project_id !== project.project.id)) {
+      throw new ApiError('CONTRACT_MISMATCH', '선택한 프로젝트와 실행 기록의 범위가 다릅니다.');
+    }
+    selectedProject.current = project;
+    setState(value => ({ ...value, project, runs }));
   }
 
   return {
-    connection, error, projects, project, runs, busy,
-    clearError: () => setError(null),
+    ...state,
+    clearError: () => setState(value => ({ ...value, error: null })),
     async connect(value) {
-      token.current = value.trim();
-      setConnection('connecting');
-      const listed = await guarded(() => client.current.listProjects());
-      if (!listed) { setConnection('error'); return; }
-      setProjects(listed.projects);
-      setConnection('connected');
-      const latest = listed.projects[listed.projects.length - 1];
-      if (latest) { setProject(latest); await guarded(() => loadRuns(latest.project.id)); } else { setProject(null); setRuns([]); }
+      const scope = newScope();
+      const credential = value.trim();
+      connected.current = false;
+      client.current = new WorkspaceClient('', () => credential, browserFetch);
+      setState(previous => ({ ...previous, connection: 'connecting', projects: [] }));
+      const result = await guarded(async (api, current) => {
+        const listed = await api.listProjects();
+        if (!current()) return false;
+        const latest = listed.projects[listed.projects.length - 1];
+        const runs = latest ? (await api.listRuns(latest.project.id)).runs as unknown as RunSnapshot[] : [];
+        if (!current()) return false;
+        if (latest) applyProject(latest, runs);
+        connected.current = true;
+        setState(previous => ({ ...previous, connection: 'connected', projects: listed.projects }));
+        return true;
+      }, scope);
+      if (!result && scope === generation.current) {
+        connected.current = false;
+        client.current = null;
+        setState(previous => ({ ...previous, connection: 'error', projects: [], project: null, runs: [] }));
+      }
     },
     disconnect() {
-      token.current = '';
-      setConnection('disconnected'); setProjects([]); setProject(null); setRuns([]); setError(null);
+      newScope();
+      connected.current = false;
+      client.current = null;
+      setState(value => ({ ...value, connection: 'disconnected', projects: [] }));
     },
     async selectProject(id) {
-      await guarded(async () => {
-        const selected = await client.current.getProject(id);
-        setProject(selected);
-        await loadRuns(id);
-      });
+      const scope = newScope();
+      await guarded(async (api, current) => {
+        if (!connected.current) throw new ApiError('UNAUTHORIZED', '작업실 인증이 필요합니다.');
+        const [project, listed] = await Promise.all([api.getProject(id), api.listRuns(id)]);
+        if (!current()) return;
+        applyProject(project, listed.runs as unknown as RunSnapshot[]);
+      }, scope);
     },
     saveRequest(request, products) {
-      return guarded(async () => {
-        const created = await client.current.createProject(projectName(request), request as unknown as Record<string, unknown>, documentVersionsFor(products, request.model_ids));
-        const run = await client.current.createRun(created.project.id, request as unknown as Record<string, unknown>) as unknown as RunSnapshot;
-        setProjects(items => [...items, created]);
-        setProject(created);
-        setRuns([run]);
+      const scope = newScope();
+      return guarded(async (api, current) => {
+        if (!connected.current) throw new ApiError('UNAUTHORIZED', '작업실 인증이 필요합니다.');
+        const created = await api.createProject(projectName(request), request as unknown as Record<string, unknown>, documentVersionsFor(products, request.model_ids));
+        if (!current()) return null;
+        setState(value => ({ ...value, projects: [...value.projects, created] }));
+        const run = await api.createRun(created.project.id, request as unknown as Record<string, unknown>) as unknown as RunSnapshot;
+        if (!current()) return null;
+        applyProject(created, [run]);
         return run;
-      });
+      }, scope);
     },
     addRun(request, previousRunId) {
-      return guarded(async () => {
-        if (!project) throw new ApiError('NOT_FOUND', '먼저 프로젝트를 선택해 주세요.');
-        const run = await client.current.createRun(project.project.id, request as unknown as Record<string, unknown>, previousRunId) as unknown as RunSnapshot;
-        setRuns(items => [...items, run]);
+      return guarded(async (api, current) => {
+        const project = requireProject();
+        const run = await api.createRun(project.project.id, request as unknown as Record<string, unknown>, previousRunId) as unknown as RunSnapshot;
+        if (!current()) return null;
+        if (run.run.project_id !== project.project.id) throw new ApiError('CONTRACT_MISMATCH', '실행 기록의 프로젝트 범위가 다릅니다.');
+        setState(value => ({ ...value, runs: [...value.runs, run] }));
         return run;
       });
     },
     search(query, modelId) {
-      return guarded(async () => {
-        if (!project) throw new ApiError('NOT_FOUND', '먼저 프로젝트를 선택해 주세요.');
-        return parseEvidenceSearch(await client.current.search(project.project.id, query, modelId));
+      return guarded(async (api, current) => {
+        const project = requireProject();
+        if (!(modelId in project.document_versions)) throw new ApiError('INVALID_ARGUMENT', '선택한 모델은 프로젝트 검토 범위가 아닙니다.');
+        const payload = await api.search(project.project.id, query, modelId);
+        if (!current()) return null;
+        const result = parseEvidenceSearch(payload);
+        if (payload.project_id !== project.project.id || payload.dataset_sha256 !== project.dataset_sha256
+          || result.modelId !== modelId || result.documentVersion !== project.document_versions[modelId]) {
+          throw new ApiError('CONTRACT_MISMATCH', '근거 검색 결과의 프로젝트·모델·문서 범위가 다릅니다.');
+        }
+        return result;
       });
     },
   };

@@ -1,0 +1,53 @@
+{
+  "observed_at": "2026-10-04T09:34:16.006064+00:00",
+  "source": "Root direct executions in current Codex session, independent review in report_tests agent",
+  "checks": [
+    {
+      "command": ".venv/Scripts/python.exe -X utf8 -m unittest discover -s tests",
+      "exit_code": 0,
+      "tests": 241,
+      "duration_seconds": 18.794
+    },
+    {
+      "command": ".venv/Scripts/python.exe -X utf8 scripts/sync_agent_rules.py --check",
+      "exit_code": 0
+    },
+    {
+      "command": ".venv/Scripts/python.exe -X utf8 scripts/phase2.py validate",
+      "exit_code": 0,
+      "valid": true
+    },
+    {
+      "command": ".venv/Scripts/python.exe -X utf8 scripts/check_contracts.py",
+      "exit_code": 0,
+      "analysis_implemented": false
+    },
+    {
+      "command": ".venv/Scripts/python.exe -X utf8 -m ruff check changed Python files",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "independent_focused_tests": {
+    "report": 48,
+    "assignment_mail": 23,
+    "total": 71,
+    "passed": true
+  },
+  "file_sha256": {
+    "scripts/project_report_common.py": "892a06a40fc7dfc72b4b035c7ac413fa2d7f03bb75e9f34b6d3848379c57409a",
+    "scripts/project_report.py": "c041b95876f8dc7b33bb306b22eaf81e9548b599b67228f4ba75601ae048e30f",
+    "scripts/assign_task.py": "d5e260fe098b3adf4cdd4bccaf9cb8d0123f533064dad8c1b07a515a7a303a62",
+    "scripts/sync_github_phase2.py": "d364f9e0d5b9e4d8d10e09e4ded4cb9345f6e740690240aa794578f9a571b9a7",
+    "services/project_reports/worker.py": "2c0387fba14afc849e3c237b003da703019e68593561453f9b510b72e2aa66fa",
+    "tests/test_project_reports.py": "ce84b1995a0eb50314d206a069330ce778ba4691a2354e8e844da00581a885e1",
+    "tests/test_assign_task.py": "a6641bcde316e5b53331cf4561de3a22fa884e62c8084bb37dbd2ba5d8f4af31"
+  },
+  "limits": [
+    "Mock regressions validate authority and format, not real teammate report or recipient read.",
+    "241 tests are project regression checks, not product/model efficacy."
+  ]
+}

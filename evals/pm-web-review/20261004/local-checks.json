@@ -1,0 +1,42 @@
+{
+  "result": "pass",
+  "tested_commit": "63112e603be5c46afe879140a0ac3cc8019c8039",
+  "checked_at": "2026-10-04T10:31:39.589620+00:00",
+  "checks": [
+    {
+      "name": "python_regression",
+      "passed": true,
+      "tests": 275
+    },
+    {
+      "name": "web_regression_including_live_server",
+      "passed": true,
+      "tests": 67,
+      "skipped": 0
+    },
+    {
+      "name": "web_types_and_build",
+      "passed": true
+    },
+    {
+      "name": "changed_python_lint",
+      "passed": true
+    },
+    {
+      "name": "contracts",
+      "passed": true,
+      "models": 5,
+      "evidence": 42
+    },
+    {
+      "name": "PM_intake_independent_review",
+      "passed": true,
+      "tests": 49
+    }
+  ],
+  "limitations": [
+    "Broad Ruff reports22 existing issues in untouched historical files; changed Python files pass",
+    "Live tests create isolated synthetic developer projects in existing private workspace",
+    "No real planning Agent execution or measured user benefit"
+  ]
+}

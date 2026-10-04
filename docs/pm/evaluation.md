@@ -60,9 +60,12 @@ json.dumps(value, ensure_ascii=False, sort_keys=True,
     "data_sha256": "<actual data file SHA256>",
     "output_contract_sha256": "<actual output contract file SHA256>",
     "model": {"id": "<exact model ID>", "revision": "<pinned revision>", "digest": null},
-    "sampling": {"temperature": 0, "seed": null},
+    "sampling": {"temperature": 0, "seed": 42},
     "output_budget": {"max_output_tokens_per_call": 4096, "total_output_tokens_limit": null},
-    "environment": {"provider": "<provider>", "host": "<same endpoint identity>", "runtime": "<version>"},
+    "environment": {
+      "provider": "<provider>", "host": "<same endpoint identity>", "runtime": "<version>",
+      "context_tokens": 8192, "adapter": "<same adapter>", "constraint_mode": "<same output constraint>"
+    },
     "data_access": {
       "pool": "entire_case_dataset", "availability": "all_materials_available", "truncation": "none"
     },
@@ -87,11 +90,15 @@ json.dumps(value, ensure_ascii=False, sort_keys=True,
 
 해시 자리표시는 실제 64자리 소문자 해시로 바꾼다. model에는 정확한 ID와 `revision` 또는 `digest`가 최소 하나 필요하다. 고정된 버전을 제공하지 않는 외부 서비스라면 현재 계약의 엄격한 버전 비교를 충족했다고 주장할 수 없다. 적절한 snapshot ID/버전 증빙을 확보하거나 평가 조건을 별도로 합의해야 한다. 사용자 플랜 이름은 모델 버전이 아니다.
 
-`conditions` 전체를 양쪽에 동일하게 기록한다. `sampling`에는 실제 사용한 모든 샘플링 설정, `environment`에는 비교에 영향을 주는 provider/host·런타임·양자화·GPU 구성 등을 넣는다. 도구는 설정값의 누락이 현실적으로 타당한지 판단하지 못한다. 프롬프트·도구 사용 방식은 서로 다르므로 `method_setup`은 동일할 필요가 없다.
+`conditions` 전체를 양쪽에 동일하게 기록한다. `sampling`에는 실제 사용한 모든 샘플링 설정, `environment`에는 비교에 영향을 주는 provider/host·런타임·양자화·GPU 구성과 실제 문맥 길이·어댑터·출력 형식 제약 방식을 넣는다. 문맥 길이는 위 예시처럼 `environment.context_tokens`에 기록한다. 새 최상위 조건 필드를 추가하는 방식은 현재 준비 도구의 계약과 맞지 않는다. 도구는 설정값의 누락이 현실적으로 타당한지 판단하지 못한다. 프롬프트·도구 사용 방식은 서로 다르므로 `method_setup`은 동일할 필요가 없다.
+
+실제 호출의 샘플링·출력 예산·문맥 길이를 양쪽에 동일하게 적용하고 원시 요청·응답과 대조한다. 위 예시의 seed 42·출력 4096·문맥 8192는 기록 형식 설명이며 최종 평가의 권장 설정이나 충분성 증거가 아니다. 미지정 seed를 42로 기록하거나 미측정 값을 추정해 채우지 않는다. 동일 자료 전체를 양쪽이 사용할 수 있어야 하고, 기준선의 전체 prompt·schema·답변이 실제 문맥 한도에 들어가는지 별도로 확인한다. 설정값 일치만으로 자료가 잘리지 않았다고 판단하지 않는다.
 
 기준선의 `material_delivery`는 `full_prompt`, `call_policy`는 `single_prompt`다. [강한 단일 프롬프트 초안](../../evals/phase2/baseline-prompt.md)을 실제 결과 계약·독립 자료에 맞게 채우고 고정한다. PM이 실제로 충분한 지시문·자료·동일한 결과 요구를 제공했는지 확인한다. Agent의 계획·반복 도구 호출을 기준선에 복제하지 않는다. 프롬프트 강도 자체를 자동 점수화하지 않는다. 최초 프롬프트는 `method_setup.prompt`에 원문으로 남기고, 후속 모델 호출·도구·host 재시도는 `execution_trace`에 원시 기록을 남긴다. 기록이 없는 경우 `[]`를 허용하지만 실제 호출 입증은 미완료다.
 
-출력 예산은 실험 전에 충분하게 고정한다. 예시의 `4096`은 권장 성능 수치가 아니다. 현재 모델 어댑터의 `num_predict=256` 등 작은 고정 제한은 기준선의 긴 최종 답변만 잘라낼 수 있어, 실제 비교 실행 전에 충분한 예산·종료 이유를 확인해야 한다. `total_output_tokens_limit: null`은 공통 총량 상한이 없다는 뜻이며 미측정 토큰 수와 다르다. 총량 상한을 쓰면 양쪽에 동일하게 적용하고 실제 실행기가 집행해야 한다.
+출력 예산은 실험 전에 충분하게 고정한다. [모델 어댑터](model-adapters.md)의 직접 Ollama는 SDK `ModelConfig(max_output_tokens=..., context_tokens=...)`, `from_env()`의 `LGAX_MODEL_MAX_OUTPUT_TOKENS`/`LGAX_MODEL_CONTEXT_TOKENS`, CLI `--max-output-tokens`/`--context-tokens`로 설정한다. 모두 기본 출력 256·문맥 4096이며 같은 범위를 검사하고, CLI는 환경변수를 읽지 않는다. Lab은 출력 256·문맥 4096만 허용하고 다른 조합을 거절한다. 긴 기준선 답변에 기본 256을 그대로 적용하면 기준선만 잘릴 수 있으므로 충분한 예산을 선택해 양쪽 조건을 다시 고정해야 한다.
+
+성공 결과의 `metadata.generation_settings`와 원시 요청에서 출력·문맥·샘플링 설정을 대조하고, 각 호출의 종료 이유를 `execution_trace`에 보존한다. 직접 Ollama의 `done_reason=length`는 `output_truncated` 실패이며 성공으로 집계하지 않는다. Lab은 종료 이유를 제공하지 않아 `done_reason=null`이다. Lab의 seed도 미지정인데 직접 Ollama는 42이므로, 현재 두 어댑터를 교차 사용하는 것만으로 샘플링·형식 제약이 동일한 평가를 충족하지 않는다. 동일한 생성 경로·설정으로 맞추거나 차이를 명시해 별도 실험으로 관리한다. `total_output_tokens_limit: null`은 공통 총량 상한이 없다는 뜻이며 미측정 토큰 수와 다르다. 총량 상한을 쓰면 양쪽에 동일하게 적용하고 실제 실행기가 집행해야 한다.
 
 측정은 요청 전체를 대상으로 한다. Agent 다중 호출·host 재시도·실패한 모델 호출을 포함한 토큰·지연·호출 수·비용을 합산한다. `model_calls`는 재시도를 포함한 모델 요청 수, `tool_calls`는 모델 호출을 제외한 도구 실행 수다. 비용을 측정했으면 `cost`는 `{ "amount": 0.12, "currency": "USD" }` 형태다. 양쪽 비용 통화가 다르면 거부한다. 미확인 비용·수정 시간은 `null`, 실제 측정 결과가 0인 경우만 0이다. human 수정시간은 동일한 수정 목표·시작/종료 기준으로 별도 기록한다.
 
@@ -128,3 +135,5 @@ uv run ruff check scripts/prepare_evaluation.py tests/test_prepare_evaluation.py
 ```
 
 이 검사는 조건 차이·자료 변경·누락/중복 사례·fixture 혼입·잘못된 측정·덮어쓰기 거부, seed 재현성, null 유지, 원문 실패 보존을 확인한다. 실제 Agent의 성능 평가·여섯 독립 사례 실행·토큰 절감 검증은 포함하지 않는다.
+
+모델 연결의 별도 근거로 2026-10-04 [28개 단위검사와 설정 안내](model-adapters.md) 및 [실제 구조화 출력 예산 검사](../../evals/pm-web-review/20261004/model-budget-live.json)가 있다. 실제 검사는 같은 고정 Qwen3:8b로 출력 상한 2048·문맥 8192에서 합성 요청의 12개 항목을 생성했고, 서버 보고 출력 544토큰·`done_reason=stop`·어댑터 호출 시간 9,313ms를 기록했다. 이는 한 번의 구조화 출력 설정 검사이며 독립 평가 사례·상품기획 판단·강한 기준선 비교·모델 품질 평가·P2-PM-005 완료 근거가 아니다.

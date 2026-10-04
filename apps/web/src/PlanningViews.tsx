@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { ApiError } from './api';
 import { evidenceLocation } from './domain';
@@ -60,13 +60,29 @@ export function WorkspaceBar({ workspace, onScopeChange }: { workspace: LiveWork
 
 /** Server-side search within the project's fixed document versions; an empty result is not an error. */
 export function ServerEvidenceSearch({ workspace, modelId }: { workspace: LiveWorkspace; modelId: string }) {
+  const project = workspace.project;
+  const scope = JSON.stringify([workspace.scopeVersion, project?.owner_id, project?.project.id,
+    project?.dataset_sha256, modelId, project?.document_versions[modelId]]);
+  return <ScopedEvidenceSearch key={scope} workspace={workspace} modelId={modelId} />;
+}
+
+function ScopedEvidenceSearch({ workspace, modelId }: { workspace: LiveWorkspace; modelId: string }) {
   const [query, setQuery] = useState('');
   const [result, setResult] = useState<EvidenceSearch | null>(null);
+  const mounted = useRef(false);
+  const searchSequence = useRef(0);
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; searchSequence.current += 1; };
+  }, []);
   const project = workspace.project;
   const inScope = !!project && modelId in project.document_versions;
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setResult(await workspace.search(query.trim(), modelId));
+    const sequence = ++searchSequence.current;
+    setResult(null);
+    const found = await workspace.search(query.trim(), modelId);
+    if (mounted.current && sequence === searchSequence.current) setResult(found);
   }
   return <section className="panel planning-panel server-search" aria-label="프로젝트 범위 서버 검색">
     <div className="planning-head"><div><p className="eyebrow">PROJECT SCOPE</p><h3>프로젝트 고정 범위 서버 검색</h3></div>

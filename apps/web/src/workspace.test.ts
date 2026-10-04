@@ -7,6 +7,19 @@ const request = { product_group: 'fridge', target_customer: '1인 가구', use_s
   improvement_task: '선반 청소 부담 감소', exclusions: [], model_ids: ['FRIDGE-A'], dataset_version: '0.1.0' };
 
 describe('shared workspace client boundaries', () => {
+  it('calls the default browser transport without a client object receiver', async () => {
+    const previous = globalThis.fetch;
+    globalThis.fetch = async function (this: unknown) {
+      if (this instanceof WorkspaceClient) throw new TypeError('Illegal invocation');
+      return new Response(JSON.stringify({ ok: true, data: { contract_version: '0.1.0', projects: [] } }));
+    };
+    try {
+      const result = await new WorkspaceClient('', () => token).listProjects();
+      expect(result.projects).toEqual([]);
+    } finally {
+      globalThis.fetch = previous;
+    }
+  });
   it('rejects missing credentials before HTTP and does not store credentials in state', async () => {
     const network = vi.fn();
     const client = new WorkspaceClient('', () => '', network);

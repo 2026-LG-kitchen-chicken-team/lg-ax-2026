@@ -1,0 +1,127 @@
+{
+  "result": "pass",
+  "execution_kind": "live_model",
+  "checked_at": "2026-10-04T10:23:29.399684+00:00",
+  "synthetic": true,
+  "agent_implemented": false,
+  "input": {
+    "prompt": "1부터 12까지 id가 각각 다른 항목 12개를 만드세요. 각 summary에는 냉장고 자료의 원문 위치와 문서 버전을 확인해야 하는 이유를 한국어 한 문장, 최소 30자로 작성하세요. 이는 합성 입력의 구조화 출력 예산 검증이며 고객 수요나 제품 성능 평가가 아닙니다.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "minItems": 12,
+          "maxItems": 12,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "summary": {
+                "type": "string",
+                "minLength": 20
+              }
+            },
+            "required": [
+              "id",
+              "summary"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "items"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "output": {
+    "data": {
+      "items": [
+        {
+          "id": 1,
+          "summary": "냉장고 자료의 원문 위치를 확인해야 하는 이유는 데이터의 신뢰성과 정확성을 검증하기 위해서입니다."
+        },
+        {
+          "id": 2,
+          "summary": "문서 버전을 확인하는 것은 변경 사항을 추적하고, 최신 정보를 기반으로 분석을 수행하기 위한 필수 과정입니다."
+        },
+        {
+          "id": 3,
+          "summary": "냉장고 자료의 원문 위치를 파악하면, 데이터의 출처와 정확성을 검증할 수 있는 기반이 됩니다."
+        },
+        {
+          "id": 4,
+          "summary": "문서 버전을 확인해야 하는 이유는 기존 데이터와의 일관성을 유지하고, 오류를 방지하기 위해서입니다."
+        },
+        {
+          "id": 5,
+          "summary": "냉장고 자료의 원문 위치를 확인하는 것은 데이터의 신뢰성과 정확성을 검증하는 데 중요한 역할을 합니다."
+        },
+        {
+          "id": 6,
+          "summary": "문서 버전을 확인하는 것은 데이터의 변경 사항을 파악하고, 분석의 일관성을 유지하기 위한 필수 과정입니다."
+        },
+        {
+          "id": 7,
+          "summary": "냉장고 자료의 원문 위치를 파악해야 하는 이유는 데이터의 출처와 정확성을 검증하기 위한 것입니다."
+        },
+        {
+          "id": 8,
+          "summary": "문서 버전을 확인하는 것은 데이터의 변경 사항을 추적하고, 분석의 일관성을 유지하기 위한 필수 과정입니다."
+        },
+        {
+          "id": 9,
+          "summary": "냉장고 자료의 원문 위치를 확인하는 것은 데이터의 신뢰성과 정확성을 검증하는 데 중요한 역할을 합니다."
+        },
+        {
+          "id": 10,
+          "summary": "문서 버전을 확인해야 하는 이유는 기존 데이터와의 일관성을 유지하고, 오류를 방지하기 위한 필수 과정입니다."
+        },
+        {
+          "id": 11,
+          "summary": "냉장고 자료의 원문 위치를 파악하면, 데이터의 출처와 정확성을 검증할 수 있는 기반이 됩니다."
+        },
+        {
+          "id": 12,
+          "summary": "문서 버전을 확인하는 것은 데이터의 변경 사항을 파악하고, 분석의 일관성을 유지하기 위한 필수 과정입니다."
+        }
+      ]
+    },
+    "metadata": {
+      "adapter": "ollama",
+      "model_id": "qwen3:8b",
+      "revision": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "revision_kind": "ollama_manifest_digest",
+      "pin_verification": "before_and_after_generation",
+      "backend_schema_enforced": true,
+      "constraint_mode": "native_schema_and_local_validation",
+      "elapsed_ms": 9313.0,
+      "generation_settings": {
+        "temperature": 0,
+        "num_ctx": 8192,
+        "num_predict": 2048,
+        "seed": 42
+      },
+      "done_reason": "stop",
+      "prompt_eval_count": 230,
+      "eval_count": 544,
+      "total_duration_ns": 9215398993,
+      "schema_sha256": "785659f2d69f26a6b719adc6c79f8bdf85b74679de4ac38d1de4ee954b709f46",
+      "response_format": "plain_json",
+      "locally_validated": true
+    }
+  },
+  "source": {
+    "path": "packages/core/src/lgax_core/model_client.py",
+    "sha256": "35a96cf2af7293d15f83c241ab3da28461234c9e14d748c0414e08e9dbffa840"
+  },
+  "limitations": [
+    "Single pinned model structured-output budget probe; not an Agent run or model quality comparison",
+    "No new model download or public endpoint",
+    "No baseline latency/quality comparison"
+  ]
+}

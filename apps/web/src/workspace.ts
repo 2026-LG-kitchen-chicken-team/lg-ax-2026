@@ -7,6 +7,8 @@ const ajv = new Ajv2020({ allErrors: true, strict: false });
 ajv.addFormat('date-time', { type: 'string', validate: value => /^\d{4}-\d{2}-\d{2}T/.test(value) && Number.isFinite(Date.parse(value)) });
 ajv.addSchema(schema, 'workspace');
 const contracts = new Map<string, ReturnType<typeof ajv.compile>>();
+// Call the browser API as a global function, never as a WorkspaceClient method.
+const defaultTransport: typeof fetch = (input, init) => fetch(input, init);
 function check(name: string, value: unknown): void {
   let validator = contracts.get(name);
   if (!validator) {
@@ -45,7 +47,7 @@ function identifier(id: string): string {
 
 export class WorkspaceClient {
   private readonly base: string;
-  constructor(base: string, private readonly credential: () => string, private readonly transport: typeof fetch = fetch) {
+  constructor(base: string, private readonly credential: () => string, private readonly transport: typeof fetch = defaultTransport) {
     if (base) {
       const parsed = new URL(base);
       if (parsed.protocol !== 'http:' || !['127.0.0.1', 'localhost', '[::1]'].includes(parsed.hostname)

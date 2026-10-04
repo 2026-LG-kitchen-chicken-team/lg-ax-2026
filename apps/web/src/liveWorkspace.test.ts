@@ -48,7 +48,7 @@ describe('browser transport', () => {
     } as typeof fetch;
     try {
       await expect(new WorkspaceClient('', () => 't'.repeat(48), browserFetch).listProjects()).resolves.toEqual({ projects: [], contract_version: '0.1.0' });
-      await expect(new WorkspaceClient('', () => 't'.repeat(48)).listProjects()).rejects.toMatchObject({ code: 'CONNECTION_FAILED' });
+      await expect(new WorkspaceClient('', () => 't'.repeat(48)).listProjects()).resolves.toEqual({ projects: [], contract_version: '0.1.0' });
     } finally { globalThis.fetch = original; }
     expect(seen).toHaveLength(2);
   });
