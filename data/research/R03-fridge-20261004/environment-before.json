@@ -1,0 +1,90 @@
+{
+  "checked_at": "2026-10-04T22:12:45+09:00",
+  "repo": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026",
+  "scope": "R03 only; no package installation",
+  "project_python": ">=3.11,<3.12",
+  "python_version_file": "3.11",
+  "lock_python": "==3.11.*",
+  "declared_runtime_dependencies": [
+    "editables>=0.5,<1",
+    "fastapi>=0.115,<1",
+    "httpx>=0.28,<1",
+    "jsonschema>=4.23,<5",
+    "mcp>=1.28,<2",
+    "uvicorn>=0.34,<1"
+  ],
+  "locked_jsonschema": "4.26.0",
+  "venv_checks": {
+    "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\pyvenv.cfg": false,
+    "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\venv\\pyvenv.cfg": false,
+    "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\env\\pyvenv.cfg": false,
+    "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.venv\\pyvenv.cfg": false,
+    "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\venv\\pyvenv.cfg": false,
+    "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\services\\inference\\.venv\\pyvenv.cfg": false
+  },
+  "uv_on_path": null,
+  "active_venv": null,
+  "interpreters": [
+    {
+      "command": "C:\\Users\\user\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe -X utf8 -c \"import sys,json,importlib.util,importlib.metadata; print(json.dumps({'executable':sys.executable,'version':sys.version,'prefix':sys.prefix,'base_prefix':sys.base_prefix,'jsonschema_found':importlib.util.find_spec('jsonschema') is not None},ensure_ascii=False))\"",
+      "argv": [
+        "C:\\Users\\user\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-X",
+        "utf8",
+        "-c",
+        "import sys,json,importlib.util,importlib.metadata; print(json.dumps({'executable':sys.executable,'version':sys.version,'prefix':sys.prefix,'base_prefix':sys.base_prefix,'jsonschema_found':importlib.util.find_spec('jsonschema') is not None},ensure_ascii=False))"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"executable\": \"C:\\\\Users\\\\user\\\\.cache\\\\codex-runtimes\\\\codex-primary-runtime\\\\dependencies\\\\python\\\\python.exe\", \"version\": \"3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]\", \"prefix\": \"C:\\\\Users\\\\user\\\\.cache\\\\codex-runtimes\\\\codex-primary-runtime\\\\dependencies\\\\python\", \"base_prefix\": \"C:\\\\Users\\\\user\\\\.cache\\\\codex-runtimes\\\\codex-primary-runtime\\\\dependencies\\\\python\", \"jsonschema_found\": false}\n",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python310\\python.exe -X utf8 -c \"import sys,json,importlib.util,importlib.metadata; print(json.dumps({'executable':sys.executable,'version':sys.version,'prefix':sys.prefix,'base_prefix':sys.base_prefix,'jsonschema_found':importlib.util.find_spec('jsonschema') is not None},ensure_ascii=False))\"",
+      "argv": [
+        "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-c",
+        "import sys,json,importlib.util,importlib.metadata; print(json.dumps({'executable':sys.executable,'version':sys.version,'prefix':sys.prefix,'base_prefix':sys.base_prefix,'jsonschema_found':importlib.util.find_spec('jsonschema') is not None},ensure_ascii=False))"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"executable\": \"C:\\\\Users\\\\user\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\python.exe\", \"version\": \"3.10.2 (tags/v3.10.2:a58ebcc, Jan 17 2022, 14:12:15) [MSC v.1929 64 bit (AMD64)]\", \"prefix\": \"C:\\\\Users\\\\user\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\", \"base_prefix\": \"C:\\\\Users\\\\user\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\", \"jsonschema_found\": false}\n",
+      "stderr": ""
+    }
+  ],
+  "py_inventory": {
+    "command": "py -0p",
+    "argv": [
+      "py",
+      "-0p"
+    ],
+    "exit_code": 0,
+    "stdout": "No installed Pythons found!\n",
+    "stderr": ""
+  },
+  "core_import_wrong_environment": {
+    "command": "C:\\Users\\user\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe -X utf8 -c \"import sys;sys.path[:0]=['packages/core/src','packages/contracts/src'];import lgax_core\"",
+    "argv": [
+      "C:\\Users\\user\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+      "-X",
+      "utf8",
+      "-c",
+      "import sys;sys.path[:0]=['packages/core/src','packages/contracts/src'];import lgax_core"
+    ],
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\packages/core/src\\lgax_core\\__init__.py\", line 3, in <module>\n    from .store import DemoStore\n  File \"C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\packages/core/src\\lgax_core\\store.py\", line 11, in <module>\n    from lgax_contracts import CONTRACT_VERSION, validate\n  File \"C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\packages/contracts/src\\lgax_contracts\\__init__.py\", line 3, in <module>\n    from .validation import CONTRACT_VERSION, load_schema, validate\n  File \"C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\packages/contracts/src\\lgax_contracts\\validation.py\", line 9, in <module>\n    from jsonschema import Draft202012Validator, FormatChecker\nModuleNotFoundError: No module named 'jsonschema'\n"
+  },
+  "online_status_prerequisites": {
+    "project_report_script_exists": false,
+    "command": "uv run --no-sync python -X utf8 scripts/project_report.py status --member 신진하",
+    "executed": false,
+    "reason": "uv is absent; project_report.py is absent from this local baseline"
+  },
+  "diagnosis": {
+    "missing_dependency_declaration": false,
+    "wrong_interpreter_used": true,
+    "project_environment_created": false,
+    "installation": "pending explicit user approval; project-local uv and Python 3.11 plus locked runtime dependencies; global unchanged"
+  }
+}
