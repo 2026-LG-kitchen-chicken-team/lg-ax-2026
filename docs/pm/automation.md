@@ -1,6 +1,6 @@
 # 팀 개발 자동화 운영
 
-2026-10-05 정이량의 “모두 진행하자 반영해” 승인으로 구축했다. 기존 단일 저장소·역할·PM 최종 검수는 유지한다. **초기 팀 모드와 개인 선택은 모두 OFF**다. 개발 자동화 구축과 참가작 완성은 별도다.
+2026-10-05 정이량의 “모두 진행하자 반영해” 승인으로 구축했다. 이후 사용자는 정이량 CLI가 다음 업무 판단·배정·독립 검수·조건부 병합·후속 배정을 이어가도록 승인했다. 단일 저장소·담당 영역·31개 신청 요구사항·보호 규칙은 유지한다. **검증 전 팀 모드와 개인 선택은 모두 OFF**다. 자동화 코드·각 PC 준비·실제 개발 완주·참가작 완성은 별도다. 최신 실행 경계는 [Docker 격리 설정](../bootstrap/automation-isolation.md), 자동 PM은 [고정 정책 운영](autonomous-pm.md)을 따른다.
 
 ## ON/OFF를 누가 정하는가
 
@@ -8,7 +8,7 @@
 
 | 모드 | 동작 |
 |---|---|
-| ON | 승인된 작은 작업만 원자적으로 배차 → 분리 작업 공간 → AI 개발·검사 → 불변 기록 → 브랜치·PR → 독립 읽기 검토 |
+| ON | 승인된 작은 작업만 배차 → 격리 개발·검사 → 불변 기록 → PR. 별도 자동 PM 정책·PM 개인 ON이면 독립 검수·조건부 병합·병합 후 인수·후속 배정 |
 | OFF | 새 자동 착수·코드 게시 중단, 실행 중인 자기 Worker도 종료. 기존 사람 지시·Issue·Project·메일·상세 기록·PM 검수와 아래 병목 개선은 계속 사용. 이미 완료된 읽기 검토의 일반 댓글은 게시 가능 |
 | STOP | 새 배차·게시 허가 중단. Worker가 연결된 자기 실행을 종료하고 복구 기록 보존. 이미 GitHub가 받은 요청을 되돌리는 기능은 아님 |
 
@@ -52,7 +52,7 @@ uv run --no-sync python -X utf8 scripts/automation.py reconcile 작업ID --actio
 
 Worker는 자기 GitHub 계정으로 브랜치·PR까지만 게시한다. 고정 배포한 보고 스크립트의 해시를 확인한 뒤 자기 세션 두 문서를 같은 PR head 링크로 제출한다. 실제 ACCEPTED를 확인하며, 보고 실패는 PR을 보존하고 미완료로 남긴다. 팀원이 Project 설정·배정·공식 Done을 변경하지 않는다. PM의 읽기 검토 결과는 고정 head의 일반 댓글이며 승인·병합을 대신하지 않는다.
 
-PM이 검수 → 실제 병합 → 병합 후 통합 실행 → 기존 phase2·공식 Project 승인 스냅샷 갱신을 수행한다. 자동화 작업 `accepted`도 phase2 Done·의존 해제와 별도다. 보호 규칙 우회·main push·비밀/계약/운영 정책 변경·공식 제출·추가 비용 결정은 Worker가 실행하지 않는다.
+PM이 검수 → 실제 병합 → 병합 후 통합 실행 → 기존 phase2·공식 Project 승인 스냅샷 갱신을 수행한다. 최신 사용자 위임으로 고정 자동 PM broker도 등록된 필수 capability 안의 일상 배정·독립 검수·조건부 병합·인수를 수행할 수 있다. 현재 main/base·PR head·필수 CI 전체 SUCCESS·개발과 다른 검수 세션·실제 검사 근거를 확인하고 즉시 재조회한다. 무인 관리자 bypass는 기존 수동 권한과 별도로 고정 정책에 명시하며 보호 규칙을 낮추지 않는다. 자동화 작업 `accepted`는 부모 phase2 Done·의존 해제와 별도다. 전체 완료는 모든 요구의 실제 근거와 전용 phase2 완료 collector가 필요하며 현재 live broker는 작은 업무 인수까지만 수행한다. Worker는 main push·병합·bypass를 하지 않으며, 범위/계약/운영 정책/권한 변경·공식 제출·추가 비용은 사용자 판단으로 올린다.
 
 ## 현재 연결과 남은 설치
 
@@ -62,7 +62,7 @@ PM이 검수 → 실제 병합 → 병합 후 통합 실행 → 기존 phase2·�
 
 네 PC의 전용 실행 계정/VM·개별 GitHub 인증·선택한 Codex 또는 Claude Code 로그인·Worker 실행 확인은 각 환경에서 필요하다. [각 PC 초기 설정](../bootstrap/automation-workers.md)을 자기 AI와 진행한다. Windows 설치는 `services/automation/install-worker.ps1`, Linux 예시는 `lgax-worker.service`를 따른다. 개인 PC의 환경변수 제거만으로 파일·키체인까지 격리했다고 표현하지 않는다. GitHub self-hosted runner는 현재 설치하지 않았으며 개인 PM 계정에 무제한 workflow 실행 권한을 부여하지 않는다. 고정 Worker의 승인 큐 polling을 먼저 사용하고 runner는 전용 실행 환경에서 선택적으로 추가한다.
 
-개발 Worker의 모델/테스트와 publisher는 현재 같은 실행 사용자다. 전용 계정/VM이 개인 PC의 다른 사용자 비밀을 분리하더라도 그 실행 계정 안의 GitHub·controller 인증 파일까지 보호하지 않는다. **무인 write 운영을 켜기 전에 publisher를 별도 사용자/broker로 분리하거나 파일·네트워크 접근 경계를 실증해야 한다.** PM 관리자 인증·메일·운영 토큰을 가진 사용자에서 비신뢰 코드/모델을 실행하지 않는다. 이 단계는 아직 완료하지 않았으므로 현재 OFF를 유지한다.
+10/5 이전 Worker는 모델/테스트와 publisher가 같은 OS 사용자여서 황대겸의 무해한 canary 접근 보고대로 폴더/환경변수 분리만으로 경계를 보장하지 못했다. 현재 코드는 고정 host supervisor가 인증을 보유하고 모델·저장소 테스트·빌드·설치는 Docker에서만 실행한다. 모델에는 본인의 전용 AI 프로필과 Git metadata 없는 작업 복사본만, 검사에는 별도 소스 복사본과 인증 없는 network=none 환경만 제공한다. 실제 image ID·mount/user/network를 확인하고 Docker 불가 때 native 실행으로 대체하지 않는다. 검사가 끝난 소스 해시·링크/범위/유출·공유 Git 설정을 확인한 뒤 깨끗한 별도 worktree에서 게시한다. 실제 canary와 로그인·개발/검수/병합 완주의 증거는 따로 인수하며 **개인/팀 검증 전 OFF를 유지한다.** 전용 계정/VM이라는 이름이나 isolation_acknowledged=true는 완료 근거가 아니다.
 
 팀원은 자기 GitHub CLI로 로그인한 뒤 `automation.py setup --member {성명} --controller-url {위주소}`를 실행한다. GitHub 토큰은 인증 확인에만 전달하며 서버에 보관하지 않는다. 개인 자동화 토큰을 발급받고 Codex는 별도 CODEX_HOME에서 `codex login`, Claude Code는 별도 CLAUDE_CONFIG_DIR에서 `claude auth login`한다. 인증 파일을 공유하거나 여러 PC에서 복제하지 않는다. 선택한 `worker.example.json` 또는 `worker.claude.example.json`의 절대 경로를 자기 환경에 맞추고 격리를 실제 확인한 뒤 설치한다. 고정 runtime/report bundle을 저장소 밖에 배포한다. 모델 프록시는 `python -m services.automation.model_proxy --config {개인client.json}`으로 loopback18873에 제공한다.
 

@@ -1,9 +1,9 @@
 """Fixed deployed worker for PM-approved packets, never a general issue executor.
 
-Run inside a dedicated OS account/VM. Environment sanitization, path checks and
-Agent tool restrictions do not protect a personal desktop's credentials from arbitrary
-dependency/test code running as that desktop's user. The publisher is trusted
-code, separated from the model process; main/merge/approval are never modified.
+Models and repository tests run only in inspected Docker containers. The model
+receives its owner's AI login; tests receive no authentication. The host owns GitHub
+and controller credentials, exports files without .git, and publishes checked bytes.
+This worker never modifies main/merges/approvals; those belong to the PM broker.
 """
 from __future__ import annotations
 
@@ -28,11 +28,12 @@ from datetime import UTC, datetime
 from pathlib import Path, PurePosixPath
 
 if __package__:
-    from . import claude
-    from .process import run_bounded
+    from . import artifacts, claude
+    from .isolation import IMAGE_ID, DockerConfig, DockerExecutor, regular_file
 else:
+    import artifacts
     import claude
-    from process import run_bounded
+    from isolation import IMAGE_ID, DockerConfig, DockerExecutor, regular_file
 
 REPO = "2026-LG-kitchen-chicken-team/lg-ax-2026"
 ACCOUNTS = {"jeongiryang": "정이량", "unknownamed": "황대겸", "ginaginaring": "신진하",
@@ -145,6 +146,9 @@ class WorkerConfig:
     claude_version: str = "2.1.289"
     claude_model: str = "sonnet"
     claude_max_turns: int = 30
+    executor_image: str | None = None
+    execution_root: Path | None = None
+    executor_network: str = "bridge"
 
     @property
     def agent_home(self):
@@ -162,7 +166,7 @@ class WorkerConfig:
         if not data.get(home_key):
             raise ValueError("selected engine requires its own private authentication directory")
         path_keys = ["repository", "state_dir", "token_file"] + [
-            key for key in ("codex_home", "claude_home") if data.get(key) is not None]
+            key for key in ("codex_home", "claude_home", "execution_root") if data.get(key) is not None]
         if any(not Path(data[key]).is_absolute() for key in path_keys):
             raise ValueError("worker paths must be explicit absolute deployment paths")
         result = cls(**{**data, **{key: Path(data[key]).resolve() for key in
@@ -171,8 +175,16 @@ class WorkerConfig:
             raise ValueError("registered account and bounded polling interval required")
         if type(result.isolation_acknowledged) is not bool:
             raise ValueError("deployment isolation acknowledgement must be a boolean")
-        if require_isolation and not result.isolation_acknowledged:
-            raise ValueError("dedicated execution-user/VM deployment boundary must be acknowledged")
+        if require_isolation and (not result.executor_image or not IMAGE_ID.fullmatch(result.executor_image) or
+                                  result.execution_root is None):
+            raise ValueError("fixed Docker executor image and external execution root are required; no native fallback")
+        if result.execution_root:
+            for private in (result.repository, result.state_dir, result.agent_home, result.token_file):
+                if private.is_relative_to(result.execution_root) or result.execution_root.is_relative_to(private):
+                    raise ValueError("execution root must be separate from repository, controller and AI credentials")
+        for personal in (Path.home() / ".codex", Path.home() / ".claude"):
+            if result.agent_home == personal.resolve():
+                raise ValueError("mount only a dedicated owner AI profile, never the whole personal CLI home")
         if result.agent_home.is_relative_to(result.repository) or result.repository.is_relative_to(result.agent_home):
             raise ValueError("Agent home must be a separate persistent private directory")
         if result.engine == "claude":
@@ -262,6 +274,54 @@ def validate_auth(config: WorkerConfig):
         if (settings.get("model_provider", "openai") != "openai" or
                 settings.get("forced_login_method", "chatgpt") != "chatgpt"):
             raise ValueError("custom/API provider configuration is not permitted")
+
+
+def private_ai_values(config):
+    values = []
+    def visit(item, name=""):
+        if isinstance(item, dict):
+            for key, value in item.items():
+                visit(value, key)
+        elif isinstance(item, list):
+            for row in item:
+                visit(row, name)
+        elif isinstance(item, str) and len(item) >= 16 and ("token" in name.lower() or "key" in name.lower()):
+            values.append(item.encode())
+    for name in ("auth.json", ".credentials.json"):
+        path = config.agent_home / name
+        if path.exists():
+            visit(json.loads(regular_file(path, maximum=128 * 1024)))
+    return values
+
+
+def validate_container_auth(config, executor, guest, stage, run_dir, heartbeat):
+    """Actual selected image metadata/authentication, never a host-login proxy."""
+    version_log = run_dir / "container-version.log"
+    result = executor.run([config.engine, "--version"], cwd=guest, artifacts=stage, env={},
+        output=version_log, timeout_seconds=30, heartbeat=heartbeat, role="model", readonly_workspace=True)
+    if result.returncode or result.stopped_reason:
+        raise ValueError("selected container CLI metadata failed")
+    expected = "codex-cli 0.155.0" if config.engine == "codex" else f"{config.claude_version} (Claude Code)"
+    if version_log.read_text(encoding="utf-8").strip() != expected:
+        raise ValueError("container CLI version differs from fixed policy")
+    auth_log = run_dir / "container-auth.log"
+    argv = (["codex", "login", "status"] if config.engine == "codex" else
+            ["claude", "--safe-mode", "--restricted", "--settings", json.dumps(claude.SETTINGS), "auth", "status"])
+    result = executor.run(argv, cwd=guest, artifacts=stage, env={}, output=auth_log, timeout_seconds=30,
+                          heartbeat=heartbeat, role="model", readonly_workspace=True)
+    if result.returncode or result.stopped_reason:
+        raise ValueError("selected container needs its owner's direct subscription login")
+    raw = auth_log.read_text(encoding="utf-8")
+    if config.engine == "codex":
+        good = "logged in using chatgpt" in raw.casefold()
+    else:
+        observed = json.loads(raw)
+        good = (observed.get("loggedIn") is True and observed.get("authMethod") == "claude.ai" and
+                observed.get("apiProvider") == "firstParty" and observed.get("configDirectory") == "/agent-auth")
+    if not good:
+        raise ValueError("container subscription login required; API fallback forbidden")
+    return {"verified": True, "source": "actual_isolated_cli", "engine": config.engine,
+            "model_generation_executed": False}
 
 
 def command(argv, cwd, *, env=None, timeout=30):
@@ -466,14 +526,10 @@ RESULT_SCHEMA = {"type": "object", "additionalProperties": False,
 def codex_argv(config: WorkerConfig, job, run_dir: Path):
     schema = run_dir / "result-schema.json"
     write_json(schema, RESULT_SCHEMA)
-    executable = shutil.which(config.codex_executable)
+    executable = "codex" if config.executor_image else shutil.which(config.codex_executable)
     if not executable:
         raise ValueError("installed Codex CLI executable is unavailable")
-    # The package may supply a .cmd wrapper on Windows; prefer its native .exe
-    # sibling. Never concatenate a command string or request an unsafe sandbox.
-    if os.name == "nt" and executable.lower().endswith((".cmd", ".bat")):
-        raise ValueError("configure the native codex.exe; shell wrappers are not used")
-    return [executable, "exec", "--ignore-user-config", "--json", "--sandbox",
+    return [executable, "exec", "--ignore-user-config", "--skip-git-repo-check", "--json", "--sandbox",
             "read-only" if job["kind"] == "review" else "workspace-write",
             "--output-schema", str(schema), "--output-last-message", str(run_dir / "result.json"), "-"]
 
@@ -494,7 +550,7 @@ def prompt_for(job, account):
                         if key not in {"lease_token", "lease_expires_at"}}, ensure_ascii=False))
 
 
-def load_result(path: Path):
+def load_result(path: Path, forbidden_values=()):
     if not path.is_file() or path.stat().st_size > 128 * 1024:
         raise ValueError("missing or oversized structured Agent result")
     result = json.loads(path.read_text(encoding="utf-8"))
@@ -507,9 +563,9 @@ def load_result(path: Path):
             any(len(result[key]) > 30 or any(len(row) > 2000 for row in result[key])
                 for key in ("changes", "limitations", "findings"))):
         raise ValueError("structured Agent result exceeds bounded field limits")
-    if re.search(r"(?:sk-[A-Za-z0-9_-]{16,}|gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|"
-                 r"Bearer\s+[A-Za-z0-9_-]{20,})", json.dumps(result, ensure_ascii=False)):
-        raise ValueError("Agent result resembles a private credential; retain privately for redaction")
+    # The Agent can see only its own dedicated AI login, but no part of that
+    # login may leave via a PR body, review, summary or controller result.
+    artifacts.secret_check(json.dumps(result, ensure_ascii=False).encode("utf-8"), forbidden_values)
     return result
 
 
@@ -626,17 +682,37 @@ def execute_job(config, client, job):
     deadline = time.monotonic() + job["timeout_seconds"]
     try:
         github_identity(config)
-        authentication = validate_auth(config)
+        authentication = validate_auth(config) if config.engine == "codex" else None
         if authentication:
             checkpoint["engine_preflight"] = authentication
         if not client.heartbeat(job):
             raise ValueError("controller disabled the claimed task")
         workspace, branch, base, config_paths, config_digest = prepare_worktree(config, job, run_dir)
         environment = isolated_environment(config, run_dir)
+        if not config.executor_image or config.execution_root is None:
+            raise ValueError("Docker execution boundary is unconfigured; native execution is forbidden")
+        config.execution_root.mkdir(parents=True, exist_ok=True)
+        execution = config.execution_root / run_dir.name
+        execution.mkdir(exist_ok=False)
+        guest, stage = execution / "source", execution / "artifacts"
+        stage.mkdir()
+        before = artifacts.export_tracked(workspace, guest)
+        executor = DockerExecutor(DockerConfig(image=config.executor_image, workspace_root=config.execution_root,
+                                               auth_root=config.agent_home, engine=config.engine,
+                                               model_network=config.executor_network))
+        checkpoint["isolation_preflight"] = executor.preflight()
+        checkpoint["base_files_sha256"] = artifacts.digest(before)
+        checkpoint["container_authentication"] = validate_container_auth(
+            config, executor, guest, stage, run_dir, lambda: client.heartbeat(job))
+        private_values = private_ai_values(config)
         checkpoint.update(state="agent_running", workspace=str(workspace), branch=branch, checked_out_commit=base)
         write_json(run_dir / "checkpoint.json", checkpoint)
-        argv = (claude.argv(config, job, run_dir, RESULT_SCHEMA)
-                if config.engine == "claude" else codex_argv(config, job, run_dir))
+        if config.engine == "claude":
+            # Construct the same fixed file-tool policy without invoking a host
+            # CLI from the repository execution context.
+            argv = claude.argv(config, job, stage, RESULT_SCHEMA, executable_name="claude")
+        else:
+            argv = codex_argv(config, job, stage)
         prompt = prompt_for(job, config.account)
         if config.engine == "claude":
             prompt += ("\nThis worker supplies file tools only. The trusted worker has checked the "
@@ -646,9 +722,10 @@ def execute_job(config, client, job):
         remaining = deadline - time.monotonic()
         if remaining <= 0:
             raise ValueError("total approved execution time exhausted before Agent launch")
-        result = run_bounded(argv, cwd=workspace, env=environment,
+        result = executor.run(argv, cwd=guest, artifacts=stage, env=environment,
             output=run_dir / "agent.jsonl", timeout_seconds=remaining,
-            heartbeat=lambda: client.heartbeat(job), input_text=prompt)
+            heartbeat=lambda: client.heartbeat(job), input_text=prompt, role="model",
+            readonly_workspace=job["kind"] == "review")
         checkpoint["agent"] = {"returncode": result.returncode, "elapsed_seconds": result.elapsed_seconds,
                                "stopped_reason": result.stopped_reason}
         if result.returncode or result.stopped_reason:
@@ -658,22 +735,33 @@ def execute_job(config, client, job):
             raise ValueError("Agent log exceeded bounded storage limit")
         if config.engine == "claude":
             checkpoint["engine_result"] = claude.extract_result(run_dir / "agent.jsonl", run_dir / "result.json")
-        output = load_result(run_dir / "result.json")
+        else:
+            payload = regular_file(stage / "result.json", maximum=128 * 1024)
+            (run_dir / "result.json").write_bytes(payload)
+        private_values += private_ai_values(config)
+        output = load_result(run_dir / "result.json", private_values)
+        frozen = artifacts.files(guest)
+        checkpoint["checked_files_sha256"] = artifacts.digest(frozen)
         if configuration_digest(config_paths) != config_digest:
             raise ValueError("shared repository configuration changed; publishing refused")
         if git(config, ["rev-parse", "HEAD"], cwd=workspace) != base:
             raise ValueError("Agent changed the pinned checkout commit; PM reconciliation required")
-        paths = check_scope(workspace, job, config.account)
         if job["kind"] == "review":
+            if artifacts.changes(before, frozen):
+                raise ValueError("read-only review changed execution source")
             check_review_head(config, job)
             outcome, publication = "completed_review", {}
         else:
             validate_commands(job["validation_commands"])
+            # Testing gets a separate copy and zero authentication. A test may
+            # generate caches/build files but cannot alter the checked source.
+            validator = execution / "validator"
+            artifacts.write_copy(frozen, validator)
             for index, argv in enumerate(job["validation_commands"]):
                 remaining = deadline - time.monotonic()
                 if remaining <= 0:
                     raise ValueError("total approved execution time exhausted before validation")
-                observed = run_bounded(resolve_validation_command(argv), cwd=workspace, env=environment,
+                observed = executor.run(argv, cwd=validator, artifacts=stage, env={}, role="validator",
                     output=run_dir / f"validation-{index}.log", timeout_seconds=min(remaining, 1800),
                     heartbeat=lambda: client.heartbeat(job))
                 row = {"argv": argv, "returncode": observed.returncode,
@@ -682,6 +770,16 @@ def execute_job(config, client, job):
                 write_json(run_dir / "checkpoint.json", checkpoint)
                 if observed.returncode or observed.stopped_reason:
                     raise ValueError("fixed validation failed/stopped; no automatic publish")
+            validator_files = artifacts.files(validator)
+            if any(validator_files.get(name) != value for name, value in frozen.items()):
+                raise ValueError("validation changed checked source bytes; no publish")
+            if artifacts.digest(artifacts.files(guest)) != artifacts.digest(frozen):
+                raise ValueError("execution source changed after tests")
+            private_values += private_ai_values(config)
+            artifacts.secret_check(json.dumps(output, ensure_ascii=False).encode("utf-8"), private_values)
+            paths = artifacts.import_checked(workspace, before, frozen,
+                allow=lambda name: allowed_path(name, job["allowed_paths"], config.account),
+                forbidden_values=private_values)
             # Validation is untrusted repository execution too: inspect its diff
             # and shared config again before credentials are used by publisher.
             if configuration_digest(config_paths) != config_digest:
@@ -741,14 +839,38 @@ def main():
     client = ControllerClient(config.controller_url, config.token_file)
     with exclusive_lock(config.state_dir / "worker.lock"), exclusive_lock(config.agent_home / "lgax-worker.lock"):
         github_identity(config)
-        authentication = validate_auth(config)
+        authentication, boundary = None, None
+        if config.executor_image and config.execution_root:
+            # Authentication must belong to the CLI in the selected image. A
+            # Windows Claude keychain/login is never a proxy for Linux readiness.
+            config.execution_root.mkdir(parents=True, exist_ok=True)
+            name = "preflight-" + str(time.time_ns())
+            guest = config.execution_root / name / "source"
+            stage = guest.parent / "artifacts"
+            probe = config.state_dir / name
+            guest.mkdir(parents=True, exist_ok=False)
+            stage.mkdir()
+            probe.mkdir()
+            executor = DockerExecutor(DockerConfig(image=config.executor_image,
+                workspace_root=config.execution_root, auth_root=config.agent_home,
+                engine=config.engine, model_network=config.executor_network))
+            boundary = executor.preflight()
+            authentication = validate_container_auth(config, executor, guest, stage, probe, lambda: True)
+            if not isinstance(authentication, dict) or authentication.get("verified") is not True:
+                raise ValueError("actual selected container subscription authentication is unverified")
         if args.preflight:
             client.request("/v1/status")
-            print(json.dumps({"account": config.account, "engine": config.engine, "preflight": "passed",
+            print(json.dumps({"account": config.account, "engine": config.engine,
+                              "preflight": "passed" if authentication else "metadata_only",
                               "model_executed": False, "engine_preflight": authentication,
+                              "docker_preflight": boundary, "container_auth_verified": bool(authentication),
+                              "canary_verified": False, "github_publication_verified": False,
+                              "automation_ready": False,
                               "isolation_acknowledged": config.isolation_acknowledged,
                               "execution_started": False}))
             return
+        if authentication is None:
+            raise ValueError("selected container authentication required; host/native fallback is forbidden")
         while True:
             try:
                 claimed = client.request("/v1/claim", {}).get("job")

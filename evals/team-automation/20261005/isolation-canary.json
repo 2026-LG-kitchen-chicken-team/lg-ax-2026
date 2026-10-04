@@ -1,0 +1,64 @@
+{
+  "proof_kind": "actual_harmless_container_not_mounted_boundary",
+  "publisher_readable": true,
+  "canary_sha256": "13c2ef52016fc3e8b09bb2e07cf543718e01c0b289135195d6851c751f3c764c",
+  "containers": {
+    "model": {
+      "workspace_readable": true,
+      "publisher_canary_readable": false,
+      "protected_path_attempts": 4,
+      "ai_profile_readable": true,
+      "docker_socket_readable": false,
+      "external_network_reachable": false,
+      "observed_boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "model",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "bridge",
+        "mount_targets": [
+          "/agent-auth",
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": true
+      }
+    },
+    "validator": {
+      "workspace_readable": true,
+      "publisher_canary_readable": false,
+      "protected_path_attempts": 4,
+      "ai_profile_readable": false,
+      "docker_socket_readable": false,
+      "external_network_reachable": false,
+      "observed_boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    }
+  },
+  "real_secret_used": false,
+  "ai_login_validated": false,
+  "model_generation_executed": false,
+  "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+  "observed_at": "2026-10-04T22:17:54.219001+00:00",
+  "source_base": "28d3eee5430da6e051d0bfb017ed9afbfb4a33b6",
+  "github_publication_verified": false,
+  "team_automation_enabled": false
+}
