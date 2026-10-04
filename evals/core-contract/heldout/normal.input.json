@@ -1,0 +1,71 @@
+{
+  "request": {
+    "product_group": "dishwasher",
+    "target_customer": "가정 내 사용자",
+    "use_situation": "실제 사용 후 불편 검토",
+    "improvement_task": "큰 접시의 방향을 잘못 놓아 회전 날개가 걸려 다시 적재했다.",
+    "exclusions": [
+      "다른 모델 기능 혼용"
+    ],
+    "model_ids": [
+      "HELD-01-MODEL"
+    ],
+    "dataset_version": "HELD-01-contract-v1"
+  },
+  "product": {
+    "model_id": "HELD-01-MODEL",
+    "name": "계약 검증용 가상 dishwasher",
+    "product_group": "dishwasher",
+    "document_version": "1.0",
+    "source_kind": "synthetic"
+  },
+  "sources": [
+    {
+      "id": "HELD-01-REVIEW",
+      "model_id": "HELD-01-MODEL",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "review",
+      "source_id": "HELD-01-CSV",
+      "locator": {
+        "row": 2
+      },
+      "text": "큰 접시의 방향을 잘못 놓아 회전 날개가 걸려 다시 적재했다.",
+      "feature_ids": []
+    },
+    {
+      "id": "HELD-01-MANUAL",
+      "model_id": "HELD-01-MODEL",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "manual",
+      "source_id": "HELD-01-DOC",
+      "locator": {
+        "page": 3,
+        "section": "사용 조건"
+      },
+      "text": "기본 적재 그림을 제공한다. 회전 날개가 식기에 닿지 않게 적재한다.",
+      "feature_ids": [
+        "HELD-01-FEATURE"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "id": "HELD-01-FEATURE",
+      "model_id": "HELD-01-MODEL",
+      "document_version": "1.0",
+      "name": "현재 제공 기능",
+      "description": "기본 적재 그림을 제공한다. 회전 날개가 식기에 닿지 않게 적재한다.",
+      "conditions": [
+        "설명서의 사용 조건을 충족해야 함"
+      ],
+      "evidence_ids": [
+        "HELD-01-MANUAL"
+      ]
+    }
+  ],
+  "revision_count": 0,
+  "max_concepts": 3,
+  "changed_evidence_ids": []
+}

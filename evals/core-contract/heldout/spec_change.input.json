@@ -1,0 +1,73 @@
+{
+  "request": {
+    "product_group": "fridge",
+    "target_customer": "가정 내 사용자",
+    "use_situation": "실제 사용 후 불편 검토",
+    "improvement_task": "도어 포켓 뒤쪽의 작은 병이 보이지 않아 같은 음료를 중복 구매했다.",
+    "exclusions": [
+      "다른 모델 기능 혼용"
+    ],
+    "model_ids": [
+      "HELD-06-MODEL"
+    ],
+    "dataset_version": "HELD-06-contract-v1"
+  },
+  "product": {
+    "model_id": "HELD-06-MODEL",
+    "name": "계약 검증용 가상 fridge",
+    "product_group": "fridge",
+    "document_version": "2.0",
+    "source_kind": "synthetic"
+  },
+  "sources": [
+    {
+      "id": "HELD-06-REVIEW",
+      "model_id": "HELD-06-MODEL",
+      "document_version": "2.0",
+      "source_kind": "synthetic",
+      "source_type": "review",
+      "source_id": "HELD-06-CSV",
+      "locator": {
+        "row": 2
+      },
+      "text": "도어 포켓 뒤쪽의 작은 병이 보이지 않아 같은 음료를 중복 구매했다.",
+      "feature_ids": []
+    },
+    {
+      "id": "HELD-06-MANUAL",
+      "model_id": "HELD-06-MODEL",
+      "document_version": "2.0",
+      "source_kind": "synthetic",
+      "source_type": "manual",
+      "source_id": "HELD-06-DOC",
+      "locator": {
+        "page": 3,
+        "section": "사용 조건"
+      },
+      "text": "도어 포켓 높이를 조절할 수 있다. 깊이는 고정이며 뒤쪽 용기를 꺼내려면 앞쪽 용기를 옮긴다. 새 문서에 해당 불편을 줄이는 추가 동작이 명시되었다.",
+      "feature_ids": [
+        "HELD-06-FEATURE"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "id": "HELD-06-FEATURE",
+      "model_id": "HELD-06-MODEL",
+      "document_version": "2.0",
+      "name": "현재 제공 기능",
+      "description": "도어 포켓 높이를 조절할 수 있다. 깊이는 고정이며 뒤쪽 용기를 꺼내려면 앞쪽 용기를 옮긴다. 새 문서에 해당 불편을 줄이는 추가 동작이 명시되었다.",
+      "conditions": [
+        "설명서의 사용 조건을 충족해야 함"
+      ],
+      "evidence_ids": [
+        "HELD-06-MANUAL"
+      ]
+    }
+  ],
+  "revision_count": 0,
+  "max_concepts": 3,
+  "changed_evidence_ids": [
+    "HELD-06-MANUAL"
+  ]
+}
