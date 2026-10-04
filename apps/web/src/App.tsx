@@ -78,9 +78,11 @@ function RequestView({ data, group, modelId, mode, live }: { data: BootstrapData
   const continueProject = !!(live && projectRequest && sameProjectScope(projectRequest, request));
   const original = continueProject ? projectRequest! : { ...firstRequest, model_ids: request.model_ids, dataset_version: request.dataset_version };
   const parent = continueProject ? live!.latest : null;
-  const revision = nextRequestRevision(original, parent, request);
+  // A live save that starts a new project is that project's original request: the server records revision 0.
+  const newLiveProject = !!live && !continueProject;
+  const revision = newLiveProject ? 0 : nextRequestRevision(original, parent, request);
   const questions = missingRequestQuestions(request);
-  const changes = requestChanges(parent?.request ?? original, request);
+  const changes = newLiveProject ? [] : requestChanges(parent?.request ?? original, request);
   const unchanged = continueProject && !changes.length;
 
   function toggleModel(id: string) {

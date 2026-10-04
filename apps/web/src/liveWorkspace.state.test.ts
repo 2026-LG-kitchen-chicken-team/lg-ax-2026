@@ -200,6 +200,23 @@ describe('actual React workspace state boundaries', () => {
     expect(live.project?.project.id).toBe(a.project.id);
   });
 
+  it('keeps a newly created project selected when its first run save fails, so a retry continues it', async () => {
+    await connect();
+    const created = project('project-new');
+    vi.spyOn(WorkspaceClient.prototype, 'createProject').mockResolvedValue(created);
+    const createRun = vi.spyOn(WorkspaceClient.prototype, 'createRun').mockRejectedValueOnce(new ApiError('CONNECTION_FAILED', 'lost'));
+    let saved: RunSnapshot | null = null;
+    await act(async () => { saved = await live.saveRequest(FIXTURE_ORIGINAL_REQUEST, FIXTURE_BOOTSTRAP.products); });
+    expect(saved).toBeNull();
+    expect(live.error?.code).toBe('CONNECTION_FAILED');
+    expect(live.project?.project.id).toBe('project-new');
+    expect(live.runs).toEqual([]);
+    expect(live.projects.map(item => item.project.id)).toEqual([a.project.id, 'project-new']);
+    createRun.mockResolvedValueOnce(run('project-new', 'run-retry'));
+    await act(async () => { saved = await live.addRun(FIXTURE_ORIGINAL_REQUEST, null); });
+    expect((saved as RunSnapshot | null)?.run.id).toBe('run-retry');
+    expect(createRun).toHaveBeenLastCalledWith('project-new', FIXTURE_ORIGINAL_REQUEST, null);
+  });
   it('rejects a run list from a different project even when the payload has the right shape', async () => {
     await connect();
     vi.mocked(WorkspaceClient.prototype.listRuns).mockResolvedValueOnce({ runs: [run(a.project.id)], contract_version: '0.1.0' });
