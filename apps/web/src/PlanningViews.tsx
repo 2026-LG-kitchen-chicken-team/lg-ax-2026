@@ -4,6 +4,7 @@ import { ApiError } from './api';
 import { evidenceLocation } from './domain';
 import type { Evidence } from './domain';
 import { ExecutionPanel } from './JudgementViews';
+import { rerunBaseNotice, selectableConcepts } from './judgement';
 import { runStatusView } from './liveWorkspace';
 import { editSummary, END_RULE, START_RULE } from './measurement';
 import type { EditSummary, ModificationMeasurement } from './measurement';
@@ -272,6 +273,7 @@ export function ConceptsView({ mode, runs, selected, onSelect, features, evidenc
     <ExecutionPanel snapshot={selected} />
     <section className="panel planning-panel">
       <div className="planning-head"><div><p className="eyebrow">CANDIDATES</p><h3>콘셉트 후보 <span className="count">{selected.run.concepts.length} / 3</span></h3></div><ExportActions mode={mode} snapshot={selected} features={features} evidence={evidence} runs={runs} /></div>
+      {selected.run.concepts.length && !selectableConcepts(selected).length ? <p className="scope-flag" role="alert">저장된 판단 기록이 이 후보들을 채택하지 않았습니다(보류·실패·기록 오류). 원문 검토용으로만 표시하며 선택·재실행 대상이 아닙니다.</p> : null}
       {selected.run.concepts.length ? <div className="concept-grid">{selected.run.concepts.map(concept => <article key={concept.id} className={`concept-card ${concept.status}`}>
         <div className="concept-top"><span className="id">{concept.id} · {concept.kind}</span><span className={`status-pill ${concept.status}`}>{statusLabel(concept.status)}</span></div>
         <h4>{concept.title}</h4>
@@ -340,7 +342,9 @@ function MeasurementLog({ measure }: { measure: MeasureControls }) {
 
 /** Planner picks a role per candidate and corrects conditions; the preview shows the exact next request before rerun. */
 function RerunPanel({ mode, selected, original, onRerun, busy, measure }: { mode: DataMode; selected: RunSnapshot; original: PlanningRequest; onRerun: (request: PlanningRequest, edits: EditSummary) => Promise<void>; busy: boolean; measure: MeasureControls }) {
-  const concepts = selected.run.concepts;
+  // Only an accepted core judgement offers candidates; a held, failed or malformed record starts from conditions alone.
+  const concepts = selectableConcepts(selected);
+  const baseNotice = rerunBaseNotice(selected);
   const { conditions: startConditions } = splitConditions(selected.request, concepts);
   const [initialChoices] = useState(() => candidateChoicesFor(selected.request, concepts));
   const [choices, setChoices] = useState<Record<string, CandidateChoice>>(initialChoices);
@@ -373,6 +377,7 @@ function RerunPanel({ mode, selected, original, onRerun, busy, measure }: { mode
     <p className="eyebrow">RERUN</p><h3>후보와 조건을 고르고 다시 실행</h3>
     <MeasureBar measure={measure} baseRunId={selected.run.id} />
     <p className="hint">{selected.run.id}의 요청을 바탕으로 새 실행을 연결합니다. {mode === 'fixture' ? '현재는 브라우저 안의 초안이며 결과는 not_implemented로 남습니다.' : '작업실 서버에 새 실행으로 저장합니다. 기존 실행은 유지됩니다.'}</p>
+    {baseNotice ? <p className="scope-flag" role="note">{baseNotice}</p> : null}
     <h4 className="sub">후보 선택</h4>
     {concepts.length ? <ul className="choice-list">{concepts.map(concept => <li key={concept.id}>
       <span><span className="id">{concept.id} · {statusLabel(concept.status)}</span>{concept.title}</span>
