@@ -1,0 +1,321 @@
+{
+  "task_id": "P2-CORE-001",
+  "owner": "황대겸",
+  "result": "pass",
+  "execution_kind": "fixture",
+  "observed_at": "2026-10-04T14:23:18+00:00",
+  "tested_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3",
+  "observations": [
+    "Canonical types reused without modifying shared Schema/API/MCP/web.",
+    "Bound original inputs, product/document scope, source kinds and citations.",
+    "0..3 concepts, explicit support vs unmentioned, hold questions and duplicate review declared separately.",
+    "Review policy routes to failed stage; revision0->1->2 never authorizes a third retry.",
+    "Six development cases and six disjoint independent synthetic contract cases match expected responses.",
+    "New32 boundary tests; full316 Python tests and launcher6 passed.",
+    "Web105 tests passed,2 local live-HTTP tests skipped; type/build passed.",
+    "Actual local stdio/isolated HTTP MCP read-only lookup smoke passed; no reasoning backend invoked."
+  ],
+  "limitations": [
+    "Assessment labels are declared fixture judgements, not generated semantic decisions.",
+    "No live model, four reasoning Skill handlers, independent effect evaluation or market claim.",
+    "No PM approval/merge/integration or formal R/E verified status change.",
+    "Online Project read unavailable with current read:project scope; actual report receipt remains separate.",
+    "Initial static invocation had a PowerShell scalar-splat argument error; failed invocations preserved under initial-static-invocation.",
+    "Initial independent-data overlap failed a regression and was corrected before final316-test run.",
+    "Initial uv minor-version link creation errored; explicit downloaded CPython3.11.17 interpreter completed locked installation."
+  ],
+  "models": [],
+  "checks": [
+    {
+      "name": "Python unittest 316 including CORE001 boundary tests32",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core001-20261004-2300/python-tests.txt",
+        "sha256": "2a341fc6a2da79dafae438d717e491292fd6bf7e64e47671f1c1bc387f083664"
+      }
+    },
+    {
+      "name": "Isolated server-launcher regressions6",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core001-20261004-2300/server-launcher-tests.txt",
+        "sha256": "b49bca71357219e574790f5b0c46fe44a05cf2330ac1ec2181e60f500fce26b7"
+      }
+    },
+    {
+      "name": "Canonical contracts",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core001-20261004-2300/check_contracts.txt",
+        "sha256": "1e1b81f4c2607b74aca9deb8fd8bf0f1b048508d317d21f36ed1b59fca45661b"
+      }
+    },
+    {
+      "name": "AGENTS/CLAUDE byte equality",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core001-20261004-2300/sync_agent_rules.txt",
+        "sha256": "7e0a7002be1c8a6a929966a18bc7207035beabeef3065614f21a9b6265ca789d"
+      }
+    },
+    {
+      "name": "Phase2 structure and historical evidence",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core001-20261004-2300/phase2.txt",
+        "sha256": "6e84f7ccf1d99593ee0bf819047eb956d33efeb0f2863bbecbebdca299bd1e42"
+      }
+    },
+    {
+      "name": "Historical project harness",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core001-20261004-2300/harness.txt",
+        "sha256": "e99f0b312c5f65cac0e4753aa3d76ba94c88329a533221fd84f90bfdc81dae5d"
+      }
+    },
+    {
+      "name": "Changed Python lint",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core001-20261004-2300/lint.txt",
+        "sha256": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0"
+      }
+    },
+    {
+      "name": "Static command exit codes",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core001-20261004-2300/static-checks.json",
+        "sha256": "b1bef7782cc5c1355ba30579699bb96d44fb3c0ea39b98219b7bbe072b5cdd59"
+      }
+    },
+    {
+      "name": "Web105 passed; two live-HTTP cases skipped in this local invocation",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core001-20261004-2300/web-tests.txt",
+        "sha256": "15858ce6db38d892f0615b4d883e59443471a355a6cb5053ccfb9ca9764e85e3"
+      }
+    },
+    {
+      "name": "Web TypeScript/Vite build",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core001-20261004-2300/web-build.txt",
+        "sha256": "c6cb47392127e2d1175f8573f1d7aa80fe4dcda65dc3090cc7ddd7c178cb47cd"
+      }
+    },
+    {
+      "name": "Real synthetic lookup MCP stdio",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core001-20261004-2300/mcp-stdio.txt",
+        "sha256": "8ff9b54d14f6c6e87c1a71b4921b501b35cf0afbfd452c5e81736999489f5ead"
+      }
+    },
+    {
+      "name": "Real synthetic lookup isolated HTTP MCP",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core001-20261004-2300/mcp-http.txt",
+        "sha256": "88c5a6a83b2c82884ffffc5fa3a571fa86e8ae9e0a9ad0b7d7b69d3ccfa95aab"
+      }
+    },
+    {
+      "name": "development six declared judgement fixtures",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core001-20261004-2300/development.json",
+        "sha256": "f94e5be5bc1e93d1c0d43dde19dff0a19219587857fee767694547bad353f88f"
+      }
+    },
+    {
+      "name": "heldout six declared judgement fixtures",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core001-20261004-2300/heldout.json",
+        "sha256": "6ca256589282ba183081e389bb7b406680ca04f1c41e45f2dd61669857e97f02"
+      }
+    }
+  ],
+  "code_versions": [
+    {
+      "path": "packages/core/src/lgax_core/judgement_contract.py",
+      "sha256": "db7560e7d61e81e8d228b439969d3a28293b0cd219b7560eddea12923a2b2c24",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "tests/test_judgement_contract.py",
+      "sha256": "37db2cdf51dd069eebe1febc07fe8046a1b707c780fa58c38ce6a0cd50575443",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/check_cases.py",
+      "sha256": "e567b7dd8d75b701d8fdbdad5202813a98f817ac60ba8147712361d22411d035",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "docs/core/judgement-contract.md",
+      "sha256": "a15b19a86d62d304e686544a997eba62f031208942dc1005efdcdeda3a75195a",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "sha256": "d7cf46d9a980b00ad786ec46feaf3d31e4094f56ff0899d8bab59bdf95a9bad5",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/development/cases.json",
+      "sha256": "46777f1a43c88080620cf122fcf8c641a54adb2eb5af3fc5e5f8aa985e255887",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/development/conflicting_reviews.fixture-output.json",
+      "sha256": "91755c1b6d4f02d341abbd449d6511b90738a18f04227b7de8085783396ebf2a",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/development/conflicting_reviews.input.json",
+      "sha256": "06462269bf25e18f283647b8b3986adaa7edfb3d50ea4c4c7e85a822d1eb3e77",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/development/duplicate.fixture-output.json",
+      "sha256": "c94810ad23679e9cfa5024b6a3239491f25a2476cc55d0395b7500b3f67d9169",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/development/duplicate.input.json",
+      "sha256": "ea787edfbcfe1f81020429d05f1871172612b8c9d595ed37c01b52b91850f9f0",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/development/expected.json",
+      "sha256": "edfdcb279b0327268ea299b97c402effa0b71d0f12597e25479e1dc13271f06c",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/development/missing_evidence.fixture-output.json",
+      "sha256": "5ba38f635ea6098dad71af93bf1d7d580bbf864b218919fd0a1839037329614c",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/development/missing_evidence.input.json",
+      "sha256": "264ef8bb87942c5cdb5ce4154626ccce641ae165bb8548ba376a77d22976024e",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/development/model_confusion.fixture-output.json",
+      "sha256": "106d87ef5bf988a7ce8c311395cf8fe83582f36a2325b9ac0d3d581b1bbcf585",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/development/model_confusion.input.json",
+      "sha256": "633f46da5788e071d39afb13817f02581c34c8074603e946deb79b121987b9c5",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/development/normal.fixture-output.json",
+      "sha256": "a0fda714005e609fad857a905eb9efb6dde41e545ba3d9b76621b2ab91fd235d",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/development/normal.input.json",
+      "sha256": "a6b0f8dea39c2914cabb8b7e471c28b5fa5fa31feb0eb5138a52f2079321f1d9",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/development/spec_change.fixture-output.json",
+      "sha256": "eaedb26b76e319573e4884348886a2c2075d9e949044bee12808a2ac5ee021f2",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/development/spec_change.input.json",
+      "sha256": "da14e1685560b7ebae46fc942ce4c0e02f48792b719295bdbb14a8354ddeb4f4",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/heldout/cases.json",
+      "sha256": "de438b29b4bcf316faf26b302f7901609d8ea4090c246b739c8013f6debb5d3a",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/heldout/conflicting_reviews.fixture-output.json",
+      "sha256": "630ab06b32a36ec7f743bfa7728106566a93cf6b47e671fda6a08fed31b65e39",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/heldout/conflicting_reviews.input.json",
+      "sha256": "367452d5b94d502a04db74665a0e5c7e3ae9723f907c5ae251faff907d03f4ea",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/heldout/duplicate.fixture-output.json",
+      "sha256": "b30a9d44c2c6f096e9119f0a5f1aa780251e21f553147b766366a1e7e32adc19",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/heldout/duplicate.input.json",
+      "sha256": "aeabf4176c77fb53fda7fe6fc003004a9818e8b0e15728a6aeb8235d242e0c41",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/heldout/expected.json",
+      "sha256": "e3dda763b62d6349fae43b6a9290766b09566054d66e693995d8ce4f72e937c7",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/heldout/missing_evidence.fixture-output.json",
+      "sha256": "1d307c667dd599be98887d8cda1593dcbc0af3d7dc0fa3424bbd6f2c2b2441c8",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/heldout/missing_evidence.input.json",
+      "sha256": "9756cb1e00bba704b57724dc047c6c072879158b48438aca3d59d15054e98361",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/heldout/model_confusion.fixture-output.json",
+      "sha256": "c57ddfac240500c7e77ca96c4b3cf4ebace02e1e037a578e8b157b9e5954c5b4",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/heldout/model_confusion.input.json",
+      "sha256": "0b945b5047e04563782d5be84b3c8b804f9b34bdc108d299412350dc7c3f3a70",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/heldout/normal.fixture-output.json",
+      "sha256": "9a48b4328666b6a41875f8038027dfc0f72305369b29450dcc5a9c575fdada3d",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/heldout/normal.input.json",
+      "sha256": "c7be1c33d5de0bee3ba4c5e0a4ddb7fda952129b526a64c6f2596f6ef7c1ed92",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/heldout/spec_change.fixture-output.json",
+      "sha256": "155bd50e2c8852652a6fc43ca90a8a0199add3754c67ff156ae7ba7f6e08d42f",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/heldout/spec_change.input.json",
+      "sha256": "b623bafef2e0a1869a27db7dc2b176db9b3f194c276f772be02779cbe17cfa4d",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/schemas/input.json",
+      "sha256": "0a01bf54ca597a04905a13875cddd630572f858943913406a4ca95e6568b492d",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    },
+    {
+      "path": "evals/core-contract/schemas/output.json",
+      "sha256": "f5ebb8b0c466e0c38ff6df19dfee1446db84350d9c4a36478438d0b5aa92b7d5",
+      "git_commit": "bdf653f070b30fb9e1854ed2ca7b3bb65d5fbeb3"
+    }
+  ]
+}
