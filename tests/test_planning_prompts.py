@@ -88,6 +88,36 @@ class PlanningPromptTests(unittest.TestCase):
         self.assertIn("assumptions/requirements", concept)
         self.assertIn("정상적으로 적절한 신규 후보가 없으면", concept)
 
+    def test_concept_prompt_allows_new_hypotheses_without_fabricating_existing_facts(self):
+        case, agent, _transport = self.fixture()
+        result = agent.run(case.payload)
+        concept = result["model_calls"][2]["prompt"].split("DATA_JSON:\n", 1)[0]
+        self.assertIn("현재 설명서에 없는 형태·기능·서비스를 기획 가설로 제안할 수", concept)
+        self.assertIn("기존 기능의 사실 근거", concept)
+        self.assertIn("제조·성능·인증·효과를 이미 검증한 제품처럼 주장하지", concept)
+        self.assertIn("적절한 신규 후보가 없으면 concepts는 비우고", concept)
+        self.assertNotIn(case.output["concepts"][0]["title"], concept)
+        self.assertNotIn("자료에 없는 근거를 만들지", concept)
+
+    def test_generated_hypothesis_stays_needs_review_with_unchanged_source_facts(self):
+        def proposed(skill, _context, value, _count):
+            if skill == "concept_draft":
+                candidate = value["result"]["concepts"][0]
+                candidate.update(title="후속 검증이 필요한 사용 흐름 개선안", kind="service",
+                                 status="needs_review", assumptions=["제조와 실제 사용 효과는 미검증"],
+                                 requirements=["현재 사용 부담을 줄이는지 후속 검증"])
+            return value
+        case, agent, transport = self.fixture(proposed)
+        result = agent.run(case.payload)
+        self.assertEqual(result["status"], "completed", result)
+        self.assertEqual(len(transport.posts), 3)
+        candidate = result["output"]["concepts"][0]
+        self.assertEqual(candidate["status"], "needs_review")
+        self.assertEqual(candidate["assumptions"], ["제조와 실제 사용 효과는 미검증"])
+        self.assertEqual(result["original_input"]["sources"], case.payload["sources"])
+        self.assertEqual(candidate["evidence_ids"], case.output["concepts"][0]["evidence_ids"])
+        self.assertEqual(result["input"]["revision_count"], 0)
+
     def test_upstream_context_is_reset_on_each_run(self):
         case, agent, transport = self.fixture()
         self.assertEqual(agent.run(case.payload)["status"], "completed")
