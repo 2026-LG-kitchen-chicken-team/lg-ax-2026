@@ -21,7 +21,7 @@
     "0~3개 후보·근거 부족·동일 모델·최대 2회 수정을 계약화한다.",
     "기대 대응과 개발 자료를 분리한다."
   ],
-  "status": "pm_review_requested",
+  "status": "done",
   "scope": "required",
   "issue_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/7",
   "branch": null,
@@ -29,10 +29,22 @@
     "path": "harness/phase2/runs/core001-20261004-2300/individual.json",
     "sha256": "e3a02a3efcfd556bbf2cd22dbc491b0b8120e2e01878d434f6bf9d8becc089b0"
   },
-  "pm_review": null,
-  "merge": null,
-  "integration": null,
-  "completion": null,
+  "pm_review": {
+    "path": "harness/phase2/runs/pm-core001-intake-20261005/review.json",
+    "sha256": "6a8b056b731eeca8f557986379de2f09b314679d0e1569f28fbb575e5f8cfd45"
+  },
+  "merge": {
+    "path": "harness/phase2/runs/pm-core001-intake-20261005/merge.json",
+    "sha256": "82dc17c16567ba3fe6a760b4a3a4e65eb2b9f60e31063445b539ff0bf60d6209"
+  },
+  "integration": {
+    "path": "harness/phase2/runs/pm-core001-intake-20261005/integration.json",
+    "sha256": "a70c8e5ce768a980b051e95eb9034559db9695e9b80eb47c65de12bbead96059"
+  },
+  "completion": {
+    "path": "harness/phase2/runs/pm-core001-intake-20261005/complete.json",
+    "sha256": "3375c516fa39486dbec981b7dad9ccef55ff92a21c4057e63e1bc06ed831dc89"
+  },
   "block_reason": null,
   "history": [
     {
@@ -49,6 +61,26 @@
       "at": "2026-10-04T14:23:21+00:00",
       "action": "request-review",
       "status": "pm_review_requested"
+    },
+    {
+      "at": "2026-10-04T15:21:28+00:00",
+      "action": "review",
+      "status": "pm_approved"
+    },
+    {
+      "at": "2026-10-04T15:21:29+00:00",
+      "action": "merge",
+      "status": "merged"
+    },
+    {
+      "at": "2026-10-04T15:21:32+00:00",
+      "action": "verify",
+      "status": "integration_verified"
+    },
+    {
+      "at": "2026-10-04T15:21:34+00:00",
+      "action": "complete",
+      "status": "done"
     }
   ]
 }
