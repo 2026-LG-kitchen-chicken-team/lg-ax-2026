@@ -1,0 +1,460 @@
+{
+  "schema_version": 1,
+  "independent_from_development": true,
+  "cases": [
+    {
+      "case_id": "SEM-01",
+      "category": "normal",
+      "request": {
+        "request": {
+          "product_group": "microwave",
+          "target_customer": "주방 가전을 사용하는 가구",
+          "use_situation": "자료에 적힌 같은 모델과 사용 조건을 검토한다.",
+          "improvement_task": "국물 있는 음식을 쏟은 뒤 회전판 아래 홈에 고여 회전판을 꺼내고도 닦기 어렵다.",
+          "exclusions": [
+            "다른 모델 기능 혼용",
+            "근거 없는 효과 단정"
+          ],
+          "model_ids": [
+            "SEM-01-MODEL"
+          ],
+          "dataset_version": "SEM-01-independent-v1"
+        },
+        "product": {
+          "model_id": "SEM-01-MODEL",
+          "name": "독립 평가용 가상 microwave",
+          "product_group": "microwave",
+          "document_version": "1.0",
+          "source_kind": "synthetic"
+        },
+        "sources": [
+          {
+            "id": "SEM-01-REVIEW",
+            "model_id": "SEM-01-MODEL",
+            "document_version": "1.0",
+            "source_kind": "synthetic",
+            "source_type": "review",
+            "source_id": "SEM-01-CSV",
+            "locator": {
+              "row": 2
+            },
+            "text": "국물 있는 음식을 쏟은 뒤 회전판 아래 홈에 고여 회전판을 꺼내고도 닦기 어렵다.",
+            "feature_ids": []
+          },
+          {
+            "id": "SEM-01-MANUAL",
+            "model_id": "SEM-01-MODEL",
+            "document_version": "1.0",
+            "source_kind": "synthetic",
+            "source_type": "manual",
+            "source_id": "SEM-01-DOC",
+            "locator": {
+              "page": 4,
+              "section": "기능 및 사용 조건"
+            },
+            "text": "유리 회전판은 분리하여 세척할 수 있다. 회전판 아래 받침과 홈은 손으로 닦는다.",
+            "feature_ids": [
+              "SEM-01-FEATURE"
+            ]
+          }
+        ],
+        "features": [
+          {
+            "id": "SEM-01-FEATURE",
+            "model_id": "SEM-01-MODEL",
+            "document_version": "1.0",
+            "name": "설명서의 제공 기능",
+            "description": "유리 회전판은 분리하여 세척할 수 있다. 회전판 아래 받침과 홈은 손으로 닦는다.",
+            "conditions": [
+              "명시한 사용 조건을 충족해야 한다."
+            ],
+            "evidence_ids": [
+              "SEM-01-MANUAL"
+            ]
+          }
+        ],
+        "revision_count": 0,
+        "max_concepts": 3,
+        "changed_evidence_ids": []
+      },
+      "data_path": "materials/SEM-01.json",
+      "output_contract_path": "../core-contract/schemas/output.json"
+    },
+    {
+      "case_id": "SEM-02",
+      "category": "duplicate_feature",
+      "request": {
+        "request": {
+          "product_group": "fridge",
+          "target_customer": "주방 가전을 사용하는 가구",
+          "use_situation": "자료에 적힌 같은 모델과 사용 조건을 검토한다.",
+          "improvement_task": "문을 닫지 않고 자리를 비운 적이 있어서 1분 후 소리로 알려주는 기능을 원한다.",
+          "exclusions": [
+            "다른 모델 기능 혼용",
+            "근거 없는 효과 단정"
+          ],
+          "model_ids": [
+            "SEM-02-MODEL"
+          ],
+          "dataset_version": "SEM-02-independent-v1"
+        },
+        "product": {
+          "model_id": "SEM-02-MODEL",
+          "name": "독립 평가용 가상 fridge",
+          "product_group": "fridge",
+          "document_version": "1.0",
+          "source_kind": "synthetic"
+        },
+        "sources": [
+          {
+            "id": "SEM-02-REVIEW",
+            "model_id": "SEM-02-MODEL",
+            "document_version": "1.0",
+            "source_kind": "synthetic",
+            "source_type": "review",
+            "source_id": "SEM-02-CSV",
+            "locator": {
+              "row": 2
+            },
+            "text": "문을 닫지 않고 자리를 비운 적이 있어서 1분 후 소리로 알려주는 기능을 원한다.",
+            "feature_ids": []
+          },
+          {
+            "id": "SEM-02-MANUAL",
+            "model_id": "SEM-02-MODEL",
+            "document_version": "1.0",
+            "source_kind": "synthetic",
+            "source_type": "manual",
+            "source_id": "SEM-02-DOC",
+            "locator": {
+              "page": 4,
+              "section": "기능 및 사용 조건"
+            },
+            "text": "냉장실 문이 열린 채 60초가 지나면 소리 알림이 반복된다. 사용자가 문을 닫으면 멈춘다.",
+            "feature_ids": [
+              "SEM-02-FEATURE"
+            ]
+          }
+        ],
+        "features": [
+          {
+            "id": "SEM-02-FEATURE",
+            "model_id": "SEM-02-MODEL",
+            "document_version": "1.0",
+            "name": "설명서의 제공 기능",
+            "description": "냉장실 문이 열린 채 60초가 지나면 소리 알림이 반복된다. 사용자가 문을 닫으면 멈춘다.",
+            "conditions": [
+              "명시한 사용 조건을 충족해야 한다."
+            ],
+            "evidence_ids": [
+              "SEM-02-MANUAL"
+            ]
+          }
+        ],
+        "revision_count": 0,
+        "max_concepts": 3,
+        "changed_evidence_ids": []
+      },
+      "data_path": "materials/SEM-02.json",
+      "output_contract_path": "../core-contract/schemas/output.json"
+    },
+    {
+      "case_id": "SEM-03",
+      "category": "model_version_confusion",
+      "request": {
+        "request": {
+          "product_group": "fridge",
+          "target_customer": "주방 가전을 사용하는 가구",
+          "use_situation": "자료에 적힌 같은 모델과 사용 조건을 검토한다.",
+          "improvement_task": "문 안쪽 칸의 높이를 바꿀 수 있는지 이 모델 기준으로 확인하고 싶다.",
+          "exclusions": [
+            "다른 모델 기능 혼용",
+            "근거 없는 효과 단정"
+          ],
+          "model_ids": [
+            "SEM-03-MODEL"
+          ],
+          "dataset_version": "SEM-03-independent-v1"
+        },
+        "product": {
+          "model_id": "SEM-03-MODEL",
+          "name": "독립 평가용 가상 fridge",
+          "product_group": "fridge",
+          "document_version": "1.0",
+          "source_kind": "synthetic"
+        },
+        "sources": [
+          {
+            "id": "SEM-03-REVIEW",
+            "model_id": "SEM-03-MODEL",
+            "document_version": "1.0",
+            "source_kind": "synthetic",
+            "source_type": "review",
+            "source_id": "SEM-03-CSV",
+            "locator": {
+              "row": 2
+            },
+            "text": "문 안쪽 칸의 높이를 바꿀 수 있는지 이 모델 기준으로 확인하고 싶다.",
+            "feature_ids": []
+          },
+          {
+            "id": "SEM-03-MANUAL",
+            "model_id": "SEM-03-OTHER-MODEL",
+            "document_version": "9.0",
+            "source_kind": "synthetic",
+            "source_type": "manual",
+            "source_id": "SEM-03-DOC",
+            "locator": {
+              "page": 4,
+              "section": "기능 및 사용 조건"
+            },
+            "text": "다른 모델의 도어 수납칸은 세 단계 높이로 조절할 수 있다.",
+            "feature_ids": [
+              "SEM-03-FEATURE"
+            ]
+          }
+        ],
+        "features": [
+          {
+            "id": "SEM-03-FEATURE",
+            "model_id": "SEM-03-OTHER-MODEL",
+            "document_version": "9.0",
+            "name": "설명서의 제공 기능",
+            "description": "다른 모델의 도어 수납칸은 세 단계 높이로 조절할 수 있다.",
+            "conditions": [
+              "명시한 사용 조건을 충족해야 한다."
+            ],
+            "evidence_ids": [
+              "SEM-03-MANUAL"
+            ]
+          }
+        ],
+        "revision_count": 0,
+        "max_concepts": 3,
+        "changed_evidence_ids": []
+      },
+      "data_path": "materials/SEM-03.json",
+      "output_contract_path": "../core-contract/schemas/output.json"
+    },
+    {
+      "case_id": "SEM-04",
+      "category": "conflicting_reviews",
+      "request": {
+        "request": {
+          "product_group": "dishwasher",
+          "target_customer": "주방 가전을 사용하는 가구",
+          "use_situation": "자료에 적힌 같은 모델과 사용 조건을 검토한다.",
+          "improvement_task": "같은 표준 코스와 동일한 유리컵 적재에서 건조 결과가 일정한지 확인하고 싶다.",
+          "exclusions": [
+            "다른 모델 기능 혼용",
+            "근거 없는 효과 단정"
+          ],
+          "model_ids": [
+            "SEM-04-MODEL"
+          ],
+          "dataset_version": "SEM-04-independent-v1"
+        },
+        "product": {
+          "model_id": "SEM-04-MODEL",
+          "name": "독립 평가용 가상 dishwasher",
+          "product_group": "dishwasher",
+          "document_version": "1.0",
+          "source_kind": "synthetic"
+        },
+        "sources": [
+          {
+            "id": "SEM-04-REVIEW",
+            "model_id": "SEM-04-MODEL",
+            "document_version": "1.0",
+            "source_kind": "synthetic",
+            "source_type": "review",
+            "source_id": "SEM-04-CSV",
+            "locator": {
+              "row": 2
+            },
+            "text": "표준 코스에서 같은 유리컵 여섯 개를 같은 위치에 놓았는데 모두 물방울이 남았다.",
+            "feature_ids": []
+          },
+          {
+            "id": "SEM-04-MANUAL",
+            "model_id": "SEM-04-MODEL",
+            "document_version": "1.0",
+            "source_kind": "synthetic",
+            "source_type": "manual",
+            "source_id": "SEM-04-DOC",
+            "locator": {
+              "page": 4,
+              "section": "기능 및 사용 조건"
+            },
+            "text": "표준 코스 종료 뒤 잔열로 건조한다. 적재 및 물방울 위치에 따라 잔여 수분을 확인한다.",
+            "feature_ids": [
+              "SEM-04-FEATURE"
+            ]
+          },
+          {
+            "id": "SEM-04-REVIEW-2",
+            "model_id": "SEM-04-MODEL",
+            "document_version": "1.0",
+            "source_kind": "synthetic",
+            "source_type": "review",
+            "source_id": "SEM-04-CSV",
+            "locator": {
+              "row": 3
+            },
+            "text": "표준 코스에서 같은 유리컵 여섯 개를 같은 위치에 놓았는데 모두 물방울 없이 말랐다.",
+            "feature_ids": []
+          }
+        ],
+        "features": [
+          {
+            "id": "SEM-04-FEATURE",
+            "model_id": "SEM-04-MODEL",
+            "document_version": "1.0",
+            "name": "설명서의 제공 기능",
+            "description": "표준 코스 종료 뒤 잔열로 건조한다. 적재 및 물방울 위치에 따라 잔여 수분을 확인한다.",
+            "conditions": [
+              "명시한 사용 조건을 충족해야 한다."
+            ],
+            "evidence_ids": [
+              "SEM-04-MANUAL"
+            ]
+          }
+        ],
+        "revision_count": 0,
+        "max_concepts": 3,
+        "changed_evidence_ids": []
+      },
+      "data_path": "materials/SEM-04.json",
+      "output_contract_path": "../core-contract/schemas/output.json"
+    },
+    {
+      "case_id": "SEM-05",
+      "category": "missing_evidence",
+      "request": {
+        "request": {
+          "product_group": "microwave",
+          "target_customer": "주방 가전을 사용하는 가구",
+          "use_situation": "자료에 적힌 같은 모델과 사용 조건을 검토한다.",
+          "improvement_task": "소리를 들을 수 없는 상황에서 가열 종료 알림을 화면으로 볼 수 있는지 확인하고 싶다.",
+          "exclusions": [
+            "다른 모델 기능 혼용",
+            "근거 없는 효과 단정"
+          ],
+          "model_ids": [
+            "SEM-05-MODEL"
+          ],
+          "dataset_version": "SEM-05-independent-v1"
+        },
+        "product": {
+          "model_id": "SEM-05-MODEL",
+          "name": "독립 평가용 가상 microwave",
+          "product_group": "microwave",
+          "document_version": "1.0",
+          "source_kind": "synthetic"
+        },
+        "sources": [
+          {
+            "id": "SEM-05-REVIEW",
+            "model_id": "SEM-05-MODEL",
+            "document_version": "1.0",
+            "source_kind": "synthetic",
+            "source_type": "review",
+            "source_id": "SEM-05-CSV",
+            "locator": {
+              "row": 2
+            },
+            "text": "소리를 들을 수 없는 상황에서 가열 종료 알림을 화면으로 볼 수 있는지 확인하고 싶다.",
+            "feature_ids": []
+          }
+        ],
+        "features": [],
+        "revision_count": 0,
+        "max_concepts": 3,
+        "changed_evidence_ids": []
+      },
+      "data_path": "materials/SEM-05.json",
+      "output_contract_path": "../core-contract/schemas/output.json"
+    },
+    {
+      "case_id": "SEM-06",
+      "category": "specification_change",
+      "request": {
+        "request": {
+          "product_group": "dishwasher",
+          "target_customer": "주방 가전을 사용하는 가구",
+          "use_situation": "자료에 적힌 같은 모델과 사용 조건을 검토한다.",
+          "improvement_task": "세제가 남았는지 확인하려면 문을 열어 식기를 꺼내야 해서 외부 확인 방식을 검토하고 싶다.",
+          "exclusions": [
+            "다른 모델 기능 혼용",
+            "근거 없는 효과 단정"
+          ],
+          "model_ids": [
+            "SEM-06-MODEL"
+          ],
+          "dataset_version": "SEM-06-independent-v2"
+        },
+        "product": {
+          "model_id": "SEM-06-MODEL",
+          "name": "독립 평가용 가상 dishwasher",
+          "product_group": "dishwasher",
+          "document_version": "2.0",
+          "source_kind": "synthetic"
+        },
+        "sources": [
+          {
+            "id": "SEM-06-REVIEW",
+            "model_id": "SEM-06-MODEL",
+            "document_version": "2.0",
+            "source_kind": "synthetic",
+            "source_type": "review",
+            "source_id": "SEM-06-CSV",
+            "locator": {
+              "row": 2
+            },
+            "text": "세제가 남았는지 확인하려면 문을 열어 식기를 꺼내야 해서 외부 확인 방식을 검토하고 싶다.",
+            "feature_ids": []
+          },
+          {
+            "id": "SEM-06-MANUAL",
+            "model_id": "SEM-06-MODEL",
+            "document_version": "2.0",
+            "source_kind": "synthetic",
+            "source_type": "manual",
+            "source_id": "SEM-06-DOC",
+            "locator": {
+              "page": 4,
+              "section": "기능 및 사용 조건"
+            },
+            "text": "투명한 외부 표시창에 잔여 세제 검사 완료/재헹굼 필요 상태를 표시한다. 전용 센서 검사 코스를 사용한다.",
+            "feature_ids": [
+              "SEM-06-FEATURE"
+            ]
+          }
+        ],
+        "features": [
+          {
+            "id": "SEM-06-FEATURE",
+            "model_id": "SEM-06-MODEL",
+            "document_version": "2.0",
+            "name": "설명서의 제공 기능",
+            "description": "투명한 외부 표시창에 잔여 세제 검사 완료/재헹굼 필요 상태를 표시한다. 전용 센서 검사 코스를 사용한다.",
+            "conditions": [
+              "전용 센서 검사 코스에서 검사 상태를 표시한다."
+            ],
+            "evidence_ids": [
+              "SEM-06-MANUAL"
+            ]
+          }
+        ],
+        "revision_count": 0,
+        "max_concepts": 3,
+        "changed_evidence_ids": [
+          "SEM-06-REVIEW",
+          "SEM-06-MANUAL"
+        ]
+      },
+      "data_path": "materials/SEM-06.json",
+      "output_contract_path": "../core-contract/schemas/output.json"
+    }
+  ]
+}

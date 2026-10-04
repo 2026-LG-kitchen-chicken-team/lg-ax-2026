@@ -1,0 +1,21 @@
+{"execution_kind":"fixture","new_live_model_calls":0,"consumer_pr":61,"consumer_head":"963d3b8c87ac62bea71880279ad116864075b6a7","original_failures":[{"name":"uncertain","errors":["/violations/0 must NOT have additional properties"]},{"name":"persistent_violation","errors":["/violations/0 must NOT have additional properties"]}],"current":[{"name":"accept","decision_errors":[],"view_kind":"ok","view_problems":[],"status":"completed","revision_count":0,"model_calls":4},{"name":"uncertain","decision_errors":[],"view_kind":"ok","view_problems":[],"status":"held","revision_count":0,"model_calls":4},{"name":"persistent_violation","decision_errors":[],"view_kind":"ok","view_problems":[],"status":"failed","revision_count":2,"model_calls":8},{"name":"invalid_review","decision_errors":[],"view_kind":"ok","view_problems":[],"status":"failed","revision_count":2,"model_calls":8},{"name":"invalid_generation","decision_errors":[],"view_kind":"ok","view_problems":[],"status":"failed","revision_count":2,"model_calls":3}],"limitation":"Actual fixed-source functions and fixture persistence, no browser or live-model execution."}
+(!) Failed to run dependency scan. Skipping dependency pre-bundling. Error:   Failed to scan for dependencies from entries:
+  C:/Users/admin/Documents/ChatGPT/LG 해커톤/lg-ax-2026/apps/web/index.html
+
+  X [ERROR] The server is being restarted or closed. Request is outdated [plugin vite:dep-scan]
+
+    apps/web/src/liveWorkspace.ts:6:32:
+      6 │ import { WorkspaceClient } from './workspace';
+        ╵                                 ~~~~~~~~~~~~~
+
+
+    at failureErrorWithLog (C:\Users\admin\Documents\ChatGPT\LG 해커톤\lg-ax-2026\apps\web\node_modules\esbuild\lib\main.js:1748:15)
+    at C:\Users\admin\Documents\ChatGPT\LG 해커톤\lg-ax-2026\apps\web\node_modules\esbuild\lib\main.js:1207:25
+    at runOnEndCallbacks (C:\Users\admin\Documents\ChatGPT\LG 해커톤\lg-ax-2026\apps\web\node_modules\esbuild\lib\main.js:1588:45)
+    at buildResponseToResult (C:\Users\admin\Documents\ChatGPT\LG 해커톤\lg-ax-2026\apps\web\node_modules\esbuild\lib\main.js:1205:7)
+    at C:\Users\admin\Documents\ChatGPT\LG 해커톤\lg-ax-2026\apps\web\node_modules\esbuild\lib\main.js:1217:9
+    at new Promise (<anonymous>)
+    at requestCallbacks.on-end (C:\Users\admin\Documents\ChatGPT\LG 해커톤\lg-ax-2026\apps\web\node_modules\esbuild\lib\main.js:1216:54)
+    at handleRequest (C:\Users\admin\Documents\ChatGPT\LG 해커톤\lg-ax-2026\apps\web\node_modules\esbuild\lib\main.js:909:17)
+    at handleIncomingPacket (C:\Users\admin\Documents\ChatGPT\LG 해커톤\lg-ax-2026\apps\web\node_modules\esbuild\lib\main.js:934:7)
+    at Socket.readFromStdout (C:\Users\admin\Documents\ChatGPT\LG 해커톤\lg-ax-2026\apps\web\node_modules\esbuild\lib\main.js:862:7)

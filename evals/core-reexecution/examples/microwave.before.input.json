@@ -1,0 +1,71 @@
+{
+  "request": {
+    "product_group": "microwave",
+    "target_customer": "냉동밥을 자주 데우는 사용자",
+    "use_situation": "냉동밥을 해동한 후 가열한다.",
+    "improvement_task": "해동 후 가열 시간은 직접 정해야 해서 밥 중앙이 차가워 다시 돌렸다.",
+    "exclusions": [
+      "다른 모델 기능 혼용"
+    ],
+    "model_ids": [
+      "CHANGE-MICROWAVE-MODEL"
+    ],
+    "dataset_version": "CHANGE-MICROWAVE-v1"
+  },
+  "product": {
+    "model_id": "CHANGE-MICROWAVE-MODEL",
+    "name": "재실행 예제용 가상 microwave",
+    "product_group": "microwave",
+    "document_version": "1.0",
+    "source_kind": "synthetic"
+  },
+  "sources": [
+    {
+      "id": "CHANGE-MICROWAVE-REVIEW",
+      "model_id": "CHANGE-MICROWAVE-MODEL",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "review",
+      "source_id": "CHANGE-MICROWAVE-REVIEW-DOC",
+      "locator": {
+        "row": 2
+      },
+      "text": "해동 후 가열 시간은 직접 정해야 해서 밥 중앙이 차가워 다시 돌렸다.",
+      "feature_ids": []
+    },
+    {
+      "id": "CHANGE-MICROWAVE-MANUAL",
+      "model_id": "CHANGE-MICROWAVE-MODEL",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "manual",
+      "source_id": "CHANGE-MICROWAVE-MANUAL-DOC",
+      "locator": {
+        "page": 3,
+        "section": "사용 조건"
+      },
+      "text": "무게를 입력하면 해동 시간을 계산한다. 가열 시간은 사용자가 직접 설정한다.",
+      "feature_ids": [
+        "CHANGE-MICROWAVE-FEATURE"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "id": "CHANGE-MICROWAVE-FEATURE",
+      "model_id": "CHANGE-MICROWAVE-MODEL",
+      "document_version": "1.0",
+      "name": "설명서의 현재 지원 기능",
+      "description": "무게를 입력하면 해동 시간을 계산한다. 가열 시간은 사용자가 직접 설정한다.",
+      "conditions": [
+        "설명서의 사용 조건을 충족해야 함"
+      ],
+      "evidence_ids": [
+        "CHANGE-MICROWAVE-MANUAL"
+      ]
+    }
+  ],
+  "revision_count": 2,
+  "max_concepts": 3,
+  "changed_evidence_ids": []
+}

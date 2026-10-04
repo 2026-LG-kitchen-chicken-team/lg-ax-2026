@@ -12,6 +12,7 @@ from jsonschema import Draft202012Validator
 from lgax_core.judgement_contract import input_digest, review_judgement
 from lgax_core.model_client import ModelConfig, OllamaAdapter, StructuredModelClient
 from lgax_core.planning_agent import PlanningAgent, generation_schema, main
+from lgax_core.semantic_review import QUALITY
 from lgax_core.store import DemoStore
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -45,6 +46,18 @@ def stages_for(output):
             for skill, fields in keys.items()}
 
 
+def semantic_for(context):
+    def row(candidate):
+        return {"concept_id": candidate["id"], "verdict": "satisfied", "reason": "테스트가 작성한 검토 선언",
+                "candidate_quote": candidate["title"], "source_quotes": []}
+    return {"input_sha256": context["input_sha256"], "output_sha256": context["output_sha256"],
+            "exclusion_assessments": [{**row(c), "verdict": "compliant", "condition_index": i, "condition": condition}
+                                      for c in context["concepts"]
+                                      for i, condition in enumerate(context["request"]["exclusions"])],
+            "quality_assessments": [{**row(c), "criterion": criterion}
+                                    for c in context["concepts"] for criterion in QUALITY], "questions": []}
+
+
 class Transport:
     def __init__(self, stages, alter=None):
         self.stages, self.alter = stages, alter
@@ -59,7 +72,7 @@ class Transport:
             context = json.loads(sent["prompt"].split("DATA_JSON:\n", 1)[1])
             skill = sent["prompt"].split("업무=", 1)[1].split(".", 1)[0]
             self.posts.append({"skill": skill, "context": context, "request": sent})
-            value = deepcopy(self.stages[skill])
+            value = semantic_for(context) if skill == "semantic_review" else deepcopy(self.stages[skill])
             if self.alter:
                 value = self.alter(skill, context, value, len(self.posts))
             body = {"model": MODEL, "done": True, "done_reason": "stop",
@@ -90,7 +103,7 @@ class PlanningAgentTests(unittest.TestCase):
         result = agent.run(self.payload)
         self.assertEqual(result["status"], "completed", result)
         self.assertEqual(result["decision"]["action"], "accept")
-        self.assertEqual(len(transport.posts), 3)
+        self.assertEqual(len(transport.posts), 4)
         self.assertEqual(self.payload, original)
         self.assertEqual(result["original_input"], original)
         self.assertEqual(result["output"]["concepts"], self.output["concepts"])
@@ -232,7 +245,8 @@ class PlanningAgentTests(unittest.TestCase):
         agent, transport = self.agent(duplicate_once)
         result = agent.run(self.payload)
         self.assertEqual(result["status"], "completed", result)
-        self.assertEqual([p["skill"] for p in transport.posts], ["need_extract", "product_compare", "concept_draft", "concept_draft"])
+        self.assertEqual([p["skill"] for p in transport.posts],
+                         ["need_extract", "product_compare", "concept_draft", "concept_draft", "semantic_review"])
         self.assertEqual(result["input"]["revision_count"], 1)
         self.assertEqual(result["original_input"]["revision_count"], 0)
         self.assertNotEqual(result["model_calls"][0]["input_sha256"], result["model_calls"][-1]["input_sha256"])
@@ -262,7 +276,8 @@ class PlanningAgentTests(unittest.TestCase):
         agent, transport = self.agent(wrong_once)
         result = agent.run(self.payload)
         self.assertEqual(result["status"], "completed", result)
-        self.assertEqual([p["skill"] for p in transport.posts], ["need_extract", "need_extract", "product_compare", "concept_draft"])
+        self.assertEqual([p["skill"] for p in transport.posts],
+                         ["need_extract", "need_extract", "product_compare", "concept_draft", "semantic_review"])
         self.assertEqual(result["input"]["revision_count"], 1)
 
     def test_malformed_json_retries_twice_then_stops_with_raw_failures(self):
@@ -288,8 +303,8 @@ class PlanningAgentTests(unittest.TestCase):
         first = agent.run(self.payload)
         second = agent.run(self.payload)
         self.assertEqual(first["status"], second["status"])
-        self.assertEqual(len(first["model_calls"]), 3)
-        self.assertEqual(len(second["model_calls"]), 3)
+        self.assertEqual(len(first["model_calls"]), 4)
+        self.assertEqual(len(second["model_calls"]), 4)
         self.assertEqual(second["input"]["revision_count"], 0)
 
     def test_cli_refuses_overwriting_input_without_environment_or_model_call(self):

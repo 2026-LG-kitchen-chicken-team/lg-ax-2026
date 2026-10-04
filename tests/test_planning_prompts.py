@@ -46,7 +46,7 @@ class PlanningPromptTests(unittest.TestCase):
         result = agent.run(case.payload)
         self.assertEqual(result["status"], "completed", result)
         self.assertEqual([post["skill"] for post in transport.posts],
-                         ["need_extract", "need_extract", "product_compare", "concept_draft"])
+                         ["need_extract", "need_extract", "product_compare", "concept_draft", "semantic_review"])
         self.assertEqual(result["input"]["revision_count"], 1)
         first = result["model_calls"][0]
         self.assertEqual(first["error"]["details"]["reason"], "schema_mismatch")
@@ -58,7 +58,7 @@ class PlanningPromptTests(unittest.TestCase):
         original = deepcopy(case.payload)
         result = agent.run(case.payload)
         self.assertEqual(result["status"], "completed", result)
-        first, compare, concept = [post["context"] for post in transport.posts]
+        first, compare, concept = [post["context"] for post in transport.posts[:3]]
         for context in (first, compare, concept):
             self.assertEqual(context["review_evidence_ids"], [case.payload["sources"][0]["id"]])
             self.assertEqual(context["manual_evidence_ids"], [case.payload["sources"][1]["id"]])
@@ -136,7 +136,7 @@ class PlanningPromptTests(unittest.TestCase):
         case, agent, transport = self.fixture(proposed)
         result = agent.run(case.payload)
         self.assertEqual(result["status"], "completed", result)
-        self.assertEqual(len(transport.posts), 3)
+        self.assertEqual(len(transport.posts), 4)
         candidate = result["output"]["concepts"][0]
         self.assertEqual(candidate["status"], "needs_review")
         self.assertEqual(candidate["assumptions"], ["제조와 실제 사용 효과는 미검증"])
@@ -149,8 +149,8 @@ class PlanningPromptTests(unittest.TestCase):
         self.assertEqual(agent.run(case.payload)["status"], "completed")
         again = agent.run(case.payload)
         self.assertEqual(again["status"], "completed")
-        self.assertEqual(transport.posts[3]["context"]["upstream_assessments"], {})
-        self.assertEqual(len(again["model_calls"]), 3)
+        self.assertEqual(transport.posts[4]["context"]["upstream_assessments"], {})
+        self.assertEqual(len(again["model_calls"]), 4)
 
 
 if __name__ == "__main__":

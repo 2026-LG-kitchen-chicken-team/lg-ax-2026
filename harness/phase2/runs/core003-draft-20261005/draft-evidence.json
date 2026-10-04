@@ -1,0 +1,116 @@
+{
+  "task_id": "P2-CORE-003",
+  "owner": "황대겸",
+  "result": "partial",
+  "execution_kind": "fixture",
+  "purpose": "Draft code handoff, never CORE003 live_model finish evidence",
+  "observed_at": "2026-10-04T15:34:01.796247+00:00",
+  "tested_commit": "0a3de02c04771d0ddf26d39b914603a2148dcf9c",
+  "models": [],
+  "checks": [
+    {
+      "name": "contracts.txt",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core003-draft-20261005/contracts.txt",
+        "sha256": "1e1b81f4c2607b74aca9deb8fd8bf0f1b048508d317d21f36ed1b59fca45661b"
+      }
+    },
+    {
+      "name": "fixture-session.json",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core003-draft-20261005/fixture-session.json",
+        "sha256": "9692a7c9790b38fc238f73ced604e0a5dfae968246be3319241794a6fd731edf"
+      }
+    },
+    {
+      "name": "lint.txt",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core003-draft-20261005/lint.txt",
+        "sha256": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0"
+      }
+    },
+    {
+      "name": "phase2.txt",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core003-draft-20261005/phase2.txt",
+        "sha256": "6e84f7ccf1d99593ee0bf819047eb956d33efeb0f2863bbecbebdca299bd1e42"
+      }
+    },
+    {
+      "name": "python-tests.txt",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core003-draft-20261005/python-tests.txt",
+        "sha256": "6f1175707ed14a3d3d7a25c1199af871cb4ded506390a3aa9110a4986e3d5f40"
+      }
+    },
+    {
+      "name": "rules.txt",
+      "passed": true,
+      "evidence": {
+        "path": "harness/phase2/runs/core003-draft-20261005/rules.txt",
+        "sha256": "7e0a7002be1c8a6a929966a18bc7207035beabeef3065614f21a9b6265ca789d"
+      }
+    }
+  ],
+  "code_versions": [
+    {
+      "path": "packages/core/src/lgax_core/revision_guard.py",
+      "sha256": "d5a4a7d45c9d24ce90dd54b89153abc40dc3ab87bb58ad40a0e5d2fd55d75d7b",
+      "git_commit": "0a3de02c04771d0ddf26d39b914603a2148dcf9c"
+    },
+    {
+      "path": "tests/test_revision_guard.py",
+      "sha256": "0f103298e134fdf5c603497d915e94b58e68b54caed9db92b0ec066e992fd66b",
+      "git_commit": "0a3de02c04771d0ddf26d39b914603a2148dcf9c"
+    },
+    {
+      "path": "docs/core/revision-guard-draft.md",
+      "sha256": "2cdc8ef7954113258bba28dfe5d2b1ab4569a8518cd8822119c58b181ae69ad2",
+      "git_commit": "0a3de02c04771d0ddf26d39b914603a2148dcf9c"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "sha256": "d7cf46d9a980b00ad786ec46feaf3d31e4094f56ff0899d8bab59bdf95a9bad5",
+      "git_commit": "0a3de02c04771d0ddf26d39b914603a2148dcf9c"
+    },
+    {
+      "path": "packages/core/src/lgax_core/skill_runner.py",
+      "sha256": "2077cd295b96bbd94ab839e3deecf38d6371583163a3d421849aa1949ffcce6a",
+      "git_commit": "0a3de02c04771d0ddf26d39b914603a2148dcf9c"
+    },
+    {
+      "path": "packages/core/src/lgax_core/model_client.py",
+      "sha256": "35a96cf2af7293d15f83c241ab3da28461234c9e14d748c0414e08e9dbffa840",
+      "git_commit": "0a3de02c04771d0ddf26d39b914603a2148dcf9c"
+    },
+    {
+      "path": "evals/core-contract/development/normal.input.json",
+      "sha256": "a6b0f8dea39c2914cabb8b7e471c28b5fa5fa31feb0eb5138a52f2079321f1d9",
+      "git_commit": "0a3de02c04771d0ddf26d39b914603a2148dcf9c"
+    },
+    {
+      "path": "evals/core-contract/development/normal.fixture-output.json",
+      "sha256": "a0fda714005e609fad857a905eb9efb6dde41e545ba3d9b76621b2ab91fd235d",
+      "git_commit": "0a3de02c04771d0ddf26d39b914603a2148dcf9c"
+    }
+  ],
+  "observations": [
+    "28 new guard tests; total344 Python tests on main-based independent branch passed.",
+    "Two authorized fixture revision attempts succeeded; replay and third calls denied.",
+    "Strict model output rejects tool/permission/counter expansion.",
+    "Actual offline store reads and CORE001 checker/SkillRuntime executed."
+  ],
+  "limitations": [
+    "No live LLM, SSH, GPU or model download; PM handles connection/execution/verification.",
+    "No semantic robustness against a real adversarial model proved.",
+    "No automatic #54 pipeline/workspace/API/MCP/web integration.",
+    "CORE002 dependency and CORE003 formal completion remain pending."
+  ]
+}
