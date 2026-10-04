@@ -162,6 +162,7 @@ class PlanningAgent:
             return fail(error)
 
         state: dict[str, dict] = {}
+        resolved_reasons: list[str] = []
         feedback: list[dict] = []
         runtime = SkillRuntime(self.store)
         config = self.client.adapter.config
@@ -208,7 +209,14 @@ class PlanningAgent:
                 state[skill_id] = deepcopy(generated.data)
                 if skill_id == "concept_draft" and generated.data["hold_reasons"] != generated.data["result"]["hold_reasons"]:
                     raise DomainError("VALIDATION_FAILED", "후보 보류 사유의 두 표현이 다릅니다.", {})
-                return generated.data["result"]
+                skill_result = deepcopy(generated.data["result"])
+                if skill_id == "concept_draft":
+                    reasons = generated.data["no_candidate_reasons"]
+                    if ("no_candidate_reasons" in skill_result
+                            and skill_result["no_candidate_reasons"] != reasons):
+                        raise DomainError("VALIDATION_FAILED", "후보 없음 사유의 두 표현이 다릅니다.", {})
+                    skill_result["no_candidate_reasons"] = deepcopy(reasons)
+                return skill_result
             return generate
 
         for skill_id in SKILLS:
@@ -235,6 +243,8 @@ class PlanningAgent:
                         combined[key] = deepcopy(declaration[key])
                 for key in ("questions", "hold_reasons", "no_candidate_reasons"):
                     combined[key] = list(dict.fromkeys(combined[key] + declaration[key]))
+            combined["no_candidate_reasons"] = list(dict.fromkeys(
+                combined["no_candidate_reasons"] + resolved_reasons))
             if combined["hold_reasons"] or combined["unresolved"]:
                 combined["status"] = "held"
                 # A declaration requiring hold must not proceed to generate ideas.
@@ -257,6 +267,17 @@ class PlanningAgent:
                 if i > 0 and (current["status"] == "held" or not current["needs"]):
                     event(STAGE[skill_id], "skip_held", {}, {"hold_reasons": current["hold_reasons"]})
                     break
+                if skill_id == "concept_draft" and current["gaps"] and all(
+                    item["resolution"] == "resolved" for item in current["gap_assessments"]
+                ):
+                    reasons = ["조회한 기존 기능으로 확인된 불편이 모두 해결되어 신규 후보가 필요하지 않습니다."]
+                    candidate = {**current, "no_candidate_reasons": reasons}
+                    checked = review_judgement(payload, candidate)
+                    if checked["valid"] and checked["action"] == "accept":
+                        resolved_reasons = reasons
+                        event("concepts", "skip_resolved", {"gap_ids": [g["id"] for g in current["gaps"]]},
+                              {"no_candidate_reasons": reasons, "decision": checked})
+                        break
                 if skill_id == "need_extract":
                     args = {**common, "review_evidence_ids": [e["id"] for e in payload["sources"]
                                                                if e["source_type"] == "review"]}

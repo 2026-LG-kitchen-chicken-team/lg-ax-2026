@@ -69,7 +69,9 @@ def schema_for(skill_id: str, direction: str) -> dict:
                                                              "desired_outcome": {"type": "string", "minLength": 1}})),
                          "unresolved": texts},
         "product_compare": {"gaps": gap_list, "unresolved": texts},
-        "concept_draft": {"concepts": concept_list, "hold_reasons": texts},
+        "concept_draft": {"concepts": concept_list, "hold_reasons": texts,
+                          "no_candidate_reasons": _array({"type": "string", "minLength": 1,
+                                                          "pattern": r"\S"}, uniqueItems=True)},
         "review_revision": {"needs": need_list, "gaps": gap_list, "concepts": concept_list,
                             "changes": _array(_object({"field": {"type": "string", "minLength": 1},
                                                        "reason": {"type": "string", "minLength": 1},
@@ -86,7 +88,9 @@ def schema_for(skill_id: str, direction: str) -> dict:
                         "execution_kind": {"enum": list(EXECUTION_KINDS)},
                         "backend_id": {"type": "string", "minLength": 1},
                         "source_kind": {"const": "synthetic"},
-                        "result": _object(result_fields[skill_id]), "sources": _array(_ref("Evidence"))})
+                        "result": _object(result_fields[skill_id],
+                                           ["concepts", "hold_reasons"] if skill_id == "concept_draft" else None),
+                         "sources": _array(_ref("Evidence"))})
         schema = {"oneOf": [_object({"ok": {"const": True}, "data": data}),
                             _object({"ok": {"const": False}, "error": _ref("Error")})]}
     canonical = deepcopy(load_schema()["$defs"])
@@ -278,8 +282,9 @@ class SkillRuntime:
                         raise DomainError("VALIDATION_FAILED", "각 니즈에 대응하는 희망 결과가 필요합니다.", {})
                 if skill_id == "concept_draft" and len(result["concepts"]) > payload.get("max_concepts", 3):
                     raise DomainError("VALIDATION_FAILED", "요청한 콘셉트 상한을 초과했습니다.", {})
-                if skill_id == "concept_draft" and not result["concepts"] and not result["hold_reasons"]:
-                    raise DomainError("VALIDATION_FAILED", "후보가 없으면 보류 사유를 남겨야 합니다.", {})
+                if (skill_id == "concept_draft" and not result["concepts"]
+                        and not result["hold_reasons"] and not result.get("no_candidate_reasons")):
+                    raise DomainError("VALIDATION_FAILED", "후보가 없으면 정상 종료 또는 보류 사유를 남겨야 합니다.", {})
                 if skill_id == "product_compare":
                     expected_needs = {need["id"] for need in payload["needs"]}
                     if {gap["need_id"] for gap in result["gaps"]} != expected_needs:
