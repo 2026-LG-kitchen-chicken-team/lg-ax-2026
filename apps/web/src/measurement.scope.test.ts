@@ -48,10 +48,11 @@ function button(label: string): HTMLButtonElement {
 async function click(label: string) { await act(async () => { button(label).click(); }); }
 
 async function input(selector: string, value: string) {
-  const element = container.querySelector<HTMLInputElement>(selector)!;
+  const element = container.querySelector<HTMLInputElement | HTMLTextAreaElement>(selector)!;
   expect(element).not.toBeNull();
   await act(async () => {
-    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(element, value);
+    const prototype = element instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
+    Object.getOwnPropertyDescriptor(prototype, 'value')!.set!.call(element, value);
     element.dispatchEvent(new Event('input', { bubbles: true }));
   });
 }
@@ -65,6 +66,15 @@ async function connect() {
 async function history() {
   const nav = [...container.querySelectorAll<HTMLButtonElement>('.nav-item')].find(item => item.textContent?.includes('수정 이력'))!;
   await act(async () => { nav.click(); });
+}
+
+async function requestView() {
+  const nav = [...container.querySelectorAll<HTMLButtonElement>('.nav-item')].find(item => item.textContent?.includes('기획 요청'))!;
+  await act(async () => { nav.click(); });
+}
+
+async function submitRequest() {
+  await act(async () => { container.querySelector('form.request-form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })); });
 }
 
 async function start(goal = '동일 목표 조건 교정') {
@@ -104,6 +114,49 @@ beforeEach(async () => {
   vi.spyOn(WorkspaceClient.prototype, 'listRuns').mockImplementation(async id => ({ runs: id === a.project.id ? [run(id, firstId), run(id, baseId, firstId)] : [run(id, 'run-b-1')], contract_version: '0.1.0' }));
   vi.spyOn(views, 'download').mockImplementation((_name, _type, content) => { downloads.push(JSON.parse(content) as MeasurementExport); });
   await act(async () => { root.render(createElement(App)); });
+});
+
+describe('App request form authentication boundaries', () => {
+  it('discards the previous private prompt and customer after an automatic 401', async () => {
+    await connect(); await requestView();
+    await input('#planning-prompt', '이전 연결의 비공개 기획 요청');
+    await input('#planning-customer', '이전 연결의 비공개 고객 조건');
+    vi.spyOn(WorkspaceClient.prototype, 'createRun').mockRejectedValueOnce(new api.ApiError('UNAUTHORIZED', 'expired'));
+    await submitRequest();
+    expect(container.textContent).toContain('작업실 인증이 필요합니다');
+    expect(container.querySelector<HTMLTextAreaElement>('#planning-prompt')!.value).not.toContain('이전 연결');
+    expect(container.querySelector<HTMLInputElement>('#planning-customer')!.value).not.toContain('이전 연결');
+    expect(container.querySelector<HTMLTextAreaElement>('#planning-prompt')!.value).toContain('냉장고를 청소');
+    expect(container.querySelector<HTMLInputElement>('#planning-customer')!.value).toBe('일상에서 키친 가전을 사용하는 고객');
+  });
+
+  it('preserves entered fields and the successful save message when connected project creation changes the scope', async () => {
+    vi.mocked(api.loadBootstrap).mockResolvedValue({ ...FIXTURE_BOOTSTRAP,
+      products: [...FIXTURE_BOOTSTRAP.products, { model_id: 'FRIDGE-B', product_group: 'fridge', name: '추가 검토 모델', document_version: '1.0' }] });
+    // Refresh the mounted App so the controlled bootstrap response includes the second valid model.
+    await act(async () => { root.unmount(); }); root = createRoot(container);
+    await act(async () => { root.render(createElement(App)); });
+    await connect(); await requestView();
+    await input('#planning-prompt', '저장 중에도 보존할 기획 요청');
+    await input('#planning-customer', '저장 중에도 보존할 대상 고객');
+    const otherModel = [...container.querySelectorAll<HTMLLabelElement>('.model-picker label')].find(item => item.textContent?.includes('FRIDGE-B'))!.querySelector<HTMLInputElement>('input')!;
+    await act(async () => { otherModel.click(); });
+    const created = deferred<WorkspaceProject>();
+    vi.spyOn(WorkspaceClient.prototype, 'createProject').mockImplementationOnce(() => created.promise);
+    vi.spyOn(WorkspaceClient.prototype, 'createRun').mockImplementationOnce(async (projectId, request) => ({ ...run(projectId, 'new-project-run'), request,
+      output: null, run: { ...run(projectId, 'new-project-run').run, status: 'not_implemented', concepts: [] } }));
+    await submitRequest();
+    expect(container.querySelector<HTMLTextAreaElement>('#planning-prompt')!.value).toBe('저장 중에도 보존할 기획 요청');
+    expect(container.querySelector<HTMLInputElement>('#planning-customer')!.value).toBe('저장 중에도 보존할 대상 고객');
+    expect(container.textContent).toContain('서버 확인 중');
+    const [name, request, versions] = vi.mocked(WorkspaceClient.prototype.createProject).mock.calls[0];
+    const savedProject = project('new-project');
+    await act(async () => { created.resolve({ ...savedProject, project: { ...savedProject.project, name, request }, document_versions: versions }); await created.promise; });
+    expect(container.textContent).toContain('요청 저장 완료 · 분석 결과 아님');
+    expect(container.textContent).toContain('새 프로젝트로 저장했습니다');
+    expect(container.querySelector<HTMLTextAreaElement>('#planning-prompt')!.value).toBe('저장 중에도 보존할 기획 요청');
+    expect(container.querySelector<HTMLInputElement>('#planning-customer')!.value).toBe('저장 중에도 보존할 대상 고객');
+  });
 });
 
 afterEach(async () => {
