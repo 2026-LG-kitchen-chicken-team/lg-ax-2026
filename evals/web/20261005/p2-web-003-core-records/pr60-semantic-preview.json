@@ -1,6 +1,6 @@
 {
  "execution_kind": "core_pipeline_with_mocked_model",
- "core_commit": "4b42728ba1133dd295feb6910fb166f4444467ab",
+ "core_commit": "28788164c1827ef5a89a053562306e3837f614a1",
  "scenario_set": "semantic",
  "input": "evals/core-contract/development/normal.input.json",
  "model_answers": "tests/test_planning_agent.py fixtures of that commit (authored, not model output)",
@@ -439,7 +439,7 @@
         "max_concepts": 3,
         "max_revisions": 2
        },
-       "elapsed_ms": 2.422
+       "elapsed_ms": 2.552
       },
       {
        "stage": "retrieve",
@@ -448,7 +448,7 @@
        "outputs": {
         "dataset_sha256": "ba71023ceea484f8b1daf7a9fd67b16d00c397449c80f9a47a2596175ec26a61"
        },
-       "elapsed_ms": 5.303
+       "elapsed_ms": 5.724
       },
       {
        "stage": "retrieve",
@@ -475,7 +475,7 @@
          "contract_version": "0.1.0"
         }
        },
-       "elapsed_ms": 5.554
+       "elapsed_ms": 5.983
       },
       {
        "stage": "retrieve",
@@ -505,7 +505,7 @@
          "contract_version": "0.1.0"
         }
        },
-       "elapsed_ms": 5.776
+       "elapsed_ms": 6.202
       },
       {
        "stage": "needs",
@@ -565,7 +565,7 @@
          ]
         }
        },
-       "elapsed_ms": 25.486
+       "elapsed_ms": 27.497
       },
       {
        "stage": "compare",
@@ -656,7 +656,7 @@
          ]
         }
        },
-       "elapsed_ms": 46.528
+       "elapsed_ms": 49.034
       },
       {
        "stage": "concepts",
@@ -767,7 +767,7 @@
          ]
         }
        },
-       "elapsed_ms": 69.563
+       "elapsed_ms": 74.555
       },
       {
        "stage": "review",
@@ -783,7 +783,7 @@
         "rerun_from": null,
         "violations": []
        },
-       "elapsed_ms": 73.022
+       "elapsed_ms": 78.016
       },
       {
        "stage": "review",
@@ -947,7 +947,7 @@
          "violations": []
         }
        },
-       "elapsed_ms": 84.974
+       "elapsed_ms": 91.217
       },
       {
        "stage": "review",
@@ -963,7 +963,7 @@
         "rerun_from": null,
         "violations": []
        },
-       "elapsed_ms": 85.027
+       "elapsed_ms": 91.269
       }
      ],
      "model_calls": [
@@ -1255,7 +1255,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.638,
+        "elapsed_ms": 1.999,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -1310,7 +1310,7 @@
          "pin_verification": "before_and_after_generation",
          "backend_schema_enforced": true,
          "constraint_mode": "native_schema_and_local_validation",
-         "elapsed_ms": 1.638,
+         "elapsed_ms": 1.999,
          "generation_settings": {
           "temperature": 0,
           "num_ctx": 8192,
@@ -1639,7 +1639,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.149,
+        "elapsed_ms": 1.196,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -1694,7 +1694,7 @@
          "pin_verification": "before_and_after_generation",
          "backend_schema_enforced": true,
          "constraint_mode": "native_schema_and_local_validation",
-         "elapsed_ms": 1.149,
+         "elapsed_ms": 1.196,
          "generation_settings": {
           "temperature": 0,
           "num_ctx": 8192,
@@ -2072,7 +2072,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.407,
+        "elapsed_ms": 1.37,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -2134,7 +2134,7 @@
          "pin_verification": "before_and_after_generation",
          "backend_schema_enforced": true,
          "constraint_mode": "native_schema_and_local_validation",
-         "elapsed_ms": 1.407,
+         "elapsed_ms": 1.37,
          "generation_settings": {
           "temperature": 0,
           "num_ctx": 8192,
@@ -2447,7 +2447,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.136,
+        "elapsed_ms": 1.216,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -2519,7 +2519,7 @@
          "pin_verification": "before_and_after_generation",
          "backend_schema_enforced": true,
          "constraint_mode": "native_schema_and_local_validation",
-         "elapsed_ms": 1.136,
+         "elapsed_ms": 1.216,
          "generation_settings": {
           "temperature": 0,
           "num_ctx": 8192,
@@ -3021,16 +3021,7 @@
       "violations": [
        {
         "code": "EXCLUSION_VIOLATION",
-        "stage": "concepts",
-        "details": {
-         "concept_id": "DEV-01-CONCEPT",
-         "verdict": "violation",
-         "reason": "테스트가 작성한 검토 선언: violation",
-         "candidate_quote": "오염 구역만 분리하는 소형 트레이",
-         "source_quotes": [],
-         "condition_index": 0,
-         "condition": "다른 모델 기능 혼용"
-        }
+        "stage": "concepts"
        }
       ]
      },
@@ -3069,7 +3060,7 @@
         "max_concepts": 3,
         "max_revisions": 2
        },
-       "elapsed_ms": 1.961
+       "elapsed_ms": 3.092
       },
       {
        "stage": "retrieve",
@@ -3078,7 +3069,7 @@
        "outputs": {
         "dataset_sha256": "ba71023ceea484f8b1daf7a9fd67b16d00c397449c80f9a47a2596175ec26a61"
        },
-       "elapsed_ms": 4.66
+       "elapsed_ms": 6.618
       },
       {
        "stage": "retrieve",
@@ -3105,7 +3096,7 @@
          "contract_version": "0.1.0"
         }
        },
-       "elapsed_ms": 4.888
+       "elapsed_ms": 6.905
       },
       {
        "stage": "retrieve",
@@ -3135,7 +3126,7 @@
          "contract_version": "0.1.0"
         }
        },
-       "elapsed_ms": 5.099
+       "elapsed_ms": 7.124
       },
       {
        "stage": "needs",
@@ -3195,7 +3186,7 @@
          ]
         }
        },
-       "elapsed_ms": 24.096
+       "elapsed_ms": 29.153
       },
       {
        "stage": "compare",
@@ -3286,7 +3277,7 @@
          ]
         }
        },
-       "elapsed_ms": 45.348
+       "elapsed_ms": 52.518
       },
       {
        "stage": "concepts",
@@ -3397,7 +3388,7 @@
          ]
         }
        },
-       "elapsed_ms": 68.352
+       "elapsed_ms": 76.093
       },
       {
        "stage": "review",
@@ -3413,7 +3404,7 @@
         "rerun_from": null,
         "violations": []
        },
-       "elapsed_ms": 71.802
+       "elapsed_ms": 79.103
       },
       {
        "stage": "review",
@@ -3577,21 +3568,12 @@
          "violations": [
           {
            "code": "EXCLUSION_VIOLATION",
-           "stage": "concepts",
-           "details": {
-            "concept_id": "DEV-01-CONCEPT",
-            "verdict": "violation",
-            "reason": "테스트가 작성한 검토 선언: violation",
-            "candidate_quote": "오염 구역만 분리하는 소형 트레이",
-            "source_quotes": [],
-            "condition_index": 0,
-            "condition": "다른 모델 기능 혼용"
-           }
+           "stage": "concepts"
           }
          ]
         }
        },
-       "elapsed_ms": 83.497
+       "elapsed_ms": 91.018
       },
       {
        "stage": "review",
@@ -3608,20 +3590,11 @@
         "violations": [
          {
           "code": "EXCLUSION_VIOLATION",
-          "stage": "concepts",
-          "details": {
-           "concept_id": "DEV-01-CONCEPT",
-           "verdict": "violation",
-           "reason": "테스트가 작성한 검토 선언: violation",
-           "candidate_quote": "오염 구역만 분리하는 소형 트레이",
-           "source_quotes": [],
-           "condition_index": 0,
-           "condition": "다른 모델 기능 혼용"
-          }
+          "stage": "concepts"
          }
         ]
        },
-       "elapsed_ms": 83.546
+       "elapsed_ms": 91.069
       },
       {
        "stage": "review",
@@ -3632,7 +3605,7 @@
        "outputs": {
         "revision_count": 1
        },
-       "elapsed_ms": 83.592
+       "elapsed_ms": 91.114
       },
       {
        "stage": "concepts",
@@ -3743,7 +3716,7 @@
          ]
         }
        },
-       "elapsed_ms": 106.881
+       "elapsed_ms": 115.172
       },
       {
        "stage": "review",
@@ -3759,7 +3732,7 @@
         "rerun_from": null,
         "violations": []
        },
-       "elapsed_ms": 109.848
+       "elapsed_ms": 118.474
       },
       {
        "stage": "review",
@@ -3937,21 +3910,12 @@
          "violations": [
           {
            "code": "EXCLUSION_VIOLATION",
-           "stage": "concepts",
-           "details": {
-            "concept_id": "DEV-01-CONCEPT",
-            "verdict": "violation",
-            "reason": "테스트가 작성한 검토 선언: violation",
-            "candidate_quote": "오염 구역만 분리하는 소형 트레이",
-            "source_quotes": [],
-            "condition_index": 0,
-            "condition": "다른 모델 기능 혼용"
-           }
+           "stage": "concepts"
           }
          ]
         }
        },
-       "elapsed_ms": 121.18
+       "elapsed_ms": 130.493
       },
       {
        "stage": "review",
@@ -3968,20 +3932,11 @@
         "violations": [
          {
           "code": "EXCLUSION_VIOLATION",
-          "stage": "concepts",
-          "details": {
-           "concept_id": "DEV-01-CONCEPT",
-           "verdict": "violation",
-           "reason": "테스트가 작성한 검토 선언: violation",
-           "candidate_quote": "오염 구역만 분리하는 소형 트레이",
-           "source_quotes": [],
-           "condition_index": 0,
-           "condition": "다른 모델 기능 혼용"
-          }
+          "stage": "concepts"
          }
         ]
        },
-       "elapsed_ms": 121.258
+       "elapsed_ms": 130.583
       },
       {
        "stage": "review",
@@ -3992,7 +3947,7 @@
        "outputs": {
         "revision_count": 2
        },
-       "elapsed_ms": 121.317
+       "elapsed_ms": 130.637
       },
       {
        "stage": "concepts",
@@ -4103,7 +4058,7 @@
          ]
         }
        },
-       "elapsed_ms": 144.687
+       "elapsed_ms": 155.358
       },
       {
        "stage": "review",
@@ -4119,7 +4074,7 @@
         "rerun_from": null,
         "violations": []
        },
-       "elapsed_ms": 147.585
+       "elapsed_ms": 158.431
       },
       {
        "stage": "review",
@@ -4297,21 +4252,12 @@
          "violations": [
           {
            "code": "EXCLUSION_VIOLATION",
-           "stage": "concepts",
-           "details": {
-            "concept_id": "DEV-01-CONCEPT",
-            "verdict": "violation",
-            "reason": "테스트가 작성한 검토 선언: violation",
-            "candidate_quote": "오염 구역만 분리하는 소형 트레이",
-            "source_quotes": [],
-            "condition_index": 0,
-            "condition": "다른 모델 기능 혼용"
-           }
+           "stage": "concepts"
           }
          ]
         }
        },
-       "elapsed_ms": 160.36
+       "elapsed_ms": 171.067
       },
       {
        "stage": "review",
@@ -4328,20 +4274,11 @@
         "violations": [
          {
           "code": "EXCLUSION_VIOLATION",
-          "stage": "concepts",
-          "details": {
-           "concept_id": "DEV-01-CONCEPT",
-           "verdict": "violation",
-           "reason": "테스트가 작성한 검토 선언: violation",
-           "candidate_quote": "오염 구역만 분리하는 소형 트레이",
-           "source_quotes": [],
-           "condition_index": 0,
-           "condition": "다른 모델 기능 혼용"
-          }
+          "stage": "concepts"
          }
         ]
        },
-       "elapsed_ms": 160.433
+       "elapsed_ms": 171.119
       }
      ],
      "model_calls": [
@@ -4633,7 +4570,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.022,
+        "elapsed_ms": 1.223,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -4688,7 +4625,7 @@
          "pin_verification": "before_and_after_generation",
          "backend_schema_enforced": true,
          "constraint_mode": "native_schema_and_local_validation",
-         "elapsed_ms": 1.022,
+         "elapsed_ms": 1.223,
          "generation_settings": {
           "temperature": 0,
           "num_ctx": 8192,
@@ -5017,7 +4954,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.197,
+        "elapsed_ms": 1.04,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -5072,7 +5009,7 @@
          "pin_verification": "before_and_after_generation",
          "backend_schema_enforced": true,
          "constraint_mode": "native_schema_and_local_validation",
-         "elapsed_ms": 1.197,
+         "elapsed_ms": 1.04,
          "generation_settings": {
           "temperature": 0,
           "num_ctx": 8192,
@@ -5450,7 +5387,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.297,
+        "elapsed_ms": 1.221,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -5512,7 +5449,7 @@
          "pin_verification": "before_and_after_generation",
          "backend_schema_enforced": true,
          "constraint_mode": "native_schema_and_local_validation",
-         "elapsed_ms": 1.297,
+         "elapsed_ms": 1.221,
          "generation_settings": {
           "temperature": 0,
           "num_ctx": 8192,
@@ -5825,7 +5762,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.01,
+        "elapsed_ms": 1.098,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -5897,7 +5834,7 @@
          "pin_verification": "before_and_after_generation",
          "backend_schema_enforced": true,
          "constraint_mode": "native_schema_and_local_validation",
-         "elapsed_ms": 1.01,
+         "elapsed_ms": 1.098,
          "generation_settings": {
           "temperature": 0,
           "num_ctx": 8192,
@@ -6289,7 +6226,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.073,
+        "elapsed_ms": 1.122,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -6351,7 +6288,7 @@
          "pin_verification": "before_and_after_generation",
          "backend_schema_enforced": true,
          "constraint_mode": "native_schema_and_local_validation",
-         "elapsed_ms": 1.073,
+         "elapsed_ms": 1.122,
          "generation_settings": {
           "temperature": 0,
           "num_ctx": 8192,
@@ -6678,7 +6615,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 0.981,
+        "elapsed_ms": 1.048,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -6750,7 +6687,7 @@
          "pin_verification": "before_and_after_generation",
          "backend_schema_enforced": true,
          "constraint_mode": "native_schema_and_local_validation",
-         "elapsed_ms": 0.981,
+         "elapsed_ms": 1.048,
          "generation_settings": {
           "temperature": 0,
           "num_ctx": 8192,
@@ -7142,7 +7079,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.108,
+        "elapsed_ms": 1.296,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -7204,7 +7141,7 @@
          "pin_verification": "before_and_after_generation",
          "backend_schema_enforced": true,
          "constraint_mode": "native_schema_and_local_validation",
-         "elapsed_ms": 1.108,
+         "elapsed_ms": 1.296,
          "generation_settings": {
           "temperature": 0,
           "num_ctx": 8192,
@@ -7531,7 +7468,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.092,
+        "elapsed_ms": 1.162,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -7603,7 +7540,7 @@
          "pin_verification": "before_and_after_generation",
          "backend_schema_enforced": true,
          "constraint_mode": "native_schema_and_local_validation",
-         "elapsed_ms": 1.092,
+         "elapsed_ms": 1.162,
          "generation_settings": {
           "temperature": 0,
           "num_ctx": 8192,
@@ -7683,16 +7620,7 @@
         "violations": [
          {
           "code": "EXCLUSION_VIOLATION",
-          "stage": "concepts",
-          "details": {
-           "concept_id": "DEV-01-CONCEPT",
-           "verdict": "violation",
-           "reason": "테스트가 작성한 검토 선언: violation",
-           "candidate_quote": "오염 구역만 분리하는 소형 트레이",
-           "source_quotes": [],
-           "condition_index": 0,
-           "condition": "다른 모델 기능 혼용"
-          }
+          "stage": "concepts"
          }
         ]
        }
@@ -7757,16 +7685,7 @@
         "violations": [
          {
           "code": "EXCLUSION_VIOLATION",
-          "stage": "concepts",
-          "details": {
-           "concept_id": "DEV-01-CONCEPT",
-           "verdict": "violation",
-           "reason": "테스트가 작성한 검토 선언: violation",
-           "candidate_quote": "오염 구역만 분리하는 소형 트레이",
-           "source_quotes": [],
-           "condition_index": 0,
-           "condition": "다른 모델 기능 혼용"
-          }
+          "stage": "concepts"
          }
         ]
        }
@@ -7831,16 +7750,7 @@
         "violations": [
          {
           "code": "EXCLUSION_VIOLATION",
-          "stage": "concepts",
-          "details": {
-           "concept_id": "DEV-01-CONCEPT",
-           "verdict": "violation",
-           "reason": "테스트가 작성한 검토 선언: violation",
-           "candidate_quote": "오염 구역만 분리하는 소형 트레이",
-           "source_quotes": [],
-           "condition_index": 0,
-           "condition": "다른 모델 기능 혼용"
-          }
+          "stage": "concepts"
          }
         ]
        }
@@ -8302,16 +8212,7 @@
       "violations": [
        {
         "code": "EXCLUSION_UNCERTAIN",
-        "stage": "concepts",
-        "details": {
-         "concept_id": "DEV-01-CONCEPT",
-         "verdict": "uncertain",
-         "reason": "테스트가 작성한 검토 선언: uncertain",
-         "candidate_quote": "오염 구역만 분리하는 소형 트레이",
-         "source_quotes": [],
-         "condition_index": 0,
-         "condition": "다른 모델 기능 혼용"
-        }
+        "stage": "concepts"
        }
       ]
      },
@@ -8350,7 +8251,7 @@
         "max_concepts": 3,
         "max_revisions": 2
        },
-       "elapsed_ms": 1.378
+       "elapsed_ms": 1.317
       },
       {
        "stage": "retrieve",
@@ -8359,7 +8260,7 @@
        "outputs": {
         "dataset_sha256": "ba71023ceea484f8b1daf7a9fd67b16d00c397449c80f9a47a2596175ec26a61"
        },
-       "elapsed_ms": 4.864
+       "elapsed_ms": 4.856
       },
       {
        "stage": "retrieve",
@@ -8386,7 +8287,7 @@
          "contract_version": "0.1.0"
         }
        },
-       "elapsed_ms": 5.209
+       "elapsed_ms": 5.107
       },
       {
        "stage": "retrieve",
@@ -8416,7 +8317,7 @@
          "contract_version": "0.1.0"
         }
        },
-       "elapsed_ms": 5.426
+       "elapsed_ms": 5.325
       },
       {
        "stage": "needs",
@@ -8476,7 +8377,7 @@
          ]
         }
        },
-       "elapsed_ms": 25.005
+       "elapsed_ms": 25.973
       },
       {
        "stage": "compare",
@@ -8567,7 +8468,7 @@
          ]
         }
        },
-       "elapsed_ms": 46.703
+       "elapsed_ms": 50.833
       },
       {
        "stage": "concepts",
@@ -8678,7 +8579,7 @@
          ]
         }
        },
-       "elapsed_ms": 69.889
+       "elapsed_ms": 76.323
       },
       {
        "stage": "review",
@@ -8694,7 +8595,7 @@
         "rerun_from": null,
         "violations": []
        },
-       "elapsed_ms": 72.86
+       "elapsed_ms": 79.58
       },
       {
        "stage": "review",
@@ -8860,21 +8761,12 @@
          "violations": [
           {
            "code": "EXCLUSION_UNCERTAIN",
-           "stage": "concepts",
-           "details": {
-            "concept_id": "DEV-01-CONCEPT",
-            "verdict": "uncertain",
-            "reason": "테스트가 작성한 검토 선언: uncertain",
-            "candidate_quote": "오염 구역만 분리하는 소형 트레이",
-            "source_quotes": [],
-            "condition_index": 0,
-            "condition": "다른 모델 기능 혼용"
-           }
+           "stage": "concepts"
           }
          ]
         }
        },
-       "elapsed_ms": 84.456
+       "elapsed_ms": 92.335
       },
       {
        "stage": "review",
@@ -8891,20 +8783,11 @@
         "violations": [
          {
           "code": "EXCLUSION_UNCERTAIN",
-          "stage": "concepts",
-          "details": {
-           "concept_id": "DEV-01-CONCEPT",
-           "verdict": "uncertain",
-           "reason": "테스트가 작성한 검토 선언: uncertain",
-           "candidate_quote": "오염 구역만 분리하는 소형 트레이",
-           "source_quotes": [],
-           "condition_index": 0,
-           "condition": "다른 모델 기능 혼용"
-          }
+          "stage": "concepts"
          }
         ]
        },
-       "elapsed_ms": 84.508
+       "elapsed_ms": 92.412
       }
      ],
      "model_calls": [
@@ -9196,7 +9079,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.018,
+        "elapsed_ms": 1.092,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -9251,7 +9134,7 @@
          "pin_verification": "before_and_after_generation",
          "backend_schema_enforced": true,
          "constraint_mode": "native_schema_and_local_validation",
-         "elapsed_ms": 1.018,
+         "elapsed_ms": 1.092,
          "generation_settings": {
           "temperature": 0,
           "num_ctx": 8192,
@@ -9580,7 +9463,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.006,
+        "elapsed_ms": 1.169,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -9635,7 +9518,7 @@
          "pin_verification": "before_and_after_generation",
          "backend_schema_enforced": true,
          "constraint_mode": "native_schema_and_local_validation",
-         "elapsed_ms": 1.006,
+         "elapsed_ms": 1.169,
          "generation_settings": {
           "temperature": 0,
           "num_ctx": 8192,
@@ -10013,7 +9896,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.06,
+        "elapsed_ms": 1.088,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -10075,7 +9958,7 @@
          "pin_verification": "before_and_after_generation",
          "backend_schema_enforced": true,
          "constraint_mode": "native_schema_and_local_validation",
-         "elapsed_ms": 1.06,
+         "elapsed_ms": 1.088,
          "generation_settings": {
           "temperature": 0,
           "num_ctx": 8192,
@@ -10388,7 +10271,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.03,
+        "elapsed_ms": 1.11,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -10462,7 +10345,7 @@
          "pin_verification": "before_and_after_generation",
          "backend_schema_enforced": true,
          "constraint_mode": "native_schema_and_local_validation",
-         "elapsed_ms": 1.03,
+         "elapsed_ms": 1.11,
          "generation_settings": {
           "temperature": 0,
           "num_ctx": 8192,
@@ -10544,16 +10427,7 @@
         "violations": [
          {
           "code": "EXCLUSION_UNCERTAIN",
-          "stage": "concepts",
-          "details": {
-           "concept_id": "DEV-01-CONCEPT",
-           "verdict": "uncertain",
-           "reason": "테스트가 작성한 검토 선언: uncertain",
-           "candidate_quote": "오염 구역만 분리하는 소형 트레이",
-           "source_quotes": [],
-           "condition_index": 0,
-           "condition": "다른 모델 기능 혼용"
-          }
+          "stage": "concepts"
          }
         ]
        }
@@ -11070,14 +10944,12 @@
       "valid": false,
       "action": "unresolved",
       "revision_count": 2,
-      "rerun_from": "concepts",
+      "next_revision_count": 2,
+      "rerun_from": null,
       "violations": [
        {
         "code": "INVALID_SEMANTIC_REVIEW",
-        "stage": "concepts",
-        "details": {
-         "reason": "schema_mismatch"
-        }
+        "stage": "concepts"
        }
       ]
      },
@@ -11116,7 +10988,7 @@
         "max_concepts": 3,
         "max_revisions": 2
        },
-       "elapsed_ms": 1.283
+       "elapsed_ms": 1.611
       },
       {
        "stage": "retrieve",
@@ -11125,7 +10997,7 @@
        "outputs": {
         "dataset_sha256": "ba71023ceea484f8b1daf7a9fd67b16d00c397449c80f9a47a2596175ec26a61"
        },
-       "elapsed_ms": 4.576
+       "elapsed_ms": 4.59
       },
       {
        "stage": "retrieve",
@@ -11152,7 +11024,7 @@
          "contract_version": "0.1.0"
         }
        },
-       "elapsed_ms": 4.806
+       "elapsed_ms": 4.834
       },
       {
        "stage": "retrieve",
@@ -11182,7 +11054,7 @@
          "contract_version": "0.1.0"
         }
        },
-       "elapsed_ms": 5.026
+       "elapsed_ms": 5.077
       },
       {
        "stage": "needs",
@@ -11242,7 +11114,7 @@
          ]
         }
        },
-       "elapsed_ms": 25.526
+       "elapsed_ms": 25.776
       },
       {
        "stage": "compare",
@@ -11333,7 +11205,7 @@
          ]
         }
        },
-       "elapsed_ms": 46.417
+       "elapsed_ms": 46.99
       },
       {
        "stage": "concepts",
@@ -11444,7 +11316,7 @@
          ]
         }
        },
-       "elapsed_ms": 80.309
+       "elapsed_ms": 82.009
       },
       {
        "stage": "review",
@@ -11460,7 +11332,7 @@
         "rerun_from": null,
         "violations": []
        },
-       "elapsed_ms": 83.19
+       "elapsed_ms": 85.377
       },
       {
        "stage": "review",
@@ -11574,7 +11446,7 @@
          }
         }
        },
-       "elapsed_ms": 95.166
+       "elapsed_ms": 96.593
       },
       {
        "stage": "review",
@@ -11586,18 +11458,16 @@
         "valid": false,
         "action": "revise",
         "revision_count": 0,
+        "next_revision_count": 1,
         "rerun_from": "concepts",
         "violations": [
          {
           "code": "INVALID_SEMANTIC_REVIEW",
-          "stage": "concepts",
-          "details": {
-           "reason": "schema_mismatch"
-          }
+          "stage": "concepts"
          }
         ]
        },
-       "elapsed_ms": 95.308
+       "elapsed_ms": 96.658
       },
       {
        "stage": "review",
@@ -11608,7 +11478,7 @@
        "outputs": {
         "revision_count": 1
        },
-       "elapsed_ms": 95.358
+       "elapsed_ms": 96.702
       },
       {
        "stage": "concepts",
@@ -11719,7 +11589,7 @@
          ]
         }
        },
-       "elapsed_ms": 119.413
+       "elapsed_ms": 119.769
       },
       {
        "stage": "review",
@@ -11735,7 +11605,7 @@
         "rerun_from": null,
         "violations": []
        },
-       "elapsed_ms": 122.435
+       "elapsed_ms": 122.849
       },
       {
        "stage": "review",
@@ -11857,7 +11727,7 @@
          }
         }
        },
-       "elapsed_ms": 133.339
+       "elapsed_ms": 134.732
       },
       {
        "stage": "review",
@@ -11869,18 +11739,16 @@
         "valid": false,
         "action": "revise",
         "revision_count": 1,
+        "next_revision_count": 2,
         "rerun_from": "concepts",
         "violations": [
          {
           "code": "INVALID_SEMANTIC_REVIEW",
-          "stage": "concepts",
-          "details": {
-           "reason": "schema_mismatch"
-          }
+          "stage": "concepts"
          }
         ]
        },
-       "elapsed_ms": 133.404
+       "elapsed_ms": 134.8
       },
       {
        "stage": "review",
@@ -11891,7 +11759,7 @@
        "outputs": {
         "revision_count": 2
        },
-       "elapsed_ms": 133.452
+       "elapsed_ms": 134.849
       },
       {
        "stage": "concepts",
@@ -12002,7 +11870,7 @@
          ]
         }
        },
-       "elapsed_ms": 157.502
+       "elapsed_ms": 158.668
       },
       {
        "stage": "review",
@@ -12018,7 +11886,7 @@
         "rerun_from": null,
         "violations": []
        },
-       "elapsed_ms": 160.866
+       "elapsed_ms": 161.876
       },
       {
        "stage": "review",
@@ -12140,7 +12008,7 @@
          }
         }
        },
-       "elapsed_ms": 171.689
+       "elapsed_ms": 173.649
       },
       {
        "stage": "review",
@@ -12152,18 +12020,16 @@
         "valid": false,
         "action": "unresolved",
         "revision_count": 2,
-        "rerun_from": "concepts",
+        "next_revision_count": 2,
+        "rerun_from": null,
         "violations": [
          {
           "code": "INVALID_SEMANTIC_REVIEW",
-          "stage": "concepts",
-          "details": {
-           "reason": "schema_mismatch"
-          }
+          "stage": "concepts"
          }
         ]
        },
-       "elapsed_ms": 171.756
+       "elapsed_ms": 173.713
       }
      ],
      "model_calls": [
@@ -12455,7 +12321,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.115,
+        "elapsed_ms": 1.072,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -12510,7 +12376,7 @@
          "pin_verification": "before_and_after_generation",
          "backend_schema_enforced": true,
          "constraint_mode": "native_schema_and_local_validation",
-         "elapsed_ms": 1.115,
+         "elapsed_ms": 1.072,
          "generation_settings": {
           "temperature": 0,
           "num_ctx": 8192,
@@ -12839,7 +12705,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.212,
+        "elapsed_ms": 1.083,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -12894,7 +12760,7 @@
          "pin_verification": "before_and_after_generation",
          "backend_schema_enforced": true,
          "constraint_mode": "native_schema_and_local_validation",
-         "elapsed_ms": 1.212,
+         "elapsed_ms": 1.083,
          "generation_settings": {
           "temperature": 0,
           "num_ctx": 8192,
@@ -13272,7 +13138,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 0.98,
+        "elapsed_ms": 1.122,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -13334,7 +13200,7 @@
          "pin_verification": "before_and_after_generation",
          "backend_schema_enforced": true,
          "constraint_mode": "native_schema_and_local_validation",
-         "elapsed_ms": 0.98,
+         "elapsed_ms": 1.122,
          "generation_settings": {
           "temperature": 0,
           "num_ctx": 8192,
@@ -13647,7 +13513,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.04,
+        "elapsed_ms": 1.021,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -14036,7 +13902,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.589,
+        "elapsed_ms": 1.098,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -14098,7 +13964,7 @@
          "pin_verification": "before_and_after_generation",
          "backend_schema_enforced": true,
          "constraint_mode": "native_schema_and_local_validation",
-         "elapsed_ms": 1.589,
+         "elapsed_ms": 1.098,
          "generation_settings": {
           "temperature": 0,
           "num_ctx": 8192,
@@ -14419,7 +14285,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.016,
+        "elapsed_ms": 1.072,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -14808,7 +14674,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.087,
+        "elapsed_ms": 1.071,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,
@@ -14870,7 +14736,7 @@
          "pin_verification": "before_and_after_generation",
          "backend_schema_enforced": true,
          "constraint_mode": "native_schema_and_local_validation",
-         "elapsed_ms": 1.087,
+         "elapsed_ms": 1.071,
          "generation_settings": {
           "temperature": 0,
           "num_ctx": 8192,
@@ -15191,7 +15057,7 @@
         "pin_verification": "before_and_after_generation",
         "backend_schema_enforced": true,
         "constraint_mode": "native_schema_and_local_validation",
-        "elapsed_ms": 1.053,
+        "elapsed_ms": 1.022,
         "generation_settings": {
          "temperature": 0,
          "num_ctx": 8192,

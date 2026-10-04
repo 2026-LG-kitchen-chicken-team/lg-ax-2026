@@ -62,18 +62,28 @@ describe('core pipeline records (mocked model) are read, not rejected', () => {
     expect(view.execution.decision!.action).toBe(action);
   });
 
-  it('PR #60 preview: semantic reviews and their violation details are readable', () => {
-    const accepted = ok(run(PR60, 'semantic_accept'));
-    expect(accepted.problems).toEqual([]);
-    expect(accepted.execution.semantic_reviews).toHaveLength(1);
+  it('PR #60 preview: canonical decisions (no details, next_revision_count always, rerun_from cleared) read cleanly', () => {
+    expect(PR60.core_commit).toBe('28788164c1827ef5a89a053562306e3837f614a1');
+    for (const snapshot of Object.values(PR60.runs) as RunSnapshot[]) {
+      const view = ok(snapshot);
+      expect(view.problems).toEqual([]);
+      // The draft core now emits decisions the strict CORE-001 check accepts as is.
+      expect(judgementDecisionErrors(view.execution.decision)).toEqual([]);
+    }
+    expect(ok(run(PR60, 'semantic_accept')).execution.semantic_reviews).toHaveLength(1);
     const violated = ok(run(PR60, 'exclusion_violation_unresolved'));
-    expect(violated.problems).toEqual([]);
     expect(violated.execution.semantic_reviews).toHaveLength(3);
-    expect(violationText(violated.execution.decision!.violations[0])).toBe(
-      "의미 검토: 후보가 제외 조건을 어겼습니다 (EXCLUSION_VIOLATION · concepts 단계) · 후보 DEV-01-CONCEPT × 제외 조건 '다른 모델 기능 혼용': 위반 · 후보 인용 '오염 구역만 분리하는 소형 트레이' — 테스트가 작성한 검토 선언: violation");
-    const invalid = ok(run(PR60, 'semantic_review_invalid'));
-    expect(invalid.problems).toContain(MISSING_NEXT);
-    expect(invalid.execution.decision!.violations[0].code).toBe('INVALID_SEMANTIC_REVIEW');
+    // Row details moved out of the decision into semantic_reviews, so the decision line carries only code and stage.
+    expect(violationText(violated.execution.decision!.violations[0])).toBe('의미 검토: 후보가 제외 조건을 어겼습니다 (EXCLUSION_VIOLATION · concepts 단계)');
+    expect(violated.execution.semantic_reviews!.at(-1)!.report.exclusion_assessments[0].verdict).toBe('violation');
+    expect(ok(run(PR60, 'semantic_review_invalid')).execution.decision!.violations).toEqual([{ code: 'INVALID_SEMANTIC_REVIEW', stage: 'concepts' }]);
+  });
+
+  it('violation details, when a core still attaches them (main), become one readable line', () => {
+    const row = { concept_id: 'C-1', verdict: 'violation', reason: '장치를 추가합니다', candidate_quote: '자동 세척 모드 추가', source_quotes: [], condition_index: 0, condition: '자동 세척 장치 제안' };
+    expect(violationText({ code: 'EXCLUSION_VIOLATION', stage: 'concepts', details: row })).toBe(
+      "의미 검토: 후보가 제외 조건을 어겼습니다 (EXCLUSION_VIOLATION · concepts 단계) · 후보 C-1 × 제외 조건 '자동 세척 장치 제안': 위반 · 후보 인용 '자동 세척 모드 추가' — 장치를 추가합니다");
+    expect(violationText({ code: 'SEMANTIC_QUESTION', stage: 'concepts', details: { questions: ['확인할까요?'] } })).toContain('질문: 확인할까요?');
   });
 
   it('a malformed semantic review is reported as an invalid record', () => {
@@ -132,6 +142,8 @@ describe('core pipeline records in the actual React DOM', () => {
     const violated = await panel(run(PR60, 'exclusion_violation_unresolved'));
     expect(violated).toContain('의미 검토 3회');
     expect(violated).toContain('의미 검토: 후보가 제외 조건을 어겼습니다');
+    // The per-row verdict and reason are shown in the semantic review panel.
+    expect(violated).toContain('테스트가 작성한 검토 선언: violation');
     const accepted = await panel(run(PR60, 'semantic_accept'));
     expect(accepted).toContain('같은 모델의 자기 검토입니다');
     expect(accepted).toContain('기획 품질 기준 4건 중 충족 선언 4건');

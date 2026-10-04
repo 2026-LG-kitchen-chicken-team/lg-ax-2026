@@ -78,7 +78,7 @@ export function judgementDecisionErrors(value: unknown): string[] {
 /**
  * Field relations a stored decision should keep. Main's PlanningAgent writes the decision of a failed stage itself
  * (without next_revision_count, keeping rerun_from after it gave up), so these are listed as record problems and the
- * web never fills in a value of its own.
+ * web never fills in a value of its own. PR #60 (draft head 2878816) makes the core emit canonical decisions on every path.
  */
 function storedDecisionProblems(decision: StoredDecision): string[] {
   const found: string[] = [];
