@@ -145,7 +145,7 @@ def prepare(api, policy, assignment, contacts, apply=False):
     write(PUBLIC / (aid + ".json"), {**assignment, "pm_account": policy["pm_account"],
                                     "recipient_account": registered["account"], "assignment_url": comment["html_url"]})
     pm_field(api, policy, registered, {"최근 배정": f"{comment['html_url']}\n{aid} · {assignment['purpose']}",
-                                     "메일 안내": f"{aid} · {prior['status']}"})
+                                     "메일 안내": f"{prior['status']} · {aid}"})
     return {"applied": True, "assignment_id": aid, "recipient_name": registered["name"],
             "assignment_url": comment["html_url"], "private_outbox": str(outbox_path), "mail_state": prior["status"],
             "next": "PM AI uses connected Gmail, then records actual message ID. Do not infer send from prepare."}
@@ -190,7 +190,7 @@ def record(api, policy, aid, action, receipt_data=None):
     else:
         raise ValueError("unsupported notification action")
     write(path, row)
-    pm_field(api, policy, registered, {"메일 안내": f"{aid} · {row['status']}"})
+    pm_field(api, policy, registered, {"메일 안내": f"{row['status']} · {aid}"})
     return {"assignment_id": aid, "recipient_name": row["recipient_name"], "state": row["status"],
             "message_id": row["message_id"], "recipient_read_confirmed": False}
 
