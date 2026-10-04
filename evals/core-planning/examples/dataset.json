@@ -1,0 +1,80 @@
+{
+  "manifest": {
+    "dataset_id": "core002-fixture",
+    "version": "DEV-01-contract-v1",
+    "description": "Synthetic pipeline regression only",
+    "source_kind": "synthetic",
+    "model_count": 1,
+    "review_count": 1,
+    "analysis_implemented": false
+  },
+  "products": [
+    {
+      "model_id": "DEV-01-MODEL",
+      "name": "계약 검증용 가상 fridge",
+      "product_group": "fridge",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "ROW-DEV-01-REVIEW",
+      "evidence_id": "DEV-01-REVIEW",
+      "model_id": "DEV-01-MODEL",
+      "text": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다.",
+      "source_kind": "synthetic",
+      "document_version": "1.0",
+      "source_id": "DEV-01-CSV",
+      "locator": {
+        "row": 2
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "DEV-01-REVIEW",
+      "model_id": "DEV-01-MODEL",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "review",
+      "source_id": "DEV-01-CSV",
+      "locator": {
+        "row": 2
+      },
+      "text": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다.",
+      "feature_ids": []
+    },
+    {
+      "id": "DEV-01-MANUAL",
+      "model_id": "DEV-01-MODEL",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "manual",
+      "source_id": "DEV-01-DOC",
+      "locator": {
+        "page": 3,
+        "section": "사용 조건"
+      },
+      "text": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다.",
+      "feature_ids": [
+        "DEV-01-FEATURE"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "id": "DEV-01-FEATURE",
+      "model_id": "DEV-01-MODEL",
+      "document_version": "1.0",
+      "name": "현재 제공 기능",
+      "description": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다.",
+      "conditions": [
+        "설명서의 사용 조건을 충족해야 함"
+      ],
+      "evidence_ids": [
+        "DEV-01-MANUAL"
+      ]
+    }
+  ]
+}
