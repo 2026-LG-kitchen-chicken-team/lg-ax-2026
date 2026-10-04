@@ -19,6 +19,7 @@ from .errors import DomainError
 from .judgement_contract import input_digest, review_judgement
 from .judgement_contract import schema_for as judgement_schema
 from .model_client import StructuredModelClient
+from .semantic_review import INSTRUCTIONS, review_semantics, schema_for_review
 from .skill_runner import SkillRuntime
 from .skill_runner import schema_for as skill_schema
 from .store import DemoStore
@@ -112,7 +113,7 @@ class PlanningAgent:
         calls: list[dict] = []
         result = {"execution_kind": self.execution_kind, "original_input": deepcopy(original),
                   "input": payload, "output": None, "decision": None, "status": "failed",
-                  "trace": trace, "model_calls": calls, "errors": []}
+                  "trace": trace, "model_calls": calls, "semantic_reviews": [], "errors": []}
 
         def event(stage: str, operation: str, inputs: Any, outputs: Any) -> None:
             trace.append({"stage": stage, "operation": operation, "inputs": deepcopy(inputs),
@@ -122,6 +123,16 @@ class PlanningAgent:
         def fail(error: DomainError) -> dict:
             result["errors"].append(error.response()["error"])
             result["status"] = "held" if error.code in ("INVALID_ARGUMENT", "VALIDATION_FAILED") else "failed"
+            if result["output"] is not None:
+                result["rejected_output"] = deepcopy(result["output"])
+                terminal = result["output"]
+                terminal.update(status=result["status"], concepts=[], concept_assessments=[])
+                terminal["unresolved"] = list(dict.fromkeys(terminal["unresolved"] + [error.message]))
+                terminal["no_candidate_reasons"] = terminal["unresolved"]
+                if result["status"] == "held":
+                    terminal["hold_reasons"] = list(dict.fromkeys(terminal["hold_reasons"] + [error.message]))
+                    if not terminal["questions"]:
+                        terminal["questions"] = ["의미 검토 오류를 해결한 뒤 다시 실행할 수 있나요?"]
             event("review", "stop", {}, error.response())
             return result
 
@@ -173,6 +184,21 @@ class PlanningAgent:
         feedback: list[dict] = []
         runtime = SkillRuntime(self.store)
         config = self.client.adapter.config
+
+        def model_call(stage: str, skill_id: str, context: dict, prompt: str, schema: dict):
+            record = {"stage": stage, "skill_id": skill_id, "execution_kind": self.execution_kind,
+                      "input_sha256": input_digest(payload), "revision_count": payload["revision_count"],
+                      "prompt": prompt, "schema": schema, "request_context": deepcopy(context),
+                      "model_id": config.model_id, "model_digest": config.expected_digest}
+            calls.append(record)
+            model = StructuredModelClient(_RecordingAdapter(self.client.adapter, record))
+            try:
+                generated = model.generate(prompt, schema, config.model_id)
+            except DomainError as error:
+                record["error"] = error.response()["error"]
+                raise
+            record["generated"] = generated.as_dict()
+            return generated
 
         def handler(skill_id: str):
             def generate(skill_input: dict, _store: DemoStore) -> dict:
@@ -259,20 +285,8 @@ class PlanningAgent:
                     + "\nDATA_JSON:\n"
                     + json.dumps(context, ensure_ascii=False, separators=(",", ":"))
                 )
-                record = {"stage": STAGE[skill_id], "skill_id": skill_id,
-                          "execution_kind": self.execution_kind, "input_sha256": input_digest(payload),
-                          "revision_count": payload["revision_count"], "prompt": prompt,
-                          "schema": generation_schema(skill_id, review_evidence_ids=review_ids),
-                          "request_context": deepcopy(context),
-                          "model_id": config.model_id, "model_digest": config.expected_digest}
-                calls.append(record)
-                model = StructuredModelClient(_RecordingAdapter(self.client.adapter, record))
-                try:
-                    generated = model.generate(prompt, record["schema"], config.model_id)
-                except DomainError as error:
-                    record["error"] = error.response()["error"]
-                    raise
-                record["generated"] = generated.as_dict()
+                generated = model_call(STAGE[skill_id], skill_id, context, prompt,
+                                       generation_schema(skill_id, review_evidence_ids=review_ids))
                 state[skill_id] = deepcopy(generated.data)
                 if skill_id == "concept_draft" and generated.data["hold_reasons"] != generated.data["result"]["hold_reasons"]:
                     raise DomainError("VALIDATION_FAILED", "후보 보류 사유의 두 표현이 다릅니다.", {})
@@ -376,8 +390,32 @@ class PlanningAgent:
                 current = output()
                 decision = review_judgement(payload, current)
                 result["output"] = deepcopy(current)
+                event("review", "review_judgement", {"input_sha256": input_digest(payload)}, decision)
+                if decision["valid"] and decision["action"] == "accept" and current["concepts"]:
+                    context = {"request": payload["request"], "product": payload["product"],
+                               "sources": payload["sources"], "features": payload["features"],
+                               "concepts": current["concepts"], "revision_count": payload["revision_count"],
+                               "input_sha256": input_digest(payload), "output_sha256": input_digest(current),
+                               "skill_input": {"constraints": payload["request"]["exclusions"]}, "feedback": feedback}
+                    try:
+                        report = model_call("review", "semantic_review", context,
+                                            INSTRUCTIONS + json.dumps(context, ensure_ascii=False, separators=(",", ":")),
+                                            schema_for_review(payload, current)).data
+                        decision = review_semantics(payload, current, report)
+                        result["semantic_reviews"].append({"report": deepcopy(report), "decision": deepcopy(decision)})
+                        result["output"]["questions"] = deepcopy(report["questions"])
+                        event("review", "semantic_review", context, {"report": report, "decision": decision})
+                    except DomainError as error:
+                        if error.code != "VALIDATION_FAILED":
+                            return fail(error)
+                        result["errors"].append(error.response()["error"])
+                        decision = {"valid": False, "action": "revise" if payload["revision_count"] < 2 else "unresolved",
+                                    "revision_count": payload["revision_count"], "rerun_from": "concepts",
+                                    "violations": [{"code": "INVALID_SEMANTIC_REVIEW", "stage": "concepts",
+                                                    "details": error.details}]}
+                        event("review", "semantic_review_error", context, error.response())
             result["decision"] = decision
-            event("review", "review_judgement", {"input_sha256": input_digest(payload)}, decision)
+            event("review", "review_decision", {"input_sha256": input_digest(payload)}, decision)
             if decision["action"] != "revise":
                 if decision["action"] == "unresolved":
                     result["status"] = "failed"

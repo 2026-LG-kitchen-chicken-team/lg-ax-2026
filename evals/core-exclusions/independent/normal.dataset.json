@@ -1,0 +1,80 @@
+{
+  "manifest": {
+    "dataset_id": "EXCL-INDEPENDENT-01",
+    "version": "EXCL-INDEPENDENT-01-v1",
+    "description": "Independent synthetic condition inputs, no generated response",
+    "source_kind": "synthetic",
+    "model_count": 1,
+    "review_count": 1,
+    "analysis_implemented": false
+  },
+  "products": [
+    {
+      "model_id": "EXCL-INDEPENDENT-01-MODEL",
+      "name": "독립 제외 조건 검토용 가상 microwave",
+      "product_group": "microwave",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EXCL-INDEPENDENT-01-REVIEW",
+      "model_id": "EXCL-INDEPENDENT-01-MODEL",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "review",
+      "source_id": "EXCL-INDEPENDENT-01-REVIEW-SOURCE",
+      "locator": {
+        "row": 2
+      },
+      "text": "회전 접시 아래 받침을 닦을 때 좁은 홈의 음식물을 빼내기 어렵다.",
+      "feature_ids": []
+    },
+    {
+      "id": "EXCL-INDEPENDENT-01-MANUAL",
+      "model_id": "EXCL-INDEPENDENT-01-MODEL",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "manual",
+      "source_id": "EXCL-INDEPENDENT-01-MANUAL-SOURCE",
+      "locator": {
+        "page": 3,
+        "section": "사용 조건"
+      },
+      "text": "회전 접시는 꺼내어 세척할 수 있다. 받침 아래 홈은 젖은 천으로 닦는다.",
+      "feature_ids": [
+        "EXCL-INDEPENDENT-01-FEATURE"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "id": "EXCL-INDEPENDENT-01-FEATURE",
+      "model_id": "EXCL-INDEPENDENT-01-MODEL",
+      "document_version": "1.0",
+      "name": "현재 제공 기능",
+      "description": "회전 접시는 꺼내어 세척할 수 있다. 받침 아래 홈은 젖은 천으로 닦는다.",
+      "conditions": [
+        "설명서의 사용 조건을 충족해야 함"
+      ],
+      "evidence_ids": [
+        "EXCL-INDEPENDENT-01-MANUAL"
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "id": "ROW-EXCL-INDEPENDENT-01-REVIEW",
+      "evidence_id": "EXCL-INDEPENDENT-01-REVIEW",
+      "model_id": "EXCL-INDEPENDENT-01-MODEL",
+      "document_version": "1.0",
+      "text": "회전 접시 아래 받침을 닦을 때 좁은 홈의 음식물을 빼내기 어렵다.",
+      "source_id": "EXCL-INDEPENDENT-01-REVIEW-SOURCE",
+      "locator": {
+        "row": 2
+      },
+      "source_kind": "synthetic"
+    }
+  ]
+}

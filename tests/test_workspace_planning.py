@@ -21,6 +21,7 @@ from lgax_core.planning_agent import PlanningAgent
 from lgax_core.store import DemoStore
 from lgax_core.workspace import WorkspaceStore
 from lgax_core.workspace_planning import EnvPlanningRunner, build_planning_input
+from test_planning_agent import semantic_for
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = ROOT / "evals/core-contract/development"
@@ -274,9 +275,13 @@ class WorkspacePlanningTests(unittest.TestCase):
                 body = json.loads(request.content)
                 skill = body["prompt"].split("업무=", 1)[1].split(".", 1)[0]
                 calls.append(skill)
-                stage = {"result": {key: expected[key] for key in fields[skill]},
-                         assessment[skill]: expected[assessment[skill]],
-                         **{key: expected[key] for key in ("questions", "hold_reasons", "no_candidate_reasons")}}
+                if skill == "semantic_review":
+                    context = json.loads(body["prompt"].split("DATA_JSON:\n", 1)[1])
+                    stage = semantic_for(context)
+                else:
+                    stage = {"result": {key: expected[key] for key in fields[skill]},
+                             assessment[skill]: expected[assessment[skill]],
+                             **{key: expected[key] for key in ("questions", "hold_reasons", "no_candidate_reasons")}}
                 response = {"model": "fixture-qwen", "done": True, "done_reason": "stop",
                             "response": json.dumps(stage), "prompt_eval_count": 100, "eval_count": 50,
                             "total_duration": 1000}
@@ -295,10 +300,11 @@ class WorkspacePlanningTests(unittest.TestCase):
         store, pid = self.store(runner)
         saved = store.create_run(pid, self.request, "planner", "api")
         self.assertEqual(saved["run"]["status"], "completed", saved)
-        self.assertEqual(calls, ["need_extract", "product_compare", "concept_draft"])
+        self.assertEqual(calls, ["need_extract", "product_compare", "concept_draft", "semantic_review"])
         execution = saved["output"]["planning_execution"]
         self.assertEqual(execution["execution_kind"], "fixture")
-        self.assertEqual(len(execution["model_calls"]), 3)
+        self.assertEqual(len(execution["model_calls"]), 4)
+        self.assertEqual(execution["semantic_reviews"][0]["decision"]["action"], "accept")
 
 
 class WorkspacePlanningApiTests(unittest.TestCase):
