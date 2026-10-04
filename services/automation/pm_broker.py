@@ -264,7 +264,8 @@ class TrustedPMBroker:
         try:
             result = subprocess.run(["git", "-c", "core.hooksPath=" + str(self.state_dir / "empty-hooks"),
                 "-c", "core.fsmonitor=false", "-c", "commit.gpgsign=false", "-c", "protocol.ext.allow=never",
-                "-c", "protocol.file.allow=never", *args], cwd=self.repository, env=env,
+                "-c", "protocol.file.allow=never", "-c", "credential.helper=",
+                "-c", "credential.helper=!gh auth git-credential", *args], cwd=self.repository, env=env,
                 capture_output=True, timeout=120, check=False,
                 creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0)
         except (OSError, subprocess.TimeoutExpired):

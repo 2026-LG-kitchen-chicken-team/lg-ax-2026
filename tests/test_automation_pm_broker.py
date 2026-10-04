@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import tempfile
 import time
 import unittest
@@ -231,6 +232,22 @@ class BrokerTests(unittest.TestCase):
         self.github.login = "unknownamed"
         with self.assertRaises(PMError):
             self.broker.authenticate()
+
+    def test_trusted_git_resets_helpers_and_uses_fixed_gh_without_global_config(self):
+        response = SimpleNamespace(returncode=0, stdout=b"fixed metadata\n")
+        with patch("services.automation.pm_broker.subprocess.run", return_value=response) as run:
+            observed = TrustedPMBroker._git(self.broker, ["fetch", "--no-tags", "origin", HEAD])
+        argv = run.call_args.args[0]
+        reset = argv.index("credential.helper=")
+        fixed = argv.index("credential.helper=!gh auth git-credential")
+        self.assertLess(reset, fixed)
+        self.assertEqual(argv[reset - 1], "-c")
+        self.assertEqual(argv[fixed - 1], "-c")
+        self.assertEqual(argv[-4:], ["fetch", "--no-tags", "origin", HEAD])
+        self.assertEqual(run.call_args.kwargs["cwd"], self.broker.repository)
+        self.assertEqual(run.call_args.kwargs["env"]["GIT_CONFIG_NOSYSTEM"], "1")
+        self.assertEqual(run.call_args.kwargs["env"]["GIT_CONFIG_GLOBAL"], os.devnull)
+        self.assertEqual(observed, "fixed metadata")
 
     def test_off_observation_does_not_run_review(self):
         self.add_unit()

@@ -136,6 +136,8 @@ class IsolationTests(unittest.TestCase):
         self.assertFalse(any(key in env for key in ("CODEX_HOME", "CLAUDE_CONFIG_DIR", "GH_TOKEN",
                                                    "LGAX_CONTROLLER_TOKEN", "OPENAI_API_KEY")))
         self.assertEqual(env["UV_OFFLINE"], "1")
+        self.assertEqual(env["UV_CACHE_DIR"], "/home/executor/uv-cache")
+        self.assertEqual(env["UV_PROJECT_ENVIRONMENT"], "/opt/lgax-venv")
         self.assertTrue(env["PYTHONPATH"].startswith("/workspace/packages/core/src"))
 
     def test_review_workspace_is_readonly(self):
