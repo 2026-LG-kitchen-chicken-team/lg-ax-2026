@@ -23,6 +23,8 @@ R03는 승인된 PDF·합성 CSV·작업실 자료 조회 경로의 실제 실�
 
 ## 부분 PR 준비와 #12 역할
 
+부분 PR은 [#69](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/69)로 실제 게시했다(ginaginaring, main 대상 비초안 Open). 같은 코드/자료의 자기 게시기록을 추가한 후 인증 Issue 보고를 진행한다. 보고/ACCEPTED/CI와 PM 판정은 실제 원격 및 게시 수신증을 따르며 PR 생성만으로 충족했다고 표시하지 않는다.
+
 [#12](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/12)는 정이량이 신진하/ginaginaring에게 배정한 **세 제품 자료팩·원문·모델·버전 계약 준비**다. AI가 다른 모델의 사양이나 가상 리뷰를 실제 LG 근거로 잘못 사용하지 않도록 자료와 근거를 연결하는 일이다. 현재 작업은 [최신 최소 인수 지시](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/12#issuecomment-5982756935)의 세 input/dataset·검사·개발/평가 분리·진척/막힘 부분 전달에 해당한다.
 
 사용자가 이번 대화에서 기존 작업의 Issue/부분 PR 게시를 직접 요청했다. 자기 기록004/E010과 증거를 같은 commit으로 전달한다. 기존 가상/합성 원문·평가 입력/답안 전문·PDF/전체 추출/이미지/DB/토큰은 새 diff에서 제외하고 publication-content-audit.json에 검사를 남겼다. 부분 PR은 #12 전체 완료 제출이나 의존 해제가 아니다. 실제 게시/ACK/CI/PM 상태는 원격 링크 및 로컬 게시 수신증을 따른다.
