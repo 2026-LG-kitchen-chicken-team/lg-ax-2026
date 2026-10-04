@@ -62,7 +62,7 @@ class ConnectionBoundaryTests(unittest.TestCase):
     def test_document_adapter_keeps_scope_and_detects_later_dataset_changes(self):
         store = WorkspaceDocumentStore(self.docs)
         workspace = WorkspaceStore(Path(self.directory.name) / "workspace.sqlite", evidence_store=store)
-        payload = json.loads((ROOT / "data/research/P2-DATA-001-stage123-20261005/planning-inputs/T876MEE1H1.json").read_text("utf-8"))
+        payload = json.loads((ROOT / "data/research/P2-DATA-001-stage45-citations-20261005/planning-inputs/T876MEE1H1.json").read_text("utf-8"))
         versions = {"T876MEE1H1": payload["product"]["document_version"]}
         self.assertEqual(build_planning_input(payload["request"], versions, store), payload)
         project = workspace.create_project("자료 범위 확인", payload["request"], "local-verifier", versions)

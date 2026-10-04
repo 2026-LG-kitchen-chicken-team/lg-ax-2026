@@ -1,0 +1,187 @@
+{
+  "observed_at": "2026-10-05T05:41:59.379029+09:00",
+  "base_commit": "bbf4e1c1da0106e140c6c7e87f7159e6f0fe3532",
+  "phase2_done": 5,
+  "application_requirements_verified": 0,
+  "actual_deployment": {
+    "source_manifest": {
+      "controller.py": "3652eaed83339c2f38018f22be336a31b76bdd1cecf87f885b8dbc59cdde586f",
+      "github_bridge.py": "29d3098c00e7a0907a24c1e064b01bb887eff6bc7a82554932f0aea51e72e5d0",
+      "model_gateway.py": "df8a12257d2e8f8fc86c0494a75f27ec35893889d4d79640c73c4332f1f637cc",
+      "model_proxy.py": "4cc078a58530f4b6351726f5ee4e6b989742ca1df57ce6e65e001de6c6aedc97",
+      "process.py": "0c6a1869de4cb8901161fbcf0c898c1ae279fd3087a47ccfbdd39f5d9d6116ec",
+      "state.py": "a1e5c56777e5ebdda4b2363373ba176d39e13876e1f81e0f96ffe6eba56e017a",
+      "worker.py": "299964bb1a0b996482b0677626fa14e35fc86ed3c01d2d004100a65c92233e66",
+      "__init__.py": "ea84d525b7ea570b7215aab65642e9daa96670c0e2436ec0565c7a9714aeb4cc"
+    },
+    "observed": {
+      "health": {
+        "service": "lgax-automation",
+        "ok": true
+      },
+      "mode": "off",
+      "members": {
+        "jeongiryang": false,
+        "unknownamed": false,
+        "ginaginaring": false,
+        "choigilung": false
+      },
+      "jobs": 0,
+      "service_active": "active"
+    },
+    "snapshot_commit": "bbf4e1c1da0106e140c6c7e87f7159e6f0fe3532",
+    "credentials_printed": false,
+    "persistent_state": true,
+    "other_services_changed": false
+  },
+  "actual_bridge": {
+    "observed_at": 1791146518.0212598,
+    "mode": "off",
+    "registered_reviews": [],
+    "posted_reviews": [],
+    "status_comment_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28#issuecomment-5984113073",
+    "offline": false,
+    "service_active": "active"
+  },
+  "actual_remote_controls_and_model": {
+    "unauthenticated_status_http": 401,
+    "worker_global_mode_http": 403,
+    "authenticated_status_http": 200,
+    "global_mode": "off",
+    "model_tags_http": 200,
+    "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+    "actual_generate_http": 200,
+    "actual_model_calls": 1,
+    "done": true,
+    "prompt_eval_count": 32,
+    "eval_count": 6,
+    "response": "{\"ok\": true}",
+    "elapsed_seconds": 4.34,
+    "not_product_quality_evidence": true,
+    "current_transport_requires_pm_pc": true
+  },
+  "actual_existing_core_proxy_model": {
+    "actual_model_calls": 1,
+    "result": {
+      "data": {
+        "ok": true
+      },
+      "metadata": {
+        "adapter": "ollama",
+        "model_id": "qwen3:8b",
+        "revision": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+        "revision_kind": "ollama_manifest_digest",
+        "pin_verification": "before_and_after_generation",
+        "backend_schema_enforced": true,
+        "constraint_mode": "native_schema_and_local_validation",
+        "elapsed_ms": 641.0,
+        "generation_settings": {
+          "temperature": 0,
+          "num_ctx": 4096,
+          "num_predict": 256,
+          "seed": 42
+        },
+        "done_reason": "stop",
+        "thinking_enabled": false,
+        "prompt_eval_count": 96,
+        "eval_count": 6,
+        "total_duration_ns": 116650866,
+        "schema_sha256": "4528a3c79c4aaee242a31e586366657f8e9a3f11cc8d2cb040d9bf61ab1bbb63",
+        "response_format": "plain_json",
+        "locally_validated": true
+      }
+    },
+    "transport": "existing core -> loopback proxy -> authenticated HTTPS -> pinned server model",
+    "product_quality_evidence": false
+  },
+  "actual_readonly_codex_pilot": {
+    "exit_code": 0,
+    "elapsed_seconds": 8.86,
+    "authentication": "existing own ChatGPT login; tier not verified",
+    "sandbox": "read-only",
+    "tools_requested": false,
+    "full_worker_installed": false,
+    "repository_changed_by_pilot": false,
+    "result": {
+      "mode": "off",
+      "human_pm_keeps_merge": true,
+      "summary": "읽기 전용 CLI 호출만으로는 무인 개발 Workers가 설치되어 있음을 입증할 수 없습니다. 병합 권한은 사람 PM이 유지합니다."
+    },
+    "events_sha256": "b393b9cd1a37d22e1de7f1c016fd59ca78544180e8f36cd3bc50380e613428de"
+  },
+  "validation": {
+    "python_full_before_final_focused_changes": {
+      "tests": 606,
+      "skipped": 1,
+      "exit_code": 0
+    },
+    "automation_final_focused": {
+      "tests": 123,
+      "skipped": 1,
+      "exit_code": 0
+    },
+    "report_bundle": {
+      "tests": 3,
+      "exit_code": 0
+    },
+    "web": {
+      "passed": 288,
+      "skipped": 5,
+      "native_browser_cases": 4,
+      "build": "pass"
+    },
+    "rules_byte_identical": true,
+    "contracts": "pass",
+    "phase2_integrity": "pass",
+    "mcp_stdio_smoke": "pass"
+  },
+  "mail_assignments": [
+    {
+      "assignment_id": "PM-20261005-CORE-AUTOMATION-PREP",
+      "status": "sent",
+      "recipient_read_confirmed": false
+    },
+    {
+      "assignment_id": "PM-20261005-DATA-AUTOMATION-PREP",
+      "status": "sent",
+      "recipient_read_confirmed": false
+    },
+    {
+      "assignment_id": "PM-20261005-WEB-AUTOMATION-PREP",
+      "status": "sent",
+      "recipient_read_confirmed": false
+    }
+  ],
+  "partial_intake": [
+    {
+      "pr": 73,
+      "head": "8310876ff78cd4a5c21110b2ad05a979897ef727",
+      "entire_parent_done": false,
+      "actual_model_calls_in_pr": 0
+    },
+    {
+      "pr": 74,
+      "head": "5af64e93b1ca413317a91893e530901fc7f5874e",
+      "entire_parent_done": false,
+      "independently_verified_pdf_hashes": 3,
+      "verified_quotes": 15
+    }
+  ],
+  "limits": [
+    "team and member modes OFF; no unattended implementation job executed",
+    "each PC installation and personal GitHub/Codex authentication pending",
+    "publisher/model credential isolation before unattended write not accepted",
+    "public HTTPS currently needs PM PC; direct lab HTTPS requires administrator",
+    "model connection test is not product judgement quality or customer demand evidence"
+  ],
+  "source_manifest": {
+    "services/automation/__init__.py": "ea84d525b7ea570b7215aab65642e9daa96670c0e2436ec0565c7a9714aeb4cc",
+    "services/automation/controller.py": "3652eaed83339c2f38018f22be336a31b76bdd1cecf87f885b8dbc59cdde586f",
+    "services/automation/github_bridge.py": "29d3098c00e7a0907a24c1e064b01bb887eff6bc7a82554932f0aea51e72e5d0",
+    "services/automation/model_gateway.py": "df8a12257d2e8f8fc86c0494a75f27ec35893889d4d79640c73c4332f1f637cc",
+    "services/automation/model_proxy.py": "4cc078a58530f4b6351726f5ee4e6b989742ca1df57ce6e65e001de6c6aedc97",
+    "services/automation/process.py": "0c6a1869de4cb8901161fbcf0c898c1ae279fd3087a47ccfbdd39f5d9d6116ec",
+    "services/automation/state.py": "a1e5c56777e5ebdda4b2363373ba176d39e13876e1f81e0f96ffe6eba56e017a",
+    "services/automation/worker.py": "299964bb1a0b996482b0677626fa14e35fc86ed3c01d2d004100a65c92233e66"
+  }
+}

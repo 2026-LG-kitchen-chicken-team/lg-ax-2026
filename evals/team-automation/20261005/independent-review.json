@@ -1,0 +1,183 @@
+{
+  "schema_version": "1.0",
+  "observed_at": "2026-10-04T20:37:09Z",
+  "reviewer": "independent incoming_audit subagent",
+  "decision": "PASS_FOR_OFF_BOOTSTRAP_WITH_EXPLICIT_LIMITS",
+  "unattended_write_accepted": false,
+  "scope": [
+    "ON/OFF/STOP authority, queue, lease and shared path ownership",
+    "Worker and metadata bridge publication boundaries",
+    "Setup authentication and existing model adapter compatibility",
+    "Code versus operating documentation and latest official OpenAI support",
+    "Fixed-head PR73/74 partial intake and recorded Project migration preservation"
+  ],
+  "independently_executed_checks": {
+    "automation_command": "uv run --no-sync python -X utf8 -m unittest discover -s tests -p test_automation*.py -q",
+    "automation_tests_run": 121,
+    "automation_passed": 120,
+    "automation_skipped": 1,
+    "skip_reason": "Windows filesystem symlink capability unavailable in this test environment",
+    "automation_failures": 0,
+    "automation_errors": 0,
+    "elapsed_seconds": 13.162,
+    "agent_claude_byte_equal": true,
+    "test_mode": "Local fixtures, mock network/model responses and isolated temporary Git/process resources",
+    "claims_not_supported": [
+      "Four member PCs authenticated and installed",
+      "Production account privilege isolation",
+      "A full unattended development-to-PR run",
+      "Continuous availability or product semantic quality"
+    ]
+  },
+  "parent_executed_evidence_independently_read": {
+    "evidence_kind": "Recorded actual deployment and pilot results; not independently repeated by this reviewer",
+    "controller": {
+      "global_mode": "off",
+      "unauthenticated_status_http": 401,
+      "worker_global_mode_change_http": 403,
+      "authenticated_status_http": 200
+    },
+    "shared_model": {
+      "tags_http": 200,
+      "generate_http": 200,
+      "actual_model_calls": 1,
+      "prompt_eval_count": 32,
+      "eval_count": 6,
+      "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "product_quality_evidence": false
+    },
+    "codex_pilot": {
+      "exit_code": 0,
+      "sandbox": "read-only",
+      "tools_requested": false,
+      "authentication": "Existing own ChatGPT login; subscription tier not verified",
+      "full_worker_installed": false,
+      "repository_changed": false,
+      "events_sha256": "b393b9cd1a37d22e1de7f1c016fd59ca78544180e8f36cd3bc50380e613428de"
+    }
+  },
+  "resolved_findings_verified": [
+    "Enrollment consumes the actual automation_token response and checks the authenticated member",
+    "PM operator and PM review Worker tokens are distinct",
+    "Per-job immutable session records allow the same owner to continue disjoint work while a PR waits",
+    "Retry generations preserve previous branches and worktrees without collision",
+    "Controller clients reject redirects, ambiguous URLs and ambient proxy forwarding",
+    "Existing model adapter keep_alive and schema payload pass through the Gateway",
+    "Model digest is checked before and after generation",
+    "Read-only reviews use the fixed PR head even when main advances; implementation still checks its approved base",
+    "Publication checks fresh permission and the actual PR head/author; report failure preserves the PR",
+    "Structured review upload is bounded and bridge comments do not constitute approval or merge"
+  ],
+  "documentation_alignment": {
+    "team_and_personal_off_default": true,
+    "team_mode_pm_only_personal_mode_self_only": true,
+    "approved_small_packets_instead_of_all_ready_issues": true,
+    "off_stops_new_code_publication_and_running_worker": true,
+    "off_may_publish_already_completed_read_only_review_comment": true,
+    "stop_blocks_review_comment_publication": true,
+    "pm_merge_and_formal_done_remain_manual": true,
+    "shared_model_available_while_automation_off": true,
+    "current_https_requires_pm_pc": true,
+    "same_execution_user_credential_boundary_explicitly_pending": true,
+    "four_pc_install_auth_and_unattended_completion_explicitly_pending": true
+  },
+  "remaining_conditions_before_unattended_write": [
+    {
+      "owner": "PM with each member",
+      "condition": "Separate publisher credentials from untrusted model/test execution using an independent OS identity or broker, or demonstrate equivalent enforced filesystem and network isolation",
+      "acceptance": "Untrusted child processes cannot read publication/controller credentials or invoke privileged publication directly; no PM administrator login in Worker runtime"
+    },
+    {
+      "owner": "Each member with PM",
+      "condition": "Prepare each dedicated execution environment, own GitHub and Codex login, worker enrollment and installation",
+      "acceptance": "Actual identity, authorized paths, authenticated OFF/STOP, interruption and bounded retry are proven per PC before individual ON"
+    },
+    {
+      "owner": "PM and laboratory administrator",
+      "condition": "Provide a server HTTPS route independent of the PM PC if PC-independent access is required",
+      "acceptance": "Authenticated controller/model access succeeds while the PM PC transport is unavailable and existing services remain reachable"
+    },
+    {
+      "owner": "PM",
+      "condition": "Run one explicitly approved small implementation pilot after the preceding write boundary is accepted",
+      "acceptance": "Actual Codex edit, fixed checks, immutable records, branch/PR, ACCEPTED report and independent fixed-head review; PM alone decides merge and formal Done"
+    }
+  ],
+  "official_support_review": {
+    "checked_at": "2026-10-05 KST",
+    "sources": [
+      {
+        "url": "https://learn.chatgpt.com/docs/auth/ci-cd-auth",
+        "conclusion": "ChatGPT-managed authentication is described for advanced trusted private automation. Preserve refreshed auth and serialize each auth copy; API keys remain the usual CI/CD recommendation. This does not guarantee indefinite unattended availability."
+      },
+      {
+        "url": "https://learn.chatgpt.com/docs/non-interactive-mode",
+        "conclusion": "codex exec supports scripted non-interactive runs, JSON output and explicit sandbox selection. Runtime isolation and permission separation remain operational requirements."
+      },
+      {
+        "url": "https://learn.chatgpt.com/docs/pricing",
+        "conclusion": "Subscription allowance and separately billed API usage are distinct. Local CLI reviews use general allowance; no unlimited throughput or unverified Pro entitlement is claimed."
+      }
+    ]
+  },
+  "incoming_partial_intake": [
+    {
+      "pr": 73,
+      "owner": "choigilung",
+      "source_head": "8310876ff78cd4a5c21110b2ad05a979897ef727",
+      "state": "Fixed-head source preserved; partial intake does not complete the parent task",
+      "original_actual_model_calls": 0,
+      "patch": "Optional strict live-model mode requires positive actual calls, expected model/digest and valid traces for both runs; default fixture evidence remains zero-call"
+    },
+    {
+      "pr": 74,
+      "owner": "ginaginaring",
+      "source_head": "5af64e93b1ca413317a91893e530901fc7f5874e",
+      "state": "Fixed-head source preserved; partial intake does not complete the parent task",
+      "official_document_hashes_independently_matched": 3,
+      "exact_quote_page_locator_spans_independently_matched": 15,
+      "patch": "Plan generation requires a new explicit run directory and rejects existing output before mutation",
+      "limitations": "Optional model applicability, independent evaluation transfer, model performance and actual customer demand remain unproven"
+    }
+  ],
+  "migration_reconciliation": {
+    "canonical_repository": "2026-LG-kitchen-chicken-team/lg-ax-2026",
+    "canonical_project": "https://github.com/orgs/2026-LG-kitchen-chicken-team/projects/1",
+    "preservation_evidence": "evals/project-migration/20261005/preservation.json",
+    "runtime_evidence": "evals/pm-review/20261005-late-handoffs/runtime-after-intake.json",
+    "issues": 26,
+    "fields": 25,
+    "applied_field_values": 238,
+    "target_dates": 26,
+    "same_issue_relations_and_assignees": true,
+    "persisted_reports_after_cutover": 55,
+    "accepted_reports": 52,
+    "rejected_reports_preserved": 3,
+    "lost_pre_cutover_reports": 0,
+    "altered_pre_cutover_outcomes": 0,
+    "unprocessed_reports": 0,
+    "missing_receipts": 0,
+    "board_mismatches": 0,
+    "unapproved_state_changes": 0,
+    "limitation": "Persisted artifacts only; never-pushed work and messages never sent cannot be audited from GitHub"
+  },
+  "review_limits": [
+    "This review does not publish, merge, turn automation ON or access the server",
+    "This reviewer did not perform additional GPU, Codex or real browser runs",
+    "An OFF deployment and read-only pilot do not prove unattended write readiness",
+    "Automation evidence does not verify the application proposal's 31 requirements or demonstrate customer value"
+  ],
+  "reviewed_sha256": {
+    "docs/pm/automation.md": "229497c38386cf63311a8d6f7e147c1015e21dc78c8648dfbaa7dc8e090875f3",
+    "AGENTS.md": "8409ea8a2aa060dea0223bef190833a7b8c3c6812f672d885ed804019e56d06e",
+    "CLAUDE.md": "8409ea8a2aa060dea0223bef190833a7b8c3c6812f672d885ed804019e56d06e",
+    "services/automation/state.py": "a1e5c56777e5ebdda4b2363373ba176d39e13876e1f81e0f96ffe6eba56e017a",
+    "services/automation/controller.py": "3652eaed83339c2f38018f22be336a31b76bdd1cecf87f885b8dbc59cdde586f",
+    "services/automation/worker.py": "299964bb1a0b996482b0677626fa14e35fc86ed3c01d2d004100a65c92233e66",
+    "services/automation/process.py": "0c6a1869de4cb8901161fbcf0c898c1ae279fd3087a47ccfbdd39f5d9d6116ec",
+    "services/automation/github_bridge.py": "9f82726f5f9d88bd48bcd1b211f88d2d48558b02ea45aad4f6881481ef721ca2",
+    "services/automation/model_gateway.py": "df8a12257d2e8f8fc86c0494a75f27ec35893889d4d79640c73c4332f1f637cc",
+    "services/automation/model_proxy.py": "4cc078a58530f4b6351726f5ee4e6b989742ca1df57ce6e65e001de6c6aedc97",
+    "scripts/automation.py": "e5f0b130ee979f98dcfaaf75380fa8e505fcd69d320eaba456b675e901abc7e2"
+  }
+}

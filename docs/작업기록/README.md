@@ -126,3 +126,7 @@ PM의 새 배정은 공용 배정 JSON·Issue 댓글·비공개 발송 대기와
 ## 현재 구축 범위
 
 root 지침, 네 명의 작업기록·근거 문서와 공통 형식을 준비한다. AGENTS.md/CLAUDE.md의 전체 내용 일치 검사는 `python scripts/sync_agent_rules.py --check`로 한다. 2차 하네스·Projects/Issue를 적용했다. 타 팀원 본인의 실제 로그와 참가작 전체 Agent 구현은 후속 작업이다.
+
+## 자동 Worker의 불변 세션 기록
+
+자동 작업은 `docs/작업기록/세션/{성명}/{job_id}.md`와 `docs/작업근거/세션/{성명}/{job_id}.md`를 새로 만들고 기존 필수 상세 항목을 모두 작성한다. 작업 지시/AI 해석/실제 수행/검증/한계/다음 행동을 구분하고 같은 전체 PR head로 자기보고한다. 개인 재개 요약은 자기 담당 단일 기록자가 세션 링크를 연결한다. [자동화 운영](../pm/automation.md)을 따른다.
