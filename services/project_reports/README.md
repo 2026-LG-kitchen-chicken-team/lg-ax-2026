@@ -63,8 +63,8 @@ uv run python scripts/project_report.py report P2-DATA-001 --status doing --summ
   "status": "doing",
   "summary": "실제 진행 요약",
   "next_action": "다음 구체 행동",
-  "log_url": "https://github.com/jeongiryang/lg-ax-2026/blob/전체40자리commit/docs/작업기록/신진하.md",
-  "evidence_url": "https://github.com/jeongiryang/lg-ax-2026/blob/전체40자리commit/docs/작업근거/신진하.md"
+  "log_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/blob/전체40자리commit/docs/작업기록/신진하.md",
+  "evidence_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/blob/전체40자리commit/docs/작업근거/신진하.md"
 }
 ```
 ````

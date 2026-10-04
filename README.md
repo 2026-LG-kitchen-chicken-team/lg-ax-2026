@@ -56,14 +56,14 @@
 
 ## GitHub 협업
 
-- 저장소: [jeongiryang/lg-ax-2026](https://github.com/jeongiryang/lg-ax-2026), 기본 브랜치 `main`.
+- 저장소: [2026-LG-kitchen-chicken-team/lg-ax-2026](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026), 기본 브랜치 `main`.
 - 신진하: [ginaginaring](https://github.com/ginaginaring), 개발팀 합류·초대 수락·저장소 Write 확인(10/4 사용자 확인·GitHub 직접 조회). 자료 Epic #5·#12~#16 담당자를 지정했다. [현재 배정](docs/pm/현재배정.md)의 #12부터 시작한다.
 - 황대겸: [unknownamed](https://github.com/unknownamed), 10/4 초대·수락·쓰기 권한 확인.
 - 최길웅: [choigilung](https://github.com/choigilung), 쓰기 권한 확인.
-- 역할 고정: [운영 Issue #28](https://github.com/jeongiryang/lg-ax-2026/issues/28), [2차 개발 Project](https://github.com/users/jeongiryang/projects/3).
+- 역할 고정: [운영 Issue #28](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28), [2차 개발 Project](https://github.com/users/jeongiryang/projects/3).
 - Project는 정이량 PM만 편집·관리하며 세 팀원은 Read다. 팀원 AI는 자기 인증 계정으로 자기 담당 Issue에 `doing`·`blocked`·`review_requested`를 보고한다. 10/4 실제 배포한 외부 PM 관리 서비스가 45초마다 검사해 `Status`·`팀원 보고`·`최근 보고`·`다음 행동`만 반영한다. [팀 협업 체계](docs/협업체계.md)와 [서비스 안내](services/project_reports/README.md)를 따른다.
 - 공식 상태는 PM이 검증한 배포 정책의 승인 스냅샷과 운영 Issue #28의 실제 PM `/lgax-sync` 승인을 따른다. 팀원이 main의 JSON을 바꾼 사실만으로 완료·의존 해제·확장 채택이 승인되지 않는다. 새 배정은 PM AI가 공용 배정 JSON·Issue·비공개 발송 대기를 만든 뒤 연결된 Gmail로 보내고 실제 Sent 메타데이터를 확인한다. 서비스 활성·재시작 보존과 첫 안내 메일 세 건의 실제 SENT 확인은 완료했다. 열람·개발 완료는 별도다.
-- 초대받은 계정으로 로그인한 뒤 [초대 수락 페이지](https://github.com/jeongiryang/lg-ax-2026/invitations)에서 수락한다.
+- 초대받은 계정으로 로그인한 뒤 [초대 수락 페이지](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/invitations)에서 수락한다.
 - 학번·연락처·서명 등 작성된 개인 서류는 Git에서 제외된 `private/`에 보관한다.
 
 ## 이어서 볼 문서
