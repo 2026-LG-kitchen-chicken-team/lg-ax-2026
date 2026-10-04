@@ -1,0 +1,143 @@
+{
+  "task_id": "P2-WEB-003",
+  "owner": "최길웅",
+  "result": "pass",
+  "execution_kind": "live_service",
+  "requirement_ids": [
+    "R02",
+    "R25"
+  ],
+  "branch": "codex/p2-web-review-fixes",
+  "tested_commit": "dbff065025c6e27d94fa03044192bd9797db6c68",
+  "scope": "PR40/41 병합 후 독립 리뷰 남은 결함(#4·#7) 수정 검증. P2-WEB-003 완료 근거가 아님(실제 코어 연결은 PM-20261004-WEB-003-CORE-INTEGRATION).",
+  "recorded_at": "2026-10-04T20:45:00+09:00",
+  "performed_by": "Claude Code (Claude Opus 5.5) for 최길웅",
+  "observations": [
+    "#4: createProject 성공 후 첫 createRun이 CONNECTION_FAILED여도 새 프로젝트가 선택된 채 남고, 재시도 addRun(previous null)이 같은 프로젝트에 저장된다(jsdom 시험).",
+    "#7: 실서버에서 새 프로젝트로 저장할 요청은 요청 회차 0과 빈 변경표로 표시(서버 저장값과 일치). live E2E가 새 프로젝트 경로에서 회차 0을 확인.",
+    "main(c8fc93e) 기준 기존 웹 104·E2E·실서버 흐름이 함께 통과."
+  ],
+  "code_versions": [
+    {
+      "path": "apps/web/src/App.tsx",
+      "git_commit": "dbff065025c6e27d94fa03044192bd9797db6c68",
+      "sha256": "8676ab2f5650b0dbd37f4df543be2fec3ac338580f863cc5e04494e4f89dbcfa"
+    },
+    {
+      "path": "apps/web/src/liveWorkspace.ts",
+      "git_commit": "dbff065025c6e27d94fa03044192bd9797db6c68",
+      "sha256": "8f799819ee6b8bae235fc9c14fb9663a233cf9d1ad2ecbe2df1405eb9ab8e6cf"
+    },
+    {
+      "path": "apps/web/src/liveWorkspace.state.test.ts",
+      "git_commit": "dbff065025c6e27d94fa03044192bd9797db6c68",
+      "sha256": "e2f3126bdb8b50176db6796aee941f425d7f9e8ea77800708314b1adc169d8de"
+    },
+    {
+      "path": "apps/web/e2e/planner-flow.spec.ts",
+      "git_commit": "dbff065025c6e27d94fa03044192bd9797db6c68",
+      "sha256": "77e0402fe6767ac692bf5b07bdf6663cee760116706ea705dddde06c0bf0bae2"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "git_commit": "dbff065025c6e27d94fa03044192bd9797db6c68",
+      "sha256": "d7cf46d9a980b00ad786ec46feaf3d31e4094f56ff0899d8bab59bdf95a9bad5"
+    },
+    {
+      "path": "data/demo/dataset.json",
+      "git_commit": "dbff065025c6e27d94fa03044192bd9797db6c68",
+      "sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0"
+    },
+    {
+      "path": "packages/core/src/lgax_core/workspace.py",
+      "git_commit": "dbff065025c6e27d94fa03044192bd9797db6c68",
+      "sha256": "7228331ae911484e9c8695e5ac731e80756c0673791938c02eed2f3f3d6a9888"
+    },
+    {
+      "path": "apps/web/package-lock.json",
+      "git_commit": "dbff065025c6e27d94fa03044192bd9797db6c68",
+      "sha256": "271f5c742de25ff68f71370684ca53218750e654ce75a62fa901a42e27953981"
+    }
+  ],
+  "models": [],
+  "checks": [
+    {
+      "name": "npx playwright test (Chrome) 3 passed: fixture 2 + 실서버 연결·저장·재실행",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-review-fixes/e2e.txt",
+        "sha256": "cef81644752ec144f5d4313ce82d3e7dc7187957c2f9c9313615e794c5a5abb4"
+      }
+    },
+    {
+      "name": "실제 작업실 서버 opt-in vitest 11 passed",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-review-fixes/live-workspace-test.txt",
+        "sha256": "f7bef11e867a8bb9231181f9ca66f267dd8d679e2196d61310d0f96f4f1aaafc"
+      }
+    },
+    {
+      "name": "live 흐름 산출",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-review-fixes/live-workspace-flow.json",
+        "sha256": "b809b1082dc5c67ddb496923bb545ef41ad58519ff3af1c4408cf701244bc0e4"
+      }
+    },
+    {
+      "name": "npm run test --prefix apps/web (105 passed, 2 skipped; #4 jsdom 회귀 포함)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-review-fixes/web-tests.txt",
+        "sha256": "4f53477eca6fee03664a775c468e336e93e4555cc2a7f9092e575616dd6eb818"
+      }
+    },
+    {
+      "name": "npm run typecheck --prefix apps/web",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-review-fixes/web-typecheck.txt",
+        "sha256": "c028f37ff786c1cd330dfd4a41ef0492f01c33aeeec7ec353ad7d20ac783869c"
+      }
+    },
+    {
+      "name": "npm run build --prefix apps/web",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-review-fixes/web-build.txt",
+        "sha256": "bfdb8302694048cdb3ea77a503032625f5836b8d3c4d43e422f7a3ef4142390d"
+      }
+    },
+    {
+      "name": "uv run python scripts/sync_agent_rules.py --check",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-review-fixes/rules.txt",
+        "sha256": "7e0a7002be1c8a6a929966a18bc7207035beabeef3065614f21a9b6265ca789d"
+      }
+    },
+    {
+      "name": "uv run python scripts/check_contracts.py",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-review-fixes/contracts.txt",
+        "sha256": "1e1b81f4c2607b74aca9deb8fd8bf0f1b048508d317d21f36ed1b59fca45661b"
+      }
+    },
+    {
+      "name": "uv run python scripts/phase2.py validate",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-review-fixes/phase2.txt",
+        "sha256": "6e84f7ccf1d99593ee0bf819047eb956d33efeb0f2863bbecbebdca299bd1e42"
+      }
+    }
+  ],
+  "limitations": [
+    "#7 E2E 확인은 저장 버튼이 새 프로젝트 경로일 때만 실행되는 조건부 단언이다.",
+    "판단 Agent 결과가 있는 실행은 아직 없다."
+  ]
+}

@@ -108,6 +108,10 @@ test('live: connect, save a request, rerun with a corrected condition on the rea
   await openArea(page, '기획 요청');
   await page.getByRole('checkbox', { name: /FRIDGE-C/ }).check();
   await page.getByLabel('사용 상황').fill(`E2E ${Date.now()} 우유를 흘린 구역만 청소`);
+  // Review fix #7: a save that starts a new project is shown as revision 0, matching what the server stores.
+  if (await page.getByRole('button', { name: '새 프로젝트로 저장' }).isVisible()) {
+    await expect(page.locator('.request-insights')).toContainText('요청 회차 0');
+  }
   await page.getByRole('button', { name: /새 프로젝트로 저장|변경 요청 저장/ }).click();
   await expect(page.locator('.request-form .inline-message')).toContainText('요청 저장 완료 · 분석 결과 아님');
 
