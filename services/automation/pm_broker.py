@@ -33,7 +33,13 @@ from services.automation.pm import (
     text,
 )
 from services.automation.state import MEMBER_NAMES, PM, REPO
-from services.automation.worker import ControllerClient, exclusive_lock, private_ai_values, write_json
+from services.automation.worker import (
+    ControllerClient,
+    exclusive_lock,
+    private_ai_values,
+    session_records,
+    write_json,
+)
 
 SHA = re.compile(r"[0-9a-f]{40}")
 ACTION_ID = re.compile(r"pm-[0-9a-f]{40}")
@@ -510,13 +516,16 @@ class TrustedPMBroker:
             files = self.github.pages(f"repos/{REPO}/pulls/{number}/files", maximum_pages=10)
             if current.get("changed_files", len(files)) != len(files):
                 raise PMError("complete changed-file evidence could not be collected")
-            pr = {"number": number, "task_id": unit["task_id"], "author": current.get("user", {}).get("login"),
+            pr = {"number": number, "task_id": unit["task_id"], "job_id": unit["job_id"],
+                  "author": current.get("user", {}).get("login"),
                   "draft": current.get("draft"), "head": current["head"]["sha"],
                   "base": unit["base_commit"], "base_ref": current["base"]["ref"],
                   "base_repo": current["base"]["repo"]["full_name"], "head_repo": current["head"]["repo"]["full_name"],
                   "state": "merged" if current.get("merged") else current["state"],
                   "mergeable": current.get("mergeable"), "changed_paths": sorted({path for row in files
                       for path in (row.get("filename"), row.get("previous_filename")) if path}),
+                  "added_paths": sorted({row["filename"] for row in files if row.get("status") == "added"
+                      and row.get("filename") and not row.get("previous_filename")}),
                   "merged_commit": current.get("merge_commit_sha") if current.get("merged") else None,
                   "ci": self._checks(current["head"]["sha"])}
             if pr["author"] != fixed_task["owner"] or pr["head"] != unit.get("head"):
@@ -778,6 +787,9 @@ class TrustedPMBroker:
                 prompt="Fixed required capability " + action["capability_id"] + "\n" + canonical(assignment),
                 base_commit=action["base_commit"], approved=True, approved_snapshot_commit=action["approved_snapshot_commit"],
                 approval_reference=comment["html_url"])
+            # Detailed records are mandatory implementation artifacts, with a
+            # fresh exact job ID. Never broaden policy paths or mutate action.
+            packet["allowed_paths"] = list(action["allowed_paths"]) + session_records(packet, action["owner"])
             previous = next((row for row in reversed(list(self.state["units"].values())) if
                 row["capability_id"] == action["capability_id"] and row.get("revision_requested") and not row.get("superseded_by")), None)
             if previous:

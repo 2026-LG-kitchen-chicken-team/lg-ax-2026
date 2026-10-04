@@ -19,7 +19,7 @@ from unittest.mock import patch
 from services.automation.pm import AutonomousPM, PMError, fingerprint, stable_observation
 from services.automation.pm_broker import DockerPMDriver, LiveGitHub, TrustedPMBroker
 from services.automation.state import ACCOUNTS, PM, REPO
-from services.automation.worker import exclusive_lock
+from services.automation.worker import exclusive_lock, session_records
 
 BASE, HEAD, MERGED = "a" * 40, "b" * 40, "c" * 40
 TASK, CAP, ACTION = "P2-PM-003", "client-unit", "pm-" + "d" * 40
@@ -217,7 +217,7 @@ class BrokerTests(unittest.TestCase):
     def evidence(self):
         pr = self.broker.observe(collect=False)["prs"][0]
         capability = self.broker.policy["capabilities"][CAP]
-        self.broker._review(pr, capability, "implementation-session")
+        self.broker._review(pr, capability, self.broker._unit(pr["number"])["implementation_session_id"])
         key = fingerprint({"commit": HEAD, "head": HEAD, "base": BASE, "capability": capability, "postmerge": False})
         self.broker.state["proofs"][key] = {"verified": True, "collector": "trusted_pm", "head": HEAD, "base": BASE,
             "commit": HEAD, "result": "passed", "checks": ["client-unit"], "evidence_sha256": "e" * 64,
@@ -316,6 +316,48 @@ class BrokerTests(unittest.TestCase):
         self.assertEqual(self.broker.lookup(ACTION), receipt)
         final = json.loads(self.github.comments[0]["body"].split("\n", 1)[1])
         self.assertEqual(final["details"]["mail_state"], "not_required_self_assignment")
+
+    def test_assignment_adds_only_fresh_exact_session_paths_without_changing_policy(self):
+        action, expected = self.action("assign")
+        original = deepcopy(action)
+        self.broker.execute(ACTION, action, expected)
+        packet = next(body for route, body in self.controller.calls if route == "/v1/jobs")
+        records = session_records(packet, PM)
+        self.assertEqual(packet["allowed_paths"], ["tests/test_pilot.py", *records])
+        self.assertEqual(action, original)
+        self.assertEqual(self.broker.policy["capabilities"][CAP]["allowed_paths"], ["tests/test_pilot.py"])
+        self.assertEqual(records, [f"docs/{directory}/세션/정이량/auto-{'d' * 40}.md"
+                                   for directory in ("작업기록", "작업근거")])
+
+    def test_actual_publication_records_pass_broker_and_exact_pm_gate_together(self):
+        action, expected = self.action("assign")
+        self.broker.execute(ACTION, action, expected)
+        packet = next(body for route, body in self.controller.calls if route == "/v1/jobs")
+        records = session_records(packet, PM)
+        self.controller.status["jobs"][0].update(status="review_requested", result={
+            "pr_url": f"https://github.com/{REPO}/pull/81", "head_commit": HEAD})
+        self.github.changed_files = [{"filename": path, "status": "added"}
+                                    for path in packet["allowed_paths"]]
+        self.evidence()
+        observed = self.broker.observe(collect=False)
+        pr = observed["prs"][0]
+        self.assertEqual(pr["job_id"], packet["job_id"])
+        self.assertTrue(set(records) <= set(pr["added_paths"]))
+        self.assertEqual(self.action("merge")[0]["expected_head"], HEAD)
+        # Existing, renamed and deleted current-session records cannot become
+        # new artifacts merely because a trusted job ID is present.
+        for status in ("modified", "renamed", "removed"):
+            with self.subTest(status=status):
+                self.github.changed_files[1]["status"] = status
+                with self.assertRaisesRegex(PMError, "new immutable session"):
+                    self.action("merge")
+
+    def test_observation_takes_job_identity_only_from_registered_host_unit(self):
+        self.add_unit()
+        self.controller.status["jobs"] = [{"job_id": "initial-job", "owner": PM, "task_id": TASK,
+            "status": "review_requested", "result": {"job_id": "branch-claim", "pr_url": f"https://github.com/{REPO}/pull/81",
+                                                       "head_commit": HEAD}}]
+        self.assertEqual(self.broker.observe(collect=False)["prs"][0]["job_id"], "initial-job")
 
     def test_off_after_decision_refuses_before_remote_intent(self):
         action, expected = self.action("assign")
