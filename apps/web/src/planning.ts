@@ -28,7 +28,7 @@ export interface Run {
   stage: 'plan' | 'retrieve' | 'needs' | 'compare' | 'concepts' | 'review' | 'finished';
   revision_count: number; max_revisions: 2; concepts: Concept[]; unresolved: string[]; evidence_ids: string[]; events: RunEvent[];
 }
-export interface RunOutput { needs: Need[]; gaps: Gap[] }
+export interface RunOutput { needs: Need[]; gaps: Gap[]; no_candidate_reasons?: string[] }
 export interface RunSnapshot {
   run: Run; request: PlanningRequest; previous_run_id: string | null; request_revision: number; actor_id: string;
   client: 'api' | 'web' | 'mcp' | 'skill'; created_at: string; document_versions: Record<string, string>;
@@ -290,6 +290,7 @@ export interface ExportDocument {
   request: PlanningRequest;
   comparison: { model_id: string; need_id: string; situation: string; pain: string; feature_ids: string[]; conditions: string[]; support_status: Gap['support_status'] | null; remaining_pain: string; evidence_ids: string[]; questions: string[]; missing_ids: string[] }[];
   concepts: Concept[];
+  no_candidate_reasons?: string[];
   requirements: { concept_id: string; requirement: string }[];
   assumptions: { source_id: string; assumption: string }[];
   unresolved: string[];
@@ -341,6 +342,7 @@ export function buildExport(mode: DataMode, snapshot: RunSnapshot, features: Fea
     request: structuredClone(snapshot.request),
     comparison: structuredClone(exportComparison(output, features, evidence)),
     concepts: structuredClone(snapshot.run.concepts),
+    no_candidate_reasons: [...(output.no_candidate_reasons ?? [])],
     requirements: snapshot.run.concepts.flatMap(concept => concept.requirements.map(requirement => ({ concept_id: concept.id, requirement }))),
     assumptions: [
       ...snapshot.run.concepts.flatMap(concept => concept.assumptions.map(assumption => ({ source_id: concept.id, assumption }))),
@@ -395,7 +397,8 @@ ${item.requirement}`));
   const fields: [string, unknown, unknown][] = [
     ['실행·자료 버전', actualMeta, expectedMeta], ['기획 요청', doc.request, snapshot.request],
     ['불편·기능 대조표', doc.comparison, exportComparison(output, features, evidence)],
-    ['콘셉트 후보', doc.concepts, snapshot.run.concepts], ['요구사항', doc.requirements, expectedRequirements],
+    ['콘셉트 후보', doc.concepts, snapshot.run.concepts],
+    ['후보 없음 사유', doc.no_candidate_reasons ?? [], output.no_candidate_reasons ?? []], ['요구사항', doc.requirements, expectedRequirements],
     ['가정·미확인', doc.assumptions, expectedAssumptions], ['미해결', doc.unresolved, snapshot.run.unresolved],
     ['근거 부족 보류', doc.held, expectedHeld], ['검토 범위 밖 문서 버전', doc.scope_warnings, expectedScope], ['실행 계보', doc.lineage, expectedLineage],
     ['인용 근거 ID', doc.evidence.map(item => item.id).sort(), [...cited].sort()],
@@ -446,6 +449,7 @@ export function exportMarkdown(doc: ExportDocument): string {
     '', '## 콘셉트 후보', '',
   ];
   if (!doc.concepts.length) lines.push('생성된 콘셉트가 없습니다.', '');
+  if (doc.no_candidate_reasons?.length) lines.push('후보 없음 사유:', ...doc.no_candidate_reasons.map(item => `- ${item}`), '');
   for (const concept of doc.concepts) {
     lines.push(`### ${concept.id} — ${concept.title} (${statusLabel(concept.status)})`, '', `- 유형: ${concept.kind} · 대응 간극: ${concept.gap_ids.join(', ')}`, `- 차별점: ${concept.differentiation}`, `- 근거: ${concept.evidence_ids.join(', ')}`, '', '요구사항:', ...concept.requirements.map(item => `- ${item}`), '', '확인할 가정:', ...(concept.assumptions.length ? concept.assumptions.map(item => `- ${item}`) : ['- 없음']), '');
   }

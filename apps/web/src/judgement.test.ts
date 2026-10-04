@@ -111,6 +111,37 @@ describe('CORE-001 judgement contract cases on the web (core fixtures + actual c
     expect(judgementDecisionErrors({ ...decision, next_revision_count: decision.revision_count })).toContain('/next_revision_count must count only an actual revise');
     expect(judgementDecisionErrors({ ...decision, action: 'retry' })).not.toEqual([]);
   });
+
+  it('preserves accepted zero-candidate reasons through snapshots and exports without calling them unresolved', () => {
+    const { input, output: original, decision } = CASES.find(item => item.suite === 'development' && item.type === 'normal')!;
+    const reasons = ['현재 조건에서 제안할 신규 콘셉트가 없습니다.', '추가 후보를 만들지 않은 검토 사유\n원문을 유지합니다.'];
+    const output: JudgementOutput = { ...structuredClone(original), concepts: [], concept_assessments: [], no_candidate_reasons: [...reasons] };
+    expect(judgementOutputErrors(output)).toEqual([]);
+    const snapshot = judgementRunSnapshot(input, output, decision, META)!;
+    expect(contractErrors('WorkspaceRunSnapshot', snapshot)).toEqual([]);
+    expect(snapshot.run.status).toBe('completed');
+    expect(snapshot.run.concepts).toEqual([]);
+    expect(snapshot.run.unresolved).toEqual([]);
+    expect(snapshot.output!.no_candidate_reasons).toEqual(reasons);
+    output.no_candidate_reasons[0] = '원 선언을 이후에 변경';
+    expect(snapshot.output!.no_candidate_reasons).toEqual(reasons);
+
+    const doc = buildExport('fixture', snapshot, input.features, input.sources, '2026-10-05T00:00:01.000Z');
+    expect(doc.no_candidate_reasons).toEqual(reasons);
+    expect(doc.unresolved).toEqual([]);
+    expect(doc.completeness.complete).toBe(true);
+    const markdown = exportMarkdown(doc);
+    expect(markdown).toContain(`후보 없음 사유:\n- ${reasons.join('\n- ')}`);
+    expect(markdown).toContain('## 미해결·보류\n\n- 없음');
+
+    for (const lost of [{ ...doc, no_candidate_reasons: undefined }, { ...doc, no_candidate_reasons: [] }, { ...doc, no_candidate_reasons: ['변조한 사유'] }]) {
+      const completeness = exportCompleteness(lost, snapshot, input.features, input.sources);
+      expect(completeness.complete).toBe(false);
+      expect(completeness.mismatched_fields).toContain('후보 없음 사유');
+    }
+    doc.no_candidate_reasons![0] = '다운로드 문서를 이후에 변경';
+    expect(snapshot.output!.no_candidate_reasons).toEqual(reasons);
+  });
 });
 
 describe('JudgementPanel (rendered)', () => {

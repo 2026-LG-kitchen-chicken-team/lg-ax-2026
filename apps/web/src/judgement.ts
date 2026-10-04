@@ -144,6 +144,9 @@ export function judgementRunSnapshot(input: JudgementInput, output: JudgementOut
     },
     request: structuredClone(input.request), previous_run_id: null, request_revision: 0, actor_id: meta.actor_id, client: 'skill',
     created_at: meta.created_at, document_versions: { [output.model_id]: output.document_version }, dataset_sha256: meta.dataset_sha256,
-    unconfirmed: [...output.questions], output: { needs: structuredClone(output.needs), gaps: structuredClone(output.gaps) },
+    unconfirmed: [...output.questions], output: {
+      needs: structuredClone(output.needs), gaps: structuredClone(output.gaps),
+      no_candidate_reasons: [...output.no_candidate_reasons],
+    },
   };
 }

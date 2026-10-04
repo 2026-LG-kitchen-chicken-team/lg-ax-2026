@@ -103,6 +103,26 @@ class WorkspacePlanningTests(unittest.TestCase):
         reopened = WorkspaceStore(self.path, self.evidence)
         self.assertEqual(reopened.get_run(result["run"]["id"], "planner"), result)
 
+    def test_completed_zero_candidates_preserve_reasons_without_unresolved_classification(self):
+        fixture = FixtureRunner()
+        reasons = ["현재 조건에서는 추가 후보를 제안하지 않았습니다."]
+
+        def zero(request, versions, evidence):
+            execution = fixture(request, versions, evidence)
+            output = execution["output"]
+            output.update(concepts=[], concept_assessments=[], no_candidate_reasons=reasons[:])
+            execution["decision"] = review_judgement(execution["input"], output)
+            self.assertEqual(execution["decision"]["action"], "accept")
+            return execution
+
+        store, pid = self.store(zero)
+        saved = store.create_run(pid, self.request, "planner", "web")
+        self.assertEqual(saved["run"]["status"], "completed")
+        self.assertEqual(saved["run"]["concepts"], [])
+        self.assertEqual(saved["run"]["unresolved"], [])
+        self.assertEqual(saved["output"]["no_candidate_reasons"], reasons)
+        self.assertEqual(store.get_run(saved["run"]["id"], "planner"), saved)
+
     def test_empty_trace_labels_become_failed_and_preserve_rejected_execution(self):
         fixture = FixtureRunner()
         for label in ("stage", "operation"):

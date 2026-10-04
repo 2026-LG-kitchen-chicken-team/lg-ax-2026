@@ -114,7 +114,7 @@ def planning_run_fields(execution: Any, payload: dict) -> tuple[dict, dict]:
         validate("Concept", item)
     reasons = list(dict.fromkeys([
         *output.get("unresolved", []), *output.get("hold_reasons", []),
-        *output.get("no_candidate_reasons", []),
+        *(output.get("no_candidate_reasons", []) if status != "completed" else []),
     ]))
     if status != "completed" and not reasons:
         reasons = ["판단이 보류되었거나 실패했습니다. 실행 내역을 확인해 주세요."]
@@ -135,5 +135,6 @@ def planning_run_fields(execution: Any, payload: dict) -> tuple[dict, dict]:
               "revision_count": revisions, "max_revisions": 2, "concepts": concepts,
               "unresolved": reasons, "evidence_ids": evidence_ids, "events": events}
     browser = {"needs": deepcopy(output["needs"]), "gaps": deepcopy(output["gaps"]),
+               "no_candidate_reasons": deepcopy(output.get("no_candidate_reasons", [])),
                "planning_execution": deepcopy(execution)}
     return fields, browser
