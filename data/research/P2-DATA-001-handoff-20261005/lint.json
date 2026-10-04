@@ -1,0 +1,897 @@
+{
+  "argv": [
+    "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+    "-m",
+    "ruff",
+    "check",
+    ".",
+    "--output-format",
+    "json"
+  ],
+  "exit_code": 1,
+  "diagnostic_count": 24,
+  "diagnostics": [
+    {
+      "cell": null,
+      "code": "I001",
+      "end_location": {
+        "column": 42,
+        "row": 13
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\apps\\api\\src\\lgax_api\\server.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "import argparse\n\nimport uvicorn\nfrom fastapi import FastAPI, Query, Request\nfrom fastapi.exceptions import RequestValidationError\nfrom fastapi.middleware.cors import CORSMiddleware\nfrom fastapi.responses import JSONResponse\nfrom lgax_contracts import CONTRACT_VERSION, load_schema\nfrom lgax_core.errors import DomainError, not_implemented\nfrom lgax_core.store import default_store\n\n",
+            "end_location": {
+              "column": 1,
+              "row": 15
+            },
+            "location": {
+              "column": 1,
+              "row": 3
+            }
+          }
+        ],
+        "message": "Organize imports"
+      },
+      "location": {
+        "column": 1,
+        "row": 3
+      },
+      "message": "Import block is un-sorted or un-formatted",
+      "name": "unsorted-imports",
+      "noqa_row": 3,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+    },
+    {
+      "cell": null,
+      "code": "I001",
+      "end_location": {
+        "column": 42,
+        "row": 14
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\apps\\mcp\\src\\lgax_mcp\\server.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "import argparse\nimport os\n\nfrom lgax_contracts import CONTRACT_VERSION\nfrom lgax_core.errors import DomainError\nfrom lgax_core.store import default_store\nfrom mcp.server.fastmcp import FastMCP\nfrom mcp.server.transport_security import TransportSecuritySettings\nfrom mcp.types import ToolAnnotations\nfrom starlette.requests import Request\nfrom starlette.responses import JSONResponse\n\n\n",
+            "end_location": {
+              "column": 1,
+              "row": 17
+            },
+            "location": {
+              "column": 1,
+              "row": 3
+            }
+          }
+        ],
+        "message": "Organize imports"
+      },
+      "location": {
+        "column": 1,
+        "row": 3
+      },
+      "message": "Import block is un-sorted or un-formatted",
+      "name": "unsorted-imports",
+      "noqa_row": 3,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+    },
+    {
+      "cell": null,
+      "code": "I001",
+      "end_location": {
+        "column": 65,
+        "row": 39
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\evals\\web\\20261005\\p2-web-003-core-records\\generate.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "    import httpx\n    import lgax_core\n    import test_planning_agent as fixtures  # the checkout's own pinned mocks\n    from lgax_core.model_client import ModelConfig, OllamaAdapter, StructuredModelClient\n    from lgax_core.planning_agent import PlanningAgent\n    from lgax_core.store import DemoStore\n    from lgax_core.workspace_planning import planning_run_fields\n",
+            "end_location": {
+              "column": 1,
+              "row": 40
+            },
+            "location": {
+              "column": 1,
+              "row": 33
+            }
+          }
+        ],
+        "message": "Organize imports"
+      },
+      "location": {
+        "column": 5,
+        "row": 33
+      },
+      "message": "Import block is un-sorted or un-formatted",
+      "name": "unsorted-imports",
+      "noqa_row": 33,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+    },
+    {
+      "cell": null,
+      "code": "I001",
+      "end_location": {
+        "column": 59,
+        "row": 9
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\packages\\contracts\\src\\lgax_contracts\\validation.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "import json\nfrom functools import lru_cache\nfrom importlib.resources import files\nfrom pathlib import Path\nfrom typing import Any\n\nfrom jsonschema import Draft202012Validator, FormatChecker\n\n",
+            "end_location": {
+              "column": 1,
+              "row": 11
+            },
+            "location": {
+              "column": 1,
+              "row": 3
+            }
+          }
+        ],
+        "message": "Organize imports"
+      },
+      "location": {
+        "column": 1,
+        "row": 3
+      },
+      "message": "Import block is un-sorted or un-formatted",
+      "name": "unsorted-imports",
+      "noqa_row": 3,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+    },
+    {
+      "cell": null,
+      "code": "I001",
+      "end_location": {
+        "column": 11,
+        "row": 11
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\scripts\\ax_workflow.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "import argparse\nimport hashlib\nimport json\nimport sys\nfrom datetime import datetime, timezone\nfrom pathlib import Path\n\n",
+            "end_location": {
+              "column": 1,
+              "row": 13
+            },
+            "location": {
+              "column": 1,
+              "row": 6
+            }
+          }
+        ],
+        "message": "Organize imports"
+      },
+      "location": {
+        "column": 1,
+        "row": 6
+      },
+      "message": "Import block is un-sorted or un-formatted",
+      "name": "unsorted-imports",
+      "noqa_row": 6,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+    },
+    {
+      "cell": null,
+      "code": "UP017",
+      "end_location": {
+        "column": 48,
+        "row": 138
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\scripts\\ax_workflow.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "from datetime import datetime, timezone, UTC",
+            "end_location": {
+              "column": 40,
+              "row": 7
+            },
+            "location": {
+              "column": 1,
+              "row": 7
+            }
+          },
+          {
+            "content": "UTC",
+            "end_location": {
+              "column": 48,
+              "row": 138
+            },
+            "location": {
+              "column": 36,
+              "row": 138
+            }
+          }
+        ],
+        "message": "Convert to `datetime.UTC` alias"
+      },
+      "location": {
+        "column": 36,
+        "row": 138
+      },
+      "message": "Use `datetime.UTC` alias",
+      "name": "datetime-timezone-utc",
+      "noqa_row": 138,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/datetime-timezone-utc"
+    },
+    {
+      "cell": null,
+      "code": "I001",
+      "end_location": {
+        "column": 28,
+        "row": 12
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\scripts\\build_application.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "import base64\nimport json\nimport re\nfrom copy import deepcopy\nfrom pathlib import Path\n\nfrom lxml import etree as E\nfrom PIL import Image\n\n",
+            "end_location": {
+              "column": 1,
+              "row": 14
+            },
+            "location": {
+              "column": 1,
+              "row": 6
+            }
+          }
+        ],
+        "message": "Organize imports"
+      },
+      "location": {
+        "column": 1,
+        "row": 6
+      },
+      "message": "Import block is un-sorted or un-formatted",
+      "name": "unsorted-imports",
+      "noqa_row": 6,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+    },
+    {
+      "cell": null,
+      "code": "PIE810",
+      "end_location": {
+        "column": 96,
+        "row": 277
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\scripts\\build_application.py",
+      "fix": {
+        "applicability": "unsafe",
+        "edits": [
+          {
+            "content": "text.startswith(('※ 제시한 6개', '※ 제안서는', '※ 최종 제출 시'))",
+            "end_location": {
+              "column": 96,
+              "row": 277
+            },
+            "location": {
+              "column": 8,
+              "row": 277
+            }
+          }
+        ],
+        "message": "Merge into a single `startswith` call"
+      },
+      "location": {
+        "column": 8,
+        "row": 277
+      },
+      "message": "Call `startswith` once with a `tuple`",
+      "name": "multiple-starts-ends-with",
+      "noqa_row": 277,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/multiple-starts-ends-with"
+    },
+    {
+      "cell": null,
+      "code": "PIE810",
+      "end_location": {
+        "column": 68,
+        "row": 279
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\scripts\\build_application.py",
+      "fix": {
+        "applicability": "unsafe",
+        "edits": [
+          {
+            "content": "text.startswith(('[붙임 2-2]', '[붙임 2-3]'))",
+            "end_location": {
+              "column": 68,
+              "row": 279
+            },
+            "location": {
+              "column": 10,
+              "row": 279
+            }
+          }
+        ],
+        "message": "Merge into a single `startswith` call"
+      },
+      "location": {
+        "column": 10,
+        "row": 279
+      },
+      "message": "Call `startswith` once with a `tuple`",
+      "name": "multiple-starts-ends-with",
+      "noqa_row": 279,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/multiple-starts-ends-with"
+    },
+    {
+      "cell": null,
+      "code": "I001",
+      "end_location": {
+        "column": 42,
+        "row": 7
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\scripts\\build_proposal_visuals.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "import math\nimport os\nimport subprocess\nfrom pathlib import Path\n\nfrom reportlab.lib.colors import HexColor\nfrom reportlab.pdfbase import pdfmetrics\nfrom reportlab.pdfbase.ttfonts import TTFont\nfrom reportlab.pdfgen import canvas\n\n",
+            "end_location": {
+              "column": 1,
+              "row": 8
+            },
+            "location": {
+              "column": 1,
+              "row": 2
+            }
+          }
+        ],
+        "message": "Organize imports"
+      },
+      "location": {
+        "column": 1,
+        "row": 2
+      },
+      "message": "Import block is un-sorted or un-formatted",
+      "name": "unsorted-imports",
+      "noqa_row": 2,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+    },
+    {
+      "cell": null,
+      "code": "I001",
+      "end_location": {
+        "column": 45,
+        "row": 9
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\scripts\\check_contracts.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "import json\nfrom hashlib import sha256\nfrom pathlib import Path\n\nfrom lgax_contracts import load_schema, validate\nfrom lgax_core import DemoStore\nfrom lgax_core.errors import not_implemented\n\n\n",
+            "end_location": {
+              "column": 1,
+              "row": 12
+            },
+            "location": {
+              "column": 1,
+              "row": 3
+            }
+          }
+        ],
+        "message": "Organize imports"
+      },
+      "location": {
+        "column": 1,
+        "row": 3
+      },
+      "message": "Import block is un-sorted or un-formatted",
+      "name": "unsorted-imports",
+      "noqa_row": 3,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+    },
+    {
+      "cell": null,
+      "code": "I001",
+      "end_location": {
+        "column": 11,
+        "row": 5
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\scripts\\flow_audit.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "import argparse\nimport json\nimport sys\nfrom pathlib import Path\n\n\n",
+            "end_location": {
+              "column": 1,
+              "row": 8
+            },
+            "location": {
+              "column": 1,
+              "row": 2
+            }
+          }
+        ],
+        "message": "Organize imports"
+      },
+      "location": {
+        "column": 1,
+        "row": 2
+      },
+      "message": "Import block is un-sorted or un-formatted",
+      "name": "unsorted-imports",
+      "noqa_row": 2,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+    },
+    {
+      "cell": null,
+      "code": "SIM102",
+      "end_location": {
+        "column": 68,
+        "row": 43
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\scripts\\flow_audit.py",
+      "fix": {
+        "applicability": "unsafe",
+        "edits": [
+          {
+            "content": "        if node.get(\"kind\") == \"command\" and (not node.get(\"sources\") or not node.get(\"requires\")):\n            errors.append(f\"{node['id']}:unverified_command_contract\")",
+            "end_location": {
+              "column": 75,
+              "row": 44
+            },
+            "location": {
+              "column": 1,
+              "row": 42
+            }
+          }
+        ],
+        "message": "Combine `if` statements using `and`"
+      },
+      "location": {
+        "column": 9,
+        "row": 42
+      },
+      "message": "Use a single `if` statement instead of nested `if` statements",
+      "name": "collapsible-if",
+      "noqa_row": 42,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/collapsible-if"
+    },
+    {
+      "cell": null,
+      "code": "I001",
+      "end_location": {
+        "column": 42,
+        "row": 11
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\scripts\\smoke_mcp.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "import argparse\nimport asyncio\nimport json\nimport sys\nfrom pathlib import Path\n\nimport httpx\nfrom mcp import ClientSession, StdioServerParameters\nfrom mcp.client.stdio import stdio_client\n\n",
+            "end_location": {
+              "column": 1,
+              "row": 13
+            },
+            "location": {
+              "column": 1,
+              "row": 3
+            }
+          }
+        ],
+        "message": "Organize imports"
+      },
+      "location": {
+        "column": 1,
+        "row": 3
+      },
+      "message": "Import block is un-sorted or un-formatted",
+      "name": "unsorted-imports",
+      "noqa_row": 3,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+    },
+    {
+      "cell": null,
+      "code": "SIM117",
+      "end_location": {
+        "column": 55,
+        "row": 35
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\scripts\\smoke_mcp.py",
+      "fix": null,
+      "location": {
+        "column": 5,
+        "row": 34
+      },
+      "message": "Use a single `with` statement with multiple contexts instead of nested `with` statements",
+      "name": "multiple-with-statements",
+      "noqa_row": 34,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/multiple-with-statements"
+    },
+    {
+      "cell": null,
+      "code": "I001",
+      "end_location": {
+        "column": 25,
+        "row": 4
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\scripts\\sync_agent_rules.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "import argparse\nfrom pathlib import Path\n\n",
+            "end_location": {
+              "column": 1,
+              "row": 7
+            },
+            "location": {
+              "column": 1,
+              "row": 3
+            }
+          }
+        ],
+        "message": "Organize imports"
+      },
+      "location": {
+        "column": 1,
+        "row": 3
+      },
+      "message": "Import block is un-sorted or un-formatted",
+      "name": "unsorted-imports",
+      "noqa_row": 3,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+    },
+    {
+      "cell": null,
+      "code": "I001",
+      "end_location": {
+        "column": 44,
+        "row": 7
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\tests\\test_ax_workflow.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "import copy\nimport json\nimport tempfile\nimport unittest\nfrom pathlib import Path\n\nfrom scripts.ax_workflow import CONFIG, ROOT, completed, finish, packet\nfrom scripts.flow_audit import audit, trace\n\n\n",
+            "end_location": {
+              "column": 1,
+              "row": 10
+            },
+            "location": {
+              "column": 1,
+              "row": 1
+            }
+          }
+        ],
+        "message": "Organize imports"
+      },
+      "location": {
+        "column": 1,
+        "row": 1
+      },
+      "message": "Import block is un-sorted or un-formatted",
+      "name": "unsorted-imports",
+      "noqa_row": 1,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+    },
+    {
+      "cell": null,
+      "code": "I001",
+      "end_location": {
+        "column": 32,
+        "row": 11
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\tests\\test_contracts.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "import json\nimport unittest\nfrom copy import deepcopy\nfrom pathlib import Path\n\nfrom jsonschema import ValidationError\nfrom lgax_contracts import load_schema, validate\nfrom lgax_core import DemoStore\n\n\n",
+            "end_location": {
+              "column": 1,
+              "row": 14
+            },
+            "location": {
+              "column": 1,
+              "row": 3
+            }
+          }
+        ],
+        "message": "Organize imports"
+      },
+      "location": {
+        "column": 1,
+        "row": 3
+      },
+      "message": "Import block is un-sorted or un-formatted",
+      "name": "unsorted-imports",
+      "noqa_row": 3,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+    },
+    {
+      "cell": null,
+      "code": "I001",
+      "end_location": {
+        "column": 49,
+        "row": 7
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\tests\\test_harness.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "import copy\nimport hashlib\nimport json\nimport tempfile\nimport unittest\nfrom pathlib import Path\n\nfrom scripts.harness import ROOT, gate, validate\n\n\n",
+            "end_location": {
+              "column": 1,
+              "row": 10
+            },
+            "location": {
+              "column": 1,
+              "row": 1
+            }
+          }
+        ],
+        "message": "Organize imports"
+      },
+      "location": {
+        "column": 1,
+        "row": 1
+      },
+      "message": "Import block is un-sorted or un-formatted",
+      "name": "unsorted-imports",
+      "noqa_row": 1,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+    },
+    {
+      "cell": null,
+      "code": "I001",
+      "end_location": {
+        "column": 39,
+        "row": 8
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\tests\\test_mcp.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "import asyncio\nimport importlib.util\nimport unittest\nfrom pathlib import Path\n\nfrom lgax_mcp.server import create_mcp\n\n\n",
+            "end_location": {
+              "column": 1,
+              "row": 11
+            },
+            "location": {
+              "column": 1,
+              "row": 3
+            }
+          }
+        ],
+        "message": "Organize imports"
+      },
+      "location": {
+        "column": 1,
+        "row": 3
+      },
+      "message": "Import block is un-sorted or un-formatted",
+      "name": "unsorted-imports",
+      "noqa_row": 3,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+    },
+    {
+      "cell": null,
+      "code": "I001",
+      "end_location": {
+        "column": 53,
+        "row": 2
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\tests\\test_scenario_spike.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "import unittest\n\nfrom scripts.scenario_spike import examples, inspect\n\n\n",
+            "end_location": {
+              "column": 1,
+              "row": 5
+            },
+            "location": {
+              "column": 1,
+              "row": 1
+            }
+          }
+        ],
+        "message": "Organize imports"
+      },
+      "location": {
+        "column": 1,
+        "row": 1
+      },
+      "message": "Import block is un-sorted or un-formatted",
+      "name": "unsorted-imports",
+      "noqa_row": 1,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+    },
+    {
+      "cell": null,
+      "code": "B023",
+      "end_location": {
+        "column": 29,
+        "row": 89
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\tests\\test_semantic_inputs.py",
+      "fix": null,
+      "location": {
+        "column": 24,
+        "row": 89
+      },
+      "message": "Function definition does not bind loop variable `field`",
+      "name": "function-uses-loop-variable",
+      "noqa_row": 89,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/function-uses-loop-variable"
+    },
+    {
+      "cell": null,
+      "code": "B023",
+      "end_location": {
+        "column": 51,
+        "row": 259
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\tests\\test_semantic_review.py",
+      "fix": null,
+      "location": {
+        "column": 47,
+        "row": 259
+      },
+      "message": "Function definition does not bind loop variable `code`",
+      "name": "function-uses-loop-variable",
+      "noqa_row": 259,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/function-uses-loop-variable"
+    },
+    {
+      "cell": null,
+      "code": "I001",
+      "end_location": {
+        "column": 98,
+        "row": 4
+      },
+      "filename": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\tests\\test_topic_trial.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "import copy\nimport json\nimport unittest\n\nfrom scripts.topic_trial import DATA, assess_concepts, design_completion_ux, execute, repair_flow\n\n\n",
+            "end_location": {
+              "column": 1,
+              "row": 7
+            },
+            "location": {
+              "column": 1,
+              "row": 1
+            }
+          }
+        ],
+        "message": "Organize imports"
+      },
+      "location": {
+        "column": 1,
+        "row": 1
+      },
+      "message": "Import block is un-sorted or un-formatted",
+      "name": "unsorted-imports",
+      "noqa_row": 1,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+    }
+  ],
+  "file_comparison": [
+    {
+      "path": "apps/api/src/lgax_api/server.py",
+      "same_as_current_main": true
+    },
+    {
+      "path": "apps/mcp/src/lgax_mcp/server.py",
+      "same_as_current_main": true
+    },
+    {
+      "path": "evals/web/20261005/p2-web-003-core-records/generate.py",
+      "same_as_current_main": true
+    },
+    {
+      "path": "packages/contracts/src/lgax_contracts/validation.py",
+      "same_as_current_main": true
+    },
+    {
+      "path": "scripts/ax_workflow.py",
+      "same_as_current_main": true
+    },
+    {
+      "path": "scripts/build_application.py",
+      "same_as_current_main": true
+    },
+    {
+      "path": "scripts/build_proposal_visuals.py",
+      "same_as_current_main": true
+    },
+    {
+      "path": "scripts/check_contracts.py",
+      "same_as_current_main": true
+    },
+    {
+      "path": "scripts/flow_audit.py",
+      "same_as_current_main": true
+    },
+    {
+      "path": "scripts/smoke_mcp.py",
+      "same_as_current_main": true
+    },
+    {
+      "path": "scripts/sync_agent_rules.py",
+      "same_as_current_main": true
+    },
+    {
+      "path": "tests/test_ax_workflow.py",
+      "same_as_current_main": true
+    },
+    {
+      "path": "tests/test_contracts.py",
+      "same_as_current_main": true
+    },
+    {
+      "path": "tests/test_harness.py",
+      "same_as_current_main": true
+    },
+    {
+      "path": "tests/test_mcp.py",
+      "same_as_current_main": true
+    },
+    {
+      "path": "tests/test_scenario_spike.py",
+      "same_as_current_main": true
+    },
+    {
+      "path": "tests/test_semantic_inputs.py",
+      "same_as_current_main": true
+    },
+    {
+      "path": "tests/test_semantic_review.py",
+      "same_as_current_main": true
+    },
+    {
+      "path": "tests/test_topic_trial.py",
+      "same_as_current_main": true
+    }
+  ],
+  "own_scope_lint_passed": true
+}

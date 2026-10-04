@@ -1,0 +1,145 @@
+{
+  "code_commit": "5fa1a62273c5f699d0619c2a088a2f5a35c7a128",
+  "routes": [
+    {
+      "path": "/health",
+      "method": "GET",
+      "function": "health",
+      "source_file": "apps/api/src/lgax_api/server.py",
+      "line": 38
+    },
+    {
+      "path": "/api/contract",
+      "method": "GET",
+      "function": "contract",
+      "source_file": "apps/api/src/lgax_api/server.py",
+      "line": 44
+    },
+    {
+      "path": "/api/bootstrap",
+      "method": "GET",
+      "function": "bootstrap",
+      "source_file": "apps/api/src/lgax_api/server.py",
+      "line": 49
+    },
+    {
+      "path": "/api/products",
+      "method": "GET",
+      "function": "products",
+      "source_file": "apps/api/src/lgax_api/server.py",
+      "line": 54
+    },
+    {
+      "path": "/api/evidence/search",
+      "method": "GET",
+      "function": "search",
+      "source_file": "apps/api/src/lgax_api/server.py",
+      "line": 59
+    },
+    {
+      "path": "/api/evidence/{evidence_id}",
+      "method": "GET",
+      "function": "evidence",
+      "source_file": "apps/api/src/lgax_api/server.py",
+      "line": 65
+    },
+    {
+      "path": "/api/planning-requests",
+      "method": "POST",
+      "function": "planning_requests",
+      "source_file": "apps/api/src/lgax_api/server.py",
+      "line": 70
+    },
+    {
+      "path": "/health",
+      "method": "GET",
+      "function": "health",
+      "source_file": "apps/api/src/lgax_api/workspace_server.py",
+      "line": 92
+    },
+    {
+      "path": "/api/workspace/projects",
+      "method": "GET",
+      "function": "projects",
+      "source_file": "apps/api/src/lgax_api/workspace_server.py",
+      "line": 102
+    },
+    {
+      "path": "/api/workspace/projects",
+      "method": "POST",
+      "function": "create_project",
+      "source_file": "apps/api/src/lgax_api/workspace_server.py",
+      "line": 113
+    },
+    {
+      "path": "/api/workspace/projects/{project_id}",
+      "method": "GET",
+      "function": "project",
+      "source_file": "apps/api/src/lgax_api/workspace_server.py",
+      "line": 123
+    },
+    {
+      "path": "/api/workspace/projects/{project_id}/runs",
+      "method": "POST",
+      "function": "create_run",
+      "source_file": "apps/api/src/lgax_api/workspace_server.py",
+      "line": 130
+    },
+    {
+      "path": "/api/workspace/projects/{project_id}/runs",
+      "method": "GET",
+      "function": "runs",
+      "source_file": "apps/api/src/lgax_api/workspace_server.py",
+      "line": 150
+    },
+    {
+      "path": "/api/workspace/runs/{run_id}",
+      "method": "GET",
+      "function": "run",
+      "source_file": "apps/api/src/lgax_api/workspace_server.py",
+      "line": 161
+    },
+    {
+      "path": "/api/workspace/projects/{project_id}/evidence",
+      "method": "GET",
+      "function": "search",
+      "source_file": "apps/api/src/lgax_api/workspace_server.py",
+      "line": 166
+    }
+  ],
+  "upload_or_document_parser_found": false,
+  "r03_full_chain_executed": false,
+  "environment_problem": "matching Python3.11/.venv absent; approved installation not yet received",
+  "implementation_problem": "local baseline has synthetic read-only evidence and planning snapshot storage; document upload/parser is #13 work, not implemented in this #12 validation run",
+  "independent_manifest_inventory": [],
+  "inspected_locations": [
+    "data",
+    "evals"
+  ],
+  "private_materials": "not inspected; do not infer global absence",
+  "pm_manifest_fields": {
+    "root": [
+      "schema_version",
+      "independent_from_development",
+      "cases"
+    ],
+    "case": [
+      "case_id",
+      "category",
+      "request",
+      "data_path",
+      "output_contract_path"
+    ]
+  },
+  "required_categories": [
+    "normal",
+    "duplicate_feature",
+    "model_version_confusion",
+    "conflicting_reviews",
+    "missing_evidence",
+    "specification_change"
+  ],
+  "expected_answers_ready": false,
+  "development_or_tuning_used_independent_answers": false,
+  "runtime_tests_started": false
+}

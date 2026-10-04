@@ -1,0 +1,58 @@
+{
+  "checked_at": "2026-10-05T01:05:17+09:00",
+  "tested_code_commit": "791c206338dc2786bb880bdd53d80f9d1c010767",
+  "scope": "final packaging only; runtime checks not repeated",
+  "commands_and_checks": [
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "input": null,
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "check": "preserved_changes",
+      "count": 4,
+      "errors": []
+    },
+    {
+      "check": "runtime_inputs",
+      "count": 8,
+      "errors": []
+    },
+    {
+      "check": "private_eval_integrity",
+      "count": 15,
+      "errors": []
+    },
+    {
+      "command": [
+        "git",
+        "check-ignore",
+        "--stdin"
+      ],
+      "input": "private\\evaluation\\DATA001-20261005-contract-review\\answer-key\\expected-behavior.md\nprivate\\evaluation\\DATA001-20261005-contract-review\\answer-key\\expected-contract-decisions.json\nprivate\\evaluation\\DATA001-20261005-contract-review\\cases.json\nprivate\\evaluation\\DATA001-20261005-contract-review\\materials\\HELD-conflicting_reviews.json\nprivate\\evaluation\\DATA001-20261005-contract-review\\materials\\HELD-duplicate.json\nprivate\\evaluation\\DATA001-20261005-contract-review\\materials\\HELD-missing_evidence.json\nprivate\\evaluation\\DATA001-20261005-contract-review\\materials\\HELD-model_confusion.json\nprivate\\evaluation\\DATA001-20261005-contract-review\\materials\\HELD-normal.json\nprivate\\evaluation\\DATA001-20261005-contract-review\\materials\\HELD-spec_change.json\nprivate\\evaluation\\DATA001-20261005-contract-review\\provenance.json\nprivate\\evaluation\\DATA001-20261005-contract-review\\README.md\nprivate\\evaluation\\DATA001-20261005-contract-review\\schemas\\input.json\nprivate\\evaluation\\DATA001-20261005-contract-review\\schemas\\output.json\nprivate\\evaluation\\DATA001-20261005-contract-review\\validation\\judgement_contract.py\nprivate\\evaluation\\DATA001-20261005-contract-review\\validation-result.json\ntmp/data001-http-20261005\n.tools/uv/bin/uv.exe\n.venv/Scripts/python.exe\n",
+      "exit_code": 0,
+      "stdout": "\"private\\\\evaluation\\\\DATA001-20261005-contract-review\\\\answer-key\\\\expected-behavior.md\\r\"\n\"private\\\\evaluation\\\\DATA001-20261005-contract-review\\\\answer-key\\\\expected-contract-decisions.json\\r\"\n\"private\\\\evaluation\\\\DATA001-20261005-contract-review\\\\cases.json\\r\"\n\"private\\\\evaluation\\\\DATA001-20261005-contract-review\\\\materials\\\\HELD-conflicting_reviews.json\\r\"\n\"private\\\\evaluation\\\\DATA001-20261005-contract-review\\\\materials\\\\HELD-duplicate.json\\r\"\n\"private\\\\evaluation\\\\DATA001-20261005-contract-review\\\\materials\\\\HELD-missing_evidence.json\\r\"\n\"private\\\\evaluation\\\\DATA001-20261005-contract-review\\\\materials\\\\HELD-model_confusion.json\\r\"\n\"private\\\\evaluation\\\\DATA001-20261005-contract-review\\\\materials\\\\HELD-normal.json\\r\"\n\"private\\\\evaluation\\\\DATA001-20261005-contract-review\\\\materials\\\\HELD-spec_change.json\\r\"\n\"private\\\\evaluation\\\\DATA001-20261005-contract-review\\\\provenance.json\\r\"\n\"private\\\\evaluation\\\\DATA001-20261005-contract-review\\\\README.md\\r\"\n\"private\\\\evaluation\\\\DATA001-20261005-contract-review\\\\schemas\\\\input.json\\r\"\n\"private\\\\evaluation\\\\DATA001-20261005-contract-review\\\\schemas\\\\output.json\\r\"\n\"private\\\\evaluation\\\\DATA001-20261005-contract-review\\\\validation\\\\judgement_contract.py\\r\"\n\"private\\\\evaluation\\\\DATA001-20261005-contract-review\\\\validation-result.json\\r\"\n\"tmp/data001-http-20261005\\r\"\n\".tools/uv/bin/uv.exe\\r\"\n\".venv/Scripts/python.exe\\r\"\n",
+      "stderr": ""
+    },
+    {
+      "check": "candidate_json_parse",
+      "result": "PASS"
+    },
+    {
+      "check": "new_delivery_excludes_synthetic_original_text",
+      "originals_checked": 26,
+      "hits": []
+    }
+  ],
+  "errors": [],
+  "result": "PASS",
+  "raw_synthetic_ids_are_metadata_only": true,
+  "publication_approved": false,
+  "issue_12_complete": false
+}

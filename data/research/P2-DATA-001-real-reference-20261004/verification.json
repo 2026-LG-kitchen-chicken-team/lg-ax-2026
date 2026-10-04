@@ -1,0 +1,194 @@
+{
+  "checked_at": "2026-10-04T18:30:23+09:00",
+  "result": "PASS",
+  "scope": "이 실제 참고팩 최소 구조/모델/핵심 수치/출처/CSV 대조; 전체 JSON Schema·검색·Agent/하네스 통과가 아님",
+  "models": {
+    "T876MEE1H1": "fridge",
+    "DUE6BGL2E": "dishwasher",
+    "MW23FDI": "microwave"
+  },
+  "facts": 60,
+  "source_counts": {
+    "official": 9,
+    "ssg": 3
+  },
+  "conflicts": 2,
+  "gaps": 7,
+  "csv_json_equal": true,
+  "baseline_unchanged": [
+    {
+      "path": "data/demo/dataset.json",
+      "expected_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+      "actual_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+      "unchanged": true
+    },
+    {
+      "path": "data/demo/manifest.json",
+      "expected_sha256": "71aa5b05e3e7e86140aac22782e1b5c33f9183efc2b417a9721fb41a80765470",
+      "actual_sha256": "71aa5b05e3e7e86140aac22782e1b5c33f9183efc2b417a9721fb41a80765470",
+      "unchanged": true
+    },
+    {
+      "path": "data/demo/planning_requests.json",
+      "expected_sha256": "89b445290a48646844279ffc2c08b6284e0a1402d9c736cb197013659742e54a",
+      "actual_sha256": "89b445290a48646844279ffc2c08b6284e0a1402d9c736cb197013659742e54a",
+      "unchanged": true
+    },
+    {
+      "path": "packages/core/src/lgax_core/store.py",
+      "expected_sha256": "211f2dcd55ad28d8273175e5d9410df99aecf64b69338e76ac1b67e5d757ee38",
+      "actual_sha256": "211f2dcd55ad28d8273175e5d9410df99aecf64b69338e76ac1b67e5d757ee38",
+      "unchanged": true
+    },
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "expected_sha256": "d7cf46d9a980b00ad786ec46feaf3d31e4094f56ff0899d8bab59bdf95a9bad5",
+      "actual_sha256": "d7cf46d9a980b00ad786ec46feaf3d31e4094f56ff0899d8bab59bdf95a9bad5",
+      "unchanged": true
+    }
+  ],
+  "inventory_sha256": "3bfa72530f425b900cf740ecdd177795a7b8fb46ed9a8789c412864231a959b1",
+  "manual_checks": [
+    {
+      "source_id": "F-M",
+      "downloaded_sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815",
+      "expected_sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815",
+      "hash_match": true,
+      "text_checks": [
+        {
+          "page_1_based": 1,
+          "checked_term": "MFL71401557",
+          "found": true
+        },
+        {
+          "page_1_based": 1,
+          "checked_term": "Rev.00_032526",
+          "found": true
+        },
+        {
+          "page_1_based": 22,
+          "checked_term": "1787",
+          "found": true
+        },
+        {
+          "page_1_based": 22,
+          "checked_term": "914",
+          "found": true
+        },
+        {
+          "page_1_based": 22,
+          "checked_term": "918",
+          "found": true
+        }
+      ]
+    },
+    {
+      "source_id": "D-M",
+      "downloaded_sha256": "ff60f78ab8326c40b9a3446f11b49531b8f0c823a310ba98366716b633ba63f5",
+      "expected_sha256": "ff60f78ab8326c40b9a3446f11b49531b8f0c823a310ba98366716b633ba63f5",
+      "hash_match": true,
+      "text_checks": [
+        {
+          "page_1_based": 1,
+          "checked_term": "MFL71959117",
+          "found": true
+        },
+        {
+          "page_1_based": 1,
+          "checked_term": "Rev.07_030626",
+          "found": true
+        },
+        {
+          "page_1_based": 1,
+          "checked_term": "DUE6****E",
+          "found": true
+        },
+        {
+          "page_1_based": 57,
+          "checked_term": "1600 W",
+          "found": true
+        },
+        {
+          "page_1_based": 57,
+          "checked_term": "598 mm X 815 mm X 567 mm",
+          "found": true
+        },
+        {
+          "page_1_based": 57,
+          "checked_term": "45 kg",
+          "found": true
+        }
+      ]
+    },
+    {
+      "source_id": "M-M",
+      "downloaded_sha256": "3ceec78295d02352fd467309bc613cf59c9bf7bce0bae3e9d5de3ad4bae2f7bc",
+      "expected_sha256": "3ceec78295d02352fd467309bc613cf59c9bf7bce0bae3e9d5de3ad4bae2f7bc",
+      "hash_match": true,
+      "text_checks": [
+        {
+          "page_1_based": 1,
+          "checked_term": "MW23FDI",
+          "found": true
+        },
+        {
+          "page_1_based": 1,
+          "checked_term": "MFL68822538",
+          "found": true
+        },
+        {
+          "page_1_based": 1,
+          "checked_term": "Rev.00_120925",
+          "found": true
+        },
+        {
+          "page_1_based": 37,
+          "checked_term": "1570 W",
+          "found": true
+        },
+        {
+          "page_1_based": 37,
+          "checked_term": "476 × 272 × 369",
+          "found": true
+        },
+        {
+          "page_1_based": 37,
+          "checked_term": "23 L(가용 용량: 13 L)",
+          "found": true
+        }
+      ]
+    }
+  ],
+  "ocr_used": false,
+  "search_questions_run": false,
+  "full_issue_complete": false,
+  "harness_validate": "이전 actual valid:false; 과거 증거 hash mismatch 및 shallow clone에 없는 merge commit. 미수정",
+  "errors": [],
+  "output_sha256": {
+    "reference-pack.json": "cdbc8e8dbcacf6f95d219856ff48f827d9b23a06d0f72d9e7f94d7a0854c8f17",
+    "facts.csv": "d3bc82f053d3c340ce720e84fcdbfa479e6de56e022fc10a3bb7c509c15e8310",
+    "sources.csv": "9be14aa8d2d9d37a29576dfa9337e81522326236b351a6634b55481971729ec5",
+    "conflicts.csv": "903281d797e856cd1089e9c5832296fc040a96f0d5932316b5e06764bd13a943"
+  },
+  "line_ending_normalization": {
+    "checked_at": "2026-10-04T22:31:22+09:00",
+    "repo_policy": ".gitattributes: text eol=lf",
+    "reason": "original Windows text bytes were CRLF; Git stored LF, creating byte-hash differences",
+    "original_windows_file_sha256": {
+      "data/research/P2-DATA-001-real-reference-20261004/conflicts.csv": "985c410160254fc045ce647f6538814807aa2fbb2a2cba80c3a63e17a204c9cc",
+      "data/research/P2-DATA-001-real-reference-20261004/facts.csv": "179290828ab706a6a6f309064431f68406959e13be214dbecd25957eec3ee130",
+      "data/research/P2-DATA-001-real-reference-20261004/reference-pack.json": "11b52928b1be5e145a49327a704b9d62405e8d2272372075b54a9974d2ca9bb0",
+      "data/research/P2-DATA-001-real-reference-20261004/sources.csv": "4098ccd465a6cf57b3979524966dcdc35d689adee051fd95b3fca9354885a21b",
+      "data/research/P2-DATA-001-real-reference-20261004/verification.json": "adaf41946ba474fd19dad15e542b2571754cd5d4215396af04b89fa194ad28d0"
+    },
+    "original_windows_output_sha256": {
+      "reference-pack.json": "11b52928b1be5e145a49327a704b9d62405e8d2272372075b54a9974d2ca9bb0",
+      "facts.csv": "179290828ab706a6a6f309064431f68406959e13be214dbecd25957eec3ee130",
+      "sources.csv": "4098ccd465a6cf57b3979524966dcdc35d689adee051fd95b3fca9354885a21b",
+      "conflicts.csv": "985c410160254fc045ce647f6538814807aa2fbb2a2cba80c3a63e17a204c9cc"
+    },
+    "content_changes": false,
+    "source_pdf_hashes_changed": false,
+    "baseline_files_changed": false
+  }
+}

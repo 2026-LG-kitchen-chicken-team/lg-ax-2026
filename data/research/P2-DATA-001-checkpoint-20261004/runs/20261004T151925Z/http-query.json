@@ -1,0 +1,351 @@
+{
+  "code_commit": "791c206338dc2786bb880bdd53d80f9d1c010767",
+  "server_argv": [
+    "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-m",
+    "lgax_api.server",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "57711"
+  ],
+  "transport": "actual loopback HTTP",
+  "raw_responses": "tmp\\data001-http-20261005",
+  "raw_responses_git_ignored": true,
+  "cases": [
+    {
+      "group": "fridge",
+      "input": {
+        "q": "선반",
+        "model_id": "FRIDGE-A",
+        "document_version": "1.0",
+        "limit": 10
+      },
+      "search": {
+        "method": "GET",
+        "path": "/api/evidence/search",
+        "params": {
+          "q": "선반",
+          "model_id": "FRIDGE-A",
+          "document_version": "1.0",
+          "limit": 10
+        },
+        "http_status": 200,
+        "response_sha256": "8164b942f91597ad11a7d2e35224ce0abdf8daf09ec1b273234237836b6e732d"
+      },
+      "original_lookup": {
+        "method": "GET",
+        "path": "/api/evidence/MANUAL-001",
+        "params": null,
+        "http_status": 200,
+        "response_sha256": "6fe9ea02e01f201fabb6542260204614e468a45a9389a41b5d8175cac28eff93"
+      },
+      "replay": {
+        "method": "GET",
+        "path": "/api/evidence/search",
+        "params": {
+          "q": "선반",
+          "model_id": "FRIDGE-A",
+          "document_version": "1.0",
+          "limit": 10
+        },
+        "http_status": 200,
+        "response_sha256": "8164b942f91597ad11a7d2e35224ce0abdf8daf09ec1b273234237836b6e732d"
+      },
+      "expected_evidence_id": "MANUAL-001",
+      "metadata_preserved": true,
+      "original_text_exact_match": true,
+      "repeat_response_equal": true,
+      "items": [
+        {
+          "id": "MANUAL-001",
+          "model_id": "FRIDGE-A",
+          "document_version": "1.0",
+          "source_kind": "synthetic",
+          "source_type": "manual",
+          "source_id": "FRIDGE-A-MANUAL-v1.0",
+          "locator": {
+            "page": 1,
+            "section": "선반 분리"
+          }
+        },
+        {
+          "id": "REVIEW-EVIDENCE-001",
+          "model_id": "FRIDGE-A",
+          "document_version": "1.0",
+          "source_kind": "synthetic",
+          "source_type": "review",
+          "source_id": "REVIEWS-CSV-v1.0",
+          "locator": {
+            "row": 2
+          }
+        },
+        {
+          "id": "REVIEW-EVIDENCE-002",
+          "model_id": "FRIDGE-A",
+          "document_version": "1.0",
+          "source_kind": "synthetic",
+          "source_type": "review",
+          "source_id": "REVIEWS-CSV-v1.0",
+          "locator": {
+            "row": 3
+          }
+        },
+        {
+          "id": "REVIEW-EVIDENCE-004",
+          "model_id": "FRIDGE-A",
+          "document_version": "1.0",
+          "source_kind": "synthetic",
+          "source_type": "review",
+          "source_id": "REVIEWS-CSV-v1.0",
+          "locator": {
+            "row": 5
+          }
+        },
+        {
+          "id": "REVIEW-EVIDENCE-006",
+          "model_id": "FRIDGE-A",
+          "document_version": "1.0",
+          "source_kind": "synthetic",
+          "source_type": "review",
+          "source_id": "REVIEWS-CSV-v1.0",
+          "locator": {
+            "row": 7
+          }
+        },
+        {
+          "id": "REVIEW-EVIDENCE-010",
+          "model_id": "FRIDGE-A",
+          "document_version": "1.0",
+          "source_kind": "synthetic",
+          "source_type": "review",
+          "source_id": "REVIEWS-CSV-v1.0",
+          "locator": {
+            "row": 11
+          }
+        }
+      ]
+    },
+    {
+      "group": "dishwasher",
+      "input": {
+        "q": "적재",
+        "model_id": "DISHWASHER-A",
+        "document_version": "1.0",
+        "limit": 10
+      },
+      "search": {
+        "method": "GET",
+        "path": "/api/evidence/search",
+        "params": {
+          "q": "적재",
+          "model_id": "DISHWASHER-A",
+          "document_version": "1.0",
+          "limit": 10
+        },
+        "http_status": 200,
+        "response_sha256": "5e577a9d8b3d4548aafc1cb6d3941b2993e8c1f491b94aca726eaff980cb5757"
+      },
+      "original_lookup": {
+        "method": "GET",
+        "path": "/api/evidence/MANUAL-004",
+        "params": null,
+        "http_status": 200,
+        "response_sha256": "f85508d16e539a0a754a5683c3d63a28fd5271af35663aeb5df430bd611ef5d1"
+      },
+      "replay": {
+        "method": "GET",
+        "path": "/api/evidence/search",
+        "params": {
+          "q": "적재",
+          "model_id": "DISHWASHER-A",
+          "document_version": "1.0",
+          "limit": 10
+        },
+        "http_status": 200,
+        "response_sha256": "5e577a9d8b3d4548aafc1cb6d3941b2993e8c1f491b94aca726eaff980cb5757"
+      },
+      "expected_evidence_id": "MANUAL-004",
+      "metadata_preserved": true,
+      "original_text_exact_match": true,
+      "repeat_response_equal": true,
+      "items": [
+        {
+          "id": "MANUAL-004",
+          "model_id": "DISHWASHER-A",
+          "document_version": "1.0",
+          "source_kind": "synthetic",
+          "source_type": "manual",
+          "source_id": "DISHWASHER-A-MANUAL-v1.0",
+          "locator": {
+            "page": 4,
+            "section": "기본 적재 안내"
+          }
+        }
+      ]
+    },
+    {
+      "group": "microwave",
+      "input": {
+        "q": "설정",
+        "model_id": "MICROWAVE-A",
+        "document_version": "1.0",
+        "limit": 10
+      },
+      "search": {
+        "method": "GET",
+        "path": "/api/evidence/search",
+        "params": {
+          "q": "설정",
+          "model_id": "MICROWAVE-A",
+          "document_version": "1.0",
+          "limit": 10
+        },
+        "http_status": 200,
+        "response_sha256": "6350d9824ca2c09b43e3919cdf0c56d66dc7141da6151da268304cb1c63a52b1"
+      },
+      "original_lookup": {
+        "method": "GET",
+        "path": "/api/evidence/MANUAL-005",
+        "params": null,
+        "http_status": 200,
+        "response_sha256": "f56a4292f64675b0211f39d26454eaab542181ed1961ce62ad3bff5adf62bb60"
+      },
+      "replay": {
+        "method": "GET",
+        "path": "/api/evidence/search",
+        "params": {
+          "q": "설정",
+          "model_id": "MICROWAVE-A",
+          "document_version": "1.0",
+          "limit": 10
+        },
+        "http_status": 200,
+        "response_sha256": "6350d9824ca2c09b43e3919cdf0c56d66dc7141da6151da268304cb1c63a52b1"
+      },
+      "expected_evidence_id": "MANUAL-005",
+      "metadata_preserved": true,
+      "original_text_exact_match": true,
+      "repeat_response_equal": true,
+      "items": [
+        {
+          "id": "MANUAL-005",
+          "model_id": "MICROWAVE-A",
+          "document_version": "1.0",
+          "source_kind": "synthetic",
+          "source_type": "manual",
+          "source_id": "MICROWAVE-A-MANUAL-v1.0",
+          "locator": {
+            "page": 5,
+            "section": "설정 저장과 호출"
+          }
+        },
+        {
+          "id": "REVIEW-EVIDENCE-035",
+          "model_id": "MICROWAVE-A",
+          "document_version": "1.0",
+          "source_kind": "synthetic",
+          "source_type": "review",
+          "source_id": "REVIEWS-CSV-v1.0",
+          "locator": {
+            "row": 36
+          }
+        },
+        {
+          "id": "REVIEW-EVIDENCE-036",
+          "model_id": "MICROWAVE-A",
+          "document_version": "1.0",
+          "source_kind": "synthetic",
+          "source_type": "review",
+          "source_id": "REVIEWS-CSV-v1.0",
+          "locator": {
+            "row": 37
+          }
+        }
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "method": "GET",
+      "path": "/api/evidence/search",
+      "params": {
+        "q": "선반",
+        "model_id": "WRONG"
+      },
+      "http_status": 404,
+      "response_sha256": "89e3756ecbab7b005da418e2ff7ecac2e89c185040c4728809cd8d585c989650",
+      "expected_error": "INVALID_MODEL_ID",
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/evidence/search",
+      "params": {
+        "q": "선반",
+        "model_id": "FRIDGE-A",
+        "document_version": "9.0"
+      },
+      "http_status": 404,
+      "response_sha256": "971038db34fda6465ec90e8405b2a8262ee012c5751f8f9ad7a6ea46e994ec11",
+      "expected_error": "INVALID_DOCUMENT_VERSION",
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/evidence/search",
+      "params": {
+        "q": "선반",
+        "model_id": "FRIDGE-A",
+        "document_version": "v1.0"
+      },
+      "http_status": 404,
+      "response_sha256": "2ca008e36e9a734ec1b353757cf03ce016ff04702a1683c9bdbf98d3c491f938",
+      "expected_error": "INVALID_DOCUMENT_VERSION",
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/evidence/search",
+      "params": {
+        "q": "선반",
+        "model_id": "T876MEE1H1"
+      },
+      "http_status": 404,
+      "response_sha256": "6b98cc2e275c05811f76791074615e4831bb5cee3d9d96c1445a5643bb1b7ede",
+      "expected_error": "INVALID_MODEL_ID",
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/evidence/search",
+      "params": {
+        "q": "절대없는검색어",
+        "model_id": "FRIDGE-A",
+        "document_version": "1.0"
+      },
+      "http_status": 200,
+      "response_sha256": "b576eaa5b44756d31a17843c97d6043572c740178fbddfd21a67d24106a83ee5",
+      "expected_error": null,
+      "passed": true
+    }
+  ],
+  "r03_full_chain": false,
+  "real_reference_ingestion": false,
+  "server_pid": 29512,
+  "health": {
+    "method": "GET",
+    "path": "/health",
+    "params": null,
+    "http_status": 200,
+    "response_sha256": "1c772bce59b3bee6ce9db3483b493261ec2553d88d9520961002dc2e35acecf7",
+    "data": "synthetic-only",
+    "analysis_implemented": false
+  },
+  "upload_parse_routes_in_api": [],
+  "status": "pass_existing_synthetic_retrieval_only",
+  "own_server_stopped": true
+}

@@ -160,3 +160,16 @@ describe('core pipeline records in the actual React DOM', () => {
     expect(accepted).toContain('기획 품질 기준 4건 중 충족 선언 4건');
   });
 });
+
+// The same scenarios regenerated with main's core after PR #64/#65 took in PR #60 (generate.py --set main and
+// --set semantic at main e5de02e): every path now stores a canonical decision, so the web reports no record problems.
+const CURRENT = read('evals/web/20261005/p2-web-003-core-records/main-core-e5de02e.json');
+
+describe('current main core records (e5de02e, mocked model)', () => {
+  it.each(Object.entries(CURRENT.runs as Record<string, RunSnapshot>))('%s: canonical decision, no record problems', (_name, snapshot) => {
+    expect(contractErrors('WorkspaceRunSnapshot', snapshot)).toEqual([]);
+    const view = ok(snapshot);
+    expect(view.problems).toEqual([]);
+    expect(judgementDecisionErrors(view.execution.decision)).toEqual([]);
+  });
+});

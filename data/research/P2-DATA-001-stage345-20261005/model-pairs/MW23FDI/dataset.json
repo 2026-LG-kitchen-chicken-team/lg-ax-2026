@@ -1,0 +1,106 @@
+{
+  "artifact_kind": "document_dataset",
+  "dataset_version": "lg-manual-scope-20261005.1",
+  "contract_version": "0.1.0",
+  "products": [
+    {
+      "model_id": "MW23FDI",
+      "name": "LG 디오스 오브제컬렉션 전자레인지",
+      "product_group": "microwave",
+      "document_version": "MFL68822538 Rev.00_120925",
+      "source_kind": "public"
+    }
+  ],
+  "features": [
+    {
+      "id": "MW23FDI-FEATURE-power-selection",
+      "model_id": "MW23FDI",
+      "document_version": "MFL68822538 Rev.00_120925",
+      "name": "출력 조절",
+      "description": "200/400/600/800/1000 W의 조리 출력 선택",
+      "conditions": [
+        "조리 출력 선택 기능. 사용자가 만든 시간/출력 조합 저장과 구분"
+      ],
+      "evidence_ids": [
+        "MW23FDI-MANUAL-M11"
+      ]
+    },
+    {
+      "id": "MW23FDI-FEATURE-quick-time",
+      "model_id": "MW23FDI",
+      "document_version": "MFL68822538 Rev.00_120925",
+      "name": "간편조리 시간",
+      "description": "시작/선택 누름마다 30초 증가",
+      "conditions": [
+        "시작/선택 누름마다 증가; 임의 사용자 프리셋 저장으로 해석하지 않음"
+      ],
+      "evidence_ids": [
+        "MW23FDI-MANUAL-M14"
+      ]
+    },
+    {
+      "id": "MW23FDI-FEATURE-auto-reheating",
+      "model_id": "MW23FDI",
+      "document_version": "MFL68822538 Rev.00_120925",
+      "name": "자동데우기 메뉴",
+      "description": "제조사가 지정한 즉석밥·국/찌개·우유 메뉴",
+      "conditions": [
+        "제조사 정해진 메뉴별 조리 시간; 사용자가 저장한 설정 아님"
+      ],
+      "evidence_ids": [
+        "MW23FDI-MANUAL-M15"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "MW23FDI-MANUAL-M11",
+      "model_id": "MW23FDI",
+      "document_version": "MFL68822538 Rev.00_120925",
+      "source_kind": "public",
+      "source_type": "manual",
+      "source_id": "MW23FDI-manual-3ceec78295d0",
+      "locator": {
+        "page": 25,
+        "section": "출력 조절"
+      },
+      "text": "출력을 선택하여 조리하는 기능입니다.",
+      "feature_ids": [
+        "MW23FDI-FEATURE-power-selection"
+      ]
+    },
+    {
+      "id": "MW23FDI-MANUAL-M14",
+      "model_id": "MW23FDI",
+      "document_version": "MFL68822538 Rev.00_120925",
+      "source_kind": "public",
+      "source_type": "manual",
+      "source_id": "MW23FDI-manual-3ceec78295d0",
+      "locator": {
+        "page": 17,
+        "section": "간편조리 시간"
+      },
+      "text": "버튼을 누를 때마다 30초씩",
+      "feature_ids": [
+        "MW23FDI-FEATURE-quick-time"
+      ]
+    },
+    {
+      "id": "MW23FDI-MANUAL-M15",
+      "model_id": "MW23FDI",
+      "document_version": "MFL68822538 Rev.00_120925",
+      "source_kind": "public",
+      "source_type": "manual",
+      "source_id": "MW23FDI-manual-3ceec78295d0",
+      "locator": {
+        "page": 18,
+        "section": "자동데우기 메뉴"
+      },
+      "text": "지정된 음식의 종류에 따라 조리시간이 기억되어 있어",
+      "feature_ids": [
+        "MW23FDI-FEATURE-auto-reheating"
+      ]
+    }
+  ],
+  "reviews": []
+}

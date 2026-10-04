@@ -1,0 +1,62 @@
+{
+  "recorded_at": "2026-10-05T02:12:29.811717+09:00",
+  "historical_failures": [
+    {
+      "step": "initial official-PDF download",
+      "result": "WinError10013 in sandbox",
+      "evidence": "download-initial-failure.json",
+      "resolution": "normal approved network context; download.json"
+    },
+    {
+      "step": "initial PDF render",
+      "result": "ModuleNotFoundError fitz",
+      "resolution": "already available pypdfium2; no install"
+    },
+    {
+      "step": "initial curated excerpt",
+      "result": "DUE6BGL2E p24 initial substring occurs twice",
+      "resolution": "unique longer anchor selected before successful plan"
+    },
+    {
+      "step": "initial 7 unit tests",
+      "result": "6 errors; Windows SQLite handles left open and extra contract_version in demo test fixture",
+      "resolution": "explicit connection close + correct fixture, 8 final tests PASS"
+    },
+    {
+      "step": "initial Ruff",
+      "result": "4 findings",
+      "resolution": "type error/check flag/import/context correction; final PASS"
+    },
+    {
+      "step": "Project status",
+      "argv": [
+        "python",
+        "-X",
+        "utf8",
+        "scripts/project_report.py",
+        "status",
+        "--member",
+        "신진하"
+      ],
+      "result": {
+        "ok": false,
+        "error": "[WinError 2] 지정된 파일을 찾을 수 없습니다"
+      },
+      "reason": "gh executable unavailable; online Project state not confirmed via this command",
+      "resolution": "not resolved; no install/auth change; browser issues read separately"
+    },
+    {
+      "step": "app managed worktree",
+      "operation_id": "77dcdbb2-c7e1-4783-84ea-6e1fdbad9463",
+      "result": "invalid reference in app repository context",
+      "resolution": "authorized Git worktree inside project created against correct clone"
+    },
+    {
+      "step": "readonly original Git under sandbox",
+      "result": "dubious ownership different execution account",
+      "resolution": "normal readonly owner context; no global safe.directory change"
+    }
+  ],
+  "current_pipeline_success": true,
+  "status_report_sent": false
+}

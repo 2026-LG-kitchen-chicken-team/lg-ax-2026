@@ -1,4 +1,4 @@
-"""Actual deterministic search over an explicitly synthetic, public-safe data pack."""
+"""Deterministic canonical evidence reads; the default demo pack remains synthetic."""
 
 import json
 import re
@@ -21,54 +21,8 @@ def _load_default() -> dict[str, Any]:
     return json.loads(files("lgax_bootstrap_data").joinpath("dataset.json").read_text("utf-8"))
 
 
-class DemoStore:
-    """In-memory read-only store. No file upload, private data, API calls or GPU work."""
-
-    def __init__(self, dataset: dict[str, Any] | None = None):
-        self._dataset = deepcopy(dataset if dataset is not None else _load_default())
-        validate("DemoDataset", self._dataset)
-        for collection in ("products", "reviews", "evidence"):
-            if any(item["source_kind"] != "synthetic" for item in self._dataset[collection]):
-                raise ValueError("Bootstrap store only accepts synthetic data")
-        self._products = {product["model_id"]: product for product in self._dataset["products"]}
-        self._evidence = {evidence["id"]: evidence for evidence in self._dataset["evidence"]}
-        self._features = {feature["id"]: feature for feature in self._dataset["features"]}
-        if self._dataset["manifest"]["model_count"] != len(self._dataset["products"]):
-            raise ValueError("Manifest model count mismatch")
-        if self._dataset["manifest"]["review_count"] != len(self._dataset["reviews"]):
-            raise ValueError("Manifest review count mismatch")
-        if len(self._products) != len(self._dataset["products"]):
-            raise ValueError("Duplicate model_id")
-        if len(self._evidence) != len(self._dataset["evidence"]):
-            raise ValueError("Duplicate evidence ID")
-        if len(self._features) != len(self._dataset["features"]):
-            raise ValueError("Duplicate feature ID")
-        for evidence in self._evidence.values():
-            if evidence["model_id"] not in self._products:
-                raise ValueError(f"Unknown evidence model: {evidence['id']}")
-            for feature_id in evidence["feature_ids"]:
-                feature = self._features.get(feature_id)
-                if not feature or feature["model_id"] != evidence["model_id"]:
-                    raise ValueError(f"Cross-model or missing feature: {evidence['id']}")
-                if feature["document_version"] != evidence["document_version"]:
-                    raise ValueError(f"Cross-version feature: {evidence['id']}")
-        for feature in self._features.values():
-            for evidence_id in feature["evidence_ids"]:
-                evidence = self._evidence.get(evidence_id)
-                if (not evidence or evidence["model_id"] != feature["model_id"]
-                        or evidence["document_version"] != feature["document_version"]):
-                    raise ValueError(f"Cross-model or missing feature evidence: {feature['id']}")
-        review_ids = set()
-        for review in self._dataset["reviews"]:
-            if review["id"] in review_ids:
-                raise ValueError("Duplicate review ID")
-            review_ids.add(review["id"])
-            evidence = self._evidence.get(review["evidence_id"])
-            if not evidence or evidence["source_type"] != "review":
-                raise ValueError(f"Missing review evidence: {review['id']}")
-            for field in ("model_id", "document_version", "text", "source_id", "locator", "source_kind"):
-                if evidence[field] != review[field]:
-                    raise ValueError(f"Review evidence {field} mismatch: {review['id']}")
+class EvidenceReader:
+    """Shared canonical read operations; concrete stores control their data policy."""
 
     def list_products(self, product_group: str | None = None) -> dict[str, Any]:
         if product_group is not None and product_group not in {"fridge", "dishwasher", "microwave"}:
@@ -125,6 +79,56 @@ class DemoStore:
         }}
         validate("EvidenceSearchResponse", result)
         return result
+
+
+class DemoStore(EvidenceReader):
+    """In-memory read-only store. No file upload, private data, API calls or GPU work."""
+
+    def __init__(self, dataset: dict[str, Any] | None = None):
+        self._dataset = deepcopy(dataset if dataset is not None else _load_default())
+        validate("DemoDataset", self._dataset)
+        for collection in ("products", "reviews", "evidence"):
+            if any(item["source_kind"] != "synthetic" for item in self._dataset[collection]):
+                raise ValueError("Bootstrap store only accepts synthetic data")
+        self._products = {product["model_id"]: product for product in self._dataset["products"]}
+        self._evidence = {evidence["id"]: evidence for evidence in self._dataset["evidence"]}
+        self._features = {feature["id"]: feature for feature in self._dataset["features"]}
+        if self._dataset["manifest"]["model_count"] != len(self._dataset["products"]):
+            raise ValueError("Manifest model count mismatch")
+        if self._dataset["manifest"]["review_count"] != len(self._dataset["reviews"]):
+            raise ValueError("Manifest review count mismatch")
+        if len(self._products) != len(self._dataset["products"]):
+            raise ValueError("Duplicate model_id")
+        if len(self._evidence) != len(self._dataset["evidence"]):
+            raise ValueError("Duplicate evidence ID")
+        if len(self._features) != len(self._dataset["features"]):
+            raise ValueError("Duplicate feature ID")
+        for evidence in self._evidence.values():
+            if evidence["model_id"] not in self._products:
+                raise ValueError(f"Unknown evidence model: {evidence['id']}")
+            for feature_id in evidence["feature_ids"]:
+                feature = self._features.get(feature_id)
+                if not feature or feature["model_id"] != evidence["model_id"]:
+                    raise ValueError(f"Cross-model or missing feature: {evidence['id']}")
+                if feature["document_version"] != evidence["document_version"]:
+                    raise ValueError(f"Cross-version feature: {evidence['id']}")
+        for feature in self._features.values():
+            for evidence_id in feature["evidence_ids"]:
+                evidence = self._evidence.get(evidence_id)
+                if (not evidence or evidence["model_id"] != feature["model_id"]
+                        or evidence["document_version"] != feature["document_version"]):
+                    raise ValueError(f"Cross-model or missing feature evidence: {feature['id']}")
+        review_ids = set()
+        for review in self._dataset["reviews"]:
+            if review["id"] in review_ids:
+                raise ValueError("Duplicate review ID")
+            review_ids.add(review["id"])
+            evidence = self._evidence.get(review["evidence_id"])
+            if not evidence or evidence["source_type"] != "review":
+                raise ValueError(f"Missing review evidence: {review['id']}")
+            for field in ("model_id", "document_version", "text", "source_id", "locator", "source_kind"):
+                if evidence[field] != review[field]:
+                    raise ValueError(f"Review evidence {field} mismatch: {review['id']}")
 
     def bootstrap(self) -> dict[str, Any]:
         result = {"ok": True, "data": {**deepcopy(self._dataset), "contract_version": CONTRACT_VERSION}}
