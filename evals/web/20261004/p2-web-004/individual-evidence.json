@@ -1,0 +1,197 @@
+{
+  "task_id": "P2-WEB-004",
+  "owner": "최길웅",
+  "result": "pass",
+  "execution_kind": "live_service",
+  "requirement_ids": [
+    "R27",
+    "E03"
+  ],
+  "branch": "codex/p2-web-004-export-e2e",
+  "tested_commit": "fc8efa5f2f52b10d9df246922946ed734f2d514a",
+  "recorded_at": "2026-10-04T19:42:00+09:00",
+  "performed_by": "Claude Code (Claude Opus 5.5) for 최길웅",
+  "harness_note": "P2-WEB-003 done 전이라 phase2 start/finish 미실행(PM 지시에 따른 선행 개발).",
+  "observations": [
+    "R27: 내보내기(JSON·Markdown)에 대조표·후보·요구사항·가정·미확인·미해결·보류·실행 계보·근거 원문(위치·출처 성격)을 넣고, 같은 문서로 계산한 내보내기 점검(누락 목록)을 화면 배지와 파일에 함께 남긴다. 누락을 만든 단위 시험에서 근거·요구사항·가정·보류 누락을 각각 보고.",
+    "E2E: 설치된 Chrome으로 요청→검토→내보내기→측정된 조건 교정 재실행→측정 기록·초안 내보내기 fixture 흐름과 실제 서버 연결·저장·재실행 흐름을 자동 검사(3 passed).",
+    "E03: 수정 시간 측정 도구와 기록 형식을 제공한다(명시적 목표·시작, 재실행 저장 시 종료, 초 단위, 취소·미완료 null, docs/pm/evaluation.md 의미와 일치). 실제 사람 측정값은 아직 없다."
+  ],
+  "code_versions": [
+    {
+      "path": "apps/web/src/App.tsx",
+      "git_commit": "fc8efa5f2f52b10d9df246922946ed734f2d514a",
+      "sha256": "57df6cbc9dad62277e5e8b9d8880c32e317d7aec02e999d7d198eb62a8654cc6"
+    },
+    {
+      "path": "apps/web/src/PlanningViews.tsx",
+      "git_commit": "fc8efa5f2f52b10d9df246922946ed734f2d514a",
+      "sha256": "7a7c40ca2ee17f04f917486f77bbf358e793e5c70f0b6afba5783fef101b29e7"
+    },
+    {
+      "path": "apps/web/src/planning.ts",
+      "git_commit": "fc8efa5f2f52b10d9df246922946ed734f2d514a",
+      "sha256": "cf778ac31698e78db7aba89fc0c5feea412d0469089f4d06940bfaa6add1f142"
+    },
+    {
+      "path": "apps/web/src/planning.css",
+      "git_commit": "fc8efa5f2f52b10d9df246922946ed734f2d514a",
+      "sha256": "7840376fea03f51be6647363d1b4233f86fed79a258d45ca106c150771d64d65"
+    },
+    {
+      "path": "apps/web/src/measurement.ts",
+      "git_commit": "fc8efa5f2f52b10d9df246922946ed734f2d514a",
+      "sha256": "195f5a71902ac3afb12de67334b66fbb48deaa88701c467259dd06865742cd59"
+    },
+    {
+      "path": "apps/web/src/measurement.test.ts",
+      "git_commit": "fc8efa5f2f52b10d9df246922946ed734f2d514a",
+      "sha256": "37a4693d3f0019ddc8e665a2995dcb28b9ef1ad604e9ff227a96072671ad7da3"
+    },
+    {
+      "path": "apps/web/src/planning.test.ts",
+      "git_commit": "fc8efa5f2f52b10d9df246922946ed734f2d514a",
+      "sha256": "d6a31c9287f9b8e3657fa9c6d78280cb50b31f96ef5088197c50525f07d23e6f"
+    },
+    {
+      "path": "apps/web/e2e/planner-flow.spec.ts",
+      "git_commit": "fc8efa5f2f52b10d9df246922946ed734f2d514a",
+      "sha256": "19a40e9286d1f0be42a506c7ad168169a84b3ed7994206bc1aefda7f7a709923"
+    },
+    {
+      "path": "apps/web/playwright.config.ts",
+      "git_commit": "fc8efa5f2f52b10d9df246922946ed734f2d514a",
+      "sha256": "97bfcbd74b9b7c0924130f6b845c4dce41895676133aa43842ad1ee093ce6379"
+    },
+    {
+      "path": "apps/web/package.json",
+      "git_commit": "fc8efa5f2f52b10d9df246922946ed734f2d514a",
+      "sha256": "eb75e474e2f76f381e24ebc82ee63d7ac6a84edb6779b5bd8db3094412d21b47"
+    },
+    {
+      "path": "apps/web/package-lock.json",
+      "git_commit": "fc8efa5f2f52b10d9df246922946ed734f2d514a",
+      "sha256": "dce30167ce99c43d89c9693ac5201d78f6494d72d557d2cec9de55a5e802c3d9"
+    },
+    {
+      "path": "apps/web/README.md",
+      "git_commit": "fc8efa5f2f52b10d9df246922946ed734f2d514a",
+      "sha256": "facd4d18d3ce5a6d982cdadb2acee1eadc671e0a6df1256949785bb1fbcd5177"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "git_commit": "fc8efa5f2f52b10d9df246922946ed734f2d514a",
+      "sha256": "d7cf46d9a980b00ad786ec46feaf3d31e4094f56ff0899d8bab59bdf95a9bad5"
+    },
+    {
+      "path": "data/demo/dataset.json",
+      "git_commit": "fc8efa5f2f52b10d9df246922946ed734f2d514a",
+      "sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0"
+    },
+    {
+      "path": "docs/pm/evaluation.md",
+      "git_commit": "fc8efa5f2f52b10d9df246922946ed734f2d514a",
+      "sha256": "7171431cd7e9e40f02e25949be21d951f54ad254ab7c6b99c6fe2f5828179068"
+    },
+    {
+      "path": "apps/web/src/workspace.ts",
+      "git_commit": "fc8efa5f2f52b10d9df246922946ed734f2d514a",
+      "sha256": "c881cc83e9c1de49e77b1e847642c305d2022e5f0c2594f30f6b7366255d3676"
+    },
+    {
+      "path": "packages/core/src/lgax_core/workspace.py",
+      "git_commit": "fc8efa5f2f52b10d9df246922946ed734f2d514a",
+      "sha256": "7228331ae911484e9c8695e5ac731e80756c0673791938c02eed2f3f3d6a9888"
+    }
+  ],
+  "models": [],
+  "checks": [
+    {
+      "name": "npx playwright test (Chrome): fixture 전체 흐름·측정 취소·live 연결/저장/재실행 3 passed",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-004/e2e.txt",
+        "sha256": "dcdf93ed171a563a36ef8ab50b73d810c46da88bce61e772ce7952e2039c3132"
+      }
+    },
+    {
+      "name": "실제 작업실 서버 opt-in vitest 11 passed",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-004/live-workspace-test.txt",
+        "sha256": "29b71d8b70612363b4c458853fb6ab65f26b54a08ed46ee88c90d1fa17cb7e44"
+      }
+    },
+    {
+      "name": "live 흐름 산출",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-004/live-workspace-flow.json",
+        "sha256": "6f2d3e9d882ef8773574074c7529bce3c5115517f28a59389ebd14e425cb28fd"
+      }
+    },
+    {
+      "name": "npm run test --prefix apps/web (59 passed, 2 skipped opt-in)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-004/web-tests.txt",
+        "sha256": "7297b33c4a3d7027f7ca96e0906d9959b1a8c8801841b48d83b8ef9847b6509a"
+      }
+    },
+    {
+      "name": "npm run typecheck --prefix apps/web",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-004/web-typecheck.txt",
+        "sha256": "c028f37ff786c1cd330dfd4a41ef0492f01c33aeeec7ec353ad7d20ac783869c"
+      }
+    },
+    {
+      "name": "npm run build --prefix apps/web",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-004/web-build.txt",
+        "sha256": "ef3b4beb7b11af66a9ecc7cd9fb2fe4806f984c7ee4289530adb899778a03e9e"
+      }
+    },
+    {
+      "name": "uv run python scripts/sync_agent_rules.py --check",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-004/rules.txt",
+        "sha256": "7e0a7002be1c8a6a929966a18bc7207035beabeef3065614f21a9b6265ca789d"
+      }
+    },
+    {
+      "name": "uv run python scripts/check_contracts.py",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-004/contracts.txt",
+        "sha256": "1e1b81f4c2607b74aca9deb8fd8bf0f1b048508d317d21f36ed1b59fca45661b"
+      }
+    },
+    {
+      "name": "uv run python scripts/phase2.py validate",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-004/phase2.txt",
+        "sha256": "6e84f7ccf1d99593ee0bf819047eb956d33efeb0f2863bbecbebdca299bd1e42"
+      }
+    },
+    {
+      "name": "E2E·내장 브라우저 관찰 기록",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-004/browser-check.json",
+        "sha256": "adefb8dcca267885c52ce4060dc3110a44bb1bca9d499689da02255968e69468"
+      }
+    }
+  ],
+  "limitations": [
+    "E03의 실제 기록(사람 참여자, 같은 목표, Agent/기준선 비교)은 없다. 자동화가 만든 측정값은 효과 근거가 아니다.",
+    "E2E는 로컬 Chrome 기준이며 CI에 넣지 않았다. 판단 Agent 미연결로 실서버 결과 내보내기는 비어 있는 실행 기준이다.",
+    "측정 기록은 화면 메모리에만 있어 새로고침 전에 내보내야 한다."
+  ]
+}

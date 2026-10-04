@@ -13,7 +13,7 @@ import type { BootstrapData, Evidence } from './domain';
 import { FIXTURE_BOOTSTRAP, FIXTURE_DATASET_SHA256, FIXTURE_ORIGINAL_REQUEST, FIXTURE_RUNS } from './fixtures/planning.fixture';
 import {
   buildComparison, buildExport, buildRerunRequest, canonical, conceptChanges, conceptDetailChanges, contractErrors, draftRunFromRequest,
-  draftRunWithCondition, exportMarkdown, heldItems, missingRequestQuestions, nextRequestRevision, requestChanges, splitConditions,
+  draftRunWithCondition, exportCompleteness, exportMarkdown, heldItems, missingRequestQuestions, nextRequestRevision, requestChanges, splitConditions,
 } from './planning';
 import type { Feature, PlanningRequest } from './planning';
 
@@ -286,6 +286,27 @@ describe('R27 meeting export', () => {
       for (const text of [...concept.requirements, ...concept.assumptions]) expect(markdown).toContain(text);
     }
     for (const text of [...second.run.unresolved, ...second.unconfirmed]) expect(markdown).toContain(text);
+  });
+  it('P2-WEB-004: includes held items and lineage, and its self-check passes', () => {
+    const full = buildExport('fixture', second, features, evidence, '2026-10-04T09:00:00.000Z', FIXTURE_RUNS);
+    expect(full.held.map(item => item.id)).toEqual(['GAP-FX-002']);
+    expect(full.lineage.map(item => [item.run_id, item.request_revision])).toEqual([['RUN-FX-001', 0], ['RUN-FX-002', 1]]);
+    expect(full.completeness).toEqual({ complete: true, missing_evidence: [], missing_requirements: [], missing_assumptions: [], missing_unresolved: [], missing_held: [] });
+    const md = exportMarkdown(full);
+    expect(md).toContain('## 근거 부족으로 보류한 불편');
+    expect(md).toContain('RUN-FX-001 · 요청 회차 0');
+    expect(md).toContain('보류가 모두 포함되었습니다');
+  });
+  it('P2-WEB-004: the self-check reports what an export would leave out', () => {
+    const lossy = buildExport('fixture', second, features, evidence.filter(item => item.id !== 'MANUAL-001'), '2026-10-04T09:00:00.000Z');
+    expect(lossy.completeness.complete).toBe(false);
+    expect(lossy.completeness.missing_evidence).toEqual(['MANUAL-001']);
+    const trimmed = { ...lossy, requirements: lossy.requirements.slice(1), assumptions: [], held: [] };
+    const check = exportCompleteness(trimmed, second);
+    expect(check.missing_requirements).toHaveLength(1);
+    expect(check.missing_assumptions).toContain('문서 범위를 2.0으로 확대할지 기획자 결정 필요');
+    expect(check.missing_held).toEqual(['GAP-FX-002']);
+    expect(exportMarkdown(lossy)).toContain('누락이 있습니다');
   });
   it('keeps the compared model on every comparison row', () => {
     expect(doc.comparison.every(row => row.model_id === 'FRIDGE-A')).toBe(true);
