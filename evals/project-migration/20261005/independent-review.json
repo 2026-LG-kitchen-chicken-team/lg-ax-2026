@@ -1,0 +1,580 @@
+{
+  "schema_version": 1,
+  "reviewer": "independent subagent /root/delivery_bottlenecks",
+  "observed_at_utc": "2026-10-04T16:49:41.386921+00:00",
+  "observed_at_kst": "2026-10-05T01:49:41.386921+09:00",
+  "local_head": "3676504c5de4706c0aae03c35e18aab2ee545c96",
+  "local_branch": "codex/org-project-migration-20261005",
+  "scope": {
+    "remote_read_only": true,
+    "remote_mutations": false,
+    "only_output_file": "evals/project-migration/20261005/independent-review.json",
+    "root_docs_changed_by_reviewer": false
+  },
+  "source_project": {
+    "id": "PVT_kwHODCN5Rc4BlmPN",
+    "url": "https://github.com/users/jeongiryang/projects/3"
+  },
+  "target_project": {
+    "id": "PVT_kwDOFCE5QM4Blr0A",
+    "url": "https://github.com/orgs/2026-LG-kitchen-chicken-team/projects/1"
+  },
+  "inputs": [
+    {
+      "path": "evals/project-migration/20261005/cutover-source.json",
+      "sha256": "c8fc8fd0b0a7570cfefad79dbc715224bd4ba269de35a6da18c588fde88ab6be"
+    },
+    {
+      "path": "evals/project-migration/20261005/after-items.json",
+      "sha256": "7d4d7bb8c6c8a599c4f96dad8234ed04b166489d2f43722f58d7eedadf36f810"
+    },
+    {
+      "path": "evals/project-migration/20261005/source-relations.json",
+      "sha256": "339da1a5d24ef9784a3f54e5ed41fa51c1c67b7d9cf4912498ba3ad082272e30"
+    },
+    {
+      "path": "evals/project-migration/20261005/target-relations.json",
+      "sha256": "919c52f7b35ace746eefb537ed5b59e55fb80c28f4d03da3812852df92e87e1f"
+    },
+    {
+      "path": "evals/project-migration/20261005/id-map.json",
+      "sha256": "9bc6ec93aba8eef8eb4169c97f6889122121c16eebb05ea63dc7e1c63d7d87a0"
+    },
+    {
+      "path": "evals/project-migration/20261005/view-config-before-copy.json",
+      "sha256": "89e05171ae6ca6e65820d8a9c81094207e086845bd02d83f9167272a1ff787a5"
+    },
+    {
+      "path": "evals/project-migration/20261005/preservation.json",
+      "sha256": "26fd310c171150799a8c62905e05523fe63df3e25e6ae6931e239922917470e3"
+    },
+    {
+      "path": "evals/project-migration/20261005/service-cutover.json",
+      "sha256": "5af1afc5b46c2accdbb974920b010d30eac2db3c9c985d82ff7363f39e02956e"
+    },
+    {
+      "path": "harness/phase2/github.json",
+      "sha256": "7db138548ca61113e4fdb5e590fb5b55ba527486108e7c3de3061f7720e3bbe5"
+    },
+    {
+      "path": "harness/phase2/project-reports.policy.json",
+      "sha256": "09527466ef24eb01569eb3fe752514a177c2c89de8444c2d291918fa02a6d366"
+    },
+    {
+      "path": "evals/project-migration/20261005/ui-checks.json",
+      "sha256": "b14fd2f3332ab5f46f543324f4a893bed0b6313b7faea7e47be8aa9a61d1b059"
+    }
+  ],
+  "method": "Independent normalization and direct comparison of raw snapshots, mapping, active policy/config and service manifest. Did not use preservation.json booleans as test answers. Project-specific IDs are checked through mapping; semantic payloads remain exact.",
+  "checks": [
+    {
+      "id": "snapshot_connection_completeness",
+      "result": "pass",
+      "details": {
+        "projects": 4,
+        "items_per_project": 26,
+        "fields_per_project": 25,
+        "captured_connections_exhausted": true,
+        "subissue_connections": "No subissue nodes exist in these snapshots; node query did not capture subissue pageInfo."
+      }
+    },
+    {
+      "id": "same_issue_identity_order_archive",
+      "result": "pass",
+      "details": {
+        "items": 26,
+        "draft_items": 0,
+        "archived_items": 0,
+        "issue_numbers_in_order": [
+          28,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27
+        ]
+      }
+    },
+    {
+      "id": "same_field_definitions_options",
+      "result": "pass",
+      "details": {
+        "fields": 25,
+        "field_name_type_options_equal": true,
+        "single_select_fields": 4
+      }
+    },
+    {
+      "id": "captured_field_values_preserved",
+      "result": "pass",
+      "details": {
+        "editable_values_including_dates": 238,
+        "title_values": 26,
+        "dates": 26,
+        "captured_named_values": 264,
+        "differences": [],
+        "rule": "Compare all returned named-field value payloads keyed by Issue node ID and field name; discard only changing Project field ID and value list order. Preserve text/date/select name/optionId/typename exactly."
+      }
+    },
+    {
+      "id": "field_id_mapping",
+      "result": "pass",
+      "details": {
+        "mapping_fields": 25,
+        "old_ids_unique": true,
+        "new_ids_unique": true,
+        "select_option_ids_and_names_map_to_actual_definitions": true
+      }
+    },
+    {
+      "id": "item_id_mapping",
+      "result": "pass",
+      "details": {
+        "mapping_items": 26,
+        "one_to_one_same_issue_node_ids": true
+      }
+    },
+    {
+      "id": "github_active_destination",
+      "result": "pass",
+      "details": {
+        "items": 26,
+        "project_id": "PVT_kwDOFCE5QM4Blr0A",
+        "project_url": "https://github.com/orgs/2026-LG-kitchen-chicken-team/projects/1"
+      }
+    },
+    {
+      "id": "policy_active_destination_assignments",
+      "result": "pass",
+      "details": {
+        "tasks": 21,
+        "pm_account": "jeongiryang",
+        "governance_issue": 28,
+        "active_task_item_ids_and_issue_assignees_match": true
+      }
+    },
+    {
+      "id": "issue_relations_and_assignees",
+      "result": "pass",
+      "details": {
+        "same_issue_nodes": 26,
+        "assignee_assignments": 26,
+        "non_null_parent_issues": 0,
+        "subissue_nodes": 0,
+        "source_observed_at": "2026-10-04T16:39:56Z",
+        "target_observed_at": "2026-10-04T16:39:58Z"
+      }
+    },
+    {
+      "id": "linked_pull_requests_preserved",
+      "result": "pass",
+      "details": {
+        "issue_pr_links": 2,
+        "unique_linked_prs": [
+          "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/30"
+        ],
+        "linked_issues": [
+          17,
+          18
+        ],
+        "all_returned_pr_connections_exhausted": true
+      }
+    },
+    {
+      "id": "view_configuration_preserved",
+      "result": "pass",
+      "details": {
+        "view_count": 1,
+        "normalized_configuration": [
+          {
+            "number": 1,
+            "name": "View 1",
+            "layout": "TABLE_LAYOUT",
+            "filter": "",
+            "visible_fields": [
+              {
+                "name": "Title",
+                "data_type": "TITLE"
+              },
+              {
+                "name": "Assignees",
+                "data_type": "ASSIGNEES"
+              },
+              {
+                "name": "Status",
+                "data_type": "SINGLE_SELECT"
+              },
+              {
+                "name": "진행상태",
+                "data_type": "SINGLE_SELECT"
+              },
+              {
+                "name": "팀원 보고",
+                "data_type": "SINGLE_SELECT"
+              },
+              {
+                "name": "최근 보고",
+                "data_type": "TEXT"
+              },
+              {
+                "name": "다음 행동",
+                "data_type": "TEXT"
+              },
+              {
+                "name": "최근 배정",
+                "data_type": "TEXT"
+              },
+              {
+                "name": "메일 안내",
+                "data_type": "TEXT"
+              },
+              {
+                "name": "Linked pull requests",
+                "data_type": "LINKED_PULL_REQUESTS"
+              }
+            ],
+            "fields": [
+              {
+                "name": "Title",
+                "data_type": "TITLE"
+              },
+              {
+                "name": "Assignees",
+                "data_type": "ASSIGNEES"
+              },
+              {
+                "name": "Status",
+                "data_type": "SINGLE_SELECT"
+              },
+              {
+                "name": "Linked pull requests",
+                "data_type": "LINKED_PULL_REQUESTS"
+              },
+              {
+                "name": "진행상태",
+                "data_type": "SINGLE_SELECT"
+              },
+              {
+                "name": "팀원 보고",
+                "data_type": "SINGLE_SELECT"
+              },
+              {
+                "name": "최근 보고",
+                "data_type": "TEXT"
+              },
+              {
+                "name": "다음 행동",
+                "data_type": "TEXT"
+              },
+              {
+                "name": "최근 배정",
+                "data_type": "TEXT"
+              },
+              {
+                "name": "메일 안내",
+                "data_type": "TEXT"
+              }
+            ],
+            "group_by": [],
+            "vertical_group_by": [],
+            "sort_by": []
+          }
+        ],
+        "snapshot_queried_at": "2026-10-04T16:27:53.412876+00:00",
+        "scope": "Observed source and already copied destination; not a pre-copy target observation."
+      }
+    },
+    {
+      "id": "workflow_public_metadata_preserved",
+      "result": "pass",
+      "details": {
+        "workflow_count": 6,
+        "workflow_metadata": [
+          {
+            "number": 1,
+            "name": "Item closed",
+            "enabled": true
+          },
+          {
+            "number": 2,
+            "name": "Pull request merged",
+            "enabled": true
+          },
+          {
+            "number": 3,
+            "name": "Auto-close issue",
+            "enabled": true
+          },
+          {
+            "number": 4,
+            "name": "Auto-add sub-issues to project",
+            "enabled": true
+          },
+          {
+            "number": 5,
+            "name": "Pull request linked to issue",
+            "enabled": true
+          },
+          {
+            "number": 6,
+            "name": "Item added to project",
+            "enabled": true
+          }
+        ],
+        "scope": "Public number/name/enabled metadata only; trigger/actions not exposed."
+      }
+    },
+    {
+      "id": "local_code_policy_match_cutover_manifest",
+      "result": "pass",
+      "details": {
+        "worker.py": {
+          "deployed_sha256": "2c0387fba14afc849e3c237b003da703019e68593561453f9b510b72e2aa66fa",
+          "local_sha256": "2c0387fba14afc849e3c237b003da703019e68593561453f9b510b72e2aa66fa"
+        },
+        "project_report_common.py": {
+          "deployed_sha256": "6b4b7a8cb8f73ce045f4aba6b11aef01e471aed4329b959ee72f8e19941d44d9",
+          "local_sha256": "6b4b7a8cb8f73ce045f4aba6b11aef01e471aed4329b959ee72f8e19941d44d9"
+        },
+        "policy.json": {
+          "deployed_sha256": "09527466ef24eb01569eb3fe752514a177c2c89de8444c2d291918fa02a6d366",
+          "local_sha256": "09527466ef24eb01569eb3fe752514a177c2c89de8444c2d291918fa02a6d366"
+        }
+      }
+    },
+    {
+      "id": "service_cutover_report_consistent",
+      "result": "pass",
+      "details": {
+        "observed_at": "2026-10-04T16:32:17Z",
+        "active": true,
+        "enabled": true,
+        "trusted_commit_preserved": true,
+        "seen_count": 30,
+        "latest_count": 10,
+        "scope": "Independent consistency check of root-captured deployment artifact, plus local manifest match; no new server query and no full seen/latest entry-by-entry comparison."
+      }
+    },
+    {
+      "id": "post_cutover_mail_changes_expected",
+      "result": "pass",
+      "details": {
+        "mail_state_changes": [
+          {
+            "issue": 8,
+            "before": "prepared · PM-20261005-CORE-002-SEMANTIC-REVIEW",
+            "after": "sent · PM-20261005-CORE-002-SEMANTIC-REVIEW"
+          },
+          {
+            "issue": 12,
+            "before": "prepared · PM-20261005-DATA-001-PLANNING-SCOPE",
+            "after": "sent · PM-20261005-DATA-001-PLANNING-SCOPE"
+          },
+          {
+            "issue": 25,
+            "before": "prepared · PM-20261005-WEB-003-LIVE-RESULTS",
+            "after": "sent · PM-20261005-WEB-003-LIVE-RESULTS"
+          }
+        ],
+        "query_shape_additions": [
+          {
+            "issue": 17,
+            "field": "Linked pull requests"
+          },
+          {
+            "issue": 18,
+            "field": "Linked pull requests"
+          }
+        ],
+        "query_shape_note": "after-items only returned typename for PR values; relation snapshot subsequently queried PR nodes. These two payload additions are query coverage changes, not evidence of added links. Original and target relation snapshots contain the same PR30 links.",
+        "notifications": [
+          {
+            "path": "docs/pm/assignments/PM-20261005-CORE-002-SEMANTIC-REVIEW.notification.json",
+            "sha256": "2623831b787a44445806aede803eb0de7d331762071857190cd40bb6a1affc07",
+            "assignment_id": "PM-20261005-CORE-002-SEMANTIC-REVIEW",
+            "task_id": "P2-CORE-002",
+            "recipient_account": "unknownamed",
+            "status": "sent",
+            "sent_at": "2026-10-04T16:34:32Z",
+            "recipient_read_confirmed": false,
+            "evidence_source": "Gmail send_email result"
+          },
+          {
+            "path": "docs/pm/assignments/PM-20261005-DATA-001-PLANNING-SCOPE.notification.json",
+            "sha256": "a800889bdb2b493931551708f4429741e8612ceb12310f868ac08e0ab241684b",
+            "assignment_id": "PM-20261005-DATA-001-PLANNING-SCOPE",
+            "task_id": "P2-DATA-001",
+            "recipient_account": "ginaginaring",
+            "status": "sent",
+            "sent_at": "2026-10-04T16:34:40Z",
+            "recipient_read_confirmed": false,
+            "evidence_source": "Gmail send_email result"
+          },
+          {
+            "path": "docs/pm/assignments/PM-20261005-WEB-003-LIVE-RESULTS.notification.json",
+            "sha256": "1512a1914ccd6bc5adc2bc2f6d31ccce58312982de751dac7503cc264ba7e0ed",
+            "assignment_id": "PM-20261005-WEB-003-LIVE-RESULTS",
+            "task_id": "P2-WEB-003",
+            "recipient_account": "choigilung",
+            "status": "sent",
+            "sent_at": "2026-10-04T16:34:36Z",
+            "recipient_read_confirmed": false,
+            "evidence_source": "Gmail send_email result"
+          }
+        ],
+        "delivery_scope": "Local notification evidence records actual Gmail send result; recipient read is unconfirmed. This reviewer did not resend or read private addresses."
+      }
+    },
+    {
+      "id": "root_ui_evidence_consistent_with_raw",
+      "result": "pass",
+      "details": {
+        "workflow_count": 6,
+        "target_roles": "PM Admin; three teammates Read",
+        "organization_base_role": "Read",
+        "default_repository": "2026-LG-kitchen-chicken-team/lg-ax-2026",
+        "source": "Root-captured live UI artifact; settings themselves not independently UI-operated by reviewer."
+      }
+    }
+  ],
+  "overall_result": "pass_with_documented_scope_limits",
+  "failed_checks": [],
+  "blocking_findings": [],
+  "preservation_claim_review": {
+    "supported_claims": [
+      "26 same Issue IDs and their order/archive state; complete one-to-one new item IDs",
+      "25 field names/types/select options; 238 editable field values including 26 dates; 26 Title values",
+      "26 Issue assignee assignments; current parent/subissue absence; PR30 linked to Issues17/18",
+      "Actual visible-field order and public view filter/group/sort/layout",
+      "All six workflow names/numbers/enabled metadata",
+      "Active local github26/policy21 destination mapping; current worker/common/policy match cutover manifest"
+    ],
+    "scope_corrections": [
+      "same_all_field_values refers to all captured named payloads, not computed fields whose snapshots captured only typename (labels/repository/user field values). Assignees are independently proven from Issue.content.",
+      "same_issue_relations is supported for actual observed null parents/empty subissues and two queried linked-PR connections; it is not evidence of a populated hierarchy.",
+      "Public API exposes workflow number/name/enabled only. Root ui-checks.json documents six matching trigger/action/status configurations before source closure; that evidence was reviewed, while direct independent UI inspection and column-width comparison remain outside this review.",
+      "service_switch_verified:false in preservation.json is an earlier snapshot. service-cutover.json subsequently reports active/enabled destination; do not rewrite history or mistake the old flag for current service failure."
+    ]
+  },
+  "formal_service_snapshot_approval": {
+    "confirmed": false,
+    "reason": "Migration/local main changes are still pending formal PM snapshot authorization at the observed deployment snapshot. Process active and mapped correctly does not prove latest main state approved.",
+    "deployment_observed_at": "2026-10-04T16:32:17Z",
+    "published_main_commit": "6b9dbe9298cd4e822132e617eaf30262d72d77e8",
+    "trusted_main_commit": "0d86d345eef2aee7bb415e08d867bb4fcc307ca3",
+    "unapproved_state_changes": [
+      "P2-CORE-001"
+    ],
+    "policy_approved_main_commit": "bfb12bbe93636a89e1335dea387edf5af7a3ba82",
+    "required_followup": "After actual PR merge and integrated checks, PM applies the official sync at exact main commit and verifies ACCEPTED plus new Project online state."
+  },
+  "ui_settings_confirmation": {
+    "source": "evals/project-migration/20261005/ui-checks.json; parent /root live CUA observation",
+    "evidence_artifact_read_by_reviewer": true,
+    "directly_observed_ui_by_this_reviewer": false,
+    "observed_date_kst": "2026-10-05",
+    "source_roles": {
+      "choigilung": "Read",
+      "ginaginaring": "Read",
+      "unknownamed": "Read"
+    },
+    "target_roles": {
+      "jeongiryang": "Admin",
+      "choigilung": "Read",
+      "ginaginaring": "Read",
+      "unknownamed": "Read"
+    },
+    "organization_base_role": {
+      "initial": "Write",
+      "applied": "Read",
+      "visible_result": "Everyone in the organization can see this project."
+    },
+    "visibility_ui": "Internal project",
+    "public_api": false,
+    "default_repository": "2026-LG-kitchen-chicken-team/lg-ax-2026",
+    "default_repository_saved_and_reloaded": true,
+    "workflow_trigger_action_value_comparisons": [
+      {
+        "name": "Auto-add sub-issues to project",
+        "source_id": "120725075",
+        "target_id": "120881128",
+        "trigger": "When an item in the project has sub-issues",
+        "action": "Add sub-issues to the project",
+        "equal": true
+      },
+      {
+        "name": "Auto-close issue",
+        "source_id": "120725074",
+        "target_id": "120881127",
+        "trigger": "When the status is updated",
+        "value": "Status: Done",
+        "action": "Close the issue",
+        "equal": true
+      },
+      {
+        "name": "Item added to project",
+        "source_id": "120725077",
+        "target_id": "120881130",
+        "trigger": "When an item is added to the project (issue, pull request)",
+        "action": "Set value",
+        "value": "Status: Todo",
+        "equal": true
+      },
+      {
+        "name": "Item closed",
+        "source_id": "120725072",
+        "target_id": "120881125",
+        "trigger": "When an item is closed (issue, pull request)",
+        "action": "Set value",
+        "value": "Status: Done",
+        "equal": true
+      },
+      {
+        "name": "Pull request linked to issue",
+        "source_id": "120725076",
+        "target_id": "120881129",
+        "trigger": "When a pull request is linked to an issue",
+        "action": "Set value",
+        "value": "Status: In Progress",
+        "equal": true
+      },
+      {
+        "name": "Pull request merged",
+        "source_id": "120725073",
+        "target_id": "120881126",
+        "trigger": "When a pull request is merged",
+        "action": "Set value",
+        "value": "Status: Done",
+        "equal": true
+      }
+    ],
+    "scope": "Inspecting the root-captured UI evidence supports its documented settings and workflow comparison; independent reviewer did not operate the UI or independently authenticate as the three teammates."
+  },
+  "evidence_limits": [
+    "Raw snapshot pagination for top-level items/fields and returned fieldValues is exhausted. Subissue pageInfo was not selected, but all returned subissue sets are empty.",
+    "No private credentials, email addresses or contacts were read or recorded.",
+    "Service durable state bytes changed after restart/health updates; evidence only establishes same trusted commit and seen/latest counts, not full entry-by-entry preserved contents.",
+    "The check validates migration preservation/configuration, not Agent efficacy, real-model output quality, participant work completion, or recipient reading of assignment emails.",
+    "Workflow preservation comparisons are cutover-time snapshots. ui-checks.json states closing the retained source disables its legacy workflows; this expected later change does not contradict successful pre-closure comparison. Historical Insights/events are retained on the source, not claimed migrated."
+  ]
+}
