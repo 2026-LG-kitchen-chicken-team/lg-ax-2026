@@ -25,6 +25,16 @@ uv run python -m lgax_api.workspace_server --db private/workspace/workspace.sqli
 
 화면 위쪽 **작업실 서버** 칸에 `private/workspace/editor-client.json`의 `token` 값을 붙여 넣고 연결합니다. 토큰은 화면 메모리에만 있고 브라우저 저장소에 남지 않으므로, 새로고침하면 다시 입력해야 합니다. `viewer-client.json` 토큰으로 연결하면 읽기만 할 수 있습니다.
 
+### 의존성 재설치는 `ci:safe`로
+
+개발 서버(`npm run dev`)나 Playwright가 띄운 서버가 실행 중일 때 `npm ci`를 돌리면 `node_modules`가 지워지면서 그 서버가 깨집니다. Windows에서는 잠긴 `esbuild.exe` 때문에 설치가 반쯤 끝난 채 남습니다(2026-10-04 실제 사고). 재설치는 아래 명령을 쓰세요. 5173 포트가 열려 있으면 설치하지 않고 멈춥니다.
+
+```powershell
+npm run ci:safe --prefix apps/web
+```
+
+서버를 멈출 수 없으면 `git worktree add <다른 경로> <브랜치>`로 별도 작업 폴더를 만들어 거기서 설치·검사합니다. 같은 사람이 AI 세션을 여러 개 쓸 때도 세션마다 다른 worktree(또는 clone)를 쓰고, 같은 폴더에서 개발 서버와 설치·검사를 함께 돌리지 않습니다.
+
 ## 검사
 
 ```powershell
