@@ -1,0 +1,296 @@
+{
+  "task_id": "P2-WEB-003",
+  "owner": "최길웅",
+  "result": "pass",
+  "execution_kind": "fixture",
+  "requirement_ids": [
+    "R14",
+    "R16",
+    "R21",
+    "R25"
+  ],
+  "branch": "claude/wonderful-thompson-vn9js7-e2o98y",
+  "tested_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+  "scope": "배정 PM-20261004-WEB-003-CORE-INTEGRATION 코어 대기 단계의 연장: 황대겸 CORE-001 판단 계약(PR #51)의 출력과 review_judgement 결정을 웹이 검사·표시·저장 형태로 바꾸는 어댑터와 12사례 회귀. P2-WEB-003 완료 근거가 아님(실제 모델 판단 결과 없음, CORE-002 Draft #54는 모의 transport).",
+  "recorded_at": "2026-10-05T00:45:00+09:00",
+  "performed_by": "Claude Code (클라우드 세션) for 최길웅",
+  "observations": [
+    "core-contract development·heldout 12사례(각 정상·중복·모델혼동·상충리뷰·근거누락·명세변경, heldout은 냉장고·식기세척기·전자레인지)의 fixture 출력이 판단 출력 Schema를 통과하고 입력 원문·기능·요청이 공통 계약 Evidence/Feature/PlanningRequest를 통과한다.",
+    "코어 결정은 이 세션에서 check_cases.py로 실제 실행한 review_judgement 결과다(두 suite passed=true). 결정 형태·관계 검사 오류 0, expected.json의 action/rerun_from/codes와 일치(suite별 accept 1·hold 2·revise 3).",
+    "12개 fixture가 모두 status completed로 선언되어 있으나 웹은 코어 결정 기준으로 표시한다. accept만 후보를 선택 가능으로 두고, 나머지 10사례는 선언 상태가 결정으로 덮였음을 표시한다. 모델혼동 사례에서만 다른 모델·문서 버전 원문 목록이 나온다.",
+    "accept→completed, hold→held(후보 제외, 위반 사유를 Run.unresolved로)는 WorkspaceRunSnapshot 계약을 통과하고, 대조표 누락 ID 0, 내보내기 점검 complete, 보류·미해결 목록과 내보내기 unresolved가 일치한다. revise 6사례는 저장 대상이 아니라 null이다.",
+    "heldout 6사례의 판단 패널을 실제 React DOM으로 렌더링해 결정 라벨, fixture 안내, 리뷰 원문, 위반 설명, 선택 불가 표시, 범위 밖 원문을 확인했다.",
+    "시험이 결함을 잡는지 확인: 후보를 항상 선택 가능으로 바꾸면 15건, 보류 실행에 후보를 남기면 4건 실패했고 되돌린 뒤 46건 통과."
+  ],
+  "code_versions": [
+    {
+      "path": "apps/web/src/judgement.ts",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "957cd148efaa7e05dbc42c6d1799de7c74724dc2a1df433ec7e1725837eb1fea"
+    },
+    {
+      "path": "apps/web/src/JudgementViews.tsx",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "08597eeffc77bf43cc377a0ec04544fe44f7815cae33c7dd2698e9e24d3e1c3a"
+    },
+    {
+      "path": "apps/web/src/judgement.test.ts",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "2a9397b20d1679fba59dc8598cc0fd3631293cb899eee82c8ec550eadf70b7d1"
+    },
+    {
+      "path": "apps/web/src/planning.css",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "2bc6c0a89258f97491fb7e336173b50b85f3f71a2bbe5c09a117e000f30cdcda"
+    },
+    {
+      "path": "apps/web/vite.config.ts",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "e15ac280db6a3a804bbc6ed33a4bdaabb9368df340ef1880e04bdf487abb1c63"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "d7cf46d9a980b00ad786ec46feaf3d31e4094f56ff0899d8bab59bdf95a9bad5"
+    },
+    {
+      "path": "evals/core-contract/schemas/output.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "f5ebb8b0c466e0c38ff6df19dfee1446db84350d9c4a36478438d0b5aa92b7d5"
+    },
+    {
+      "path": "evals/core-contract/check_cases.py",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "e567b7dd8d75b701d8fdbdad5202813a98f817ac60ba8147712361d22411d035"
+    },
+    {
+      "path": "packages/core/src/lgax_core/judgement_contract.py",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "db7560e7d61e81e8d228b439969d3a28293b0cd219b7560eddea12923a2b2c24"
+    },
+    {
+      "path": "evals/core-contract/development/cases.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "46777f1a43c88080620cf122fcf8c641a54adb2eb5af3fc5e5f8aa985e255887"
+    },
+    {
+      "path": "evals/core-contract/development/expected.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "edfdcb279b0327268ea299b97c402effa0b71d0f12597e25479e1dc13271f06c"
+    },
+    {
+      "path": "evals/core-contract/development/normal.input.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "a6b0f8dea39c2914cabb8b7e471c28b5fa5fa31feb0eb5138a52f2079321f1d9"
+    },
+    {
+      "path": "evals/core-contract/development/normal.fixture-output.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "a0fda714005e609fad857a905eb9efb6dde41e545ba3d9b76621b2ab91fd235d"
+    },
+    {
+      "path": "evals/core-contract/development/duplicate.input.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "ea787edfbcfe1f81020429d05f1871172612b8c9d595ed37c01b52b91850f9f0"
+    },
+    {
+      "path": "evals/core-contract/development/duplicate.fixture-output.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "c94810ad23679e9cfa5024b6a3239491f25a2476cc55d0395b7500b3f67d9169"
+    },
+    {
+      "path": "evals/core-contract/development/model_confusion.input.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "633f46da5788e071d39afb13817f02581c34c8074603e946deb79b121987b9c5"
+    },
+    {
+      "path": "evals/core-contract/development/model_confusion.fixture-output.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "106d87ef5bf988a7ce8c311395cf8fe83582f36a2325b9ac0d3d581b1bbcf585"
+    },
+    {
+      "path": "evals/core-contract/development/conflicting_reviews.input.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "06462269bf25e18f283647b8b3986adaa7edfb3d50ea4c4c7e85a822d1eb3e77"
+    },
+    {
+      "path": "evals/core-contract/development/conflicting_reviews.fixture-output.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "91755c1b6d4f02d341abbd449d6511b90738a18f04227b7de8085783396ebf2a"
+    },
+    {
+      "path": "evals/core-contract/development/missing_evidence.input.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "264ef8bb87942c5cdb5ce4154626ccce641ae165bb8548ba376a77d22976024e"
+    },
+    {
+      "path": "evals/core-contract/development/missing_evidence.fixture-output.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "5ba38f635ea6098dad71af93bf1d7d580bbf864b218919fd0a1839037329614c"
+    },
+    {
+      "path": "evals/core-contract/development/spec_change.input.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "da14e1685560b7ebae46fc942ce4c0e02f48792b719295bdbb14a8354ddeb4f4"
+    },
+    {
+      "path": "evals/core-contract/development/spec_change.fixture-output.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "eaedb26b76e319573e4884348886a2c2075d9e949044bee12808a2ac5ee021f2"
+    },
+    {
+      "path": "evals/core-contract/heldout/cases.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "de438b29b4bcf316faf26b302f7901609d8ea4090c246b739c8013f6debb5d3a"
+    },
+    {
+      "path": "evals/core-contract/heldout/expected.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "e3dda763b62d6349fae43b6a9290766b09566054d66e693995d8ce4f72e937c7"
+    },
+    {
+      "path": "evals/core-contract/heldout/normal.input.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "c7be1c33d5de0bee3ba4c5e0a4ddb7fda952129b526a64c6f2596f6ef7c1ed92"
+    },
+    {
+      "path": "evals/core-contract/heldout/normal.fixture-output.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "9a48b4328666b6a41875f8038027dfc0f72305369b29450dcc5a9c575fdada3d"
+    },
+    {
+      "path": "evals/core-contract/heldout/duplicate.input.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "aeabf4176c77fb53fda7fe6fc003004a9818e8b0e15728a6aeb8235d242e0c41"
+    },
+    {
+      "path": "evals/core-contract/heldout/duplicate.fixture-output.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "b30a9d44c2c6f096e9119f0a5f1aa780251e21f553147b766366a1e7e32adc19"
+    },
+    {
+      "path": "evals/core-contract/heldout/model_confusion.input.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "0b945b5047e04563782d5be84b3c8b804f9b34bdc108d299412350dc7c3f3a70"
+    },
+    {
+      "path": "evals/core-contract/heldout/model_confusion.fixture-output.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "c57ddfac240500c7e77ca96c4b3cf4ebace02e1e037a578e8b157b9e5954c5b4"
+    },
+    {
+      "path": "evals/core-contract/heldout/conflicting_reviews.input.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "367452d5b94d502a04db74665a0e5c7e3ae9723f907c5ae251faff907d03f4ea"
+    },
+    {
+      "path": "evals/core-contract/heldout/conflicting_reviews.fixture-output.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "630ab06b32a36ec7f743bfa7728106566a93cf6b47e671fda6a08fed31b65e39"
+    },
+    {
+      "path": "evals/core-contract/heldout/missing_evidence.input.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "9756cb1e00bba704b57724dc047c6c072879158b48438aca3d59d15054e98361"
+    },
+    {
+      "path": "evals/core-contract/heldout/missing_evidence.fixture-output.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "1d307c667dd599be98887d8cda1593dcbc0af3d7dc0fa3424bbd6f2c2b2441c8"
+    },
+    {
+      "path": "evals/core-contract/heldout/spec_change.input.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "b623bafef2e0a1869a27db7dc2b176db9b3f194c276f772be02779cbe17cfa4d"
+    },
+    {
+      "path": "evals/core-contract/heldout/spec_change.fixture-output.json",
+      "git_commit": "438c8d65b7e7f577eb94e4c60abccb6878659099",
+      "sha256": "155bd50e2c8852652a6fc43ca90a8a0199add3754c67ff156ae7ba7f6e08d42f"
+    }
+  ],
+  "models": [],
+  "checks": [
+    {
+      "name": "evals/core-contract/check_cases.py --suite development (review_judgement 실제 실행, passed=true)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-core-judgement/core-decisions-development.json",
+        "sha256": "f94e5be5bc1e93d1c0d43dde19dff0a19219587857fee767694547bad353f88f"
+      }
+    },
+    {
+      "name": "evals/core-contract/check_cases.py --suite heldout (review_judgement 실제 실행, passed=true)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-core-judgement/core-decisions-heldout.json",
+        "sha256": "6ca256589282ba183081e389bb7b406680ca04f1c41e45f2dd61669857e97f02"
+      }
+    },
+    {
+      "name": "npm run test --prefix apps/web (188 passed, 3 skipped; judgement.test.ts 46건 포함)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-core-judgement/web-tests.txt",
+        "sha256": "c0b24ddd8a6c182fd8772f01f592358aebbc90bf2dcba39c6fcc05945d5733e3"
+      }
+    },
+    {
+      "name": "npm run typecheck --prefix apps/web",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-core-judgement/web-typecheck.txt",
+        "sha256": "c028f37ff786c1cd330dfd4a41ef0492f01c33aeeec7ec353ad7d20ac783869c"
+      }
+    },
+    {
+      "name": "npm run build --prefix apps/web",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-core-judgement/web-build.txt",
+        "sha256": "b274a90a2b40a0e4f614cf22d9d3fefd7448078251f73db48ef215cabc76c787"
+      }
+    },
+    {
+      "name": "uv run python scripts/sync_agent_rules.py --check",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-core-judgement/rules.txt",
+        "sha256": "56b21f915cb5a695479359f4ca6063582b0b9bcbdaee1869782a2a805a2a82cd"
+      }
+    },
+    {
+      "name": "uv run python scripts/check_contracts.py",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-core-judgement/contracts.txt",
+        "sha256": "6eeefba1598ed16cffaa688f144376cf5a072af5ec2d72e621cc6d504a38502e"
+      }
+    },
+    {
+      "name": "uv run python scripts/phase2.py validate",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-core-judgement/phase2.txt",
+        "sha256": "513ceac05d2694c95767b5e14a41edc7664eeb902b0bf91c1265be72d440ac6a"
+      }
+    },
+    {
+      "name": "uv run python -m unittest discover -s tests (316 OK)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-core-judgement/python-tests.txt",
+        "sha256": "f0327b6f549af46ec24cf01c05d450bf838874f6ec7494119765855707ab0355"
+      }
+    }
+  ],
+  "limitations": [
+    "판단 입력·출력은 황대겸이 작성한 합성 fixture 선언이고, 결정은 결정적 검사기 결과다. 실제 모델의 판단·의미 정확도·사용자 효용을 보여 주지 않는다.",
+    "판단 패널과 어댑터는 아직 앱 화면에 연결하지 않았다(빌드 번들 미포함, 타입 검사·단위/DOM 시험만). 실제 Workspace에 코어 결과가 어떤 형태로 저장되는지는 PM #19에서 정해진 뒤 연결한다.",
+    "hold/unresolved 실행에서 후보를 빼고 위반 사유를 Run.unresolved에 넣는 변환은 코어 문서의 규칙을 웹이 해석한 것이다. PM·황대겸 확인이 필요하다.",
+    "Playwright E2E·실서버 시험은 이번에 다시 실행하지 않았다(화면 마운트 변경 없음). 최신 실행은 E007.",
+    "ruff 24건은 이번 변경 전부터 있던 Python 오류다(Python 파일 변경 없음, CI 단계 아님)."
+  ]
+}
