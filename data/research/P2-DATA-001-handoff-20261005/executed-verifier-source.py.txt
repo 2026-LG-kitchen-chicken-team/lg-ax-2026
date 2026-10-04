@@ -1,0 +1,117 @@
+"""Re-run existing DATA-001 checks without replacing historical evidence."""
+
+import argparse
+import hashlib
+import json
+import os
+import re
+import subprocess
+import sys
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--cases", type=Path, required=True)
+    args = parser.parse_args()
+    output = ROOT / "data/research/P2-DATA-001-handoff-20261005"
+    output.mkdir(parents=True, exist_ok=True)
+    env = dict(os.environ)
+    env["PYTHONPATH"] = os.pathsep.join(
+        str(ROOT / p)
+        for p in ("packages/core/src", "packages/contracts/src", "apps/api/src", "apps/mcp/src", "scripts")
+    )
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    env["PYTHONIOENCODING"] = "utf-8"
+    head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    paths = subprocess.check_output(
+        ["git", "ls-files", "--cached", "--others", "--exclude-standard"],
+        cwd=ROOT,
+        text=True,
+        encoding="utf-8",
+    ).splitlines()
+    hashes = {
+        p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest()
+        for p in paths
+        if p.endswith(".py") or p.startswith(("packages/contracts/schemas/", "data/demo/", "data/document_"))
+    }
+    report = {
+        "started_at": datetime.now(timezone(timedelta(hours=9))).isoformat(),
+        "tested_base_commit": head,
+        "python": sys.version,
+        "python_executable": sys.executable,
+        "tested_file_sha256": hashes,
+        "commands": [],
+        "actual_AI_calls": 0,
+        "actual_customer_reviews": 0,
+        "PM_review_complete": False,
+    }
+    commands = [
+        ("contracts", ["scripts/check_contracts.py"]),
+        ("rules", ["scripts/sync_agent_rules.py", "--check"]),
+        ("phase2", ["scripts/phase2.py", "validate"]),
+        ("packet", ["scripts/phase2.py", "packet", "P2-DATA-001"]),
+        ("next", ["scripts/phase2.py", "next", "--member", "신진하"]),
+        ("regression", ["-m", "unittest", "discover", "-s", "tests", "-v"]),
+        ("mcp_stdio", ["scripts/smoke_mcp.py", "--transport", "stdio"]),
+        (
+            "connections",
+            [
+                "-c",
+                "import verify_data001_connections as v; from pathlib import Path; v.PUBLIC=Path('data/research/P2-DATA-001-handoff-20261005'); v.PRIVATE=Path('private/document-runs/handoff-20261005'); v.main()",
+            ],
+        ),
+        (
+            "evaluation_metadata",
+            [
+                "-c",
+                "import verify_data001_eval_metadata as v; from pathlib import Path; v.PUBLIC=Path('data/research/P2-DATA-001-handoff-20261005'); v.main()",
+                "--cases",
+                str(args.cases),
+            ],
+        ),
+    ]
+    for name, arguments in commands:
+        argv = [sys.executable, "-B", "-X", "utf8", *arguments]
+        started = datetime.now(timezone(timedelta(hours=9))).isoformat()
+        result = subprocess.run(argv, cwd=ROOT, env=env, capture_output=True, encoding="utf-8")
+        item = {
+            "name": name,
+            "argv": argv,
+            "started_at": started,
+            "finished_at": datetime.now(timezone(timedelta(hours=9))).isoformat(),
+            "exit_code": result.returncode,
+            "stdout": result.stdout,
+            "stderr": result.stderr,
+        }
+        report["commands"].append(item)
+        if name == "regression":
+            match = re.search(r"Ran (\d+) tests", result.stderr)
+            report["regression_test_count"] = int(match[1]) if match else None
+        (output / (name + ".json")).write_text(
+            json.dumps(item, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n"
+        )
+        print(
+            json.dumps(
+                {
+                    "check": name,
+                    "exit_code": result.returncode,
+                    "regression_test_count": report.get("regression_test_count"),
+                },
+                ensure_ascii=False,
+            ),
+            flush=True,
+        )
+    report["checks_passed"] = all(x["exit_code"] == 0 for x in report["commands"])
+    report["finished_at"] = datetime.now(timezone(timedelta(hours=9))).isoformat()
+    (output / "checks.json").write_text(
+        json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n"
+    )
+    return 0 if report["checks_passed"] else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

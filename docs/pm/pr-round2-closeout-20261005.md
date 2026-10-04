@@ -39,3 +39,19 @@ LG Notion과 공모전 대시보드의 LG 항목 갱신 succeeded 후 재조회�
 이번 사용자 요청의 PM 검수·누락 점검·새 배정·기록 최신화는 완료했다. 참가작 개발/최종 제출은 미완료다. 다음 재개는 새 main에서 네 개인 기록 요약과 온라인 Project를 조회하고 황대겸 #8/#9, 신진하 #12, 최길웅 #25의 후속 인수/막힘 보고를 확인하는 것이다. [실제 응답 근거](../../evals/pm-review/20261005-round2/delivery-proof.json).
 
 활성 참조 점검: policy의 repo/project_id/project_url·github.json 운영 주소·AGENTS/CLAUDE·운영 CLI/서비스는 새 조직 Project1을 사용한다. github.json의 source_url과 policy의 approved_tasks는 과거 승인 commit/이관 원본을 보존한 기록이며 개인 주소를 새로운 운영 대상으로 사용하지 않는다. 서비스의 현재 정식 상태는 durable trusted_tasks와 실제 승인 main24032a8로 대조했다. 과거 수신증·원본 보고 링크는 해시/결과를 바꾸지 않고 유지했다.
+
+## 추가 발견: 미공유 로컬 프로필 기록 복구
+
+마지막 원 checkout 대조에서 docs/작업기록/정이량.md의 Identity01/02 추가16행과 docs/작업근거/정이량.md의 E01/E02 추가17행, assets/branding의 원 PNG·업로드 JPEG·생성 프롬프트가 원격에 포함되지 않은 것을 발견했다. 등록된 Project 보고49건의 이관 공백 누락0과는 별개인 미push 로컬 작업이다.
+
+원 dirty 전체 파일은 private/pm-local-recovery-20261005에 백업했다. 이전 문서 전체로 최신 PM 기록을 덮어쓰지 않고 추가4단락을 그대로 보존·합쳤으며 이미지/프롬프트3개를 byte 동일하게 복사했다. 이것은 과거 생성/프로필 업로드 기록의 인수이며 이미지 재생성·조직 설정 재변경은 수행하지 않았다. UI 증빙의 비공개 설정 필드는 private에 유지한다. [정확한 복구 출처](../../evals/pm-review/20261005-round2/local-recovery.json).
+
+복구 PR 병합 뒤 원 comparison 브랜치와 전체 SHA의 safety stash를 보존하고 local main을 최신 origin/main으로 전진한다. 원 기록4단락 각각1회·assets3해시·지침 동일·clean checkout을 확인한 다음 재개 완료로 보고한다. stash를 새 문서 위에 중복 적용하거나 이전 브랜치를 삭제하지 않는다.
+
+## 재개 가능한 최종 상태 (2026-10-05 03:56 KST)
+
+복구 PR67 head89ae136e058db5f930338a2ae246b7645649dbf9의 필수4검사 성공·main a03699d234b0dfc1cddbf67552bb62f82b0085bc 실제 병합·main CI37225918969 성공과 공식 승인21작업을 확인했다. 원 작업 폴더는 local main을 그 commit으로 fast-forward했다. 이전 comparison 브랜치와 전체SHA safety stash·private 백업/설정 UI는 보존했다. Identity 추가 블록 각각1회·브랜드3해시 동일·AGENTS/CLAUDE 일치·Git clean을 확인하고 잠금 파일 기준 실행 환경을 맞췄다. 최신 팀 저장소 주소와 지침을 다음 AI도 읽는다. [로컬 확인](../../evals/pm-review/20261005-round2/final-local-verification.json).
+
+LG Notion/공모전 대시보드에 복구 결과까지 반영하고 재조회해 새 대상 문구와 비대상·원 첨부 경로 동일을 확인했다. 운영Issue28 댓글5983251859에 실제 인수/불완전 품질/세 담당 잔여 지시를 공유했다. PM003 최신 blocked 보고5983260315→ACCEPTED5983265025가 조직 Project1에 반영됐다. 의미 품질·수정 연결·자료팩/웹전체/두 호스트·평가/제출의 미완료 조건을 유지한다. 기존 사용자 설정의3명 승인·선형 이력·admin bypass 규칙을 읽기 대조해 유지됨을 확인했다.
+
+이번 요청의 안전한 다음 행동은 최신 main과 네 개인 재개 요약·Issue/Project를 읽고10/5 18:00까지의 담당별 최소인수/막힘 보고를 받는 것이다. PM은 후속 부분 PR→실제 전체 통합→독립 평가/동일조건 LLM 비교→발표/영상/최종ZIP·10/20제출을 진행한다. 원 로컬 갱신/프로필 복구를 다시 실행하거나 source stash를 pop해서 중복 기록을 만들지 않는다. 문서 증거 공유 후 최신main의 공식 승인/worker 일치를 마지막으로 재조회한다. [최신 런타임 공백 감사](../../evals/pm-review/20261005-round2/final-runtime-verification.json).

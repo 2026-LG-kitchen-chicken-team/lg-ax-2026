@@ -1,4 +1,5 @@
-// Reinstalls apps/web dependencies only when nothing is using them. `npm ci` deletes node_modules first, so running it
+// Checks configured local dev ports before reinstalling dependencies. This is not a process or filesystem lock.
+// `npm ci` deletes node_modules first, so running it
 // while the Vite dev server (or a Playwright run that started one) holds esbuild open leaves a half-installed tree and
 // breaks that server; on Windows the locked files cannot even be removed. This refuses instead of trying.
 //   npm run ci:safe --prefix apps/web      (from the repository root)
@@ -11,25 +12,32 @@ const WEB = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 // 5173: `npm run dev` and the Playwright webServer (vite --strictPort). Extra ports can be given as arguments.
 const PORTS = [5173, ...process.argv.slice(2).map(Number).filter(Number.isInteger)];
 
-export function listening(port, host = '127.0.0.1', timeoutMs = 500) {
-  return new Promise(done => {
-    const socket = connect({ port, host });
-    const finish = value => { socket.destroy(); done(value); };
-    socket.setTimeout(timeoutMs, () => finish(false));
+export function listening(port, host = '127.0.0.1', timeoutMs = 500, connectSocket = connect) {
+  return new Promise((done, reject) => {
+    const socket = connectSocket({ port, host });
+    let settled = false;
+    const finish = value => { if (settled) return; settled = true; socket.destroy(); done(value); };
+    const fail = error => { if (settled) return; settled = true; socket.destroy(); reject(error); };
+    socket.setTimeout(timeoutMs, () => fail(new Error('Port observation timed out')));
     socket.once('connect', () => finish(true));
-    socket.once('error', () => finish(false));
+    socket.once('error', error => error.code === 'ECONNREFUSED' ? finish(false) : fail(error));
   });
 }
 
-async function main() {
+export async function main({ ports = PORTS, probe = listening, install = () => spawnSync('npm', ['ci', '--no-audit', '--no-fund'], { cwd: WEB, stdio: 'inherit', shell: process.platform === 'win32' }), log = console.error } = {}) {
   const busy = [];
-  for (const port of PORTS) if (await listening(port)) busy.push(port);
-  if (busy.length) {
-    console.error(`[ci:safe] 포트 ${busy.join(', ')}에서 개발 서버가 실행 중입니다. npm ci는 node_modules를 지우므로 그 서버가 깨집니다.`);
-    console.error('[ci:safe] 서버를 멈춘 뒤 다시 실행하거나, 별도 worktree에서 설치하세요: git worktree add <경로> <브랜치>');
+  try {
+    for (const port of ports) if (await probe(port)) busy.push(port);
+  } catch {
+    log('[ci:safe] 포트 상태를 확인하지 못했습니다. 설치를 중단합니다.');
     return 2;
   }
-  const result = spawnSync('npm', ['ci', '--no-audit', '--no-fund'], { cwd: WEB, stdio: 'inherit', shell: process.platform === 'win32' });
+  if (busy.length) {
+    log(`[ci:safe] 포트 ${busy.join(', ')}에서 개발 서버가 실행 중입니다. npm ci는 node_modules를 지우므로 그 서버가 깨집니다.`);
+    log('[ci:safe] 해당 작업 폴더의 서버/검사를 멈춘 뒤 설치하세요. 이 검사는 다른 프로세스나 설치 경쟁의 안전을 보장하지 않습니다.');
+    return 2;
+  }
+  const result = install();
   return result.status ?? 1;
 }
 

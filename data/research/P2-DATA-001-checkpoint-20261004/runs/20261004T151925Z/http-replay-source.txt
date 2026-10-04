@@ -1,0 +1,130 @@
+"""One local replay of existing APIs; raw fictional text stays in ignored tmp."""
+import hashlib
+import json
+import socket
+import subprocess
+import sys
+import time
+from pathlib import Path
+from urllib.error import HTTPError
+from urllib.parse import urlencode
+from urllib.request import urlopen
+
+ROOT = Path(__file__).resolve().parents[1]
+RUN = ROOT / "data/research/P2-DATA-001-checkpoint-20261004/runs/20261004T151925Z"
+RAW = ROOT / "tmp/data001-http-20261005"
+RAW.mkdir(exist_ok=False)
+
+
+def write(path, value):
+    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+
+
+with socket.socket() as probe:
+    probe.bind(("127.0.0.1", 0))
+    port = probe.getsockname()[1]
+base = f"http://127.0.0.1:{port}"
+argv = [sys.executable, "-B", "-X", "utf8", "-m", "lgax_api.server", "--host", "127.0.0.1", "--port", str(port)]
+summary = {"code_commit": "791c206338dc2786bb880bdd53d80f9d1c010767", "server_argv": argv,
+           "transport": "actual loopback HTTP", "raw_responses": str(RAW.relative_to(ROOT)),
+           "raw_responses_git_ignored": True, "cases": [], "controls": [],
+           "r03_full_chain": False, "real_reference_ingestion": False}
+dataset = json.loads((ROOT / "data/demo/dataset.json").read_text("utf-8"))
+original = {e["id"]: e for e in dataset["evidence"]}
+fields = ("id", "model_id", "document_version", "source_kind", "source_type", "source_id", "locator")
+
+
+def request(label, path, params=None):
+    url = base + path + ("?" + urlencode(params) if params else "")
+    try:
+        response = urlopen(url, timeout=10)
+    except HTTPError as error:
+        response = error
+    with response:
+        status = response.status
+        body = response.read()
+    (RAW / (label + ".json")).write_bytes(body)
+    return status, json.loads(body), {"method": "GET", "path": path, "params": params,
+                                     "http_status": status, "response_sha256": hashlib.sha256(body).hexdigest()}
+
+
+log = (RAW / "server.log").open("wb")
+server = subprocess.Popen(argv, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT,
+                          creationflags=subprocess.CREATE_NO_WINDOW)
+summary["server_pid"] = server.pid
+try:
+    for attempt in range(50):
+        if server.poll() is not None:
+            raise RuntimeError("Our server exited before health check")
+        try:
+            status, health, receipt = request("health", "/health")
+            assert status == 200 and health["data"] == "synthetic-only"
+            summary["health"] = {**receipt, "data": health["data"], "analysis_implemented": health["analysis_implemented"]}
+            break
+        except OSError:
+            time.sleep(0.1)
+    else:
+        raise RuntimeError("Our server was not ready within five seconds")
+
+    from lgax_contracts import validate
+    inputs = [("fridge", "FRIDGE-A", "선반", "MANUAL-001"),
+              ("dishwasher", "DISHWASHER-A", "적재", "MANUAL-004"),
+              ("microwave", "MICROWAVE-A", "설정", "MANUAL-005")]
+    for group, model, query, expected in inputs:
+        params = {"q": query, "model_id": model, "document_version": "1.0", "limit": 10}
+        status, response, receipt = request(group + "-search", "/api/evidence/search", params)
+        assert status == 200
+        validate("EvidenceSearchResponse", response)
+        items = response["data"]["items"]
+        assert items and expected in {item["id"] for item in items}
+        for item in items:
+            assert item["model_id"] == model and item["document_version"] == "1.0"
+            assert item["source_kind"] == "synthetic"
+            assert all(item[key] == original[item["id"]][key] for key in fields)
+        status, evidence_response, get_receipt = request(group + "-original", "/api/evidence/" + expected)
+        assert status == 200
+        validate("EvidenceResponse", evidence_response)
+        assert evidence_response["data"]["evidence"] == original[expected]
+        status2, repeated, repeat_receipt = request(group + "-replay", "/api/evidence/search", params)
+        assert status2 == 200 and repeated == response
+        summary["cases"].append({"group": group, "input": params, "search": receipt,
+                                  "original_lookup": get_receipt, "replay": repeat_receipt,
+                                  "expected_evidence_id": expected, "metadata_preserved": True,
+                                  "original_text_exact_match": True, "repeat_response_equal": True,
+                                  "items": [{key: item[key] for key in fields} for item in items]})
+
+    controls = [("wrong-model", {"q": "선반", "model_id": "WRONG"}, 404, "INVALID_MODEL_ID"),
+                ("wrong-version", {"q": "선반", "model_id": "FRIDGE-A", "document_version": "9.0"}, 404, "INVALID_DOCUMENT_VERSION"),
+                ("source-id-prefix-is-not-version", {"q": "선반", "model_id": "FRIDGE-A", "document_version": "v1.0"}, 404, "INVALID_DOCUMENT_VERSION"),
+                ("real-model-not-ingested", {"q": "선반", "model_id": "T876MEE1H1"}, 404, "INVALID_MODEL_ID"),
+                ("valid-empty", {"q": "절대없는검색어", "model_id": "FRIDGE-A", "document_version": "1.0"}, 200, None)]
+    for label, params, expected_status, expected_error in controls:
+        status, response, receipt = request(label, "/api/evidence/search", params)
+        assert status == expected_status
+        if expected_error:
+            assert response["error"]["code"] == expected_error
+            validate("ErrorResponse", response)
+        else:
+            assert response["data"]["items"] == [] and response["data"]["total"] == 0
+        summary["controls"].append({**receipt, "expected_error": expected_error, "passed": True})
+
+    status, contract, receipt = request("contract", "/api/contract")
+    assert status == 200
+    summary["upload_parse_routes_in_api"] = []
+    summary["status"] = "pass_existing_synthetic_retrieval_only"
+except Exception as error:
+    summary["status"] = "failed"
+    summary["error"] = {"type": type(error).__name__, "message": str(error)}
+    raise
+finally:
+    server.terminate()
+    try:
+        server.wait(timeout=10)
+    except subprocess.TimeoutExpired:
+        server.kill()
+        server.wait(timeout=5)
+    log.close()
+    summary["own_server_stopped"] = server.poll() is not None
+    write(RUN / "http-query.json", summary)
+    print(json.dumps({"status": summary["status"], "cases": len(summary["cases"]),
+                      "controls": len(summary["controls"]), "own_server_stopped": summary["own_server_stopped"]}))

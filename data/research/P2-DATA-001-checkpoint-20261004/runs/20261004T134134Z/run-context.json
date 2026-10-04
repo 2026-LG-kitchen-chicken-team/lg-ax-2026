@@ -1,0 +1,55 @@
+{
+  "code_commit": "5fa1a62273c5f699d0619c2a088a2f5a35c7a128",
+  "contract_version": "0.1.0",
+  "dataset_version": "0.1.0",
+  "code_and_input_hashes": {
+    "pyproject.toml": "47433f6bcd288f55a6120f2875582375f25f2cd5122a404fab00f8117ed53a43",
+    "uv.lock": "5a4604fca47f39e78f3679f7c4a68ac306b0d708ab4b8d391b54f71126b58e6b",
+    "packages/contracts/schemas/lgax.schema.json": "d7cf46d9a980b00ad786ec46feaf3d31e4094f56ff0899d8bab59bdf95a9bad5",
+    "packages/core/src/lgax_core/store.py": "211f2dcd55ad28d8273175e5d9410df99aecf64b69338e76ac1b67e5d757ee38",
+    "apps/api/src/lgax_api/server.py": "698ad5461a246685b3e60e4b2027dc6ad3615b771e30bd241e6e72a8a0e566e3",
+    "apps/api/src/lgax_api/workspace_server.py": "8b4a2dd1d1b8c97ffcfa1a54295729a3b1ff38564e7998c826b403ae159d4720",
+    "scripts/check_contracts.py": "de1e1c635f6d57bf597b76534b2f3dd55de3ef49cfec34f648e840beb147fdd6",
+    "tests/test_core.py": "d81edfddda104c38114eb75b24a863edd837c12e1391602375f43e46c9fcf2dc",
+    "tests/test_contracts.py": "0aa705c377f6ebef2310b4473263da0c93c016666daa9918a73d09d230528531",
+    "scripts/prepare_evaluation.py": "06f8e7220292d75fdc0b028258968563bfd13255b9d8cc4d171f2e041607feba",
+    "data/demo/dataset.json": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+    "data/demo/manifest.json": "71aa5b05e3e7e86140aac22782e1b5c33f9183efc2b417a9721fb41a80765470",
+    "data/demo/planning_requests.json": "89b445290a48646844279ffc2c08b6284e0a1402d9c736cb197013659742e54a",
+    "data/research/P2-DATA-001-real-reference-20261004/reference-pack.json": "cdbc8e8dbcacf6f95d219856ff48f827d9b23a06d0f72d9e7f94d7a0854c8f17"
+  },
+  "existing_local_changes_preserved": {
+    "harness/phase2/tasks/P2-DATA-001.json": "6049541b0b626877951772a09131a18f5dd3a385633bef3ece0997a0b9849a2d",
+    "data/research/사례선정_2026-10-04.md": "dedd2c31a698a9b6b35ca6453adcddf06936a3f293005d08cf6108c1bf4325a7",
+    "data/research/자료확보현황_2026-10-04.json": "3bfa72530f425b900cf740ecdd177795a7b8fb46ed9a8789c412864231a959b1",
+    "data/research/자료확보현황_2026-10-04.md": "650fe5c85f7e2016b5b2d9f13291de22e3d1759501da75f194cd576185721100"
+  },
+  "counts_directly_read": {
+    "synthetic_models": 5,
+    "synthetic_reviews": 36,
+    "synthetic_evidence": 42,
+    "real_reference_products": 3,
+    "reference_facts": 60,
+    "reference_sources": 12,
+    "conflicts": 2,
+    "unconfirmed_entries": 7
+  },
+  "data_separation": "default DemoStore input is existing synthetic DemoDataset; real reference-pack is a public sidecar and will not be injected into DemoStore",
+  "planned_checks": [
+    {
+      "command": "project-local uv run --no-sync python -X utf8 scripts/check_contracts.py",
+      "scope": "existing canonical contract validator; no upload/parser claim"
+    },
+    {
+      "command": "project-local uv run --no-sync python -X utf8 -m unittest discover -s tests -v",
+      "scope": "existing regression suite; unit tests may use mocks/fixtures, distinct from live model or end-to-end ingestion"
+    },
+    {
+      "command": "project-local uv run --no-sync python -m lgax_api.server --host 127.0.0.1 --port <free LG local port>",
+      "scope": "existing read-only API; fridge synthetic query plus invalid model/version and evidence-ID retrieval checks"
+    }
+  ],
+  "install_approval": "pending; current user prompt explicitly is not installation approval",
+  "runtime_checks_started": false,
+  "remote_posted": false
+}

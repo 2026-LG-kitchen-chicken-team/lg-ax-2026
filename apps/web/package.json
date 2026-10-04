@@ -8,7 +8,7 @@
     "ci:safe": "node scripts/safe-ci.mjs",
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b",
-    "test": "vitest run",
+    "test": "vitest run && node --test scripts/safe-ci.check.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {

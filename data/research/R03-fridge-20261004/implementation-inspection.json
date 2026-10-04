@@ -1,0 +1,123 @@
+{
+  "checked_at": "2026-10-04T22:12:45+09:00",
+  "inspection": "AST route inventory plus reading both API implementations and DemoStore/WorkspaceStore. This is not a runtime success test.",
+  "routes": [
+    {
+      "file": "apps/api/src/lgax_api/server.py",
+      "line": 38,
+      "method": "GET",
+      "path": "/health",
+      "function": "health"
+    },
+    {
+      "file": "apps/api/src/lgax_api/server.py",
+      "line": 44,
+      "method": "GET",
+      "path": "/api/contract",
+      "function": "contract"
+    },
+    {
+      "file": "apps/api/src/lgax_api/server.py",
+      "line": 49,
+      "method": "GET",
+      "path": "/api/bootstrap",
+      "function": "bootstrap"
+    },
+    {
+      "file": "apps/api/src/lgax_api/server.py",
+      "line": 54,
+      "method": "GET",
+      "path": "/api/products",
+      "function": "products"
+    },
+    {
+      "file": "apps/api/src/lgax_api/server.py",
+      "line": 59,
+      "method": "GET",
+      "path": "/api/evidence/search",
+      "function": "search"
+    },
+    {
+      "file": "apps/api/src/lgax_api/server.py",
+      "line": 65,
+      "method": "GET",
+      "path": "/api/evidence/{evidence_id}",
+      "function": "evidence"
+    },
+    {
+      "file": "apps/api/src/lgax_api/server.py",
+      "line": 70,
+      "method": "POST",
+      "path": "/api/planning-requests",
+      "function": "planning_requests"
+    },
+    {
+      "file": "apps/api/src/lgax_api/workspace_server.py",
+      "line": 92,
+      "method": "GET",
+      "path": "/health",
+      "function": "health"
+    },
+    {
+      "file": "apps/api/src/lgax_api/workspace_server.py",
+      "line": 102,
+      "method": "GET",
+      "path": "/api/workspace/projects",
+      "function": "projects"
+    },
+    {
+      "file": "apps/api/src/lgax_api/workspace_server.py",
+      "line": 113,
+      "method": "POST",
+      "path": "/api/workspace/projects",
+      "function": "create_project"
+    },
+    {
+      "file": "apps/api/src/lgax_api/workspace_server.py",
+      "line": 123,
+      "method": "GET",
+      "path": "/api/workspace/projects/{project_id}",
+      "function": "project"
+    },
+    {
+      "file": "apps/api/src/lgax_api/workspace_server.py",
+      "line": 130,
+      "method": "POST",
+      "path": "/api/workspace/projects/{project_id}/runs",
+      "function": "create_run"
+    },
+    {
+      "file": "apps/api/src/lgax_api/workspace_server.py",
+      "line": 150,
+      "method": "GET",
+      "path": "/api/workspace/projects/{project_id}/runs",
+      "function": "runs"
+    },
+    {
+      "file": "apps/api/src/lgax_api/workspace_server.py",
+      "line": 161,
+      "method": "GET",
+      "path": "/api/workspace/runs/{run_id}",
+      "function": "run"
+    },
+    {
+      "file": "apps/api/src/lgax_api/workspace_server.py",
+      "line": 166,
+      "method": "GET",
+      "path": "/api/workspace/projects/{project_id}/evidence",
+      "function": "search"
+    }
+  ],
+  "upload_route_found": false,
+  "document_parser_found": false,
+  "workspace_persistence": "planning project/run snapshots only; existing DemoStore evidence is not document ingestion",
+  "scope_12": "prepare data and contract/reproducible inputs",
+  "scope_13": "document registration, parsing, retrieval and model/version filters",
+  "required_changes": [
+    "document registration/ingestion core retaining source ID, model, version, kind and original locator",
+    "text PDF parser and validation connected to the registry",
+    "retrieval from the registered evidence, not only the default synthetic dataset",
+    "coordinate public/private API/MCP boundary with PM before changing common files"
+  ],
+  "r03_met": false
+}
