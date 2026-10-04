@@ -23,6 +23,13 @@ import { requireLiveModelProof } from './live-model-proof';
 const tokenFile = process.env.LGAX_E2E_PLANNING_TOKEN_FILE;
 const proofDir = process.env.LGAX_E2E_PLANNING_PROOF_DIR;
 const model = process.env.LGAX_E2E_PLANNING_MODEL ?? 'FRIDGE-A';
+// Per-product inputs for the three demo scenarios (data/demo/planning_requests.json). Any other model keeps the fridge
+// wording and must already be in the default product group.
+const SCENARIO_INPUTS: Record<string, { group: string | null; situation: string; condition: string }> = {
+  'DISHWASHER-A': { group: '식기세척기', situation: '큰 접시와 냄비를 함께 넣을 때 어디에 둘지 몰라 다시 꺼내 배치함', condition: '적재 안내 서비스만 검토' },
+  'MICROWAVE-A': { group: '전자레인지', situation: '매일 같은 데우기 설정을 반복해서 다시 입력함', condition: '기존 설정 저장 기능과 겹치는 안은 제외' },
+};
+const inputs = SCENARIO_INPUTS[model] ?? { group: null, situation: '작은 오염도 선반 전체를 꺼내 청소해야 함', condition: '분리형 선반 구조만 검토' };
 const stepTimeout = Number(process.env.LGAX_E2E_PLANNING_TIMEOUT_MS ?? 20 * 60_000);
 const requireGeneration = process.env.LGAX_E2E_REQUIRE_LIVE_MODEL === '1';
 const expectedModelId = process.env.LGAX_E2E_EXPECTED_MODEL_ID;
@@ -71,9 +78,14 @@ test('real planning server: browser-initiated run → same run ID review → dow
     await expect(page.locator('.workspace-state')).toContainText('연결됨');
 
     // 1. The browser saves a new request; the server runs the judgement before answering.
+    if (inputs.group) {
+      const card = page.getByRole('region', { name: '제품군 선택' }).getByRole('button', { name: new RegExp(inputs.group) });
+      await card.click();
+      await expect(card).toHaveAttribute('aria-pressed', 'true');
+    }
     await openArea(page, '기획 요청');
     await page.getByRole('checkbox', { name: new RegExp(model) }).check();
-    await page.getByLabel('사용 상황').fill(`E2E ${new Date().toISOString()} 작은 오염도 선반 전체를 꺼내 청소해야 함`);
+    await page.getByLabel('사용 상황').fill(`E2E ${new Date().toISOString()} ${inputs.situation}`);
     await page.getByRole('button', { name: /새 프로젝트로 저장|변경 요청 저장/ }).click();
     const message = page.locator('.request-form .inline-message');
     // The message also names the previous run ("이전 실행 run-…") when the request continues a project; take the new one.
@@ -115,7 +127,7 @@ test('real planning server: browser-initiated run → same run ID review → dow
     } else {
       proof.rerun_kind = 'condition';
       // Unique per run: a condition already in a continued project's request is refused as a duplicate.
-      await rerun.getByLabel('추가 조건').fill(`분리형 선반 구조만 검토 (E2E ${Date.now()})`);
+      await rerun.getByLabel('추가 조건').fill(`${inputs.condition} (E2E ${Date.now()})`);
       await rerun.getByRole('button', { name: '조건 추가' }).click();
     }
     await rerun.getByRole('button', { name: '다시 실행 요청' }).click();

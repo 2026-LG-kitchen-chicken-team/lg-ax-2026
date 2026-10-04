@@ -1,5 +1,5 @@
 import type { Evidence } from './domain';
-import { executionKindText, judgementView, planningExecutionView, violationText } from './judgement';
+import { executionKindText, judgementView, planningExecutionView, reasonText, violationText } from './judgement';
 import type { JudgementDecision, JudgementInput, JudgementOutput, PlanningExecution, SemanticAssessment, StoredDecision } from './judgement';
 import type { RunSnapshot } from './planning';
 
@@ -10,7 +10,7 @@ const DUPLICATION: Record<string, string> = { distinct: '기존 기능과 다름
 
 function TextList({ title, items, empty }: { title: string; items: string[]; empty?: string }) {
   if (!items.length && !empty) return null;
-  return <><h4>{title} <span className="count">{items.length}건</span></h4>{items.length ? <ul>{items.map(item => <li key={item}>{item}</li>)}</ul> : <p className="muted">{empty}</p>}</>;
+  return <><h4>{title} <span className="count">{items.length}건</span></h4>{items.length ? <ul>{items.map(item => <li key={item}>{reasonText(item)}</li>)}</ul> : <p className="muted">{empty}</p>}</>;
 }
 
 /**
