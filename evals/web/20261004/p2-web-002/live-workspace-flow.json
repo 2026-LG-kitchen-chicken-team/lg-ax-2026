@@ -1,0 +1,61 @@
+{
+  "project_id": "project-e07249b5b3284dfb8caf6348ac59db39",
+  "document_versions": {
+    "FRIDGE-A": "1.0"
+  },
+  "dataset_sha256": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03",
+  "runs": [
+    {
+      "id": "run-4be7bf1547524beab57248f898591968",
+      "previous_run_id": null,
+      "request_revision": 0,
+      "status": "not_implemented",
+      "client": "web",
+      "actor_id": "planner-demo",
+      "exclusions": [],
+      "unresolved": [
+        "상품기획 Agent 분석·콘셉트 생성·검사·수정은 아직 구현되지 않았습니다."
+      ]
+    },
+    {
+      "id": "run-8ba432d89f4745a7a3e645dec86ce203",
+      "previous_run_id": "run-4be7bf1547524beab57248f898591968",
+      "request_revision": 1,
+      "status": "not_implemented",
+      "client": "web",
+      "actor_id": "planner-demo",
+      "exclusions": [
+        "1인 가구 소형 모델만"
+      ],
+      "unresolved": [
+        "상품기획 Agent 분석·콘셉트 생성·검사·수정은 아직 구현되지 않았습니다."
+      ]
+    }
+  ],
+  "search": {
+    "hit": {
+      "query": "청소",
+      "total": 4,
+      "ids": [
+        "REVIEW-EVIDENCE-001",
+        "REVIEW-EVIDENCE-006",
+        "REVIEW-EVIDENCE-008",
+        "REVIEW-EVIDENCE-009"
+      ],
+      "document_version": "1.0",
+      "method": "literal_token_count"
+    },
+    "miss": {
+      "query": "존재하지않는검색어",
+      "total": 0
+    }
+  },
+  "failures": {
+    "wrong_token": "UNAUTHORIZED",
+    "viewer_write": "FORBIDDEN",
+    "missing_run": "NOT_FOUND",
+    "scope_change": "INVALID_ARGUMENT",
+    "model_outside_project": "INVALID_ARGUMENT",
+    "unreachable": "CONNECTION_FAILED"
+  }
+}
