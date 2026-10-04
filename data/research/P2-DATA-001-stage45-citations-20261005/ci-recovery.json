@@ -1,0 +1,27 @@
+{
+  "initial_pr_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/74",
+  "initial_published_commit": "3cbcc64e93ec1cb71860c98e1c4e09e86e309831",
+  "initial_issue_report_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/12#issuecomment-5983852638",
+  "failed_ci_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/actions/runs/37230410141/job/111518700660?pr=74",
+  "observed_ci_result": {
+    "tests": 485,
+    "failures": 1,
+    "web_checks_passed": 2,
+    "python_checks_failed": 2
+  },
+  "failed_test": "test_data001_connections.ConnectionBoundaryTests.test_document_adapter_keeps_scope_and_detects_later_dataset_changes",
+  "cause": "Canonical document dataset is .2, but the connection regression compared it with the preserved stage123 .1 planning input.",
+  "correction": "Change this existing test's input path to stage45 .2 planning input; preserve old input, evidence and CI failure.",
+  "shared_runtime_and_schema_changed": false,
+  "canonical_source_data_changed_by_correction": false,
+  "local_recovery_evidence": [
+    "connection_regression.json",
+    "full_regression_after_ci_fix.json"
+  ],
+  "actual_model_execution_claimed": false,
+  "PM_review_merge_integration_claimed": false,
+  "local_connection_tests": 5,
+  "local_full_regression_tests": 485,
+  "local_recovery_passed": true,
+  "latest_remote_ci_after_correction": "pending publication of recovery commit; check actual PR head"
+}

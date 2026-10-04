@@ -3,12 +3,14 @@
   "proposed_branch": "codex/data001-stage45-citations-20261005",
   "target_repository": "2026-LG-kitchen-chicken-team/lg-ax-2026",
   "target_base": "main",
-  "file_count": 37,
+  "file_count": 41,
   "files": [
     "data/document_datasets/lg-three-models-20261005.json",
     "data/document_plans/lg-three-models-20261005.json",
     "data/research/P2-DATA-001-stage45-citations-20261005/README.md",
     "data/research/P2-DATA-001-stage45-citations-20261005/checks.json",
+    "data/research/P2-DATA-001-stage45-citations-20261005/ci-recovery.json",
+    "data/research/P2-DATA-001-stage45-citations-20261005/connection_regression.json",
     "data/research/P2-DATA-001-stage45-citations-20261005/contracts.json",
     "data/research/P2-DATA-001-stage45-citations-20261005/delivery-manifest.json",
     "data/research/P2-DATA-001-stage45-citations-20261005/document_http.json",
@@ -17,6 +19,7 @@
     "data/research/P2-DATA-001-stage45-citations-20261005/evaluation-intake-metadata.json",
     "data/research/P2-DATA-001-stage45-citations-20261005/feature-citation-audit.json",
     "data/research/P2-DATA-001-stage45-citations-20261005/final-readiness.json",
+    "data/research/P2-DATA-001-stage45-citations-20261005/full_regression_after_ci_fix.json",
     "data/research/P2-DATA-001-stage45-citations-20261005/http-flow.json",
     "data/research/P2-DATA-001-stage45-citations-20261005/lint.json",
     "data/research/P2-DATA-001-stage45-citations-20261005/mapping.json",
@@ -41,13 +44,16 @@
     "data/research/P2-DATA-001-stage45-citations-20261005/semantic_preparation_regression.json",
     "docs/작업근거/신진하.md",
     "docs/작업기록/신진하.md",
-    "scripts/prepare_lg_document_plan.py"
+    "scripts/prepare_lg_document_plan.py",
+    "tests/test_data001_connections.py"
   ],
   "file_sha256_except_self": {
     "data/document_datasets/lg-three-models-20261005.json": "6699cfe98196800e6a809a80b90b86ae6d5d4e799ac431165fad752a78381ac5",
     "data/document_plans/lg-three-models-20261005.json": "6ec5d5ffa457ba87b9d982e9b22920f2e2b2466ec41afba3273c9584f7d491be",
-    "data/research/P2-DATA-001-stage45-citations-20261005/README.md": "9de4ba7be48d68435f80b9e44b3bd2c15e8afb511770dd32418358f7f41e35fa",
-    "data/research/P2-DATA-001-stage45-citations-20261005/checks.json": "d40fdf93fd11b74dd765d0768bfd74006a5e85002e59cf12ddfc5a1f0a3fe319",
+    "data/research/P2-DATA-001-stage45-citations-20261005/README.md": "eaae773fd88991cb2abb635d84d8239b2c1e303e38746c4aa291e2623216fd1c",
+    "data/research/P2-DATA-001-stage45-citations-20261005/checks.json": "411ad30ce233b69443d0a201ef8cad5318bdc15be8915d6d947309c45c0dcc9e",
+    "data/research/P2-DATA-001-stage45-citations-20261005/ci-recovery.json": "4f0b631259b97419c34ab1b73709fc021f5cbb672aa63d633d659d4b01a174f2",
+    "data/research/P2-DATA-001-stage45-citations-20261005/connection_regression.json": "0de097517f0ae1c90de4f12466ffe2b68f2aa70d9ca77d15abf7988eacb8d8f6",
     "data/research/P2-DATA-001-stage45-citations-20261005/contracts.json": "33a77d8a34218b38935d6f6cf30f5f12cc73eaa547c3ff20e9671a9eb803aa08",
     "data/research/P2-DATA-001-stage45-citations-20261005/document_http.json": "3613d0fe790afc3d151e2762b2a7b4e1369709fb603b27533ca073ebdf0bc5e4",
     "data/research/P2-DATA-001-stage45-citations-20261005/document_regression.json": "45b74e66a98e04d2f5b1ea9f24f2577a06574302d0bae2de69d0d300beab8e5c",
@@ -55,6 +61,7 @@
     "data/research/P2-DATA-001-stage45-citations-20261005/evaluation-intake-metadata.json": "df0a9c94c826147c4d29ad6ca5f83bb6388af99f8fe691279007fd0c96e66395",
     "data/research/P2-DATA-001-stage45-citations-20261005/feature-citation-audit.json": "11aa22cf9dcc00258848c69c0bcfe6dfc191ea87bb79c93f4b8959e4552a0726",
     "data/research/P2-DATA-001-stage45-citations-20261005/final-readiness.json": "ca9b69915467a1abbc7d0a0d8e964800405198d065803c204611e05f84d583d6",
+    "data/research/P2-DATA-001-stage45-citations-20261005/full_regression_after_ci_fix.json": "3539c36e764367f8f05a24eac5fe4205d72b7fbb14c571287d7e87f10a945224",
     "data/research/P2-DATA-001-stage45-citations-20261005/http-flow.json": "908ed5411954eb6003730ad6cbe9573c4647c9544ac8d43c312553b79cf7b9a2",
     "data/research/P2-DATA-001-stage45-citations-20261005/lint.json": "f6004dc3a97625aa55b173ddb3ea6f7ea6a967db26d9808df042dbcb253ce648",
     "data/research/P2-DATA-001-stage45-citations-20261005/mapping.json": "5d186f2d255e64061ce2281242b4d7d7706093360a098b6cacd8e13545a830e6",
@@ -77,9 +84,10 @@
     "data/research/P2-DATA-001-stage45-citations-20261005/semantic-input-readiness.json": "44f425ffb9ae1f7124da684b7a7c4c75a9a53639be3b59d0a89ac31f5a32ac1a",
     "data/research/P2-DATA-001-stage45-citations-20261005/semantic_input_preparation.json": "9c2993c16b93600d90c765318e89c56e0c7f43eb60791d8d91fd7a195aee49ee",
     "data/research/P2-DATA-001-stage45-citations-20261005/semantic_preparation_regression.json": "bbf2511f7c4becfc7e8bb8fa93da5fa1f6eee008fb06d3ef55733f5c8d359a53",
-    "docs/작업근거/신진하.md": "065377776ae22127cf4da46a7ec80300274723f77bdcd621ede8da863f3c3a41",
-    "docs/작업기록/신진하.md": "b232b2f3a47d625394737e761a2fab79a804d07c577bf86b6c5849d2d0e2c174",
-    "scripts/prepare_lg_document_plan.py": "1421f2f0d841d1730d0aa43d8fde5756c39f51a4fee77b05765491a25d320a0f"
+    "docs/작업근거/신진하.md": "22ac19201626ba15fd81d11b802c785d12a0c60ce0e7ba6ae54395ab658b43c9",
+    "docs/작업기록/신진하.md": "c0b7d5fe2b40ce81280dd43fcb7f25fafa653b487aeeb137222680d926131657",
+    "scripts/prepare_lg_document_plan.py": "1421f2f0d841d1730d0aa43d8fde5756c39f51a4fee77b05765491a25d320a0f",
+    "tests/test_data001_connections.py": "51dfe0d3eebc01b53cfa1fc59285dd93b115f7f91fd4051ce60f50526ae92b10"
   },
   "self_hash_excluded_to_avoid_recursion": true,
   "raw_originals_and_answers_private": true,
@@ -94,5 +102,24 @@
   "tested_source_data_commit": "13ab5d23c6b2dc858005b4a5684238539510d365",
   "tested_base_commit": "f88dd7ac6448ef863a8cdc418804b7838eff0e24",
   "latest_main_observed_before_publication": "bbf4e1c1da0106e140c6c7e87f7159e6f0fe3532",
-  "source_data_changed_after_tests": false
+  "source_data_changed_after_tests": false,
+  "initial_publication": {
+    "commit": "3cbcc64e93ec1cb71860c98e1c4e09e86e309831",
+    "files": 37,
+    "pr_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/74",
+    "issue_report_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/12#issuecomment-5983852638"
+  },
+  "ci_recovery": {
+    "existing_test_input_path_updated": true,
+    "historical_inputs_preserved": true,
+    "local_connection_tests": 5,
+    "local_full_regression_tests": 485,
+    "tested_parent_commit": "3cbcc64e93ec1cb71860c98e1c4e09e86e309831",
+    "tested_test_sha256": "51dfe0d3eebc01b53cfa1fc59285dd93b115f7f91fd4051ce60f50526ae92b10",
+    "remote_ci_pending_republication": true
+  },
+  "ci_recovery_content_audit": {
+    "raw_existing_synthetic_review_matches": 0,
+    "private_originals_or_answers_added": false
+  }
 }

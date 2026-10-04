@@ -25,6 +25,8 @@
 
 ## 검사와 현재 제한
 
+게시 후 추가 확인: [PR74](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/74)는 초기37파일/head3cbcc64로 생성했고 [자기보고](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/12#issuecomment-5983852638)를 게시했다. GitHub 전체485회귀 중1실패는 새 `.2` 자료와 기존 연결 검사의 역사 `.1` 입력 비교였다. 기존 검사 입력 경로1곳만 stage45 `.2`로 맞추고 과거 자료/실패는 보존했다. 실패 원격 링크·범위는 `ci-recovery.json`, 수정 후 현재 source/test/input SHA의 결과는 `connection_regression.json`, `full_regression_after_ci_fix.json`에 연결한다. 최초37파일과 복구 추가파일을 전달 manifest에서 구분한다. 원격 CI·보고 ACK 최종 상태는 실제 원격/게시 수신증을 따른다.
+
 계약·규칙·phase2 PASS. 문서 등록 회귀10개, 의미 입력 준비 검사7개, 수정 generator Ruff PASS. `checks.json`은 실행 시작 main SHA, 실제 수정 파일SHA, 명령/입출력/종료코드를 연결한다. 전체 회귀475개/CI4PASS는 이전 PR69 버전의 증거이며 이번 수정본의 전체 검사로 재표시하지 않는다.
 
 실제 고객 리뷰0·모델 호출0, 참고팩의 출처 차이2/미확인7은 유지한다. 선반 선택 기능의 모델 적용/수량은 graph의 별도 미확인이다. 모델 환경4값은 없으며, 최신 PM 지시에 따라 GPU 실실행은 PM의 안전한 전용 연결에서 검수한다. 연구실 loopback을 사용자 PC 주소로 가정하거나 새 tunnel/설치/권한/공개endpoint를 만들지 않았다. 평가 점수/성공 출력/실제 고객 수요를 생성하지 않았다.
@@ -36,3 +38,5 @@
 승인된 `team-lg-ax-2026/.venv/Scripts/python.exe`를 사용하고 프로세스 PYTHONPATH에는 이 worktree의 `packages/core/src`, `packages/contracts/src`, `apps/api/src`, `apps/mcp/src`, `scripts`를 지정한다. 추가 설치는 없다. 인용 레시피 생성은 `python -B -X utf8 scripts/prepare_lg_document_plan.py --run-directory <새 data/research 실행 폴더>`다. 실제 PDF 재실행 명령은 `document_http.json`, 평가 입력 명령은 `semantic_input_preparation.json`을 따른다. 재실행에는 새 private/output 폴더를 사용해 기존 원문·실패·평가 인수물을 보존한다.
 
 이번 다음 작업 하나는 **승인된 인용 보완 부분 PR·자기보고를 게시하고 접수를 확인하는 것**이다. 이후 PM 안전 연결의 냉장고 실제 출력과 이 `.2` 자료를 대조한다. 평가 ZIP은 비공개 전달 경로와 사용자 확인 후 전송한다. PM은 세 모델의 실제 실행 및 평가 독립성/기대 대응을 별도로 검수한다.
+
+게시 후 복구의 로컬 결과는 연결5검사·전체485회귀 PASS다. 원문/자료/generator를 다시 바꾸지 않고 기존 테스트의 최신 입력 연결만 수정했다. 초기37파일에 테스트 수정 및 실패/복구 증거4파일을 추가한 총41파일이다. 과거 CI 실패는 `ci-recovery.json`의 링크로 보존하며, 수정 후 원격 CI·ACK는 현재 PR head의 실제 상태를 따른다.
