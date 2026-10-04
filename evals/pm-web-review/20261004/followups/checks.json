@@ -1,0 +1,120 @@
+{
+  "result": "pass",
+  "tested_commit": "9c3c4f60841b2781a1a410b5707899b8f77e88b0",
+  "checked_at": "2026-10-04T10:58:16.914252+00:00",
+  "checks": [
+    {
+      "name": "web-live",
+      "command": [
+        "npm.cmd",
+        "test"
+      ],
+      "exit_code": 0,
+      "output_path": "evals/pm-web-review/20261004/followups/web-live.txt",
+      "output_sha256": "3a69f4aa152757b302ad998f328f52e3789aef24031111444b7c60e9f5625973"
+    },
+    {
+      "name": "web-build",
+      "command": [
+        "npm.cmd",
+        "run",
+        "build"
+      ],
+      "exit_code": 0,
+      "output_path": "evals/pm-web-review/20261004/followups/web-build.txt",
+      "output_sha256": "207561129d78a8d09eab9753c881c3eb13245b89f04abd6e2c8d49d3fd28c576"
+    },
+    {
+      "name": "contracts",
+      "command": [
+        "C:\\Users\\user\\.codex\\worktrees\\pm-web-integration\\LG_해커톤\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "scripts/check_contracts.py"
+      ],
+      "exit_code": 0,
+      "output_path": "evals/pm-web-review/20261004/followups/contracts.txt",
+      "output_sha256": "6eeefba1598ed16cffaa688f144376cf5a072af5ec2d72e621cc6d504a38502e"
+    },
+    {
+      "name": "rules",
+      "command": [
+        "C:\\Users\\user\\.codex\\worktrees\\pm-web-integration\\LG_해커톤\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "output_path": "evals/pm-web-review/20261004/followups/rules.txt",
+      "output_sha256": "56b21f915cb5a695479359f4ca6063582b0b9bcbdaee1869782a2a805a2a82cd"
+    },
+    {
+      "name": "phase2",
+      "command": [
+        "C:\\Users\\user\\.codex\\worktrees\\pm-web-integration\\LG_해커톤\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "scripts/phase2.py",
+        "validate"
+      ],
+      "exit_code": 0,
+      "output_path": "evals/pm-web-review/20261004/followups/phase2.txt",
+      "output_sha256": "513ceac05d2694c95767b5e14a41edc7664eeb902b0bf91c1265be72d440ac6a"
+    },
+    {
+      "name": "diff",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "output_path": "evals/pm-web-review/20261004/followups/diff.txt",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "code_files": [
+    {
+      "path": "apps/web/src/App.tsx",
+      "sha256": "fbf4d43a3945447f2e9b256985f075ec76b69e8d0fe30cfb8dcb8b611cf0a3a5"
+    },
+    {
+      "path": "apps/web/src/PlanningViews.tsx",
+      "sha256": "b243768eb5339e348aa288c6408255ca637ad8af932a33ea9e4c27dc58e18d62"
+    },
+    {
+      "path": "apps/web/src/measurement.ts",
+      "sha256": "41312ead069b1ff494c899974a8988b38294353b9d7553631b7568752f16d5e3"
+    },
+    {
+      "path": "apps/web/src/measurement.test.ts",
+      "sha256": "7717659766e6a8d211cd72267dc1888f2c0bad4878bf3d5fe1d312270f50dcca"
+    },
+    {
+      "path": "apps/web/src/measurement.scope.test.ts",
+      "sha256": "1a015ab414a12379238483ccfa002512d307334277a0db1d1964eed6f79b001d"
+    },
+    {
+      "path": "apps/web/src/planning.ts",
+      "sha256": "069c1c1dc4c173429096ad1cc217c95661f19108501d69532356dc639226a7a6"
+    },
+    {
+      "path": "apps/web/src/planning.test.ts",
+      "sha256": "e11fd17e52d03525d0c0e5087351127871327ce46b0f8105af6956a13f0ed7db"
+    },
+    {
+      "path": "apps/web/src/workspace.ts",
+      "sha256": "dba2facde6e562e6e6a446aaa321388359f50e415cde63407e69397d3e4b1124"
+    },
+    {
+      "path": "apps/web/src/workspace.test.ts",
+      "sha256": "770d3fc8b9d2583e6c5f424d4d61c721d959f75b36ade40e848485edf2ff1840"
+    }
+  ],
+  "limitations": [
+    "Two explicit opt-in HTTP tests use the existing private loopback service with synthetic developer inputs.",
+    "Browser timing measures request-save latency; user benefit and actual planning Agent execution remain unverified.",
+    "WEB003 and WEB004 full tasks remain incomplete until actual core and dependent evaluation."
+  ]
+}

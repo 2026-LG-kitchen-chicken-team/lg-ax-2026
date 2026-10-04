@@ -140,7 +140,10 @@ export function requestWithCondition(base: PlanningRequest, condition: string): 
 }
 
 export function draftRunWithCondition(base: RunSnapshot, original: PlanningRequest, condition: string, id: string, createdAt: string): RunSnapshot {
-  const request = requestWithCondition(base.request, condition);
+  return draftRunFromRequest(base, original, requestWithCondition(base.request, condition), id, createdAt);
+}
+
+export function draftRunFromRequest(base: RunSnapshot, original: PlanningRequest, request: PlanningRequest, id: string, createdAt: string): RunSnapshot {
   const draft: RunSnapshot = {
     run: {
       id, project_id: base.run.project_id, dataset_version: base.run.dataset_version, contract_version: '0.1.0',
@@ -153,6 +156,98 @@ export function draftRunWithCondition(base: RunSnapshot, original: PlanningReque
   const errors = contractErrors('WorkspaceRunSnapshot', draft);
   if (errors.length) throw new ApiError('CONTRACT_MISMATCH', `새 실행 초안이 공통 규격과 다릅니다. ${errors.join('; ')}`);
   return draft;
+}
+
+// R21 (P2-WEB-003): candidate choices and corrected conditions become the next request. The shared contract has no
+// candidate-selection field, so choices are written into the request text the Agent reads, in a stable form.
+export type CandidateChoice = 'keep' | 'focus' | 'exclude';
+const FOCUS_PREFIX = ' [집중 검토: ';
+
+function candidateLabel(concept: Pick<Concept, 'id' | 'title'>): string {
+  return `${concept.title} (${concept.id})`;
+}
+
+/** Only a suffix composed entirely of current candidate labels is managed by the choice controls. */
+function knownFocus(task: string, concepts: Concept[]): { task: string; ids: string[] } | null {
+  const at = task.lastIndexOf(FOCUS_PREFIX);
+  if (at < 0 || !task.endsWith(']') || !concepts.length) return null;
+  const labels = concepts.map(candidateLabel);
+  const content = task.slice(at + FOCUS_PREFIX.length, -1);
+  const alternatives = labels.map(label => label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+  if (!new RegExp(`^(?:${alternatives})(?:, (?:${alternatives}))*$`).test(content)) return null;
+  const labelIds = new Map(concepts.map(concept => [candidateLabel(concept), concept.id]));
+  const matches = content.matchAll(new RegExp(`(?:^|, )(${alternatives})(?=, |$)`, 'g'));
+  return { task: task.slice(0, at), ids: [...new Set([...matches].map(match => labelIds.get(match[1])!))] };
+}
+
+export function candidateExclusion(concept: Pick<Concept, 'id' | 'title'>): string {
+  return `후보 제외: ${candidateLabel(concept)}`;
+}
+
+export function candidateChoicesFor(request: PlanningRequest, concepts: Concept[]): Record<string, CandidateChoice> {
+  const focused = new Set(knownFocus(request.improvement_task, concepts)?.ids ?? []);
+  return Object.fromEntries(concepts.map(concept => [concept.id,
+    request.exclusions.includes(candidateExclusion(concept)) ? 'exclude' : focused.has(concept.id) ? 'focus' : 'keep']));
+}
+
+export function buildRerunRequest(base: PlanningRequest, concepts: Concept[], choices: Record<string, CandidateChoice>, conditions: string[]): PlanningRequest {
+  const managedExclusions = new Set(concepts.map(candidateExclusion));
+  const cleaned = [...new Set(conditions.map(item => base.exclusions.includes(item) ? item : item.trim()).filter(item => item.trim() && !managedExclusions.has(item)))];
+  const effective = { ...candidateChoicesFor(base, concepts), ...choices };
+  const excluded = concepts.filter(concept => effective[concept.id] === 'exclude').map(candidateExclusion);
+  const focused = concepts.filter(concept => effective[concept.id] === 'focus');
+  const priorFocus = knownFocus(base.improvement_task, concepts);
+  const sameFocus = priorFocus && priorFocus.ids.length === focused.length && focused.every(concept => priorFocus.ids.includes(concept.id));
+  const task = priorFocus?.task ?? base.improvement_task;
+  const remaining = new Set([...cleaned, ...excluded]);
+  // Keep existing condition order when nothing was removed, and append only new conditions/choices.
+  const exclusions = base.exclusions.filter(item => remaining.delete(item));
+  exclusions.push(...remaining);
+  const request: PlanningRequest = {
+    ...base,
+    improvement_task: sameFocus ? base.improvement_task : focused.length ? `${task}${FOCUS_PREFIX}${focused.map(candidateLabel).join(', ')}]` : task,
+    exclusions,
+  };
+  const errors = contractErrors('PlanningRequest', request);
+  if (errors.length) throw new ApiError('INVALID_ARGUMENT', `재실행 요청이 공통 규격과 다릅니다. ${errors.join('; ')}`);
+  return request;
+}
+
+/** Unknown candidate IDs and user-authored prefixed text remain editable conditions; absent candidates preserve everything. */
+export function splitConditions(request: PlanningRequest, concepts: Concept[] = []): { conditions: string[]; excludedCandidates: string[] } {
+  const managed = new Set(concepts.map(candidateExclusion));
+  return {
+    conditions: request.exclusions.filter(item => !managed.has(item)),
+    excludedCandidates: request.exclusions.filter(item => managed.has(item)),
+  };
+}
+
+export interface ConceptDetailChange { id: string; title: string; status: [Concept['status'] | null, Concept['status'] | null]; added: { requirements: string[]; assumptions: string[]; evidence_ids: string[] }; removed: { requirements: string[]; assumptions: string[]; evidence_ids: string[] } }
+
+/** Field-level before/after for each candidate, so a revision shows what changed inside a concept, not only its status. */
+export function conceptDetailChanges(before: RunSnapshot | undefined, after: RunSnapshot): ConceptDetailChange[] {
+  const previous = new Map((before?.run.concepts ?? []).map(item => [item.id, item]));
+  const current = new Map(after.run.concepts.map(item => [item.id, item]));
+  const diff = (a: string[] = [], b: string[] = []) => b.filter(item => !a.includes(item));
+  return [...new Set([...previous.keys(), ...current.keys()])].map(id => {
+    const old = previous.get(id); const next = current.get(id);
+    return {
+      id, title: (next ?? old)!.title, status: [old?.status ?? null, next?.status ?? null] as [Concept['status'] | null, Concept['status'] | null],
+      added: { requirements: diff(old?.requirements, next?.requirements), assumptions: diff(old?.assumptions, next?.assumptions), evidence_ids: diff(old?.evidence_ids, next?.evidence_ids) },
+      removed: { requirements: diff(next?.requirements, old?.requirements), assumptions: diff(next?.assumptions, old?.assumptions), evidence_ids: diff(next?.evidence_ids, old?.evidence_ids) },
+    };
+  }).filter(change => change.status[0] !== change.status[1] || Object.values(change.added).some(list => list.length) || Object.values(change.removed).some(list => list.length));
+}
+
+export interface HeldItem { kind: 'insufficient_evidence' | 'unresolved'; id: string | null; text: string; questions: string[] }
+
+/** Everything the Agent held back: gaps without enough evidence and unresolved items, shown next to the candidates. */
+export function heldItems(snapshot: RunSnapshot): HeldItem[] {
+  const gaps = (snapshot.output?.gaps ?? []).filter(gap => gap.support_status === 'insufficient_evidence').map(gap => {
+    const need = snapshot.output!.needs.find(item => item.id === gap.need_id);
+    return { kind: 'insufficient_evidence' as const, id: gap.id, text: need ? `${need.pain} (${need.id})` : gap.need_id, questions: gap.questions };
+  });
+  return [...gaps, ...snapshot.run.unresolved.map(text => ({ kind: 'unresolved' as const, id: null, text, questions: [] }))];
 }
 
 export interface ConceptChange { id: string; title: string; before: Concept['status'] | null; after: Concept['status'] | null }
@@ -174,48 +269,124 @@ export interface ExportDocument {
   requirements: { concept_id: string; requirement: string }[];
   assumptions: { source_id: string; assumption: string }[];
   unresolved: string[];
+  held: HeldItem[];
+  lineage: { run_id: string; previous_run_id: string | null; request_revision: number; status: Run['status']; created_at: string }[];
   evidence: { id: string; model_id: string; document_version: string; source_type: string; source_kind: string; source_id: string; location: string; text: string }[];
+  completeness: ExportCompleteness;
 }
+
+export interface ExportCompleteness { complete: boolean; missing_evidence: string[]; missing_concepts: string[]; missing_requirements: string[]; missing_assumptions: string[]; missing_unresolved: string[]; missing_held: string[]; mismatched_fields: string[] }
 
 export const FIXTURE_NOTICE = '계약 fixture(모의) 예시입니다. Agent 출력이나 서버 응답이 아니며 실제 수요·성능을 입증하지 않습니다.';
 export const LIVE_NOTICE = '실제 서버 응답에서 내보낸 기록입니다.';
 
-export function buildExport(mode: DataMode, snapshot: RunSnapshot, features: Feature[], evidence: Evidence[], generatedAt: string): ExportDocument {
+function exportComparison(output: RunOutput, features: Feature[], evidence: Evidence[]): ExportDocument['comparison'] {
+  return buildComparison(output, features, evidence).map(row => ({
+    model_id: row.need.model_id, need_id: row.need.id, situation: row.need.situation, pain: row.need.pain, feature_ids: row.gap?.feature_ids ?? [], conditions: row.conditions,
+    support_status: row.gap?.support_status ?? null, remaining_pain: row.gap?.remaining_pain ?? '', evidence_ids: row.evidence.map(item => item.id),
+    questions: [...row.need.uncertainties, ...(row.gap?.questions ?? [])], missing_ids: row.missingIds,
+  }));
+}
+
+function exportEvidence(item: Evidence): ExportDocument['evidence'][number] {
+  return { id: item.id, model_id: item.model_id, document_version: item.document_version, source_type: item.source_type, source_kind: item.source_kind, source_id: item.source_id, location: evidenceLocation(item), text: item.text };
+}
+
+function exportCitationIds(snapshot: RunSnapshot, features: Feature[]): Set<string> {
   const output = snapshot.output ?? { needs: [], gaps: [] };
-  const rows = buildComparison(output, features, evidence);
-  const cited = new Set([
-    ...snapshot.run.evidence_ids,
-    ...output.needs.flatMap(item => item.evidence_ids),
-    ...output.gaps.flatMap(item => item.evidence_ids),
+  const featureIds = new Set(output.gaps.flatMap(item => item.feature_ids));
+  return new Set([
+    ...snapshot.run.evidence_ids, ...snapshot.run.events.flatMap(item => item.evidence_ids),
+    ...output.needs.flatMap(item => item.evidence_ids), ...output.gaps.flatMap(item => item.evidence_ids),
     ...snapshot.run.concepts.flatMap(item => item.evidence_ids),
+    ...features.filter(item => featureIds.has(item.id)).flatMap(item => item.evidence_ids),
   ]);
+}
+
+export function buildExport(mode: DataMode, snapshot: RunSnapshot, features: Feature[], evidence: Evidence[], generatedAt: string, runs: RunSnapshot[] = [snapshot]): ExportDocument {
+  const output = snapshot.output ?? { needs: [], gaps: [] };
+  const cited = exportCitationIds(snapshot, features);
   const evidenceById = new Map(evidence.map(item => [item.id, item]));
-  return {
+  const doc: ExportDocument = {
     meta: {
       mode, notice: mode === 'fixture' ? FIXTURE_NOTICE : LIVE_NOTICE, generated_at: generatedAt, run_id: snapshot.run.id,
       previous_run_id: snapshot.previous_run_id, run_status: snapshot.run.status, request_revision: snapshot.request_revision,
-      dataset_version: snapshot.run.dataset_version, dataset_sha256: snapshot.dataset_sha256, document_versions: snapshot.document_versions,
+      dataset_version: snapshot.run.dataset_version, dataset_sha256: snapshot.dataset_sha256, document_versions: { ...snapshot.document_versions },
     },
-    request: snapshot.request,
-    comparison: rows.map(row => ({
-      model_id: row.need.model_id, need_id: row.need.id, situation: row.need.situation, pain: row.need.pain, feature_ids: row.gap?.feature_ids ?? [], conditions: row.conditions,
-      support_status: row.gap?.support_status ?? null, remaining_pain: row.gap?.remaining_pain ?? '', evidence_ids: row.evidence.map(item => item.id),
-      questions: [...row.need.uncertainties, ...(row.gap?.questions ?? [])], missing_ids: row.missingIds,
-    })),
-    concepts: snapshot.run.concepts,
+    request: structuredClone(snapshot.request),
+    comparison: structuredClone(exportComparison(output, features, evidence)),
+    concepts: structuredClone(snapshot.run.concepts),
     requirements: snapshot.run.concepts.flatMap(concept => concept.requirements.map(requirement => ({ concept_id: concept.id, requirement }))),
     assumptions: [
       ...snapshot.run.concepts.flatMap(concept => concept.assumptions.map(assumption => ({ source_id: concept.id, assumption }))),
       ...snapshot.unconfirmed.map(assumption => ({ source_id: snapshot.run.id, assumption })),
     ],
-    unresolved: snapshot.run.unresolved,
+    unresolved: [...snapshot.run.unresolved],
+    held: structuredClone(heldItems(snapshot).filter(item => item.kind === 'insufficient_evidence')),
+    lineage: runLineage(snapshot, runs).map(item => ({ run_id: item.run.id, previous_run_id: item.previous_run_id, request_revision: item.request_revision, status: item.run.status, created_at: item.created_at })),
     evidence: [...cited].sort().map(id => {
       const item = evidenceById.get(id);
       return item
-        ? { id, model_id: item.model_id, document_version: item.document_version, source_type: item.source_type, source_kind: item.source_kind, source_id: item.source_id, location: evidenceLocation(item), text: item.text }
+        ? exportEvidence(item)
         : { id, model_id: '', document_version: '', source_type: '', source_kind: '', source_id: '', location: '자료 누락', text: '원문을 찾을 수 없습니다.' };
     }),
+    completeness: { complete: false, missing_evidence: [], missing_concepts: [], missing_requirements: [], missing_assumptions: [], missing_unresolved: [], missing_held: [], mismatched_fields: [] },
   };
+  doc.completeness = exportCompleteness(doc, snapshot, features, evidence, runs);
+  return doc;
+}
+
+/** Follows previous_run_id links back to the first run, so an export shows how the request evolved. */
+export function runLineage(snapshot: RunSnapshot, runs: RunSnapshot[]): RunSnapshot[] {
+  const byId = new Map(runs.map(item => [item.run.id, item]));
+  const chain: RunSnapshot[] = [];
+  for (let current: RunSnapshot | undefined = snapshot; current && !chain.includes(current); current = current.previous_run_id ? byId.get(current.previous_run_id) : undefined) chain.unshift(current);
+  return chain;
+}
+
+/** Compares the downloadable document with the selected snapshot and source data, not with its own badge. */
+export function exportCompleteness(doc: ExportDocument, snapshot: RunSnapshot, features: Feature[], evidence: Evidence[], runs: RunSnapshot[] = [snapshot]): ExportCompleteness {
+  const output = snapshot.output ?? { needs: [], gaps: [] };
+  const cited = exportCitationIds(snapshot, features);
+  const evidenceById = new Map(evidence.map(item => [item.id, item]));
+  const withText = new Set(doc.evidence.filter(item => {
+    const source = evidenceById.get(item.id);
+    return source && source.text.trim() && canonical(item) === canonical(exportEvidence(source));
+  }).map(item => item.id));
+  const requirements = new Set(doc.requirements.map(item => `${item.concept_id}
+${item.requirement}`));
+  const assumptions = new Set(doc.assumptions.map(item => canonical(item)));
+  const expectedRequirements = snapshot.run.concepts.flatMap(concept => concept.requirements.map(requirement => ({ concept_id: concept.id, requirement })));
+  const expectedAssumptions = [
+    ...snapshot.run.concepts.flatMap(concept => concept.assumptions.map(assumption => ({ source_id: concept.id, assumption }))),
+    ...snapshot.unconfirmed.map(assumption => ({ source_id: snapshot.run.id, assumption })),
+  ];
+  const expectedHeld = heldItems(snapshot).filter(item => item.kind === 'insufficient_evidence');
+  const expectedLineage = runLineage(snapshot, runs).map(item => ({ run_id: item.run.id, previous_run_id: item.previous_run_id, request_revision: item.request_revision, status: item.run.status, created_at: item.created_at }));
+  const expectedMeta = { run_id: snapshot.run.id, previous_run_id: snapshot.previous_run_id, run_status: snapshot.run.status, request_revision: snapshot.request_revision, dataset_version: snapshot.run.dataset_version, dataset_sha256: snapshot.dataset_sha256, document_versions: snapshot.document_versions };
+  const actualMeta = { run_id: doc.meta.run_id, previous_run_id: doc.meta.previous_run_id, run_status: doc.meta.run_status, request_revision: doc.meta.request_revision, dataset_version: doc.meta.dataset_version, dataset_sha256: doc.meta.dataset_sha256, document_versions: doc.meta.document_versions };
+  const fields: [string, unknown, unknown][] = [
+    ['실행·자료 버전', actualMeta, expectedMeta], ['기획 요청', doc.request, snapshot.request],
+    ['불편·기능 대조표', doc.comparison, exportComparison(output, features, evidence)],
+    ['콘셉트 후보', doc.concepts, snapshot.run.concepts], ['요구사항', doc.requirements, expectedRequirements],
+    ['가정·미확인', doc.assumptions, expectedAssumptions], ['미해결', doc.unresolved, snapshot.run.unresolved],
+    ['근거 부족 보류', doc.held, expectedHeld], ['실행 계보', doc.lineage, expectedLineage],
+    ['인용 근거 ID', doc.evidence.map(item => item.id).sort(), [...cited].sort()],
+  ];
+  const result = {
+    missing_evidence: [...cited].filter(id => !withText.has(id)),
+    missing_concepts: snapshot.run.concepts.filter(concept => !doc.concepts.some(item => canonical(item) === canonical(concept))).map(concept => concept.id),
+    missing_requirements: snapshot.run.concepts.flatMap(concept => concept.requirements.filter(item => !requirements.has(`${concept.id}
+${item}`))),
+    missing_assumptions: expectedAssumptions.filter(item => !assumptions.has(canonical(item))).map(item => item.assumption),
+    missing_unresolved: snapshot.run.unresolved.filter(item => !doc.unresolved.includes(item)),
+    missing_held: expectedHeld.filter(item => !doc.held.some(held => canonical(held) === canonical(item))).map(item => item.id ?? item.text),
+    mismatched_fields: [
+      ...fields.filter(([, actual, expected]) => canonical(actual) !== canonical(expected)).map(([label]) => label),
+      ...doc.comparison.filter(row => row.missing_ids.length).map(row => `대조표 연결 자료 누락: ${row.need_id} (${row.missing_ids.join(', ')})`),
+    ],
+  };
+  return { complete: Object.values(result).every(list => !list.length), ...result };
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -253,6 +424,10 @@ export function exportMarkdown(doc: ExportDocument): string {
   const runAssumptions = doc.assumptions.filter(item => item.source_id === doc.meta.run_id);
   lines.push('## 실행 단위 미확인 사항', '', ...(runAssumptions.length ? runAssumptions.map(item => `- ${item.assumption}`) : ['- 없음']), '');
   lines.push('## 미해결·보류', '', ...(doc.unresolved.length ? doc.unresolved.map(item => `- ${item}`) : ['- 없음']), '');
+  lines.push('## 근거 부족으로 보류한 불편', '', ...(doc.held.length ? doc.held.map(item => `- ${item.id}: ${item.text}${item.questions.length ? ` — 확인할 질문: ${item.questions.join(' / ')}` : ''}`) : ['- 없음']), '');
+  lines.push('## 실행 계보', '', ...doc.lineage.map(item => `- ${item.run_id} · 요청 회차 ${item.request_revision} · ${item.status} · ${item.created_at}${item.previous_run_id ? ` (← ${item.previous_run_id})` : ' (첫 실행)'}`), '');
+  const missing = Object.entries(doc.completeness).filter(([key, value]) => key !== 'complete' && Array.isArray(value) && value.length);
+  lines.push('## 내보내기 점검', '', doc.completeness.complete ? '- 선택 실행의 요청·후보·인용 근거 원문·요구사항·가정·미확인·미해결·보류·계보가 모두 포함되었습니다.' : '- **누락이 있습니다. 원본과 일치하지 않거나 확인할 수 없는 항목을 검토하세요.**', ...missing.map(([key, value]) => `- ${key}: ${(value as string[]).join(', ')}`), '');
   lines.push('## 인용 근거 원문', '', ...doc.evidence.map(item => `- **${item.id}** (${item.model_id} · 문서 ${item.document_version} · ${item.location} · ${item.source_id}, ${item.source_kind}): ${item.text}`), '');
   return lines.join('\n');
 }

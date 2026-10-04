@@ -18,6 +18,18 @@ function check(name: string, value: unknown): void {
   if (!validator(value)) throw new ApiError('CONTRACT_MISMATCH', '작업실 데이터가 공통 규격과 다릅니다.');
 }
 
+// The envelope allows a generic object, but these views require canonical Need/Gap arrays.
+// Reject malformed partial output before a rendering component can treat it as analysis.
+function checkPlanningOutput(snapshot: WorkspaceRun): void {
+  if (snapshot.output === null) return;
+  const { needs, gaps } = snapshot.output;
+  if (!Array.isArray(needs) || !Array.isArray(gaps)) {
+    throw new ApiError('CONTRACT_MISMATCH', '판단 결과에 불편·대조 목록이 필요합니다.');
+  }
+  for (const need of needs) check('Need', need);
+  for (const gap of gaps) check('Gap', gap);
+}
+
 export interface WorkspaceProject {
   project: { id: string; name: string; request: Record<string, unknown>; status: string; dataset_version: string };
   owner_id: string;
@@ -82,7 +94,12 @@ export class WorkspaceClient {
       throw new ApiError('CONNECTION_FAILED', '작업실 서버 요청에 실패했습니다.');
     }
     check(contract, payload);
-    return (payload as { ok: true; data: T }).data;
+    const data = (payload as { ok: true; data: T }).data;
+    if (contract === 'WorkspaceRunResponse') checkPlanningOutput(data as WorkspaceRun);
+    if (contract === 'WorkspaceRunsResponse') {
+      for (const snapshot of (data as { runs: WorkspaceRun[] }).runs) checkPlanningOutput(snapshot);
+    }
+    return data;
   }
 
   listProjects(): Promise<{ projects: WorkspaceProject[]; contract_version: string }> {

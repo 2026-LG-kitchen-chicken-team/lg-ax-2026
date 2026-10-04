@@ -1,15 +1,18 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { ApiError, loadBootstrap, parseBootstrap, requestPlanning } from './api';
 import { evidenceLocation, filterEvidence, friendlyError, productName, SCENARIOS } from './domain';
 import type { BootstrapData, Evidence, ProductGroup, View } from './domain';
-import { FIXTURE_BOOTSTRAP, FIXTURE_ORIGINAL_REQUEST, FIXTURE_RUNS } from './fixtures/planning.fixture';
+import { FIXTURE_BOOTSTRAP, FIXTURE_ORIGINAL_REQUEST, FIXTURE_PROJECT_ID, FIXTURE_RUNS } from './fixtures/planning.fixture';
 import { ApplianceIcon, ArrowIcon, SearchIcon } from './icons';
 import { runStatusView, sameProjectScope, useLiveWorkspace } from './liveWorkspace';
 import type { WorkspaceProject } from './workspace';
-import { contractErrors, draftRunWithCondition, missingRequestQuestions, nextRequestRevision, requestChanges, requestWithCondition } from './planning';
+import { contractErrors, draftRunFromRequest, missingRequestQuestions, nextRequestRevision, requestChanges } from './planning';
 import type { DataMode, Feature, PlanningRequest, RunSnapshot } from './planning';
-import { ConceptsView, FixtureBanner, HistoryView, ModeSwitch, RequestInsights, ServerEvidenceSearch, WorkspaceBar } from './PlanningViews';
+import { ConceptsView, download, FixtureBanner, HistoryView, ModeSwitch, RequestInsights, ServerEvidenceSearch, WorkspaceBar } from './PlanningViews';
+import type { MeasureControls } from './PlanningViews';
+import { cancelMeasurement, exportMeasurements, finishMeasurement, startMeasurement } from './measurement';
+import type { EditSummary, MeasurementScope, ModificationMeasurement } from './measurement';
 
 const NAV: { id: View; label: string; number: string }[] = [
   { id: 'request', label: '기획 요청', number: '01' },
@@ -176,19 +179,109 @@ export default function App() {
   const workspace = useLiveWorkspace();
   const runs = mode === 'fixture' ? [...FIXTURE_RUNS, ...drafts] : workspace.runs;
   const selectedRun = runs.find(item => item.run.id === runChoice) ?? runs[runs.length - 1];
-  const planningProps = { mode, runs, selected: selectedRun, onSelect: setRunChoice, features: (data?.features ?? []) as unknown as Feature[], evidence: data?.evidence ?? [] };
+  const planningProps = { mode, runs, selected: selectedRun, onSelect: selectRun, features: (data?.features ?? []) as unknown as Feature[], evidence: data?.evidence ?? [] };
   const originalRequest = mode === 'fixture' ? FIXTURE_ORIGINAL_REQUEST : workspace.project?.project.request as PlanningRequest | undefined;
+  // Expiry/reconnect must discard private form state. Connected project creation also changes scopeVersion,
+  // but must keep its in-flight form mounted so the successful save result and entered request remain visible.
+  const requestConnectionKey = mode === 'live' && workspace.connection !== 'connected' ? `${workspace.connection}-${workspace.scopeVersion}` : 'connected';
 
-  async function addCondition(condition: string) {
+  const [measurements, setMeasurements] = useState<ModificationMeasurement[]>([]);
+  const [measureError, setMeasureError] = useState('');
+  const measurementSequence = useRef(0);
+  const measurementGeneration = useRef(0);
+  useEffect(() => () => { measurementGeneration.current += 1; }, []);
+  const projectId = mode === 'fixture' ? FIXTURE_PROJECT_ID : workspace.project?.project.id ?? '';
+  const projectOwner = mode === 'fixture' ? null : workspace.project?.owner_id ?? null;
+  // scopeVersion changes on reconnect as well as project changes. Project owner is not an authenticated participant identity.
+  const scopeId = JSON.stringify([mode, mode === 'fixture' ? 0 : workspace.scopeVersion, projectId, projectOwner,
+    mode === 'fixture' ? null : workspace.project?.dataset_sha256, mode === 'fixture' ? null : workspace.project?.document_versions]);
+  const measurementScope = useMemo<MeasurementScope>(() => ({ scope_id: scopeId, project_id: projectId, project_owner_id: projectOwner }), [scopeId, projectId, projectOwner]);
+  const currentMeasurementScope = useRef(measurementScope);
+  const currentMeasurements = measurements.filter(item => item.mode === mode && item.scope?.scope_id === scopeId);
+  useEffect(() => {
+    if (currentMeasurementScope.current.scope_id !== scopeId) invalidateMeasurements();
+    currentMeasurementScope.current = measurementScope;
+  }, [scopeId, measurementScope]);
+  useEffect(() => {
+    // Account reconnect, expiry and disconnect must not retain private goals from the previous connection.
+    if (mode === 'live' && workspace.connection !== 'connected') setMeasurements([]);
+    setMeasureError('');
+  }, [mode, workspace.connection]);
+  useEffect(() => {
+    const now = new Date();
+    setMeasurements(items => items.map(item => item.status === 'running' && (item.scope?.scope_id !== scopeId || item.base_run_id !== selectedRun?.run.id)
+      ? cancelMeasurement(item, now) : item));
+  }, [scopeId, selectedRun?.run.id]);
+
+  function invalidateMeasurements(clear = false) {
+    measurementGeneration.current += 1;
+    const now = new Date();
+    setMeasurements(items => clear ? [] : items.map(item => item.status === 'running' ? cancelMeasurement(item, now) : item));
+    setMeasureError('');
+  }
+
+  function selectRun(id: string) {
+    if (id !== selectedRun?.run.id) invalidateMeasurements();
+    setRunChoice(id);
+  }
+
+  // Invalidate before waiting for the hook's asynchronous operations, rather than after their response arrives.
+  const scopedWorkspace = {
+    ...workspace,
+    async connect(token: string) { invalidateMeasurements(true); setRunChoice(''); await workspace.connect(token); },
+    disconnect() { invalidateMeasurements(true); setRunChoice(''); workspace.disconnect(); },
+    async selectProject(id: string) { invalidateMeasurements(); setRunChoice(''); await workspace.selectProject(id); },
+  };
+
+  const measure: MeasureControls = {
+    records: currentMeasurements, error: measureError,
+    start(goal, baseRunId) {
+      try {
+        if (!projectId || baseRunId !== selectedRun?.run.id || mode === 'live' && workspace.connection !== 'connected') {
+          throw new ApiError('INVALID_ARGUMENT', '현재 프로젝트의 기준 실행을 선택해 주세요.');
+        }
+        if (currentMeasurements.some(item => item.status === 'running')) throw new ApiError('INVALID_ARGUMENT', '진행 중인 측정을 먼저 취소해 주세요.');
+        const started = startMeasurement(goal, baseRunId, mode, `MEASURE-${++measurementSequence.current}`, new Date(), measurementScope);
+        setMeasurements(items => [...items, started]); setMeasureError('');
+      } catch (failure) { setMeasureError(friendlyError(failure)); }
+    },
+    cancel() { setMeasurements(items => items.map(item => item.status === 'running' && item.scope?.scope_id === scopeId ? cancelMeasurement(item, new Date()) : item)); },
+    exportRecords() { download(`modification-time-${new Date().toISOString().slice(0, 10)}.json`, 'application/json', `${JSON.stringify(exportMeasurements(currentMeasurements, new Date().toISOString()), null, 2)}\n`); },
+  };
+
+  async function rerun(request: PlanningRequest, edits: EditSummary) {
     if (!selectedRun) return;
+    const base = selectedRun;
+    const generation = measurementGeneration.current;
+    const completion = { mode, base_run_id: base.run.id, scope: measurementScope };
+    const current = () => generation === measurementGeneration.current && completion.scope.scope_id === currentMeasurementScope.current.scope_id;
+    // Keep the captured base selected while the hook appends a saved run; its implicit latest-run fallback must not switch mid-request.
+    setRunChoice(base.run.id);
+    let resultId: string;
     if (mode === 'fixture') {
-      const draft = draftRunWithCondition(selectedRun, FIXTURE_ORIGINAL_REQUEST, condition, `RUN-DRAFT-${runs.length + 1}`, new Date().toISOString());
-      setDrafts(items => [...items, draft]); setRunChoice(draft.run.id);
-      return;
+      const draft = draftRunFromRequest(base, FIXTURE_ORIGINAL_REQUEST, request, `RUN-DRAFT-${runs.length + 1}`, new Date().toISOString());
+      setDrafts(items => [...items, draft]);
+      resultId = draft.run.id;
+    } else {
+      const saved = await workspace.addRun(request, base.run.id);
+      if (!current()) return;
+      if (!saved) throw new ApiError('REQUEST_FAILED', '새 실행을 저장하지 못했습니다. 위쪽 작업실 안내를 확인해 주세요.');
+      if (saved.run.project_id !== completion.scope.project_id || saved.previous_run_id !== base.run.id) {
+        throw new ApiError('CONTRACT_MISMATCH', '새 실행과 측정의 프로젝트·기준 실행이 다릅니다.');
+      }
+      resultId = saved.run.id;
     }
-    const saved = await workspace.addRun(requestWithCondition(selectedRun.request, condition), selectedRun.run.id);
-    if (!saved) throw new ApiError('REQUEST_FAILED', '새 실행을 저장하지 못했습니다. 위쪽 작업실 안내를 확인해 주세요.');
-    setRunChoice(saved.run.id);
+    if (!current()) return;
+    // The measurement stops only after the rerun is actually saved; a failed save leaves it running.
+    const ended = new Date();
+    const completed = new Map<string, ModificationMeasurement>();
+    for (const item of currentMeasurements) {
+      if (item.status !== 'running' || item.base_run_id !== base.run.id) continue;
+      try { completed.set(item.measurement_id, finishMeasurement(item, resultId, edits, ended, completion)); }
+      catch (failure) { completed.set(item.measurement_id, cancelMeasurement(item, ended)); setMeasureError(friendlyError(failure)); }
+    }
+    setMeasurements(items => items.map(item => item.status === 'running' ? completed.get(item.measurement_id) ?? item : item));
+    setRunChoice(resultId);
   }
   const products = data?.products.filter(product => product.product_group === group) ?? [];
   const modelId = products.some(product => product.model_id === modelChoice) ? modelChoice : products[0]?.model_id ?? '';
@@ -206,6 +299,7 @@ export default function App() {
     if (next === mode) return;
     // Invalidate pending live chains before fixture actions become available.
     // A request already sent to the server cannot be rolled back by a mode switch.
+    invalidateMeasurements(true);
     if (next === 'fixture') workspace.disconnect();
     setMode(next);
     setGroup(next === 'fixture' ? FIXTURE_ORIGINAL_REQUEST.product_group : 'fridge');
@@ -228,7 +322,7 @@ export default function App() {
       <header className="topbar"><div className="breadcrumb">상품기획 작업실<span>/</span><strong>{currentNav.label}</strong></div><div className="topbar-right"><ModeSwitch mode={mode} onChange={changeMode} /><div className="connection-status">{mode === 'fixture' ? <><span className="status-dot loading" />fixture 사용 · 공통 API 요청 안 함</> : <><span className={`status-dot ${state.status}`} />{state.status === 'ready' ? '공통 API 연결됨' : state.status === 'loading' ? 'API 연결 확인 중' : 'API 연결 오류'}</>}</div></div></header>
       <main id="main-content">
         <section className="hero"><div><p className="eyebrow">EVIDENCE-LED KITCHEN PLANNING</p><h1>근거에서 시작하는<br />키친 기획.</h1><p>고객의 불편과 제품의 기능을 함께 살펴보고,<br className="desktop-break" /> 아직 해결되지 않은 기회를 검토하는 작업실입니다.</p></div><div className="hero-stats"><div><strong>{data?.products.length ?? '—'}</strong><span>등록된 모델</span></div><div><strong>{data?.evidence.length ?? '—'}</strong><span>조회 가능한 근거</span></div><p>{mode === 'fixture' ? `계약 fixture · FRIDGE-A 예시만 포함` : data ? `공통 계약 ${data.contract_version} · 시연용 합성자료` : '공통 API에서 자료를 불러옵니다'}</p></div></section>
-        {mode === 'fixture' ? <FixtureBanner /> : <WorkspaceBar workspace={workspace} onScopeChange={() => setFormSeed(value => value + 1)} />}
+        {mode === 'fixture' ? <FixtureBanner /> : <WorkspaceBar workspace={scopedWorkspace} onScopeChange={() => setFormSeed(value => value + 1)} />}
         <section className="scenario-grid" aria-label="제품군 선택">{SCENARIOS.map(scenario => {
           const unavailable = mode === 'fixture' && scenario.group !== FIXTURE_ORIGINAL_REQUEST.product_group;
           return <button key={scenario.group} disabled={unavailable} onClick={() => selectGroup(scenario.group)} className={`scenario-card ${group === scenario.group ? 'selected' : ''}`} aria-pressed={group === scenario.group}><ApplianceIcon kind={scenario.group} /><span className="scenario-copy"><strong>{scenario.title}</strong><span>{scenario.subtitle}</span></span><span className="scenario-count">{unavailable ? 'fixture 미제공' : data ? `${data.products.filter(product => product.product_group === scenario.group).length}개 모델` : '연결 대기'}</span></button>;
@@ -241,7 +335,10 @@ export default function App() {
             {active.status === 'loading' ? <div className="loading-state" role="status"><div className="skeleton" /><div className="skeleton" /><div className="skeleton" /><p>공통 API에서 근거를 불러오는 중입니다…</p></div> : !data ? <EmptyState title="API 연결이 필요합니다" text="서버가 연결되면 실제 자료와 근거를 확인할 수 있습니다." /> : !visibleEvidence.length ? <EmptyState title={allModelEvidence.length ? '검색 결과가 없습니다' : '등록된 근거가 없습니다'} text={allModelEvidence.length ? '검색어 또는 자료 유형을 바꿔 보세요.' : '이 모델에 리뷰와 제품 문서를 등록하면 여기에 표시됩니다.'} /> : <ul>{visibleEvidence.map(item => <li key={item.id}><button className={`evidence-card ${selected?.id === item.id ? 'selected' : ''}`} aria-pressed={selected?.id === item.id} onClick={() => setSelectedId(item.id)}><div className="evidence-card-top"><SourceBadge type={item.source_type} /><span>{evidenceLocation(item)}</span></div><p>{item.text}</p><div className="evidence-card-bottom"><span>{item.model_id} · {item.document_version}</span><ArrowIcon /></div></button></li>)}</ul>}
           </div><EvidenceDetail selected={selected} features={data?.features ?? []} /></div>
           <footer className="evidence-footer"><span className={`status-dot ${active.status}`} /><p>{data ? '원문 조회와 모델별 필터가 연결되어 있습니다. 자동 대조·판단은 구현 예정입니다.' : '공통 API가 연결되면 원문을 조회할 수 있습니다. 자동 대조·판단은 구현 예정입니다.'}</p></footer>
-        </section> : view === 'request' ? <RequestView key={`${group}-${mode}-${formSeed}`} data={data} group={group} modelId={modelId} mode={mode} live={mode === 'live' && workspace.connection === 'connected' ? { project: workspace.project, latest: workspace.runs[workspace.runs.length - 1] ?? null, save: (request, continueProject) => continueProject ? workspace.addRun(request, workspace.runs[workspace.runs.length - 1]?.run.id ?? null) : workspace.saveRequest(request, data?.products ?? []) } : undefined} /> : selectedRun && originalRequest && view === 'concepts' ? <ConceptsView {...planningProps} selected={selectedRun} /> : selectedRun && originalRequest ? <HistoryView {...planningProps} selected={selectedRun} original={originalRequest} onCondition={addCondition} busy={workspace.busy} /> : view === 'concepts' ? <section className="panel future-panel"><EmptyState type="future" title="근거를 갖춘 콘셉트를 이곳에서 검토합니다" text="콘셉트 생성과 중복·인용 검사는 아직 연결되지 않았습니다. 생성된 결과가 있을 때 후보별 차별점, 요구사항, 확인할 가정을 함께 표시할 예정입니다." /><div className="future-columns"><div><strong>콘셉트 비교</strong><span>최대 3개 타당한 후보 · 근거 부족 시 보류</span></div><div><strong>요구사항 확인</strong><span>연결된 원문 · 남은 불편 · 검토할 조건</span></div><div><strong>기획자 검토</strong><span>선택 · 수정 요청 · 추가 조건</span></div></div></section> : <section className="panel future-panel"><EmptyState type="future" title="아직 실행·수정 이력이 없습니다" text="Agent 실행과 기록 저장이 연결되면 동일 기획의 변경 전후, 사용한 자료 버전, 재검토 이유를 확인할 수 있습니다." /><div className="history-plan"><span>기획 요청</span><ArrowIcon /><span>근거·판단 기록</span><ArrowIcon /><span>새 자료로 재검토</span><ArrowIcon /><span>변경 전후 비교</span></div></section>}
+        </section> : view === 'request' ? <RequestView key={`${group}-${mode}-${formSeed}-${requestConnectionKey}`} data={data} group={group} modelId={modelId} mode={mode} live={mode === 'live' && workspace.connection === 'connected' ? { project: workspace.project, latest: workspace.runs[workspace.runs.length - 1] ?? null, save: (request, continueProject) => {
+          invalidateMeasurements(); setRunChoice('');
+          return continueProject ? workspace.addRun(request, workspace.runs[workspace.runs.length - 1]?.run.id ?? null) : workspace.saveRequest(request, data?.products ?? []);
+        } } : undefined} /> : selectedRun && originalRequest && view === 'concepts' ? <ConceptsView {...planningProps} selected={selectedRun} /> : selectedRun && originalRequest ? <HistoryView {...planningProps} selected={selectedRun} original={originalRequest} onRerun={rerun} busy={workspace.busy} measure={measure} /> : view === 'concepts' ? <section className="panel future-panel"><EmptyState type="future" title="근거를 갖춘 콘셉트를 이곳에서 검토합니다" text="콘셉트 생성과 중복·인용 검사는 아직 연결되지 않았습니다. 생성된 결과가 있을 때 후보별 차별점, 요구사항, 확인할 가정을 함께 표시할 예정입니다." /><div className="future-columns"><div><strong>콘셉트 비교</strong><span>최대 3개 타당한 후보 · 근거 부족 시 보류</span></div><div><strong>요구사항 확인</strong><span>연결된 원문 · 남은 불편 · 검토할 조건</span></div><div><strong>기획자 검토</strong><span>선택 · 수정 요청 · 추가 조건</span></div></div></section> : <section className="panel future-panel"><EmptyState type="future" title="아직 실행·수정 이력이 없습니다" text="Agent 실행과 기록 저장이 연결되면 동일 기획의 변경 전후, 사용한 자료 버전, 재검토 이유를 확인할 수 있습니다." /><div className="history-plan"><span>기획 요청</span><ArrowIcon /><span>근거·판단 기록</span><ArrowIcon /><span>새 자료로 재검토</span><ArrowIcon /><span>변경 전후 비교</span></div></section>}
         {mode === 'live' && view === 'evidence' && workspace.connection === 'connected' ? <ServerEvidenceSearch workspace={workspace} modelId={modelId} /> : null}
         {mode === 'live' && (view === 'concepts' || view === 'history') && !selectedRun ? <p className="hint">{workspace.connection === 'connected' ? '저장된 실행 기록이 없습니다. 기획 요청에서 작업실에 저장하면 여기에 표시됩니다.' : '작업실 서버에 연결하면 저장된 실제 실행 기록을 불러옵니다. 화면 예시는 상단의 계약 fixture에서 볼 수 있습니다.'}</p> : null}
         <footer className="page-footer"><span>키친에서치킨먹기 · LG AX 2026</span><span>반복 가능한 상품기획을 위한 첫 작업 공간</span></footer>
