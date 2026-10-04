@@ -6,9 +6,10 @@ import type { Evidence } from './domain';
 import { runStatusView } from './liveWorkspace';
 import type { ErrorView, EvidenceSearch, LiveWorkspace } from './liveWorkspace';
 import {
-  buildComparison, buildExport, conceptChanges, exportMarkdown, FIXTURE_NOTICE, requestChanges, statusLabel,
+  buildComparison, buildExport, buildRerunRequest, candidateExclusion, conceptDetailChanges, exportMarkdown, FIXTURE_NOTICE, heldItems,
+  nextRequestRevision, requestChanges, splitConditions, statusLabel,
 } from './planning';
-import type { DataMode, Feature, MissingQuestion, PlanningRequest, RequestChange, RunSnapshot } from './planning';
+import type { CandidateChoice, Concept, DataMode, Feature, MissingQuestion, PlanningRequest, RequestChange, RunSnapshot } from './planning';
 import { ArrowIcon, SearchIcon } from './icons';
 import './planning.css';
 
@@ -192,8 +193,62 @@ function RunStatus({ snapshot, mode }: { snapshot: RunSnapshot; mode: DataMode }
   return <span className={`run-status ${fixture ? 'fixture' : view.tone}`} title={fixture ? FIXTURE_NOTICE : view.detail}>{fixture ? `fixture 예시 · ${snapshot.run.status}` : view.label}<small>{snapshot.run.status} · {snapshot.run.stage}</small></span>;
 }
 
+/** Candidates side by side on the attributes a planner compares before choosing. */
+function CandidateMatrix({ snapshot }: { snapshot: RunSnapshot }) {
+  const concepts = snapshot.run.concepts;
+  const rows: [string, (concept: Concept) => string][] = [
+    ['상태', concept => statusLabel(concept.status)],
+    ['유형', concept => ({ product: '제품', feature: '기능', service: '서비스' })[concept.kind]],
+    ['대응 간극', concept => concept.gap_ids.join(', ')],
+    ['근거 수', concept => `${concept.evidence_ids.length}건`],
+    ['요구사항 수', concept => `${concept.requirements.length}개`],
+    ['확인할 가정', concept => `${concept.assumptions.length}개`],
+  ];
+  return <div className="table-scroll"><table className="candidate-matrix">
+    <thead><tr><th>비교 항목</th>{concepts.map(concept => <th key={concept.id}><span className="id">{concept.id}</span>{concept.title}</th>)}</tr></thead>
+    <tbody>{rows.map(([label, value]) => <tr key={label}><th>{label}</th>{concepts.map(concept => <td key={concept.id}>{value(concept)}</td>)}</tr>)}</tbody>
+  </table></div>;
+}
+
+/** One place to read a candidate's sources, the judgments behind it, its assumptions and what was held back. */
+function CandidateReview({ snapshot, concept, features, evidence }: { snapshot: RunSnapshot; concept: Concept; features: Feature[]; evidence: Map<string, Evidence> }) {
+  const gaps = (snapshot.output?.gaps ?? []).filter(gap => concept.gap_ids.includes(gap.id));
+  const held = heldItems(snapshot);
+  return <div className="candidate-review">
+    <div className="review-col">
+      <h4>판단 근거</h4>
+      {gaps.length ? gaps.map(gap => {
+        const need = snapshot.output!.needs.find(item => item.id === gap.need_id);
+        return <div key={gap.id} className="judgment">
+          <div className="judgment-top"><span className="id">{gap.id} · {gap.model_id}</span><span className={`status-pill ${gap.support_status}`}>{statusLabel(gap.support_status)}</span></div>
+          {need ? <p><strong>{need.pain}</strong><small>{need.situation}</small></p> : null}
+          <dl>
+            <dt>기존 기능</dt><dd>{gap.feature_ids.length ? gap.feature_ids.map(id => features.find(item => item.id === id)?.name ?? id).join(', ') : '연결된 기능 없음'}</dd>
+            <dt>남은 불편</dt><dd>{gap.remaining_pain || '-'}</dd>
+            {need?.uncertainties.length ? <><dt>상충·불확실</dt><dd>{need.uncertainties.join(' / ')}</dd></> : null}
+            {gap.questions.length ? <><dt>확인할 질문</dt><dd>{gap.questions.join(' / ')}</dd></> : null}
+          </dl>
+        </div>;
+      }) : <p className="muted">이 실행에는 후보와 연결된 판단 기록이 없습니다.</p>}
+      <h4>확인할 가정</h4>
+      {concept.assumptions.length ? <ul>{concept.assumptions.map(item => <li key={item}>{item}</li>)}</ul> : <p className="muted">없음</p>}
+    </div>
+    <div className="review-col">
+      <h4>근거 원문 <span className="count">{concept.evidence_ids.length}건</span></h4>
+      <ul className="quote-list">{concept.evidence_ids.map(id => {
+        const item = evidence.get(id);
+        return <li key={id}>{item ? <><q>{item.text}</q><small>{id} · {sourceKindLabel(item.source_kind)} · {item.source_type === 'review' ? '고객 리뷰' : '제품 설명서'} · {item.model_id} · 문서 {item.document_version} · {evidenceLocation(item)}</small></> : <span className="missing-note">{id} · 원문을 찾을 수 없습니다(자료 누락)</span>}</li>;
+      })}</ul>
+      <h4>보류·미해결 <span className="count">{held.length}건</span></h4>
+      {held.length ? <ul className="held-list">{held.map(item => <li key={`${item.kind}-${item.text}`}><span className={`status-pill ${item.kind}`}>{item.kind === 'insufficient_evidence' ? '근거 부족·보류' : '미해결'}</span>{item.text}{item.questions.length ? <small>{item.questions.join(' / ')}</small> : null}</li>)}</ul> : <p className="muted">보류된 항목이 없습니다.</p>}
+    </div>
+  </div>;
+}
+
 export function ConceptsView({ mode, runs, selected, onSelect, features, evidence }: PlanningProps) {
   const evidenceById = new Map(evidence.map(item => [item.id, item]));
+  const [reviewId, setReviewId] = useState('');
+  const reviewed = selected.run.concepts.find(item => item.id === reviewId) ?? selected.run.concepts[0];
   return <div className="planning-stack">
     <section className="panel planning-panel">
       <div className="planning-head"><div><p className="eyebrow">COMPARISON</p><h3>불편·기존 기능 대조표</h3></div><div className="head-tools"><RunStatus snapshot={selected} mode={mode} /><RunPicker runs={runs} selected={selected} onSelect={onSelect} /></div></div>
@@ -211,29 +266,84 @@ export function ConceptsView({ mode, runs, selected, onSelect, features, evidenc
           <dt>확인할 가정</dt><dd>{concept.assumptions.length ? <ul>{concept.assumptions.map(item => <li key={item}>{item}</li>)}</ul> : <span className="muted">없음</span>}</dd>
           <dt>근거 원문</dt><dd><Refs ids={concept.evidence_ids} evidence={evidenceById} /></dd>
         </dl>
+        <button type="button" className={`review-button ${reviewed?.id === concept.id ? 'active' : ''}`} aria-pressed={reviewed?.id === concept.id} onClick={() => setReviewId(concept.id)}>원문·판단 함께 보기</button>
       </article>)}</div> : <p className="muted pad">{selected.run.status === 'not_implemented' ? '이 실행은 요청만 기록된 초안입니다. Agent가 연결되지 않아 후보를 만들지 않았습니다.' : '생성된 후보가 없습니다.'}</p>}
       {selected.run.unresolved.length ? <div className="unresolved"><strong>보류·미해결</strong><ul>{selected.run.unresolved.map(item => <li key={item}>{item}</li>)}</ul></div> : null}
     </section>
+    {selected.run.concepts.length > 1 ? <section className="panel planning-panel"><div className="planning-head"><div><p className="eyebrow">SIDE BY SIDE</p><h3>후보 비교표</h3></div></div><CandidateMatrix snapshot={selected} /></section> : null}
+    {reviewed ? <section className="panel planning-panel" aria-label="후보 상세 검토"><div className="planning-head"><div><p className="eyebrow">REVIEW</p><h3>{reviewed.title} <span className="count">원문·판단·가정·보류</span></h3></div><span className={`status-pill ${reviewed.status}`}>{statusLabel(reviewed.status)}</span></div><CandidateReview snapshot={selected} concept={reviewed} features={features} evidence={evidenceById} /></section> : null}
   </div>;
 }
 
-export function HistoryView({ mode, runs, selected, onSelect, features, evidence, original, onCondition, busy = false }: PlanningProps & { original: PlanningRequest; onCondition: (condition: string) => Promise<void>; busy?: boolean }) {
-  const [condition, setCondition] = useState('');
+/** Planner picks a role per candidate and corrects conditions; the preview shows the exact next request before rerun. */
+function RerunPanel({ mode, selected, original, onRerun, busy }: { mode: DataMode; selected: RunSnapshot; original: PlanningRequest; onRerun: (request: PlanningRequest) => Promise<void>; busy: boolean }) {
+  const concepts = selected.run.concepts;
+  const { conditions: startConditions } = splitConditions(selected.request);
+  const [choices, setChoices] = useState<Record<string, CandidateChoice>>(() => Object.fromEntries(concepts.map(concept => [concept.id, selected.request.exclusions.includes(candidateExclusion(concept)) ? 'exclude' : 'keep'])));
+  const [conditions, setConditions] = useState<string[]>(startConditions);
+  const [draft, setDraft] = useState('');
   const [error, setError] = useState('');
+
+  let preview: PlanningRequest | null = null;
+  let previewError = '';
+  try { preview = buildRerunRequest(selected.request, concepts, choices, conditions); } catch (failure) { previewError = failure instanceof ApiError ? failure.message : '재실행 요청을 만들 수 없습니다.'; }
+  const changes = preview ? requestChanges(selected.request, preview) : [];
+
+  function addDraft() {
+    const text = draft.trim();
+    if (!text) { setError('추가할 조건을 입력해 주세요.'); return; }
+    if (conditions.includes(text)) { setError('이미 같은 조건이 있습니다.'); return; }
+    setConditions(items => [...items, text]); setDraft(''); setError('');
+  }
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!preview) return;
+    if (!changes.length) { setError('바뀐 조건이 없습니다. 후보 선택이나 조건을 수정한 뒤 다시 실행해 주세요.'); return; }
+    try { await onRerun(preview); setError(''); } catch (failure) { setError(failure instanceof ApiError ? failure.message : '새 실행을 만들지 못했습니다.'); }
+  }
+
+  return <form className="panel planning-panel condition-form" onSubmit={submit} aria-label="후보·조건 선택 후 재실행">
+    <p className="eyebrow">RERUN</p><h3>후보와 조건을 고르고 다시 실행</h3>
+    <p className="hint">{selected.run.id}의 요청을 바탕으로 새 실행을 연결합니다. {mode === 'fixture' ? '현재는 브라우저 안의 초안이며 결과는 not_implemented로 남습니다.' : '작업실 서버에 새 실행으로 저장합니다. 판단 Agent가 연결되기 전까지 분석은 실행되지 않습니다.'}</p>
+    <h4 className="sub">후보 선택</h4>
+    {concepts.length ? <ul className="choice-list">{concepts.map(concept => <li key={concept.id}>
+      <span><span className="id">{concept.id} · {statusLabel(concept.status)}</span>{concept.title}</span>
+      <span className="choice-group" role="radiogroup" aria-label={`${concept.title} 처리`}>{([['keep', '유지'], ['focus', '집중'], ['exclude', '제외']] as const).map(([value, label]) => <label key={value} className={choices[concept.id] === value ? `on ${value}` : ''}><input type="radio" name={`choice-${concept.id}`} checked={choices[concept.id] === value} onChange={() => setChoices(items => ({ ...items, [concept.id]: value }))} />{label}</label>)}</span>
+    </li>)}</ul> : <p className="muted">이 실행에는 고를 후보가 없습니다. 조건만 교정해 다시 실행할 수 있습니다.</p>}
+    <h4 className="sub">조건 교정 <small>제외·제약 조건</small></h4>
+    <ul className="condition-list">{conditions.map((item, index) => <li key={`${index}-${item}`}>
+      <label className="sr-only" htmlFor={`condition-${index}`}>조건 {index + 1}</label>
+      <input id={`condition-${index}`} value={item} onChange={event => setConditions(items => items.map((value, at) => at === index ? event.target.value : value))} />
+      <button type="button" className="text-button" onClick={() => setConditions(items => items.filter((_, at) => at !== index))} aria-label={`조건 ${index + 1} 삭제`}>삭제</button>
+    </li>)}</ul>
+    <div className="condition-row"><label className="sr-only" htmlFor="extra-condition">추가 조건</label><input id="extra-condition" value={draft} onChange={event => setDraft(event.target.value)} onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); addDraft(); } }} placeholder="예: 1인 가구 소형 모델만 검토" /><button type="button" className="secondary-button" onClick={addDraft}>조건 추가</button></div>
+    <h4 className="sub">다음 요청 미리보기 <small>요청 회차 {preview ? nextRequestRevision(original, selected, preview) : '-'}</small></h4>
+    {previewError ? <p className="form-error" role="alert">{previewError}</p> : changes.length ? <table className="change-table"><thead><tr><th>항목</th><th>지금</th><th>다음 실행</th></tr></thead><tbody>{changes.map(item => <tr key={item.field}><th>{item.label}</th><td>{item.before}</td><td>{item.after}</td></tr>)}</tbody></table> : <p className="muted">아직 바뀐 내용이 없습니다.</p>}
+    <div className="form-footer"><p>후보 선택은 공통 요청 규격 안에서 제외 조건("후보 제외: …")과 기획 요청 끝의 "[집중 검토: …]"로 전달됩니다.</p><button className="primary-button" type="submit" disabled={busy || !preview}>{mode === 'fixture' ? '새 실행 초안' : busy ? '저장 중…' : '다시 실행 요청'}<ArrowIcon /></button></div>
+    {error ? <p className="form-error" role="alert">{error}</p> : null}
+  </form>;
+}
+
+function DetailChanges({ previous, selected }: { previous: RunSnapshot | undefined; selected: RunSnapshot }) {
+  // A draft without Agent output has no result to compare; showing "removed" candidates would misstate the history.
+  if (selected.run.status === 'not_implemented') return <p className="muted">Agent가 연결되지 않아 결과 변화가 없습니다.</p>;
+  const changes = conceptDetailChanges(previous, selected);
+  if (!changes.length) return <p className="muted">후보 변화가 없습니다.</p>;
+  const list = (label: string, items: string[], sign: '+' | '−') => items.length ? <li className={sign === '+' ? 'added' : 'removed'}><strong>{sign} {label}</strong>{items.join(' / ')}</li> : null;
+  return <ul className="status-changes">{changes.map(item => <li key={item.id} className="detail-change">
+    <div className="detail-change-top"><span><span className="id">{item.id}</span>{item.title}</span><span className="status-flow"><span className={`status-pill ${item.status[0] ?? 'none'}`}>{statusLabel(item.status[0])}</span><ArrowIcon /><span className={`status-pill ${item.status[1] ?? 'none'}`}>{statusLabel(item.status[1])}</span></span></div>
+    <ul className="field-diff">
+      {list('요구사항', item.added.requirements, '+')}{list('요구사항', item.removed.requirements, '−')}
+      {list('가정', item.added.assumptions, '+')}{list('가정', item.removed.assumptions, '−')}
+      {list('근거', item.added.evidence_ids, '+')}{list('근거', item.removed.evidence_ids, '−')}
+    </ul>
+  </li>)}</ul>;
+}
+
+export function HistoryView({ mode, runs, selected, onSelect, features, evidence, original, onRerun, busy = false }: PlanningProps & { original: PlanningRequest; onRerun: (request: PlanningRequest) => Promise<void>; busy?: boolean }) {
   const previous = runs.find(item => item.run.id === selected.previous_run_id);
   const changes = requestChanges(previous?.request ?? original, selected.request);
-  // A draft without Agent output has no result to compare; showing "removed" candidates would misstate the history.
-  const statusChanges = selected.run.status === 'not_implemented' ? [] : conceptChanges(previous, selected);
-
-  async function addCondition(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    try {
-      await onCondition(condition);
-      setCondition(''); setError('');
-    } catch (failure) {
-      setError(failure instanceof ApiError ? failure.message : '새 실행을 만들지 못했습니다.');
-    }
-  }
 
   return <div className="history-layout">
     <section className="panel planning-panel timeline-panel" aria-label="실행 기록">
@@ -256,17 +366,12 @@ export function HistoryView({ mode, runs, selected, onSelect, features, evidence
         </dl>
         <h4 className="sub">요청 변경</h4>
         {changes.length ? <table className="change-table"><thead><tr><th>항목</th><th>변경 전</th><th>변경 후</th></tr></thead><tbody>{changes.map(item => <tr key={item.field}><th>{item.label}</th><td>{item.before}</td><td>{item.after}</td></tr>)}</tbody></table> : <p className="muted">이전 기준과 요청이 같습니다.</p>}
-        <h4 className="sub">후보 상태 변화</h4>
-        {statusChanges.length ? <ul className="status-changes">{statusChanges.map(item => <li key={item.id}><span className="id">{item.id}</span>{item.title}<span className="status-flow"><span className={`status-pill ${item.before ?? 'none'}`}>{statusLabel(item.before)}</span><ArrowIcon /><span className={`status-pill ${item.after ?? 'none'}`}>{statusLabel(item.after)}</span></span></li>)}</ul> : <p className="muted">{selected.run.status === 'not_implemented' ? 'Agent가 연결되지 않아 결과 변화가 없습니다.' : '후보 상태 변화가 없습니다.'}</p>}
+        <h4 className="sub">후보 변화 <small>상태·요구사항·가정·근거</small></h4>
+        <DetailChanges previous={previous} selected={selected} />
         {selected.run.events.length ? <><h4 className="sub">판단 순서와 사용한 Skill</h4><ol className="events">{selected.run.events.map((item, index) => <li key={`${item.stage}-${index}`}><span className="stage">{item.stage}</span><span>{item.summary}</span>{item.tool ? <code>{item.tool}</code> : null}</li>)}</ol></> : null}
         {selected.unconfirmed.length ? <div className="unresolved"><strong>미확인 사항</strong><ul>{selected.unconfirmed.map(item => <li key={item}>{item}</li>)}</ul></div> : null}
       </section>
-      <form className="panel planning-panel condition-form" onSubmit={addCondition}>
-        <p className="eyebrow">ADD CONDITION</p><h3>추가 조건으로 다시 검토</h3>
-        <p className="hint">선택한 실행({selected.run.id})의 요청에 조건을 더해 새 실행을 연결합니다. {mode === 'fixture' ? '현재는 브라우저 안의 초안이며, Agent가 연결되지 않아 결과는 not_implemented로 남습니다.' : '작업실 서버에 새 실행으로 저장합니다. 판단 Agent가 연결되기 전까지 분석은 실행되지 않습니다.'}</p>
-        <div className="condition-row"><label className="sr-only" htmlFor="extra-condition">추가 조건</label><input id="extra-condition" value={condition} onChange={event => setCondition(event.target.value)} placeholder="예: 1인 가구 소형 모델만 검토" /><button className="primary-button" type="submit" disabled={busy}>{mode === 'fixture' ? '새 실행 초안' : busy ? '저장 중…' : '새 실행 저장'}<ArrowIcon /></button></div>
-        {error ? <p className="form-error" role="alert">{error}</p> : null}
-      </form>
+      <RerunPanel key={selected.run.id} mode={mode} selected={selected} original={original} onRerun={onRerun} busy={busy} />
     </div>
   </div>;
 }

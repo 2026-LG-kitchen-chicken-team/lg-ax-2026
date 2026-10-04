@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { ApiError } from './api';
 import type { Product } from './domain';
 import { browserFetch, documentVersionsFor, errorView, parseEvidenceSearch, projectName, runStatusView, sameProjectScope } from './liveWorkspace';
-import { contractErrors, nextRequestRevision, requestWithCondition } from './planning';
+import { buildRerunRequest, contractErrors, nextRequestRevision, requestWithCondition } from './planning';
 import type { PlanningRequest, RunSnapshot } from './planning';
 import { WorkspaceClient } from './workspace';
 
@@ -112,7 +112,14 @@ describe.skipIf(!live)('actual workspace server flow used by the web live mode (
     expect(second.request_revision).toBe(1);
     expect(second.run.concepts).toEqual([]);
     expect(second.output).toBeNull();
-    expect((await editor.listRuns(project.project.id)).runs.map(item => item.run.id)).toEqual([first.run.id, second.run.id]);
+    // P2-WEB-003: corrected conditions (edit + remove + add) rerun on the server as the next linked revision.
+    const corrected = buildRerunRequest(second.request, [], {}, ['1인 가구 소형 모델 우선', '제조 비용 비교 제외']);
+    const third = await editor.createRun(project.project.id, corrected as unknown as Record<string, unknown>, second.run.id) as unknown as RunSnapshot;
+    expect(third.previous_run_id).toBe(second.run.id);
+    expect(third.request.exclusions).toEqual(['1인 가구 소형 모델 우선', '제조 비용 비교 제외']);
+    expect(third.request_revision).toBe(nextRequestRevision(request, second, corrected));
+    expect(third.request_revision).toBe(2);
+    expect((await editor.listRuns(project.project.id)).runs.map(item => item.run.id)).toEqual([first.run.id, second.run.id, third.run.id]);
 
     const hit = parseEvidenceSearch(await editor.search(project.project.id, '청소', 'FRIDGE-A'));
     const miss = parseEvidenceSearch(await editor.search(project.project.id, '존재하지않는검색어', 'FRIDGE-A'));
@@ -139,7 +146,7 @@ describe.skipIf(!live)('actual workspace server flow used by the web live mode (
     if (process.env.LGAX_WORKSPACE_PROOF_FILE) {
       writeFileSync(process.env.LGAX_WORKSPACE_PROOF_FILE, JSON.stringify({
         project_id: project.project.id, document_versions: project.document_versions, dataset_sha256: project.dataset_sha256,
-        runs: [first, second].map(item => ({ id: item.run.id, previous_run_id: item.previous_run_id, request_revision: item.request_revision, status: item.run.status, client: item.client, actor_id: item.actor_id, exclusions: item.request.exclusions, unresolved: item.run.unresolved })),
+        runs: [first, second, third].map(item => ({ id: item.run.id, previous_run_id: item.previous_run_id, request_revision: item.request_revision, status: item.run.status, client: item.client, actor_id: item.actor_id, exclusions: item.request.exclusions, unresolved: item.run.unresolved })),
         search: { hit: { query: hit.query, total: hit.total, ids: hit.items.map(item => item.id), document_version: hit.documentVersion, method: hit.method }, miss: { query: miss.query, total: miss.total } },
         failures,
       }, null, 2) + '\n');

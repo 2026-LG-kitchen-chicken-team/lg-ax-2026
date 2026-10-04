@@ -151,3 +151,56 @@
 .model-picker label small { font-size: 9px; color: #9aa48c; }
 .model-picker input { width: auto; margin: 0; accent-color: #486d38; }
 .model-cell { font-family: Manrope, Arial, sans-serif; font-size: 9px !important; color: #6f8a55 !important; white-space: nowrap; }
+
+/* Candidate comparison, combined review and rerun (P2-WEB-003) */
+.review-button { margin-top: 12px; width: 100%; border: 1px solid #d7e0cd; background: #fff; border-radius: 6px; font-size: 10px; padding: 7px; color: #5f7a4b; }
+.review-button.active { background: #486d38; border-color: #486d38; color: #f3f7ec; }
+.candidate-matrix { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 10px; }
+.candidate-matrix th, .candidate-matrix td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #eef1ea; vertical-align: top; }
+.candidate-matrix thead th { font-weight: 600; color: #3e5338; background: #fafbf7; }
+.candidate-matrix tbody th { font-weight: 500; color: #8a967d; white-space: nowrap; width: 100px; }
+.candidate-review { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.review-col h4 { font-size: 11px; font-weight: 600; color: #6f8260; margin: 0 0 8px; }
+.review-col h4:not(:first-child) { margin-top: 18px; }
+.review-col ul { margin: 0; padding-left: 16px; font-size: 10px; line-height: 1.8; color: #55654f; }
+.judgment { border: 1px solid #e9ede4; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; font-size: 10px; }
+.judgment-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.judgment-top .id { margin: 0; }
+.judgment p { margin: 6px 0; line-height: 1.7; }
+.judgment p strong { display: block; color: #3e5338; }
+.judgment p small { color: #9aa48c; }
+.judgment dl { margin: 0; display: grid; grid-template-columns: 72px 1fr; gap: 4px 10px; }
+.judgment dt { color: #9ca690; }
+.judgment dd { margin: 0; color: #55654f; line-height: 1.7; }
+.quote-list { list-style: none; padding: 0 !important; display: grid; gap: 7px; }
+.quote-list li { border-left: 2px solid #b5c29f; background: #f8f9f4; border-radius: 0 6px 6px 0; padding: 7px 10px; }
+.quote-list q { display: block; font-size: 11px; color: #4c5c46; quotes: '“' '”'; }
+.quote-list small { display: block; font-size: 8px; color: #98a28a; margin-top: 3px; }
+.held-list { list-style: none; padding: 0 !important; display: grid; gap: 7px; }
+.held-list li { display: block; line-height: 1.8; }
+.held-list .status-pill { margin-right: 6px; vertical-align: 1px; }
+.held-list small { display: block; color: #8a6b45; font-size: 9px; }
+.status-pill.unresolved { background: #f3eef6; color: #7b6290; }
+.choice-list, .condition-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+.choice-list li { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 11px; color: #3e5338; border: 1px solid #e9ede4; border-radius: 8px; padding: 8px 11px; flex-wrap: wrap; }
+.choice-list .id { margin-bottom: 2px; }
+.choice-group { display: inline-flex; border: 1px solid #dfe5d8; border-radius: 6px; overflow: hidden; }
+.choice-group label { font-size: 10px; padding: 5px 10px; cursor: pointer; color: #849076; }
+.choice-group input { position: absolute; opacity: 0; pointer-events: none; }
+.choice-group label.on.keep { background: #eef1ea; color: #4f5f45; }
+.choice-group label.on.focus { background: #486d38; color: #f3f7ec; }
+.choice-group label.on.exclude { background: #f7e9e6; color: #a2574a; }
+.choice-group label:has(input:focus-visible) { outline: 2px solid #9bbf71; outline-offset: -2px; }
+.condition-list li { display: flex; gap: 8px; align-items: center; }
+.condition-list input { flex: 1; font-size: 11px; padding: 7px 10px; min-width: 0; }
+.condition-form .form-footer { margin-top: 18px; }
+.condition-form .form-footer > p { max-width: 380px; }
+.detail-change { display: block !important; border: 1px solid #edf0e8; border-radius: 8px; padding: 8px 10px; }
+.detail-change-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.field-diff { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 3px; font-size: 10px; }
+.field-diff li { line-height: 1.6; }
+.field-diff li strong { margin-right: 6px; font-weight: 600; }
+.field-diff .added strong { color: #4f7a3a; }
+.field-diff .removed strong { color: #a2574a; }
+.sub small { font-weight: 400; color: #a3ac96; margin-left: 6px; font-size: 9px; }
+@media (max-width: 960px) { .candidate-review { grid-template-columns: 1fr; } }

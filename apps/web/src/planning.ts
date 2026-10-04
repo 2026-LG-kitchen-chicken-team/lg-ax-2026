@@ -140,7 +140,10 @@ export function requestWithCondition(base: PlanningRequest, condition: string): 
 }
 
 export function draftRunWithCondition(base: RunSnapshot, original: PlanningRequest, condition: string, id: string, createdAt: string): RunSnapshot {
-  const request = requestWithCondition(base.request, condition);
+  return draftRunFromRequest(base, original, requestWithCondition(base.request, condition), id, createdAt);
+}
+
+export function draftRunFromRequest(base: RunSnapshot, original: PlanningRequest, request: PlanningRequest, id: string, createdAt: string): RunSnapshot {
   const draft: RunSnapshot = {
     run: {
       id, project_id: base.run.project_id, dataset_version: base.run.dataset_version, contract_version: '0.1.0',
@@ -153,6 +156,67 @@ export function draftRunWithCondition(base: RunSnapshot, original: PlanningReque
   const errors = contractErrors('WorkspaceRunSnapshot', draft);
   if (errors.length) throw new ApiError('CONTRACT_MISMATCH', `새 실행 초안이 공통 규격과 다릅니다. ${errors.join('; ')}`);
   return draft;
+}
+
+// R21 (P2-WEB-003): candidate choices and corrected conditions become the next request. The shared contract has no
+// candidate-selection field, so choices are written into the request text the Agent reads, in a stable form.
+export type CandidateChoice = 'keep' | 'focus' | 'exclude';
+const FOCUS_SUFFIX = /\s*\[집중 검토: [^\]]*\]$/;
+const EXCLUDED_CANDIDATE = /^후보 제외: /;
+
+export function candidateExclusion(concept: Pick<Concept, 'id' | 'title'>): string {
+  return `후보 제외: ${concept.title} (${concept.id})`;
+}
+
+export function buildRerunRequest(base: PlanningRequest, concepts: Concept[], choices: Record<string, CandidateChoice>, conditions: string[]): PlanningRequest {
+  const cleaned = [...new Set(conditions.map(item => item.trim()).filter(item => item && !EXCLUDED_CANDIDATE.test(item)))];
+  const excluded = concepts.filter(concept => choices[concept.id] === 'exclude').map(candidateExclusion);
+  const focused = concepts.filter(concept => choices[concept.id] === 'focus');
+  const task = base.improvement_task.replace(FOCUS_SUFFIX, '');
+  const request: PlanningRequest = {
+    ...base,
+    improvement_task: focused.length ? `${task} [집중 검토: ${focused.map(concept => `${concept.title} (${concept.id})`).join(', ')}]` : task,
+    exclusions: [...cleaned, ...excluded],
+  };
+  const errors = contractErrors('PlanningRequest', request);
+  if (errors.length) throw new ApiError('INVALID_ARGUMENT', `재실행 요청이 공통 규격과 다릅니다. ${errors.join('; ')}`);
+  return request;
+}
+
+/** Splits a request's exclusions into planner conditions and candidate exclusions written by buildRerunRequest. */
+export function splitConditions(request: PlanningRequest): { conditions: string[]; excludedCandidates: string[] } {
+  return {
+    conditions: request.exclusions.filter(item => !EXCLUDED_CANDIDATE.test(item)),
+    excludedCandidates: request.exclusions.filter(item => EXCLUDED_CANDIDATE.test(item)),
+  };
+}
+
+export interface ConceptDetailChange { id: string; title: string; status: [Concept['status'] | null, Concept['status'] | null]; added: { requirements: string[]; assumptions: string[]; evidence_ids: string[] }; removed: { requirements: string[]; assumptions: string[]; evidence_ids: string[] } }
+
+/** Field-level before/after for each candidate, so a revision shows what changed inside a concept, not only its status. */
+export function conceptDetailChanges(before: RunSnapshot | undefined, after: RunSnapshot): ConceptDetailChange[] {
+  const previous = new Map((before?.run.concepts ?? []).map(item => [item.id, item]));
+  const current = new Map(after.run.concepts.map(item => [item.id, item]));
+  const diff = (a: string[] = [], b: string[] = []) => b.filter(item => !a.includes(item));
+  return [...new Set([...previous.keys(), ...current.keys()])].map(id => {
+    const old = previous.get(id); const next = current.get(id);
+    return {
+      id, title: (next ?? old)!.title, status: [old?.status ?? null, next?.status ?? null] as [Concept['status'] | null, Concept['status'] | null],
+      added: { requirements: diff(old?.requirements, next?.requirements), assumptions: diff(old?.assumptions, next?.assumptions), evidence_ids: diff(old?.evidence_ids, next?.evidence_ids) },
+      removed: { requirements: diff(next?.requirements, old?.requirements), assumptions: diff(next?.assumptions, old?.assumptions), evidence_ids: diff(next?.evidence_ids, old?.evidence_ids) },
+    };
+  }).filter(change => change.status[0] !== change.status[1] || Object.values(change.added).some(list => list.length) || Object.values(change.removed).some(list => list.length));
+}
+
+export interface HeldItem { kind: 'insufficient_evidence' | 'unresolved'; id: string | null; text: string; questions: string[] }
+
+/** Everything the Agent held back: gaps without enough evidence and unresolved items, shown next to the candidates. */
+export function heldItems(snapshot: RunSnapshot): HeldItem[] {
+  const gaps = (snapshot.output?.gaps ?? []).filter(gap => gap.support_status === 'insufficient_evidence').map(gap => {
+    const need = snapshot.output!.needs.find(item => item.id === gap.need_id);
+    return { kind: 'insufficient_evidence' as const, id: gap.id, text: need ? `${need.pain} (${need.id})` : gap.need_id, questions: gap.questions };
+  });
+  return [...gaps, ...snapshot.run.unresolved.map(text => ({ kind: 'unresolved' as const, id: null, text, questions: [] }))];
 }
 
 export interface ConceptChange { id: string; title: string; before: Concept['status'] | null; after: Concept['status'] | null }
