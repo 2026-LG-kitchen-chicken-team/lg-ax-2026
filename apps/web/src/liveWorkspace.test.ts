@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { ApiError } from './api';
 import type { Product } from './domain';
-import { browserFetch, documentVersionsFor, errorView, parseEvidenceSearch, projectName, runStatusView } from './liveWorkspace';
+import { browserFetch, documentVersionsFor, errorView, parseEvidenceSearch, projectName, runStatusView, sameProjectScope } from './liveWorkspace';
 import { contractErrors, nextRequestRevision, requestWithCondition } from './planning';
 import type { PlanningRequest, RunSnapshot } from './planning';
 import { WorkspaceClient } from './workspace';
@@ -22,6 +22,13 @@ describe('workspace error presentation', () => {
     expect(views.map(view => view.code)).toEqual(codes);
     expect(errorView(new ApiError('NOT_IMPLEMENTED', 'x')).tone).toBe('notice');
     expect(errorView(new ApiError('FORBIDDEN', 'x')).tone).toBe('error');
+  });
+  it('has a dedicated message for every error code in the shared contract', () => {
+    const schema = JSON.parse(readFileSync(new URL('../../../packages/contracts/schemas/lgax.schema.json', import.meta.url), 'utf8'));
+    const codes = schema.$defs.Error.properties.code.enum as string[];
+    const titles = codes.map(code => errorView(new ApiError(code, 'x')).title);
+    expect(titles).not.toContain('요청을 처리하지 못했습니다');
+    expect(errorView(new ApiError('INSUFFICIENT_EVIDENCE', 'x')).tone).toBe('notice');
   });
   it('keeps unknown failures visible with their message instead of hiding them', () => {
     expect(errorView(new ApiError('SOMETHING_NEW', '새 오류'))).toMatchObject({ code: 'SOMETHING_NEW', action: '새 오류', tone: 'error' });
@@ -68,6 +75,12 @@ describe('source scope and run status', () => {
     const empty = parseEvidenceSearch({ project_id: 'p', dataset_sha256: 'a'.repeat(64), contract_version: '0.1.0',
       search: { ok: true, data: { query: '없는말', model_id: 'FRIDGE-A', document_version: '1.0', items: [], total: 0, contract_version: '0.1.0', search_method: 'literal_token_count' } } });
     expect(empty).toMatchObject({ total: 0, items: [], documentVersion: '1.0', method: 'literal_token_count' });
+  });
+  it('continues a project only for the same product group and model set', () => {
+    const multi = { ...request, model_ids: ['FRIDGE-A', 'FRIDGE-B'] };
+    expect(sameProjectScope(multi, { ...multi, model_ids: ['FRIDGE-B', 'FRIDGE-A'], use_situation: '다른 상황' })).toBe(true);
+    expect(sameProjectScope(multi, request)).toBe(false);
+    expect(sameProjectScope(request, { ...request, product_group: 'dishwasher', model_ids: ['DISHWASHER-A'] })).toBe(false);
   });
   it('builds condition requests that stay inside the project scope', () => {
     const next = requestWithCondition(request, '1인 가구 소형 모델만');

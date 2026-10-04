@@ -119,6 +119,19 @@ describe('R27 meeting export', () => {
     }
     for (const text of [...second.run.unresolved, ...second.unconfirmed]) expect(markdown).toContain(text);
   });
+  it('keeps the compared model on every comparison row', () => {
+    expect(doc.comparison.every(row => row.model_id === 'FRIDGE-A')).toBe(true);
+    expect(markdown).toContain('| 모델 | 불편 |');
+    expect(markdown).toContain('| FRIDGE-A | NEED-FX-001');
+  });
+  it('accepts the shared multi-model sample requests', () => {
+    const samples = JSON.parse(readFileSync(new URL('../../../data/demo/planning_requests.json', import.meta.url), 'utf8')) as PlanningRequest[];
+    expect(samples[0].model_ids).toEqual(['FRIDGE-A', 'FRIDGE-B', 'FRIDGE-C']);
+    for (const sample of samples) {
+      expect(contractErrors('PlanningRequest', sample)).toEqual([]);
+      expect(missingRequestQuestions(sample)).toEqual([]);
+    }
+  });
   it('labels fixture exports so they are not mistaken for Agent output', () => {
     expect(doc.meta.mode).toBe('fixture');
     expect(markdown).toContain('Agent 출력이나 서버 응답이 아니며');

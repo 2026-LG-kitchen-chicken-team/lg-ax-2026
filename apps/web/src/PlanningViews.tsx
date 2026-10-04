@@ -20,22 +20,27 @@ export function ErrorBox({ error, onClose }: { error: ErrorView; onClose?: () =>
 }
 
 /** Live-mode connection bar: token input (memory only), connection state and project choice. */
-export function WorkspaceBar({ workspace }: { workspace: LiveWorkspace }) {
+export function WorkspaceBar({ workspace, onScopeChange }: { workspace: LiveWorkspace; onScopeChange: () => void }) {
   const [token, setToken] = useState('');
   const connected = workspace.connection === 'connected';
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     await workspace.connect(token);
     setToken('');
+    onScopeChange();
+  }
+  async function choose(id: string) {
+    await workspace.selectProject(id);
+    onScopeChange();
   }
   return <section className="panel workspace-bar" aria-label="작업실 서버 연결">
     <div className="workspace-bar-row">
       <div className="workspace-state"><span className={`status-dot ${connected ? 'ready' : workspace.connection === 'error' ? 'error' : 'loading'}`} /><div><strong>작업실 서버</strong><small>{connected ? `연결됨 · 프로젝트 ${workspace.projects.length}개` : workspace.connection === 'connecting' ? '연결 중…' : workspace.connection === 'error' ? '연결 오류' : '미연결 · 요청 저장과 실행 기록에는 연결이 필요합니다'}</small></div></div>
       {connected ? <div className="workspace-actions">
-        <label className="run-picker">프로젝트<select value={workspace.project?.project.id ?? ''} disabled={workspace.busy || !workspace.projects.length} onChange={event => workspace.selectProject(event.target.value)}>
+        <label className="run-picker">프로젝트<select value={workspace.project?.project.id ?? ''} disabled={workspace.busy || !workspace.projects.length} onChange={event => choose(event.target.value)}>
           {workspace.projects.length ? workspace.projects.map(item => <option key={item.project.id} value={item.project.id}>{item.project.name}</option>) : <option value="">저장된 프로젝트 없음</option>}
         </select></label>
-        <button type="button" className="secondary-button" onClick={workspace.disconnect}>연결 해제</button>
+        <button type="button" className="secondary-button" onClick={() => { workspace.disconnect(); onScopeChange(); }}>연결 해제</button>
       </div> : <form className="workspace-actions" onSubmit={submit}>
         <label className="sr-only" htmlFor="workspace-token">작업실 토큰</label>
         <input id="workspace-token" type="password" autoComplete="off" spellCheck={false} placeholder="작업실 토큰 (메모리에만 보관)" value={token} onChange={event => setToken(event.target.value)} />
@@ -71,7 +76,7 @@ export function ServerEvidenceSearch({ workspace, modelId }: { workspace: LiveWo
       : !result ? <p className="muted">{modelId} · 문서 {project.document_versions[modelId]}로 고정해 검색합니다.</p>
       : <>
         <p className="hint">“{result.query}” · {result.modelId} · 문서 {result.documentVersion ?? '전체'} · {result.total}건 · 방식 {result.method}</p>
-        {result.items.length ? <ul className="server-results">{result.items.map(item => <li key={item.id}><span className="id">{item.id} · {item.source_type === 'review' ? '고객 리뷰' : '제품 설명서'} · {item.locator.row ? `${item.locator.row}행` : item.locator.page ? `${item.locator.page}쪽` : item.locator.section}</span>{item.text}</li>)}</ul>
+        {result.items.length ? <ul className="server-results">{result.items.map(item => <li key={item.id}><span className="id">{item.id} · {sourceKindLabel(item.source_kind)} · {item.source_type === 'review' ? '고객 리뷰' : '제품 설명서'} ·{item.locator.row ? `${item.locator.row}행` : item.locator.page ? `${item.locator.page}쪽` : item.locator.section}</span>{item.text}</li>)}</ul>
           : <p className="muted">검색 결과가 없습니다. 서버는 정상 응답했으며, 이 문서 버전에 일치하는 원문이 없습니다.</p>}
       </>}
   </section>;
@@ -87,6 +92,13 @@ export function FixtureBanner() {
   return <div className="fixture-banner" role="note"><strong>모의 데이터 모드</strong><p>{FIXTURE_NOTICE} 서버에 아무것도 저장하거나 전송하지 않습니다.</p></div>;
 }
 
+const SOURCE_KINDS: Record<string, string> = { synthetic: '합성자료', public: '공개자료', licensed: '이용허락 자료', private: '비공개 자료' };
+
+/** Real vs synthetic origin stays visible wherever a source is quoted. */
+export function sourceKindLabel(kind: string): string {
+  return SOURCE_KINDS[kind] ?? kind;
+}
+
 /** Inline citation: shows the original text, location and version without leaving the current view. */
 function EvidenceRef({ id, evidence }: { id: string; evidence: Map<string, Evidence> }) {
   const [open, setOpen] = useState(false);
@@ -94,7 +106,7 @@ function EvidenceRef({ id, evidence }: { id: string; evidence: Map<string, Evide
   if (!item) return <span className="evidence-ref missing" title="원문을 찾을 수 없습니다">{id} · 자료 누락</span>;
   return <span className="evidence-ref-wrap">
     <button type="button" className={`evidence-ref ${item.source_type}`} aria-expanded={open} onClick={() => setOpen(value => !value)}>{id}</button>
-    {open ? <span className="evidence-pop" role="note"><q>{item.text}</q><small>{item.model_id} · 문서 {item.document_version} · {evidenceLocation(item)} · {item.source_id}</small></span> : null}
+    {open ? <span className="evidence-pop" role="note"><q>{item.text}</q><small>{sourceKindLabel(item.source_kind)} · {item.model_id} · 문서 {item.document_version} · {evidenceLocation(item)} · {item.source_id}</small></span> : null}
   </span>;
 }
 
@@ -120,8 +132,9 @@ function ComparisonTable({ snapshot, features, evidence }: { snapshot: RunSnapsh
   if (!snapshot.output) return <p className="muted pad">이 실행에는 대조 결과가 없습니다. {runStatusView(snapshot.run.status).detail}</p>;
   const rows = buildComparison(snapshot.output, features, [...evidence.values()]);
   return <div className="table-scroll"><table className="comparison-table">
-    <thead><tr><th>고객 불편</th><th>연결된 기존 기능</th><th>기능 조건</th><th>판단</th><th>남은 불편</th><th>근거</th><th>확인할 질문</th></tr></thead>
+    <thead><tr><th>모델</th><th>고객 불편</th><th>연결된 기존 기능</th><th>기능 조건</th><th>판단</th><th>남은 불편</th><th>근거</th><th>확인할 질문</th></tr></thead>
     <tbody>{rows.map(row => <tr key={row.need.id}>
+      <td className="model-cell">{row.need.model_id}</td>
       <td><span className="id">{row.need.id}</span><strong>{row.need.pain}</strong><small>{row.need.situation}</small></td>
       <td>{row.features.length ? row.features.map(item => <span key={item.id} className="feature-chip" title={item.description}>{item.name}<small>{item.id} · 문서 {item.document_version}</small></span>) : <span className="muted">없음</span>}</td>
       <td>{row.conditions.length ? row.conditions.join(', ') : <span className="muted">없음</span>}</td>

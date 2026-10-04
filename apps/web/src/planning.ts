@@ -169,7 +169,7 @@ export function conceptChanges(before: RunSnapshot | undefined, after: RunSnapsh
 export interface ExportDocument {
   meta: { mode: DataMode; notice: string; generated_at: string; run_id: string; previous_run_id: string | null; run_status: Run['status']; request_revision: number; dataset_version: string; dataset_sha256: string; document_versions: Record<string, string> };
   request: PlanningRequest;
-  comparison: { need_id: string; situation: string; pain: string; feature_ids: string[]; conditions: string[]; support_status: Gap['support_status'] | null; remaining_pain: string; evidence_ids: string[]; questions: string[]; missing_ids: string[] }[];
+  comparison: { model_id: string; need_id: string; situation: string; pain: string; feature_ids: string[]; conditions: string[]; support_status: Gap['support_status'] | null; remaining_pain: string; evidence_ids: string[]; questions: string[]; missing_ids: string[] }[];
   concepts: Concept[];
   requirements: { concept_id: string; requirement: string }[];
   assumptions: { source_id: string; assumption: string }[];
@@ -198,7 +198,7 @@ export function buildExport(mode: DataMode, snapshot: RunSnapshot, features: Fea
     },
     request: snapshot.request,
     comparison: rows.map(row => ({
-      need_id: row.need.id, situation: row.need.situation, pain: row.need.pain, feature_ids: row.gap?.feature_ids ?? [], conditions: row.conditions,
+      model_id: row.need.model_id, need_id: row.need.id, situation: row.need.situation, pain: row.need.pain, feature_ids: row.gap?.feature_ids ?? [], conditions: row.conditions,
       support_status: row.gap?.support_status ?? null, remaining_pain: row.gap?.remaining_pain ?? '', evidence_ids: row.evidence.map(item => item.id),
       questions: [...row.need.uncertainties, ...(row.gap?.questions ?? [])], missing_ids: row.missingIds,
     })),
@@ -242,8 +242,8 @@ export function exportMarkdown(doc: ExportDocument): string {
     `- 제품군: ${doc.request.product_group}`, `- 대상 고객: ${doc.request.target_customer}`, `- 사용 상황: ${doc.request.use_situation}`,
     `- 기획 요청: ${doc.request.improvement_task}`, `- 제외 조건: ${doc.request.exclusions.join(', ') || '(없음)'}`, `- 검토 모델: ${doc.request.model_ids.join(', ')}`, '',
     '## 불편·기존 기능 대조표', '',
-    '| 불편 | 연결 기능 | 기능 조건 | 판단 | 남은 불편 | 근거 | 확인할 질문 |', '|---|---|---|---|---|---|---|',
-    ...doc.comparison.map(row => `| ${cell(`${row.need_id}: ${row.pain}`)} | ${cell(row.feature_ids.join(', ') || '없음')} | ${cell(row.conditions.join(', ') || '없음')} | ${cell(statusLabel(row.support_status))} | ${cell(row.remaining_pain || '-')} | ${cell(row.evidence_ids.join(', '))} | ${cell(row.questions.join(' / ') || '-')} |`),
+    '| 모델 | 불편 | 연결 기능 | 기능 조건 | 판단 | 남은 불편 | 근거 | 확인할 질문 |', '|---|---|---|---|---|---|---|---|',
+    ...doc.comparison.map(row => `| ${cell(row.model_id)} | ${cell(`${row.need_id}: ${row.pain}`)} | ${cell(row.feature_ids.join(', ') || '없음')} | ${cell(row.conditions.join(', ') || '없음')} | ${cell(statusLabel(row.support_status))} | ${cell(row.remaining_pain || '-')} | ${cell(row.evidence_ids.join(', '))} | ${cell(row.questions.join(' / ') || '-')} |`),
     '', '## 콘셉트 후보', '',
   ];
   if (!doc.concepts.length) lines.push('생성된 콘셉트가 없습니다.', '');

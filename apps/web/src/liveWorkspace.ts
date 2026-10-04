@@ -21,7 +21,17 @@ const ERROR_VIEWS: Record<string, Omit<ErrorView, 'code'>> = {
   CONNECTION_FAILED: { title: '작업실 서버에 연결할 수 없습니다', action: '18869번 작업실 서버가 실행 중인지 확인해 주세요. 저장 요청은 자동으로 다시 보내지 않으니, 목록을 먼저 확인한 뒤 다시 시도해 주세요.', tone: 'error' },
   CONTRACT_MISMATCH: { title: '서버 응답이 공통 규격과 다릅니다', action: '웹과 서버의 계약 버전이 맞는지 PM에게 확인해 주세요.', tone: 'error' },
   NOT_IMPLEMENTED: { title: '요청은 저장됐지만 Agent 분석은 아직 연결되지 않았습니다', action: '후보·대조 결과는 판단 Agent가 연결된 뒤 같은 실행 기록에 표시됩니다.', tone: 'notice' },
+  INVALID_EVIDENCE_ID: { title: '근거 원문을 찾을 수 없습니다', action: '인용된 근거 ID가 현재 자료에 없습니다. 자료 버전과 근거 ID를 확인해 주세요.', tone: 'error' },
+  VALIDATION_FAILED: { title: '검사를 통과하지 못했습니다', action: '인용 누락·모델 혼동·기능 중복 검사에서 실패했습니다. 미해결 항목과 수정 기록을 확인해 주세요.', tone: 'error' },
+  INSUFFICIENT_EVIDENCE: { title: '근거가 부족해 보류했습니다', action: '후보를 억지로 만들지 않았습니다. 자료를 보강하거나 검토 조건을 바꿔 다시 요청해 주세요.', tone: 'notice' },
+  MODEL_UNAVAILABLE: { title: '분석 모델을 사용할 수 없습니다', action: '모델 서버 연결 또는 응답 형식에 문제가 있습니다. 잠시 후 다시 시도하거나 PM에게 모델 상태를 확인해 주세요.', tone: 'error' },
 };
+
+/** A changed request on the same product group and model set continues the project; otherwise it starts a new one. */
+export function sameProjectScope(project: PlanningRequest, request: PlanningRequest): boolean {
+  const models = (ids: string[]) => [...ids].sort().join('\n');
+  return project.product_group === request.product_group && models(project.model_ids) === models(request.model_ids);
+}
 
 export function errorView(error: unknown): ErrorView {
   const code = error instanceof ApiError ? error.code : 'UNKNOWN_ERROR';
