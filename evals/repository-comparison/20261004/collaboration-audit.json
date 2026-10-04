@@ -1,0 +1,460 @@
+{
+  "schema_version": 1,
+  "audit_id": "LGAX-REPO-COLLABORATION-20261004",
+  "scope": "Public GitHub collaboration metadata for hong0527 fork and B23en upstream; read-only API/browser audit.",
+  "performed_by": "Codex subagent repo_collaboration_audit",
+  "requested_by": "Parent PM AI; repository comparison evidence request",
+  "checked_window": {
+    "started_at_utc": "2026-10-04T14:20:57Z",
+    "completed_at_utc": "2026-10-04T14:21:18Z",
+    "started_at_kst": "2026-10-04T23:20:57+09:00",
+    "completed_at_kst": "2026-10-04T23:21:18+09:00",
+    "source": "clock.curr_time immediately before/after the metadata reads; individual API response timestamps were not separately recorded."
+  },
+  "access": {
+    "method": "Authenticated gh api, read-only queries to public repositories",
+    "credentials_in_artifact": false,
+    "queried_account_identifier_in_artifact": false,
+    "repository_code_executed": false,
+    "dependencies_installed": false,
+    "product_code_modified": false
+  },
+  "counting_definitions": {
+    "commit_count": "Number of commits reachable from the observed main tip, including merge commits; not lifetime repository commits or unmerged branch commits.",
+    "ordinary_issues": "GraphQL Issue objects only; excludes pull requests.",
+    "closed_unmerged": "GraphQL PullRequestState.CLOSED; merged requests are a separate MERGED state.",
+    "rest_closed_including_merged": "Derived sum of GraphQL CLOSED and MERGED, matching REST state=closed semantics.",
+    "review_count": "GitHub PullRequestReview records across every returned PR; not issue comments, offline review, reviewer assignments, or AI review assertions.",
+    "projects": "ProjectsV2 linked to this repository and visible to the query account; not all projects owned by contributors.",
+    "main_protected": "REST branches/main protected flag and effective rules/branches/main response observed at the stated check window.",
+    "actions": "actions/runs total_count returned at the check window; no inference about deleted/expired past runs."
+  },
+  "repositories": [
+    {
+      "role": "fork",
+      "repository": "hong0527/water-purifier-subscription-management-system",
+      "repository_url": "https://github.com/hong0527/water-purifier-subscription-management-system",
+      "is_fork": true,
+      "pinned_main": {
+        "branch": "main",
+        "commit_sha": "b7e44430663d8855ce59fbf809b992ed65722ae0",
+        "commit_url": "https://github.com/hong0527/water-purifier-subscription-management-system/commit/b7e44430663d8855ce59fbf809b992ed65722ae0",
+        "committed_at_utc": "2026-06-22T01:56:45Z",
+        "reachable_commit_count": 5,
+        "evidence": "/source_records/0/response/data/fork/defaultBranchRef"
+      },
+      "ordinary_issues": {
+        "all_states_count": 0,
+        "evidence": "/source_records/0/response/data/fork/issues/totalCount",
+        "ui_url": "https://github.com/hong0527/water-purifier-subscription-management-system/issues"
+      },
+      "pull_requests": {
+        "all_states_count": 0,
+        "open_count": 0,
+        "closed_unmerged_count": 0,
+        "merged_count": 0,
+        "rest_closed_including_merged_count": 0,
+        "rest_closed_count_is_derived": true,
+        "github_review_record_count": 0,
+        "review_prs_inspected": 0,
+        "review_list_complete": true,
+        "review_counts_by_pr": [],
+        "evidence": "/source_records/0/response/data/fork/pullRequests",
+        "state_counts_evidence": [
+          "/source_records/0/response/data/fork/openPR/totalCount",
+          "/source_records/0/response/data/fork/closedPR/totalCount",
+          "/source_records/0/response/data/fork/mergedPR/totalCount"
+        ],
+        "ui_url": "https://github.com/hong0527/water-purifier-subscription-management-system/pulls"
+      },
+      "actions": {
+        "returned_run_total_count": 0,
+        "evidence_source_id": "fork_actions",
+        "ui_url": "https://github.com/hong0527/water-purifier-subscription-management-system/actions"
+      },
+      "linked_projectsv2": {
+        "visible_linked_count": 0,
+        "evidence": "/source_records/0/response/data/fork/projectsV2/totalCount",
+        "ui_url": "https://github.com/hong0527/water-purifier-subscription-management-system/projects"
+      },
+      "main_protection": {
+        "protected": false,
+        "effective_rules": [],
+        "evidence_source_ids": [
+          "fork_main",
+          "fork_rules"
+        ]
+      }
+    },
+    {
+      "role": "upstream",
+      "repository": "B23en/water-purifier-subscription-management-system",
+      "repository_url": "https://github.com/B23en/water-purifier-subscription-management-system",
+      "is_fork": false,
+      "pinned_main": {
+        "branch": "main",
+        "commit_sha": "a498b7dae28f09bf8d1c6f7a34013435af80f88c",
+        "commit_url": "https://github.com/B23en/water-purifier-subscription-management-system/commit/a498b7dae28f09bf8d1c6f7a34013435af80f88c",
+        "committed_at_utc": "2026-07-05T09:06:22Z",
+        "reachable_commit_count": 39,
+        "evidence": "/source_records/0/response/data/upstream/defaultBranchRef"
+      },
+      "ordinary_issues": {
+        "all_states_count": 0,
+        "evidence": "/source_records/0/response/data/upstream/issues/totalCount",
+        "ui_url": "https://github.com/B23en/water-purifier-subscription-management-system/issues"
+      },
+      "pull_requests": {
+        "all_states_count": 13,
+        "open_count": 0,
+        "closed_unmerged_count": 2,
+        "merged_count": 11,
+        "rest_closed_including_merged_count": 13,
+        "rest_closed_count_is_derived": true,
+        "github_review_record_count": 0,
+        "review_prs_inspected": 13,
+        "review_list_complete": true,
+        "review_counts_by_pr": [
+          {
+            "number": 1,
+            "review_count": 0,
+            "url": "https://github.com/B23en/water-purifier-subscription-management-system/pull/1"
+          },
+          {
+            "number": 2,
+            "review_count": 0,
+            "url": "https://github.com/B23en/water-purifier-subscription-management-system/pull/2"
+          },
+          {
+            "number": 3,
+            "review_count": 0,
+            "url": "https://github.com/B23en/water-purifier-subscription-management-system/pull/3"
+          },
+          {
+            "number": 4,
+            "review_count": 0,
+            "url": "https://github.com/B23en/water-purifier-subscription-management-system/pull/4"
+          },
+          {
+            "number": 5,
+            "review_count": 0,
+            "url": "https://github.com/B23en/water-purifier-subscription-management-system/pull/5"
+          },
+          {
+            "number": 6,
+            "review_count": 0,
+            "url": "https://github.com/B23en/water-purifier-subscription-management-system/pull/6"
+          },
+          {
+            "number": 7,
+            "review_count": 0,
+            "url": "https://github.com/B23en/water-purifier-subscription-management-system/pull/7"
+          },
+          {
+            "number": 8,
+            "review_count": 0,
+            "url": "https://github.com/B23en/water-purifier-subscription-management-system/pull/8"
+          },
+          {
+            "number": 9,
+            "review_count": 0,
+            "url": "https://github.com/B23en/water-purifier-subscription-management-system/pull/9"
+          },
+          {
+            "number": 10,
+            "review_count": 0,
+            "url": "https://github.com/B23en/water-purifier-subscription-management-system/pull/10"
+          },
+          {
+            "number": 11,
+            "review_count": 0,
+            "url": "https://github.com/B23en/water-purifier-subscription-management-system/pull/11"
+          },
+          {
+            "number": 12,
+            "review_count": 0,
+            "url": "https://github.com/B23en/water-purifier-subscription-management-system/pull/12"
+          },
+          {
+            "number": 13,
+            "review_count": 0,
+            "url": "https://github.com/B23en/water-purifier-subscription-management-system/pull/13"
+          }
+        ],
+        "evidence": "/source_records/0/response/data/upstream/pullRequests",
+        "state_counts_evidence": [
+          "/source_records/0/response/data/upstream/openPR/totalCount",
+          "/source_records/0/response/data/upstream/closedPR/totalCount",
+          "/source_records/0/response/data/upstream/mergedPR/totalCount"
+        ],
+        "ui_url": "https://github.com/B23en/water-purifier-subscription-management-system/pulls"
+      },
+      "actions": {
+        "returned_run_total_count": 0,
+        "evidence_source_id": "upstream_actions",
+        "ui_url": "https://github.com/B23en/water-purifier-subscription-management-system/actions"
+      },
+      "linked_projectsv2": {
+        "visible_linked_count": 0,
+        "evidence": "/source_records/0/response/data/upstream/projectsV2/totalCount",
+        "ui_url": "https://github.com/B23en/water-purifier-subscription-management-system/projects"
+      },
+      "main_protection": {
+        "protected": false,
+        "effective_rules": [],
+        "evidence_source_ids": [
+          "upstream_main",
+          "upstream_rules"
+        ]
+      }
+    }
+  ],
+  "source_records": [
+    {
+      "id": "graphql_repository_metrics",
+      "method": "POST",
+      "api_url": "https://api.github.com/graphql",
+      "query": "query { fork: repository(owner: \"hong0527\", name: \"water-purifier-subscription-management-system\") { nameWithOwner url isFork defaultBranchRef { name target { ... on Commit { oid committedDate history { totalCount } } } } issues(first: 1) { totalCount } openPR: pullRequests(states: [OPEN], first: 1) { totalCount } closedPR: pullRequests(states: [CLOSED], first: 1) { totalCount } mergedPR: pullRequests(states: [MERGED], first: 1) { totalCount } pullRequests(first: 100) { totalCount nodes { number reviews(first: 1) { totalCount } } } projectsV2(first: 1) { totalCount } } upstream: repository(owner: \"B23en\", name: \"water-purifier-subscription-management-system\") { nameWithOwner url isFork defaultBranchRef { name target { ... on Commit { oid committedDate history { totalCount } } } } issues(first: 1) { totalCount } openPR: pullRequests(states: [OPEN], first: 1) { totalCount } closedPR: pullRequests(states: [CLOSED], first: 1) { totalCount } mergedPR: pullRequests(states: [MERGED], first: 1) { totalCount } pullRequests(first: 100) { totalCount nodes { number reviews(first: 1) { totalCount } } } projectsV2(first: 1) { totalCount } } }",
+      "response_kind": "complete_graphql_response",
+      "response": {
+        "data": {
+          "fork": {
+            "nameWithOwner": "hong0527/water-purifier-subscription-management-system",
+            "url": "https://github.com/hong0527/water-purifier-subscription-management-system",
+            "isFork": true,
+            "defaultBranchRef": {
+              "name": "main",
+              "target": {
+                "oid": "b7e44430663d8855ce59fbf809b992ed65722ae0",
+                "committedDate": "2026-06-22T01:56:45Z",
+                "history": {
+                  "totalCount": 5
+                }
+              }
+            },
+            "issues": {
+              "totalCount": 0
+            },
+            "openPR": {
+              "totalCount": 0
+            },
+            "closedPR": {
+              "totalCount": 0
+            },
+            "mergedPR": {
+              "totalCount": 0
+            },
+            "pullRequests": {
+              "totalCount": 0,
+              "nodes": []
+            },
+            "projectsV2": {
+              "totalCount": 0
+            }
+          },
+          "upstream": {
+            "nameWithOwner": "B23en/water-purifier-subscription-management-system",
+            "url": "https://github.com/B23en/water-purifier-subscription-management-system",
+            "isFork": false,
+            "defaultBranchRef": {
+              "name": "main",
+              "target": {
+                "oid": "a498b7dae28f09bf8d1c6f7a34013435af80f88c",
+                "committedDate": "2026-07-05T09:06:22Z",
+                "history": {
+                  "totalCount": 39
+                }
+              }
+            },
+            "issues": {
+              "totalCount": 0
+            },
+            "openPR": {
+              "totalCount": 0
+            },
+            "closedPR": {
+              "totalCount": 2
+            },
+            "mergedPR": {
+              "totalCount": 11
+            },
+            "pullRequests": {
+              "totalCount": 13,
+              "nodes": [
+                {
+                  "number": 1,
+                  "reviews": {
+                    "totalCount": 0
+                  }
+                },
+                {
+                  "number": 2,
+                  "reviews": {
+                    "totalCount": 0
+                  }
+                },
+                {
+                  "number": 3,
+                  "reviews": {
+                    "totalCount": 0
+                  }
+                },
+                {
+                  "number": 4,
+                  "reviews": {
+                    "totalCount": 0
+                  }
+                },
+                {
+                  "number": 5,
+                  "reviews": {
+                    "totalCount": 0
+                  }
+                },
+                {
+                  "number": 6,
+                  "reviews": {
+                    "totalCount": 0
+                  }
+                },
+                {
+                  "number": 7,
+                  "reviews": {
+                    "totalCount": 0
+                  }
+                },
+                {
+                  "number": 8,
+                  "reviews": {
+                    "totalCount": 0
+                  }
+                },
+                {
+                  "number": 9,
+                  "reviews": {
+                    "totalCount": 0
+                  }
+                },
+                {
+                  "number": 10,
+                  "reviews": {
+                    "totalCount": 0
+                  }
+                },
+                {
+                  "number": 11,
+                  "reviews": {
+                    "totalCount": 0
+                  }
+                },
+                {
+                  "number": 12,
+                  "reviews": {
+                    "totalCount": 0
+                  }
+                },
+                {
+                  "number": 13,
+                  "reviews": {
+                    "totalCount": 0
+                  }
+                }
+              ]
+            },
+            "projectsV2": {
+              "totalCount": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "fork_main",
+      "method": "GET",
+      "api_url": "https://api.github.com/repos/hong0527/water-purifier-subscription-management-system/branches/main",
+      "response_kind": "field_projection",
+      "projection": "{name,protected,commit:{sha:.commit.sha}}",
+      "response": {
+        "commit": {
+          "sha": "b7e44430663d8855ce59fbf809b992ed65722ae0"
+        },
+        "name": "main",
+        "protected": false
+      }
+    },
+    {
+      "id": "upstream_main",
+      "method": "GET",
+      "api_url": "https://api.github.com/repos/B23en/water-purifier-subscription-management-system/branches/main",
+      "response_kind": "field_projection",
+      "projection": "{name,protected,commit:{sha:.commit.sha}}",
+      "response": {
+        "commit": {
+          "sha": "a498b7dae28f09bf8d1c6f7a34013435af80f88c"
+        },
+        "name": "main",
+        "protected": false
+      }
+    },
+    {
+      "id": "fork_rules",
+      "method": "GET",
+      "api_url": "https://api.github.com/repos/hong0527/water-purifier-subscription-management-system/rules/branches/main",
+      "response_kind": "complete_api_response",
+      "projection": null,
+      "response": []
+    },
+    {
+      "id": "upstream_rules",
+      "method": "GET",
+      "api_url": "https://api.github.com/repos/B23en/water-purifier-subscription-management-system/rules/branches/main",
+      "response_kind": "complete_api_response",
+      "projection": null,
+      "response": []
+    },
+    {
+      "id": "fork_actions",
+      "method": "GET",
+      "api_url": "https://api.github.com/repos/hong0527/water-purifier-subscription-management-system/actions/runs?per_page=1",
+      "response_kind": "field_projection",
+      "projection": "{total_count,workflow_runs:[.workflow_runs[]|{id,head_sha,status,conclusion,html_url}]}",
+      "response": {
+        "total_count": 0,
+        "workflow_runs": []
+      }
+    },
+    {
+      "id": "upstream_actions",
+      "method": "GET",
+      "api_url": "https://api.github.com/repos/B23en/water-purifier-subscription-management-system/actions/runs?per_page=1",
+      "response_kind": "field_projection",
+      "projection": "{total_count,workflow_runs:[.workflow_runs[]|{id,head_sha,status,conclusion,html_url}]}",
+      "response": {
+        "total_count": 0,
+        "workflow_runs": []
+      }
+    }
+  ],
+  "raw_response_preservation": {
+    "location": "This file's source_records[].response",
+    "graphql": "Complete successful response preserved, including every PR's review totalCount.",
+    "rest": "Effective rules responses are complete. Branch and Actions responses preserve documented field projections; complete unprojected REST payloads were not saved.",
+    "earlier_turn_api_outputs": "Earlier audit API results were tool outputs only, with no original JSON files saved. The requested metrics were re-read in the recorded window so values link directly to preserved responses.",
+    "secrets": "No authorization headers, tokens, emails, private data, or credentials are included."
+  },
+  "consistency_checks": {
+    "upstream_pr_total_equals_open_plus_closed_unmerged_plus_merged": true,
+    "fork_pr_total_equals_open_plus_closed_unmerged_plus_merged": true,
+    "rest_main_sha_matches_graphql_for_both": true,
+    "all_pr_review_counts_enumerated": true
+  },
+  "limitations": [
+    "A public API snapshot does not establish private settings, repository write/admin authority, offline approvals, internal chat, real identities, or undocumented work.",
+    "Zero GitHub review records does not prove no review took place. Upstream PR #1 has a public internal-review-before-resubmission comment: https://github.com/B23en/water-purifier-subscription-management-system/pull/1#issuecomment-4762599607 .",
+    "Zero visible linked ProjectsV2 does not prove contributors have no separate or inaccessible projects.",
+    "Actions total_count=0 states the currently returned API count; removed or expired runs and checks from external providers are not established.",
+    "No repository code, model, backtest, crawler, integration, build, or test was run. Metadata cannot prove product completeness, model accuracy, execution truth, or reproducibility.",
+    "Branches are mutable. Metrics are tied to the recorded main SHA and observation window, and are not promised to remain current.",
+    "The audit did not mutate the external repositories and did not inspect private repository settings."
+  ]
+}
