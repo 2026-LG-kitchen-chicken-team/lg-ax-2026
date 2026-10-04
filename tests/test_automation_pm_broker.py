@@ -366,6 +366,54 @@ class BrokerTests(unittest.TestCase):
         self.assertEqual(receipt["outcome"], "rejected")
         self.assertEqual(self.github.comments, [])
 
+    def test_explicit_empty_release_denies_assignment_even_when_worker_ready_and_on(self):
+        self.broker.config["released_capabilities"] = []
+        self.assertEqual(self.broker.observe(collect=False)["capabilities_ready"], [])
+        with self.assertRaisesRegex(PMError, "not released"):
+            self.action("assign")
+        self.assertEqual(self.github.comments, [])
+        self.assertEqual(self.controller.status["jobs"], [])
+
+    def test_release_is_exact_allowlist_and_registered_is_not_automatically_ready(self):
+        self.broker.policy["capabilities"]["other-unit"] = deepcopy(self.broker.policy["capabilities"][CAP])
+        self.broker.config["released_capabilities"] = [CAP]
+        self.assertEqual(self.broker.observe(collect=False)["capabilities_ready"], [CAP])
+        action, expected = self.action("assign")
+        self.assertEqual(self.broker.execute(ACTION, action, expected)["outcome"], "applied")
+        self.assertEqual(len(self.controller.status["jobs"]), 1)
+
+    def test_legacy_pilot_config_keeps_existing_trusted_policy_release(self):
+        self.assertNotIn("released_capabilities", self.broker.config)
+        self.assertEqual(self.broker.observe(collect=False)["capabilities_ready"], [CAP])
+        self.assertEqual(self.action("assign")[0]["capability_id"], CAP)
+
+    def test_release_reconciled_capability_does_not_reopen_it(self):
+        self.broker.config["released_capabilities"] = [CAP]
+        self.add_unit()
+        self.broker.state["units"]["initial-job"]["reconciled"] = True
+        self.assertEqual(self.broker.observe(collect=False)["capabilities_ready"], [])
+
+    def test_invalid_release_is_rejected_before_broker_state_or_model_calls(self):
+        for value in (None, True, CAP, {}, [1], [CAP, CAP], ["unknown-unit"], ["../unit"]):
+            with self.subTest(value=value):
+                config = {**self.config, "released_capabilities": value,
+                          "state_dir": str(self.root / "invalid-release-state")}
+                with self.assertRaisesRegex(PMError, "released capabilities"):
+                    TrustedPMBroker(config, github=self.github, controller=self.controller,
+                                    executor=self.executor, driver=self.driver)
+                self.assertFalse(Path(config["state_dir"]).exists())
+        self.assertEqual(self.github.comments, [])
+        self.assertEqual(self.executor.calls, [])
+
+    def test_revoked_release_after_decision_is_rechecked_before_any_publication(self):
+        self.broker.config["released_capabilities"] = [CAP]
+        action, expected = self.action("assign")
+        self.broker.config["released_capabilities"] = []
+        receipt = self.broker.execute(ACTION, action, expected)
+        self.assertEqual(receipt["outcome"], "rejected")
+        self.assertEqual(self.github.comments, [])
+        self.assertEqual(self.controller.status["jobs"], [])
+
     def test_duplicate_action_lookup_does_not_reenqueue(self):
         action, expected = self.action("assign")
         first = self.broker.execute(ACTION, action, expected)

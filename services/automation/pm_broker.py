@@ -27,6 +27,7 @@ from services.automation.pm import (
     PMError,
     canonical,
     fingerprint,
+    identifiers,
     load_policy,
     protected_path,
     stable_observation,
@@ -224,6 +225,7 @@ class TrustedPMBroker:
     def __init__(self, config: dict, *, github=None, controller=None, executor=None, driver=None):
         self.config = config
         self.policy = load_policy(config["policy_file"], config["policy_sha256"])
+        self._released_capabilities()  # Reject invalid trusted releases before side effects.
         self.state_dir = protected_path(Path(config["state_dir"]) / "broker-state.json").parent
         self.state_dir.mkdir(parents=True, exist_ok=True)
         self.state_path = self.state_dir / "broker-state.json"
@@ -245,6 +247,19 @@ class TrustedPMBroker:
             "schema_version": 1, "policy_sha256": config["policy_sha256"], "actions": {}, "units": {}, "proofs": {}, "budgets": {}}
         if self.state.get("policy_sha256") != config["policy_sha256"]:
             raise PMError("broker state belongs to another policy; explicit migration required")
+
+    def _released_capabilities(self):
+        """Only the deployed host config releases new assignments.
+
+        Missing is legacy compatibility for the already approved pilot. An
+        explicit empty list denies every new assignment; it is never a request
+        to use all registered capabilities. PR text and model decisions cannot
+        add IDs here. execute's fresh observe repeats this same validation.
+        """
+        if "released_capabilities" not in self.config:
+            return set(self.policy["capabilities"])
+        return set(identifiers(self.config["released_capabilities"], "released capabilities",
+                               allowed=self.policy["capabilities"], nonempty=False))
 
     def save(self):
         write_json(self.state_path, self.state)
@@ -496,6 +511,7 @@ class TrustedPMBroker:
 
     def observe(self, *, collect=True):
         self.authenticate()
+        released = self._released_capabilities()
         status = self.controller.request("/v1/status")
         main = self.github.request("GET", f"repos/{REPO}/commits/main")["sha"]
         if not SHA.fullmatch(main):
@@ -562,7 +578,7 @@ class TrustedPMBroker:
                     elif proof.get("commit") == pr["head"]:
                         pr.setdefault("integration", proof)
             prs.append(pr)
-        ready = [key for key, value in self.policy["capabilities"].items() if not any(
+        ready = [key for key in self.policy["capabilities"] if key in released and not any(
             unit["capability_id"] == key and unit.get("reconciled") for unit in self.state["units"].values())]
         budget = self.state["budgets"].get(time.strftime("%Y-%m-%d", time.gmtime()), {})
         lifetime_tasks = {}

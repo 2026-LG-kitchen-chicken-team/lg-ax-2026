@@ -4,7 +4,7 @@
 
 검증 전 팀/개인 모두 OFF다. 초기 설정을 끝냈다고 켜지지 않는다. 최신 Worker는 [Docker 실행·검사 경계](automation-isolation.md)를 사용한다. 모델·저장소 검사에 게시 인증을 제공하지 않고 실제 canary·본인 로그인·첫 PR/보고를 확인해야 한다. 정이량의 [자동 PM](../pm/autonomous-pm.md)은 별도 정책과 PM 개인 ON이 필요하다. 중앙 HTTPS는 아직 정이량 PC를 경유한다. 네 PC의 실제 준비는 각자 근거로 확인한다.
 
-10/5 정이량 PC의 제한 pilot에서는 실제 Docker Codex 수정(168.109초) → 고정 validator(2.844초, 1개 테스트로 다른 프로젝트 부모 거부·같은 프로젝트 부모 허용 검증) → [PR82](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/82)의 CI 4개 성공 → [Project 보고 ACCEPTED](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/19#issuecomment-5985353509)까지 확인했다. 앞선 cache 권한 실패와 세션 근거 경로 미승인으로 게시가 차단된 두 시도는 보존했다. 독립 PM 검수·실제 병합·병합 후 통합 확인은 [pipeline 근거](../../evals/team-automation/20261005/pipeline-proof.json)의 최종 결과를 따른다. 이 한 건의 pilot과 전원 OFF 상태를 다른 세 PC의 준비 완료·팀 전체 가동·참가작 완성으로 확대하지 않는다.
+10/5 정이량 PC의 제한 pilot은 실제 Docker Codex 수정(168.109초) → 고정 validator(2.844초, 1개 테스트로 다른 프로젝트 부모 거부·같은 프로젝트 부모 허용 검증) → [PR82](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/82)의 CI 4개 성공 → [Project 보고 ACCEPTED](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/19#issuecomment-5985353509) → 독립 PM 검수·검사 → 실제 병합 `466c2b9` → 병합 후 격리 검사·[공식 스냅샷 승인 ACCEPTED](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28#issuecomment-5985418682)까지 완주했다. 앞선 cache 권한 실패와 세션 근거 경로 미승인으로 게시가 차단된 두 시도, 잘못된 첫 merge 결정의 변경 전 거부 기록은 보존했다. 자세한 고정 commit·receipt·검사 근거는 [pipeline 근거](../../evals/team-automation/20261005/pipeline-proof.json)를 따른다. 이후 pilot 팀/개인 OFF에서 `--once`가 모델 호출·변경 없이 종료했고 후속 배정은 예산 한도로 멈췄다. 현재 운영 OFF 배포·정이량 background Worker·팀원 PC 인계는 별도로 진행 중이다. 이 한 건의 성공을 다른 세 PC의 준비 완료·팀 전체 가동·상위 작업 Done·신청서 31개 요구 구현 완료로 확대하지 않는다.
 
 ## 팀원 AI에게 먼저 전달할 지시
 

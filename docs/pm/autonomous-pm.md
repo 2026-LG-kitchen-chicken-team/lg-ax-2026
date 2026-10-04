@@ -31,6 +31,7 @@ PM 코드는 편집 중인 clone/PR에서 실행하지 않는다. config·policy
 | controller_url / controller_token_file | 현재 서비스와 정이량 운영자 인증 |
 | executor | 검토 image ID·별도 workspace_root·본인 auth_root·engine·고정 network |
 | readiness_files | 담당자별 고정 private 증거 경로/해시. 실제 경계/로그인 미검증은 false |
+| released_capabilities | PM이 개별 인수를 허용한 고정 capability ID 목록. 새 배포에는 반드시 명시하며 `[]`는 모든 새 배정을 금지 |
 | poll_seconds | 제한된 상태 조회 간격 |
 | notification_hook | 선택적인 외부 고정 발송 script/해시. 미설정이면 메일 미발송 |
 
@@ -76,6 +77,10 @@ Get-ScheduledTaskInfo -TaskName LGAX-PM-jeongiryang
 정책은 31개 신청 필수 요구를 부모 task의 owner·Issue·requirement_ids·depends_on과 연결한다. capability는 고정 허용 경로·검사 argv·acceptance·검사 ID·시간·우선순위의 좁은 인수 단위다. 모델은 ID와 의도/수정 문구만 선택하고 경로·검사 명령을 새로 만들어 실행하지 않는다. proposed_extension은 자동 채택하지 않는다.
 
 자동 PM은 policy.enabled·팀 ON·PM 개인 ON이 필요하다. 배정 대상도 본인 ON과 실제 Docker 경계·publisher 분리·로그인 증거가 있어야 한다. main과 승인 snapshot이 달라지면 새 배정을 멈추고 실제 인수/동기화를 먼저 확인한다. 부모 blocked인 부분 작업은 별도 released capability로 진행하며 미완료 의존을 그대로 표시한다.
+
+**등록과 개별 배정 허용은 별개다.** 새 production config는 `"released_capabilities": []`로 준비한다. 필수 task와 세 팀원의 작은 단위를 policy에 등록해도 이 목록에 없는 ID는 `capabilities_ready`에 포함되지 않는다. PM이 해당 PC의 현재 준비 증빙·원래 선행 완료·최신 배정·동일 파일의 열린 PR/다른 실행 충돌을 확인한 뒤 특정 ID만 외부 config에 넣는다. 설정 변경은 OFF와 PM loop 중단 상태에서 새 config 해시를 확인하고 예약 작업을 명시적으로 재설치한 뒤 반영한다. 모델·Issue/PR 본문·브랜치 JSON은 이 목록을 바꾸지 못한다. 실행 직전 broker가 목록과 기존 인증·snapshot·readiness gate를 다시 확인한다.
+
+`released_capabilities`가 없는 이전 고정 pilot config는 당시 trusted policy 승인을 유지하는 호환 경로다. 앞으로 만드는 운영 config에서는 생략하지 않는다. `null`·잘못된 자료형·중복·등록되지 않은 ID는 오류이며 빈 목록을 전체 허용으로 해석하지 않는다. 목록에서 제거해도 이미 실행 중인 외부 요청을 취소하는 것은 아니므로 전체 중단에는 기존 OFF/STOP 절차를 사용한다. 기존 reconcile·개별 검수·정확한 head 병합 조건은 그대로 유지한다.
 
 병합은 현재 main/base와 head, 모든 필수 CI SUCCESS, 허용 경로, 서로 다른 implementation/reviewer session, unresolved finding 없음, 실제 고정 검사 근거를 요구한다. 같은 PM GitHub 계정의 작업도 개발과 다른 격리 검수 세션을 사용한다. PR 본문의 “승인”·branch JSON의 verified flag·개발자의 자기 평가를 trusted proof로 취급하지 않는다. broker가 직접 수집하고 고정 head/base와 연결한다.
 
