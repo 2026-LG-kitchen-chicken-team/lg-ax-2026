@@ -1,0 +1,75 @@
+{
+  "task_id": "P2-CORE-002",
+  "result": "partial",
+  "execution_kind": "fixture",
+  "models": [],
+  "new_live_model_calls": 0,
+  "observed_at": "2026-10-04T17:42:34.432395+00:00",
+  "local_base_commit": "28788164c1827ef5a89a053562306e3837f614a1",
+  "core_code_commit": "afff4a77469816dca52ab7bb22d835f6ed06c0bf",
+  "remote_main": "07be0aa3fe42eb023b05b3b69016ef8f57777ca2",
+  "consumer_pr": 61,
+  "consumer_head": "184b44485e1f17684dc61fdeaa6da719012d09ff",
+  "checks": [
+    {
+      "command": [
+        "node.exe",
+        "evals/core-exclusions/check_web_decision_compat.mjs"
+      ],
+      "path": "harness/phase2/runs/core002-web61-current-20261005/original-consumer.txt",
+      "sha256": "cce0da80d9962ec1cfbf1acd240179af0addd6066bb196b9ff5d7a1ae8a8d18f",
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "node.exe",
+        "evals/core-exclusions/check_web_decision_compat.mjs",
+        "--consumer-commit",
+        "184b44485e1f17684dc61fdeaa6da719012d09ff"
+      ],
+      "path": "harness/phase2/runs/core002-web61-current-20261005/current-consumer.txt",
+      "sha256": "87530205545c4bec49135cd60b71bfda0ed51e864f1658293415b708f2a8937a",
+      "exit_code": 0
+    },
+    {
+      "command": [
+        ".venv/Scripts/python.exe",
+        "-X",
+        "utf8",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "path": "harness/phase2/runs/core002-web61-current-20261005/rules.txt",
+      "sha256": "7e0a7002be1c8a6a929966a18bc7207035beabeef3065614f21a9b6265ca789d",
+      "exit_code": 0
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "evals/core-exclusions/check_web_decision_compat.mjs",
+      "sha256": "5f046e157933598d5066155656a72451479f23db38aef23dd8b88844e8f8393d"
+    },
+    {
+      "path": "harness/phase2/runs/core002-decision-compat-20261005/current-fixture-snapshots.json",
+      "sha256": "0615863bb7a2d74cbc50c7c7e1623f6e7c3fc749062bb437e8be81ccd6ca951d"
+    },
+    {
+      "path": "packages/core/src/lgax_core/planning_agent.py",
+      "sha256": "1b05239783b26bef1992f6006718e2897780251921cab9f810679db24939995a"
+    },
+    {
+      "path": "packages/core/src/lgax_core/semantic_review.py",
+      "sha256": "24ddcf66e99ae4b6edb72af1356ceb35bddaec085129ae477b3de987f05af6e6"
+    }
+  ],
+  "observations": [
+    "Original pinned consumer still reproduces both old errors and accepts all five repaired persisted fixtures.",
+    "New pinned consumer accepts all five current persisted fixtures with zero decision or record errors.",
+    "ExecutionPanel statically renders all five paths, including expected semantic-review and rejected-candidate panels.",
+    "Current decisions use six top-level fields; previous prose saying seven was a counting error, not a code change."
+  ],
+  "limitations": [
+    "Static HTML replay of authored fixtures; no browser, live model, new meaning score, PM approval or merge.",
+    "Core implementation unchanged since afff4a7; prior Python403/semantic21 results are historical, not rerun here."
+  ]
+}

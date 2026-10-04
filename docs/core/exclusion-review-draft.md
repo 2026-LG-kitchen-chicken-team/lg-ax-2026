@@ -25,7 +25,9 @@ PM의 `workspace-live.json` 변경 실행은 수정 회차2에서 계약 accept�
 
 공통 JSON Schema·Skill 계약·API/웹 코드는 변경하지 않습니다. 내부 planning_execution에 `semantic_reviews`와 review trace/model call이 추가되며 기존 decision/status/출력 후보 경계에 반영됩니다. review_judgement trace는 실제 기존 검사 결과를 보존하고 최종 review_decision/semantic_review를 별도로 기록합니다. 기존 Workspace runner는 이 PlanningAgent를 사용하므로 다음 PM 검증에서 새 검토가 적용됩니다. 기본 request-only/미구현 Skill 경로는 그대로입니다. Draft55의 별도 review_revision callback 통합은 CORE003 후속입니다.
 
-공개 decision은 기존7필드와 violations의 code/stage만 사용합니다. 조건/후보/판단 근거의 상세값은 semantic_reviews.report·trace 및 다음 생성 단계의 내부 feedback에서 보존합니다. 생성/검토 오류 종료도 next_revision_count를 기록하고 rerun_from=null로 종료합니다. 웹 PR61의 고정 judgementDecisionErrors/planningExecutionView 함수를 그대로 실행해 이전 details 포함 결과의 거절과 수정 후 저장된5경로 수신을 확인했습니다. 웹의 추가 속성 검사를 느슨하게 하지 않았습니다.
+공개 decision은 기존 6필드(`valid`, `action`, `revision_count`, `next_revision_count`, `rerun_from`, `violations`)와 violations의 code/stage만 사용합니다. 조건/후보/판단 근거의 상세값은 semantic_reviews.report·trace 및 다음 생성 단계의 내부 feedback에서 보존합니다. 생성/검토 오류 종료도 next_revision_count를 기록하고 rerun_from=null로 종료합니다. 웹 PR61의 고정 judgementDecisionErrors/planningExecutionView 함수를 그대로 실행해 이전 details 포함 결과의 거절과 수정 후 저장된5경로 수신을 확인했습니다. 웹의 추가 속성 검사를 느슨하게 하지 않았습니다.
+
+후속 웹 PR61 `184b44485e1f17684dc61fdeaa6da719012d09ff`는 저장된 이전 형식과 semantic_reviews/rejected_output 표시를 추가했습니다. 아래 선택적 명령은 해당 Git commit의 실제 소비자와 ExecutionPanel을 읽어 같은5경로의 검사/정적 HTML 렌더링을 재현합니다. 원 웹 파일·이전 근거를 덮어쓰지 않으며 HTTP 서버·브라우저·실모델 실행은 아닙니다. 이 변경과 기존 코어 결정 보완은 양립합니다.
 
 ## 재현 및 PM 인수
 
@@ -33,6 +35,7 @@ PM의 `workspace-live.json` 변경 실행은 수정 회차2에서 계약 accept�
 uv run python -m unittest discover -s tests -p test_semantic_review.py -v
 uv run python -m unittest discover -s tests -p test_planning_agent.py -v
 node evals/core-exclusions/check_web_decision_compat.mjs
+node evals/core-exclusions/check_web_decision_compat.mjs --consumer-commit 184b44485e1f17684dc61fdeaa6da719012d09ff
 ```
 
 테스트의 reviewer 응답은 authored fixture입니다. PM의 원 live 출력에 대한 기존 계약 accept 재현과 불확실 선언을 받아 hold로 끝나는 경계를 확인했으며, 새 모델이 실제로 위반을 탐지했다고 주장하지 않습니다.
