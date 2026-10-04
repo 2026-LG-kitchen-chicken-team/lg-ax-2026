@@ -20,6 +20,8 @@
 
 ## 지금 볼 문서
 
+- [PM 현재 배정·결과 인수](docs/pm/현재배정.md), [평가 결과 수집·가린 검토](docs/pm/evaluation.md), [소스 ZIP·재현 준비](docs/pm/submission.md), [발표·시연 구성](docs/pm/발표와시연_준비.md): 10/4 PM 후속 준비. 실제 참가작 평가·최종 제출은 별도 완료 조건이다.
+
 - [PM 공통 작업실·권한·이력](docs/pm/workspace.md), [모델 호출 규격](docs/pm/model-adapters.md), [다섯 Skill](docs/pm/skills.md): 10/4 정이량 #19/#20 선행 구현. 실제 공통 저장/연결은 확인했고 전체 Agent·화면·네 판단 Skill 통합은 남았다.
 
 - [팀 AI 작업기록·근거·재개](docs/작업기록/README.md): 사용자 지시 원문·AI 해석·실제 수행·검증을 팀원별로 기록하고 다음 AI와 PM이 이어받는 필수 규칙. AGENTS.md와 CLAUDE.md는 동일한 전체 내용으로 유지.
@@ -54,7 +56,7 @@
 ## GitHub 협업
 
 - 저장소: [jeongiryang/lg-ax-2026](https://github.com/jeongiryang/lg-ax-2026), 기본 브랜치 `main`.
-- 신진하: [ginaginaring](https://github.com/ginaginaring), 쓰기 권한 초대 발송(2026-09-27), 수락 대기.
+- 신진하: [ginaginaring](https://github.com/ginaginaring), 개발팀 합류·초대 수락·저장소 Write 확인(10/4 사용자 확인·GitHub 직접 조회). 자료 Epic #5·#12~#16 담당자를 지정했다. [현재 배정](docs/pm/현재배정.md)의 #12부터 시작한다.
 - 황대겸: [unknownamed](https://github.com/unknownamed), 10/4 초대·수락·쓰기 권한 확인.
 - 최길웅: [choigilung](https://github.com/choigilung), 쓰기 권한 확인.
 - 역할 고정: [운영 Issue #28](https://github.com/jeongiryang/lg-ax-2026/issues/28), [2차 개발 Project](https://github.com/users/jeongiryang/projects/3).

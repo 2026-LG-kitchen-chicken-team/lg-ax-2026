@@ -29,7 +29,7 @@
 
 ## 2026-10-04 확정 개발 구조·역할·하네스
 
-- 사용자가 승인한 단일 비공개 저장소는 `jeongiryang/lg-ax-2026`이다. [고정 운영 Issue #28](https://github.com/jeongiryang/lg-ax-2026/issues/28), [LG AX 2026 · 2차 개발 Project](https://github.com/users/jeongiryang/projects/3)를 사용한다. 첫 개발 작업은 정이량 #17/#18, 황대겸 #7, 신진하 #12, 최길웅 #23이다. 담당 Epic·후속 작업·요구사항 링크는 `harness/phase2/github.json`과 각 작업 패킷에 있다. 정이량·황대겸·최길웅의 저장소 쓰기 권한은 확인됐고 신진하는 초대 수락 대기다. 이후 권한 상태는 직접 확인한다.
+- 사용자가 승인한 단일 비공개 저장소는 `jeongiryang/lg-ax-2026`이다. [고정 운영 Issue #28](https://github.com/jeongiryang/lg-ax-2026/issues/28), [LG AX 2026 · 2차 개발 Project](https://github.com/users/jeongiryang/projects/3)를 사용한다. 첫 개발 작업은 정이량 #17/#18, 황대겸 #7, 신진하 #12, 최길웅 #23이다. 담당 Epic·후속 작업·요구사항 링크는 `harness/phase2/github.json`과 각 작업 패킷에 있다. 정이량·황대겸·최길웅에 이어 신진하의 초대 수락·저장소 Write도 확인했다. 네 담당 권한과 Issue 배정은 직접 조회해 유지한다.
 - 정이량(`jeongiryang`): PM, 공통 JSON Schema·API/MCP·연구실 연결·하네스/CI·전체 통합·검수·병합·평가·제출을 맡는다. 황대겸(`unknownamed`): 최고 난도인 불편/기존 기능 대조, 잔여 불편, 콘셉트/요구사항, 중복·근거 검사와 수정·보류 판단을 맡는다. 신진하(`ginaginaring`): 문서 처리/OCR, 제품·모델·버전 자료팩, 검색/재정렬, 근거 연결, 공개 모델·기술 비교를 맡는다. 최길웅(`choigilung`): 웹 요청·자료/근거 대조·후보 비교·조건 수정/이력·내보내기와 사용자 흐름 검증을 맡는다. 공식 팀장은 황대겸이며 개발 PM과 구분한다. 이전 역할·레포 미정 문장은 당시 기록이다.
 - 웹은 React·TypeScript·Vite와 npm, 코어/API/MCP는 Python 3.11과 uv이다. `apps/web`, `apps/api`, `apps/mcp`, `packages/core`, `packages/contracts`, `services/inference`, `skills`, `evals`를 구분하며 웹과 MCP는 같은 코어를 호출한다. `packages/contracts/schemas/lgax.schema.json`이 계약 원본이다. Python jsonschema와 웹 Ajv 2020은 같은 원본을 검사한다. 잠금 파일 `uv.lock`, `apps/web/package-lock.json`을 사용한다.
 - 제품·문서·근거·불편·기능·콘셉트·실행 기록의 ID, 제품 모델·문서 버전·원문 위치·실자료/합성 구분을 유지한다. 잘못된 입력·자료 부족·모델 불일치·상충 근거·연결 실패·미구현을 구분한다. 미구현은 명시적인 오류이며 고정 성공 응답으로 대체하지 않는다. 계약 변경은 PM Issue/PR에서 영향·소비자·마이그레이션을 먼저 검토한다. 담당 경계가 겹치면 PM이 편집 범위를 조정한다.
@@ -42,9 +42,27 @@
 - 설치/실행/검사 명령은 `docs/bootstrap/README.md`를 따른다. 핵심 종료 검사: `uv run python scripts/sync_agent_rules.py --check`, `uv run python scripts/check_contracts.py`, `uv run python scripts/phase2.py validate`, `uv run python -m unittest discover -s tests -v`, MCP stdio/HTTP smoke, 웹 `npm ci`, test/build. CI 실제 통과와 로컬 성공을 구분한다. GPU 실모델 검사는 별도 실행 증빙으로 관리한다. Windows 실행 정책을 낮추지 않고 Python 모듈/공식 WASM 등 정상 지원 경로를 사용한다.
 - 2차 개발 시작과 참가작 완성은 별도 상태다. 컨설팅 일정 10/6 오전 확인, 10/20 발표자료·영상·전체 코드 ZIP(README·재실행 Skill의 SKILL.md 포함) 준비를 관리한다. 공식 배점 20/20/10/30/20·기존 분량 규정은 `docs/2차제출_평가안내_2026-10-03.md`를 따르며 제출 시각/경로/용량/영상 길이/가산점은 후속 확인한다.
 
+## GitHub 계정과 실제 이름·담당자 확인
+
+| GitHub 계정 | 실제 이름 | 담당 |
+|---|---|---|
+| `jeongiryang` | 정이량 | PM·공통 규격/연결·통합·검수·병합·평가·제출 |
+| `unknownamed` | 황대겸 | 공식 팀장·핵심 판단/대조·콘셉트·검사/수정 |
+| `ginaginaring` | 신진하 | 자료 처리/OCR·검색·근거·공개 모델 비교 |
+| `choigilung` | 최길웅 | 웹 기획 작업실·검토 화면·수정 이력·내보내기 |
+
+- 사용자가 현재 대화에서 담당자를 지정했다면 그 지정을 우선한다. 이미 확인한 담당자는 같은 대화에서 매번 다시 묻지 않는다.
+- 이름 없이 “내 작업 진행해”처럼 요청하면, 현재 사용 환경의 GitHub 인증 계정을 읽기 전용으로 확인하고 위 표와 대조한다. GitHub CLI를 사용할 수 있다면 `gh api user --jq .login`으로 로그인 계정을 확인한다. 일치하는 개인 계정이면 해당 이름으로 자기 작업기록·근거·phase2 배정을 읽고 진행한다.
+- 인증 계정을 확인할 수 없거나 표에 없는 계정, 공유 계정임이 알려진 경우, 현재 지시와 계정이 충돌하는 경우에는 담당자를 확인한 뒤 개인 기록을 작성한다. 저장소 소유자·최근 commit 작성자·`git config user.name`만으로 실제 작업자를 추정하지 않는다.
+- 이 표는 담당자를 식별하기 위한 규칙이며 GitHub 권한 부여나 초대 수락을 증명하지 않는다. 실제 저장소/Project 권한과 작업 완료는 별도 확인한다.
+
 ## 팀 AI의 작업 의도·진행·근거 기록 (필수)
 
-- 2026-10-04 사용자 직접 지시로 GitHub Projects 대시보드는 PM 정이량만 편집·관리한다. 황대겸/신진하/최길웅은 조회 전용(Read)이며 저장소 코드 작업의 Write 권한과 구분한다. 팀원 AI는 자기 Issue/PR·작업기록/근거에 진행·검수·배정 변경 요청을 남기고 PM이 보드의 상태/배정/우선순위/증빙/설정을 갱신한다. 팀원 계정으로 `bootstrap_github.py --apply`·`sync_github_phase2.py --apply`를 실행하거나 보드 편집 권한을 재부여하지 않는다. 신진하의 만료 저장소 초대는 10/4 새 Write 초대로 교체했고 실제 수락은 대기다. 최신 권한/검증 범위는 `docs/프로젝트권한_2026-10-04.md`를 따른다.
+- 2026-10-04 신진하의 개발팀 합류에 이어 초대 수락을 사용자가 확인했고 GitHub에서 실제 Write 권한·대기 초대 없음이 확인됐다. PM이 자료 Epic #5·첫 작업 #12·후속 #13~#16의 담당자를 `ginaginaring`으로 지정했다. 최신 배정/인수 조건은 `docs/pm/현재배정.md`를 읽는다. 팀 합류·계정 접근·개발 완료를 구분하며 Project Read 권한은 유지한다.
+
+- PM #21/#22 선행 준비는 `docs/pm/evaluation.md`, `docs/pm/submission.md`, `docs/pm/발표와시연_준비.md`를 따른다. 평가 수집/가린 검토 도구와 준비용 ZIP은 실제 Agent 비교·효과/토큰 절감·최종 제출 완료 증거가 아니다. 입력/자료/출력 계약·모델 digest·샘플링/출력 예산·전체 호출/재시도 측정 조건을 맞추며 미측정은 null로 유지한다. 독립 평가 입력/기대 대응은 개발 예시와 분리한다. 촬영 코드 commit·자료/모델 버전과 ZIP을 연결하고 실제 완성/제출 gate는 후속 증거로 판정한다.
+
+- 2026-10-04 사용자 직접 지시로 GitHub Projects 대시보드는 PM 정이량만 편집·관리한다. 황대겸/신진하/최길웅은 조회 전용(Read)이며 저장소 코드 작업의 Write 권한과 구분한다. 팀원 AI는 자기 Issue/PR·작업기록/근거에 진행·검수·배정 변경 요청을 남기고 PM이 보드의 상태/배정/우선순위/증빙/설정을 갱신한다. 팀원 계정으로 `bootstrap_github.py --apply`·`sync_github_phase2.py --apply`를 실행하거나 보드 편집 권한을 재부여하지 않는다. 신진하의 만료 저장소 초대는 10/4 새 Write 초대로 교체한 뒤 실제 수락·Write 권한과 자료 담당자 지정을 확인했다. 최신 권한/검증 범위는 `docs/프로젝트권한_2026-10-04.md`를 따른다.
 
 - 2026-10-04 PM #19/#20 선행 구현의 공통 연결 규격은 `docs/pm/workspace.md`, `docs/pm/model-adapters.md`, `docs/pm/skills.md`를 따른다. private 작업실 API는 loopback18869/Bearer/owner·viewer·admin, 전용 MCP는 stdio이고 기존 공개 읽기3도구와 구분한다. 웹 공통 클라이언트는 `apps/web/src/workspace.ts`다. 요청 기록 저장 성공을 Agent 판단 성공으로 표현하지 않는다. 원입력/변경 요청/자료·문서 scope와 사용자변경 회차·Agent 내부수정 회차를 분리한다. 실제 코어 결과 저장·기획 화면/호스트 연결·4판단 Skill 실모델 반복 실행은 미완료이므로 P2-PM003/004와 R/E 전체 완료는 후속 실제 통합 뒤 판정한다. 상세 상태는 phase2와 정이량 최신 재개 기록을 읽는다.
 

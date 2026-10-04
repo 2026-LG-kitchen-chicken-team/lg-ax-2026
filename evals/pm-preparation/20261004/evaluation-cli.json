@@ -1,0 +1,50 @@
+{
+  "execution_kind": "fixture",
+  "purpose": "Actual preparation CLI, not Agent/LLM quality evaluation",
+  "first_exit": 0,
+  "summary": {
+    "schema_version": 1,
+    "preparation_status": "fixture_only",
+    "execution_kind": "fixture",
+    "evaluation_complete": false,
+    "blinding": "method_labels_only",
+    "independent_review_required": true,
+    "execution_verified_by_tool": false,
+    "comparability_check": "case_file_hashes_and_declared_conditions_only",
+    "case_count": 6,
+    "categories": {
+      "normal": 1,
+      "duplicate_feature": 1,
+      "model_version_confusion": 1,
+      "conflicting_reviews": 1,
+      "missing_evidence": 1,
+      "specification_change": 1
+    }
+  },
+  "checks": {
+    "null_preserved": true,
+    "actual_zero_preserved": true,
+    "pm_key_separate": true,
+    "review_labels_hide_method_names": true,
+    "overwrite_rejected_without_change": true
+  },
+  "repeat_exit": 2,
+  "repeat_stderr": "Evaluation preparation rejected: Output directory and PM key must be new; overwriting is forbidden\n",
+  "input_sha256": {
+    "agent.json": "d7950202a860c3a5055a28202990b69ab054cdb946a907f3e2294b326b01945c",
+    "baseline.json": "89eb0b01e16525c26738a38e8f9a810f472175292b6b7500a395d270dfa3ee0e",
+    "cases.json": "3df7c81eb82c2b0c75453972afd328d225e87f7b38417b6374544f6d91c10f16",
+    "data.json": "5eab9a197ab685a03b95af93d924de561c7c031b071064db4c0141ae75be740b",
+    "output-contract.json": "8c6dd42edad41e101043f68ebf84cb52d48940fcac909ab736d34c11501761ef"
+  },
+  "output_sha256": {
+    "preparation.json": "d763d17971ca4aedca0508d774c1155b00dc702e453d9e3d7abcd8ad9715777e",
+    "review.json": "0e67c2937eb95742d0ceb3e225671dbe4835cb1bf7e5d8a2f3269a501e449890",
+    "scorecard.json": "4a65c76f589ce2e44832a19e9cd87bb38281f63b714e5f42a411d6b595076f5c"
+  },
+  "evaluation_complete": false,
+  "limitations": [
+    "Input/results are synthetic interface-test fixtures generated from tests/test_prepare_evaluation.py; independent cases and live-model comparison remain unexecuted.",
+    "Actual PM key/raw inputs are under private/ and not shared."
+  ]
+}
