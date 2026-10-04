@@ -112,5 +112,5 @@
 
 - 사용자 승인으로 Team 월간 4석 가입·결제 후 기존 LG 저장소를 `2026-LG-kitchen-chicken-team/lg-ax-2026`으로 이전했다. 비공개와 repo ID 1389435290·Git 이력·Issue/PR·기존 네 명 권한을 보존한다. 앞의 개인 소유 주소는 당시 기록이다.
 - 현재 운영 Issue는 https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28 이다. Project는 기존 https://github.com/users/jeongiryang/projects/3 을 유지한다. 개인 clone의 origin을 새 주소로 갱신한다.
-- main은 PR·필수 CI(python-and-harness, web)·PM만 push/병합·강제 push 및 삭제 금지로 보호한다. PM 본인 PR도 CI와 PR 경로를 따르며 관리자 우회로 통과하지 않는다. GitHub 승인 리뷰 수는 0으로 두고 실제 PM 검수·증빙·팀원 PR 승인 절차는 기존 규칙을 유지한다.
+- main은 PR·필수 CI(python-and-harness, web)·PM만 push/병합·강제 push 및 삭제 금지로 보호한다. 2026-10-05 사용자가 직접 추가한 protect-main 규칙의 3명 승인·선형 이력은 유지한다. 같은 날 사용자가 PM 정이량의 관리자 bypass 병합을 명시적으로 승인했다. PM은 고정 head의 검수·필수 CI 성공을 먼저 확인한 뒤 PR 경로에서 squash와 관리자 bypass로 병합할 수 있다. 팀원에게 bypass를 부여하거나 보호 규칙을 낮추지 않는다. 이전의 승인 수0·관리자 우회 금지는 10/4 운영 기록이며 최신 사용자 지시로 이 문장에 대체됐다.
 - 보고 서비스는 새 canonical repo만 호출한다. 이전 주소로 작성한 고정 인수 수신증은 원본/해시를 보존하며 하네스의 명시적인 역사 주소 허용목록에서 검증한다. 임의 저장소나 다른 소유자를 허용하지 않는다.
