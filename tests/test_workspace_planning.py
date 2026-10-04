@@ -189,6 +189,20 @@ class WorkspacePlanningTests(unittest.TestCase):
         self.assertEqual(saved["run"]["status"], "failed")
         self.assertEqual(saved["run"]["revision_count"], 0)
 
+    def test_held_output_cannot_publish_another_model_or_source(self):
+        fixture = FixtureRunner(status="held")
+
+        def invalid(request, versions, evidence):
+            result = fixture(request, versions, evidence)
+            result["output"]["needs"][0]["evidence_ids"] = ["OTHER-MODEL-SOURCE"]
+            return result
+
+        store, pid = self.store(invalid)
+        saved = store.create_run(pid, self.request, "planner", "api")
+        self.assertEqual(saved["run"]["status"], "failed")
+        self.assertEqual(saved["output"]["needs"], [])
+        self.assertIn("rejected_execution", saved["output"]["planning_execution"])
+
     def test_builder_rejects_multi_model_or_new_document_version_before_call(self):
         with self.assertRaises(DomainError) as multi:
             build_planning_input({**self.request, "model_ids": ["A", "B"]}, {}, self.evidence)

@@ -10,7 +10,7 @@ from jsonschema import Draft202012Validator
 from lgax_contracts import validate
 
 from .errors import DomainError
-from .judgement_contract import review_judgement
+from .judgement_contract import input_digest, review_judgement
 from .judgement_contract import schema_for as judgement_schema
 from .model_client import StructuredModelClient
 from .planning_agent import PlanningAgent
@@ -90,13 +90,21 @@ def planning_run_fields(execution: Any, payload: dict) -> tuple[dict, dict]:
     declared = execution.get("output")
     if declared is not None:
         Draft202012Validator(judgement_schema("output")).validate(declared)
-        if declared["status"] != status or declared["revision_count"] != revisions:
+        if (declared["status"] != status or declared["revision_count"] != revisions
+                or declared["model_id"] != payload["product"]["model_id"]
+                or declared["document_version"] != payload["product"]["document_version"]
+                or declared["input_sha256"] != input_digest(terminal)):
             raise DomainError("CONTRACT_MISMATCH", "판단 결과와 실행 상태가 다릅니다.", {})
     if status == "completed":
         checked = review_judgement(terminal, declared)
         if not checked["valid"] or checked["action"] != "accept":
             raise DomainError("CONTRACT_MISMATCH", "검사를 통과하지 않은 판단을 완료로 저장할 수 없습니다.", {})
     output = declared or {"needs": [], "gaps": [], "concepts": []}
+    scoped_evidence = {item["id"] for item in payload["sources"]}
+    for item in output["needs"] + output["gaps"]:
+        if (item["model_id"] != payload["product"]["model_id"]
+                or not set(item["evidence_ids"]).issubset(scoped_evidence)):
+            raise DomainError("CONTRACT_MISMATCH", "판단 결과가 프로젝트 원문 범위를 벗어났습니다.", {})
     for item in output["needs"]:
         validate("Need", item)
     for item in output["gaps"]:

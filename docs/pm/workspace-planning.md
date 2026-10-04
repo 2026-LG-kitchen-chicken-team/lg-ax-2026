@@ -34,3 +34,5 @@ uv run --no-sync ruff check packages/core/src/lgax_core/workspace.py packages/co
 ```
 
 신규 시험은 기본 미호출·scope/owner/parent·요청 변경/부모 불변·내부 수정 회차·보류/실패·잘못된 완료·트랜잭션 경계와 API body/권한을 확인한다. MockTransport를 사용하는 실제 PlanningAgent 흐름도 **fixture 시험**으로만 기록한다. 별도 실제 모델/API 실행은 PM이 입력·서버 설정·자료/모델 버전·원본 응답·같은 run 조회/호스트·웹 연결을 증빙해야 한다. 이 문서 생성과 자동 검사만으로 그것을 완료 처리하지 않는다.
+
+이번 연결 구현 검증에서는 위 범위의 workspace 시험 31개와 변경 Python 파일의 Ruff 검사가 통과했다. 보류·실패 결과도 입력 SHA·제품 모델·문서 버전·원문 근거 범위를 확인하며, 범위를 벗어난 결과는 화면용 needs/gaps에 싣지 않고 실패와 원본 rejected_execution을 보관한다. 실제 모델 호출 성공과 브라우저 시연은 이 검사 결과에 포함하지 않는다.
