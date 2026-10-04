@@ -1,0 +1,21 @@
+{
+ "LGAX_MODEL_ADAPTER": "ollama",
+ "LGAX_MODEL_ENDPOINT": "http://127.0.0.1:18873 (loopback model_proxy -> shared gateway)",
+ "LGAX_MODEL_ID": "qwen3:8b",
+ "LGAX_MODEL_DIGEST": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+ "LGAX_MODEL_TIMEOUT_SECONDS": "240",
+ "LGAX_MODEL_MAX_OUTPUT_TOKENS": "8192",
+ "LGAX_MODEL_CONTEXT_TOKENS": "16384",
+ "LGAX_MODEL_THINK": "false",
+ "source": "PM round2 evals/pm-review/20261005-round2/api-live/executed-source.json config",
+ "attempt1_config": "same except defaults MAX_OUTPUT_TOKENS=256, CONTEXT_TOKENS=4096, TIMEOUT=120 -> MODEL_UNAVAILABLE output_truncated",
+ "code_commit": "d20b31f6e79976d54160984af746ea3ecc254846",
+ "web_port": 5173,
+ "public_api": "http://127.0.0.1:18867 (existing local process, read-only)",
+ "workspace_server": "http://127.0.0.1:18879 --enable-planning, fresh private DB",
+ "e2e_env": {
+  "LGAX_E2E_REQUIRE_LIVE_MODEL": "1",
+  "LGAX_E2E_EXPECTED_MODEL_ID": "qwen3:8b",
+  "LGAX_E2E_EXPECTED_MODEL_DIGEST": "500a1f06...b41"
+ }
+}
