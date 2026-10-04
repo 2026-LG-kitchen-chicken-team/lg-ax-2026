@@ -1,0 +1,238 @@
+{
+  "schema_version": "1.0",
+  "observed_at": "2026-10-04T23:28:28.488598+00:00",
+  "scope": "PM own production OFF standby and real team handoff; not all-PC automation or product completion",
+  "repository": "2026-LG-kitchen-chicken-team/lg-ax-2026",
+  "execution_code_source": "12f5a920d2170113f08f2f806fada5070d3acb4d",
+  "delivery": {
+    "pull_request": 81,
+    "state": "MERGED",
+    "merged_at": "2026-10-04T23:11:57Z",
+    "merge_commit": "12f5a920d2170113f08f2f806fada5070d3acb4d",
+    "checks": [
+      {
+        "name": "python-and-harness",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/actions/runs/37242762785/job/111554587388"
+      },
+      {
+        "name": "python-and-harness",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/actions/runs/37242758895/job/111554576727"
+      },
+      {
+        "name": "web",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/actions/runs/37242762785/job/111554587200"
+      },
+      {
+        "name": "web",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/actions/runs/37242758895/job/111554576957"
+      }
+    ]
+  },
+  "central_observation": {
+    "global_mode": "off",
+    "members": {
+      "jeongiryang": false,
+      "unknownamed": false,
+      "ginaginaring": false,
+      "choigilung": false
+    },
+    "jobs": 0,
+    "reservations": 0,
+    "formal_approved_commit": "12f5a920d2170113f08f2f806fada5070d3acb4d",
+    "formal_tasks": 21,
+    "observed_at": 1791156506.9142432
+  },
+  "migration": {
+    "proof_sha256": "30235d9cfaa424421e6166863a32a3047ef1b41cf966b6bc36179bee7b918a9c",
+    "source_counts": {
+      "journal": 20,
+      "seen": 6,
+      "actions": 4,
+      "budgets": 2,
+      "metadata": 2
+    },
+    "target_counts": {
+      "journal": 21,
+      "seen": 6,
+      "actions": 4,
+      "budgets": 2,
+      "metadata": 2
+    },
+    "budget_rows_preserved": true,
+    "broker_state_preserved": true,
+    "counter_reset": false,
+    "formal_task_completion_changed": false,
+    "policy_sha256": "8c4a2c05cdcda55fbd17f44c6c3f05952f4b0dab48177a1498fa8c2e0990516b",
+    "catalog_tasks": 21,
+    "required_tasks": 19,
+    "excluded_proposed_extensions": [
+      "P2-DATA-005",
+      "P2-WEB-005"
+    ],
+    "capability_count": 4,
+    "released_capabilities": []
+  },
+  "limited_runtime": {
+    "python_version": "3.11.15",
+    "dependencies_locked": 35,
+    "base_files_copied": 4190,
+    "base_file_digest_differences": 0,
+    "probe_sha256": "f3cd405b26943ef18244baa52ada7f98a57565e46dba0219d449f5f3a61d21f5",
+    "admin_token": false,
+    "children": [
+      {
+        "kind": "python",
+        "exit_code": 0,
+        "observations": {
+          "version": "3.11.15",
+          "dependencies": 35,
+          "base_exists": true,
+          "ssl": true,
+          "sqlite": true,
+          "imports": "passed"
+        }
+      },
+      {
+        "kind": "pythonw",
+        "exit_code": 0,
+        "observations": {
+          "version": "3.11.15",
+          "dependencies": 35,
+          "base_exists": true,
+          "ssl": true,
+          "sqlite": true,
+          "imports": "passed"
+        }
+      }
+    ],
+    "existing_user_acl_changed": false,
+    "other_project_changed": false,
+    "initial_inaccessible_uv_base_failure_preserved": true
+  },
+  "background_execution": {
+    "tasks": [
+      {
+        "Name": "LGAX-PM-jeongiryang",
+        "State": "Running",
+        "Hidden": true,
+        "RunLevel": "Limited",
+        "LogonType": "Interactive",
+        "LastTaskResult": 267009
+      },
+      {
+        "Name": "LGAX-Worker-jeongiryang",
+        "State": "Running",
+        "Hidden": true,
+        "RunLevel": "Limited",
+        "LogonType": "Interactive",
+        "LastTaskResult": 267009
+      }
+    ],
+    "off_ticks_observed": 12,
+    "last_tick": {
+      "state": "off",
+      "global_mode": "off",
+      "pm_mode": "off",
+      "model_called": false,
+      "mutated": false
+    },
+    "stdout_sha256": "d0f4b670cece08bfc30172c3c7d83ad7f234c960cf641095cf5249d91302c006",
+    "stderr_bytes": 0,
+    "stdout_digest_observed_at": "2026-10-04T23:28:28.488598+00:00",
+    "stdout_is_live_file": true,
+    "execution_requires_logged_in_awake_PC": true
+  },
+  "runtime_hashes": {
+    "pm_entry": "2ed5832a49c36c010df39980a25e9794b8c9e19c7e5d0f6f0a4fbe2322ff637f",
+    "worker_entry": "e445ce8e91e0475f3bddfdbc5bbeedca56803daf81d1bc1b64f7144300478288",
+    "report_entry": "12e949ba65a473ce48353fcef325210465e209e5ed867b82f0823124b935479b"
+  },
+  "independent_runtime_audit": {
+    "source": "Read-only independent security agent inspected actual processes, locks, selected auth metadata and SQLite source backup",
+    "pm_and_worker_runtime_processes_alive": true,
+    "pm_and_worker_loop_os_locks_owned": true,
+    "idle_owner_AI_profile_lock_available": true,
+    "worker_selected_container_auth_verified": true,
+    "worker_cli_version": "0.155.0",
+    "worker_new_jobs_or_error_artifacts": false,
+    "pending_intents": 0,
+    "journal_source_prefix_preserved": true,
+    "source_budget_actions_units_proofs_preserved": true,
+    "daily_and_task_budget_are_same_calls_not_additive": {
+      "calls": 6,
+      "tokens": 91135
+    },
+    "independent_broker_review_budget": {
+      "calls": 1,
+      "tokens": 19048
+    },
+    "broker_reconciled_units": 1,
+    "readiness_sha256": "326e126407aa22d7e3d7eb613611a2d4073db3d2b36bbedcee9a5d585d3c424d",
+    "checks_did_not_execute_model_or_change_automation": true
+  },
+  "team_notifications": [
+    {
+      "assignment_id": "PM-20261005-CORE-DOCKER-HANDOFF",
+      "task_id": "P2-CORE-002",
+      "recipient_account": "unknownamed",
+      "status": "sent",
+      "sent_at": "2026-10-04T23:16:52Z",
+      "message_id": "1a1093411e4140ee",
+      "source": "Gmail send_email result",
+      "recipient_read_confirmed": false
+    },
+    {
+      "assignment_id": "PM-20261005-DATA-DOCKER-HANDOFF",
+      "task_id": "P2-DATA-001",
+      "recipient_account": "ginaginaring",
+      "status": "sent",
+      "sent_at": "2026-10-04T23:16:57Z",
+      "message_id": "1a109344c03ab729",
+      "source": "Gmail send_email result",
+      "recipient_read_confirmed": false
+    },
+    {
+      "assignment_id": "PM-20261005-WEB-DOCKER-HANDOFF",
+      "task_id": "P2-WEB-003",
+      "recipient_account": "choigilung",
+      "status": "sent",
+      "sent_at": "2026-10-04T23:17:02Z",
+      "message_id": "1a10934852cf8582",
+      "source": "Gmail send_email result",
+      "recipient_read_confirmed": false
+    }
+  ],
+  "latest_user_report": {
+    "member": "황대겸",
+    "account": "unknownamed",
+    "reported": [
+      "dedicated Windows account and Docker prepared",
+      "container ChatGPT login",
+      "controller connection and actual credential boundary verified",
+      "no additional login required"
+    ],
+    "automation_mode": "off",
+    "first_development_publication_test_run": false,
+    "automatic_worker_registration_done": false,
+    "original_other_PC_report_accessible_here": false,
+    "direct_readiness_evidence_received": false,
+    "docker_model_runner_required": false
+  },
+  "remaining": [
+    "team PC exact runtime/image and direct proof intake",
+    "team first approved development/publication tests and OFF registrations",
+    "actual Claude subscription pilot",
+    "unattended CLI email dispatch hook",
+    "PC independent HTTPS path",
+    "product core quality/Skill integration/independent evaluation/final submission"
+  ],
+  "product_status": {
+    "done_tasks": 5,
+    "requirements_verified": 0,
+    "requirements_total": 31
+  }
+}

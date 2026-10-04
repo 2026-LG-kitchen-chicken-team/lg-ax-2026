@@ -72,6 +72,14 @@ Get-ScheduledTaskInfo -TaskName LGAX-PM-jeongiryang
 
 기존 작업을 바꾸려면 자동화 OFF·진행 중 실행 정리·기존 PM loop 중단을 먼저 확인한다. 설치기는 실행 중인 예약 작업을 덮어쓰지 않는다. 고정 config/policy/readiness/runtime/Python을 변경했다면 새 경로/해시를 검토한 뒤 **`-Replace`로 명시적으로 재설치**한다. ON/OFF만 변경할 때는 controller 스위치를 사용하고 파일을 수정하지 않는다. 설치/중단은 각 Worker의 개인 모드를 대신 바꾸지 않는다.
 
+### Limited 실행 토큰의 Python 경로 점검
+
+10/5 정이량 PC에서는 일반 콘솔의 venv Python과 preflight가 성공했지만 실제 Limited/Interactive 예약 작업이 사용자 Roaming의 managed CPython base를 읽지 못해 exit `103`으로 종료됐다. 같은 경로를 사용하는 임시 예약 probe로 base 접근 실패를 확인했다. installer의 따옴표나 PS5 고유 실행 오류로 단정하지 않고, 기존 Python/계정 ACL·다른 프로젝트를 바꾸지 않은 채 별도 host runtime을 준비했다.
+
+검토한 CPython 3.11.15 **배포 폴더만** 새 외부 위치에 두고 원 파일 hash·`LICENSE.txt`·제3자 고지를 보존했다. 그 base로 새 venv를 만든 뒤 검토한 잠금 requirements의 SHA256과 `--require-hashes`·`--link-mode copy`를 사용해 동일 35개 의존성을 복원했다. 실제 Limited 예약 probe에서 `python.exe`·`pythonw.exe`의 exit 0, base 접근, 기본 라이브러리와 주요 의존성 import를 확인한 뒤 임시 task를 제거했다. uv managed 배포와 Python 라이선스의 공식 근거·각 PC에 적용할 상세 절차는 [Worker 초기 설정](../bootstrap/automation-workers.md#windows-예약-작업이-python을-실행하지-못할-때)에 있다.
+
+PM installer의 `-PythonPath`에는 이제 **본인이 검증한 새 runtime의 python.exe**를 사용한다(예: `C:/LGAX-tools/jeongiryang/host-runtime-reviewed/Scripts/python.exe`; 예시는 실제 경로로 치환). 기존 profile·운영 토큰·config·policy·journal·release 목록은 복제하거나 초기화하지 않는다. OFF와 loop 중단을 확인하고 새 경로·해시로 명시적으로 재등록한 뒤 첫 실행 로그·task/PID를 확인한다. 정이량 PC에서는 새 runtime으로 PM/Worker 두 예약 작업을 실행하고 실제 PM OFF tick의 `model_called=false`·`mutated=false`를 확인했다. task 등록 성공·일시 Running·콘솔 preflight만으로 background 정상 대기를 보고하지 않는다. 다른 세 PC는 자기 Limited 토큰의 검사와 실제 첫 실행 증빙을 별도로 제출해야 한다.
+
 ## 정책과 자동 병합 조건
 
 정책은 31개 신청 필수 요구를 부모 task의 owner·Issue·requirement_ids·depends_on과 연결한다. capability는 고정 허용 경로·검사 argv·acceptance·검사 ID·시간·우선순위의 좁은 인수 단위다. 모델은 ID와 의도/수정 문구만 선택하고 경로·검사 명령을 새로 만들어 실행하지 않는다. proposed_extension은 자동 채택하지 않는다.
