@@ -1,0 +1,175 @@
+{
+  "task_id": "P2-WEB-003",
+  "owner": "최길웅",
+  "result": "pass",
+  "execution_kind": "live_service",
+  "requirement_ids": [
+    "R14",
+    "R21",
+    "R25"
+  ],
+  "branch": "codex/p2-web-003-candidate-review",
+  "tested_commit": "a7706431a50e91c28a5b281b7c41985e950b5313",
+  "supersedes": "evals/web/20261004/p2-web-003/individual-evidence.json (d72eec1, origin/main 병합 전)",
+  "recorded_at": "2026-10-04T20:15:00+09:00",
+  "performed_by": "Claude Code (Claude Opus 5.5) for 최길웅",
+  "harness_note": "P2-WEB-002 done 전이라 phase2 start/finish 미실행. PM 인수는 receive_submission.py로 이 파일을 사용한다.",
+  "observations": [
+    "origin/main(PM #42: 범위·경합·transport 수정) 병합 후 기존 R14·R21·R25 기능과 PM 상태 시험이 모두 통과.",
+    "독립 리뷰 결함 수정: #1 후보 없는 실행에서 재실행해도 이전 후보 제외·집중을 요청에서 다시 읽어 유지(시험), #9 제목에 ]·, 가 있어도 집중 표시가 쌓이지 않음(시험), #6 조건 행 key 고정, #7 새 실서버 프로젝트의 회차 0 표시, #4 첫 실행 저장 실패 시 새 프로젝트 선택 유지·재시도는 같은 프로젝트로(jsdom 시험), 후보 제외 문장 직접 입력 거부.",
+    "실서버 시험: 조건 교정 재실행이 회차 2로 저장(웹 계산 일치)."
+  ],
+  "code_versions": [
+    {
+      "path": "apps/web/src/App.tsx",
+      "git_commit": "a7706431a50e91c28a5b281b7c41985e950b5313",
+      "sha256": "42920bc2dfc64adbbb4f0c34f0af07a463641f2b4c0b139ac1b79aa2235d2b9e"
+    },
+    {
+      "path": "apps/web/src/PlanningViews.tsx",
+      "git_commit": "a7706431a50e91c28a5b281b7c41985e950b5313",
+      "sha256": "b7dc1ec27297347ff37874f02ff0b64a7d595d5ecbbcfa861fbf44da0ce5757b"
+    },
+    {
+      "path": "apps/web/src/planning.ts",
+      "git_commit": "a7706431a50e91c28a5b281b7c41985e950b5313",
+      "sha256": "af1d6c78c8153440e718fda531958c9e1e25571b67717f3ccfe3471a5d1310b2"
+    },
+    {
+      "path": "apps/web/src/planning.css",
+      "git_commit": "a7706431a50e91c28a5b281b7c41985e950b5313",
+      "sha256": "820b412b8a45eb8f66a80863a9668d985d10bc7951bae1912cc0422a89c1fa0d"
+    },
+    {
+      "path": "apps/web/src/liveWorkspace.ts",
+      "git_commit": "a7706431a50e91c28a5b281b7c41985e950b5313",
+      "sha256": "4c6ba97ba49e9dd3f5a84dcd16d971643d4131521bb13669b1a63252ba5c2d2c"
+    },
+    {
+      "path": "apps/web/src/planning.test.ts",
+      "git_commit": "a7706431a50e91c28a5b281b7c41985e950b5313",
+      "sha256": "388d0185dac06fc785ec77241db5e31659e4a242244643cde97ff8714104553c"
+    },
+    {
+      "path": "apps/web/src/liveWorkspace.test.ts",
+      "git_commit": "a7706431a50e91c28a5b281b7c41985e950b5313",
+      "sha256": "8e05238df291fe36fedd598e34ebdc595275df569e525995ff5eaf9bbdf6a853"
+    },
+    {
+      "path": "apps/web/src/liveWorkspace.state.test.ts",
+      "git_commit": "a7706431a50e91c28a5b281b7c41985e950b5313",
+      "sha256": "e2f3126bdb8b50176db6796aee941f425d7f9e8ea77800708314b1adc169d8de"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "git_commit": "a7706431a50e91c28a5b281b7c41985e950b5313",
+      "sha256": "d7cf46d9a980b00ad786ec46feaf3d31e4094f56ff0899d8bab59bdf95a9bad5"
+    },
+    {
+      "path": "data/demo/dataset.json",
+      "git_commit": "a7706431a50e91c28a5b281b7c41985e950b5313",
+      "sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0"
+    },
+    {
+      "path": "apps/web/src/fixtures/planning.fixture.ts",
+      "git_commit": "a7706431a50e91c28a5b281b7c41985e950b5313",
+      "sha256": "5f7cb4543a1f15adbb994bcad755156811cbb55b6cd2cb02b8de6a82eb38815a"
+    },
+    {
+      "path": "apps/web/src/workspace.ts",
+      "git_commit": "a7706431a50e91c28a5b281b7c41985e950b5313",
+      "sha256": "f6857b11ba642de5678e39cbcde357bde7a2a5cab96bcfb6a41b1ae8e3bfd764"
+    },
+    {
+      "path": "packages/core/src/lgax_core/workspace.py",
+      "git_commit": "a7706431a50e91c28a5b281b7c41985e950b5313",
+      "sha256": "7228331ae911484e9c8695e5ac731e80756c0673791938c02eed2f3f3d6a9888"
+    },
+    {
+      "path": "apps/web/package-lock.json",
+      "git_commit": "a7706431a50e91c28a5b281b7c41985e950b5313",
+      "sha256": "7c2149e6f044ac3f3bdc4282b294d0402a57e7805dc0f573e26d69fedae05823"
+    }
+  ],
+  "models": [],
+  "checks": [
+    {
+      "name": "깨끗한 checkout(a770643)에서 실제 작업실 서버 opt-in vitest 11 passed",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-r2/live-workspace-test.txt",
+        "sha256": "39d41e6549ae52f9c44ab5c35da3caf5e2cda6ea74026975fef8d210d7db6fb7"
+      }
+    },
+    {
+      "name": "live 흐름 산출(회차 0→1→2)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-r2/live-workspace-flow.json",
+        "sha256": "7fd0ce06fab230196474bd1e5d85bfb88ed10704bee50eb200f397a8a25c3913"
+      }
+    },
+    {
+      "name": "npm run test --prefix apps/web (74 passed, 2 skipped opt-in; jsdom 상태 시험 포함)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-r2/web-tests.txt",
+        "sha256": "a27ace0ca37ef6544694cfc229f23dc1ecbe940bb5a1e14d895be1d0c84f598f"
+      }
+    },
+    {
+      "name": "npm run typecheck --prefix apps/web",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-r2/web-typecheck.txt",
+        "sha256": "c028f37ff786c1cd330dfd4a41ef0492f01c33aeeec7ec353ad7d20ac783869c"
+      }
+    },
+    {
+      "name": "npm run build --prefix apps/web",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-r2/web-build.txt",
+        "sha256": "4ec2e25e1783badad5a11b9e67434fb603f56afa584d24ed58f26b397c3c4261"
+      }
+    },
+    {
+      "name": "uv run python scripts/sync_agent_rules.py --check",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-r2/rules.txt",
+        "sha256": "7e0a7002be1c8a6a929966a18bc7207035beabeef3065614f21a9b6265ca789d"
+      }
+    },
+    {
+      "name": "uv run python scripts/check_contracts.py",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-r2/contracts.txt",
+        "sha256": "1e1b81f4c2607b74aca9deb8fd8bf0f1b048508d317d21f36ed1b59fca45661b"
+      }
+    },
+    {
+      "name": "uv run python scripts/phase2.py validate",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003-r2/phase2.txt",
+        "sha256": "6e84f7ccf1d99593ee0bf819047eb956d33efeb0f2863bbecbebdca299bd1e42"
+      }
+    },
+    {
+      "name": "이전 브라우저 확인(후보 비교·원문/판단·재실행 fixture/live)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-003/browser-check.json",
+        "sha256": "8dc0016cae60605e622b0453dabe401b04087b51fe9a7762d96ac276b8aa7de7"
+      }
+    }
+  ],
+  "limitations": [
+    "이 r2에서는 내장 브라우저 재확인을 하지 못했다(사용자 개발 서버가 실행 중이고 그 의존성 설치가 깨진 상태). #6 입력 포커스는 P2-WEB-004 E2E에서 실제 브라우저로 검사한다.",
+    "판단 Agent 미연결로 실서버 실행에는 후보가 없어 후보 화면은 fixture 기준이다. 후보 선택의 구조화 계약 필드는 PM 결정 사항."
+  ]
+}
