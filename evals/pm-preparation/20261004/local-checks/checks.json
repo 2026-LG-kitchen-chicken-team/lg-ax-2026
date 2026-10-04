@@ -1,0 +1,108 @@
+{
+  "recorded_at": "2026-10-04T08:18:55.005110+00:00",
+  "execution_kind": "deterministic",
+  "meaning": "Preparation tooling/regression tests; not live Agent evaluation",
+  "checks": [
+    {
+      "name": "python-tests",
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "output": "evals/pm-preparation/20261004/local-checks/python-tests.txt",
+      "sha256": "c2c9beab1e8f9176acdc0283e81e36ed861a870ce36828cb0c765c8f847c2ef8"
+    },
+    {
+      "name": "lint",
+      "command": [
+        "uv",
+        "run",
+        "ruff",
+        "check",
+        "scripts/prepare_evaluation.py",
+        "scripts/package_submission.py",
+        "tests/test_prepare_evaluation.py",
+        "tests/test_package_submission.py"
+      ],
+      "exit_code": 0,
+      "output": "evals/pm-preparation/20261004/local-checks/lint.txt",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "name": "contracts",
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/check_contracts.py"
+      ],
+      "exit_code": 0,
+      "output": "evals/pm-preparation/20261004/local-checks/contracts.txt",
+      "sha256": "1e1b81f4c2607b74aca9deb8fd8bf0f1b048508d317d21f36ed1b59fca45661b"
+    },
+    {
+      "name": "rules",
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "output": "evals/pm-preparation/20261004/local-checks/rules.txt",
+      "sha256": "7e0a7002be1c8a6a929966a18bc7207035beabeef3065614f21a9b6265ca789d"
+    },
+    {
+      "name": "phase2",
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/phase2.py",
+        "validate"
+      ],
+      "exit_code": 0,
+      "output": "evals/pm-preparation/20261004/local-checks/phase2.txt",
+      "sha256": "6e84f7ccf1d99593ee0bf819047eb956d33efeb0f2863bbecbebdca299bd1e42"
+    },
+    {
+      "name": "diff",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "output": "evals/pm-preparation/20261004/local-checks/diff.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "scripts/prepare_evaluation.py",
+      "sha256": "06f8e7220292d75fdc0b028258968563bfd13255b9d8cc4d171f2e041607feba"
+    },
+    {
+      "path": "scripts/package_submission.py",
+      "sha256": "0925ef0debcf7a49a5406ed5bb1186ee878fd68b029c086e6a7f01106f3f27ab"
+    },
+    {
+      "path": "tests/test_prepare_evaluation.py",
+      "sha256": "449d121755e592152c46ab253c46495a2a971b7131ed1cf707736533e1468ac4"
+    },
+    {
+      "path": "tests/test_package_submission.py",
+      "sha256": "f10b0836b34518ed04a3931ba559d08848972174148e316d103b154d30aa3a17"
+    }
+  ],
+  "application_requirements_verified": 0
+}

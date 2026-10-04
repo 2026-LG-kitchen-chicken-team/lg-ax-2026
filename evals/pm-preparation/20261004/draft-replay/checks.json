@@ -1,0 +1,154 @@
+{
+  "recorded_at": "2026-10-04T08:24:29.030204+00:00",
+  "execution_kind": "live_service",
+  "source_commit": "124dbf0d2088101df6272334a00b9130bb98e77a",
+  "draft": true,
+  "submission_ready": false,
+  "archive_sha256": "1e6261e266071e64ccfa503f5e6347b89d38e55ee05576862441570c8ff625cc",
+  "archive_relative_path": "private/pm-preparation/20261004/source-draft/source-draft.zip",
+  "source_file_count": 505,
+  "deterministic_duplicate_equal": true,
+  "original_git_file_verification": {
+    "archive_name": "source-draft.zip",
+    "archive_sha256": "1e6261e266071e64ccfa503f5e6347b89d38e55ee05576862441570c8ff625cc",
+    "draft": true,
+    "manifest_sha256": "96ed066fa1e53e911f8c1eb745a780180415f1a8aaa562921562a77e754748bf",
+    "schema_version": 1,
+    "source_commit": "124dbf0d2088101df6272334a00b9130bb98e77a",
+    "source_file_count": 505,
+    "submission_ready": false,
+    "verified": true,
+    "archive_path": "C:\\Users\\user\\Documents\\ChatGPT\\LG_해커톤\\private\\pm-preparation\\20261004\\source-draft\\source-draft.zip"
+  },
+  "unpack": {
+    "archive_name": "source-draft.zip",
+    "archive_sha256": "1e6261e266071e64ccfa503f5e6347b89d38e55ee05576862441570c8ff625cc",
+    "draft": true,
+    "manifest_sha256": "96ed066fa1e53e911f8c1eb745a780180415f1a8aaa562921562a77e754748bf",
+    "schema_version": 1,
+    "source_commit": "124dbf0d2088101df6272334a00b9130bb98e77a",
+    "source_file_count": 505,
+    "submission_ready": false,
+    "verified": true,
+    "archive_path": "C:\\Users\\user\\Documents\\ChatGPT\\LG_해커톤\\private\\pm-preparation\\20261004\\source-draft\\source-draft.zip",
+    "extract_path": "C:\\Users\\user\\Documents\\ChatGPT\\LG_해커톤\\private\\pm-preparation\\20261004\\source-draft\\clean-source",
+    "extracted_files": 507,
+    "replay_executed": false
+  },
+  "checks": [
+    {
+      "name": "python-install",
+      "command": [
+        "uv",
+        "sync",
+        "--locked",
+        "--dev"
+      ],
+      "exit_code": 0,
+      "evidence": "evals/pm-preparation/20261004/draft-replay/python-install.txt",
+      "sha256": "98d64057359841b186178645894020795eae748e3ccb5dce5c0af8f6e9158339"
+    },
+    {
+      "name": "rules",
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "evidence": "evals/pm-preparation/20261004/draft-replay/rules.txt",
+      "sha256": "20dd67da1fcd348a9fbbf6088dfa2ab40fe1d1576d519ef9e5af3e36769cac6a"
+    },
+    {
+      "name": "contracts",
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/check_contracts.py"
+      ],
+      "exit_code": 0,
+      "evidence": "evals/pm-preparation/20261004/draft-replay/contracts.txt",
+      "sha256": "9d704c4523c76ebcfe383b3443f9a01bd70e5c63d72e3b33868fea9c27ff0d12"
+    },
+    {
+      "name": "skill-tests",
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_skill_runner.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "evidence": "evals/pm-preparation/20261004/draft-replay/skill-tests.txt",
+      "sha256": "457b91561ab5d087b4587670f39e35dc83a0e1379c8e7c1fcc30c48e2e9f1e1e"
+    },
+    {
+      "name": "mcp-stdio",
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/smoke_mcp.py",
+        "--transport",
+        "stdio"
+      ],
+      "exit_code": 0,
+      "evidence": "evals/pm-preparation/20261004/draft-replay/mcp-stdio.txt",
+      "sha256": "332d0538e634caf3577bd5fb26d700e62f763e0fc68becaf448fc3082722266d"
+    },
+    {
+      "name": "web-install",
+      "command": [
+        "npm.cmd",
+        "ci",
+        "--prefix",
+        "apps/web"
+      ],
+      "exit_code": 0,
+      "evidence": "evals/pm-preparation/20261004/draft-replay/web-install.txt",
+      "sha256": "ce0626df214377b3e993aa5f346ad657e2758c8cd0c0d5ac78ae9ada28c7da06"
+    },
+    {
+      "name": "web-tests",
+      "command": [
+        "npm.cmd",
+        "run",
+        "test",
+        "--prefix",
+        "apps/web"
+      ],
+      "exit_code": 0,
+      "evidence": "evals/pm-preparation/20261004/draft-replay/web-tests.txt",
+      "sha256": "4acf5060aa59d7c2ca55c15ab5914457237d3d6a591d90dffe1c980bc72d0de8"
+    },
+    {
+      "name": "web-build",
+      "command": [
+        "npm.cmd",
+        "run",
+        "build",
+        "--prefix",
+        "apps/web"
+      ],
+      "exit_code": 0,
+      "evidence": "evals/pm-preparation/20261004/draft-replay/web-build.txt",
+      "sha256": "b46414b36283647cc2ae1fdb40c7dca83d261a12d88b2b5093add8e14313cc28"
+    }
+  ],
+  "limitations": [
+    "Draft preparation replay, not full planning Agent or final submission.",
+    "Four judgement Skill handlers remain NOT_IMPLEMENTED; Skill tests verify that error honestly.",
+    "No .git in ZIP; historical phase2 commit audits need the original history.",
+    "No new live-model/ChatGPT/Claude integration or quality comparison performed."
+  ]
+}
