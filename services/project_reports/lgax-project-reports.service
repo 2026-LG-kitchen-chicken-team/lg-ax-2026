@@ -1,0 +1,19 @@
+[Unit]
+Description=LG AX authenticated task reports to GitHub Project
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 -u %h/.local/share/lgax-project-reports/worker.py --policy %h/.local/share/lgax-project-reports/policy.json --token-file %h/.config/lgax-project-reports/token --state-dir %h/.local/state/lgax-project-reports --interval 45
+Restart=on-failure
+RestartSec=15
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=%h/.local/state/lgax-project-reports
+
+[Install]
+WantedBy=default.target
