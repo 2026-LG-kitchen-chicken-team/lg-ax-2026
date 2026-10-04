@@ -34,11 +34,22 @@ def assignment_id(value):
 
 def check_assignment(assignment, policy):
     required = {"assignment_id", "task_id", "purpose", "instructions", "acceptance", "next_action"}
-    if not isinstance(assignment, dict) or not required <= assignment.keys() or assignment.keys() - required - {"deadline", "source", "requirement_ids"}:
+    optional = {"deadline", "source", "requirement_ids", "pm_account", "recipient_account", "assignment_url"}
+    if not isinstance(assignment, dict) or not required <= assignment.keys() or assignment.keys() - required - optional:
         raise ValueError("invalid assignment fields")
     assignment_id(assignment["assignment_id"])
     if assignment["task_id"] not in policy["tasks"]:
         raise ValueError("registered task required; PM must register new tasks before assignment")
+    registered = policy["tasks"][assignment["task_id"]]
+    # prepare writes these public provenance fields back to the assignment file.
+    # Re-reading that file must preserve idempotency without accepting forged targets.
+    for key, expected in (("pm_account", policy["pm_account"]), ("recipient_account", registered["account"])):
+        if key in assignment and assignment[key] != expected:
+            raise ValueError("recorded assignment metadata mismatch")
+    if "assignment_url" in assignment:
+        prefix = f"https://github.com/{policy['repo']}/issues/{registered['issue_number']}#issuecomment-"
+        if not isinstance(assignment["assignment_url"], str) or not re.fullmatch(re.escape(prefix) + r"\d+", assignment["assignment_url"]):
+            raise ValueError("recorded assignment metadata mismatch")
     for key in ("purpose", "next_action"):
         if not isinstance(assignment[key], str) or not assignment[key].strip() or len(assignment[key]) > 2000:
             raise ValueError("nonempty purpose/next_action required")
@@ -46,7 +57,7 @@ def check_assignment(assignment, policy):
         if not isinstance(assignment[key], list) or not assignment[key] or not all(isinstance(x, str) and x.strip() for x in assignment[key]):
             raise ValueError("instructions and acceptance must be nonempty text lists")
     safe_text(json.dumps(assignment, ensure_ascii=False))
-    return policy["tasks"][assignment["task_id"]]
+    return registered
 
 
 def pm_only(api, policy):
@@ -145,7 +156,7 @@ def prepare(api, policy, assignment, contacts, apply=False):
     write(PUBLIC / (aid + ".json"), {**assignment, "pm_account": policy["pm_account"],
                                     "recipient_account": registered["account"], "assignment_url": comment["html_url"]})
     pm_field(api, policy, registered, {"최근 배정": f"{comment['html_url']}\n{aid} · {assignment['purpose']}",
-                                     "메일 안내": f"{aid} · {prior['status']}"})
+                                     "메일 안내": f"{prior['status']} · {aid}"})
     return {"applied": True, "assignment_id": aid, "recipient_name": registered["name"],
             "assignment_url": comment["html_url"], "private_outbox": str(outbox_path), "mail_state": prior["status"],
             "next": "PM AI uses connected Gmail, then records actual message ID. Do not infer send from prepare."}
@@ -190,7 +201,7 @@ def record(api, policy, aid, action, receipt_data=None):
     else:
         raise ValueError("unsupported notification action")
     write(path, row)
-    pm_field(api, policy, registered, {"메일 안내": f"{aid} · {row['status']}"})
+    pm_field(api, policy, registered, {"메일 안내": f"{row['status']} · {aid}"})
     return {"assignment_id": aid, "recipient_name": row["recipient_name"], "state": row["status"],
             "message_id": row["message_id"], "recipient_read_confirmed": False}
 
