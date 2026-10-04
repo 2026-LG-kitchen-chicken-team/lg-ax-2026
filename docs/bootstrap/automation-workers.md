@@ -2,7 +2,7 @@
 
 2026-10-05 사용자 승인으로 두 실행기를 제공한다. **각자 선호하는 실행기 하나를 선택**한다. 배정·작업 잠금·상세 기록·검사·PR·Project 보고·PM 검수는 동일하다. Claude Code 사용자는 Codex 로그인이나 구독을 추가할 필요가 없다.
 
-지금은 팀/개인 모두 OFF다. 초기 설정을 끝냈다고 켜지지 않는다. 실제 인증·연결·읽기 pilot 확인 후, 개발 write의 publisher 인증 격리까지 실증하고 정이량이 팀 ON을 설정해야 한다. 중앙 HTTPS는 아직 정이량 PC를 경유한다.
+검증 전 팀/개인 모두 OFF다. 초기 설정을 끝냈다고 켜지지 않는다. 최신 Worker는 [Docker 실행·검사 경계](automation-isolation.md)를 사용한다. 모델·저장소 검사에 게시 인증을 제공하지 않고 실제 canary·본인 로그인·첫 PR/보고를 확인해야 한다. 정이량의 [자동 PM](../pm/autonomous-pm.md)은 별도 정책과 PM 개인 ON이 필요하다. 중앙 HTTPS는 아직 정이량 PC를 경유한다. 네 PC의 실제 준비는 각자 근거로 확인한다.
 
 ## 팀원 AI에게 먼저 전달할 지시
 
@@ -14,14 +14,14 @@ Claude 선택 시 초기 설정을 돕는 대화와 자동 작업을 수행하�
 
 | 단계 | 팀원/자기 AI가 할 일 | 완료 증거 |
 |---|---|---|
-| 1. 실행 환경 | 전용 OS 계정/VM, 별도 clone·상태·인증 폴더, Python 3.11/uv·GitHub CLI·해당 작업의 Node/npm 확인 | 실제 경로·현재 사용자·설치 버전. 모델/테스트와 publisher 자격증명 경계의 미완료도 기록 |
+| 1. 실행 환경 | Linux Docker engine·검토한 최소 context/고정 image ID, 별도 clone·상태·execution·본인 인증 폴더, Python 3.11/uv·GitHub CLI 확인 | 실제 경로·image/user/mount/network. OS 계정/VM 이름은 경계 증거가 아님 |
 | 2. 본인 인증 | `gh auth login` 후 실제 `gh api user --jq .login`이 자기 담당 계정인지 확인 | 본인 계정·저장소 Write. 토큰 원문 기록 금지 |
 | 3. 중앙 가입 | `automation.py setup --member {성명} --controller-url {중앙주소}`로 개인 Worker 자격증명 발급 | private 설정/토큰 파일 위치·개인 OFF 상태. PM 운영자 토큰 공유 금지 |
-| 4. 실행기 로그인 | 아래 선택한 AI의 개인 전용 폴더에서 직접 로그인 | 자기 계정 로그인·선택 엔진. 다른 팀원 인증 복제 금지 |
+| 4. 실행기 로그인 | 아래 선택한 AI의 개인 전용 폴더에서 직접 로그인 | host metadata와 같은 profile을 mount한 Linux CLI 인증 확인. 다른 팀원 인증 복제 금지 |
 | 5. 고정 실행 파일 | PM 검토 main에서 저장소 밖의 새 폴더에 Worker와 report bundle 생성 | manifest·외부 entry 경로/해시. 편집 중인 브랜치에서 운영 코드 실행 금지 |
-| 6. 개인 설정 | 해당 example을 private worker.json으로 복사, 실제 절대 경로·계정·토큰·bundle 연결 | API fallback 없음·기존 state_dir/lock 보존. 예시 false를 무조건 true로 바꾸지 않음 |
+| 6. 개인 설정 | 해당 example을 private worker.json으로 복사, 실제 경로·계정·토큰·bundle·executor_image/execution_root 연결 | Docker 미준비 때 native fallback 없음·state_dir/lock 보존. legacy true가 증거가 아님 |
 | 7. 사전 점검 | 고정 entry의 `--preflight`로 계정/로그인/버전/중앙 연결만 확인 | `preflight=passed`, `model_executed=false`. 유료 모델/작업 착수 아님 |
-| 8. pilot와 등록 | PM의 작은 승인 패킷으로 읽기 pilot → write 격리 확인 후 개발 pilot → 서비스 등록 | 실제 종료/중단·검사·자기 PR·보고 수신 확인. 준비만으로 완료 선언 금지 |
+| 8. 경계/pilot/등록 | 실제 canary 분리 확인 → PM의 작은 승인 패킷으로 개발 pilot → 서비스 등록/개인 ON을 별도 확인 | model/validator 게시 canary 거부, 실제 종료/검사/자기 PR/보고 수신 확인. host canary 읽기와 GitHub 게시를 구분 |
 
 등록 계정: 정이량 `jeongiryang`, 황대겸 `unknownamed`, 신진하 `ginaginaring`, 최길웅 `choigilung`.
 
@@ -29,7 +29,7 @@ Claude 선택 시 초기 설정을 돕는 대화와 자동 작업을 수행하�
 
 [공식 설치](https://code.claude.com/docs/en/setup)를 따라 native Claude Code를 설치한다. 이번에 실제 옵션을 점검한 버전은 **2.1.289**이며 `claude_version`과 정확히 맞춰야 한다. 설치된 버전이 다르면 PM에게 버전·옵션을 제출하고 재검증한다. Windows의 `.cmd` 래퍼는 쓰지 않고 `claude_executable`에 실제 `claude.exe` 경로를 넣는다. Linux는 native 실행 파일을 쓴다.
 
-직접 로그인할 PowerShell에서 **전용 개인 폴더**를 지정한다. 아래 계정/경로는 최길웅 예시이며 자기 이름으로 바꾼다. 지정한 CLI의 `auth login`을 실행하고 **Claude 구독 계정**으로 직접 로그인한다.
+호스트 metadata 점검을 위해 직접 로그인할 PowerShell에서 **전용 개인 폴더**를 지정할 수 있다. 아래 계정/경로는 최길웅 예시이며 자기 이름으로 바꾼다. 지정한 CLI의 `auth login`을 실행하고 **Claude 구독 계정**으로 직접 로그인한다. 이 절차만으로 Linux 컨테이너 인증이 완료되지 않는다. 같은 전용 profile의 컨테이너 CLI 인증을 반드시 `automation_isolation.py verify`로 확인하고, OS 키체인 차이로 실패하면 선택한 실행 환경에서 본인 직접 로그인을 진행한다.
 
 ```powershell
 $env:CLAUDE_CONFIG_DIR = 'C:/LGAX-auth/choigilung-claude'
@@ -46,13 +46,13 @@ safe-mode에서는 CLAUDE.md가 자동 로딩되지 않으므로 작업 prompt�
 
 ## Codex 선택
 
-`services/automation/worker.example.json`을 사용한다. `engine` 생략 시 기존 Codex 설정과 호환된다. 자기 전용 CODEX_HOME을 지정해 `codex login`하고 ChatGPT 계정으로 인증한다. API key/provider로 자동 전환하지 않는다. Windows는 native codex.exe 경로를 지정한다. 나머지 중앙 가입·상태·기록·PR 절차는 같다.
+`services/automation/worker.example.json`을 사용한다. `engine` 생략 시 기존 Codex 설정과 호환된다. Docker image와 실제 개인 경로를 준비한 뒤 `scripts/automation_isolation.py login --config {본인worker.json}`으로 고정 Linux CLI의 device 인증을 안내받아 ChatGPT 계정으로 직접 로그인한다. 전용 CODEX_HOME만 사용하며 다른 프로필을 복사하지 않는다. API key/provider로 자동 전환하지 않는다. Windows의 native codex.exe metadata 경로와 실제 컨테이너 codex를 구분한다. 나머지 중앙 가입·상태·기록·PR 절차는 같다.
 
 ## 공통 bundle·점검·서비스
 
-`--preflight`는 격리 확인이 false여도 로그인·연결 metadata만 점검할 수 있으며 실제 값과 execution_started=false를 출력한다. 일반 Worker 실행은 여전히 isolation_acknowledged=false를 거부한다. preflight 성공을 무인 write 승인으로 바꾸지 않는다.
+`--preflight`는 본인 GitHub·controller를 확인하고 image/execution_root가 구성된 경우 **선택한 컨테이너 CLI의 실제 버전·구독 로그인**을 검사한다. 미구성은 metadata_only이고 Windows Claude 로그인으로 대신하지 않는다. Docker canary·유료 생성·실제 게시는 검사하지 않아 automation_ready=false다. 일반 Worker는 정확한 image ID와 별도 execution_root를 요구하며 Docker 불가 때 native 실행을 하지 않는다. `isolation_acknowledged`는 과거 호환용 표시이고 true/false 자체가 경계 완료나 실행 허가의 증거가 아니다.
 
-PM 검토 main의 깨끗한 clone에서 아래 두 bundle을 **저장소 밖 새 폴더**에 만든다. Worker entry는 worker/process/Claude 모듈의 해시를 확인하고 변경되면 실행을 거부한다. 보고 entry도 자기 종속 코드/정책의 해시를 확인한다. 출력의 실제 경로/해시를 개인 설정에 넣는다. 이 해시 검사는 같은 OS 계정의 비밀 격리를 대신하지 않는다.
+PM 검토 main의 깨끗한 clone에서 아래 두 bundle을 **저장소 밖 새 폴더**에 만든다. Worker entry는 worker/process/claude/isolation/artifacts 모듈의 해시를 확인하고 변경되면 실행을 거부한다. 보고 entry도 자기 종속 코드/정책의 해시를 확인한다. 실제 출력 경로/해시와 검토 image ID를 개인 설정에 넣는다. hash 검사는 인증 접근 격리와 별개다. 이전 bundle을 수정해 재사용하지 않는다.
 
 ```powershell
 uv run --no-sync python -X utf8 scripts/build_worker_runtime.py --output C:/LGAX-tools/worker-reviewed

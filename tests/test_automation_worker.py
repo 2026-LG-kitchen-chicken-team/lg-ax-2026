@@ -122,14 +122,17 @@ class WorkerTests(unittest.TestCase):
         self.assertLessEqual(set(example), set(WorkerConfig.__dataclass_fields__))
         self.assertIs(example["isolation_acknowledged"], False)
         for field, value in (("repository", self.repository), ("state_dir", self.config.state_dir),
-                             ("codex_home", self.config.codex_home), ("token_file", self.config.token_file)):
+                             ("codex_home", self.config.codex_home), ("token_file", self.config.token_file),
+                             ("execution_root", self.root / "execution")):
             example[field] = str(value)
         # The example intentionally cannot be deployed by merely copying it.
         config_file = self.root / "worker-config.json"
         config_file.write_text(json.dumps(example))
-        with self.assertRaisesRegex(ValueError, "deployment boundary"):
+        with self.assertRaisesRegex(ValueError, "no native fallback"):
             WorkerConfig.load(config_file)
         example["isolation_acknowledged"] = True
+        example["executor_image"] = "sha256:" + "a" * 64
+        example["execution_root"] = str(self.root / "execution")
         config_file.write_text(json.dumps(example))
         actual = WorkerConfig.load(config_file)
         self.assertEqual(actual.model_gateway_url, "http://127.0.0.1:18873")
@@ -335,6 +338,19 @@ class WorkerTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             load_result(path)
 
+    def test_structured_result_never_exports_own_opaque_login_or_jwt(self):
+        path = self.root / "result.json"
+        output = {"summary": "observed", "intent_interpretation": "task", "changes": [],
+                  "limitations": [], "next_action": "PM review", "findings": []}
+        opaque = b"private-opaque-refresh-canary-123456789"
+        for secret in (opaque.decode(), "eyJ" + "a" * 20 + "." + "b" * 20 + "." + "c" * 20,
+                       "-----BEGIN PRIVATE KEY-----"):
+            output["limitations"] = [secret]
+            path.write_text(json.dumps(output))
+            with self.assertRaises(ValueError) as error:
+                load_result(path, [opaque])
+            self.assertNotIn(secret, str(error.exception))
+
     def test_off_before_model_retains_checkpoint_and_does_not_execute(self):
         class Client:
             def heartbeat(self, job):
@@ -344,7 +360,7 @@ class WorkerTests(unittest.TestCase):
                 return {"job": {"state": "blocked"}}
 
         with patch("services.automation.worker.github_identity"), patch("services.automation.worker.validate_auth", return_value=None), \
-                patch("services.automation.worker.run_bounded") as execution:
+                patch("services.automation.worker.DockerExecutor") as execution:
             observed = execute_job(self.config, Client(), self.job)
         execution.assert_not_called()
         self.assertEqual(observed["state"], "blocked")

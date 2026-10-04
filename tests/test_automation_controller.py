@@ -421,6 +421,10 @@ class ControllerTests(unittest.TestCase):
                 with self.subTest(path=path):
                     self.assertEqual(client.post(path, json=body, headers=worker_headers).status_code, 403)
             self.assertEqual(client.get("/v1/status", headers=worker_headers).status_code, 200)
+            self.assertEqual(client.get("/v1/operator-status", headers=worker_headers).json(),
+                             {"account": "jeongiryang", "operator": False})
+            self.assertEqual(client.get("/v1/operator-status", headers=self.headers()).json(),
+                             {"account": "jeongiryang", "operator": True})
             self.assertEqual(client.post("/v1/mode", json={"mode": "on", "member": "jeongiryang"}, headers=worker_headers).status_code, 200)
             self.assertEqual(client.post("/v1/claim", json={}, headers=worker_headers).status_code, 200)
 

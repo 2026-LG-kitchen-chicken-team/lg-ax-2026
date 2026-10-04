@@ -31,7 +31,8 @@ class ClaudeWorkerTests(unittest.TestCase):
         self.config = WorkerConfig(account="choigilung", repository=self.repo,
             state_dir=self.root / "state", controller_url="http://127.0.0.1:18871",
             token_file=self.root / "worker.token", engine="claude", claude_home=self.root / "claude-auth",
-            isolation_acknowledged=True)
+            isolation_acknowledged=True, executor_image="sha256:" + "a" * 64,
+            execution_root=self.root / "execution")
         self.result = {"summary": "fixture only", "intent_interpretation": "assigned web work",
                        "changes": [], "limitations": ["no live model"], "findings": [],
                        "next_action": "PM review"}
@@ -44,6 +45,7 @@ class ClaudeWorkerTests(unittest.TestCase):
                               "services/automation/worker.claude.example.json").read_text())
         example.update(repository=str(self.repo), state_dir=str(self.config.state_dir),
                        token_file=str(self.config.token_file), claude_home=str(self.config.claude_home),
+                       execution_root=str(self.config.execution_root), executor_image=self.config.executor_image,
                        isolation_acknowledged=True)
         example.update(overrides)
         path = self.root / "config.json"
@@ -79,10 +81,10 @@ class ClaudeWorkerTests(unittest.TestCase):
         self.assertEqual(actual.agent_home, self.root / "codex-auth")
 
     def test_metadata_preflight_preserves_unacknowledged_isolation_without_permitting_execution(self):
-        path = self.write_config(isolation_acknowledged=False)
+        path = self.write_config(isolation_acknowledged=False, executor_image=None)
         actual = WorkerConfig.load(path, require_isolation=False)
         self.assertIs(actual.isolation_acknowledged, False)
-        with self.assertRaisesRegex(ValueError, "deployment boundary"):
+        with self.assertRaisesRegex(ValueError, "no native fallback"):
             WorkerConfig.load(path)
 
     def test_invalid_engine_home_turns_model_or_unacknowledged_deployment_refused(self):
@@ -91,7 +93,7 @@ class ClaudeWorkerTests(unittest.TestCase):
                           {"claude_max_turns": 101}, {"claude_model": "unapproved"},
                           {"claude_version": "latest"}, {"claude_version": "2.1.250"},
                           {"isolation_acknowledged": "false"},
-                          {"isolation_acknowledged": False}):
+                          {"executor_image": None}):
             with self.subTest(overrides=overrides), self.assertRaises(ValueError):
                 WorkerConfig.load(self.write_config(**overrides))
 
@@ -190,14 +192,19 @@ class ClaudeWorkerTests(unittest.TestCase):
 
         with patch("services.automation.worker.github_identity"), \
                 patch("services.automation.worker.validate_auth", return_value={"engine": "claude"}), \
+                patch("services.automation.worker.validate_container_auth", return_value={"verified": True}), \
                 patch("services.automation.worker.prepare_worktree",
                       return_value=(self.repo, "codex/fixture", "b" * 40, [], [])), \
+                patch("services.automation.worker.artifacts.export_tracked", side_effect=lambda source, target:
+                      target.mkdir() or {}), \
+                patch("services.automation.worker.DockerExecutor") as docker, \
                 patch("services.automation.claude.executable", return_value="claude.exe"), \
-                patch("services.automation.worker.run_bounded", side_effect=run), \
                 patch("services.automation.worker.git", return_value="b" * 40), \
                 patch("services.automation.worker.check_scope", return_value=[]), \
                 patch("services.automation.worker.check_review_head"), \
                 patch("services.automation.worker.publish") as publish:
+            docker.return_value.run.side_effect = run
+            docker.return_value.preflight.return_value = {"backend": "docker", "native_fallback": False}
             observed = execute_job(self.config, client, job)
         self.assertEqual(observed["state"], "completed_review")
         self.assertEqual(observed["engine"], "claude")
@@ -212,7 +219,7 @@ class ClaudeWorkerTests(unittest.TestCase):
         client = SimpleNamespace(heartbeat=lambda job: False, request=lambda *args: {})
         with patch("services.automation.worker.github_identity"), \
                 patch("services.automation.worker.validate_auth", return_value=None), \
-                patch("services.automation.worker.run_bounded") as run, \
+                patch("services.automation.worker.DockerExecutor") as run, \
                 patch("services.automation.worker.publish") as publish:
             observed = execute_job(self.config, client, job)
         self.assertEqual(observed["state"], "blocked")
@@ -226,7 +233,7 @@ class ClaudeWorkerTests(unittest.TestCase):
         client = SimpleNamespace(heartbeat=lambda job: True, request=lambda *args: {})
         with patch("services.automation.worker.github_identity"), \
                 patch("services.automation.worker.validate_auth", side_effect=ValueError("login expired")), \
-                patch("services.automation.worker.run_bounded") as run:
+                patch("services.automation.worker.DockerExecutor") as run:
             observed = execute_job(self.config, client, job)
         self.assertIs(observed["halt_worker"], True)
         self.assertEqual(observed["state"], "blocked")
@@ -234,7 +241,8 @@ class ClaudeWorkerTests(unittest.TestCase):
 
     def test_external_runtime_includes_both_engines_and_refuses_module_tamper(self):
         bundle = build(self.root / "fixed-runtime")
-        self.assertEqual(set(bundle["dependency_manifest"]), {"worker.py", "process.py", "claude.py"})
+        self.assertEqual(set(bundle["dependency_manifest"]),
+                         {"worker.py", "process.py", "claude.py", "isolation.py", "artifacts.py"})
         self.assertIs(bundle["automation_enabled"], False)
         help_result = subprocess.run([sys.executable, bundle["worker_path"], "--help"],
                                      capture_output=True, text=True, timeout=30, check=False)

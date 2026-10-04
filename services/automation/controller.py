@@ -136,6 +136,12 @@ def create_app(config_path=None, *, config=None, store=None, enrollment_verifier
     def status(account=actor_dependency):
         return store.status(account)
 
+    @app.get("/v1/operator-status")
+    def operator_status(account=actor_dependency):
+        # Read-only authentication proof. PM Worker and PM operator credentials
+        # must never be interchangeable just because their account name matches.
+        return {"account": str(account), "operator": bool(account.operator)}
+
     @app.post("/v1/mode")
     def mode(body: dict, account=actor_dependency):
         if (body.get("member") is None or body.get("member") != account) and not account.operator:
