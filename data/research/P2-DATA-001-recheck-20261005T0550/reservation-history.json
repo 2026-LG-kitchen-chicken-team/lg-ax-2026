@@ -1,0 +1,145 @@
+{
+  "reservation_id": "manual-ginaginaring-data001-recheck-20261005T0550",
+  "paths": [
+    "data/research/P2-DATA-001-recheck-20261005T0550",
+    "docs/작업기록/신진하.md",
+    "docs/작업근거/신진하.md"
+  ],
+  "resources": [
+    "ginaginaring-manual-cpu-audit-20261005T0550",
+    "shared-model-qwen3-8b",
+    "ginaginaring-loopback-18873"
+  ],
+  "events": [
+    {
+      "receipt_file": "release-20261004T205534940478Z-receipt.json",
+      "action": "release",
+      "exit_code": 0,
+      "account": "ginaginaring",
+      "credentials_printed": false,
+      "result": {
+        "released": true
+      }
+    },
+    {
+      "receipt_file": "reserve-20261004T205541021243Z-receipt.json",
+      "action": "reserve",
+      "exit_code": 0,
+      "account": "ginaginaring",
+      "credentials_printed": false,
+      "result": {
+        "reserved": true,
+        "reservation_id": "manual-ginaginaring-data001-recheck-20261005T0550",
+        "expires_at": 1791150940.9765625
+      }
+    },
+    {
+      "receipt_file": "reserve-model-receipt.json",
+      "action": "reserve-model",
+      "exit_code": 1,
+      "account": "ginaginaring",
+      "credentials_printed": false,
+      "failure": "{\"ok\": false, \"error\": \"controller rejected operation (409): manual work conflicts with an existing running/orphaned owner\"}\n"
+    },
+    {
+      "receipt_file": "reserve-receipt.json",
+      "action": "reserve",
+      "exit_code": 0,
+      "account": "ginaginaring",
+      "credentials_printed": false,
+      "result": {
+        "reserved": true,
+        "reservation_id": "manual-ginaginaring-data001-recheck-20261005T0550",
+        "expires_at": 1791150734.4700367
+      }
+    },
+    {
+      "receipt_file": "setup-receipt.json",
+      "action": "setup",
+      "exit_code": 0,
+      "account": "ginaginaring",
+      "credentials_printed": false,
+      "result": "personal enrollment succeeded; client/token kept private"
+    },
+    {
+      "receipt_file": "status-20261004T205446678703Z-receipt.json",
+      "action": "status",
+      "exit_code": 0,
+      "account": "ginaginaring",
+      "credentials_printed": false,
+      "state": {
+        "global_mode": "off",
+        "members": {
+          "jeongiryang": false,
+          "unknownamed": false,
+          "ginaginaring": false,
+          "choigilung": false
+        },
+        "reservations": [
+          {
+            "id": "manual-ginaginaring-data001-recheck-20261005T0550",
+            "owner": "ginaginaring",
+            "expires": 1791150734.4700367,
+            "status": "active"
+          }
+        ],
+        "viewer": "ginaginaring",
+        "observed_at": 1791147286.674502
+      }
+    },
+    {
+      "receipt_file": "status-20261004T211033538944Z-receipt.json",
+      "action": "status",
+      "exit_code": 0,
+      "account": "ginaginaring",
+      "credentials_printed": false,
+      "state": {
+        "global_mode": "off",
+        "members": {
+          "jeongiryang": false,
+          "unknownamed": false,
+          "ginaginaring": false,
+          "choigilung": false
+        },
+        "reservations": [
+          {
+            "id": "manual-ginaginaring-data001-recheck-20261005T0550",
+            "owner": "ginaginaring",
+            "expires": 1791150940.9765625,
+            "status": "active"
+          }
+        ],
+        "viewer": "ginaginaring",
+        "observed_at": 1791148233.542601
+      }
+    },
+    {
+      "receipt_file": "status-receipt.json",
+      "action": "status",
+      "exit_code": 0,
+      "account": "ginaginaring",
+      "credentials_printed": false,
+      "state": {
+        "global_mode": "off",
+        "members": {
+          "jeongiryang": false,
+          "unknownamed": false,
+          "ginaginaring": false,
+          "choigilung": false
+        },
+        "reservations": [],
+        "viewer": "ginaginaring",
+        "observed_at": 1791147128.6391401
+      }
+    }
+  ],
+  "failures_preserved": [
+    "Initial PDF run failed on escalated Git safe.directory ownership; pdf-run1/failure.json preserved.",
+    "PDF run2: only 3 cover revision text checks failed because pypdf cover encoding; rendered covers reviewed.",
+    "Model reservation private path rejected HTTP422; separate public reservation rejected HTTP409.",
+    "HTTP409 was the same owner existing reservation, not another member; own reservation released then combined.",
+    "First setup helper invocation used a runtime without httpx; switched to existing main venv.",
+    "Sandbox uv access and Codex HOME discovery denied/failed; user-context read/status checks succeeded."
+  ],
+  "release_confirmation": "release-confirmation.json is written after the final release/status check"
+}
