@@ -1,0 +1,194 @@
+{
+  "task_id": "P2-WEB-002",
+  "owner": "최길웅",
+  "result": "pass",
+  "execution_kind": "live_service",
+  "requirement_ids": [
+    "R02",
+    "R14",
+    "R21",
+    "R25"
+  ],
+  "branch": "codex/p2-web-002-live-workspace",
+  "tested_commit": "295e2a528051df3db66e25c04b1ab8d1702d36ee",
+  "supersedes": "evals/web/20261004/p2-web-002/individual-evidence.json (06e1023)",
+  "recorded_at": "2026-10-04T18:50:00+09:00",
+  "performed_by": "Claude Code (Claude Opus 5.5) for 최길웅",
+  "harness_note": "P2-WEB-001 done 전이라 phase2 start/finish 미실행. #23 완료 후 이 파일로 finish한다.",
+  "observations": [
+    "R25: 실제 서버 모드 네 영역이 서버 데이터를 사용(요청 저장·변경 요청, 실행 기록, 조건 실행, 고정 범위 서버 검색).",
+    "R02: 검토 모델 다중 선택(공통 샘플 FRIDGE-A/B/C 입력 가능), 누락 정보 질문 후 저장 차단, 같은 범위 변경 요청은 현재 프로젝트의 새 실행으로 저장되어 서버 회차 1(웹 계산 일치), 범위가 바뀌면 새 프로젝트.",
+    "R14: 대조표·내보내기에 모델 열 추가, 근거 출처 성격(합성자료) 표시.",
+    "R21: 원문 칩과 조건 실행 저장 유지(실서버 시험 통과).",
+    "오류: 계약 Error 코드 14개 전부 전용 안내(시험으로 확인). 실서버에서 UNAUTHORIZED·FORBIDDEN·NOT_FOUND·INVALID_ARGUMENT·CONNECTION_FAILED 재현, 빈 검색은 결과로 표시.",
+    "README: 두 모드·작업실 설정·실서버 시험·오류·fixture 번들 공개·알려진 transport 문제 기재."
+  ],
+  "code_versions": [
+    {
+      "path": "apps/web/src/App.tsx",
+      "git_commit": "295e2a528051df3db66e25c04b1ab8d1702d36ee",
+      "sha256": "ffd291e970272fd9e30cd3147a0428a1e3daf265f2e7fa1cd3515b1383bc2135"
+    },
+    {
+      "path": "apps/web/src/PlanningViews.tsx",
+      "git_commit": "295e2a528051df3db66e25c04b1ab8d1702d36ee",
+      "sha256": "67d6d7814a6b93f772ff5013090907adab084b6226885f967a79f87d923c9b87"
+    },
+    {
+      "path": "apps/web/src/planning.ts",
+      "git_commit": "295e2a528051df3db66e25c04b1ab8d1702d36ee",
+      "sha256": "ca0b89ffd228a702ae555731e5ebbd73dd1592e24d52942a7d1b91fa978904e7"
+    },
+    {
+      "path": "apps/web/src/planning.css",
+      "git_commit": "295e2a528051df3db66e25c04b1ab8d1702d36ee",
+      "sha256": "2d0bfbd4d78c41a4e06f1bb12962ed619a83b2cb54ae0621fbf0f5699a5eaffa"
+    },
+    {
+      "path": "apps/web/src/liveWorkspace.ts",
+      "git_commit": "295e2a528051df3db66e25c04b1ab8d1702d36ee",
+      "sha256": "72382a17f971587c94574bde05a637bcd0231c4e109073f26713614a5f86f14a"
+    },
+    {
+      "path": "apps/web/src/liveWorkspace.test.ts",
+      "git_commit": "295e2a528051df3db66e25c04b1ab8d1702d36ee",
+      "sha256": "670e769d42224eb4c9c212a6d24c61b3b6815625857fe5770234e6faba1f20f3"
+    },
+    {
+      "path": "apps/web/src/planning.test.ts",
+      "git_commit": "295e2a528051df3db66e25c04b1ab8d1702d36ee",
+      "sha256": "451b93eab2fefea27d807798b4aeb4ab7c9f38ff530efd2d9b6e4a370cae1235"
+    },
+    {
+      "path": "apps/web/README.md",
+      "git_commit": "295e2a528051df3db66e25c04b1ab8d1702d36ee",
+      "sha256": "49d1ed942192510d61d2c686400c831547e2a1863de8d42f22ea32f807571e51"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "git_commit": "295e2a528051df3db66e25c04b1ab8d1702d36ee",
+      "sha256": "d7cf46d9a980b00ad786ec46feaf3d31e4094f56ff0899d8bab59bdf95a9bad5"
+    },
+    {
+      "path": "data/demo/dataset.json",
+      "git_commit": "295e2a528051df3db66e25c04b1ab8d1702d36ee",
+      "sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0"
+    },
+    {
+      "path": "data/demo/planning_requests.json",
+      "git_commit": "295e2a528051df3db66e25c04b1ab8d1702d36ee",
+      "sha256": "89b445290a48646844279ffc2c08b6284e0a1402d9c736cb197013659742e54a"
+    },
+    {
+      "path": "apps/web/src/workspace.ts",
+      "git_commit": "295e2a528051df3db66e25c04b1ab8d1702d36ee",
+      "sha256": "c881cc83e9c1de49e77b1e847642c305d2022e5f0c2594f30f6b7366255d3676"
+    },
+    {
+      "path": "apps/api/src/lgax_api/workspace_server.py",
+      "git_commit": "295e2a528051df3db66e25c04b1ab8d1702d36ee",
+      "sha256": "8b4a2dd1d1b8c97ffcfa1a54295729a3b1ff38564e7998c826b403ae159d4720"
+    },
+    {
+      "path": "packages/core/src/lgax_core/workspace.py",
+      "git_commit": "295e2a528051df3db66e25c04b1ab8d1702d36ee",
+      "sha256": "7228331ae911484e9c8695e5ac731e80756c0673791938c02eed2f3f3d6a9888"
+    },
+    {
+      "path": "apps/web/package-lock.json",
+      "git_commit": "295e2a528051df3db66e25c04b1ab8d1702d36ee",
+      "sha256": "a87b14e2a2a0c1de26953fad51a8d85cd9511661d66c68496cd6d90b2add56f9"
+    }
+  ],
+  "models": [],
+  "checks": [
+    {
+      "name": "실제 작업실 서버 opt-in vitest(11 passed): 저장·연결 실행·서버 회차·검색 적중/빈 결과·오류 6종",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-002-r2/live-workspace-test.txt",
+        "sha256": "ea86501ecc2f0f8732f6ea87b8d440d15603439d2b3aab2466856d02d5593caf"
+      }
+    },
+    {
+      "name": "live 흐름 산출",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-002-r2/live-workspace-flow.json",
+        "sha256": "803ac3ee2751d8cbec3ae760a9beeb6c6eb9710d59c7355316285f67fedf164e"
+      }
+    },
+    {
+      "name": "npm run test --prefix apps/web (45 passed, 2 skipped opt-in)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-002-r2/web-tests.txt",
+        "sha256": "2deef6f918f98c46465b412ff7abd8a3a6d0f55e2fe47f70260b0c92b4acf53c"
+      }
+    },
+    {
+      "name": "npm run typecheck --prefix apps/web",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-002-r2/web-typecheck.txt",
+        "sha256": "c028f37ff786c1cd330dfd4a41ef0492f01c33aeeec7ec353ad7d20ac783869c"
+      }
+    },
+    {
+      "name": "npm run build --prefix apps/web",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-002-r2/web-build.txt",
+        "sha256": "32aefd582d4362fd159fbcc23bc6f20494c6dc0ef2cdfd44569097cd33a037c1"
+      }
+    },
+    {
+      "name": "uv run python scripts/sync_agent_rules.py --check",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-002-r2/rules.txt",
+        "sha256": "7e0a7002be1c8a6a929966a18bc7207035beabeef3065614f21a9b6265ca789d"
+      }
+    },
+    {
+      "name": "uv run python scripts/check_contracts.py",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-002-r2/contracts.txt",
+        "sha256": "1e1b81f4c2607b74aca9deb8fd8bf0f1b048508d317d21f36ed1b59fca45661b"
+      }
+    },
+    {
+      "name": "uv run python scripts/phase2.py validate",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-002-r2/phase2.txt",
+        "sha256": "6e84f7ccf1d99593ee0bf819047eb956d33efeb0f2863bbecbebdca299bd1e42"
+      }
+    },
+    {
+      "name": "내장 브라우저: 다중 모델·변경 요청 회차·변경 없음·누락 질문·합성자료 표시·모델 열",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-002-r2/browser-check.json",
+        "sha256": "f519d858a39190814c3429c5c1e83c83c1176a3dc276e77af30229c75778782f"
+      }
+    },
+    {
+      "name": "이전 브라우저 확인(연결·저장·이력·검색·오류·모바일)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-002/browser-check.json",
+        "sha256": "e7c8b6e741f4ce78834dc60ba0bc3ac076fc7a52be9e54c89cfa76359eed3853"
+      }
+    }
+  ],
+  "limitations": [
+    "판단 Agent·코어 결과 저장 전이라 서버 대조표·후보는 비어 있다(결과 표시 형태는 fixture로 검증).",
+    "INSUFFICIENT_EVIDENCE·VALIDATION_FAILED·MODEL_UNAVAILABLE·INVALID_EVIDENCE_ID·DATASET_MISMATCH는 현재 서버에서 재현하지 않았고 화면 문구만 시험했다.",
+    "추가 조건은 제외 조건 추가 방식만 지원한다.",
+    "사람의 사용성 확인·E03 측정 없음. Python 변경 없음(Python unittest 재실행 안 함)."
+  ]
+}

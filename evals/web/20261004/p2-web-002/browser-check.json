@@ -1,0 +1,31 @@
+{
+  "task_id": "P2-WEB-002",
+  "owner": "최길웅",
+  "checked_at": "2026-10-04T18:30:00+09:00",
+  "method": "Claude 데스크톱 내장 브라우저에서 수동 조작·DOM 조회. 담당 AI의 실행 확인이며 사람의 사용성 확인이 아니다.",
+  "environment": {
+    "web": "사용자가 터미널에서 실행한 npm run dev --prefix apps/web (http://127.0.0.1:5173, Vite proxy /api/workspace→18869, /api→18867)",
+    "api": "사용자가 실행한 uv run python -m lgax_api.server --port 18867",
+    "workspace": "uv run python -m lgax_api.workspace_server --db private/workspace/workspace.sqlite --credentials private/workspace/server-credentials.json --port 18869 (이번 세션 init_workspace.py로 만든 로컬 테스트 자격증명, 값은 기록하지 않음)",
+    "viewports": ["800px desktop pane", "375x812 mobile emulation"]
+  },
+  "observations": [
+    {"area": "auth", "result": "잘못된 토큰 입력 시 '작업실 인증이 필요합니다'(UNAUTHORIZED)와 다시 입력 안내 표시. editor 테스트 토큰으로 연결 시 '연결됨 · 프로젝트 N개', 실제 프로젝트의 고정 문서 버전(FRIDGE-A 1.0)·자료 버전 0.1.0·dataset_sha256 앞 12자리·소유자 planner-demo·생성 시각 표시. 연결 후 localStorage/sessionStorage 항목 0개, DOM에 토큰 문자열 없음."},
+    {"area": "R02/R25-request", "result": "실제 서버 모드 + 연결 상태에서 기획 요청 버튼이 '작업실에 저장'으로 바뀌고, 제출 시 실제 서버에 프로젝트와 첫 실행 생성: '요청 저장 완료 · 분석 결과 아님 … 요청 회차 0 · 요청만 저장됨'(SAVED_NOT_IMPLEMENTED). 프로젝트 수 1→2."},
+    {"area": "R14/R25-concepts", "result": "콘셉트 검토가 서버 실행 기록을 표시: 상태 배지 '요청만 저장됨 (not_implemented · plan)', 대조표 자리 '이 실행에는 대조 결과가 없습니다. 판단 Agent가 아직 연결되지 않아…', 미해결에 서버 문구 '상품기획 Agent 분석·콘셉트 생성·검사·수정은 아직 구현되지 않았습니다.'"},
+    {"area": "R21/R25-history", "result": "수정 이력에서 '문서 2.0 부분 분리 트레이와 같은 기능 제외' 추가 → 실제 서버에 새 실행 저장, 타임라인에 요청 회차 1 · ← 첫 실행 · web/planner-demo 표시, 제외 조건 변경 전후 표시, 후보 변화는 Agent 미연결 안내."},
+    {"area": "R25-evidence", "result": "프로젝트 고정 범위 서버 검색 '청소' → FRIDGE-A · 문서 1.0 · 4건 · literal_token_count, REVIEW-EVIDENCE-001/006/008/009 원문 표시. '존재하지않는검색어' → '검색 결과가 없습니다. 서버는 정상 응답했으며…'(오류와 구분). FRIDGE-B 선택 시 '프로젝트의 검토 범위(FRIDGE-A)가 아닙니다' 안내로 요청 차단."},
+    {"area": "regression", "result": "계약 fixture 모드는 배너·후보 2개·RUN-FX-001/002 유지, 작업실 바는 숨김. fixture 실행 상태는 'fixture 예시 · completed'로 표시. 실제 서버 모드로 돌아오면 서버 실행 2개 유지. '연결 해제' 시 미연결 상태와 연결 안내로 복귀."},
+    {"area": "layout", "result": "375px 폭에서 scrollWidth 375(가로 스크롤 없음), 토큰 입력·연결 버튼 세로 배치."}
+  ],
+  "found_and_fixed": [
+    "공통 WorkspaceClient가 transport를 메서드로 호출해(this.transport(...)) 브라우저 window.fetch가 'Illegal invocation'을 던지고, 모든 작업실 요청이 네트워크 전송 없이 CONNECTION_FAILED가 됨. Node 시험에서는 드러나지 않음. PM 파일(workspace.ts)은 수정하지 않고 웹에서 browserFetch 래퍼를 넘겨 해결, 재현 시험 추가.",
+    "fixture 실행의 상태 배지가 '분석 완료'로 보여 Agent 결과로 오인될 수 있어 'fixture 예시 · completed'로 변경."
+  ],
+  "console": "남은 콘솔 오류는 의도한 잘못된 토큰 401과, 수정 중 HMR이 중간 상태(browserFetch 정의 전)를 불러온 일시적 ReferenceError 1건. 새로고침 후 재현되지 않음.",
+  "limitations": [
+    "판단 Agent·코어 결과 저장이 없어 서버 실행은 모두 not_implemented이며 대조표·후보는 실제 결과로 채워지지 않았다.",
+    "DATASET_MISMATCH(409)는 자료 변경이 필요해 실제 서버로 재현하지 않았고 화면 문구만 단위 시험으로 확인했다.",
+    "사람의 사용성 확인은 하지 않았다."
+  ]
+}
