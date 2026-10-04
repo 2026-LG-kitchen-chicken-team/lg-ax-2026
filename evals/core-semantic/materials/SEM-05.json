@@ -1,0 +1,94 @@
+{
+  "input": {
+    "request": {
+      "product_group": "microwave",
+      "target_customer": "주방 가전을 사용하는 가구",
+      "use_situation": "자료에 적힌 같은 모델과 사용 조건을 검토한다.",
+      "improvement_task": "소리를 들을 수 없는 상황에서 가열 종료 알림을 화면으로 볼 수 있는지 확인하고 싶다.",
+      "exclusions": [
+        "다른 모델 기능 혼용",
+        "근거 없는 효과 단정"
+      ],
+      "model_ids": [
+        "SEM-05-MODEL"
+      ],
+      "dataset_version": "SEM-05-independent-v1"
+    },
+    "product": {
+      "model_id": "SEM-05-MODEL",
+      "name": "독립 평가용 가상 microwave",
+      "product_group": "microwave",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "SEM-05-REVIEW",
+        "model_id": "SEM-05-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "SEM-05-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "소리를 들을 수 없는 상황에서 가열 종료 알림을 화면으로 볼 수 있는지 확인하고 싶다.",
+        "feature_ids": []
+      }
+    ],
+    "features": [],
+    "revision_count": 0,
+    "max_concepts": 3,
+    "changed_evidence_ids": []
+  },
+  "dataset": {
+    "manifest": {
+      "dataset_id": "SEM-05-MODEL",
+      "version": "SEM-05-independent-v1",
+      "description": "Independent synthetic semantic evaluation input; no expected model output",
+      "source_kind": "synthetic",
+      "model_count": 1,
+      "review_count": 1,
+      "analysis_implemented": false
+    },
+    "products": [
+      {
+        "model_id": "SEM-05-MODEL",
+        "name": "독립 평가용 가상 microwave",
+        "product_group": "microwave",
+        "document_version": "1.0",
+        "source_kind": "synthetic"
+      }
+    ],
+    "reviews": [
+      {
+        "id": "ROW-SEM-05-REVIEW",
+        "evidence_id": "SEM-05-REVIEW",
+        "model_id": "SEM-05-MODEL",
+        "document_version": "1.0",
+        "text": "소리를 들을 수 없는 상황에서 가열 종료 알림을 화면으로 볼 수 있는지 확인하고 싶다.",
+        "source_id": "SEM-05-CSV",
+        "locator": {
+          "row": 2
+        },
+        "source_kind": "synthetic"
+      }
+    ],
+    "evidence": [
+      {
+        "id": "SEM-05-REVIEW",
+        "model_id": "SEM-05-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "SEM-05-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "소리를 들을 수 없는 상황에서 가열 종료 알림을 화면으로 볼 수 있는지 확인하고 싶다.",
+        "feature_ids": []
+      }
+    ],
+    "features": []
+  }
+}

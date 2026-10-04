@@ -1,0 +1,154 @@
+{
+  "input": {
+    "request": {
+      "product_group": "microwave",
+      "target_customer": "주방 가전을 사용하는 가구",
+      "use_situation": "자료에 적힌 같은 모델과 사용 조건을 검토한다.",
+      "improvement_task": "국물 있는 음식을 쏟은 뒤 회전판 아래 홈에 고여 회전판을 꺼내고도 닦기 어렵다.",
+      "exclusions": [
+        "다른 모델 기능 혼용",
+        "근거 없는 효과 단정"
+      ],
+      "model_ids": [
+        "SEM-01-MODEL"
+      ],
+      "dataset_version": "SEM-01-independent-v1"
+    },
+    "product": {
+      "model_id": "SEM-01-MODEL",
+      "name": "독립 평가용 가상 microwave",
+      "product_group": "microwave",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "SEM-01-REVIEW",
+        "model_id": "SEM-01-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "SEM-01-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "국물 있는 음식을 쏟은 뒤 회전판 아래 홈에 고여 회전판을 꺼내고도 닦기 어렵다.",
+        "feature_ids": []
+      },
+      {
+        "id": "SEM-01-MANUAL",
+        "model_id": "SEM-01-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "SEM-01-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능 및 사용 조건"
+        },
+        "text": "유리 회전판은 분리하여 세척할 수 있다. 회전판 아래 받침과 홈은 손으로 닦는다.",
+        "feature_ids": [
+          "SEM-01-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "SEM-01-FEATURE",
+        "model_id": "SEM-01-MODEL",
+        "document_version": "1.0",
+        "name": "설명서의 제공 기능",
+        "description": "유리 회전판은 분리하여 세척할 수 있다. 회전판 아래 받침과 홈은 손으로 닦는다.",
+        "conditions": [
+          "명시한 사용 조건을 충족해야 한다."
+        ],
+        "evidence_ids": [
+          "SEM-01-MANUAL"
+        ]
+      }
+    ],
+    "revision_count": 0,
+    "max_concepts": 3,
+    "changed_evidence_ids": []
+  },
+  "dataset": {
+    "manifest": {
+      "dataset_id": "SEM-01-MODEL",
+      "version": "SEM-01-independent-v1",
+      "description": "Independent synthetic semantic evaluation input; no expected model output",
+      "source_kind": "synthetic",
+      "model_count": 1,
+      "review_count": 1,
+      "analysis_implemented": false
+    },
+    "products": [
+      {
+        "model_id": "SEM-01-MODEL",
+        "name": "독립 평가용 가상 microwave",
+        "product_group": "microwave",
+        "document_version": "1.0",
+        "source_kind": "synthetic"
+      }
+    ],
+    "reviews": [
+      {
+        "id": "ROW-SEM-01-REVIEW",
+        "evidence_id": "SEM-01-REVIEW",
+        "model_id": "SEM-01-MODEL",
+        "document_version": "1.0",
+        "text": "국물 있는 음식을 쏟은 뒤 회전판 아래 홈에 고여 회전판을 꺼내고도 닦기 어렵다.",
+        "source_id": "SEM-01-CSV",
+        "locator": {
+          "row": 2
+        },
+        "source_kind": "synthetic"
+      }
+    ],
+    "evidence": [
+      {
+        "id": "SEM-01-REVIEW",
+        "model_id": "SEM-01-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "SEM-01-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "국물 있는 음식을 쏟은 뒤 회전판 아래 홈에 고여 회전판을 꺼내고도 닦기 어렵다.",
+        "feature_ids": []
+      },
+      {
+        "id": "SEM-01-MANUAL",
+        "model_id": "SEM-01-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "SEM-01-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능 및 사용 조건"
+        },
+        "text": "유리 회전판은 분리하여 세척할 수 있다. 회전판 아래 받침과 홈은 손으로 닦는다.",
+        "feature_ids": [
+          "SEM-01-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "SEM-01-FEATURE",
+        "model_id": "SEM-01-MODEL",
+        "document_version": "1.0",
+        "name": "설명서의 제공 기능",
+        "description": "유리 회전판은 분리하여 세척할 수 있다. 회전판 아래 받침과 홈은 손으로 닦는다.",
+        "conditions": [
+          "명시한 사용 조건을 충족해야 한다."
+        ],
+        "evidence_ids": [
+          "SEM-01-MANUAL"
+        ]
+      }
+    ]
+  }
+}
