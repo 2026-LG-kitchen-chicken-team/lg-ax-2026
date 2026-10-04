@@ -1,0 +1,31 @@
+{
+  "task_id": "P2-WEB-001",
+  "owner": "최길웅",
+  "checked_at": "2026-10-04T18:01:00+09:00",
+  "method": "Claude 데스크톱 내장 브라우저에서 수동 조작·DOM 조회. 사람(최길웅)의 사용성 확인이 아니라 담당 AI의 실행 확인이다.",
+  "environment": {
+    "web": "npm run dev --prefix apps/web (Vite 7.3.6, http://127.0.0.1:5173)",
+    "api": "uv run python -m lgax_api.server --host 127.0.0.1 --port 18867 (합성자료 kitchen-demo 0.1.0)",
+    "node": "v24.16.0",
+    "viewports": ["800x609 desktop pane", "375x812 mobile emulation"]
+  },
+  "observations": [
+    {"area": "live", "result": "실제 서버 모드: '공통 API 연결됨', 모델 5개·근거 42건 표시. 기획 요청 제출 시 API가 501을 반환하고 화면에 NOT_IMPLEMENTED 안내 표시. 콘셉트 화면은 '구현 예정' 패널을 유지하고 fixture 콘텐츠가 섞이지 않음."},
+    {"area": "mode", "result": "계약 fixture 전환 시 상단 상태가 'fixture 사용 · 서버 미사용'으로 바뀌고 노란 모의 데이터 배너가 표시됨. 제품군이 냉장고로 고정되고 FRIDGE-A만 표시."},
+    {"area": "R02", "result": "대상 고객을 지우면 질문 1개('누구의 불편을 다루나요?…')와 원 요청 대비 변경(요청 회차 1)이 즉시 표시. 다시 입력 후 '요청 규격 검사'는 FIXTURE_ONLY(규격 통과·전송 안 함, 요청 회차 1)."},
+    {"area": "R14", "result": "콘셉트 검토의 대조표에 NEED-FX-001/002의 불편·연결 기능(FEATURE-001 · 문서 1.0)·조건·판단(남은 불편 있음/근거 부족·보류)·남은 불편·근거·질문이 한 행에 표시."},
+    {"area": "R21-원문", "result": "콘셉트 카드의 REVIEW-EVIDENCE-004 칩을 누르면 원문 '선반 분리 방법이 설명서 어디 있는지 모르겠어요.'와 'FRIDGE-A · 문서 1.0 · 5행 · REVIEWS-CSV-v1.0' 표시."},
+    {"area": "R21-추가조건", "result": "수정 이력에서 빈 조건 제출 시 '추가할 조건을 입력해 주세요.' 경고. '1인 가구 소형 모델만 검토' 입력 시 RUN-DRAFT-3(요청 회차 2, ← RUN-FX-002, not_implemented, 브라우저 초안) 생성·선택, 제외 조건 변경 전후 표시, 후보 변화는 'Agent가 연결되지 않아 결과 변화가 없습니다.'"},
+    {"area": "R27", "result": "내보내기 버튼 클릭을 페이지 안에서 가로채 확인(실제 파일 저장 없음): RUN-FX-002-fixture.json(application/json, meta.mode=fixture와 모의 고지 포함), RUN-FX-002-fixture.md(text/markdown, 고지·실행 상태·요청 회차·이전 실행 포함)."},
+    {"area": "layout", "result": "375px 모바일 폭에서 document scrollWidth 375(가로 스크롤 없음). 콘솔 오류는 실제 서버 기획 요청의 의도된 501 두 건뿐."}
+  ],
+  "fixed_during_check": [
+    "not_implemented 초안 선택 시 '후보 상태 변화'가 제외→없음/제안→없음으로 보여 후보가 삭제된 것처럼 오해될 수 있어, 초안에서는 상태 변화 대신 Agent 미연결 안내만 표시하도록 수정",
+    "요청 변경표에서 비운 값이 빈칸으로 보여 '(비어 있음)'으로 표시하도록 수정"
+  ],
+  "limitations": [
+    "fixture의 불편·대조·콘셉트·실행 기록은 손으로 작성한 계약 예시이며 Agent 출력이 아니다.",
+    "작업실 API(18869) 연결·저장은 이번 범위가 아니며 #24/#25에서 연결한다.",
+    "사람의 사용성 확인과 수정 시간 측정(E03)은 하지 않았다."
+  ]
+}

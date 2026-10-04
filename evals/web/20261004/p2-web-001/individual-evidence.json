@@ -1,0 +1,163 @@
+{
+  "task_id": "P2-WEB-001",
+  "owner": "최길웅",
+  "result": "pass",
+  "execution_kind": "fixture",
+  "requirement_ids": [
+    "R02",
+    "R14",
+    "R21",
+    "R25",
+    "R27"
+  ],
+  "branch": "codex/p2-web-001-fixture-workspace",
+  "tested_commit": "59cd703332815b17a2b7c18a2305323c72e73e96",
+  "recorded_at": "2026-10-04T18:10:00+09:00",
+  "performed_by": "Claude Code (Claude Opus 5.5) for 최길웅",
+  "observations": [
+    "R02: missingRequestQuestions가 빈 대상 고객·사용 상황·모델·자료 버전마다 질문을 만들고, requestChanges/nextRequestRevision이 작업실 서버 규칙(부모 없음: 원본과 같으면 0·다르면 1, 부모 있음: 같으면 유지·다르면 +1)대로 계산함(단위 시험·브라우저).",
+    "R14: buildComparison이 불편·연결 기능·기능 조건·판단·남은 불편·근거·질문을 행 단위로 결합하고, 없는 기능/근거 ID는 버리지 않고 missingIds로 보고함.",
+    "R21: 근거 칩에서 원문·모델·문서 버전·위치를 확인. 추가 조건은 RunSnapshot 계약을 통과한 not_implemented 초안(previous_run_id 연결, 개념 0개, output null)으로만 생성하며 결과를 꾸며내지 않음.",
+    "R27: buildExport/exportMarkdown이 인용된 모든 근거 원문·요구사항·가정·미해결·미확인을 포함하고 fixture 고지를 meta와 문서 첫머리에 넣음. 브라우저에서 JSON/Markdown Blob 생성 확인.",
+    "fixture 근거·리뷰·기능·제품은 data/demo/dataset.json 항목과 deep-equal, fixture의 dataset_sha256은 Python lgax_core와 같은 canonical 해시(8cbc9a49…), 모든 Run/Need/Gap/Concept는 lgax.schema.json 검증 통과.",
+    "live 모드는 기존과 동일하게 실제 API(18867)의 501 NOT_IMPLEMENTED를 표시하고 fixture 콘텐츠를 섞지 않음."
+  ],
+  "code_versions": [
+    {
+      "path": "apps/web/src/App.tsx",
+      "git_commit": "59cd703332815b17a2b7c18a2305323c72e73e96",
+      "sha256": "147dbf6110bac9e7c2026759df070bdfe3e45879a451399bcb5322c93c3e09da"
+    },
+    {
+      "path": "apps/web/src/PlanningViews.tsx",
+      "git_commit": "59cd703332815b17a2b7c18a2305323c72e73e96",
+      "sha256": "f5ee98313c4292088570d6ec3e60079dc7015bd2ed22d1bed8cf605df27744dc"
+    },
+    {
+      "path": "apps/web/src/planning.ts",
+      "git_commit": "59cd703332815b17a2b7c18a2305323c72e73e96",
+      "sha256": "9988e1ed918429cb0a4ed16d0225b5bb1b0ec0a7d25d06c8719b4250bf082f8c"
+    },
+    {
+      "path": "apps/web/src/planning.css",
+      "git_commit": "59cd703332815b17a2b7c18a2305323c72e73e96",
+      "sha256": "2a6b2fc33db534fea81cbb54a5b9d923c522bcdc3ad14fa574fcdf8a491b3312"
+    },
+    {
+      "path": "apps/web/src/planning.test.ts",
+      "git_commit": "59cd703332815b17a2b7c18a2305323c72e73e96",
+      "sha256": "932103ab7d62f7070a124dfc9f8d7d037c449fdac7089023cfc8748f528d5092"
+    },
+    {
+      "path": "apps/web/src/fixtures/planning.fixture.ts",
+      "git_commit": "59cd703332815b17a2b7c18a2305323c72e73e96",
+      "sha256": "5f7cb4543a1f15adbb994bcad755156811cbb55b6cd2cb02b8de6a82eb38815a"
+    },
+    {
+      "path": "apps/web/src/fixtures/bootstrap.fixture.json",
+      "git_commit": "59cd703332815b17a2b7c18a2305323c72e73e96",
+      "sha256": "0e97dd44771a0f07f225dbe099f0cbcac6da8b7224c496c5d6d91015531691f7"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "git_commit": "59cd703332815b17a2b7c18a2305323c72e73e96",
+      "sha256": "d7cf46d9a980b00ad786ec46feaf3d31e4094f56ff0899d8bab59bdf95a9bad5"
+    },
+    {
+      "path": "data/demo/dataset.json",
+      "git_commit": "59cd703332815b17a2b7c18a2305323c72e73e96",
+      "sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0"
+    },
+    {
+      "path": "apps/web/src/api.ts",
+      "git_commit": "59cd703332815b17a2b7c18a2305323c72e73e96",
+      "sha256": "5f1250b562fd961f19c68d8d9ea86ab2bda9cc0c433c1356f8b2d8b19f716188"
+    },
+    {
+      "path": "apps/web/src/workspace.ts",
+      "git_commit": "59cd703332815b17a2b7c18a2305323c72e73e96",
+      "sha256": "c881cc83e9c1de49e77b1e847642c305d2022e5f0c2594f30f6b7366255d3676"
+    },
+    {
+      "path": "apps/web/package-lock.json",
+      "git_commit": "59cd703332815b17a2b7c18a2305323c72e73e96",
+      "sha256": "a87b14e2a2a0c1de26953fad51a8d85cd9511661d66c68496cd6d90b2add56f9"
+    }
+  ],
+  "models": [],
+  "checks": [
+    {
+      "name": "npm run test --prefix apps/web (vitest: 4 files, 33 passed, 1 skipped; planning.test.ts 16 new)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-001/web-tests.txt",
+        "sha256": "79273c94dd10a3448e654d0dc2e5f561362cf71a72f2097a451001fc2cc49ef6"
+      }
+    },
+    {
+      "name": "npm run typecheck --prefix apps/web (tsc -b)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-001/web-typecheck.txt",
+        "sha256": "c028f37ff786c1cd330dfd4a41ef0492f01c33aeeec7ec353ad7d20ac783869c"
+      }
+    },
+    {
+      "name": "npm run build --prefix apps/web (vite build)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-001/web-build.txt",
+        "sha256": "03974331a0026de7f0a80df0b2784a7ba4bbae8071248b7d281cc6b1889030ba"
+      }
+    },
+    {
+      "name": "uv run python scripts/sync_agent_rules.py --check",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-001/rules.txt",
+        "sha256": "7e0a7002be1c8a6a929966a18bc7207035beabeef3065614f21a9b6265ca789d"
+      }
+    },
+    {
+      "name": "uv run python scripts/check_contracts.py",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-001/contracts.txt",
+        "sha256": "1e1b81f4c2607b74aca9deb8fd8bf0f1b048508d317d21f36ed1b59fca45661b"
+      }
+    },
+    {
+      "name": "uv run python scripts/phase2.py validate",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-001/phase2.txt",
+        "sha256": "6e84f7ccf1d99593ee0bf819047eb956d33efeb0f2863bbecbebdca299bd1e42"
+      }
+    },
+    {
+      "name": "uv run python -m unittest discover -s tests (170 tests OK; Python unchanged)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-001/python-tests.txt",
+        "sha256": "64ac6df7255ea3c14623ee3364a6f2fcc04b43d67ab9568bca079b49d12dfe1b"
+      }
+    },
+    {
+      "name": "내장 브라우저 live/fixture 네 영역·오류·내보내기·모바일 확인",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261004/p2-web-001/browser-check.json",
+        "sha256": "763b1a0ca7840bf02da79d811222666e3a390e16492f95c59eacd4ac0eb6be98"
+      }
+    }
+  ],
+  "limitations": [
+    "execution_kind=fixture: 손으로 작성한 계약 예시 기준 검증이다. 판단 Agent·실제 모델·작업실 서버 저장과의 연결은 검증하지 않았다.",
+    "R25(네 영역의 실제 서버 데이터 연결)는 충족하지 않았다. 근거 영역만 기존 합성 API를 쓰며 후보·이력은 #24/#25에서 작업실 API(18869)와 코어 결과에 연결해야 한다.",
+    "R02 질문은 규칙 기반 누락 필드 질문이며 Agent의 맥락 질문 생성이 아니다.",
+    "브라우저 초안 실행은 메모리에만 있어 새로고침 시 사라진다.",
+    "사람의 사용성 평가·수정 시간 측정(E03)은 하지 않았다."
+  ]
+}
