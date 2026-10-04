@@ -4,6 +4,8 @@
 
 검증 전 팀/개인 모두 OFF다. 초기 설정을 끝냈다고 켜지지 않는다. 최신 Worker는 [Docker 실행·검사 경계](automation-isolation.md)를 사용한다. 모델·저장소 검사에 게시 인증을 제공하지 않고 실제 canary·본인 로그인·첫 PR/보고를 확인해야 한다. 정이량의 [자동 PM](../pm/autonomous-pm.md)은 별도 정책과 PM 개인 ON이 필요하다. 중앙 HTTPS는 아직 정이량 PC를 경유한다. 네 PC의 실제 준비는 각자 근거로 확인한다.
 
+10/5 정이량 PC의 제한 pilot에서는 실제 Docker Codex 수정(168.109초) → 고정 validator(2.844초, 1개 테스트로 다른 프로젝트 부모 거부·같은 프로젝트 부모 허용 검증) → [PR82](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/82)의 CI 4개 성공 → [Project 보고 ACCEPTED](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/19#issuecomment-5985353509)까지 확인했다. 앞선 cache 권한 실패와 세션 근거 경로 미승인으로 게시가 차단된 두 시도는 보존했다. 독립 PM 검수·실제 병합·병합 후 통합 확인은 [pipeline 근거](../../evals/team-automation/20261005/pipeline-proof.json)의 최종 결과를 따른다. 이 한 건의 pilot과 전원 OFF 상태를 다른 세 PC의 준비 완료·팀 전체 가동·참가작 완성으로 확대하지 않는다.
+
 ## 팀원 AI에게 먼저 전달할 지시
 
 > 이 저장소의 AGENTS.md와 동일 CLAUDE.md, docs/bootstrap/automation-workers.md, docs/pm/automation.md를 읽고 내 담당 계정을 확인해 LG 자동화 초기 설정을 진행해. 내 실행기는 Claude Code(또는 Codex)야. 실행 환경·개인 GitHub 인증·전용 AI 로그인·중앙 가입·고정 Worker/보고 bundle·preflight 순서로 준비하고 결과를 내 상세 작업기록/근거와 자기 Project 보고에 남겨. 비밀번호나 로그인 토큰은 복사/출력하지 마. 직접 로그인만 나에게 요청하고 AI가 할 수 있는 설치/파일 설정은 진행해. 격리 미검증을 true로 바꾸지 말고, 팀 ON·PM 병합·Done을 대신 수행하지 마. 현재 진행 수준·남은 일·내가 직접 해야 할 일을 마지막에 알려줘.
@@ -73,7 +75,7 @@ report bundle 출력의 `trusted_report_script`·`trusted_report_sha256`도 설�
 자기 AI는 다음 순서로 기존 세팅을 갱신한다. 다른 팀원도 자기 계정·실제 경로로 같은 절차를 따른다.
 
 1. 기존 Worker/실행을 중단하고 원격 main과 로컬 차이를 확인한다. PM이 운영 Issue #28에 게시한 **정확한 main commit**과 연결된 변경·검증 근거를 확인한 뒤 깨끗한 clone에서 그 코드를 준비한다. 미커밋 작업을 강제로 reset하거나 기존 state·토큰·실행 기록·등록을 삭제하지 않는다. source commit과 bundle manifest/image ID를 자기 근거에 연결한다.
-2. Linux Docker engine을 확인하고 [최소 context 빌드 절차](automation-isolation.md#검토한-이미지-만들기)로 image를 만든다. 다른 PC의 image ID 문자열만 복사하지 않고 **이 PC에서 실제 존재하는** 정확한 image ID를 기록한다. 빌드 입력·CLI 버전·image가 변경되면 PM에게 새 근거를 인계한다.
+2. Linux Docker engine을 확인하고 [최소 context 빌드 절차](automation-isolation.md#검토한-이미지-만들기)로 image를 만든다. 다른 PC의 image ID 문자열만 복사하지 않고 **이 PC에서 실제 존재하는** 정확한 image ID를 기록한다. 빌드 입력·CLI 버전·image가 변경되면 PM에게 새 근거를 인계한다. PC별 빌드의 image ID가 다를 수 있으므로 PM이 자료와 실제 경계 증거를 인수한 뒤 private trusted config의 `readiness_files[계정].approved_executor_image`에 해당 계정의 정확한 image를 고정한다. proof의 최상위 image와 model/validator 관측 image가 모두 이 pin과 같아야 하며, 팀원의 자기보고만으로 pin을 자동 채택하지 않는다. 계정별 pin이 없으면 기존 PM image와 같은 경우만 허용한다.
 3. 개인 worker.json의 `account=unknownamed`, 기존 controller URL/개인 token/state, 별도 `codex_home`, `execution_root`, 실제 `executor_image`를 연결한다. 경로가 서로 포함되지 않는지 확인하고, 기존 동일 state/프로필을 쓰는 Worker를 중복 등록하지 않는다. 이미 유효한 중앙 등록을 이유 없이 재발급하지 않는다.
 4. `automation_isolation.py login --config {본인worker.json}`으로 **고정 Linux Codex CLI의 device URL/code**를 안내하고 본인이 ChatGPT 계정으로 직접 로그인한다. helper는 automation을 켜지 않는다. timeout·인증 실패는 미완료로 남기고 API fallback·프로필 복사를 하지 않는다. Claude 선택 시 현재 login helper는 지원하지 않으므로 선택한 Linux CLI의 본인 직접 인증과 실제 metadata 확인이 필요하다.
 5. `automation_isolation.py verify --config {본인worker.json} --output {새private증빙.json}`으로 이 PC의 실제 model/validator canary·컨테이너 로그인·image/mount/network 증거를 만든다. 기존 proof를 덮어쓰지 않는다. 실패하면 설치 준비 완료가 아니며 팀/개인 OFF를 유지한다.

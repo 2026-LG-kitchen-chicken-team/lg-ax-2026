@@ -472,6 +472,7 @@ class BrokerTests(unittest.TestCase):
 
     def test_canary_metadata_not_boolean_alone_controls_readiness(self):
         proof = {"collector": "trusted_pm", "account": PM, "verified_at": time.time(),
+                 "image_id": self.executor.config.image,
                  "execution_isolation_verified": True, "publisher_separation_verified": True, "login_verified": True,
                  "authentication": {"verified": True, "source": "actual_isolated_cli", "engine": "codex"},
                  "boundary": {"proof_kind": "actual_harmless_container_not_mounted_boundary", "publisher_readable": True,
@@ -606,6 +607,95 @@ class DriverTests(unittest.TestCase):
             driver = DockerPMDriver(executor, state_dir=root / "state", heartbeat=lambda: True)
             with self.assertRaises(PMError):
                 driver({}, {}, 30)
+
+
+class ReadinessImagePinTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.pm_image = "sha256:" + "a" * 64
+        self.worker_image = "sha256:" + "b" * 64
+        self.account = "unknownamed"
+        self.broker = SimpleNamespace(config={"readiness_files": {}},
+            policy={"tasks": {"P2-CORE-002": {"owner": self.account}}},
+            executor=SimpleNamespace(config=SimpleNamespace(image=self.pm_image)))
+
+    def proof(self, image):
+        return {"collector": "trusted_pm", "account": self.account, "verified_at": time.time(),
+                "image_id": image, "execution_isolation_verified": True,
+                "publisher_separation_verified": True, "login_verified": True,
+                "authentication": {"verified": True, "source": "actual_isolated_cli", "engine": "codex"},
+                "boundary": {"proof_kind": "actual_harmless_container_not_mounted_boundary", "publisher_readable": True,
+                    "containers": {role: {"workspace_readable": True, "publisher_canary_readable": False,
+                        "docker_socket_readable": False, "ai_profile_readable": role == "model",
+                        "external_network_reachable": False,
+                        "observed_boundary": {"backend": "docker", "image_id": image,
+                                              "publisher_credentials_mounted": False}}
+                        for role in ("model", "validator")}}}
+
+    def register(self, proof, *, approved=None):
+        path = self.root / (proof["account"] + "-readiness.json")
+        path.write_text(json.dumps(proof), encoding="utf-8")
+        item = {"path": str(path), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+        if approved is not None:
+            item["approved_executor_image"] = approved
+        self.broker.config["readiness_files"][proof["account"]] = item
+        return item
+
+    def observed(self, *, account=None):
+        return TrustedPMBroker._readiness(self.broker)[account or self.account]
+
+    def test_missing_explicit_pin_preserves_same_pm_image_compatibility(self):
+        self.register(self.proof(self.pm_image))
+        self.assertTrue(all(self.observed().values()))
+
+    def test_different_worker_image_is_not_auto_approved_from_proof(self):
+        self.register(self.proof(self.worker_image))
+        self.assertFalse(any(self.observed().values()))
+        self.assertNotIn("approved_executor_image", self.broker.config["readiness_files"][self.account])
+
+    def test_trusted_per_member_exact_image_pin_accepts_independent_build(self):
+        self.register(self.proof(self.worker_image), approved=self.worker_image)
+        self.assertTrue(all(self.observed().values()))
+        self.assertEqual(self.broker.executor.config.image, self.pm_image)
+
+    def test_proof_top_image_and_both_role_images_must_match_trusted_pin(self):
+        for key in ("top", "model", "validator", "missing_top"):
+            proof = self.proof(self.worker_image)
+            if key == "top":
+                proof["image_id"] = self.pm_image
+            elif key == "missing_top":
+                proof.pop("image_id")
+            else:
+                proof["boundary"]["containers"][key]["observed_boundary"]["image_id"] = self.pm_image
+            self.register(proof, approved=self.worker_image)
+            with self.subTest(key=key):
+                self.assertFalse(any(self.observed().values()))
+
+    def test_mutable_invalid_image_approval_fails_closed(self):
+        for value in ("lgax:latest", "sha256:" + "A" * 64, "sha256:" + "b" * 63,
+                      "repo@sha256:" + "b" * 64, "", 123):
+            self.register(self.proof(self.worker_image), approved=value)
+            with self.subTest(value=value), self.assertRaises(PMError):
+                self.observed()
+
+    def test_readiness_file_hash_still_pinned_for_approved_worker_image(self):
+        item = self.register(self.proof(self.worker_image), approved=self.worker_image)
+        with Path(item["path"]).open("a", encoding="utf-8") as stream:
+            stream.write(" ")
+        with self.assertRaises(PMError):
+            self.observed()
+
+    def test_member_image_approval_does_not_apply_to_other_member(self):
+        self.register(self.proof(self.worker_image), approved=self.worker_image)
+        other = self.proof(self.worker_image)
+        other["account"] = "ginaginaring"
+        self.broker.policy["tasks"]["P2-DATA-002"] = {"owner": "ginaginaring"}
+        self.register(other)  # No PM-reviewed image pin for this other owner.
+        actual = TrustedPMBroker._readiness(self.broker)
+        self.assertTrue(all(actual[self.account].values()))
+        self.assertFalse(any(actual["ginaginaring"].values()))
 
 
 class DestinationTests(unittest.TestCase):

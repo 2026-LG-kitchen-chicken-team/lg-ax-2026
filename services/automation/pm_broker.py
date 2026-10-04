@@ -352,6 +352,12 @@ class TrustedPMBroker:
         for account, item in self.config.get("readiness_files", {}).items():
             if account not in {task["owner"] for task in self.policy["tasks"].values()}:
                 continue
+            # Only this PM-owned deployed config can approve a worker's image.
+            # Independent per-PC builds need not match the PM review image, but
+            # a worker proof must never choose/expand its own accepted image.
+            approved_image = item.get("approved_executor_image", self.executor.config.image)
+            if not isinstance(approved_image, str) or not re.fullmatch(r"sha256:[0-9a-f]{64}", approved_image):
+                raise PMError("worker image approval requires an exact trusted sha256 image pin")
             raw = regular_file(protected_path(item["path"]))
             if hashlib.sha256(raw).hexdigest() != item.get("sha256"):
                 raise PMError("pinned actual worker readiness proof changed")
@@ -359,6 +365,7 @@ class TrustedPMBroker:
             boundary = proof.get("boundary", {})
             containers = boundary.get("containers", {})
             verified = (proof.get("collector") == "trusted_pm" and proof.get("account") == account and
+                        proof.get("image_id") == approved_image and
                         boundary.get("proof_kind") == "actual_harmless_container_not_mounted_boundary" and
                         boundary.get("publisher_readable") is True and
                         all(containers.get(role, {}).get("publisher_canary_readable") is False for role in ("model", "validator")) and
@@ -368,7 +375,7 @@ class TrustedPMBroker:
                 containers.get(role, {}).get("workspace_readable") is True and
                 containers.get(role, {}).get("docker_socket_readable") is False and
                 containers.get(role, {}).get("observed_boundary", {}).get("backend") == "docker" and
-                containers.get(role, {}).get("observed_boundary", {}).get("image_id") == self.executor.config.image and
+                containers.get(role, {}).get("observed_boundary", {}).get("image_id") == approved_image and
                 containers.get(role, {}).get("observed_boundary", {}).get("publisher_credentials_mounted") is False
                 for role in ("model", "validator"))
             verified = verified and containers.get("validator", {}).get("external_network_reachable") is False

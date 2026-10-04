@@ -172,6 +172,17 @@ class AutonomousPMTests(unittest.TestCase):
         self.assertNotIn("allowed_paths", context["capabilities"][CAP])
         self.assertTrue(self.calls[0][1]["additionalProperties"] is False)
 
+    def test_model_context_explains_action_specific_instruction_constraints(self):
+        contract = self.pm._context(self.broker.state)["action_contract"]
+        for kind in ("merge", "reconcile", "wait", "escalate"):
+            self.assertIn("MUST be []", contract[kind])
+        self.assertIn("Nonempty", contract["assign"])
+        self.assertIn("Nonempty", contract["request_changes"])
+        # Clarifying model context never weakens the enforcement boundary.
+        for kind in ("merge", "reconcile"):
+            with self.assertRaises(PMError):
+                self.pm.validate_action(decision(kind, instructions=["Proceed"]), self.broker.state)
+
     def test_unchanged_event_and_clock_churn_never_rebill(self):
         self.assertEqual(self.pm.tick()["state"], "applied")
         self.clock_value += 50
