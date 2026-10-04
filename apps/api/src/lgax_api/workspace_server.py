@@ -1,6 +1,7 @@
 """Authenticated loopback workspace API; separate from the public evidence demo."""
 
 import argparse
+import json
 from pathlib import Path
 from typing import Annotated
 
@@ -12,8 +13,9 @@ from fastapi.responses import JSONResponse
 from jsonschema import ValidationError
 from lgax_contracts import CONTRACT_VERSION, validate
 from lgax_core.errors import DomainError
-from lgax_core.store import default_store
+from lgax_core.store import DemoStore, default_store
 from lgax_core.workspace import WorkspaceStore
+from lgax_core.workspace_planning import EnvPlanningRunner, PlanningRunner
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from .workspace_auth import TokenRegistry
@@ -34,9 +36,11 @@ def error_status(error: DomainError) -> int:
     }.get(error.code, 422)
 
 
-def create_workspace_app(db_path: Path, registry: TokenRegistry) -> FastAPI:
-    evidence = default_store()
-    workspace = WorkspaceStore(db_path, evidence_store=evidence)
+def create_workspace_app(db_path: Path, registry: TokenRegistry, *,
+                         planning_runner: PlanningRunner | None = None,
+                         evidence_store: DemoStore | None = None) -> FastAPI:
+    evidence = default_store() if evidence_store is None else evidence_store
+    workspace = WorkspaceStore(db_path, evidence_store=evidence, planning_runner=planning_runner)
     app = FastAPI(title="LG AX authenticated local workspace", version=CONTRACT_VERSION)
     app.state.workspace = workspace
     app.add_middleware(
@@ -96,7 +100,8 @@ def create_workspace_app(db_path: Path, registry: TokenRegistry) -> FastAPI:
             "contract_version": CONTRACT_VERSION,
             "authentication": "required",
             "access_boundary": "loopback-only",
-            "analysis_implemented": False,
+            "analysis_implemented": planning_runner is not None,
+            "planning_enabled": planning_runner is not None,
         }
 
     @app.get("/api/workspace/projects")
@@ -197,11 +202,17 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--db", type=Path, required=True)
     parser.add_argument("--credentials", type=Path, required=True)
+    parser.add_argument("--dataset", type=Path, help="Trusted server-side synthetic dataset; never a request field.")
+    parser.add_argument("--enable-planning", action="store_true",
+                        help="Explicitly allow configured model calls when an authorized run is submitted.")
     parser.add_argument("--host", choices=["127.0.0.1"], default="127.0.0.1")
     parser.add_argument("--port", type=int, default=18869)
     args = parser.parse_args()
     uvicorn.run(
-        create_workspace_app(args.db, TokenRegistry.from_file(args.credentials)),
+        create_workspace_app(args.db, TokenRegistry.from_file(args.credentials),
+                             evidence_store=DemoStore(json.loads(args.dataset.read_text("utf-8-sig")))
+                             if args.dataset else None,
+                             planning_runner=EnvPlanningRunner() if args.enable_planning else None),
         host=args.host,
         port=args.port,
     )

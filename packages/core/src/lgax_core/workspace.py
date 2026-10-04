@@ -1,4 +1,4 @@
-"""Persistent, append-only planning inputs. This module does not run an Agent."""
+"""Append-only workspace snapshots; planning runs only through server opt-in."""
 
 import hashlib
 import json
@@ -17,6 +17,7 @@ from lgax_contracts import CONTRACT_VERSION, validate
 
 from .errors import DomainError
 from .store import DemoStore
+from .workspace_planning import PlanningRunner, build_planning_input, failed_execution, planning_run_fields
 
 _ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,99}$")
 _CLIENTS = {"web", "mcp", "skill", "api"}
@@ -57,12 +58,16 @@ class WorkspaceStore:
     after the dataset changes; a new run against their old source scope is rejected.
     """
 
-    def __init__(self, path: Path, evidence_store: DemoStore | None = None):
+    def __init__(self, path: Path, evidence_store: DemoStore | None = None,
+                 *, planning_runner: PlanningRunner | None = None):
         self.path = Path(path).resolve()
         if Path(path).name == ":memory:":
             raise _invalid("path", "영구 기록을 저장할 데이터베이스 파일이 필요합니다.")
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.evidence_store = evidence_store if evidence_store is not None else DemoStore()
+        if planning_runner is not None and not callable(planning_runner):
+            raise _invalid("planning_runner")
+        self.planning_runner = planning_runner
         connection = self._open_connection()
         try:
             connection.execute("PRAGMA journal_mode = WAL")
@@ -250,7 +255,7 @@ class WorkspaceStore:
                 or any(not isinstance(item, str) or not item.strip() for item in uncertainties)
                 or len(set(uncertainties)) != len(uncertainties)):
             raise _invalid("unconfirmed")
-        with self._connection(write=True) as connection:
+        def checked_context(connection):
             project_row = self._project_row(connection, project_id)
             self._access(project_row["owner_id"], actor, admin)
             project_snapshot = json.loads(project_row["snapshot_json"])
@@ -273,24 +278,57 @@ class WorkspaceStore:
                 if previous["dataset_sha256"] != digest or previous["document_versions"] != versions:
                     raise DomainError("DATASET_MISMATCH", "이전 실행과 현재 자료 범위가 다릅니다.")
                 revision = previous["request_revision"] + int(copied_request != previous["request"])
-            missing_agent = "상품기획 Agent 분석·콘셉트 생성·검사·수정은 아직 구현되지 않았습니다."
-            unresolved = list(dict.fromkeys([*uncertainties, missing_agent]))
-            run = {
-                "id": f"run-{uuid4().hex}", "project_id": project_id,
-                "dataset_version": copied_request["dataset_version"], "contract_version": CONTRACT_VERSION,
-                "status": "not_implemented", "stage": "plan", "revision_count": 0, "max_revisions": 2,
-                "concepts": [], "unresolved": unresolved, "evidence_ids": [],
-                "events": [{"stage": "plan", "summary": "기획 요청과 자료 범위를 저장했습니다. 분석은 실행하지 않았습니다.",
-                            "tool": None, "evidence_ids": []}],
-            }
-            _contract("Run", run, "run")
-            snapshot = {
-                "run": run, "request": copied_request, "previous_run_id": previous_run_id,
-                "request_revision": revision, "actor_id": actor, "client": client,
-                "created_at": _created_at(), "document_versions": versions, "dataset_sha256": digest,
-                "unconfirmed": uncertainties, "output": None,
-            }
-            self._validate_snapshot("WorkspaceRunSnapshot", snapshot)
+            return copied_request, digest, versions, revision
+
+        # Authenticate and pin parent/source before any potentially costly model call.
+        with self._connection() as connection:
+            copied_request, digest, versions, revision = checked_context(connection)
+        missing_agent = "상품기획 Agent 분석·콘셉트 생성·검사·수정은 아직 구현되지 않았습니다."
+        fields = {
+            "status": "not_implemented", "stage": "plan", "revision_count": 0, "max_revisions": 2,
+            "concepts": [], "unresolved": list(dict.fromkeys([*uncertainties, missing_agent])), "evidence_ids": [],
+            "events": [{"stage": "plan", "summary": "기획 요청과 자료 범위를 저장했습니다. 분석은 실행하지 않았습니다.",
+                        "tool": None, "evidence_ids": []}],
+        }
+        output = None
+        if self.planning_runner is not None:
+            payload = build_planning_input(copied_request, versions, self.evidence_store)
+            execution = None
+            try:
+                execution = self.planning_runner(deepcopy(copied_request), deepcopy(versions), self.evidence_store)
+                fields, output = planning_run_fields(execution, payload)
+                _json(output)
+            except Exception:  # noqa: BLE001 -- Untrusted adapter details must not escape the stored failure boundary.
+                kind = execution.get("execution_kind") if isinstance(execution, dict) else None
+                fallback = failed_execution(payload, "CONTRACT_MISMATCH" if execution is not None
+                                            else "MODEL_UNAVAILABLE",
+                                            execution_kind=kind if kind in {"fixture", "live_model"}
+                                            else "live_model")
+                if execution is not None:
+                    try:
+                        _json(execution)
+                        fallback["rejected_execution"] = deepcopy(execution)
+                    except (TypeError, ValueError, RecursionError):
+                        fallback["rejected_execution_omitted"] = "non_json_execution"
+                fields, output = planning_run_fields(fallback, payload)
+            fields["unresolved"] = list(dict.fromkeys([*uncertainties, *fields["unresolved"]]))
+        run = {
+            "id": f"run-{uuid4().hex}", "project_id": project_id,
+            "dataset_version": copied_request["dataset_version"], "contract_version": CONTRACT_VERSION,
+            **fields,
+        }
+        _contract("Run", run, "run")
+        snapshot = {
+            "run": run, "request": copied_request, "previous_run_id": previous_run_id,
+            "request_revision": revision, "actor_id": actor, "client": client,
+            "created_at": _created_at(), "document_versions": versions, "dataset_sha256": digest,
+            "unconfirmed": uncertainties, "output": output,
+        }
+        self._validate_snapshot("WorkspaceRunSnapshot", snapshot)
+        # No model call occurs within this short SQLite write transaction.
+        with self._connection(write=True) as connection:
+            if checked_context(connection) != (copied_request, digest, versions, revision):
+                raise DomainError("DATASET_MISMATCH", "판단 중 요청 또는 자료 범위가 변경됐습니다.", {})
             connection.execute(
                 "INSERT INTO workspace_runs (id, project_id, created_at, snapshot_json) VALUES (?, ?, ?, ?)",
                 (run["id"], project_id, snapshot["created_at"], _json(snapshot)),
