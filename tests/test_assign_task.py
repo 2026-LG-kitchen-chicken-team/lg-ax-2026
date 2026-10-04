@@ -218,6 +218,26 @@ class AssignTaskTests(unittest.TestCase):
         self.assertEqual(self.outbox(), old)
         self.assertEqual(len(self.api.comments[7]), count)
 
+    def test_public_assignment_file_roundtrip_preserves_sent_state_without_new_mail(self):
+        first = self.prepare()
+        self.sending()
+        self.sent()
+        count = len(self.api.comments[7])
+        saved = json.loads((self.public / (AID + ".json")).read_text(encoding="utf-8"))
+        self.assertEqual(saved["assignment_url"], first["assignment_url"])
+        second = self.prepare(saved)
+        self.assertEqual(second["mail_state"], "sent")
+        self.assertEqual(second["assignment_url"], first["assignment_url"])
+        self.assertEqual(len(self.api.comments[7]), count)
+
+    def test_public_assignment_metadata_cannot_change_pm_recipient_or_issue(self):
+        for changed in ({"pm_account": "unknownamed"}, {"recipient_account": "ginaginaring"},
+                        {"assignment_url": f"https://github.com/{REPO}/issues/12#issuecomment-100"},
+                        {"assignment_url": "https://example.invalid/issues/7#issuecomment-100"}):
+            with self.subTest(changed=changed), self.assertRaisesRegex(ValueError, "metadata mismatch"):
+                self.prepare({**self.assignment, **changed})
+        self.assertEqual(self.api.mutations, [])
+
     def test_remote_assignment_id_conflict_rejected_before_mutation(self):
         self.prepare()
         before = len(self.api.mutations)
