@@ -6,7 +6,7 @@ import type { Evidence } from './domain';
 import { runStatusView } from './liveWorkspace';
 import type { ErrorView, EvidenceSearch, LiveWorkspace } from './liveWorkspace';
 import {
-  buildComparison, buildExport, buildRerunRequest, candidateExclusion, conceptDetailChanges, exportMarkdown, FIXTURE_NOTICE, heldItems,
+  buildComparison, buildExport, buildRerunRequest, isCandidateExclusion, requestCandidateChoices, rerunCandidates, conceptDetailChanges, exportMarkdown, FIXTURE_NOTICE, heldItems,
   nextRequestRevision, requestChanges, splitConditions, statusLabel,
 } from './planning';
 import type { CandidateChoice, Concept, DataMode, Feature, MissingQuestion, PlanningRequest, RequestChange, RunSnapshot } from './planning';
@@ -278,22 +278,33 @@ export function ConceptsView({ mode, runs, selected, onSelect, features, evidenc
 /** Planner picks a role per candidate and corrects conditions; the preview shows the exact next request before rerun. */
 function RerunPanel({ mode, selected, original, onRerun, busy }: { mode: DataMode; selected: RunSnapshot; original: PlanningRequest; onRerun: (request: PlanningRequest) => Promise<void>; busy: boolean }) {
   const concepts = selected.run.concepts;
+  // Candidates already excluded/focused in this request stay selectable even when this run has no concepts.
+  const candidates = rerunCandidates(concepts, selected.request);
+  const carried = new Set(candidates.filter(ref => !concepts.some(concept => concept.id === ref.id)).map(ref => ref.id));
   const { conditions: startConditions } = splitConditions(selected.request);
-  const [choices, setChoices] = useState<Record<string, CandidateChoice>>(() => Object.fromEntries(concepts.map(concept => [concept.id, selected.request.exclusions.includes(candidateExclusion(concept)) ? 'exclude' : 'keep'])));
-  const [conditions, setConditions] = useState<string[]>(startConditions);
+  const [initialChoices] = useState<Record<string, CandidateChoice>>(() => {
+    const written = requestCandidateChoices(selected.request).choices;
+    return Object.fromEntries(candidates.map(ref => [ref.id, written[ref.id] ?? 'keep']));
+  });
+  const [choices, setChoices] = useState<Record<string, CandidateChoice>>(initialChoices);
+  // Stable row keys: a key that includes the text would remount the input on every keystroke and drop focus.
+  const nextKey = useRef(0);
+  const [rows, setRows] = useState<{ key: number; text: string }[]>(() => startConditions.map(text => ({ key: nextKey.current++, text })));
+  const conditions = rows.map(row => row.text);
   const [draft, setDraft] = useState('');
   const [error, setError] = useState('');
 
   let preview: PlanningRequest | null = null;
   let previewError = '';
-  try { preview = buildRerunRequest(selected.request, concepts, choices, conditions); } catch (failure) { previewError = failure instanceof ApiError ? failure.message : '재실행 요청을 만들 수 없습니다.'; }
+  try { preview = buildRerunRequest(selected.request, candidates, choices, conditions); } catch (failure) { previewError = failure instanceof ApiError ? failure.message : '재실행 요청을 만들 수 없습니다.'; }
   const changes = preview ? requestChanges(selected.request, preview) : [];
 
   function addDraft() {
     const text = draft.trim();
     if (!text) { setError('추가할 조건을 입력해 주세요.'); return; }
     if (conditions.includes(text)) { setError('이미 같은 조건이 있습니다.'); return; }
-    setConditions(items => [...items, text]); setDraft(''); setError('');
+    if (isCandidateExclusion(text)) { setError('후보 제외는 위의 후보 선택에서 고릅니다.'); return; }
+    setRows(items => [...items, { key: nextKey.current++, text }]); setDraft(''); setError('');
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -307,15 +318,15 @@ function RerunPanel({ mode, selected, original, onRerun, busy }: { mode: DataMod
     <p className="eyebrow">RERUN</p><h3>후보와 조건을 고르고 다시 실행</h3>
     <p className="hint">{selected.run.id}의 요청을 바탕으로 새 실행을 연결합니다. {mode === 'fixture' ? '현재는 브라우저 안의 초안이며 결과는 not_implemented로 남습니다.' : '작업실 서버에 새 실행으로 저장합니다. 판단 Agent가 연결되기 전까지 분석은 실행되지 않습니다.'}</p>
     <h4 className="sub">후보 선택</h4>
-    {concepts.length ? <ul className="choice-list">{concepts.map(concept => <li key={concept.id}>
-      <span><span className="id">{concept.id} · {statusLabel(concept.status)}</span>{concept.title}</span>
+    {candidates.length ? <ul className="choice-list">{candidates.map(concept => <li key={concept.id}>
+      <span><span className="id">{concept.id} · {carried.has(concept.id) ? '이전 요청에서 지정' : statusLabel(concepts.find(item => item.id === concept.id)!.status)}</span>{concept.title}</span>
       <span className="choice-group" role="radiogroup" aria-label={`${concept.title} 처리`}>{([['keep', '유지'], ['focus', '집중'], ['exclude', '제외']] as const).map(([value, label]) => <label key={value} className={choices[concept.id] === value ? `on ${value}` : ''}><input type="radio" name={`choice-${concept.id}`} checked={choices[concept.id] === value} onChange={() => setChoices(items => ({ ...items, [concept.id]: value }))} />{label}</label>)}</span>
     </li>)}</ul> : <p className="muted">이 실행에는 고를 후보가 없습니다. 조건만 교정해 다시 실행할 수 있습니다.</p>}
     <h4 className="sub">조건 교정 <small>제외·제약 조건</small></h4>
-    <ul className="condition-list">{conditions.map((item, index) => <li key={`${index}-${item}`}>
+    <ul className="condition-list">{rows.map((row, index) => <li key={row.key}>
       <label className="sr-only" htmlFor={`condition-${index}`}>조건 {index + 1}</label>
-      <input id={`condition-${index}`} value={item} onChange={event => setConditions(items => items.map((value, at) => at === index ? event.target.value : value))} />
-      <button type="button" className="text-button" onClick={() => setConditions(items => items.filter((_, at) => at !== index))} aria-label={`조건 ${index + 1} 삭제`}>삭제</button>
+      <input id={`condition-${index}`} value={row.text} onChange={event => { const text = event.target.value; setRows(items => items.map(item => item.key === row.key ? { ...item, text } : item)); }} />
+      <button type="button" className="text-button" onClick={() => setRows(items => items.filter(item => item.key !== row.key))} aria-label={`조건 ${index + 1} 삭제`}>삭제</button>
     </li>)}</ul>
     <div className="condition-row"><label className="sr-only" htmlFor="extra-condition">추가 조건</label><input id="extra-condition" value={draft} onChange={event => setDraft(event.target.value)} onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); addDraft(); } }} placeholder="예: 1인 가구 소형 모델만 검토" /><button type="button" className="secondary-button" onClick={addDraft}>조건 추가</button></div>
     <h4 className="sub">다음 요청 미리보기 <small>요청 회차 {preview ? nextRequestRevision(original, selected, preview) : '-'}</small></h4>

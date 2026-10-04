@@ -161,14 +161,47 @@ export function draftRunFromRequest(base: RunSnapshot, original: PlanningRequest
 // R21 (P2-WEB-003): candidate choices and corrected conditions become the next request. The shared contract has no
 // candidate-selection field, so choices are written into the request text the Agent reads, in a stable form.
 export type CandidateChoice = 'keep' | 'focus' | 'exclude';
-const FOCUS_SUFFIX = /\s*\[집중 검토: [^\]]*\]$/;
+export interface CandidateRef { id: string; title: string }
+// The focus suffix is always last, so match greedily to the final ']' (titles may contain ']').
+const FOCUS_SUFFIX = /\s*\[집중 검토: (.*)\]$/s;
 const EXCLUDED_CANDIDATE = /^후보 제외: /;
+const EXCLUDED_REF = /^후보 제외: (.*) \(([A-Za-z0-9][A-Za-z0-9_.:-]*)\)$/s;
+const FOCUS_REF = /(.*?) \(([A-Za-z0-9][A-Za-z0-9_.:-]*)\)(?:, |$)/gs;
 
-export function candidateExclusion(concept: Pick<Concept, 'id' | 'title'>): string {
+export function candidateExclusion(concept: CandidateRef): string {
   return `후보 제외: ${concept.title} (${concept.id})`;
 }
 
-export function buildRerunRequest(base: PlanningRequest, concepts: Concept[], choices: Record<string, CandidateChoice>, conditions: string[]): PlanningRequest {
+export function isCandidateExclusion(text: string): boolean {
+  return EXCLUDED_CANDIDATE.test(text.trim());
+}
+
+/**
+ * Reads the candidate choices already written into a request, so a rerun from a run without concepts
+ * (a draft or a not_implemented server run) keeps earlier exclusions and focus instead of silently dropping them.
+ */
+export function requestCandidateChoices(request: PlanningRequest): { refs: CandidateRef[]; choices: Record<string, CandidateChoice> } {
+  const refs: CandidateRef[] = [];
+  const choices: Record<string, CandidateChoice> = {};
+  for (const line of request.exclusions) {
+    const match = EXCLUDED_REF.exec(line);
+    if (match) { refs.push({ id: match[2], title: match[1] }); choices[match[2]] = 'exclude'; }
+  }
+  const suffix = FOCUS_SUFFIX.exec(request.improvement_task)?.[1] ?? '';
+  for (const match of suffix.matchAll(FOCUS_REF)) {
+    if (!refs.some(ref => ref.id === match[2])) refs.push({ id: match[2], title: match[1] });
+    choices[match[2]] = 'focus';
+  }
+  return { refs, choices };
+}
+
+/** Candidates offered for a rerun: the run's concepts plus candidates the request already excludes or focuses. */
+export function rerunCandidates(concepts: Concept[], request: PlanningRequest): CandidateRef[] {
+  const carried = requestCandidateChoices(request).refs.filter(ref => !concepts.some(concept => concept.id === ref.id));
+  return [...concepts.map(({ id, title }) => ({ id, title })), ...carried];
+}
+
+export function buildRerunRequest(base: PlanningRequest, concepts: CandidateRef[], choices: Record<string, CandidateChoice>, conditions: string[]): PlanningRequest {
   const cleaned = [...new Set(conditions.map(item => item.trim()).filter(item => item && !EXCLUDED_CANDIDATE.test(item)))];
   const excluded = concepts.filter(concept => choices[concept.id] === 'exclude').map(candidateExclusion);
   const focused = concepts.filter(concept => choices[concept.id] === 'focus');

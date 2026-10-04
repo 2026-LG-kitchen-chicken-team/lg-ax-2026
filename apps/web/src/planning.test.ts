@@ -12,7 +12,7 @@ import { parseBootstrap } from './api';
 import type { BootstrapData, Evidence } from './domain';
 import { FIXTURE_BOOTSTRAP, FIXTURE_DATASET_SHA256, FIXTURE_ORIGINAL_REQUEST, FIXTURE_RUNS } from './fixtures/planning.fixture';
 import {
-  buildComparison, buildExport, buildRerunRequest, canonical, conceptChanges, conceptDetailChanges, contractErrors, draftRunFromRequest,
+  buildComparison, buildExport, buildRerunRequest, canonical, isCandidateExclusion, requestCandidateChoices, rerunCandidates, conceptChanges, conceptDetailChanges, contractErrors, draftRunFromRequest,
   draftRunWithCondition, exportMarkdown, heldItems, missingRequestQuestions, nextRequestRevision, requestChanges, splitConditions,
 } from './planning';
 import type { Feature, PlanningRequest } from './planning';
@@ -248,6 +248,30 @@ describe('P2-WEB-003 candidate choices, condition correction and combined review
     expect(twice.improvement_task).toBe(first.request.improvement_task);
     expect(twice.exclusions).toEqual(first.request.exclusions);
     expect(splitConditions(once)).toEqual({ conditions: first.request.exclusions, excludedCandidates: ['후보 제외: 오염 구획만 꺼내는 분리 청소 트레이 (CONCEPT-FX-001)'] });
+  });
+  it('review fix #1: a rerun from a run without concepts keeps earlier candidate exclusions and focus', () => {
+    const once = buildRerunRequest(second.request, concepts, { 'CONCEPT-FX-001': 'exclude', 'CONCEPT-FX-002': 'focus' }, splitConditions(second.request).conditions);
+    const draft = draftRunFromRequest(second, FIXTURE_ORIGINAL_REQUEST, once, 'RUN-DRAFT-7', '2026-10-04T10:00:00.000Z');
+    expect(draft.run.concepts).toEqual([]);
+    const carried = rerunCandidates(draft.run.concepts, draft.request);
+    expect(carried.map(ref => ref.id)).toEqual(['CONCEPT-FX-001', 'CONCEPT-FX-002']);
+    const { choices } = requestCandidateChoices(draft.request);
+    expect(choices).toEqual({ 'CONCEPT-FX-001': 'exclude', 'CONCEPT-FX-002': 'focus' });
+    const next = buildRerunRequest(draft.request, carried, choices, [...splitConditions(draft.request).conditions, '조건 X']);
+    expect(next.exclusions).toContain('후보 제외: 오염 구획만 꺼내는 분리 청소 트레이 (CONCEPT-FX-001)');
+    expect(next.improvement_task.endsWith('[집중 검토: 청소 전 식품 이동 범위 안내 (CONCEPT-FX-002)]')).toBe(true);
+    const released = buildRerunRequest(draft.request, carried, { 'CONCEPT-FX-001': 'keep', 'CONCEPT-FX-002': 'keep' }, splitConditions(draft.request).conditions);
+    expect(released.improvement_task).toBe(second.request.improvement_task);
+    expect(splitConditions(released).excludedCandidates).toEqual([]);
+  });
+  it('review fix #9: titles containing brackets or commas round-trip without stacking suffixes', () => {
+    const odd = [{ id: 'C-1', title: '트레이 [소형], 2단' }, { id: 'C-2', title: '안내 (화면)' }];
+    const once = buildRerunRequest(first.request, odd, { 'C-1': 'focus', 'C-2': 'exclude' }, []);
+    expect(requestCandidateChoices(once)).toEqual({ refs: [{ id: 'C-2', title: '안내 (화면)' }, { id: 'C-1', title: '트레이 [소형], 2단' }], choices: { 'C-2': 'exclude', 'C-1': 'focus' } });
+    const twice = buildRerunRequest(once, odd, { 'C-1': 'focus', 'C-2': 'keep' }, []);
+    expect(twice.improvement_task.split('[집중 검토:')).toHaveLength(2);
+    expect(buildRerunRequest(twice, odd, { 'C-1': 'keep', 'C-2': 'keep' }, []).improvement_task).toBe(first.request.improvement_task);
+    expect(isCandidateExclusion(' 후보 제외: 무엇 (X-1)')).toBe(true);
   });
   it('corrects conditions: edits, removals and blanks are applied, duplicates collapse', () => {
     const next = buildRerunRequest(first.request, [], {}, ['실기기 제어', '  ', '실기기 제어', '제조용 CAD 제외']);

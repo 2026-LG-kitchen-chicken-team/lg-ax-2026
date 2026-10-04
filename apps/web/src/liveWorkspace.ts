@@ -212,6 +212,9 @@ export function useLiveWorkspace(): LiveWorkspace {
         const created = await api.createProject(projectName(request), request as unknown as Record<string, unknown>, documentVersionsFor(products, request.model_ids));
         if (!current()) return null;
         setState(value => ({ ...value, projects: [...value.projects, created] }));
+        // Select the new project before its first run: if that save fails, the next save continues this project
+        // (no duplicate project), and the list shows what the server actually stored.
+        applyProject(created, []);
         const run = await api.createRun(created.project.id, request as unknown as Record<string, unknown>) as unknown as RunSnapshot;
         if (!current()) return null;
         applyProject(created, [run]);
