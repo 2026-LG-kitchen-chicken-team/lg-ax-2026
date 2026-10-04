@@ -122,7 +122,8 @@ class WorkerTests(unittest.TestCase):
         self.assertLessEqual(set(example), set(WorkerConfig.__dataclass_fields__))
         self.assertIs(example["isolation_acknowledged"], False)
         for field, value in (("repository", self.repository), ("state_dir", self.config.state_dir),
-                             ("codex_home", self.config.codex_home), ("token_file", self.config.token_file)):
+                             ("codex_home", self.config.codex_home), ("token_file", self.config.token_file),
+                             ("execution_root", self.root / "execution")):
             example[field] = str(value)
         # The example intentionally cannot be deployed by merely copying it.
         config_file = self.root / "worker-config.json"
