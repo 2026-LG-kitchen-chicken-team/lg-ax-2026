@@ -1,0 +1,98 @@
+{
+  "execution_kind": "fixture",
+  "new_live_model_calls": 0,
+  "consumer_pr": 61,
+  "consumer_head": "184b44485e1f17684dc61fdeaa6da719012d09ff",
+  "consumer_source_sha256": "b317d0667ebd398b2e031296e88b1231abe41714d4d5fa37f1c4d0c56112e717",
+  "view_source_sha256": "6b0910a6df3842a509683004a1b4fe92fc58852b81ba41d19a95e722ef2dc3cc",
+  "original_failures": [
+    {
+      "name": "uncertain",
+      "errors": []
+    },
+    {
+      "name": "persistent_violation",
+      "errors": []
+    }
+  ],
+  "current": [
+    {
+      "name": "accept",
+      "decision_errors": [],
+      "view_kind": "ok",
+      "view_problems": [],
+      "status": "completed",
+      "revision_count": 0,
+      "model_calls": 4
+    },
+    {
+      "name": "uncertain",
+      "decision_errors": [],
+      "view_kind": "ok",
+      "view_problems": [],
+      "status": "held",
+      "revision_count": 0,
+      "model_calls": 4
+    },
+    {
+      "name": "persistent_violation",
+      "decision_errors": [],
+      "view_kind": "ok",
+      "view_problems": [],
+      "status": "failed",
+      "revision_count": 2,
+      "model_calls": 8
+    },
+    {
+      "name": "invalid_review",
+      "decision_errors": [],
+      "view_kind": "ok",
+      "view_problems": [],
+      "status": "failed",
+      "revision_count": 2,
+      "model_calls": 8
+    },
+    {
+      "name": "invalid_generation",
+      "decision_errors": [],
+      "view_kind": "ok",
+      "view_problems": [],
+      "status": "failed",
+      "revision_count": 2,
+      "model_calls": 3
+    }
+  ],
+  "rendered": [
+    {
+      "name": "accept",
+      "semantic_review_panel": true,
+      "rejected_candidates_panel": false,
+      "render_ok": true
+    },
+    {
+      "name": "uncertain",
+      "semantic_review_panel": true,
+      "rejected_candidates_panel": true,
+      "render_ok": true
+    },
+    {
+      "name": "persistent_violation",
+      "semantic_review_panel": true,
+      "rejected_candidates_panel": true,
+      "render_ok": true
+    },
+    {
+      "name": "invalid_review",
+      "semantic_review_panel": false,
+      "rejected_candidates_panel": true,
+      "render_ok": true
+    },
+    {
+      "name": "invalid_generation",
+      "semantic_review_panel": false,
+      "rejected_candidates_panel": false,
+      "render_ok": true
+    }
+  ],
+  "limitation": "Pinned source functions, persisted fixtures and optional static HTML rendering; no browser or live-model execution."
+}

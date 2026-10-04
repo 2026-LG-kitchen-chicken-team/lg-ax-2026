@@ -4,7 +4,15 @@
 
 ## 팀이 시작할 곳
 
-### PM 공통 연결 진행 (10/4)
+### 현재 재개 기준 (2026-10-05)
+
+운영 보드는 [조직 Project1](https://github.com/orgs/2026-LG-kitchen-chicken-team/projects/1)이며 [저장소 Projects](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/projects)에서도 같은 보드를 연다. 이전 개인 Project3는 역사 기록이며 새 작업에 사용하지 않는다. [PM 현재 배정](../pm/현재배정.md)·[Project 이관 기록](../프로젝트이관_2026-10-05.md)을 따른다.
+
+현재 Done은 초기 설정2·WEB001/002·CORE001의 5개 작업이며 신청31요구 verified0이다. PR58에서 실제 Qwen 판단→인증 API·결과 저장→전용 MCP 조회를 확인했으나 변경 실행에 제외 조건 위반이 남았다. 후속 의미 검토·검사/수정 Agent·실제 웹 판단 흐름·독립 평가·최종 제출의 최신 범위는 [PM 현재 배정](../pm/현재배정.md)을 읽는다. 현재 우선 배정은 PM #19/#20 통합→#21 평가→#22 제출, 황대겸 #8 의미 검수→#9 수정/검사, 신진하 #12 자료팩→#13/#14, 최길웅 #25 후보 검토/조건 재실행→#26이다.
+
+### 초기 PM 공통 연결 진행 (10/4 역사)
+
+아래는 PR31 선행 구현 당시 상태이며 현재 작업은 위 재개 기준을 우선한다.
 
 정이량 #19/#20의 선행 구현: [공통 작업실 API·저장·권한](../pm/workspace.md), [구조화 모델 어댑터](../pm/model-adapters.md), [다섯 Skill 실행 계약](../pm/skills.md). SQLite 원입력/변경 이력과 인증된 loopback API·MCP stdio·웹용 TS 클라이언트를 실제 연결했다. 서버 재시작 보존과 Lab/Ollama 실제 호출도 확인했다. 실제 화면 연결·코어 결과 저장·네 판단 Skill의 실모델 반복 실행은 후속 통합이다. 기존 공개3도구의 계정 검증을 새 작업실 OAuth 검증으로 확대하지 않는다.
 
@@ -12,7 +20,7 @@ P2-PM-003/004는 전체 완료 조건이 남아 있으므로 Done으로 바꾸�
 
 선행 코드와 규격은 [PR #31](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/31)로 main에 병합했다. [실제 CI·병합 commit·공통 기록 재확인](../../evals/pm-workspace/20261004/delivery/checks.json)과 PM의 정이량-20261004-003/E004에서 확인한다. 이 PR 병합은 PM 두 과제의 전체 완료와 별개다.
 
-| 담당 | 업무 | 첫 Issue | 편집 영역 |
+| 담당 | 업무 | 초기 첫 Issue (10/4) | 편집 영역 |
 |---|---|---|---|
 | 정이량 / jeongiryang | PM, 공통 계약, 연결, 통합·검수·병합·제출 | [공동 실행/이력 #19](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/19), [다섯 Skill #20](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/20) | 계약, API/MCP, 하네스, CI, 운영 문서 |
 | 황대겸 / unknownamed | 핵심 판단·대조·콘셉트·검사·수정 | [판단 계약 #7](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/7) | 공통 코어의 판단 구현, 관련 Skill·평가 |
@@ -49,7 +57,7 @@ blocked는 `--reason`, review_requested는 자기 열린 비초안 PR의 `--pr-u
 - `skills`: 기존 Skill 보존 및 후속 재실행 Skill. `evals`: 실제 모델 비교와 후속 독립 평가.
 - `harness/phase2`: 31개 요구사항·21개 작업·검증 근거·검수/병합/통합 상태. 이전 선정/접수 AtoZ는 역사 상태로 보존한다.
 
-현재 자동 상품기획 판단은 구현하지 않았다. `POST /api/planning-requests`는 `501 NOT_IMPLEMENTED`를 반환하며 고정된 성공 결과를 돌려주지 않는다. 콘셉트·수정 이력 화면도 구현 상태를 분명히 표시한다. 전체 신청서 구현은 #7~#27에서 이어간다.
+초기 공개 API의 `POST /api/planning-requests`는 `501 NOT_IMPLEMENTED`를 반환한다. 인증된 private 작업실에서는 PR58의 실제 모델 판단·결과 저장·전용 MCP 조회를 확인했다. 공개 읽기 서비스와 부분 판단 실행을 구분하며, 조건 의미 검증·검사/수정·실제 웹 판단 흐름과 신청서 전체 구현의 최신 상태는 PM 배정과 실행 증거를 따른다.
 
 ## 로컬 설치와 실행
 
@@ -83,7 +91,7 @@ AI는 하네스 키워드 없이 작업 지시를 받으면 담당 패킷을 읽
 ```powershell
 uv run python scripts/phase2.py status
 uv run python scripts/phase2.py next --member 황대겸
-uv run python scripts/phase2.py packet P2-CORE-001
+uv run python scripts/phase2.py packet P2-CORE-002
 uv run python scripts/phase2.py gate setup_framework
 uv run python scripts/phase2.py gate setup_external
 ```
@@ -96,11 +104,11 @@ uv run python scripts/phase2.py gate setup_external
 
 공통 요구·모델 revision·근거 계약 변경은 PM에게 영향과 마이그레이션을 먼저 제시한다. 타인 영역이 필요하면 Issue에서 편집 범위를 조정한다. 10/6 오전 컨설팅 일정 확인, 10/20 발표자료·영상·README/Skill 포함 코드 ZIP 준비는 후속 작업이다. 정확한 제출 시각·경로·용량·영상 길이는 공식 확인 전이다.
 
-## 초기 설정 완료와 지금의 배정
+## 초기 설정 완료 기록 (10/4 역사)
 
 초기 설정·실제 연결은 [PR #29](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/29)로 병합했다. 실제 GitHub CI([최종 구현 검사](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/actions/runs/37147862767))와 병합 commit `ea4389a1d9d8d4e469bc049ab4e3ef91871ace8d`의 별도 깨끗한 작업 공간에서 Python 기본93·서버 운영6·웹11시험, 타입/빌드, 계약/기록, stdio/공개HTTPS MCP 호출이 통과했다. 근거는 `harness/phase2/runs/post-merge-ea4389a1d9d8/`다.
 
-P2-PM-001·002 두 작업만 Done이다. 참가작31요구의 verified는 0개이고 전체 Agent·다섯 업무 Skill·독립 평가·제출 ZIP은 다음 작업이다. 현재 우선 배정은 PM #19(공동 실행/이력; #20 Skill도 병렬 가능), 황대겸 #7(판단 계약), 신진하 #12(자료팩), 최길웅 #23(웹 작업실)이다. 다음 작업의 입출력/범위/완료 조건은 각 Issue와 packet을 따른다.
+PR29 초기 설정 당시에는 P2-PM-001·002 두 작업만 Done이었다. 참가작31요구 verified0·전체 Agent/Skill/평가/ZIP 후속 상태와 당시 첫 배정 PM #19/#20·황대겸 #7·신진하 #12·최길웅 #23을 보존한다. 현재 Done5·황대겸 #8·최길웅 #25는 상단과 PM 현재 배정을 따른다. 다음 작업의 입출력/범위/완료 조건은 각 Issue와 packet을 따른다.
 
 초기9체크의 코드/자료 원본은 실제 병합 commit의 바이트와 일치하는 스냅샷으로 고정했다. gate PASS는 기록된 초기 버전의 검증이며 현재 서버 생존을 감시하는 기능이 아니다. 새 기능·모델·자료 변경은 담당 작업의 새 run/현재 버전/실행 증거로 검사한다. 공통 data/demo와 bootstrap 실험의 원본을 덮어 쓰지 않는다.
 

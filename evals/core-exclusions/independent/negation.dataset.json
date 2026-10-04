@@ -1,0 +1,80 @@
+{
+  "manifest": {
+    "dataset_id": "EXCL-INDEPENDENT-03",
+    "version": "EXCL-INDEPENDENT-03-v1",
+    "description": "Independent synthetic condition inputs, no generated response",
+    "source_kind": "synthetic",
+    "model_count": 1,
+    "review_count": 1,
+    "analysis_implemented": false
+  },
+  "products": [
+    {
+      "model_id": "EXCL-INDEPENDENT-03-MODEL",
+      "name": "독립 제외 조건 검토용 가상 dishwasher",
+      "product_group": "dishwasher",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EXCL-INDEPENDENT-03-REVIEW",
+      "model_id": "EXCL-INDEPENDENT-03-MODEL",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "review",
+      "source_id": "EXCL-INDEPENDENT-03-REVIEW-SOURCE",
+      "locator": {
+        "row": 2
+      },
+      "text": "세척 후 필터에 남은 찌꺼기를 직접 꺼내야 하는데 손에 묻어 불편하다.",
+      "feature_ids": []
+    },
+    {
+      "id": "EXCL-INDEPENDENT-03-MANUAL",
+      "model_id": "EXCL-INDEPENDENT-03-MODEL",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "manual",
+      "source_id": "EXCL-INDEPENDENT-03-MANUAL-SOURCE",
+      "locator": {
+        "page": 3,
+        "section": "사용 조건"
+      },
+      "text": "세척 후 필터를 꺼내어 흐르는 물로 씻는다. 필터 자동 세척 모드는 제공하지 않는다.",
+      "feature_ids": [
+        "EXCL-INDEPENDENT-03-FEATURE"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "id": "EXCL-INDEPENDENT-03-FEATURE",
+      "model_id": "EXCL-INDEPENDENT-03-MODEL",
+      "document_version": "1.0",
+      "name": "현재 제공 기능",
+      "description": "세척 후 필터를 꺼내어 흐르는 물로 씻는다. 필터 자동 세척 모드는 제공하지 않는다.",
+      "conditions": [
+        "설명서의 사용 조건을 충족해야 함"
+      ],
+      "evidence_ids": [
+        "EXCL-INDEPENDENT-03-MANUAL"
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "id": "ROW-EXCL-INDEPENDENT-03-REVIEW",
+      "evidence_id": "EXCL-INDEPENDENT-03-REVIEW",
+      "model_id": "EXCL-INDEPENDENT-03-MODEL",
+      "document_version": "1.0",
+      "text": "세척 후 필터에 남은 찌꺼기를 직접 꺼내야 하는데 손에 묻어 불편하다.",
+      "source_id": "EXCL-INDEPENDENT-03-REVIEW-SOURCE",
+      "locator": {
+        "row": 2
+      },
+      "source_kind": "synthetic"
+    }
+  ]
+}

@@ -7,6 +7,7 @@ import { FIXTURE_BOOTSTRAP, FIXTURE_ORIGINAL_REQUEST, FIXTURE_PROJECT_ID, FIXTUR
 import { ApplianceIcon, ArrowIcon, SearchIcon } from './icons';
 import { runStatusView, sameProjectScope, useLiveWorkspace } from './liveWorkspace';
 import type { WorkspaceProject } from './workspace';
+import { runSources } from './judgement';
 import { contractErrors, draftRunFromRequest, missingRequestQuestions, nextRequestRevision, requestChanges } from './planning';
 import type { DataMode, Feature, PlanningRequest, RunSnapshot } from './planning';
 import { ConceptsView, download, FixtureBanner, HistoryView, ModeSwitch, RequestInsights, ServerEvidenceSearch, WorkspaceBar } from './PlanningViews';
@@ -181,7 +182,9 @@ export default function App() {
   const workspace = useLiveWorkspace();
   const runs = mode === 'fixture' ? [...FIXTURE_RUNS, ...drafts] : workspace.runs;
   const selectedRun = runs.find(item => item.run.id === runChoice) ?? runs[runs.length - 1];
-  const planningProps = { mode, runs, selected: selectedRun, onSelect: selectRun, features: (data?.features ?? []) as unknown as Feature[], evidence: data?.evidence ?? [] };
+  // A stored planning run quotes the sources and features its judgement actually received, ahead of the bootstrap data.
+  const runScope = runSources(selectedRun, (data?.features ?? []) as unknown as Feature[], data?.evidence ?? []);
+  const planningProps = { mode, runs, selected: selectedRun, onSelect: selectRun, features: runScope.features, evidence: runScope.evidence };
   const originalRequest = mode === 'fixture' ? FIXTURE_ORIGINAL_REQUEST : workspace.project?.project.request as PlanningRequest | undefined;
   // Expiry/reconnect must discard private form state. Connected project creation also changes scopeVersion,
   // but must keep its in-flight form mounted so the successful save result and entered request remain visible.

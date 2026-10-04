@@ -1,0 +1,31 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests\test_semantic_review.py:2:1
+   |
+ 1 |   """Literal review coverage and safe pipeline termination, without live LLM grading."""
+ 2 | / import json
+ 3 | | import unittest
+ 4 | | from copy import deepcopy
+ 5 | | from pathlib import Path
+ 6 | |
+ 7 | | import test_planning_agent as fixtures
+ 8 | | from jsonschema import Draft202012Validator
+ 9 | | from lgax_core.errors import DomainError
+10 | | from lgax_core.judgement_contract import input_digest, review_judgement
+11 | | from lgax_core.semantic_review import review_semantics, schema_for_review
+12 | | from lgax_core.judgement_contract import schema_for as judgement_schema
+13 | | from lgax_core.store import DemoStore
+   | |_____________________________________^
+14 |
+15 |   ROOT = Path(__file__).resolve().parents[1]
+   |
+help: Organize imports
+   |
+10 | from lgax_core.judgement_contract import input_digest, review_judgement
+11 + from lgax_core.judgement_contract import schema_for as judgement_schema
+12 | from lgax_core.semantic_review import review_semantics, schema_for_review
+   - from lgax_core.judgement_contract import schema_for as judgement_schema
+13 | from lgax_core.store import DemoStore
+   |
+
+Found 1 error.
+[*] 1 fixable with the `--fix` option.

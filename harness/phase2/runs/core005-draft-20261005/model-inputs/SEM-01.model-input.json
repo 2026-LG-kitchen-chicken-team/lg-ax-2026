@@ -1,0 +1,669 @@
+{
+  "input": {
+    "request": {
+      "product_group": "microwave",
+      "target_customer": "주방 가전을 사용하는 가구",
+      "use_situation": "자료에 적힌 같은 모델과 사용 조건을 검토한다.",
+      "improvement_task": "국물 있는 음식을 쏟은 뒤 회전판 아래 홈에 고여 회전판을 꺼내고도 닦기 어렵다.",
+      "exclusions": [
+        "다른 모델 기능 혼용",
+        "근거 없는 효과 단정"
+      ],
+      "model_ids": [
+        "SEM-01-MODEL"
+      ],
+      "dataset_version": "SEM-01-independent-v1"
+    },
+    "product": {
+      "model_id": "SEM-01-MODEL",
+      "name": "독립 평가용 가상 microwave",
+      "product_group": "microwave",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "SEM-01-REVIEW",
+        "model_id": "SEM-01-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "SEM-01-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "국물 있는 음식을 쏟은 뒤 회전판 아래 홈에 고여 회전판을 꺼내고도 닦기 어렵다.",
+        "feature_ids": []
+      },
+      {
+        "id": "SEM-01-MANUAL",
+        "model_id": "SEM-01-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "SEM-01-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능 및 사용 조건"
+        },
+        "text": "유리 회전판은 분리하여 세척할 수 있다. 회전판 아래 받침과 홈은 손으로 닦는다.",
+        "feature_ids": [
+          "SEM-01-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "SEM-01-FEATURE",
+        "model_id": "SEM-01-MODEL",
+        "document_version": "1.0",
+        "name": "설명서의 제공 기능",
+        "description": "유리 회전판은 분리하여 세척할 수 있다. 회전판 아래 받침과 홈은 손으로 닦는다.",
+        "conditions": [
+          "명시한 사용 조건을 충족해야 한다."
+        ],
+        "evidence_ids": [
+          "SEM-01-MANUAL"
+        ]
+      }
+    ],
+    "revision_count": 0,
+    "max_concepts": 3,
+    "changed_evidence_ids": []
+  },
+  "materials": {
+    "input": {
+      "request": {
+        "product_group": "microwave",
+        "target_customer": "주방 가전을 사용하는 가구",
+        "use_situation": "자료에 적힌 같은 모델과 사용 조건을 검토한다.",
+        "improvement_task": "국물 있는 음식을 쏟은 뒤 회전판 아래 홈에 고여 회전판을 꺼내고도 닦기 어렵다.",
+        "exclusions": [
+          "다른 모델 기능 혼용",
+          "근거 없는 효과 단정"
+        ],
+        "model_ids": [
+          "SEM-01-MODEL"
+        ],
+        "dataset_version": "SEM-01-independent-v1"
+      },
+      "product": {
+        "model_id": "SEM-01-MODEL",
+        "name": "독립 평가용 가상 microwave",
+        "product_group": "microwave",
+        "document_version": "1.0",
+        "source_kind": "synthetic"
+      },
+      "sources": [
+        {
+          "id": "SEM-01-REVIEW",
+          "model_id": "SEM-01-MODEL",
+          "document_version": "1.0",
+          "source_kind": "synthetic",
+          "source_type": "review",
+          "source_id": "SEM-01-CSV",
+          "locator": {
+            "row": 2
+          },
+          "text": "국물 있는 음식을 쏟은 뒤 회전판 아래 홈에 고여 회전판을 꺼내고도 닦기 어렵다.",
+          "feature_ids": []
+        },
+        {
+          "id": "SEM-01-MANUAL",
+          "model_id": "SEM-01-MODEL",
+          "document_version": "1.0",
+          "source_kind": "synthetic",
+          "source_type": "manual",
+          "source_id": "SEM-01-DOC",
+          "locator": {
+            "page": 4,
+            "section": "기능 및 사용 조건"
+          },
+          "text": "유리 회전판은 분리하여 세척할 수 있다. 회전판 아래 받침과 홈은 손으로 닦는다.",
+          "feature_ids": [
+            "SEM-01-FEATURE"
+          ]
+        }
+      ],
+      "features": [
+        {
+          "id": "SEM-01-FEATURE",
+          "model_id": "SEM-01-MODEL",
+          "document_version": "1.0",
+          "name": "설명서의 제공 기능",
+          "description": "유리 회전판은 분리하여 세척할 수 있다. 회전판 아래 받침과 홈은 손으로 닦는다.",
+          "conditions": [
+            "명시한 사용 조건을 충족해야 한다."
+          ],
+          "evidence_ids": [
+            "SEM-01-MANUAL"
+          ]
+        }
+      ],
+      "revision_count": 0,
+      "max_concepts": 3,
+      "changed_evidence_ids": []
+    },
+    "dataset": {
+      "manifest": {
+        "dataset_id": "SEM-01-MODEL",
+        "version": "SEM-01-independent-v1",
+        "description": "Independent synthetic semantic evaluation input; no expected model output",
+        "source_kind": "synthetic",
+        "model_count": 1,
+        "review_count": 1,
+        "analysis_implemented": false
+      },
+      "products": [
+        {
+          "model_id": "SEM-01-MODEL",
+          "name": "독립 평가용 가상 microwave",
+          "product_group": "microwave",
+          "document_version": "1.0",
+          "source_kind": "synthetic"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "ROW-SEM-01-REVIEW",
+          "evidence_id": "SEM-01-REVIEW",
+          "model_id": "SEM-01-MODEL",
+          "document_version": "1.0",
+          "text": "국물 있는 음식을 쏟은 뒤 회전판 아래 홈에 고여 회전판을 꺼내고도 닦기 어렵다.",
+          "source_id": "SEM-01-CSV",
+          "locator": {
+            "row": 2
+          },
+          "source_kind": "synthetic"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "SEM-01-REVIEW",
+          "model_id": "SEM-01-MODEL",
+          "document_version": "1.0",
+          "source_kind": "synthetic",
+          "source_type": "review",
+          "source_id": "SEM-01-CSV",
+          "locator": {
+            "row": 2
+          },
+          "text": "국물 있는 음식을 쏟은 뒤 회전판 아래 홈에 고여 회전판을 꺼내고도 닦기 어렵다.",
+          "feature_ids": []
+        },
+        {
+          "id": "SEM-01-MANUAL",
+          "model_id": "SEM-01-MODEL",
+          "document_version": "1.0",
+          "source_kind": "synthetic",
+          "source_type": "manual",
+          "source_id": "SEM-01-DOC",
+          "locator": {
+            "page": 4,
+            "section": "기능 및 사용 조건"
+          },
+          "text": "유리 회전판은 분리하여 세척할 수 있다. 회전판 아래 받침과 홈은 손으로 닦는다.",
+          "feature_ids": [
+            "SEM-01-FEATURE"
+          ]
+        }
+      ],
+      "features": [
+        {
+          "id": "SEM-01-FEATURE",
+          "model_id": "SEM-01-MODEL",
+          "document_version": "1.0",
+          "name": "설명서의 제공 기능",
+          "description": "유리 회전판은 분리하여 세척할 수 있다. 회전판 아래 받침과 홈은 손으로 닦는다.",
+          "conditions": [
+            "명시한 사용 조건을 충족해야 한다."
+          ],
+          "evidence_ids": [
+            "SEM-01-MANUAL"
+          ]
+        }
+      ]
+    }
+  },
+  "input_sha256": "1ed26cd360d1baaa52d5c36a7564eb146daa8114542299cff28e9f59881a5774",
+  "output_contract": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "urn:lgax:core:judgement:output:1",
+    "type": "object",
+    "properties": {
+      "input_sha256": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      },
+      "model_id": {
+        "$ref": "#/$defs/ID"
+      },
+      "document_version": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      },
+      "revision_count": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 2
+      },
+      "status": {
+        "enum": [
+          "completed",
+          "held",
+          "failed"
+        ]
+      },
+      "needs": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/Need"
+        }
+      },
+      "gaps": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/Gap"
+        }
+      },
+      "desired_outcomes": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "need_id": {
+              "$ref": "#/$defs/ID"
+            },
+            "desired_outcome": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "need_id",
+            "desired_outcome"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "concepts": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/Concept"
+        },
+        "maxItems": 3
+      },
+      "review_assessments": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "evidence_id": {
+              "$ref": "#/$defs/ID"
+            },
+            "polarity": {
+              "enum": [
+                "complaint",
+                "positive",
+                "conflicting",
+                "irrelevant",
+                "uncertain"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "evidence_id",
+            "polarity",
+            "reason"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "gap_assessments": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "gap_id": {
+              "$ref": "#/$defs/ID"
+            },
+            "support_basis": {
+              "enum": [
+                "explicit_supported",
+                "explicit_unsupported",
+                "unmentioned",
+                "conflicting"
+              ]
+            },
+            "resolution": {
+              "enum": [
+                "resolved",
+                "remaining",
+                "unknown"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "gap_id",
+            "support_basis",
+            "resolution",
+            "reason"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "concept_assessments": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "concept_id": {
+              "$ref": "#/$defs/ID"
+            },
+            "duplication": {
+              "enum": [
+                "distinct",
+                "duplicate",
+                "uncertain"
+              ]
+            },
+            "compared_feature_ids": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ID"
+              },
+              "uniqueItems": true
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "concept_id",
+            "duplication",
+            "compared_feature_ids",
+            "reason"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "questions": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "uniqueItems": true
+      },
+      "hold_reasons": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "uniqueItems": true
+      },
+      "unresolved": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "uniqueItems": true
+      },
+      "no_candidate_reasons": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "uniqueItems": true
+      }
+    },
+    "required": [
+      "input_sha256",
+      "model_id",
+      "document_version",
+      "revision_count",
+      "status",
+      "needs",
+      "gaps",
+      "desired_outcomes",
+      "concepts",
+      "review_assessments",
+      "gap_assessments",
+      "concept_assessments",
+      "questions",
+      "hold_reasons",
+      "unresolved",
+      "no_candidate_reasons"
+    ],
+    "additionalProperties": false,
+    "$defs": {
+      "ID": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+      },
+      "Need": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+          },
+          "model_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+          },
+          "situation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "pain": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "uncertainties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "id",
+          "model_id",
+          "situation",
+          "pain",
+          "evidence_ids",
+          "uncertainties"
+        ],
+        "additionalProperties": false
+      },
+      "Gap": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+          },
+          "need_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+          },
+          "model_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+          },
+          "feature_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "support_status": {
+            "enum": [
+              "supported",
+              "unsupported",
+              "insufficient_evidence"
+            ]
+          },
+          "remaining_pain": {
+            "type": "string"
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "id",
+          "need_id",
+          "model_id",
+          "feature_ids",
+          "support_status",
+          "remaining_pain",
+          "evidence_ids",
+          "questions"
+        ],
+        "additionalProperties": false
+      },
+      "Concept": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "product",
+              "feature",
+              "service"
+            ]
+          },
+          "gap_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "differentiation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "requirements": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1
+          },
+          "assumptions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "status": {
+            "enum": [
+              "proposed",
+              "needs_review",
+              "accepted",
+              "rejected"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "kind",
+          "gap_ids",
+          "evidence_ids",
+          "differentiation",
+          "requirements",
+          "assumptions",
+          "status"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+}

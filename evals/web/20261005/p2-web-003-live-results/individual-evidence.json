@@ -1,0 +1,195 @@
+{
+  "task_id": "P2-WEB-003",
+  "owner": "최길웅",
+  "result": "pass",
+  "execution_kind": "fixture",
+  "requirement_ids": [
+    "R14",
+    "R16",
+    "R21",
+    "R25",
+    "R27"
+  ],
+  "branch": "claude/wonderful-thompson-vn9js7-e2o98y",
+  "tested_commit": "f3c652c8005c0c9b322c60eb85ece0001464ee20",
+  "scope": "배정 PM-20261005-WEB-003-LIVE-RESULTS 중 클라우드 세션에서 가능한 범위: 저장된 planning_execution 표시 어댑터, 검토·이력 화면 연결, 실행 입력 원문 우선 사용, accept 문구, PM 기록 실제 실행 2건의 데이터 재생 회귀와 브라우저 기록 재생 E2E. 실제 서버·모델을 대상으로 한 브라우저 재현은 하지 않았다(접근 불가). P2-WEB-003 완료 근거가 아님.",
+  "recorded_at": "2026-10-05T02:40:00+09:00",
+  "performed_by": "Claude Code (클라우드 세션) for 최길웅",
+  "replayed_record": {
+    "path": "evals/pm-integration/20261005/workspace-live.json",
+    "sha256": "e828e31ad76a05b6e5e000e3ea25e0f79c23211df515bf049d9d26a5c2521ee7",
+    "execution_kind": "live_model (PM 기록)",
+    "runs": [
+      "run-743b67de262246df95314b4017dd1684",
+      "run-2c4925b9660b410ebea335276a7b177a"
+    ],
+    "model": "qwen3:8b (ollama, digest 500a1f067a9f…)",
+    "note": "이 세션은 모델을 호출하지 않았다. 기록을 데이터로 재생했다."
+  },
+  "observations": [
+    "PM 기록 실제 실행 2건 모두 planning_execution 형식 검사 통과, 저장 상태·원 요청·모델/문서 범위·후보와 불일치 0. 모델 호출 3회/5회, 모델 qwen3:8b.",
+    "콘셉트 검토 화면(실제 React DOM·브라우저)에서 같은 run ID 아래 원 요청의 제외 조건 '자동 세척 장치 제안', 그와 충돌하는 후보 '자동 세척 모드 추가', '계약 검사 통과 · 의미 미검증' 문구, 실행 오류 2건(VALIDATION_FAILED), trace 14단계가 함께 보인다.",
+    "웹 bootstrap(kitchen-demo)에는 DEV-01 원문이 없어 기존 화면은 대조표 원문을 모두 찾지 못한다. runSources로 실행의 판단 입력 원문을 우선 쓰면 누락 0, 내보내기 원문도 그 입력과 같다.",
+    "기록 재생 E2E: 연결→검토 화면→JSON 내보내기(계보 2건·누락 없음)→'자동 세척 모드 추가' 제외→새 실행 요청(previous_run_id=조건 변경 실행, 제외 조건 추가)→기존 2건 불변→재생 서버의 새 실행은 '요청만 저장됨'.",
+    "보류·실패(거절 기록 포함)·0후보 파생본과 형식 오류·상태 불일치 사본이 성공처럼 보이지 않고 각각 보류/실패/문제/invalid로 표시된다.",
+    "이 기록은 서버가 output.no_candidate_reasons를 따로 보존하기 전에 저장돼 모델의 후보 없음 사유가 run.unresolved에 들어가 있다. 내보내기는 이를 unresolved로 유지하며 새 필드를 만들지 않는다.",
+    "시험 민감도: runSources 비활성 2건, 검토 화면 패널 제거 4건, 상태 불일치 검사 제거 1건 실패, 복구 후 통과."
+  ],
+  "code_versions": [
+    {
+      "path": "apps/web/src/judgement.ts",
+      "git_commit": "f3c652c8005c0c9b322c60eb85ece0001464ee20",
+      "sha256": "d7a6cb8038d376e8ba3b783cbfa086f82f0454c736a3f56374c648795362e15b"
+    },
+    {
+      "path": "apps/web/src/JudgementViews.tsx",
+      "git_commit": "f3c652c8005c0c9b322c60eb85ece0001464ee20",
+      "sha256": "7330a8742bb301d64e69bf460b912f176b88303557213d7af6d0f160eb506a98"
+    },
+    {
+      "path": "apps/web/src/PlanningViews.tsx",
+      "git_commit": "f3c652c8005c0c9b322c60eb85ece0001464ee20",
+      "sha256": "d2955d0378e7d2494326a0f3560d8d08fc19d0e393c4066dc2935272efbd9cf9"
+    },
+    {
+      "path": "apps/web/src/App.tsx",
+      "git_commit": "f3c652c8005c0c9b322c60eb85ece0001464ee20",
+      "sha256": "a966e2ade9a5046ce427e46a220f2133d8c8a2e1e9ef7b81aa2b82c4c98ca6af"
+    },
+    {
+      "path": "apps/web/src/liveWorkspace.ts",
+      "git_commit": "f3c652c8005c0c9b322c60eb85ece0001464ee20",
+      "sha256": "675e90307c63653cb33a470399ccfb84bfd5b4a90d7a5ca5eca8d617b9bab9a4"
+    },
+    {
+      "path": "apps/web/src/liveResults.test.ts",
+      "git_commit": "f3c652c8005c0c9b322c60eb85ece0001464ee20",
+      "sha256": "cd6fbfd23144b3a2090880bbf06a5513d4e9242992affafe43fdfd9fac027725"
+    },
+    {
+      "path": "apps/web/e2e/live-results.spec.ts",
+      "git_commit": "f3c652c8005c0c9b322c60eb85ece0001464ee20",
+      "sha256": "38a880ffb8e3a58c1648aa12c01ac95f2b3ee5614e1bc55a6539b40295e75dea"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "git_commit": "f3c652c8005c0c9b322c60eb85ece0001464ee20",
+      "sha256": "d7cf46d9a980b00ad786ec46feaf3d31e4094f56ff0899d8bab59bdf95a9bad5"
+    },
+    {
+      "path": "evals/core-contract/schemas/output.json",
+      "git_commit": "f3c652c8005c0c9b322c60eb85ece0001464ee20",
+      "sha256": "f5ebb8b0c466e0c38ff6df19dfee1446db84350d9c4a36478438d0b5aa92b7d5"
+    },
+    {
+      "path": "evals/pm-integration/20261005/workspace-live.json",
+      "git_commit": "f3c652c8005c0c9b322c60eb85ece0001464ee20",
+      "sha256": "e828e31ad76a05b6e5e000e3ea25e0f79c23211df515bf049d9d26a5c2521ee7"
+    },
+    {
+      "path": "evals/pm-integration/20261005/semantic-review.json",
+      "git_commit": "f3c652c8005c0c9b322c60eb85ece0001464ee20",
+      "sha256": "24afad07cb994992edc8e81e483de067888a8b3749d66e4a8caa05486f1b7f65"
+    },
+    {
+      "path": "docs/pm/workspace-planning.md",
+      "git_commit": "f3c652c8005c0c9b322c60eb85ece0001464ee20",
+      "sha256": "856cd63a0b4fea7d64353c98432614375be739d82e04b97951482e0ee925319a"
+    },
+    {
+      "path": "docs/pm/assignments/PM-20261005-WEB-003-LIVE-RESULTS.json",
+      "git_commit": "f3c652c8005c0c9b322c60eb85ece0001464ee20",
+      "sha256": "75e8cb9a73850b70a4d7e9be9495840a82059b4893a614b3e17bb8af8f376018"
+    },
+    {
+      "path": "packages/core/src/lgax_core/workspace_planning.py",
+      "git_commit": "f3c652c8005c0c9b322c60eb85ece0001464ee20",
+      "sha256": "4fc53316708cdfc095dc1d358a03bf943a245e999032b99ea12a5390632eff99"
+    }
+  ],
+  "models": [],
+  "checks": [
+    {
+      "name": "npm run test --prefix apps/web (201 passed, 4 skipped; liveResults.test.ts 12건 포함)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261005/p2-web-003-live-results/web-tests.txt",
+        "sha256": "332037bdbc5f3bfe4290ade3941f9d3cd767a5d42ace70fc867b40deec74ff1e"
+      }
+    },
+    {
+      "name": "npm run typecheck --prefix apps/web",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261005/p2-web-003-live-results/web-typecheck.txt",
+        "sha256": "c028f37ff786c1cd330dfd4a41ef0492f01c33aeeec7ec353ad7d20ac783869c"
+      }
+    },
+    {
+      "name": "npm run build --prefix apps/web",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261005/p2-web-003-live-results/web-build.txt",
+        "sha256": "27196af4695ea76031a731c803081f18b0810de3d923e43efa0e582776c0fac1"
+      }
+    },
+    {
+      "name": "Playwright E2E (live-results 기록 재생 1 + planner-flow fixture 2 통과, 실서버 opt-in 1 건너뜀; 컨테이너 Chromium 1194 임시 설정)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261005/p2-web-003-live-results/e2e.txt",
+        "sha256": "ea79610441023bb27043e15d5ac9d44db22af068aebe77afad6cc8770ffd6693"
+      }
+    },
+    {
+      "name": "uv run python scripts/sync_agent_rules.py --check",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261005/p2-web-003-live-results/rules.txt",
+        "sha256": "56b21f915cb5a695479359f4ca6063582b0b9bcbdaee1869782a2a805a2a82cd"
+      }
+    },
+    {
+      "name": "uv run python scripts/check_contracts.py",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261005/p2-web-003-live-results/contracts.txt",
+        "sha256": "6eeefba1598ed16cffaa688f144376cf5a072af5ec2d72e621cc6d504a38502e"
+      }
+    },
+    {
+      "name": "uv run python scripts/phase2.py validate",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261005/p2-web-003-live-results/phase2.txt",
+        "sha256": "513ceac05d2694c95767b5e14a41edc7664eeb902b0bf91c1265be72d440ac6a"
+      }
+    },
+    {
+      "name": "uv run python -m unittest discover -s tests (382 OK)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261005/p2-web-003-live-results/python-tests.txt",
+        "sha256": "f9bd567f5ab9efe4cb83a31f4c97ec28e363264393b9c715dfdfcab6fa1ec4fc"
+      }
+    },
+    {
+      "name": "브라우저 화면 캡처(기록 재생, 콘셉트 검토)",
+      "passed": true,
+      "evidence": {
+        "path": "evals/web/20261005/p2-web-003-live-results/live-results-concepts.png",
+        "sha256": "14957dd435fe16d848db068ce9d2883e3851512fc0aefe0bc8a86fdc728a014b"
+      }
+    }
+  ],
+  "limitations": [
+    "실제 작업실 서버(--enable-planning)와 모델을 대상으로 한 브라우저 재현은 하지 않았다. 이 클라우드 세션은 연구실 모델 서버와 PM 비공개 자격증명에 접근할 수 없다. 배정 검수 조건의 '실제 Workspace API 결과'는 PM 기록의 재생으로만 확인했다.",
+    "기록 재생 서버의 새 실행은 기본 서버처럼 요청만 저장(not_implemented)한다. 제외 후 실제 재판단 결과는 없다.",
+    "accept는 계약 검사 통과일 뿐이다. 두 번째 실행에서 제외 조건과 충돌하는 후보가 남은 문제(semantic-review P1)는 CORE002/003 의미검사의 몫이며 웹은 이를 드러낼 뿐 판정하지 않는다.",
+    "보류·실패·0후보는 실제 기록이 없어 첫 실행을 고친 파생본으로 화면을 확인했다(모델 결과 아님).",
+    "Playwright는 컨테이너의 Chromium 1194를 커밋하지 않은 임시 설정(apps/web/.pw-cloud.config.ts)으로 지정했다. CI E2E는 planner-flow 3건만 실행하며 live-results는 포함하지 않는다.",
+    "세 제품·6유형 실제 결과, 사람 사용성(E03)은 미검증."
+  ]
+}
