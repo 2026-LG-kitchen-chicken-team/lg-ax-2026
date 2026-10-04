@@ -20,6 +20,8 @@ P2-PM-003/004는 전체 완료 조건이 남아 있으므로 Done으로 바꾸�
 | 최길웅 / choigilung | 웹 기획 작업실·사용자 검토·수정 이력 | [웹 작업실 #23](https://github.com/jeongiryang/lg-ax-2026/issues/23) | apps/web, 웹 검증·사용 안내 |
 
 [고정 운영 Issue #28](https://github.com/jeongiryang/lg-ax-2026/issues/28) · [2차 개발 Project](https://github.com/users/jeongiryang/projects/3).
+
+대시보드 편집/관리는 정이량 PM만 한다. 세 팀원은 Project 조회 전용이고 자기 Issue/PR·작업기록으로 진행/검수 요청을 남긴다. 신진하는 만료 초대를 교체한 새 저장소 Write 초대 수락 대기다. [실제 권한 변경·검증](../프로젝트권한_2026-10-04.md)을 따른다.
 모두 자기 `docs/작업기록/{성명}.md`와 `docs/작업근거/{성명}.md`를 읽고 사용자 지시·AI 해석·실제 수행·증빙·다음 행동을 기록한다. 이 초기 설정은 PM의 AI가 수행한 공통 작업이다. 각 팀원이 수행했다고 대신 기록하지 않는다.
 
 ## 구조와 공통 계약
