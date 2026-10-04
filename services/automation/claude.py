@@ -76,12 +76,12 @@ def validate_auth(config, environment, cwd):
             "configuration_directory_verified": True, "model_executed": False}
 
 
-def argv(config, job, run_dir, schema):
+def argv(config, job, run_dir, schema, *, executable_name=None):
     validate_options(config)
     mcp = run_dir / "empty-mcp.json"
     mcp.write_text('{"mcpServers": {}}\n', encoding="utf-8")
     tools = "Read,Glob,Grep" + (",Edit,Write" if job["kind"] == "implementation" else "")
-    return [executable(config), "--print", "--output-format", "stream-json", "--verbose",
+    return [executable_name or executable(config), "--print", "--output-format", "stream-json", "--verbose",
             "--json-schema", json.dumps(schema, separators=(",", ":")),
             "--restricted", "--safe-mode", "--no-chrome", "--no-session-persistence",
             "--strict-mcp-config", "--mcp-config", str(mcp), "--settings", json.dumps(SETTINGS),

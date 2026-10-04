@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "repo": "2026-LG-kitchen-chicken-team/lg-ax-2026",
+  "pm_account": "jeongiryang",
+  "enabled": false,
+  "allow_auto_merge": false,
+  "allow_admin_bypass": false,
+  "delegation_reference": "Replace with actual approved routine-PM delegation before deployment. This example is OFF.",
+  "automatic_merge_delegation": "Separate approved exact-head automatic merge delegation required.",
+  "admin_bypass_delegation": "Earlier manual PM bypass permission does not activate unattended bypass.",
+  "limits": {
+    "max_model_calls_per_day": 24,
+    "max_actions_per_day": 24,
+    "max_model_tokens_per_day": 300000,
+    "max_actions_per_task": 8,
+    "max_revisions_per_task": 3,
+    "max_model_tokens_per_task": 100000,
+    "max_driver_failures": 3,
+    "decision_timeout_seconds": 300
+  },
+  "required_ci_contexts": ["python-and-harness", "web"],
+  "independent_reviewers": ["jeongiryang"],
+  "tasks": {
+    "P2-PM-001": {
+      "owner": "jeongiryang",
+      "issue_number": 17,
+      "scope": "required",
+      "requirement_ids": ["R17", "R23", "R24", "R28"],
+      "depends_on": []
+    },
+    "P2-PM-003": {
+      "owner": "jeongiryang",
+      "issue_number": 19,
+      "scope": "required",
+      "requirement_ids": ["R17", "R24"],
+      "depends_on": ["P2-PM-001"]
+    }
+  },
+  "capabilities": {
+    "pm-workspace-small-pilot": {
+      "task_id": "P2-PM-003",
+      "requirement_ids": ["R17", "R24"],
+      "title": "Example only: one small workspace client regression",
+      "purpose": "Replace with a real approved narrow acceptance unit before deployment; no parent task Done.",
+      "allowed_paths": ["tests/test_workspace_client_pilot.py"],
+      "validation_commands": [["uv", "run", "--no-sync", "python", "-m", "unittest", "tests.test_workspace_client_pilot"]],
+      "required_checks": ["workspace-client-pilot"],
+      "shared_resources": [],
+      "acceptance": ["One actual workspace client behavior with a meaningful regression test; retain unmet core dependencies."],
+      "completes_task": false,
+      "timeout_seconds": 1800,
+      "priority": 50
+    }
+  }
+}

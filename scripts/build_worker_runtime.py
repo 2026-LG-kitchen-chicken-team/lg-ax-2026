@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCES = ("worker.py", "process.py", "claude.py")
+SOURCES = ("worker.py", "process.py", "claude.py", "isolation.py", "artifacts.py")
 
 
 def build(destination):
