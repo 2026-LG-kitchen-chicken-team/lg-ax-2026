@@ -1,0 +1,106 @@
+{
+  "task_id": "P2-CORE-003",
+  "assignment_id": "PM-20261005-CORE-002-ACTUAL-REVIEW-FOLLOWUP",
+  "assignment_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/8#issuecomment-5982755886",
+  "result": "partial",
+  "execution_kind": "rule_check",
+  "models": [],
+  "new_live_model_calls": 0,
+  "observed_at": "2026-10-04T18:02:49.662989+00:00",
+  "base_commit": "07be0aa3fe42eb023b05b3b69016ef8f57777ca2",
+  "code_commit": "a316ba809695f3ca8bda56acd4b6f7e807be174a",
+  "full_python_tests": 390,
+  "new_budget_tests": 8,
+  "checks": [
+    {
+      "path": "harness/phase2/runs/core003-shared-budget-20261005/python-tests.txt",
+      "command": [
+        ".venv/Scripts/python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "sha256": "6e9603eeee92079e2cf505db53e991576b8e10ae4abb840c566449251bf327b9"
+    },
+    {
+      "path": "harness/phase2/runs/core003-shared-budget-20261005/lint.txt",
+      "command": [
+        ".venv/Scripts/python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "ruff",
+        "check",
+        "packages/core/src/lgax_core/correction_budget.py",
+        "tests/test_correction_budget.py"
+      ],
+      "exit_code": 0,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "harness/phase2/runs/core003-shared-budget-20261005/rules.txt",
+      "command": [
+        ".venv/Scripts/python.exe",
+        "-X",
+        "utf8",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "sha256": "7e0a7002be1c8a6a929966a18bc7207035beabeef3065614f21a9b6265ca789d"
+    },
+    {
+      "path": "harness/phase2/runs/core003-shared-budget-20261005/contracts.txt",
+      "command": [
+        ".venv/Scripts/python.exe",
+        "-X",
+        "utf8",
+        "scripts/check_contracts.py"
+      ],
+      "exit_code": 0,
+      "sha256": "1e1b81f4c2607b74aca9deb8fd8bf0f1b048508d317d21f36ed1b59fca45661b"
+    },
+    {
+      "path": "harness/phase2/runs/core003-shared-budget-20261005/phase2.txt",
+      "command": [
+        ".venv/Scripts/python.exe",
+        "-X",
+        "utf8",
+        "scripts/phase2.py",
+        "validate"
+      ],
+      "exit_code": 0,
+      "sha256": "6e84f7ccf1d99593ee0bf819047eb956d33efeb0f2863bbecbebdca299bd1e42"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "packages/core/src/lgax_core/correction_budget.py",
+      "sha256": "20e279ed85ab92a6bf613b144927bdd82c02d38a873de000f8080f65811709d1"
+    },
+    {
+      "path": "tests/test_correction_budget.py",
+      "sha256": "489518fe590988d39cd29cd6224830de55d7575be2e5a47bc71dbbcad6635d6f"
+    },
+    {
+      "path": "docs/core/shared-correction-budget-draft.md",
+      "sha256": "2eae3019d10e9c434a3e30deb6caf8e2d6e432c8f49fcf56e02517f5fb0c1011"
+    }
+  ],
+  "observations": [
+    "Same budget supports two mixed correction paths and rejects replay or a third claim.",
+    "Failed correction retains its consumed attempt; concurrent replays have one winner per round.",
+    "No model or Skill invocation is performed by this primitive."
+  ],
+  "limitations": [
+    "PlanningAgent/RevisionSession are not wired to this primitive yet.",
+    "PM round2 intake document and raw live output are not published in fetched main or advertised branches at this audit.",
+    "Actual meaning quality, live calls, PM approval/merge and CORE002/003 completion are not verified."
+  ]
+}

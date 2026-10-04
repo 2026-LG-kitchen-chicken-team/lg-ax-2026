@@ -1,0 +1,80 @@
+{
+  "manifest": {
+    "dataset_id": "EXCL-INDEPENDENT-04",
+    "version": "EXCL-INDEPENDENT-04-v1",
+    "description": "Independent synthetic condition inputs, no generated response",
+    "source_kind": "synthetic",
+    "model_count": 1,
+    "review_count": 1,
+    "analysis_implemented": false
+  },
+  "products": [
+    {
+      "model_id": "EXCL-INDEPENDENT-04-MODEL",
+      "name": "독립 제외 조건 검토용 가상 fridge",
+      "product_group": "fridge",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EXCL-INDEPENDENT-04-REVIEW",
+      "model_id": "EXCL-INDEPENDENT-04-MODEL",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "review",
+      "source_id": "EXCL-INDEPENDENT-04-REVIEW-SOURCE",
+      "locator": {
+        "row": 2
+      },
+      "text": "식품을 모두 옮긴 뒤에야 선반을 꺼낼 수 있어 가벼운 오염도 시간이 걸린다.",
+      "feature_ids": []
+    },
+    {
+      "id": "EXCL-INDEPENDENT-04-MANUAL",
+      "model_id": "EXCL-INDEPENDENT-04-MODEL",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "manual",
+      "source_id": "EXCL-INDEPENDENT-04-MANUAL-SOURCE",
+      "locator": {
+        "page": 3,
+        "section": "사용 조건"
+      },
+      "text": "식품을 꺼낸 뒤 선반을 분리한다. 선반 세척은 제품 밖에서 진행한다.",
+      "feature_ids": [
+        "EXCL-INDEPENDENT-04-FEATURE"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "id": "EXCL-INDEPENDENT-04-FEATURE",
+      "model_id": "EXCL-INDEPENDENT-04-MODEL",
+      "document_version": "1.0",
+      "name": "현재 제공 기능",
+      "description": "식품을 꺼낸 뒤 선반을 분리한다. 선반 세척은 제품 밖에서 진행한다.",
+      "conditions": [
+        "설명서의 사용 조건을 충족해야 함"
+      ],
+      "evidence_ids": [
+        "EXCL-INDEPENDENT-04-MANUAL"
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "id": "ROW-EXCL-INDEPENDENT-04-REVIEW",
+      "evidence_id": "EXCL-INDEPENDENT-04-REVIEW",
+      "model_id": "EXCL-INDEPENDENT-04-MODEL",
+      "document_version": "1.0",
+      "text": "식품을 모두 옮긴 뒤에야 선반을 꺼낼 수 있어 가벼운 오염도 시간이 걸린다.",
+      "source_id": "EXCL-INDEPENDENT-04-REVIEW-SOURCE",
+      "locator": {
+        "row": 2
+      },
+      "source_kind": "synthetic"
+    }
+  ]
+}

@@ -5,9 +5,10 @@
  * Fixture outputs from evals/core-contract are hand-written declarations, not model results.
  */
 import Ajv2020 from 'ajv/dist/2020';
+import inputSchema from '../../../evals/core-contract/schemas/input.json';
 import outputSchema from '../../../evals/core-contract/schemas/output.json';
 import type { Evidence } from './domain';
-import { canonical, contractErrors } from './planning';
+import { canonical } from './planning';
 import type { Concept, Feature, Gap, Need, PlanningRequest, RunSnapshot } from './planning';
 
 export interface JudgementInput {
@@ -48,6 +49,7 @@ const decisionSchema = { type: 'object', additionalProperties: false, required: 
 const storedDecisionSchema = { ...decisionSchema, required: decisionSchema.required.filter(key => key !== 'next_revision_count') };
 
 const ajv = new Ajv2020({ allErrors: true, strict: false });
+const validateInput = ajv.compile(inputSchema);
 const validateOutput = ajv.compile(outputSchema);
 const validateDecision = ajv.compile(decisionSchema);
 const validateStoredDecision = ajv.compile(storedDecisionSchema);
@@ -78,7 +80,7 @@ export function judgementDecisionErrors(value: unknown): string[] {
 /**
  * Field relations a stored decision should keep. Main's PlanningAgent writes the decision of a failed stage itself
  * (without next_revision_count, keeping rerun_from after it gave up), so these are listed as record problems and the
- * web never fills in a value of its own. PR #60 (draft head 2878816) makes the core emit canonical decisions on every path.
+ * web never fills in a value of its own.
  */
 function storedDecisionProblems(decision: StoredDecision): string[] {
   const found: string[] = [];
@@ -121,7 +123,7 @@ const VIOLATION_LABELS: Record<string, string> = {
 };
 
 const QUALITY_LABELS: Record<string, string> = {
-  mechanism: '작동 방식', difference_from_current_features: '현재 기능과 차이', unverified_assumptions: '미검증 가정', unsupported_claims: '근거 없는 단정',
+  mechanism: '작동 방식', difference_from_current_features: '현재 기능과 차이', unverified_assumptions: '미검증 가정', unsupported_claims: '근거 없는 단정', unsupported_factual_claims: '근거 없는 단정',
 };
 const VERDICT_LABELS: Record<string, string> = { compliant: '준수', satisfied: '충족', violation: '위반', uncertain: '불확실' };
 
@@ -225,6 +227,8 @@ export interface SemanticAssessment {
 export interface SemanticReview {
   report: { exclusion_assessments: SemanticAssessment[]; quality_assessments: SemanticAssessment[]; questions: string[] };
   decision: StoredDecision;
+  /** Exact immutable originals of this review attempt, when retained by the core. */
+  reviewed_input?: JudgementInput; reviewed_output?: JudgementOutput;
 }
 export interface PlanningExecution {
   execution_kind: 'fixture' | 'live_model'; status: 'completed' | 'held' | 'failed';
@@ -242,32 +246,32 @@ export type ExecutionView =
 
 
 function inputErrors(label: string, value: unknown): string[] {
-  if (!isObject(value) || !isObject(value.product) || !Array.isArray(value.sources) || !Array.isArray(value.features)) return [`/${label} is not a judgement input`];
-  return [
-    ...contractErrors('PlanningRequest', value.request).map(item => `/${label}/request${item}`),
-    ...value.sources.flatMap((item, index) => contractErrors('Evidence', item).map(error => `/${label}/sources/${index}${error}`)),
-    ...value.features.flatMap((item, index) => contractErrors('Feature', item).map(error => `/${label}/features/${index}${error}`)),
-  ];
+  return errors(validateInput, value).map(item => `/${label}${item}`);
 }
 
-const text = (value: unknown) => typeof value === 'string' && value.trim() !== '';
-const RECORD_ITEMS: Record<string, { strings: string[]; numbers?: string[] }> = {
-  trace: { strings: ['stage', 'operation'], numbers: ['elapsed_ms'] },
-  model_calls: { strings: ['stage', 'skill_id', 'model_id', 'model_digest'], numbers: ['revision_count'] },
-  errors: { strings: ['code', 'message'] },
+// The workspace output envelope permits additional JSON. Check every field the UI reads before typed projection,
+// so malformed nested records become an alert rather than an exception during source lookup or React rendering.
+const text = { type: 'string', minLength: 1, pattern: '\\S' };
+const recordArrays = {
+  trace: ajv.compile({ type: 'array', items: { type: 'object', required: ['stage', 'operation'], properties: { stage: text, operation: text, elapsed_ms: { type: 'number', minimum: 0 } } } }),
+  model_calls: ajv.compile({ type: 'array', items: { type: 'object', required: ['stage', 'skill_id', 'execution_kind', 'revision_count', 'model_id', 'model_digest'], properties: {
+    stage: text, skill_id: text, execution_kind: { enum: ['fixture', 'live_model'] }, revision_count: { type: 'integer', minimum: 0, maximum: 2 }, model_id: text, model_digest: text,
+  } } }),
+  errors: ajv.compile({ type: 'array', items: { type: 'object', required: ['code', 'message'], properties: { code: text, message: { type: 'string' } } } }),
 };
-
-/** Item-level shape of trace, model_calls and errors, so a malformed entry is reported instead of breaking the screen. */
-function recordItemErrors(raw: Record<string, unknown>): string[] {
-  return Object.entries(RECORD_ITEMS).flatMap(([key, rule]) => Array.isArray(raw[key]) ? (raw[key] as unknown[]).flatMap((item, index) => {
-    const at = `/${key}/${index}`;
-    if (!isObject(item)) return [`${at} must be an object`];
-    return [
-      ...rule.strings.filter(field => !text(item[field])).map(field => `${at}/${field} must be a non-empty string`),
-      ...(rule.numbers ?? []).filter(field => item[field] !== undefined && typeof item[field] !== 'number').map(field => `${at}/${field} must be a number`),
-    ];
-  }) : []);
-}
+const assessmentProperties = {
+  concept_id: text, reason: text, candidate_quote: { type: 'string' },
+  source_quotes: { type: 'array', items: { type: 'object', required: ['evidence_id', 'quote'], properties: { evidence_id: text, quote: text } } },
+};
+const assessmentValidators = {
+  exclusion_assessments: ajv.compile({ type: 'object', required: [...Object.keys(assessmentProperties), 'verdict', 'condition_index', 'condition'], properties: {
+    ...assessmentProperties, verdict: { enum: ['compliant', 'violation', 'uncertain'] }, condition_index: { type: 'integer', minimum: 0 }, condition: { type: 'string' },
+  } }),
+  quality_assessments: ajv.compile({ type: 'object', required: [...Object.keys(assessmentProperties), 'verdict', 'criterion'], properties: {
+    ...assessmentProperties, verdict: { enum: ['satisfied', 'violation', 'uncertain'] }, criterion: text,
+  } }),
+};
+const validateQuestions = ajv.compile({ type: 'array', items: { type: 'string' } });
 
 function semanticReviewErrors(value: unknown): string[] {
   if (!Array.isArray(value)) return ['/semantic_reviews must be an array'];
@@ -275,10 +279,14 @@ function semanticReviewErrors(value: unknown): string[] {
     const at = `/semantic_reviews/${index}`;
     if (!isObject(item) || !isObject(item.report)) return [`${at} has no report`];
     const report = item.report;
-    const rows = ['exclusion_assessments', 'quality_assessments'].flatMap(key => Array.isArray(report[key])
-      ? (report[key] as unknown[]).flatMap((row, n) => isObject(row) && typeof row.concept_id === 'string' && typeof row.verdict === 'string' ? [] : [`${at}/report/${key}/${n} is not an assessment`])
+    const rows = (Object.keys(assessmentValidators) as (keyof typeof assessmentValidators)[]).flatMap(key => Array.isArray(report[key])
+      ? (report[key] as unknown[]).flatMap((row, n) => errors(assessmentValidators[key], row).map(error => `${at}/report/${key}/${n}${error}`))
       : [`${at}/report/${key} must be an array`]);
-    if (!Array.isArray(report.questions)) rows.push(`${at}/report/questions must be an array`);
+    rows.push(...errors(validateQuestions, report.questions).map(error => `${at}/report/questions${error}`));
+    if (item.reviewed_input !== undefined || item.reviewed_output !== undefined) {
+      rows.push(...inputErrors(`${at.slice(1)}/reviewed_input`, item.reviewed_input));
+      rows.push(...judgementOutputErrors(item.reviewed_output).map(error => `${at}/reviewed_output${error}`));
+    }
     return [...rows, ...errors(validateStoredDecision, item.decision).map(error => `${at}/decision${error}`)];
   });
 }
@@ -294,8 +302,7 @@ export function planningExecutionView(snapshot: RunSnapshot): ExecutionView {
   const found: string[] = [];
   if (raw.execution_kind !== 'fixture' && raw.execution_kind !== 'live_model') found.push('/execution_kind must be fixture or live_model');
   if (!['completed', 'held', 'failed'].includes(raw.status as string)) found.push('/status must be completed, held or failed');
-  for (const key of ['trace', 'model_calls', 'errors']) if (!Array.isArray(raw[key])) found.push(`/${key} must be an array`);
-  found.push(...recordItemErrors(raw));
+  for (const key of Object.keys(recordArrays) as (keyof typeof recordArrays)[]) found.push(...errors(recordArrays[key], raw[key]).map(item => `/${key}${item}`));
   found.push(...inputErrors('original_input', raw.original_input), ...inputErrors('input', raw.input));
   if (raw.output !== null) found.push(...judgementOutputErrors(raw.output).map(item => `/output${item}`));
   if (raw.decision !== null) found.push(...errors(validateStoredDecision, raw.decision).map(item => `/decision${item}`));
@@ -308,6 +315,7 @@ export function planningExecutionView(snapshot: RunSnapshot): ExecutionView {
   if (execution.status !== snapshot.run.status) problems.push(`저장된 실행 상태(${snapshot.run.status})와 판단 기록 상태(${execution.status})가 다릅니다.`);
   if (execution.status === 'completed' && execution.decision?.action !== 'accept') problems.push('완료로 기록됐지만 코어 검사 결정이 accept가 아닙니다.');
   if (canonical(execution.original_input.request) !== canonical(snapshot.request)) problems.push('판단에 들어간 원 요청이 이 실행의 요청과 다릅니다.');
+  if (canonical(execution.input.request) !== canonical(execution.original_input.request)) problems.push('판단의 최종 요청이 이 실행의 원 요청과 다릅니다.');
   const product = execution.input.product;
   if (snapshot.document_versions[product.model_id] !== product.document_version) problems.push(`판단한 모델·문서 버전(${product.model_id} ${product.document_version})이 이 실행의 고정 범위와 다릅니다.`);
   if (execution.output && (execution.output.model_id !== product.model_id || execution.output.document_version !== product.document_version)) problems.push('판단 출력의 모델·문서 버전이 입력과 다릅니다.');
@@ -340,22 +348,29 @@ export function runSources(snapshot: RunSnapshot | undefined, features: Feature[
  * not end in an accepted decision, offers none even if candidates were stored with it. Runs without a core record
  * (fixtures, request-only drafts) keep the stored candidates as before.
  */
+function acceptedStoredExecution(snapshot: RunSnapshot, view: ExecutionView): boolean {
+  return view.kind === 'ok' && snapshot.run.status === 'completed' && view.execution.status === 'completed'
+    && view.execution.output !== null && view.execution.decision?.valid === true
+    && view.execution.decision.action === 'accept' && view.problems.length === 0;
+}
+
 export function selectableConcepts(snapshot: RunSnapshot): RunSnapshot['run']['concepts'] {
   const view = planningExecutionView(snapshot);
-  if (view.kind === 'none') return snapshot.run.concepts;
-  if (view.kind === 'invalid' || view.execution.status !== 'completed' || view.execution.decision?.action !== 'accept') return [];
-  return snapshot.run.concepts;
+  if (view.kind === 'none') return snapshot.run.status === 'completed' ? snapshot.run.concepts : [];
+  return acceptedStoredExecution(snapshot, view) ? snapshot.run.concepts : [];
 }
 
 /** Why a rerun from this run starts without a usable judgement, or null when the base run was accepted. */
 export function rerunBaseNotice(snapshot: RunSnapshot): string | null {
   const view = planningExecutionView(snapshot);
-  if (view.kind === 'none') return null;
+  if (view.kind === 'none') return snapshot.run.status === 'completed' ? null : '이 실행에는 채택된 판단 결과가 없어 후보를 고를 수 없습니다. 조건을 고쳐 새로 요청할 수 있습니다.';
   if (view.kind === 'invalid') return '이 실행의 판단 기록 형식이 맞지 않아 후보를 고를 수 없습니다. 조건만 고쳐 새로 요청할 수 있으며, 이전 판단을 이어받지 않습니다.';
   const { status, decision } = view.execution;
-  if (status === 'completed' && decision?.action === 'accept') return snapshot.run.concepts.length ? null : '이 실행은 후보 없이 끝났습니다. 조건을 고쳐 새로 요청할 수 있습니다.';
+  if (acceptedStoredExecution(snapshot, view)) return snapshot.run.concepts.length ? null : '이 실행은 후보 없이 끝났습니다. 조건을 고쳐 새로 요청할 수 있습니다.';
+  if (status === 'completed' && view.problems.length) return '저장된 판단 기록이 실행 상태·입력·범위·후보와 일치하지 않아 후보를 고를 수 없습니다. 불일치를 확인하고 조건을 고쳐 새로 요청할 수 있습니다.';
+  if (status === 'completed') return '완료로 기록됐지만 최종 출력과 채택 결정을 함께 확인할 수 없어 후보를 고를 수 없습니다. 조건을 고쳐 새로 요청할 수 있습니다.';
   const reason = status === 'held' ? '보류' : '실패';
-  return `이 실행은 ${reason}로 끝나 채택된 후보가 없습니다${decision ? '' : '(코어 결정 없음)'}. 조건을 고쳐 새로 요청하면 새 판단이 실행되며, 이 실행의 결과를 성공으로 이어받지 않습니다.`;
+  return `이 실행은 ${reason}로 끝나 채택된 후보가 없습니다${decision ? '' : '(코어 결정 없음)'}. 조건을 고쳐 새로 요청할 수 있으며 실제 판단 여부는 새 실행 결과로 확인합니다. 이 실행의 결과를 성공으로 이어받지 않습니다.`;
 }
 
 export interface ExportSemanticRow { round: number; concept_id: string; target: string; verdict: string; candidate_quote: string; reason: string }

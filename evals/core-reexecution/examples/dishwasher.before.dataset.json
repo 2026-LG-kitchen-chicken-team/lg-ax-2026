@@ -1,0 +1,80 @@
+{
+  "manifest": {
+    "dataset_id": "CHANGE-DISHWASHER",
+    "version": "CHANGE-DISHWASHER-v1",
+    "description": "Synthetic re-execution handoff; no model output",
+    "source_kind": "synthetic",
+    "model_count": 1,
+    "review_count": 1,
+    "analysis_implemented": false
+  },
+  "products": [
+    {
+      "model_id": "CHANGE-DISHWASHER-MODEL",
+      "name": "재실행 예제용 가상 dishwasher",
+      "product_group": "dishwasher",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "CHANGE-DISHWASHER-REVIEW",
+      "model_id": "CHANGE-DISHWASHER-MODEL",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "review",
+      "source_id": "CHANGE-DISHWASHER-REVIEW-DOC",
+      "locator": {
+        "row": 2
+      },
+      "text": "냄비 손잡이가 회전 날개에 닿는지 확인하기 어려워 중간에 다시 적재했다.",
+      "feature_ids": []
+    },
+    {
+      "id": "CHANGE-DISHWASHER-MANUAL",
+      "model_id": "CHANGE-DISHWASHER-MODEL",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "manual",
+      "source_id": "CHANGE-DISHWASHER-MANUAL-DOC",
+      "locator": {
+        "page": 3,
+        "section": "사용 조건"
+      },
+      "text": "회전 날개에 식기가 닿지 않게 배치한다. 적재 예시 그림을 제공한다.",
+      "feature_ids": [
+        "CHANGE-DISHWASHER-FEATURE"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "id": "CHANGE-DISHWASHER-FEATURE",
+      "model_id": "CHANGE-DISHWASHER-MODEL",
+      "document_version": "1.0",
+      "name": "설명서의 현재 지원 기능",
+      "description": "회전 날개에 식기가 닿지 않게 배치한다. 적재 예시 그림을 제공한다.",
+      "conditions": [
+        "설명서의 사용 조건을 충족해야 함"
+      ],
+      "evidence_ids": [
+        "CHANGE-DISHWASHER-MANUAL"
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "id": "ROW-CHANGE-DISHWASHER-REVIEW",
+      "evidence_id": "CHANGE-DISHWASHER-REVIEW",
+      "model_id": "CHANGE-DISHWASHER-MODEL",
+      "text": "냄비 손잡이가 회전 날개에 닿는지 확인하기 어려워 중간에 다시 적재했다.",
+      "source_kind": "synthetic",
+      "document_version": "1.0",
+      "source_id": "CHANGE-DISHWASHER-REVIEW-DOC",
+      "locator": {
+        "row": 2
+      }
+    }
+  ]
+}

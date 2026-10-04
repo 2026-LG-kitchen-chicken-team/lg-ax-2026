@@ -1,0 +1,441 @@
+{
+  "execution_kind": "fixture",
+  "replay_source_execution_kind": "live_model",
+  "model_calls": 0,
+  "reviewer_is_authored_fixture": true,
+  "source_path": "evals/pm-integration/20261005/workspace-live.json",
+  "source_sha256": "e828e31ad76a05b6e5e000e3ea25e0f79c23211df515bf049d9d26a5c2521ee7",
+  "input": {
+    "request": {
+      "product_group": "fridge",
+      "target_customer": "가정 내 사용자",
+      "use_situation": "실제 사용 후 불편 검토",
+      "improvement_task": "식품을 모두 비우지 않고 작은 오염만 청소할 수 있는 사용 방식을 검토한다.",
+      "exclusions": [
+        "다른 모델 기능 혼용",
+        "자동 세척 장치 제안"
+      ],
+      "model_ids": [
+        "DEV-01-MODEL"
+      ],
+      "dataset_version": "DEV-01-contract-v1"
+    },
+    "product": {
+      "model_id": "DEV-01-MODEL",
+      "name": "계약 검증용 가상 fridge",
+      "product_group": "fridge",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "DEV-01-REVIEW",
+        "model_id": "DEV-01-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "DEV-01-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다.",
+        "feature_ids": []
+      },
+      {
+        "id": "DEV-01-MANUAL",
+        "model_id": "DEV-01-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "DEV-01-DOC",
+        "locator": {
+          "page": 3,
+          "section": "사용 조건"
+        },
+        "text": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다.",
+        "feature_ids": [
+          "DEV-01-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "DEV-01-FEATURE",
+        "model_id": "DEV-01-MODEL",
+        "document_version": "1.0",
+        "name": "현재 제공 기능",
+        "description": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다.",
+        "conditions": [
+          "설명서의 사용 조건을 충족해야 함"
+        ],
+        "evidence_ids": [
+          "DEV-01-MANUAL"
+        ]
+      }
+    ],
+    "revision_count": 2,
+    "max_concepts": 3,
+    "changed_evidence_ids": []
+  },
+  "original_output": {
+    "input_sha256": "5a1527298c7e440d33cf68b83b20ecf31994f4d531374444010864608d26cf5c",
+    "model_id": "DEV-01-MODEL",
+    "document_version": "1.0",
+    "revision_count": 2,
+    "status": "completed",
+    "needs": [
+      {
+        "id": "NEED-001",
+        "model_id": "DEV-01-MODEL",
+        "situation": "실제 사용 후 불편 검토",
+        "pain": "식품을 모두 비워야 하므로 작은 오염도 청소가 번거롭다.",
+        "evidence_ids": [
+          "DEV-01-REVIEW"
+        ],
+        "uncertainties": []
+      }
+    ],
+    "desired_outcomes": [
+      {
+        "need_id": "NEED-001",
+        "desired_outcome": "식품을 모두 비우지 않고 작은 오염만 청소할 수 있는 사용 방식 제공"
+      }
+    ],
+    "gaps": [
+      {
+        "id": "GAP-001",
+        "need_id": "NEED-001",
+        "model_id": "DEV-01-MODEL",
+        "feature_ids": [
+          "DEV-01-FEATURE"
+        ],
+        "support_status": "supported",
+        "remaining_pain": "식품을 모두 비워야 하므로 작은 오염도 청소가 번거롭다.",
+        "evidence_ids": [
+          "DEV-01-REVIEW",
+          "DEV-01-MANUAL"
+        ],
+        "questions": []
+      }
+    ],
+    "concepts": [
+      {
+        "id": "CON-001",
+        "title": "부분 세척 기능 추가",
+        "kind": "feature",
+        "gap_ids": [
+          "GAP-001"
+        ],
+        "evidence_ids": [
+          "DEV-01-REVIEW",
+          "DEV-01-MANUAL"
+        ],
+        "differentiation": "현재 전체 선반 분리 세척 기능이 존재하지만, 사용 시 식품을 모두 비워야 하므로 불편함이 발생합니다. 이 기능은 선반 일부만 분리하여 세척할 수 있도록 하여, 식품을 모두 비우지 않고 작은 오염만 청소할 수 있도록 합니다.",
+        "requirements": [
+          "선반 일부만 분리하여 세척 가능",
+          "식품을 모두 비우지 않고 작동 가능",
+          "사용 조건에 따라 자동 세척 기능 제한"
+        ],
+        "assumptions": [
+          "부분 세척 기능이 사용자에게 불편함을 줄일 수 있음",
+          "기존 기능과의 충돌 없음",
+          "사용자에게 새로운 사용 조건을 설명할 수 있음"
+        ],
+        "status": "proposed"
+      },
+      {
+        "id": "CON-002",
+        "title": "자동 세척 모드 추가",
+        "kind": "feature",
+        "gap_ids": [
+          "GAP-001"
+        ],
+        "evidence_ids": [
+          "DEV-01-REVIEW",
+          "DEV-01-MANUAL"
+        ],
+        "differentiation": "현재 전체 선반 분리 세척 기능이 존재하지만, 사용 시 식품을 모두 비워야 하므로 불편함이 발생합니다. 이 기능은 사용자가 식품을 모두 비우지 않고, 자동으로 선반 일부만 세척할 수 있도록 합니다.",
+        "requirements": [
+          "선반 일부만 자동 세척 가능",
+          "식품을 모두 비우지 않고 작동 가능",
+          "사용 조건에 따라 자동 세척 기능 제한"
+        ],
+        "assumptions": [
+          "자동 세척 기능이 사용자에게 불편함을 줄일 수 있음",
+          "기존 기능과의 충돌 없음",
+          "사용자에게 새로운 사용 조건을 설명할 수 있음"
+        ],
+        "status": "needs_review"
+      },
+      {
+        "id": "CON-003",
+        "title": "식품 보호 모드 추가",
+        "kind": "feature",
+        "gap_ids": [
+          "GAP-001"
+        ],
+        "evidence_ids": [
+          "DEV-01-REVIEW",
+          "DEV-01-MANUAL"
+        ],
+        "differentiation": "현재 전체 선반 분리 세척 기능이 존재하지만, 사용 시 식품을 모두 비워야 하므로 불편함이 발생합니다. 이 기능은 식품을 보호하면서, 선반 일부만 세척할 수 있도록 합니다.",
+        "requirements": [
+          "선반 일부만 세척 가능",
+          "식품을 모두 비우지 않고 작동 가능",
+          "사용 조건에 따라 자동 세척 기능 제한"
+        ],
+        "assumptions": [
+          "식품 보호 모드가 사용자에게 불편함을 줄일 수 있음",
+          "기존 기능과의 충돌 없음",
+          "사용자에게 새로운 사용 조건을 설명할 수 있음"
+        ],
+        "status": "proposed"
+      }
+    ],
+    "review_assessments": [
+      {
+        "evidence_id": "DEV-01-REVIEW",
+        "polarity": "complaint",
+        "reason": "식품을 모두 비워야 하므로 작은 오염도 청소가 번거롭다."
+      }
+    ],
+    "gap_assessments": [
+      {
+        "gap_id": "GAP-001",
+        "support_basis": "explicit_supported",
+        "resolution": "remaining",
+        "reason": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다는 기능이 존재하지만, 사용 조건상 식품을 모두 비워야 하므로 작은 오염도 청소가 번거롭다."
+      }
+    ],
+    "concept_assessments": [
+      {
+        "concept_id": "CON-001",
+        "duplication": "distinct",
+        "compared_feature_ids": [
+          "DEV-01-FEATURE"
+        ],
+        "reason": "기존 기능과는 사용 조건이 다르며, 부분 세척 기능이 새로운 사용자 경험을 제공합니다."
+      },
+      {
+        "concept_id": "CON-002",
+        "duplication": "distinct",
+        "compared_feature_ids": [
+          "DEV-01-FEATURE"
+        ],
+        "reason": "기존 기능과는 사용 조건이 다르며, 자동 세척 기능이 새로운 사용자 경험을 제공합니다."
+      },
+      {
+        "concept_id": "CON-003",
+        "duplication": "distinct",
+        "compared_feature_ids": [
+          "DEV-01-FEATURE"
+        ],
+        "reason": "기존 기능과는 사용 조건이 다르며, 식품 보호 모드가 새로운 사용자 경험을 제공합니다."
+      }
+    ],
+    "questions": [
+      "부분 세척 기능이 기존 기능과 충돌할 수 있는지 검토 필요",
+      "자동 세척 기능의 안전성 검토 필요",
+      "식품 보호 모드의 효과 검토 필요"
+    ],
+    "hold_reasons": [],
+    "unresolved": [],
+    "no_candidate_reasons": [
+      "기존 기능과의 충돌 가능성",
+      "사용자 교육 필요",
+      "제조 가능성 및 안전성 검증 필요"
+    ]
+  },
+  "original_contract_decision": {
+    "valid": true,
+    "action": "accept",
+    "revision_count": 2,
+    "next_revision_count": 2,
+    "rerun_from": null,
+    "violations": []
+  },
+  "authored_review": {
+    "input_sha256": "5a1527298c7e440d33cf68b83b20ecf31994f4d531374444010864608d26cf5c",
+    "output_sha256": "23ae2d000547fc6f4081d08d357c01d83124f4b7647faa5258c6386075a66745",
+    "exclusion_assessments": [
+      {
+        "concept_id": "CON-001",
+        "verdict": "compliant",
+        "reason": "테스트가 작성한 검토 선언",
+        "candidate_quote": "부분 세척 기능 추가",
+        "source_quotes": [],
+        "condition_index": 0,
+        "condition": "다른 모델 기능 혼용"
+      },
+      {
+        "concept_id": "CON-001",
+        "verdict": "compliant",
+        "reason": "테스트가 작성한 검토 선언",
+        "candidate_quote": "부분 세척 기능 추가",
+        "source_quotes": [],
+        "condition_index": 1,
+        "condition": "자동 세척 장치 제안"
+      },
+      {
+        "concept_id": "CON-002",
+        "verdict": "compliant",
+        "reason": "테스트가 작성한 검토 선언",
+        "candidate_quote": "자동 세척 모드 추가",
+        "source_quotes": [],
+        "condition_index": 0,
+        "condition": "다른 모델 기능 혼용"
+      },
+      {
+        "concept_id": "CON-002",
+        "verdict": "uncertain",
+        "reason": "현재 원문은 기존 소프트웨어 모드인지 새 장치인지 확인해 주지 않는다.",
+        "candidate_quote": "자동 세척 모드 추가",
+        "source_quotes": [],
+        "condition_index": 1,
+        "condition": "자동 세척 장치 제안"
+      },
+      {
+        "concept_id": "CON-003",
+        "verdict": "compliant",
+        "reason": "테스트가 작성한 검토 선언",
+        "candidate_quote": "식품 보호 모드 추가",
+        "source_quotes": [],
+        "condition_index": 0,
+        "condition": "다른 모델 기능 혼용"
+      },
+      {
+        "concept_id": "CON-003",
+        "verdict": "compliant",
+        "reason": "테스트가 작성한 검토 선언",
+        "candidate_quote": "식품 보호 모드 추가",
+        "source_quotes": [],
+        "condition_index": 1,
+        "condition": "자동 세척 장치 제안"
+      }
+    ],
+    "quality_assessments": [
+      {
+        "concept_id": "CON-001",
+        "verdict": "satisfied",
+        "reason": "테스트가 작성한 검토 선언",
+        "candidate_quote": "부분 세척 기능 추가",
+        "source_quotes": [],
+        "criterion": "mechanism"
+      },
+      {
+        "concept_id": "CON-001",
+        "verdict": "satisfied",
+        "reason": "테스트가 작성한 검토 선언",
+        "candidate_quote": "부분 세척 기능 추가",
+        "source_quotes": [],
+        "criterion": "difference_from_current_features"
+      },
+      {
+        "concept_id": "CON-001",
+        "verdict": "satisfied",
+        "reason": "테스트가 작성한 검토 선언",
+        "candidate_quote": "부분 세척 기능 추가",
+        "source_quotes": [],
+        "criterion": "unverified_assumptions"
+      },
+      {
+        "concept_id": "CON-001",
+        "verdict": "satisfied",
+        "reason": "테스트가 작성한 검토 선언",
+        "candidate_quote": "부분 세척 기능 추가",
+        "source_quotes": [],
+        "criterion": "unsupported_factual_claims"
+      },
+      {
+        "concept_id": "CON-002",
+        "verdict": "satisfied",
+        "reason": "테스트가 작성한 검토 선언",
+        "candidate_quote": "자동 세척 모드 추가",
+        "source_quotes": [],
+        "criterion": "mechanism"
+      },
+      {
+        "concept_id": "CON-002",
+        "verdict": "satisfied",
+        "reason": "테스트가 작성한 검토 선언",
+        "candidate_quote": "자동 세척 모드 추가",
+        "source_quotes": [],
+        "criterion": "difference_from_current_features"
+      },
+      {
+        "concept_id": "CON-002",
+        "verdict": "satisfied",
+        "reason": "테스트가 작성한 검토 선언",
+        "candidate_quote": "자동 세척 모드 추가",
+        "source_quotes": [],
+        "criterion": "unverified_assumptions"
+      },
+      {
+        "concept_id": "CON-002",
+        "verdict": "satisfied",
+        "reason": "테스트가 작성한 검토 선언",
+        "candidate_quote": "자동 세척 모드 추가",
+        "source_quotes": [],
+        "criterion": "unsupported_factual_claims"
+      },
+      {
+        "concept_id": "CON-003",
+        "verdict": "satisfied",
+        "reason": "테스트가 작성한 검토 선언",
+        "candidate_quote": "식품 보호 모드 추가",
+        "source_quotes": [],
+        "criterion": "mechanism"
+      },
+      {
+        "concept_id": "CON-003",
+        "verdict": "satisfied",
+        "reason": "테스트가 작성한 검토 선언",
+        "candidate_quote": "식품 보호 모드 추가",
+        "source_quotes": [],
+        "criterion": "difference_from_current_features"
+      },
+      {
+        "concept_id": "CON-003",
+        "verdict": "satisfied",
+        "reason": "테스트가 작성한 검토 선언",
+        "candidate_quote": "식품 보호 모드 추가",
+        "source_quotes": [],
+        "criterion": "unverified_assumptions"
+      },
+      {
+        "concept_id": "CON-003",
+        "verdict": "satisfied",
+        "reason": "테스트가 작성한 검토 선언",
+        "candidate_quote": "식품 보호 모드 추가",
+        "source_quotes": [],
+        "criterion": "unsupported_factual_claims"
+      }
+    ],
+    "questions": [
+      "기존 부품만으로 실행되는 모드라는 현재 모델 설명서 근거가 있나요?"
+    ]
+  },
+  "new_boundary_decision": {
+    "valid": false,
+    "action": "hold",
+    "revision_count": 2,
+    "next_revision_count": 2,
+    "rerun_from": null,
+    "violations": [
+      {
+        "code": "EXCLUSION_UNCERTAIN",
+        "stage": "concepts",
+        "details": {
+          "concept_id": "CON-002",
+          "verdict": "uncertain",
+          "reason": "현재 원문은 기존 소프트웨어 모드인지 새 장치인지 확인해 주지 않는다.",
+          "candidate_quote": "자동 세척 모드 추가",
+          "source_quotes": [],
+          "condition_index": 1,
+          "condition": "자동 세척 장치 제안"
+        }
+      }
+    ]
+  },
+  "limitation": "Original generation was recorded by PM. New meaning judgement is an authored fixture, not live detection."
+}

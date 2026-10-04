@@ -1,0 +1,161 @@
+{
+  "input": {
+    "request": {
+      "product_group": "fridge",
+      "target_customer": "주방 가전을 사용하는 가구",
+      "use_situation": "자료에 적힌 같은 모델과 사용 조건을 검토한다.",
+      "improvement_task": "문 안쪽 칸의 높이를 바꿀 수 있는지 이 모델 기준으로 확인하고 싶다.",
+      "exclusions": [
+        "다른 모델 기능 혼용",
+        "근거 없는 효과 단정"
+      ],
+      "model_ids": [
+        "SEM-03-MODEL"
+      ],
+      "dataset_version": "SEM-03-independent-v1"
+    },
+    "product": {
+      "model_id": "SEM-03-MODEL",
+      "name": "독립 평가용 가상 fridge",
+      "product_group": "fridge",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "SEM-03-REVIEW",
+        "model_id": "SEM-03-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "SEM-03-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "문 안쪽 칸의 높이를 바꿀 수 있는지 이 모델 기준으로 확인하고 싶다.",
+        "feature_ids": []
+      },
+      {
+        "id": "SEM-03-MANUAL",
+        "model_id": "SEM-03-OTHER-MODEL",
+        "document_version": "9.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "SEM-03-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능 및 사용 조건"
+        },
+        "text": "다른 모델의 도어 수납칸은 세 단계 높이로 조절할 수 있다.",
+        "feature_ids": [
+          "SEM-03-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "SEM-03-FEATURE",
+        "model_id": "SEM-03-OTHER-MODEL",
+        "document_version": "9.0",
+        "name": "설명서의 제공 기능",
+        "description": "다른 모델의 도어 수납칸은 세 단계 높이로 조절할 수 있다.",
+        "conditions": [
+          "명시한 사용 조건을 충족해야 한다."
+        ],
+        "evidence_ids": [
+          "SEM-03-MANUAL"
+        ]
+      }
+    ],
+    "revision_count": 0,
+    "max_concepts": 3,
+    "changed_evidence_ids": []
+  },
+  "dataset": {
+    "manifest": {
+      "dataset_id": "SEM-03-MODEL",
+      "version": "SEM-03-independent-v1",
+      "description": "Independent synthetic semantic evaluation input; no expected model output",
+      "source_kind": "synthetic",
+      "model_count": 2,
+      "review_count": 1,
+      "analysis_implemented": false
+    },
+    "products": [
+      {
+        "model_id": "SEM-03-MODEL",
+        "name": "독립 평가용 가상 fridge",
+        "product_group": "fridge",
+        "document_version": "1.0",
+        "source_kind": "synthetic"
+      },
+      {
+        "model_id": "SEM-03-OTHER-MODEL",
+        "name": "구분용 다른 가상 모델",
+        "product_group": "fridge",
+        "document_version": "9.0",
+        "source_kind": "synthetic"
+      }
+    ],
+    "reviews": [
+      {
+        "id": "ROW-SEM-03-REVIEW",
+        "evidence_id": "SEM-03-REVIEW",
+        "model_id": "SEM-03-MODEL",
+        "document_version": "1.0",
+        "text": "문 안쪽 칸의 높이를 바꿀 수 있는지 이 모델 기준으로 확인하고 싶다.",
+        "source_id": "SEM-03-CSV",
+        "locator": {
+          "row": 2
+        },
+        "source_kind": "synthetic"
+      }
+    ],
+    "evidence": [
+      {
+        "id": "SEM-03-REVIEW",
+        "model_id": "SEM-03-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "SEM-03-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "문 안쪽 칸의 높이를 바꿀 수 있는지 이 모델 기준으로 확인하고 싶다.",
+        "feature_ids": []
+      },
+      {
+        "id": "SEM-03-MANUAL",
+        "model_id": "SEM-03-OTHER-MODEL",
+        "document_version": "9.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "SEM-03-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능 및 사용 조건"
+        },
+        "text": "다른 모델의 도어 수납칸은 세 단계 높이로 조절할 수 있다.",
+        "feature_ids": [
+          "SEM-03-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "SEM-03-FEATURE",
+        "model_id": "SEM-03-OTHER-MODEL",
+        "document_version": "9.0",
+        "name": "설명서의 제공 기능",
+        "description": "다른 모델의 도어 수납칸은 세 단계 높이로 조절할 수 있다.",
+        "conditions": [
+          "명시한 사용 조건을 충족해야 한다."
+        ],
+        "evidence_ids": [
+          "SEM-03-MANUAL"
+        ]
+      }
+    ]
+  }
+}

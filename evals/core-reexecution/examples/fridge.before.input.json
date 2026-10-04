@@ -1,0 +1,71 @@
+{
+  "request": {
+    "product_group": "fridge",
+    "target_customer": "청소 시간이 짧은 1인 가구",
+    "use_situation": "냉장고 사용 중 작은 음료 얼룩을 청소한다.",
+    "improvement_task": "국소 얼룩을 닦으려면 선반 위 용기를 모두 꺼내야 해 번거롭다.",
+    "exclusions": [
+      "다른 모델 기능 혼용"
+    ],
+    "model_ids": [
+      "CHANGE-FRIDGE-MODEL"
+    ],
+    "dataset_version": "CHANGE-FRIDGE-v1"
+  },
+  "product": {
+    "model_id": "CHANGE-FRIDGE-MODEL",
+    "name": "재실행 예제용 가상 fridge",
+    "product_group": "fridge",
+    "document_version": "1.0",
+    "source_kind": "synthetic"
+  },
+  "sources": [
+    {
+      "id": "CHANGE-FRIDGE-REVIEW",
+      "model_id": "CHANGE-FRIDGE-MODEL",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "review",
+      "source_id": "CHANGE-FRIDGE-REVIEW-DOC",
+      "locator": {
+        "row": 2
+      },
+      "text": "국소 얼룩을 닦으려면 선반 위 용기를 모두 꺼내야 해 번거롭다.",
+      "feature_ids": []
+    },
+    {
+      "id": "CHANGE-FRIDGE-MANUAL",
+      "model_id": "CHANGE-FRIDGE-MODEL",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "manual",
+      "source_id": "CHANGE-FRIDGE-MANUAL-DOC",
+      "locator": {
+        "page": 3,
+        "section": "사용 조건"
+      },
+      "text": "선반 전체를 분리하여 세척할 수 있다. 분리 전에 식품을 모두 꺼낸다.",
+      "feature_ids": [
+        "CHANGE-FRIDGE-FEATURE"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "id": "CHANGE-FRIDGE-FEATURE",
+      "model_id": "CHANGE-FRIDGE-MODEL",
+      "document_version": "1.0",
+      "name": "설명서의 현재 지원 기능",
+      "description": "선반 전체를 분리하여 세척할 수 있다. 분리 전에 식품을 모두 꺼낸다.",
+      "conditions": [
+        "설명서의 사용 조건을 충족해야 함"
+      ],
+      "evidence_ids": [
+        "CHANGE-FRIDGE-MANUAL"
+      ]
+    }
+  ],
+  "revision_count": 2,
+  "max_concepts": 3,
+  "changed_evidence_ids": []
+}

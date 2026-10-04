@@ -49,9 +49,9 @@ describe('malformed nested record items', () => {
     const view = planningExecutionView(BROKEN);
     if (view.kind !== 'invalid') throw new Error('expected an invalid record');
     expect(view.errors).toEqual(expect.arrayContaining([
-      '/trace/1/operation must be a non-empty string',
-      '/model_calls/0/model_digest must be a non-empty string',
-      `/errors/${execution(BROKEN).errors.length - 1} must be an object`,
+      "/trace/1 must have required property 'operation'",
+      "/model_calls/0 must have required property 'model_digest'",
+      `/errors/${execution(BROKEN).errors.length - 1} must be object`,
     ]));
     expect(exportJudgement(BROKEN)).toEqual({ record_valid: false, record_errors: view.errors });
   });
@@ -81,6 +81,28 @@ describe('candidates are offered only from an accepted judgement', () => {
     draft.output = { needs: [], gaps: [] } as unknown as RunSnapshot['output'];
     expect(selectableConcepts(draft)).toEqual(draft.run.concepts);
     expect(rerunBaseNotice(draft)).toBeNull();
+  });
+});
+
+describe('inconsistent accepted records never offer candidates', () => {
+  const cases: [string, (copy: RunSnapshot, record: Record<string, unknown>) => void][] = [
+    ['stored run held while its execution claims completed', copy => { copy.run.status = 'held'; }],
+    ['fixed document scope differs', copy => { copy.document_versions = {}; }],
+    ['stored candidates differ from the judged candidates', copy => { copy.run.concepts[0].title = '변조된 후보 제목'; }],
+    ['accepted decision has no terminal output', (_copy, record) => { record.output = null; }],
+  ];
+  it.each(cases)('%s offers none and explains why', (_name, change) => {
+    const snapshot = derive(ACCEPTED, change);
+    expect(planningExecutionView(snapshot).kind).toBe('ok');
+    expect(selectableConcepts(snapshot)).toEqual([]);
+    expect(rerunBaseNotice(snapshot)).not.toBeNull();
+    // Missing judgement records on held/failed/request-only runs are not an alternative path to selection.
+    if (snapshot.run.status !== 'completed') {
+      const withoutRecord = structuredClone(snapshot);
+      withoutRecord.output = { needs: [], gaps: [] };
+      expect(selectableConcepts(withoutRecord)).toEqual([]);
+      expect(rerunBaseNotice(withoutRecord)).not.toBeNull();
+    }
   });
 });
 
@@ -153,7 +175,7 @@ describe('terminal runs in the actual React DOM', () => {
     await act(async () => root.render(createElement(ConceptsView, { mode: 'live', runs: [BROKEN], selected: BROKEN, onSelect: () => {}, ...scoped })));
     const text = host.querySelector('[aria-label="판단 실행 기록"]')?.textContent ?? '';
     expect(text).toContain('저장된 판단 기록의 형식이 맞지 않아 표시하지 않습니다');
-    expect(text).toContain('/model_calls/0/model_digest must be a non-empty string');
+    expect(text).toContain("/model_calls/0 must have required property 'model_digest'");
   });
 
   it('stale candidates on a held run are flagged and not offered for selection', async () => {

@@ -49,7 +49,7 @@ export function JudgementPanel({ input, output, decision, fixture }: { input: Ju
 
 const DECISION_LABEL: Record<string, string> = { accept: '계약 검사 통과', hold: '보류', revise: '수정 필요', unresolved: '미해결 종료' };
 const VERDICT: Record<string, string> = { compliant: '준수', satisfied: '충족', violation: '위반', uncertain: '불확실' };
-const CRITERION: Record<string, string> = { mechanism: '작동 방식', difference_from_current_features: '현재 기능과 차이', unverified_assumptions: '미검증 가정', unsupported_claims: '근거 없는 단정' };
+const CRITERION: Record<string, string> = { mechanism: '작동 방식', difference_from_current_features: '현재 기능과 차이', unverified_assumptions: '미검증 가정', unsupported_claims: '근거 없는 단정', unsupported_factual_claims: '근거 없는 단정' };
 
 function AssessmentRow({ row, target }: { row: SemanticAssessment; target: string }) {
   const tone = row.verdict === 'violation' ? 'error' : row.verdict === 'uncertain' ? 'notice' : 'done';
@@ -73,6 +73,7 @@ function SemanticReviews({ execution }: { execution: PlanningExecution }) {
       const flagged = quality.filter(row => row.verdict !== 'satisfied');
       return <div key={index} className="semantic-review">
         <p><strong>{index + 1}회차</strong> · 결정 {DECISION_LABEL[review.decision.action] ?? review.decision.action}{review.decision.violations.length ? ` · 위반 ${review.decision.violations.length}건` : ' · 위반 없음'}</p>
+        {review.reviewed_input && review.reviewed_output ? <details><summary>이 회차에서 검토한 원 입력·후보</summary><p className="id">{review.reviewed_input.product.model_id} · 문서 {review.reviewed_input.product.document_version} · 내부 수정 {review.reviewed_input.revision_count}/2 · 입력 {review.reviewed_output.input_sha256.slice(0, 12)}</p><p>{review.reviewed_input.request.improvement_task}</p><TextList title="검토 당시 제외 조건" items={review.reviewed_input.request.exclusions} empty="없음" /><ul>{review.reviewed_output.concepts.map(concept => <li key={concept.id}><span className="id">{concept.id}</span> {concept.title}</li>)}</ul></details> : null}
         <ul>{review.report.exclusion_assessments.map((row, n) => <AssessmentRow key={`x-${n}`} row={row} target={`제외 조건 '${row.condition ?? row.condition_index}'`} />)}</ul>
         {review.report.exclusion_assessments.length ? null : <p className="muted">제외 조건이 없어 조건별 검토가 없습니다.</p>}
         <ul>{flagged.map((row, n) => <AssessmentRow key={`q-${n}`} row={row} target={`기준 ${CRITERION[row.criterion ?? ''] ?? row.criterion}`} />)}</ul>
@@ -99,6 +100,19 @@ function RejectedCandidates({ output }: { output: JudgementOutput }) {
   return <section className="rejected-output" aria-label="거절된 후보">
     <h4 className="sub">검사에서 거절된 마지막 후보 <small>{output.concepts.length}개 · 선택·내보내기 대상 아님</small></h4>
     <ul>{output.concepts.map(concept => <li key={concept.id}><span className="id">{concept.id}</span> {concept.title}<span className="scope-flag"> · 거절됨</span></li>)}</ul>
+  </section>;
+}
+
+/** A failed attempt may retain a checked declaration but have no terminal decision. Do not invent a decision. */
+function OutputWithoutDecision({ output, status }: { output: JudgementOutput; status: PlanningExecution['status'] }) {
+  return <section className="judgement-panel" aria-label="최종 결정 없는 판단 출력">
+    <div className="judgement-head"><span className={`run-status ${status === 'failed' ? 'error' : 'notice'}`}>저장된 판단 출력 · {STATUS_LABEL[status]}<small>최종 코어 검사 결정이 없습니다</small></span><span className="id">{output.model_id} · 문서 {output.document_version} · 내부 수정 {output.revision_count}/2 · 입력 {output.input_sha256.slice(0, 12)}</span></div>
+    <p className="judgement-detail">판단 출력은 저장되었지만 최종 검사 결정을 얻지 못했습니다. 완료·검수 통과로 취급하지 않으며 후보는 선택할 수 없습니다. 위의 실행 오류와 아래 사유를 확인해 주세요.</p>
+    <TextList title="확인할 질문" items={[...output.questions, ...output.gaps.flatMap(gap => gap.questions)]} />
+    <TextList title="보류 사유" items={output.hold_reasons} />
+    <TextList title="미해결" items={output.unresolved} />
+    <TextList title="후보 없음 사유" items={output.no_candidate_reasons} />
+    {output.concepts.length ? <RejectedCandidates output={output} /> : null}
   </section>;
 }
 
@@ -137,7 +151,8 @@ export function ExecutionPanel({ snapshot }: { snapshot: RunSnapshot }) {
     </dl>
     {execution.output && execution.decision
       ? <JudgementPanel input={execution.input} output={execution.output} decision={execution.decision} fixture={execution.execution_kind === 'fixture'} />
-      : <>{execution.decision ? <DecisionOnly decision={execution.decision} /> : null}<p className="muted">판단 출력이 저장되지 않았습니다({STATUS_LABEL[execution.status]}). 위의 오류와 실행 순서를 확인해 주세요.</p></>}
+      : execution.output ? <OutputWithoutDecision output={execution.output} status={execution.status} />
+        : <>{execution.decision ? <DecisionOnly decision={execution.decision} /> : null}<p className="muted">판단 출력이 저장되지 않았습니다({STATUS_LABEL[execution.status]}). 위의 오류와 실행 순서를 확인해 주세요.</p></>}
     {execution.rejected_output ? <RejectedCandidates output={execution.rejected_output} /> : null}
     <SemanticReviews execution={execution} />
     <h4 className="sub">실행 순서 <small>trace {execution.trace.length}단계</small></h4>

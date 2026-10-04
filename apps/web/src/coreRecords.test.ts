@@ -115,6 +115,17 @@ describe('core pipeline records in the actual React DOM', () => {
     return host.querySelector('[aria-label="판단 실행 기록"]')?.textContent ?? '';
   }
 
+  it('a supported feature does not claim that remaining customer pain is resolved', async () => {
+    const snapshot = structuredClone(run(PR60, 'exclusion_uncertain_held'));
+    snapshot.output!.gaps[0].support_status = 'supported';
+    snapshot.output!.gaps[0].remaining_pain = '식품을 모두 옮기는 부담이 남습니다.';
+    await panel(snapshot);
+    const table = host.querySelector('.comparison-table')!.textContent!;
+    expect(table).toContain('기존 기능 제공');
+    expect(table).toContain('식품을 모두 옮기는 부담이 남습니다.');
+    expect(table).not.toContain('기존 기능으로 해결');
+  });
+
   it('failed stage: the decision and its reason are shown although no output was stored', async () => {
     const text = await panel(run(MAIN, 'generation_failed'));
     expect(text).not.toContain('형식이 맞지 않아 표시하지 않습니다');

@@ -376,7 +376,7 @@ function RerunPanel({ mode, selected, original, onRerun, busy, measure }: { mode
   return <form className="panel planning-panel condition-form" onSubmit={submit} aria-label="후보·조건 선택 후 재실행">
     <p className="eyebrow">RERUN</p><h3>후보와 조건을 고르고 다시 실행</h3>
     <MeasureBar measure={measure} baseRunId={selected.run.id} />
-    <p className="hint">{selected.run.id}의 요청을 바탕으로 새 실행을 연결합니다. {mode === 'fixture' ? '현재는 브라우저 안의 초안이며 결과는 not_implemented로 남습니다.' : '작업실 서버에 새 실행으로 저장합니다. 판단 Agent가 연결되기 전까지 분석은 실행되지 않습니다.'}</p>
+    <p className="hint">{selected.run.id}의 요청을 바탕으로 새 실행을 연결합니다. {mode === 'fixture' ? '현재는 브라우저 안의 초안이며 결과는 not_implemented로 남습니다.' : '작업실 서버에 새 실행으로 저장합니다. 기존 실행은 유지됩니다.'}</p>
     {baseNotice ? <p className="scope-flag" role="note">{baseNotice}</p> : null}
     <h4 className="sub">후보 선택</h4>
     {concepts.length ? <ul className="choice-list">{concepts.map(concept => <li key={concept.id}>

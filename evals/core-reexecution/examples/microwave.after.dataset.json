@@ -1,0 +1,80 @@
+{
+  "manifest": {
+    "dataset_id": "CHANGE-MICROWAVE",
+    "version": "CHANGE-MICROWAVE-v2",
+    "description": "Synthetic re-execution handoff; no model output",
+    "source_kind": "synthetic",
+    "model_count": 1,
+    "review_count": 1,
+    "analysis_implemented": false
+  },
+  "products": [
+    {
+      "model_id": "CHANGE-MICROWAVE-MODEL",
+      "name": "재실행 예제용 가상 microwave",
+      "product_group": "microwave",
+      "document_version": "2.0",
+      "source_kind": "synthetic"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "CHANGE-MICROWAVE-REVIEW",
+      "model_id": "CHANGE-MICROWAVE-MODEL",
+      "document_version": "2.0",
+      "source_kind": "synthetic",
+      "source_type": "review",
+      "source_id": "CHANGE-MICROWAVE-REVIEW-DOC",
+      "locator": {
+        "row": 2
+      },
+      "text": "해동 후 가열 시간은 직접 정해야 해서 밥 중앙이 차가워 다시 돌렸다.",
+      "feature_ids": []
+    },
+    {
+      "id": "CHANGE-MICROWAVE-MANUAL",
+      "model_id": "CHANGE-MICROWAVE-MODEL",
+      "document_version": "2.0",
+      "source_kind": "synthetic",
+      "source_type": "manual",
+      "source_id": "CHANGE-MICROWAVE-MANUAL-DOC",
+      "locator": {
+        "page": 3,
+        "section": "사용 조건"
+      },
+      "text": "무게에 따른 해동 후 자동 가열까지 연결하는 냉동밥 코스를 제공한다. 전용 용기를 사용한다.",
+      "feature_ids": [
+        "CHANGE-MICROWAVE-FEATURE"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "id": "CHANGE-MICROWAVE-FEATURE",
+      "model_id": "CHANGE-MICROWAVE-MODEL",
+      "document_version": "2.0",
+      "name": "설명서의 현재 지원 기능",
+      "description": "무게에 따른 해동 후 자동 가열까지 연결하는 냉동밥 코스를 제공한다. 전용 용기를 사용한다.",
+      "conditions": [
+        "냉동밥 코스에서 전용 용기를 사용한다."
+      ],
+      "evidence_ids": [
+        "CHANGE-MICROWAVE-MANUAL"
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "id": "ROW-CHANGE-MICROWAVE-REVIEW",
+      "evidence_id": "CHANGE-MICROWAVE-REVIEW",
+      "model_id": "CHANGE-MICROWAVE-MODEL",
+      "text": "해동 후 가열 시간은 직접 정해야 해서 밥 중앙이 차가워 다시 돌렸다.",
+      "source_kind": "synthetic",
+      "document_version": "2.0",
+      "source_id": "CHANGE-MICROWAVE-REVIEW-DOC",
+      "locator": {
+        "row": 2
+      }
+    }
+  ]
+}
