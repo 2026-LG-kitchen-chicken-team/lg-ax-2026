@@ -1,0 +1,93 @@
+{
+  "input_sha256": "5aeab3b1fee3a282465668f26bd70a12e1612df7c7cade121a06a6c1550148c7",
+  "model_id": "DEV-01-MODEL",
+  "document_version": "1.0",
+  "revision_count": 0,
+  "status": "completed",
+  "needs": [
+    {
+      "id": "DEV-01-NEED",
+      "model_id": "DEV-01-MODEL",
+      "situation": "설명서 조건대로 사용",
+      "pain": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다.",
+      "evidence_ids": [
+        "DEV-01-REVIEW"
+      ],
+      "uncertainties": []
+    }
+  ],
+  "desired_outcomes": [
+    {
+      "need_id": "DEV-01-NEED",
+      "desired_outcome": "해당 사용 상황의 남은 불편을 줄인다"
+    }
+  ],
+  "gaps": [
+    {
+      "id": "DEV-01-GAP",
+      "need_id": "DEV-01-NEED",
+      "model_id": "DEV-01-MODEL",
+      "feature_ids": [
+        "DEV-01-FEATURE"
+      ],
+      "support_status": "supported",
+      "remaining_pain": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다.",
+      "evidence_ids": [
+        "DEV-01-REVIEW",
+        "DEV-01-MANUAL"
+      ],
+      "questions": []
+    }
+  ],
+  "concepts": [
+    {
+      "id": "DEV-01-CONCEPT",
+      "title": "오염 구역만 분리하는 소형 트레이",
+      "kind": "product",
+      "gap_ids": [
+        "DEV-01-GAP"
+      ],
+      "evidence_ids": [
+        "DEV-01-REVIEW",
+        "DEV-01-MANUAL"
+      ],
+      "differentiation": "기존 기능의 사용 조건 이후에도 남는 불편을 다룬다",
+      "requirements": [
+        "해당 사용 조건에서 불편 감소 여부를 검토할 수 있어야 한다"
+      ],
+      "assumptions": [
+        "실제 사용자 검증은 아직 수행하지 않았다"
+      ],
+      "status": "proposed"
+    }
+  ],
+  "review_assessments": [
+    {
+      "evidence_id": "DEV-01-REVIEW",
+      "polarity": "complaint",
+      "reason": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+    }
+  ],
+  "gap_assessments": [
+    {
+      "gap_id": "DEV-01-GAP",
+      "support_basis": "explicit_supported",
+      "resolution": "remaining",
+      "reason": "기능은 있으나 사용 조건에 남는 불편이 있다"
+    }
+  ],
+  "concept_assessments": [
+    {
+      "concept_id": "DEV-01-CONCEPT",
+      "duplication": "distinct",
+      "compared_feature_ids": [
+        "DEV-01-FEATURE"
+      ],
+      "reason": "기능과 남은 불편을 구분해 제안한 검토용 후보"
+    }
+  ],
+  "questions": [],
+  "hold_reasons": [],
+  "unresolved": [],
+  "no_candidate_reasons": []
+}
