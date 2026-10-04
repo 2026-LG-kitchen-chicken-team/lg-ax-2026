@@ -54,5 +54,25 @@ jobs:
       - run: npm ci --prefix apps/web
       - run: npm run test --prefix apps/web
       - run: npm run build --prefix apps/web
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --locked --dev
+      - name: Install official Chromium for browser regression
+        working-directory: apps/web
+        run: npx playwright install --with-deps chromium
+      - name: Two fixture and one isolated real API browser cases (no skipped cases)
+        run: uv run python scripts/ci_web_e2e.py --report "$RUNNER_TEMP/lgax-web-e2e-summary.json"
+      - name: Preserve only the sanitized browser summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-e2e-summary-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/lgax-web-e2e-summary.json
+          if-no-files-found: error
+          retention-days: 7
   # GPU/model and real ChatGPT/Claude checks require explicit recorded runs.
   # CI never converts fixture success into external integration success.

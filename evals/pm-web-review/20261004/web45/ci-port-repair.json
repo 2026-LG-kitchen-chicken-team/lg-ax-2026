@@ -1,0 +1,33 @@
+{
+  "checked_at": "2026-10-04T12:31:50.735666+00:00",
+  "previous_ci_runs": [
+    37202052829,
+    37202109742
+  ],
+  "previous_commit": "ca49ef03f7cb8ad332d70137835e7b56158d4411",
+  "observed_failure": "all3browsercases_pass_but_linux_timewait_raw_bind_reports_port_in_use",
+  "fix": "require_explicit_loopback_connection_refusal_to_prove_listener_stopped;3second_timeout_supports_windows_refusal",
+  "preserved_gates": [
+    "real_listener_and_timeout_fail",
+    "owned_children_reaped",
+    "authentication_and_exact_origin",
+    "temporary_material_removed",
+    "three_named_browser_cases_skip0"
+  ],
+  "related_tests": 7,
+  "new_ci_status": "pending",
+  "code_files": [
+    {
+      "path": "scripts/ci_web_e2e.py",
+      "sha256": "bb9fc284c3bb28bad75a98eacfc1dff8188279ea32170c7f25a19a895b453be3"
+    },
+    {
+      "path": "tests/test_ci_web_e2e.py",
+      "sha256": "63a2a3b5050435242703a12e7b1859932d0646801f50721d248c151d4fe83de7"
+    },
+    {
+      "path": ".github/workflows/harness.yml",
+      "sha256": "e58ec972ea054693b2c157694a8530cdc48e32bc3d316ce0f305b07bbe1f405f"
+    }
+  ]
+}
