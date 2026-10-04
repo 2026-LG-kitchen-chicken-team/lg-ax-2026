@@ -4,6 +4,9 @@ import schema from '../../../packages/contracts/schemas/lgax.schema.json';
 import { ApiError } from './api';
 import { evidenceLocation } from './domain';
 import type { Evidence, ProductGroup } from './domain';
+// judgement.ts also imports from this module; neither uses the other at module load, so the cycle is safe.
+import { exportJudgement } from './judgement';
+import type { ExportJudgement } from './judgement';
 
 export type DataMode = 'live' | 'fixture';
 
@@ -297,6 +300,8 @@ export interface ExportDocument {
   held: HeldItem[];
   scope_warnings: ScopeWarning[];
   lineage: { run_id: string; previous_run_id: string | null; request_revision: number; status: Run['status']; created_at: string }[];
+  /** The stored core record (decision, terminal reasons, semantic review); null when the run has none. */
+  judgement?: ExportJudgement | null;
   evidence: { id: string; model_id: string; document_version: string; source_type: string; source_kind: string; source_id: string; location: string; text: string }[];
   completeness: ExportCompleteness;
 }
@@ -352,6 +357,7 @@ export function buildExport(mode: DataMode, snapshot: RunSnapshot, features: Fea
     held: structuredClone(heldItems(snapshot).filter(item => item.kind === 'insufficient_evidence')),
     scope_warnings: scopeWarnings(snapshot, features, evidence),
     lineage: runLineage(snapshot, runs).map(item => ({ run_id: item.run.id, previous_run_id: item.previous_run_id, request_revision: item.request_revision, status: item.run.status, created_at: item.created_at })),
+    judgement: exportJudgement(snapshot),
     evidence: [...cited].sort().map(id => {
       const item = evidenceById.get(id);
       return item
@@ -402,6 +408,7 @@ ${item.requirement}`));
     ['가정·미확인', doc.assumptions, expectedAssumptions], ['미해결', doc.unresolved, snapshot.run.unresolved],
     ['근거 부족 보류', doc.held, expectedHeld], ['검토 범위 밖 문서 버전', doc.scope_warnings, expectedScope], ['실행 계보', doc.lineage, expectedLineage],
     ['인용 근거 ID', doc.evidence.map(item => item.id).sort(), [...cited].sort()],
+    ['판단 실행 기록', doc.judgement ?? null, exportJudgement(snapshot)],
   ];
   const result = {
     missing_evidence: [...cited].filter(id => !withText.has(id)),
@@ -433,6 +440,31 @@ function cell(text: string): string {
   return text.replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
 }
 
+const DECISION_TEXT: Record<string, string> = { accept: '계약 검사 통과(의미 검증 아님)', hold: '보류', revise: '수정 중', unresolved: '미해결 종료' };
+const STATUS_TEXT: Record<string, string> = { completed: '완료', held: '보류', failed: '실패' };
+
+function judgementMarkdown(judgement: ExportJudgement | null): string[] {
+  if (!judgement) return [];
+  const list = (title: string, items: string[]) => [`${title}:`, ...(items.length ? items.map(item => `- ${item}`) : ['- 없음']), ''];
+  if (!judgement.record_valid) return ['## 판단 실행 기록', '', '- **저장된 판단 기록의 형식이 맞지 않아 결과로 쓰지 않았습니다.**', ...judgement.record_errors.map(item => `- ${item}`), ''];
+  return [
+    '## 판단 실행 기록', '',
+    `- 실행 종류: ${judgement.execution_kind === 'live_model' ? '실제 모델 실행 기록' : 'fixture(모델 호출 아님)'} · 종료 상태: ${STATUS_TEXT[judgement.status]} · 코어 결정: ${judgement.decision ? DECISION_TEXT[judgement.decision] ?? judgement.decision : '없음'}`,
+    `- 모델: ${judgement.models.join(', ') || '호출 기록 없음'} · 호출 ${judgement.model_calls}회`, '',
+    ...list('검사에서 발견한 문제', judgement.violations),
+    ...(judgement.record_problems.length ? list('저장 기록 불일치', judgement.record_problems) : []),
+    ...(judgement.errors.length ? list('실행 오류', judgement.errors.map(item => `${item.code}: ${item.message}`)) : []),
+    ...list('확인할 질문', judgement.questions), ...list('보류 사유', judgement.hold_reasons),
+    ...list('미해결', judgement.unresolved), ...list('후보 없음 사유', judgement.no_candidate_reasons),
+    ...(judgement.rejected_candidates.length ? list('검사에서 거절된 후보(선택 대상 아님)', judgement.rejected_candidates.map(item => `${item.id} ${item.title}`)) : []),
+    ...(judgement.semantic_reviews.length ? [
+      `의미 검토 ${judgement.semantic_reviews.length}회 (판단과 같은 모델의 검토 선언, 독립 검증 아님):`, '',
+      '| 회차 | 후보 | 대상 | 판정 | 후보 인용 | 사유 |', '|---|---|---|---|---|---|',
+      ...judgement.semantic_rows.map(row => `| ${row.round} | ${cell(row.concept_id)} | ${cell(row.target)} | ${cell(row.verdict)} | ${cell(row.candidate_quote)} | ${cell(row.reason)} |`), '',
+    ] : []),
+  ];
+}
+
 export function exportMarkdown(doc: ExportDocument): string {
   const lines = [
     `# 키친 상품기획 검토 — ${doc.meta.run_id}`, '',
@@ -458,6 +490,7 @@ export function exportMarkdown(doc: ExportDocument): string {
   lines.push('## 미해결·보류', '', ...(doc.unresolved.length ? doc.unresolved.map(item => `- ${item}`) : ['- 없음']), '');
   lines.push('## 근거 부족으로 보류한 불편', '', ...(doc.held.length ? doc.held.map(item => `- ${item.id}: ${item.text}${item.questions.length ? ` — 확인할 질문: ${item.questions.join(' / ')}` : ''}`) : ['- 없음']), '');
   lines.push('## 검토 범위 밖 문서 버전', '', ...(doc.scope_warnings.length ? doc.scope_warnings.map(item => `- ${scopeWarningText(item)}`) : ['- 없음']), '');
+  lines.push(...judgementMarkdown(doc.judgement ?? null));
   lines.push('## 실행 계보', '', ...doc.lineage.map(item => `- ${item.run_id} · 요청 회차 ${item.request_revision} · ${item.status} · ${item.created_at}${item.previous_run_id ? ` (← ${item.previous_run_id})` : ' (첫 실행)'}`), '');
   const missing = Object.entries(doc.completeness).filter(([key, value]) => key !== 'complete' && Array.isArray(value) && value.length);
   lines.push('## 내보내기 점검', '', doc.completeness.complete ? '- 선택 실행의 요청·후보·인용 근거 원문·요구사항·가정·미확인·미해결·보류·계보가 모두 포함되었습니다.' : '- **누락이 있습니다. 원본과 일치하지 않거나 확인할 수 없는 항목을 검토하세요.**', ...missing.map(([key, value]) => `- ${key}: ${(value as string[]).join(', ')}`), '');
