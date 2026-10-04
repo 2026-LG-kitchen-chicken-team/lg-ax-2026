@@ -1,0 +1,3613 @@
+{
+  "observed_at": "2026-10-04T16:24:23Z",
+  "project": {
+    "id": "PVT_kwHODCN5Rc4BlmPN",
+    "number": 3,
+    "title": "LG AX 2026 · 2차 개발",
+    "url": "https://github.com/users/jeongiryang/projects/3",
+    "public": false,
+    "closed": false,
+    "readme": "# LG AX 2026 · 2차 개발\n\nPM: 정이량. 팀장: 황대겸. 팀원은 조회 전용이며 보드 갱신은 PM이 수행한다.\n\n| 담당 | 현재 첫 작업 | 참여/접근 |\n|---|---|---|\n| 정이량 | #19/#20 통합 대기, #21/#22 도구·ZIP 재현 완료, 실제 평가/제출 대기 | 저장소 Admin·Project 소유자 |\n| 황대겸 | #7 판단 계약·6유형 대응 | 저장소 Write·Project Read |\n| 신진하 | #12 자료팩·원문/모델/버전 | 합류·초대 수락·저장소 Write 확인·Project Read |\n| 최길웅 | #23 기획 검토 화면 | 저장소 Write·Project Read |\n\n신진하의 초대 수락은 10/4 사용자 확인과 GitHub Write 조회로 확인했다. #5·#12~#16 담당자를 ginaginaring으로 지정했고 첫 작업은 #12다.\n\n진행 보고: 자기 Issue/PR + docs/작업기록·작업근거 → PM 검수 → 실제 병합 → 통합 확인.\n초기 완료2·참가작31요구 verified0. 선행 도구 준비와 참가작 평가·최종 제출은 구분한다.\n10/6 오전 실제 컨설팅 일정 확인, 10/20 제출 준비. 정확한 제출 시각/경로는 후속 확인.\n\n[고정 운영 Issue](https://github.com/jeongiryang/lg-ax-2026/issues/28) · [개발 안내](https://github.com/jeongiryang/lg-ax-2026/blob/main/docs/bootstrap/README.md)\n\n## PM 선행 도구 검증\nPython170·독립 검수19·fixture CLI·고정505파일 ZIP의 깨끗한8검사를 확인했다. 실제 Agent 평가·최종 제출은 미완료다. [PR#34](https://github.com/jeongiryang/lg-ax-2026/pull/34) · [현재 배정](https://github.com/jeongiryang/lg-ax-2026/blob/main/docs/pm/현재배정.md)\n",
+    "shortDescription": "PM 정이량 관리 · 4인 담당 작업 · 신진하 Write/담당 지정 완료 · 초기Done2/참가작검증0",
+    "owner": {
+      "login": "jeongiryang"
+    },
+    "repositories": {
+      "nodes": [],
+      "pageInfo": {
+        "hasNextPage": false
+      }
+    },
+    "views": {
+      "nodes": [
+        {
+          "id": "PVTV_lAHODCN5Rc4BlmPNzgL5u9k",
+          "number": 1,
+          "name": "View 1",
+          "layout": "TABLE_LAYOUT",
+          "filter": "",
+          "fields": {
+            "nodes": [
+              {
+                "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                "name": "Title"
+              },
+              {
+                "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtY",
+                "name": "Assignees"
+              },
+              {
+                "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                "name": "Status"
+              },
+              {
+                "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtk",
+                "name": "Linked pull requests"
+              },
+              {
+                "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                "name": "진행상태"
+              },
+              {
+                "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkVgkg",
+                "name": "팀원 보고"
+              },
+              {
+                "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgkk",
+                "name": "최근 보고"
+              },
+              {
+                "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgko",
+                "name": "다음 행동"
+              },
+              {
+                "id": "PVTF_lAHODCN5Rc4BlmPNzhkVhHY",
+                "name": "최근 배정"
+              },
+              {
+                "id": "PVTF_lAHODCN5Rc4BlmPNzhkVhK0",
+                "name": "메일 안내"
+              }
+            ]
+          },
+          "groupByFields": {
+            "nodes": []
+          },
+          "sortByFields": {
+            "nodes": []
+          },
+          "verticalGroupByFields": {
+            "nodes": []
+          }
+        }
+      ],
+      "pageInfo": {
+        "hasNextPage": false
+      }
+    },
+    "workflows": {
+      "nodes": [
+        {
+          "id": "PWF_lAHODCN5Rc4BlmPNzgcyHlM",
+          "number": 4,
+          "name": "Auto-add sub-issues to project",
+          "enabled": true
+        },
+        {
+          "id": "PWF_lAHODCN5Rc4BlmPNzgcyHlI",
+          "number": 3,
+          "name": "Auto-close issue",
+          "enabled": true
+        },
+        {
+          "id": "PWF_lAHODCN5Rc4BlmPNzgcyHlU",
+          "number": 6,
+          "name": "Item added to project",
+          "enabled": true
+        },
+        {
+          "id": "PWF_lAHODCN5Rc4BlmPNzgcyHlA",
+          "number": 1,
+          "name": "Item closed",
+          "enabled": true
+        },
+        {
+          "id": "PWF_lAHODCN5Rc4BlmPNzgcyHlQ",
+          "number": 5,
+          "name": "Pull request linked to issue",
+          "enabled": true
+        },
+        {
+          "id": "PWF_lAHODCN5Rc4BlmPNzgcyHlE",
+          "number": 2,
+          "name": "Pull request merged",
+          "enabled": true
+        }
+      ],
+      "pageInfo": {
+        "hasNextPage": false
+      }
+    },
+    "fields": {
+      "nodes": [
+        {
+          "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+          "name": "Title",
+          "dataType": "TITLE"
+        },
+        {
+          "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtY",
+          "name": "Assignees",
+          "dataType": "ASSIGNEES"
+        },
+        {
+          "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+          "name": "Status",
+          "dataType": "SINGLE_SELECT",
+          "options": [
+            {
+              "id": "f75ad846",
+              "name": "Todo",
+              "color": "GREEN",
+              "description": "This item hasn't been started"
+            },
+            {
+              "id": "47fc9ee4",
+              "name": "In Progress",
+              "color": "YELLOW",
+              "description": "This is actively being worked on"
+            },
+            {
+              "id": "98236657",
+              "name": "Done",
+              "color": "PURPLE",
+              "description": "This has been completed"
+            }
+          ]
+        },
+        {
+          "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtg",
+          "name": "Labels",
+          "dataType": "LABELS"
+        },
+        {
+          "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtk",
+          "name": "Linked pull requests",
+          "dataType": "LINKED_PULL_REQUESTS"
+        },
+        {
+          "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdto",
+          "name": "Milestone",
+          "dataType": "MILESTONE"
+        },
+        {
+          "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdts",
+          "name": "Repository",
+          "dataType": "REPOSITORY"
+        },
+        {
+          "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdt0",
+          "name": "Reviewers",
+          "dataType": "REVIEWERS"
+        },
+        {
+          "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdt4",
+          "name": "Parent issue",
+          "dataType": "PARENT_ISSUE"
+        },
+        {
+          "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdt8",
+          "name": "Sub-issues progress",
+          "dataType": "SUB_ISSUES_PROGRESS"
+        },
+        {
+          "id": "PVTF_lAHODCN5Rc4BlmPNzhkSduA",
+          "name": "Created",
+          "dataType": "CREATED"
+        },
+        {
+          "id": "PVTF_lAHODCN5Rc4BlmPNzhkSduE",
+          "name": "Updated",
+          "dataType": "UPDATED"
+        },
+        {
+          "id": "PVTF_lAHODCN5Rc4BlmPNzhkSduI",
+          "name": "Closed",
+          "dataType": "CLOSED"
+        },
+        {
+          "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+          "name": "담당자",
+          "dataType": "TEXT"
+        },
+        {
+          "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+          "name": "요구사항",
+          "dataType": "TEXT"
+        },
+        {
+          "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdw8",
+          "name": "의존 작업",
+          "dataType": "TEXT"
+        },
+        {
+          "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+          "name": "실행 증빙",
+          "dataType": "TEXT"
+        },
+        {
+          "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+          "name": "목표일",
+          "dataType": "DATE"
+        },
+        {
+          "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+          "name": "우선순위",
+          "dataType": "SINGLE_SELECT",
+          "options": [
+            {
+              "id": "ab672556",
+              "name": "P0",
+              "color": "GRAY",
+              "description": ""
+            },
+            {
+              "id": "598279e3",
+              "name": "P1",
+              "color": "GRAY",
+              "description": ""
+            },
+            {
+              "id": "ada65f3d",
+              "name": "P2",
+              "color": "GRAY",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+          "name": "진행상태",
+          "dataType": "SINGLE_SELECT",
+          "options": [
+            {
+              "id": "f2501d08",
+              "name": "Ready",
+              "color": "GRAY",
+              "description": ""
+            },
+            {
+              "id": "0177895d",
+              "name": "Doing",
+              "color": "GRAY",
+              "description": ""
+            },
+            {
+              "id": "09a0cf04",
+              "name": "Individual verified",
+              "color": "GRAY",
+              "description": ""
+            },
+            {
+              "id": "ab962352",
+              "name": "PM review",
+              "color": "GRAY",
+              "description": ""
+            },
+            {
+              "id": "cea8b576",
+              "name": "PM approved",
+              "color": "GRAY",
+              "description": ""
+            },
+            {
+              "id": "d3272aa8",
+              "name": "Merged",
+              "color": "GRAY",
+              "description": ""
+            },
+            {
+              "id": "d333c6fb",
+              "name": "Integration verified",
+              "color": "GRAY",
+              "description": ""
+            },
+            {
+              "id": "8f30a46b",
+              "name": "Done",
+              "color": "GRAY",
+              "description": ""
+            },
+            {
+              "id": "9068b3f7",
+              "name": "Blocked",
+              "color": "GRAY",
+              "description": ""
+            },
+            {
+              "id": "bbbc9363",
+              "name": "Deferred",
+              "color": "GRAY",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkVgkg",
+          "name": "팀원 보고",
+          "dataType": "SINGLE_SELECT",
+          "options": [
+            {
+              "id": "8a5e2344",
+              "name": "Doing",
+              "color": "GRAY",
+              "description": ""
+            },
+            {
+              "id": "421f298b",
+              "name": "Blocked",
+              "color": "GRAY",
+              "description": ""
+            },
+            {
+              "id": "9808f8c6",
+              "name": "Review requested",
+              "color": "GRAY",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgkk",
+          "name": "최근 보고",
+          "dataType": "TEXT"
+        },
+        {
+          "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgko",
+          "name": "다음 행동",
+          "dataType": "TEXT"
+        },
+        {
+          "id": "PVTF_lAHODCN5Rc4BlmPNzhkVhHY",
+          "name": "최근 배정",
+          "dataType": "TEXT"
+        },
+        {
+          "id": "PVTF_lAHODCN5Rc4BlmPNzhkVhK0",
+          "name": "메일 안내",
+          "dataType": "TEXT"
+        }
+      ],
+      "pageInfo": {
+        "hasNextPage": false
+      }
+    },
+    "items": {
+      "nodes": [
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WALU",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0me9A",
+            "number": 28,
+            "title": "팀 역할·작업 규칙·현재 배정",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "jeongiryang"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "팀 역할·작업 규칙·현재 배정",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "정이량",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Todo",
+                "optionId": "f75ad846",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "담당 Epic/운영 규칙",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "PR34/35 main 병합·CI성공. Python170·fixtureCLI·고정505파일 ZIP clean8검사. 신진하Write/#5·12~16담당확인. 팀AI 종료보고규칙 동일. 실제Agent/평가/최종제출미완료, Done2/31verified0. 다음 CORE#7 DATA#12 WEB#23→PM19/20통합→21평가→22제출.",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P0",
+                "optionId": "ab672556",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Ready",
+                "optionId": "f2501d08",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WAPE",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mEOQ",
+            "number": 3,
+            "title": "[담당 Epic] 정이량 — PM·연결·통합·검수·병합·제출",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/3",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "jeongiryang"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[담당 Epic] 정이량 — PM·연결·통합·검수·병합·제출",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "정이량",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "담당 Epic/운영 규칙",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "미검증 — 작업기록/PR와 실제 실행 증빙 연결 필요",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Todo",
+                "optionId": "f75ad846",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P0",
+                "optionId": "ab672556",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Ready",
+                "optionId": "f2501d08",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WASU",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mS0A",
+            "number": 4,
+            "title": "[담당 Epic] 황대겸 — 핵심 판단·불편/기능 대조·콘셉트·검사·수정",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/4",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "unknownamed"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[담당 Epic] 황대겸 — 핵심 판단·불편/기능 대조·콘셉트·검사·수정",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "황대겸",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "담당 Epic/운영 규칙",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Todo",
+                "optionId": "f75ad846",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "미검증 — 작업기록/PR와 실제 실행 증빙 연결 필요",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P0",
+                "optionId": "ab672556",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Ready",
+                "optionId": "f2501d08",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WAV0",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mTpQ",
+            "number": 5,
+            "title": "[담당 Epic] 신진하 — 자료 처리·검색·원문/제품/버전 근거·공개 모델 비교",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/5",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "ginaginaring"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[담당 Epic] 신진하 — 자료 처리·검색·원문/제품/버전 근거·공개 모델 비교",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "신진하",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "담당 Epic/운영 규칙",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "신진하 개발팀 합류·저장소 초대 수락 완료(10/4 사용자 확인·GitHub 실제 Write 조회). ginaginaring에게 자료 Epic #5·작업 #12~#16 담당자를 지정했다. 첫 작업 #12 자료팩·원문/제품/버전 계약부터 진행한다. Project Read/PM 단독 관리 유지.",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Todo",
+                "optionId": "f75ad846",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P0",
+                "optionId": "ab672556",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Ready",
+                "optionId": "f2501d08",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WAYY",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mUAg",
+            "number": 6,
+            "title": "[담당 Epic] 최길웅 — 웹 기획 검토 작업실·교정·이력·내보내기",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/6",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "choigilung"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[담당 Epic] 최길웅 — 웹 기획 검토 작업실·교정·이력·내보내기",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "최길웅",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "담당 Epic/운영 규칙",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "미검증 — 작업기록/PR와 실제 실행 증빙 연결 필요",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P0",
+                "optionId": "ab672556",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Todo",
+                "optionId": "f75ad846",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Ready",
+                "optionId": "f2501d08",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WAck",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mUbA",
+            "number": 7,
+            "title": "[P2-CORE-001] 판단 계약·수정/보류·여섯 유형 기대 대응 정의",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/7",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "unknownamed"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[P2-CORE-001] 판단 계약·수정/보류·여섯 유형 기대 대응 정의",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "황대겸",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "R09, R10, R11, R15, R16, R19, R20, E01",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "In Progress",
+                "optionId": "47fc9ee4",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "미검증 — 작업기록/PR와 실제 실행 증빙 연결 필요",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P0",
+                "optionId": "ab672556",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Ready",
+                "optionId": "f2501d08",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-06",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "https://github.com/jeongiryang/lg-ax-2026/issues/7#issuecomment-5979830911\nPM-20261004-CORE-001-CHECKPOINT · 코어의 현재 진척과 판단 계약·여섯 유형의 첫 인수물을 PM에게 전달한다",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVhHY",
+                  "name": "최근 배정"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "sent · PM-20261004-CORE-001-CHECKPOINT",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVhK0",
+                  "name": "메일 안내"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Review requested",
+                "optionId": "9808f8c6",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkVgkg",
+                  "name": "팀원 보고"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/7#issuecomment-5981078072\n@unknownamed · 2026-10-04T14:31:10Z\n현재 자기보고: CORE001 내부 계약·보류/최대2회 수정 정책, 개발/독립 6유형과 개별 근거 제출. 실모델 판단은 후속 미완료.",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgkk",
+                  "name": "최근 보고"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "PR #51 계약·분리 기대 대응·실행 근거 PM 검수 후 수정 대응; 후속 #8 실모델 불편/기능 대조 준비.",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgko",
+                  "name": "다음 행동"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WAgQ",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mU2A",
+            "number": 8,
+            "title": "[P2-CORE-002] 실제 모델로 니즈→기능 대조→잔여 불편→콘셉트 완주",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/8",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "unknownamed"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[P2-CORE-002] 실제 모델로 니즈→기능 대조→잔여 불편→콘셉트 완주",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "황대겸",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "R01, R09, R10, R11, R12, R15, R16, R26",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "P2-CORE-001",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdw8",
+                  "name": "의존 작업"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "In Progress",
+                "optionId": "47fc9ee4",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "미검증 — 작업기록/PR와 실제 실행 증빙 연결 필요",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P1",
+                "optionId": "598279e3",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Deferred",
+                "optionId": "bbbc9363",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Doing",
+                "optionId": "8a5e2344",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkVgkg",
+                  "name": "팀원 보고"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/8#issuecomment-5981333453\n@unknownamed · 2026-10-04T15:00:05Z\n현재 자기보고: Draft PR #54: CORE002 판단 흐름·fixture22/전체338 검사 제출. LLM 연결·실행·검증은 사용자 지정으로 PM 정이량이 Draft에서 인수하며 미실시.",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgkk",
+                  "name": "최근 보고"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "PM #51 검수/병합 후 Draft #54 LLM 연결·실행·검증 진행; 실제 의미/변경 조건 검증과 formal 의존·Done은 미완료.",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgko",
+                  "name": "다음 행동"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/8#issuecomment-5981903112\nPM-20261005-CORE-002-SEMANTIC-REVIEW · 실모델 결과의 제외 조건 검사·기획 타당성·수정 보류 구현",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVhHY",
+                  "name": "최근 배정"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "prepared · PM-20261005-CORE-002-SEMANTIC-REVIEW",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVhK0",
+                  "name": "메일 안내"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WAk0",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mVKQ",
+            "number": 9,
+            "title": "[P2-CORE-003] 인용·모델·중복·문서 지시문 검사와 최대 2회 수정",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/9",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "unknownamed"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[P2-CORE-003] 인용·모델·중복·문서 지시문 검사와 최대 2회 수정",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "황대겸",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "R18, R19, R20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "In Progress",
+                "optionId": "47fc9ee4",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "P2-CORE-002",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdw8",
+                  "name": "의존 작업"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "미검증 — 작업기록/PR와 실제 실행 증빙 연결 필요",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P1",
+                "optionId": "598279e3",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Deferred",
+                "optionId": "bbbc9363",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Doing",
+                "optionId": "8a5e2344",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkVgkg",
+                  "name": "팀원 보고"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/9#issuecomment-5981672942\n@unknownamed · 2026-10-04T15:37:06Z\n현재 자기보고: CORE003 Draft: scoped 도구/수정 세션·동시 회차 재전송·모델 권한 확장 차단, fixture28/전체344 통과. LLM 연결·실행·검증은 PM 인수.",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgkk",
+                  "name": "최근 보고"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "PM 실제 LLM/수정 스케줄러 연결·검증; 담당자는 이어 #10 변경 입력/명세 재검토를 독립 구현. CORE003 공식 의존·Done은 미완료.",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgko",
+                  "name": "다음 행동"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WAok",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mViA",
+            "number": 10,
+            "title": "[P2-CORE-004] 명세·조건 변경 영향 재검토 및 세 제품 실제 사례",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/10",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "unknownamed"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[P2-CORE-004] 명세·조건 변경 영향 재검토 및 세 제품 실제 사례",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "황대겸",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "In Progress",
+                "optionId": "47fc9ee4",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "R01, R22, R26",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "P2-CORE-003",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdw8",
+                  "name": "의존 작업"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "미검증 — 작업기록/PR와 실제 실행 증빙 연결 필요",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P1",
+                "optionId": "598279e3",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Deferred",
+                "optionId": "bbbc9363",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Doing",
+                "optionId": "8a5e2344",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkVgkg",
+                  "name": "팀원 보고"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/10#issuecomment-5981811641\n@unknownamed · 2026-10-04T15:54:06Z\n현재 자기보고: CORE004 변경 계획 코드·21개 검사/전체337 통과와 세 제품 합성 입력을 Draft 제출. LLM 연결/실제 실행·검증 및 CORE003 의존/공식 완료는 미완료이며 사용자 지정으로 PM 인수.",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgkk",
+                  "name": "최근 보고"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "PM은 Draft에서 #54/#55 모델 연결·세 제품 실제 변경 영향 및 Workspace 통합 검증. 담당자는 #11 독립 여섯 유형 평가 입력 준비를 계속한다.",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgko",
+                  "name": "다음 행동"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WAsg",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mV2Q",
+            "number": 11,
+            "title": "[P2-CORE-005] 여섯 유형 독립 평가와 의미 판단 회귀 검증",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/11",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "unknownamed"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[P2-CORE-005] 여섯 유형 독립 평가와 의미 판단 회귀 검증",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "황대겸",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "E01",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "P2-CORE-004",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdw8",
+                  "name": "의존 작업"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "미검증 — 작업기록/PR와 실제 실행 증빙 연결 필요",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "In Progress",
+                "optionId": "47fc9ee4",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P1",
+                "optionId": "598279e3",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Deferred",
+                "optionId": "bbbc9363",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Doing",
+                "optionId": "8a5e2344",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkVgkg",
+                  "name": "팀원 보고"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/11#issuecomment-5981945487\n@unknownamed · 2026-10-04T16:10:39Z\n현재 자기보고: CORE005 Draft #57 공유·PM LLM 인수 본문/제출 head CI4 성공 및 이전 ACCEPTED를 기록009/E009에 연결. 새6유형 입력·신규6/전체322 검사 완료. 실제 LLM·의미 검증/의존/공식 완료는 미완료.",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgkk",
+                  "name": "최근 보고"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "PM은 Draft #54/#55/#56/#57에서 LLM 연결·실제 실행/수정/변경 영향/독립 의미 검증·통합 및 검수/병합을 이어서 진행. 황대겸은 실제 코어 실패/검수 수정 요청에 대응하며 현재 사용자 직접 할 일은 없다.",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgko",
+                  "name": "다음 행동"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WAvE",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mWjA",
+            "number": 12,
+            "title": "[P2-DATA-001] 세 제품 자료팩·원문·모델·버전 계약 준비",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/12",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "ginaginaring"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[P2-DATA-001] 세 제품 자료팩·원문·모델·버전 계약 준비",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "신진하",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "R03, R04, R05, R06, R07, R08, R13",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "신진하 개발팀 합류·저장소 초대 수락 완료(10/4 사용자 확인·GitHub 실제 Write 조회). ginaginaring에게 자료 Epic #5·작업 #12~#16 담당자를 지정했다. 첫 작업 #12 자료팩·원문/제품/버전 계약부터 진행한다. Project Read/PM 단독 관리 유지.",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Todo",
+                "optionId": "f75ad846",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P0",
+                "optionId": "ab672556",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Ready",
+                "optionId": "f2501d08",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-06",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/12#issuecomment-5981905359\nPM-20261005-DATA-001-PLANNING-SCOPE · 실제 판단 입력에 연결할 세 제품 자료팩 부분 인수",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVhHY",
+                  "name": "최근 배정"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "prepared · PM-20261005-DATA-001-PLANNING-SCOPE",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVhK0",
+                  "name": "메일 안내"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WAzQ",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mXZQ",
+            "number": 13,
+            "title": "[P2-DATA-002] 문서 등록·파싱·조회·모델/버전 필터 구현",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/13",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "ginaginaring"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[P2-DATA-002] 문서 등록·파싱·조회·모델/버전 필터 구현",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "신진하",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "R03, R04, R05, R06, R10, R13",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "P2-DATA-001",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdw8",
+                  "name": "의존 작업"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Todo",
+                "optionId": "f75ad846",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "미검증 — 작업기록/PR와 실제 실행 증빙 연결 필요",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P1",
+                "optionId": "598279e3",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Deferred",
+                "optionId": "bbbc9363",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WA1g",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mYEQ",
+            "number": 14,
+            "title": "[P2-DATA-003] 공개 모델 검색·재정렬·OCR 실제 비교",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/14",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "ginaginaring"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[P2-DATA-003] 공개 모델 검색·재정렬·OCR 실제 비교",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "신진하",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "R03, R05, R13, E03",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Todo",
+                "optionId": "f75ad846",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "P2-DATA-002",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdw8",
+                  "name": "의존 작업"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "미검증 — 작업기록/PR와 실제 실행 증빙 연결 필요",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P1",
+                "optionId": "598279e3",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Deferred",
+                "optionId": "bbbc9363",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WA5s",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mYjw",
+            "number": 15,
+            "title": "[P2-DATA-004] 자료 충돌·명세 변경·근거 정답과 평가 자료 검수",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/15",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "ginaginaring"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[P2-DATA-004] 자료 충돌·명세 변경·근거 정답과 평가 자료 검수",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "신진하",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Todo",
+                "optionId": "f75ad846",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "R05, R06, R22, E01",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "P2-DATA-002",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdw8",
+                  "name": "의존 작업"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "미검증 — 작업기록/PR와 실제 실행 증빙 연결 필요",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P1",
+                "optionId": "598279e3",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Deferred",
+                "optionId": "bbbc9363",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WA80",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mY4A",
+            "number": 16,
+            "title": "[P2-DATA-005] 기술·경쟁 탐색 확장 타당성 실험",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/16",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "ginaginaring"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[P2-DATA-005] 기술·경쟁 탐색 확장 타당성 실험",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "신진하",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Todo",
+                "optionId": "f75ad846",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "R12, R15",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "P2-DATA-003",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdw8",
+                  "name": "의존 작업"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "미검증 — 작업기록/PR와 실제 실행 증빙 연결 필요",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P1",
+                "optionId": "598279e3",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Deferred",
+                "optionId": "bbbc9363",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WA_E",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mZTQ",
+            "number": 17,
+            "title": "[P2-PM-001] 공통 계약·PM 운영·Projects·개발 환경 고정",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/17",
+            "state": "CLOSED",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "jeongiryang"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldPullRequestValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[P2-PM-001] 공통 계약·PM 운영·Projects·개발 환경 고정",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Done",
+                "optionId": "98236657",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "정이량",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "R17, R23, R24, R28",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "individual_evidence: harness/phase2/runs/pm-bootstrap-20261004/individual.json\npm_review: harness/phase2/runs/pm-bootstrap-20261004/review.json\nintegration: harness/phase2/runs/post-merge-ea4389a1d9d8/P2-PM-001-integration.json\ncompletion: harness/phase2/runs/post-merge-ea4389a1d9d8/P2-PM-001-complete.json\nhttps://github.com/jeongiryang/lg-ax-2026/pull/29",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P0",
+                "optionId": "ab672556",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Done",
+                "optionId": "8f30a46b",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-06",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WBDg",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mZ6A",
+            "number": 18,
+            "title": "[P2-PM-002] 연구실 서버·ChatGPT·Claude 실제 연결 검증",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/18",
+            "state": "CLOSED",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "jeongiryang"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldPullRequestValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[P2-PM-002] 연구실 서버·ChatGPT·Claude 실제 연결 검증",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "정이량",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "R24",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Done",
+                "optionId": "98236657",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "individual_evidence: harness/phase2/runs/pm-connections-20261004/individual.json\npm_review: harness/phase2/runs/pm-connections-20261004/review.json\nintegration: harness/phase2/runs/post-merge-ea4389a1d9d8/P2-PM-002-integration.json\ncompletion: harness/phase2/runs/post-merge-ea4389a1d9d8/P2-PM-002-complete.json\nhttps://github.com/jeongiryang/lg-ax-2026/pull/29",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P0",
+                "optionId": "ab672556",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Done",
+                "optionId": "8f30a46b",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-06",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WBFg",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0maYw",
+            "number": 19,
+            "title": "[P2-PM-003] MCP·웹 동일 프로젝트·자료·실행 이력 연결",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/19",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "jeongiryang"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[P2-PM-003] MCP·웹 동일 프로젝트·자료·실행 이력 연결",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "정이량",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "R17, R24",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "In Progress",
+                "optionId": "47fc9ee4",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "P2-PM-001",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdw8",
+                  "name": "의존 작업"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "선행 checkpoint PR #31 main 병합/실제 CI/실서비스 검증. 전체 과제는 의존 대기.\nhttps://github.com/jeongiryang/lg-ax-2026/blob/main/evals/pm-workspace/20261004/delivery/checks.json",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P1",
+                "optionId": "598279e3",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Blocked",
+                "optionId": "9068b3f7",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Blocked",
+                "optionId": "421f298b",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkVgkg",
+                  "name": "팀원 보고"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/19#issuecomment-5980853848\n@jeongiryang · 2026-10-04T14:06:09Z\n현재 자기보고: 조직 Team 비공개 이전·PM main 보호·새 주소의 보고 서비스 재배포 확인; PR49 CI·병합 후 sync 진행, 실제 판단 통합 대기",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgkk",
+                  "name": "최근 보고"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "PR49 검사 통과 후 보호를 유지해 병합·승인 sync; CORE/DATA 결과를 인수해 실제 판단 통합",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgko",
+                  "name": "다음 행동"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WBJI",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mbBQ",
+            "number": 20,
+            "title": "[P2-PM-004] 다섯 Skill·실행 README·재실행 경로 구성",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/20",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "jeongiryang"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[P2-PM-004] 다섯 Skill·실행 README·재실행 경로 구성",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "정이량",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "R23, R28",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "In Progress",
+                "optionId": "47fc9ee4",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "P2-PM-001",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdw8",
+                  "name": "의존 작업"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "선행 checkpoint PR #31 main 병합/실제 CI/실서비스 검증. 전체 과제는 의존 대기.\nhttps://github.com/jeongiryang/lg-ax-2026/blob/main/evals/pm-workspace/20261004/delivery/checks.json",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P1",
+                "optionId": "598279e3",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Blocked",
+                "optionId": "9068b3f7",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Blocked",
+                "optionId": "421f298b",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkVgkg",
+                  "name": "팀원 보고"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "https://github.com/jeongiryang/lg-ax-2026/issues/20#issuecomment-5979917221\n@jeongiryang · 2026-10-04T12:28:03Z\n현재 자기보고: 5Skill 문서·CLI·근거조회 재실행 준비 완료; 4판단 Skill의 실제 모델 반복 실행은 코어 인수 대기",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgkk",
+                  "name": "최근 보고"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "CORE CHECKPOINT 계약을 먼저 검수해 handler 연결·보류/최대2회수정·실모델 원시출력을 반복 검증",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgko",
+                  "name": "다음 행동"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WBN8",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mboQ",
+            "number": 21,
+            "title": "[P2-PM-005] 독립 평가·강한 기준선·가린 검토·측정 실행",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/21",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "jeongiryang"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[P2-PM-005] 독립 평가·강한 기준선·가린 검토·측정 실행",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "정이량",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "E02, E03",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "In Progress",
+                "optionId": "47fc9ee4",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "P2-PM-003",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdw8",
+                  "name": "의존 작업"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "동일 조건 평가 수집·가린 A/B 검토·PM 별도키 도구와 강한 단일프롬프트 초안을 준비했다. 실제 CLI fixture_only/null·0·실패·덮어쓰기 거부 확인. 실제 Agent/기준선 실행·독립 검토 점수/실측은 미완료이며 PM005 전체 완료로 올리지 않는다. docs/pm/evaluation.md · evals/pm-preparation/20261004/evaluation-cli.json PR#34",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P1",
+                "optionId": "598279e3",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Deferred",
+                "optionId": "bbbc9363",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Blocked",
+                "optionId": "421f298b",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkVgkg",
+                  "name": "팀원 보고"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/21#issuecomment-5981091623\n@jeongiryang · 2026-10-04T14:32:47Z\n현재 자기보고: 외부 정수기 구독 레포 심층 비교와 출처/독립 정적 검수를 PR52로 공유. 실제 Agent 비교는 코어/자료 인수 대기.",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgkk",
+                  "name": "최근 보고"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "핵심 코어/자료 첫 인수물을 받아 웹/MCP/Skill 완주 후 동일 입력 일반 LLM 비교·효과 측정.",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgko",
+                  "name": "다음 행동"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WBRg",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mcIw",
+            "number": 22,
+            "title": "[P2-PM-006] 발표·영상·코드 ZIP·깨끗한 환경 재현",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/22",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "jeongiryang"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[P2-PM-006] 발표·영상·코드 ZIP·깨끗한 환경 재현",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "정이량",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "In Progress",
+                "optionId": "47fc9ee4",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "R28",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "P2-PM-004, P2-PM-005",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdw8",
+                  "name": "의존 작업"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "고정commit124dbf0의505파일 draft ZIP을 두 번 생성해 byte동일/원Git 전체 파일 검증 후 깨끗한 새 환경에서 Python설치·계약/Skill21·MCP·웹17/빌드8명령을 재현했다. draft=true/submission_ready=false. 실제 판단/영상/발표/최종 제출 미완료. docs/pm/submission.md · evals/pm-preparation/20261004/draft-replay/checks.json PR#34",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P1",
+                "optionId": "598279e3",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Deferred",
+                "optionId": "bbbc9363",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Blocked",
+                "optionId": "421f298b",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkVgkg",
+                  "name": "팀원 보고"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "https://github.com/jeongiryang/lg-ax-2026/issues/22#issuecomment-5979922408\n@jeongiryang · 2026-10-04T12:28:42Z\n현재 자기보고: 발표/3제품 시연 구성·재현Skill·준비용ZIP 도구는 완료; 실제 완성코드/평가/촬영·최종ZIP은 대기",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgkk",
+                  "name": "최근 보고"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "코어/자료/웹을 실제통합·평가한 버전에서 발표·시연영상·최종소스ZIP을 만들고 깨끗한환경 재현·공식제출 증거를 확인",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgko",
+                  "name": "다음 행동"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WBU4",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mclg",
+            "number": 23,
+            "title": "[P2-WEB-001] 웹 네 영역과 계약 fixture 독립 구현",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/23",
+            "state": "CLOSED",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "choigilung"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[P2-WEB-001] 웹 네 영역과 계약 fixture 독립 구현",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "최길웅",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Done",
+                "optionId": "98236657",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "R02, R14, R21, R25, R27",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "individual_evidence: evals/web/20261004/p2-web-001/individual-evidence.json\npm_review: evals/pm-web-review/20261004/web001-review.json\nintegration: evals/pm-web-review/20261004/merged/web-001-integration.json\ncompletion: evals/pm-web-review/20261004/merged/web-001-completion.json\nhttps://github.com/jeongiryang/lg-ax-2026/pull/42",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P0",
+                "optionId": "ab672556",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Done",
+                "optionId": "8f30a46b",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-06",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "https://github.com/jeongiryang/lg-ax-2026/issues/23#issuecomment-5978584297\nPM-20261004-WEB-001-START · 기획자가 요청·근거 대조·후보 비교·수정 이력을 한 흐름으로 검토하는 웹 작업실을 준비한다.",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVhHY",
+                  "name": "최근 배정"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "sent · PM-20261004-WEB-001-START",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVhK0",
+                  "name": "메일 안내"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WBYM",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mc-A",
+            "number": 24,
+            "title": "[P2-WEB-002] 실제 제품·근거 API 연결·오류·필터·원문 검토",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/24",
+            "state": "CLOSED",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "choigilung"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[P2-WEB-002] 실제 제품·근거 API 연결·오류·필터·원문 검토",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "최길웅",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Done",
+                "optionId": "98236657",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "R02, R14, R21, R25",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "P2-WEB-001",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdw8",
+                  "name": "의존 작업"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "individual_evidence: evals/web/20261004/p2-web-002-r2/individual-evidence.json\npm_review: evals/pm-web-review/20261004/merged/web-002-review.json\nintegration: evals/pm-web-review/20261004/merged/web-002-integration.json\ncompletion: evals/pm-web-review/20261004/merged/web-002-completion.json\nhttps://github.com/jeongiryang/lg-ax-2026/pull/42",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P1",
+                "optionId": "598279e3",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Done",
+                "optionId": "8f30a46b",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WBdI",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mdZg",
+            "number": 25,
+            "title": "[P2-WEB-003] 후보 비교·조건 교정·변경 전후·수정 이력",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "choigilung"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[P2-WEB-003] 후보 비교·조건 교정·변경 전후·수정 이력",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "최길웅",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "R14, R21, R25",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "In Progress",
+                "optionId": "47fc9ee4",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "P2-WEB-002",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdw8",
+                  "name": "의존 작업"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "individual_evidence: evals/web/20261004/p2-web-003/individual-evidence.json\npm_review: evals/pm-web-review/20261004/web003-partial-review.json",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P1",
+                "optionId": "598279e3",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Doing",
+                "optionId": "0177895d",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25#issuecomment-5981904242\nPM-20261005-WEB-003-LIVE-RESULTS · 실제 저장된 판단·근거·검사 결과를 웹 화면에 연결",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVhHY",
+                  "name": "최근 배정"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "prepared · PM-20261005-WEB-003-LIVE-RESULTS",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVhK0",
+                  "name": "메일 안내"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Doing",
+                "optionId": "8a5e2344",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkVgkg",
+                  "name": "팀원 보고"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25#issuecomment-5981703522\n@choigilung · 2026-10-04T15:40:55Z\n현재 자기보고: 011: CORE-001 판단 계약 웹 어댑터·12사례 회귀",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgkk",
+                  "name": "최근 보고"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "PR #53 PM 검수 대응, Workspace 결과 형태가 정해지면 판단 패널을 화면에 연결",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkVgko",
+                  "name": "다음 행동"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WBgk",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0mdxw",
+            "number": 26,
+            "title": "[P2-WEB-004] 회의용 JSON/문서 내보내기·웹 E2E·수정 시간 측정",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/26",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "choigilung"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[P2-WEB-004] 회의용 JSON/문서 내보내기·웹 E2E·수정 시간 측정",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "최길웅",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Todo",
+                "optionId": "f75ad846",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "R27, E03",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "P2-WEB-003",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdw8",
+                  "name": "의존 작업"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "미검증 — 작업기록/PR와 실제 실행 증빙 연결 필요",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P1",
+                "optionId": "598279e3",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Deferred",
+                "optionId": "bbbc9363",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        },
+        {
+          "id": "PVTI_lAHODCN5Rc4BlmPNzg-WBjA",
+          "isArchived": false,
+          "type": "ISSUE",
+          "content": {
+            "id": "I_kwDOUtEZms8AAAABU0meVw",
+            "number": 27,
+            "title": "[P2-WEB-005] 형태·사용성 시각 기획 확장 타당성 실험",
+            "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/27",
+            "state": "OPEN",
+            "assignees": {
+              "nodes": [
+                {
+                  "login": "choigilung"
+                }
+              ]
+            },
+            "parent": null,
+            "subIssues": {
+              "nodes": []
+            }
+          },
+          "fieldValues": {
+            "nodes": [
+              {
+                "__typename": "ProjectV2ItemFieldUserValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldRepositoryValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldLabelValue"
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "[P2-WEB-005] 형태·사용성 시각 기획 확장 타당성 실험",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdtU",
+                  "name": "Title"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "최길웅",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdv8",
+                  "name": "담당자"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "R15, R21",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdwA",
+                  "name": "요구사항"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Todo",
+                "optionId": "f75ad846",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdtc",
+                  "name": "Status"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "P2-WEB-003",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdw8",
+                  "name": "의존 작업"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldTextValue",
+                "text": "미검증 — 작업기록/PR와 실제 실행 증빙 연결 필요",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdxA",
+                  "name": "실행 증빙"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "P1",
+                "optionId": "598279e3",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyA",
+                  "name": "우선순위"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                "name": "Deferred",
+                "optionId": "bbbc9363",
+                "field": {
+                  "id": "PVTSSF_lAHODCN5Rc4BlmPNzhkSdyE",
+                  "name": "진행상태"
+                }
+              },
+              {
+                "__typename": "ProjectV2ItemFieldDateValue",
+                "date": "2026-10-20",
+                "field": {
+                  "id": "PVTF_lAHODCN5Rc4BlmPNzhkSdx8",
+                  "name": "목표일"
+                }
+              }
+            ],
+            "pageInfo": {
+              "hasNextPage": false
+            }
+          }
+        }
+      ],
+      "pageInfo": {
+        "hasNextPage": false
+      }
+    }
+  }
+}

@@ -29,7 +29,7 @@
 
 ## 2026-10-04 확정 개발 구조·역할·하네스
 
-- 사용자가 승인한 단일 비공개 저장소는 `jeongiryang/lg-ax-2026`이다. [고정 운영 Issue #28](https://github.com/jeongiryang/lg-ax-2026/issues/28), [LG AX 2026 · 2차 개발 Project](https://github.com/users/jeongiryang/projects/3)를 사용한다. 첫 개발 작업은 정이량 #17/#18, 황대겸 #7, 신진하 #12, 최길웅 #23이다. 담당 Epic·후속 작업·요구사항 링크는 `harness/phase2/github.json`과 각 작업 패킷에 있다. 정이량·황대겸·최길웅에 이어 신진하의 초대 수락·저장소 Write도 확인했다. 네 담당 권한과 Issue 배정은 직접 조회해 유지한다.
+- 사용자가 승인한 단일 비공개 저장소는 현재 `2026-LG-kitchen-chicken-team/lg-ax-2026`이다. [고정 운영 Issue #28](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28), [LG AX 2026 · 2차 개발 Project](https://github.com/orgs/2026-LG-kitchen-chicken-team/projects/1)를 사용한다. 10/4 최초 개발 배정은 정이량 #17/#18, 황대겸 #7, 신진하 #12, 최길웅 #23이었으며 현재 배정은 최신 docs/pm/현재배정.md를 따른다. 담당 Epic·후속 작업·요구사항 링크는 `harness/phase2/github.json`과 각 작업 패킷에 있다. 네 담당자의 저장소 Write와 Issue 배정은 직접 조회해 유지한다. 이전 개인 저장소 주소와 Project3는 역사 기록이다.
 - 정이량(`jeongiryang`): PM, 공통 JSON Schema·API/MCP·연구실 연결·하네스/CI·전체 통합·검수·병합·평가·제출을 맡는다. 황대겸(`unknownamed`): 최고 난도인 불편/기존 기능 대조, 잔여 불편, 콘셉트/요구사항, 중복·근거 검사와 수정·보류 판단을 맡는다. 신진하(`ginaginaring`): 문서 처리/OCR, 제품·모델·버전 자료팩, 검색/재정렬, 근거 연결, 공개 모델·기술 비교를 맡는다. 최길웅(`choigilung`): 웹 요청·자료/근거 대조·후보 비교·조건 수정/이력·내보내기와 사용자 흐름 검증을 맡는다. 공식 팀장은 황대겸이며 개발 PM과 구분한다. 이전 역할·레포 미정 문장은 당시 기록이다.
 - 웹은 React·TypeScript·Vite와 npm, 코어/API/MCP는 Python 3.11과 uv이다. `apps/web`, `apps/api`, `apps/mcp`, `packages/core`, `packages/contracts`, `services/inference`, `skills`, `evals`를 구분하며 웹과 MCP는 같은 코어를 호출한다. `packages/contracts/schemas/lgax.schema.json`이 계약 원본이다. Python jsonschema와 웹 Ajv 2020은 같은 원본을 검사한다. 잠금 파일 `uv.lock`, `apps/web/package-lock.json`을 사용한다.
 - 제품·문서·근거·불편·기능·콘셉트·실행 기록의 ID, 제품 모델·문서 버전·원문 위치·실자료/합성 구분을 유지한다. 잘못된 입력·자료 부족·모델 불일치·상충 근거·연결 실패·미구현을 구분한다. 미구현은 명시적인 오류이며 고정 성공 응답으로 대체하지 않는다. 계약 변경은 PM Issue/PR에서 영향·소비자·마이그레이션을 먼저 검토한다. 담당 경계가 겹치면 PM이 편집 범위를 조정한다.
@@ -41,6 +41,13 @@
 - MCP는 Streamable HTTP와 로컬 stdio를 제공한다. 초기 공개 endpoint는 합성자료 읽기 도구만 노출하며 서버 제어·개인 자료·비용 발생 모델 실행을 공개하지 않는다. Tailscale 기존 경로는 보존하고 LG 경로만 추가/복구한다. 정확한 host/origin 허용목록을 사용하고 DNS rebinding 검사를 끄지 않는다. SDK/로컬 테스트와 ChatGPT·Claude 계정 안의 실제 발견/호출을 구분한다. 계정 권한·접속에 막히면 해당 외부 연결 gate는 미완료로 유지한다.
 - 설치/실행/검사 명령은 `docs/bootstrap/README.md`를 따른다. 핵심 종료 검사: `uv run python scripts/sync_agent_rules.py --check`, `uv run python scripts/check_contracts.py`, `uv run python scripts/phase2.py validate`, `uv run python -m unittest discover -s tests -v`, MCP stdio/HTTP smoke, 웹 `npm ci`, test/build. CI 실제 통과와 로컬 성공을 구분한다. GPU 실모델 검사는 별도 실행 증빙으로 관리한다. Windows 실행 정책을 낮추지 않고 Python 모듈/공식 WASM 등 정상 지원 경로를 사용한다.
 - 2차 개발 시작과 참가작 완성은 별도 상태다. 컨설팅 일정 10/6 오전 확인, 10/20 발표자료·영상·전체 코드 ZIP(README·재실행 Skill의 SKILL.md 포함) 준비를 관리한다. 공식 배점 20/20/10/30/20·기존 분량 규정은 `docs/2차제출_평가안내_2026-10-03.md`를 따르며 제출 시각/경로/용량/영상 길이/가산점은 후속 확인한다.
+
+
+## 2026-10-05 조직 Project 운영 (현재 기준)
+
+- 운영 보드는 [LG AX 2026 · 2차 개발](https://github.com/orgs/2026-LG-kitchen-chicken-team/projects/1), 비공개 조직 저장소는 `2026-LG-kitchen-chicken-team/lg-ax-2026`이다. 저장소 Projects 탭에서도 같은 보드를 연다. 이전 개인 Project3 링크는 당시 기록이며 새 작업에 사용하지 않는다. 기존 Issue/PR·개인 의도/근거 기록은 보존하고 새 항목/필드 ID는 `evals/project-migration/20261005/id-map.json`으로 대응한다.
+- Project 소유자 `2026-LG-kitchen-chicken-team`과 PM 인증자 `jeongiryang`을 구분한다. 팀원 Read·저장소 Write·인증된 자기 이슈 보고 흐름과 PM 승인/배정/메일 책임은 유지한다. 활성 연결은 `harness/phase2/github.json`·`project-reports.policy.json` 및 PM의 고정 서버 배포를 사용한다. main만 변경하고 서버/공식 스냅샷을 갱신하지 않은 상태를 운영 완료로 판단하지 않는다.
+- 이관 대조 범위는 26이슈·25필드/옵션·26목표일·보기/워크플로·최근 보고/배정/메일/실행 근거·담당/PR/상하 이슈 관계다. 과거 댓글/메일/실행 증거의 이전 URL은 원문을 바꾸지 않고 이관 문서로 연결한다. 팀원 AI는 최신 main의 지침/설정을 읽고 기존 status/report 명령을 그대로 사용한다.
 
 ## GitHub 계정과 실제 이름·담당자 확인
 
@@ -111,6 +118,6 @@
 ## 2026-10-04 조직 Team 이전 후 현재 주소
 
 - 사용자 승인으로 Team 월간 4석 가입·결제 후 기존 LG 저장소를 `2026-LG-kitchen-chicken-team/lg-ax-2026`으로 이전했다. 비공개와 repo ID 1389435290·Git 이력·Issue/PR·기존 네 명 권한을 보존한다. 앞의 개인 소유 주소는 당시 기록이다.
-- 현재 운영 Issue는 https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28 이다. Project는 기존 https://github.com/users/jeongiryang/projects/3 을 유지한다. 개인 clone의 origin을 새 주소로 갱신한다.
+- 현재 운영 Issue는 https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28 이다. 2026-10-05 사용자 지시로 Project는 조직 소유 https://github.com/orgs/2026-LG-kitchen-chicken-team/projects/1 로 이관했다. 개인 Project3는 역사 보드로 보존한다. 개인 clone의 origin을 새 주소로 갱신한다.
 - main은 PR·필수 CI(python-and-harness, web)·PM만 push/병합·강제 push 및 삭제 금지로 보호한다. 2026-10-05 사용자가 직접 추가한 protect-main 규칙의 3명 승인·선형 이력은 유지한다. 같은 날 사용자가 PM 정이량의 관리자 bypass 병합을 명시적으로 승인했다. PM은 고정 head의 검수·필수 CI 성공을 먼저 확인한 뒤 PR 경로에서 squash와 관리자 bypass로 병합할 수 있다. 팀원에게 bypass를 부여하거나 보호 규칙을 낮추지 않는다. 이전의 승인 수0·관리자 우회 금지는 10/4 운영 기록이며 최신 사용자 지시로 이 문장에 대체됐다.
 - 보고 서비스는 새 canonical repo만 호출한다. 이전 주소로 작성한 고정 인수 수신증은 원본/해시를 보존하며 하네스의 명시적인 역사 주소 허용목록에서 검증한다. 임의 저장소나 다른 소유자를 허용하지 않는다.
