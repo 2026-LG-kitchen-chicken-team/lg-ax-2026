@@ -1,0 +1,44 @@
+{
+  "observed_at": "2026-10-04T18:54:43Z",
+  "mode": "read_only_api_and_private_durable_state_reconciliation",
+  "source_seen_count": 30,
+  "current_seen_count": 52,
+  "source_latest_count": 10,
+  "current_latest_count": 10,
+  "commands_after_acceptance_floor": 52,
+  "unprocessed_commands": [],
+  "lost_pre_cutover_seen_ids": [],
+  "altered_pre_cutover_outcomes": [],
+  "missing_receipts": [],
+  "latest_board_mismatches": [],
+  "health_at": "2026-10-04T18:54:26Z",
+  "trusted_main_commit": "a03699d234b0dfc1cddbf67552bb62f82b0085bc",
+  "published_main_commit": "a03699d234b0dfc1cddbf67552bb62f82b0085bc",
+  "unapproved_state_changes": [],
+  "accepted": 49,
+  "rejected": 3,
+  "rejected_records": [
+    {
+      "comment_id": 5978575141,
+      "issue_number": 21,
+      "reason": "self-report allows only doing, blocked, review_requested; Done is PM-only",
+      "receipt_url": "https://github.com/jeongiryang/lg-ax-2026/issues/21#issuecomment-5978576325"
+    },
+    {
+      "comment_id": 5978575235,
+      "issue_number": 7,
+      "reason": "only the registered task owner may report this task",
+      "receipt_url": "https://github.com/jeongiryang/lg-ax-2026/issues/7#issuecomment-5978576459"
+    },
+    {
+      "comment_id": 5982640992,
+      "issue_number": 25,
+      "reason": "use exactly /lgax-report and one fenced JSON object",
+      "receipt_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25#issuecomment-5982641155"
+    }
+  ],
+  "limits": [
+    "Audits persisted GitHub reports, not unpushed personal work or messages never sent.",
+    "Rejected commands retain their outcomes; they are not lost accepted reports."
+  ]
+}
