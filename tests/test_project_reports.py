@@ -43,6 +43,7 @@ class FixtureAPI:
         self.board = None
         self.fail_mutation = None
         self.fail_contents = False
+        self.text_byte_limit = None
 
     def api(self, path, data=None, method=None):
         self.calls.append((path, data, method))
@@ -75,6 +76,9 @@ class FixtureAPI:
 
     def graphql(self, query, variables):
         self.mutations.append(copy.deepcopy(variables))
+        text_value = variables.get("value", {}).get("text")
+        if self.text_byte_limit is not None and text_value is not None and len(text_value.encode("utf-8")) > self.text_byte_limit:
+            raise RuntimeError("Column value must be a valid value for text column")
         if self.fail_mutation == len(self.mutations):
             raise RuntimeError("fixture project transport failure")
         if self.board:
@@ -319,6 +323,42 @@ class ProjectReportTests(unittest.TestCase):
         self.assertEqual(board["items"][7]["values"]["실행 증빙"], "PM-owned evidence")
         self.assertEqual(common.update_fields(self.api, self.policy, board, board["items"][7], values), [])
         self.assertEqual(len(self.api.mutations), 4)
+
+    def test_long_korean_report_projects_and_receipts_without_losing_source(self):
+        self.api.board = self.board()
+        self.api.text_byte_limit = 1024
+        self.report.update(summary="고객 불편·기능 대조 근거 검증 " * 55,
+                           next_action="원문 인용과 모델 버전의 실측 근거를 확인하고 후속 검증을 진행 " * 35)
+        original = copy.deepcopy(self.report)
+        comment = self.comment()
+        self.api.comments = [comment]
+        with tempfile.TemporaryDirectory() as directory:
+            first = self.tick(directory)
+            self.assertEqual(first["accepted"], 1)
+            self.assertEqual(first["rejected"], 0)
+            self.assertEqual(len(self.api.posts), 1)
+            stored = json.loads((Path(directory) / "state.json").read_text(encoding="utf-8"))
+            self.assertEqual(stored["latest"][TASK]["report"], original)
+            self.assertEqual(stored["seen"][str(comment["id"])]["body_sha256"], common.digest(comment["body"]))
+            values = self.api.board["items"][7]["values"]
+            self.assertTrue(values["최근 보고"].startswith(comment["html_url"]))
+            for name in ("최근 보고", "다음 행동"):
+                self.assertLessEqual(len(values[name].encode("utf-8")), 1024)
+                self.assertIn("전체 내용은 원 보고", values[name])
+            self.assertEqual(self.tasks[TASK]["status"], "ready")
+            mutation_count = len(self.api.mutations)
+            self.assertEqual(self.tick(directory)["mutations"], [])
+            self.assertEqual(len(self.api.mutations), mutation_count)
+            self.assertEqual(len(self.api.posts), 1)
+
+    def test_display_byte_budget_handles_emoji_and_short_text_unchanged(self):
+        self.assertEqual(common.board_text("짧은 한국어 보고"), "짧은 한국어 보고")
+        original = "실제 원문 " + "🍗" * 600
+        bounded = common.board_text(original)
+        self.assertLessEqual(len(bounded.encode("utf-8")), 1024)
+        self.assertTrue(bounded.startswith("실제 원문 "))
+        self.assertIn("전체 내용은 원 보고", bounded)
+        self.assertEqual(original, "실제 원문 " + "🍗" * 600)
 
     def test_forbidden_field_rejected_before_any_mutation(self):
         for field in ("진행상태", "실행 증빙", "담당자", "우선순위", "목표일"):

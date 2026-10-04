@@ -1,0 +1,399 @@
+{
+  "observed_at": "2026-10-04T20:58:16.658150+00:00",
+  "scope": "OFF bootstrap delivery, fixed-head partial PR intake and report service recovery; participant completion is separate",
+  "merged_bootstrap": {
+    "mergeCommit": {
+      "oid": "c6c1382faab29ffe06ee5d24c5ff0a196d5c1531"
+    },
+    "mergedAt": "2026-10-04T20:46:37Z",
+    "mergedBy": {
+      "id": "U_kgDODCN5RQ",
+      "is_bot": false,
+      "login": "jeongiryang",
+      "name": "정이량"
+    },
+    "number": 75,
+    "state": "MERGED",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-04T20:44:42Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/actions/runs/37233224201/job/111527113827",
+        "name": "python-and-harness",
+        "startedAt": "2026-10-04T20:43:59Z",
+        "status": "COMPLETED",
+        "workflowName": "Development and evidence checks"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-04T20:44:38Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/actions/runs/37233220272/job/111527102339",
+        "name": "python-and-harness",
+        "startedAt": "2026-10-04T20:43:54Z",
+        "status": "COMPLETED",
+        "workflowName": "Development and evidence checks"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-04T20:45:20Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/actions/runs/37233224201/job/111527113997",
+        "name": "web",
+        "startedAt": "2026-10-04T20:43:57Z",
+        "status": "COMPLETED",
+        "workflowName": "Development and evidence checks"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-04T20:45:07Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/actions/runs/37233220272/job/111527102223",
+        "name": "web",
+        "startedAt": "2026-10-04T20:43:54Z",
+        "status": "COMPLETED",
+        "workflowName": "Development and evidence checks"
+      }
+    ],
+    "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/75"
+  },
+  "merged_tree_equals_tested_head": "git diff --exit-code 7390fbff177a38f8d8b4133814ac70960c730886 c6c1382faab29ffe06ee5d24c5ff0a196d5c1531 exited 0",
+  "post_merge_main_ci": {
+    "conclusion": "success",
+    "headSha": "c6c1382faab29ffe06ee5d24c5ff0a196d5c1531",
+    "jobs": [
+      {
+        "completedAt": "2026-10-04T20:47:23Z",
+        "conclusion": "success",
+        "databaseId": 111527627659,
+        "name": "python-and-harness",
+        "startedAt": "2026-10-04T20:46:41Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-04T20:46:44Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-04T20:46:42Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:46:46Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-04T20:46:44Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:46:46Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-python@v5",
+            "number": 3,
+            "startedAt": "2026-10-04T20:46:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:46:49Z",
+            "conclusion": "success",
+            "name": "Run astral-sh/setup-uv@v6",
+            "number": 4,
+            "startedAt": "2026-10-04T20:46:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:46:50Z",
+            "conclusion": "success",
+            "name": "Run uv sync --locked --dev",
+            "number": 5,
+            "startedAt": "2026-10-04T20:46:49Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:46:51Z",
+            "conclusion": "success",
+            "name": "Shared instructions and project records",
+            "number": 6,
+            "startedAt": "2026-10-04T20:46:50Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:47:19Z",
+            "conclusion": "success",
+            "name": "Regression, phase2 integrity and contract tests",
+            "number": 7,
+            "startedAt": "2026-10-04T20:46:51Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:47:20Z",
+            "conclusion": "success",
+            "name": "Actual local MCP transport smoke (no live-model claim)",
+            "number": 8,
+            "startedAt": "2026-10-04T20:47:19Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:47:20Z",
+            "conclusion": "success",
+            "name": "Preserve historical deterministic experiments",
+            "number": 9,
+            "startedAt": "2026-10-04T20:47:20Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:47:20Z",
+            "conclusion": "success",
+            "name": "Post Run astral-sh/setup-uv@v6",
+            "number": 16,
+            "startedAt": "2026-10-04T20:47:20Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:47:21Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-python@v5",
+            "number": 17,
+            "startedAt": "2026-10-04T20:47:20Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:47:21Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 18,
+            "startedAt": "2026-10-04T20:47:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:47:21Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 19,
+            "startedAt": "2026-10-04T20:47:21Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/actions/runs/37233400189/job/111527627659"
+      },
+      {
+        "completedAt": "2026-10-04T20:48:40Z",
+        "conclusion": "success",
+        "databaseId": 111527627879,
+        "name": "web",
+        "startedAt": "2026-10-04T20:47:18Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-04T20:47:20Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-04T20:47:19Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:47:22Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-04T20:47:20Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:47:23Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-node@v4",
+            "number": 3,
+            "startedAt": "2026-10-04T20:47:22Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:47:26Z",
+            "conclusion": "success",
+            "name": "Run npm ci --prefix apps/web",
+            "number": 4,
+            "startedAt": "2026-10-04T20:47:23Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:47:45Z",
+            "conclusion": "success",
+            "name": "Run npm run test --prefix apps/web",
+            "number": 5,
+            "startedAt": "2026-10-04T20:47:26Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:47:59Z",
+            "conclusion": "success",
+            "name": "Run npm run build --prefix apps/web",
+            "number": 6,
+            "startedAt": "2026-10-04T20:47:45Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:47:59Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-python@v5",
+            "number": 7,
+            "startedAt": "2026-10-04T20:47:59Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:48:02Z",
+            "conclusion": "success",
+            "name": "Run astral-sh/setup-uv@v6",
+            "number": 8,
+            "startedAt": "2026-10-04T20:47:59Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:48:03Z",
+            "conclusion": "success",
+            "name": "Run uv sync --locked --dev",
+            "number": 9,
+            "startedAt": "2026-10-04T20:48:02Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:48:25Z",
+            "conclusion": "success",
+            "name": "Install official Chromium for browser regression",
+            "number": 10,
+            "startedAt": "2026-10-04T20:48:03Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:48:36Z",
+            "conclusion": "success",
+            "name": "Two fixture and one isolated real API browser cases (no skipped cases)",
+            "number": 11,
+            "startedAt": "2026-10-04T20:48:25Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:48:37Z",
+            "conclusion": "success",
+            "name": "Preserve only the sanitized browser summary",
+            "number": 12,
+            "startedAt": "2026-10-04T20:48:36Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:48:37Z",
+            "conclusion": "success",
+            "name": "Post Run astral-sh/setup-uv@v6",
+            "number": 21,
+            "startedAt": "2026-10-04T20:48:37Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:48:37Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-python@v5",
+            "number": 22,
+            "startedAt": "2026-10-04T20:48:37Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:48:37Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-node@v4",
+            "number": 23,
+            "startedAt": "2026-10-04T20:48:37Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:48:38Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 24,
+            "startedAt": "2026-10-04T20:48:37Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-04T20:48:38Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 25,
+            "startedAt": "2026-10-04T20:48:38Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/actions/runs/37233400189/job/111527627879"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/actions/runs/37233400189"
+  },
+  "live_control": {
+    "global_mode": "off",
+    "members": {
+      "jeongiryang": false,
+      "unknownamed": false,
+      "ginaginaring": false,
+      "choigilung": false
+    },
+    "jobs": 0,
+    "observed_at": 1791147494.1533558
+  },
+  "live_project": {
+    "url": "https://github.com/orgs/2026-LG-kitchen-chicken-team/projects/1",
+    "observed_at": "2026-10-04T20:58:16Z",
+    "published_main_commit": "c6c1382faab29ffe06ee5d24c5ff0a196d5c1531",
+    "formal_mismatches": 0,
+    "formal_done": 5
+  },
+  "report_recovery": {
+    "proof": "evals/automation/20261005/reports-recovery.json",
+    "acks_proof": "evals/automation/20261005/reports-recovery-acks.json",
+    "seen": 63,
+    "accepted": 59,
+    "rejected_preserved": 4,
+    "pending_receipts": 0,
+    "pm_own_report": {
+      "source_comment_id": 5984267266,
+      "in_state": true,
+      "outcome": "accepted",
+      "receipt_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/19#issuecomment-5984288957",
+      "source_body_sha256": "8952e93b570bcdcde16b1bee9bb79e4428afb09f13b4928f0f8bff6d4df06b17",
+      "original_source_hash_preserved": true,
+      "actual_pm_ack_valid": true,
+      "actual_ack_count": 1
+    }
+  },
+  "source_manifest": {
+    "scripts/project_report_common.py": "83522e7240c8c028f5e9976b3e53794c4a3e3cb9575c426d87d2e402cf1960a6",
+    "tests/test_project_reports.py": "83addf9399597168ed474654cbc559d6b3ef40d378075b7dd0dba8f8369c59c9"
+  },
+  "independent_recovery_review": {
+    "tests": 50,
+    "utf8_boundary_cases": 900,
+    "formal_state_and_source_cases": 7,
+    "ruff": "pass",
+    "blockers": 0
+  },
+  "assignments_email_actual_sent": [
+    "PM-20261005-CORE-AUTOMATION-PREP",
+    "PM-20261005-DATA-AUTOMATION-PREP",
+    "PM-20261005-WEB-AUTOMATION-PREP"
+  ],
+  "notion_updates": {
+    "lg_page": "3e7b3295f8cb81fdb730f6ef105a927c",
+    "dashboard": "3e7b3295f8cb8165a146d70ab4c0e8d6",
+    "off_scope_and_pr75_merge_verified": true,
+    "recovery_followup": "Final recovery note is applied separately after this checkpoint"
+  },
+  "unattended_write_accepted": false,
+  "application_requirements_verified": 0,
+  "remaining": [
+    "Individual execution environments and own logins/installation",
+    "Enforced model/test versus publisher credential separation",
+    "One approved real implementation-to-PR pilot",
+    "PC-independent HTTPS needs lab administrator",
+    "Product judgement quality, applicability, integrated evaluation and final submission"
+  ]
+}

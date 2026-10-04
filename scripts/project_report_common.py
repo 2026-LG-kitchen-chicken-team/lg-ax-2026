@@ -29,6 +29,22 @@ PM_STATES = {"pm_approved", "merged", "integration_verified", "done"}
 REQUIRED = {"task_id", "status", "summary", "next_action", "log_url", "evidence_url"}
 OPTIONAL = {"pr_url", "reason"}
 REPORT_FIELDS = {"Status", "팀원 보고", "최근 보고", "다음 행동"}
+# Live organization Project rejected a 1,676-byte Korean report projection and
+# accepted the same field within this byte budget (2026-10-05). Display only:
+# immutable report comments, receipts, source hashes and private state stay whole.
+BOARD_TEXT_BYTES = 1024
+
+
+def board_text(value):
+    """Bound UTF-8 board display without changing the authenticated source."""
+    if not isinstance(value, str):
+        raise TypeError("Project text display must be a string")
+    encoded = value.encode("utf-8")
+    if len(encoded) <= BOARD_TEXT_BYTES:
+        return value
+    suffix = "\n… 전체 내용은 원 보고·작업기록에서 확인"
+    prefix = encoded[:BOARD_TEXT_BYTES - len(suffix.encode("utf-8"))].decode("utf-8", "ignore")
+    return prefix + suffix
 
 
 def now():
@@ -271,7 +287,7 @@ def projection(task, accepted):
                        "최근 보고": f"{accepted['url']}\n@{accepted['actor']} · {accepted['at']}\n"
                                     f"{'현재 자기보고' if active else '이후 하네스 갱신으로 역사 보고'}: {report['summary']}",
                        "다음 행동": report["next_action"] if active else "하네스/PM 최신 지시를 확인 (이전 보고는 역사)"})
-    return values
+    return {name: board_text(value) for name, value in values.items()}
 
 
 def update_fields(api, policy, snapshot, item, values):
@@ -279,9 +295,11 @@ def update_fields(api, policy, snapshot, item, values):
         raise ValueError("worker may update only Status and its three report fields")
     updated = []
     for name, value in values.items():
+        field = snapshot["fields"][name]
+        if "options" not in field:
+            value = board_text(value)
         if item["values"].get(name) == value:
             continue
-        field = snapshot["fields"][name]
         payload = {"text": value}
         if "options" in field:
             payload = {"singleSelectOptionId": next(o["id"] for o in field["options"] if o["name"] == value)}

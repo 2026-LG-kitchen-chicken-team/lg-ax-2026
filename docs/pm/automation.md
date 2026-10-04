@@ -73,3 +73,5 @@ PM이 검수 → 실제 병합 → 병합 후 통합 실행 → 기존 phase2·�
 OpenAI의 [CI/CD 인증 안내](https://learn.chatgpt.com/docs/auth/ci-cd-auth)는 개인 로그인 상태를 신뢰된 지속 runner에서 보존하는 고급 구성을 설명한다. 한 인증 파일을 병렬 실행·여러 PC에 공유하지 않고 만료·재로그인을 처리해야 한다. [비대화형 실행](https://learn.chatgpt.com/docs/non-interactive-mode)과 [요금/사용량](https://learn.chatgpt.com/docs/pricing)을 따른다. ChatGPT 구독 사용량과 API 별도 과금은 구분하며 API로 자동 전환하지 않는다. 무제한·24시간 성공을 보장하지 않는다.
 
 실제 설치·인증·도구 실행 증거, OFF/STOP·timeout·재시도·복구·잠금·권한 거부 검사와 최종 CI를 남긴다. 현재 읽기 전용 Codex pilot 성공을 개발 Worker의 전체 무인 완주로 표현하지 않는다. 실제 배포와 검사 기록은 `evals/team-automation/20261005/`에서 확인한다.
+
+PR75는 원격 CI4 성공 후 정이량 PM이 main `c6c1382`에 수동 병합했고, 병합 후 CI와 같은 코드 여부도 확인했다. [실제 반영 근거](../../evals/team-automation/20261005/delivery-proof.json)를 따른다. 기존 팀원 보고 collector의 긴 한국어 보드 표시 오류도 display-only 제한으로 복구하고 대기 보고의 실제 수신 확인·원문 해시·재시작 보존을 검증했다. [복구 근거](../../evals/automation/20261005/reports-display-recovery.json)를 따른다. Worker가 팀원의 지시나 상세 기록을 줄이는 동작은 아니다.
