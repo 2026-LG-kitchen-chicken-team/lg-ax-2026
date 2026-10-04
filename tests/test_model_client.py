@@ -2,10 +2,15 @@
 
 import json
 import unittest
+from contextlib import redirect_stdout
+from io import StringIO
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 import httpx
 from lgax_core.errors import DomainError
-from lgax_core.model_client import LabModelAdapter, ModelConfig, OllamaAdapter, StructuredModelClient
+from lgax_core.model_client import LabModelAdapter, ModelConfig, OllamaAdapter, StructuredModelClient, main
 
 MODEL = "qwen3:8b"
 DIGEST = "a" * 64
@@ -109,6 +114,37 @@ class ModelClientTests(unittest.TestCase):
         self.assertEqual(payload["options"]["temperature"], 0)
         self.assertEqual([r.url.path for r in backend.requests], ["/api/tags", "/api/generate", "/api/tags"])
         self.assertNotIn("endpoint", result.metadata)
+
+    def test_explicit_output_and_context_budget_reaches_backend_and_receipt(self):
+        client, backend = self.client(max_output_tokens=1024, context_tokens=8192)
+        result = client.generate("인사", SCHEMA, MODEL)
+        options = json.loads(backend.requests[1].content)["options"]
+        self.assertEqual(options, {"temperature": 0, "seed": 42, "num_predict": 1024, "num_ctx": 8192})
+        self.assertEqual(result.metadata["generation_settings"], options)
+        self.assertEqual(result.metadata["done_reason"], "stop")
+
+    def test_invalid_generation_budgets_fail_before_model_call(self):
+        for kwargs in [{"max_output_tokens": True}, {"max_output_tokens": 0},
+                       {"max_output_tokens": 8193}, {"context_tokens": 32769},
+                       {"context_tokens": False}, {"max_output_tokens": 1024, "context_tokens": 1024}]:
+            with self.subTest(kwargs=kwargs), self.assertRaises(DomainError) as error:
+                self.client(**kwargs)
+            self.assertEqual(error.exception.details["reason"], "invalid_generation_budget")
+
+    def test_fixed_lab_does_not_silently_ignore_requested_budget(self):
+        client, backend = self.client(Backend("lab"), max_output_tokens=1024, context_tokens=8192)
+        self.assert_failure(client, "lab_generation_budget_is_fixed", "INVALID_ARGUMENT")
+        self.assertTrue(all(request.method == "GET" for request in backend.requests))
+
+    def test_budget_environment_is_parsed_and_bad_values_rejected(self):
+        values = {"LGAX_MODEL_ADAPTER": "ollama", "LGAX_MODEL_ENDPOINT": "http://127.0.0.1:18864",
+                  "LGAX_MODEL_ID": MODEL, "LGAX_MODEL_DIGEST": DIGEST,
+                  "LGAX_MODEL_MAX_OUTPUT_TOKENS": "1024", "LGAX_MODEL_CONTEXT_TOKENS": "8192"}
+        with StructuredModelClient.from_env(values) as client:
+            self.assertEqual(client.adapter.config.max_output_tokens, 1024)
+            self.assertEqual(client.adapter.config.context_tokens, 8192)
+        with self.assertRaises(DomainError):
+            StructuredModelClient.from_env({**values, "LGAX_MODEL_MAX_OUTPUT_TOKENS": "nan"})
 
     def test_lab_existing_prompt_only_api_has_honest_constraint_metadata(self):
         client, backend = self.client(Backend("lab"))
@@ -321,6 +357,69 @@ class ModelClientTests(unittest.TestCase):
         client, _ = self.client()
         client.close()
         self.assert_failure(client, "client_closed", "MODEL_UNAVAILABLE")
+
+
+class ModelClientCLITests(unittest.TestCase):
+    def invoke(self, backend, extra=()):
+        # Exercise parsing, file input/output, pin checks and the real adapter with no network or GPU.
+        real_client = httpx.Client
+
+        def routed_client(*args, **kwargs):
+            return real_client(*args, **{**kwargs, "transport": httpx.MockTransport(backend)})
+
+        with TemporaryDirectory(prefix="lgax-model-cli-") as directory:
+            base = Path(directory)
+            prompt, schema, output = base / "prompt.txt", base / "schema.json", base / "result.json"
+            prompt.write_text("한국어 인사를 JSON으로 작성하세요.", encoding="utf-8")
+            schema.write_text(json.dumps(SCHEMA), encoding="utf-8")
+            argv = ["--adapter", backend.kind, "--endpoint", "http://127.0.0.1:18865",
+                    "--model", MODEL, "--digest", DIGEST,
+                    "--prompt-file", str(prompt), "--schema-file", str(schema), "--output", str(output), *extra]
+            console = StringIO()
+            with patch("lgax_core.model_client.httpx.Client", side_effect=routed_client), redirect_stdout(console):
+                status = main(argv)
+            receipt = json.loads(output.read_text("utf-8")) if output.exists() else None
+            return status, receipt, json.loads(console.getvalue())
+
+    def test_cli_explicit_budget_reaches_generation_and_validated_output_receipt(self):
+        backend = Backend()
+        status, receipt, console = self.invoke(backend, ["--max-output-tokens", "1024", "--context-tokens", "8192"])
+        self.assertEqual(status, 0)
+        options = json.loads(backend.requests[1].content)["options"]
+        self.assertEqual(options, {"temperature": 0, "seed": 42, "num_ctx": 8192, "num_predict": 1024})
+        self.assertEqual(receipt["data"], {"message": "한국어 응답"})
+        self.assertEqual(receipt["metadata"]["generation_settings"], options)
+        self.assertTrue(receipt["metadata"]["locally_validated"])
+        self.assertEqual(console, {"ok": True, "locally_validated": True, "adapter": "ollama"})
+
+    def test_cli_defaults_match_sdk_and_do_not_read_from_env_budget_settings(self):
+        backend = Backend()
+        with patch.dict("os.environ", {"LGAX_MODEL_MAX_OUTPUT_TOKENS": "8193", "LGAX_MODEL_CONTEXT_TOKENS": "1"}):
+            status, receipt, _ = self.invoke(backend)
+        self.assertEqual(status, 0)
+        options = json.loads(backend.requests[1].content)["options"]
+        self.assertEqual(options["num_predict"], 256)
+        self.assertEqual(options["num_ctx"], 4096)
+        self.assertEqual(receipt["metadata"]["generation_settings"], options)
+
+    def test_cli_rejects_invalid_or_unsupported_lab_budget_without_generation_or_output(self):
+        cases = [
+            ("ollama", ["--max-output-tokens", "31"], "invalid_generation_budget"),
+            ("ollama", ["--context-tokens", "32769"], "invalid_generation_budget"),
+            ("ollama", ["--max-output-tokens", "1024", "--context-tokens", "1024"], "invalid_generation_budget"),
+            ("lab", ["--max-output-tokens", "1024", "--context-tokens", "8192"], "lab_generation_budget_is_fixed"),
+        ]
+        for kind, extra, reason in cases:
+            with self.subTest(kind=kind, reason=reason):
+                backend = Backend(kind)
+                status, receipt, console = self.invoke(backend, extra)
+                self.assertEqual(status, 1)
+                self.assertIsNone(receipt)
+                self.assertEqual(console["error"]["code"], "INVALID_ARGUMENT")
+                self.assertEqual(console["error"]["details"]["reason"], reason)
+                self.assertTrue(all(request.method == "GET" for request in backend.requests))
+                if reason == "invalid_generation_budget":
+                    self.assertEqual(backend.requests, [])
 
 
 if __name__ == "__main__":

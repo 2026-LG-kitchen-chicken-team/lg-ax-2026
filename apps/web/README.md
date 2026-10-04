@@ -1,19 +1,31 @@
 # 키친 상품기획 작업실
 
-React·TypeScript·Vite 기반의 초기 웹 프레임워크입니다. 공통 API의 제품·리뷰·설명서 원문을 조회하고 기획 요청 입력을 연결합니다. 상품기획 Agent의 분석·콘셉트 생성·검사·수정과 기록 저장은 아직 구현하지 않았습니다.
+React·TypeScript·Vite 기반의 기획자용 웹 화면입니다. 요청 입력·근거 대조·콘셉트 비교·수정 이력 네 영역이 있고, **실제 서버**와 **계약 fixture** 두 모드로 동작합니다. 상품기획 판단 Agent(불편 구조화·기능 대조·콘셉트 생성·검사·수정)는 아직 연결되지 않았습니다. 서버에 저장되는 실행은 `not_implemented` 상태이며, 화면은 이를 분석 결과처럼 보이게 하지 않습니다.
 
 ## 실행
 
-검증 환경은 Node.js 22.23.2, npm 10.9.8입니다. Node.js 22 LTS를 사용하세요.
+검증 환경은 Node.js 22.23.2, npm 10.9.8입니다. Node.js 22 LTS를 사용하세요. Node 24에서도 테스트·빌드가 통과했습니다.
 
-저장소 루트에서 실행합니다.
+명령은 저장소 루트에서 실행하고, 서비스마다 터미널을 하나씩 엽니다.
 
 ```powershell
 npm ci --prefix apps/web
+uv run python -m lgax_api.server --host 127.0.0.1 --port 18867
 npm run dev --prefix apps/web
 ```
 
-접속 주소는 `http://127.0.0.1:5173/`입니다. 공통 API를 `127.0.0.1:18867`에서 먼저 실행해야 원문 조회가 가능합니다. API 실행 절차는 저장소의 공통 실행 안내를 따릅니다. 개발 서버가 `/api`와 `/health` 요청을 해당 API로 전달합니다. 현재 프록시는 로컬 개발용이며 공개 배포·인증·HTTPS 설정을 포함하지 않습니다.
+접속 주소는 `http://127.0.0.1:5173/`입니다. 개발 서버가 `/api`·`/health`는 18867(합성자료 API)로, `/api/workspace`는 18869(작업실 API)로 전달합니다. 로컬 개발용 프록시이며 공개 배포·HTTPS는 포함하지 않습니다.
+
+요청 저장과 실행 기록까지 쓰려면 작업실 서버를 추가로 실행합니다. 자격증명은 한 번만 만들며, `private/`에 저장되어 Git에 올라가지 않습니다.
+
+```powershell
+uv run python scripts/init_workspace.py --directory private/workspace
+uv run python -m lgax_api.workspace_server --db private/workspace/workspace.sqlite --credentials private/workspace/server-credentials.json --port 18869
+```
+
+화면 위쪽 **작업실 서버** 칸에 `private/workspace/editor-client.json`의 `token` 값을 붙여 넣고 연결합니다. 토큰은 화면 메모리에만 있고 브라우저 저장소에 남지 않으므로, 새로고침하면 다시 입력해야 합니다. `viewer-client.json` 토큰으로 연결하면 읽기만 할 수 있습니다.
+
+## 검사
 
 ```powershell
 npm run test --prefix apps/web
@@ -21,17 +33,61 @@ npm run typecheck --prefix apps/web
 npm run build --prefix apps/web
 ```
 
-## 현재 연결 범위
+실제 작업실 서버 흐름 시험은 서버를 띄운 뒤에만 켭니다. `apps/web` 폴더에서 실행합니다.
 
-- 기획 요청: 대상 고객·사용 상황·검토 모델·제외 조건 입력, 공통 입력 규격 검사, API 호출. 현재 API의 `NOT_IMPLEMENTED` 응답을 화면에 표시합니다.
-- 근거 대조: 냉장고·식기세척기·전자레인지 제품군, 모델 필터, 리뷰/설명서 필터, 원문 검색·선택, 위치·자료 버전·근거 ID·연결 기능 확인.
-- 콘셉트 검토·수정 이력: 구현 예정 범위 안내. 생성 결과나 저장된 이력을 만들어 표시하지 않습니다.
-- API 연결 실패와 검색 결과 없음은 서로 다른 상태로 표시합니다. 실패 시 샘플 자료로 몰래 대체하지 않습니다.
+```powershell
+$env:LGAX_WORKSPACE_URL='http://127.0.0.1:18869'; $env:LGAX_WORKSPACE_CREDENTIAL_FILE='../../private/workspace/editor-client.json'; $env:LGAX_WORKSPACE_VIEWER_FILE='../../private/workspace/viewer-client.json'; npx vitest run src/liveWorkspace.test.ts
+```
 
-`packages/contracts/schemas/lgax.schema.json`을 직접 가져와 Ajv의 Draft 2020-12 검증기로 읽습니다. 웹에 별도 JSON 스키마를 복제하지 않습니다. 브라우저는 `/api/bootstrap`의 응답을 이용하며 `data/demo`를 직접 번들에 포함하지 않습니다. 테스트만 공통 fixture를 읽습니다.
+이 시험은 작업실 DB에 프로젝트를 하나 추가합니다.
 
-현재 자료는 시연용 합성자료입니다. 화면의 출처·모델·문서 버전 표시를 유지합니다. 실제 LG 제품 기능·실제 고객 수요·Agent 성능을 입증하는 자료는 아닙니다.
+## 두 모드
+
+| | 실제 서버 | 계약 fixture |
+|---|---|---|
+| 자료 | 18867 합성자료 API, 18869 작업실 API | 번들된 `src/fixtures/` (FRIDGE-A만) |
+| 요청 | 작업실에 프로젝트·실행으로 저장 | 공통 규격 검사만, 전송하지 않음 |
+| 후보·이력 | 서버에 저장된 실행 기록 | 손으로 작성한 예시 실행 2개 + 브라우저 초안 |
+| 표시 | 상단 상태와 작업실 연결 칸 | 노란 "모의 데이터" 배너, 상태 배지 "fixture 예시" |
+
+fixture는 판단 Agent가 없을 때 화면 계약을 개발·시험하기 위한 예시입니다. Agent 출력이나 서버 응답이 아니며, 내보내기 파일에도 그렇게 적힙니다. `bootstrap.fixture.json`은 `data/demo/dataset.json`의 FRIDGE-A 항목을 그대로 복사했고, 원본과 같은지 테스트가 확인합니다.
+
+## 네 영역
+
+- **기획 요청:** 제품군, 대상 고객, 사용 상황, 개선 과제, 제외 조건(한 줄에 하나)을 입력하고 검토 모델을 하나 이상 고릅니다.
+  - 빈 항목은 질문으로 표시하고 저장하지 않습니다.
+  - 연결된 프로젝트와 제품군·모델 범위가 같으면 **변경 요청**(이전 실행에 연결, 요청 회차 증가)으로 저장합니다. 범위가 다르면 새 프로젝트로 저장합니다.
+  - 원 요청 대비 변경표와 요청 회차를 보여 줍니다. 회차는 서버 규칙과 같은 방식으로 계산합니다.
+- **근거 대조:** 제품군·모델·리뷰/설명서 필터와 원문 검색으로 위치·문서 버전·근거 ID·자료 성격(합성/공개 등)을 확인합니다. 작업실에 연결하면 프로젝트에 고정된 문서 버전 안에서 **서버 검색**을 합니다. 결과 0건은 오류가 아니라 "결과 없음"으로 표시합니다.
+- **콘셉트 검토:** 실행별 불편·기존 기능 대조표(모델·불편·기능·조건·판단·남은 불편·근거·질문)와 최대 3개 후보(차별점·요구사항·확인할 가정·근거 원문)를 보여 줍니다. 근거 ID를 누르면 원문이 열립니다. JSON과 Markdown으로 내보낼 수 있습니다.
+- **수정 이력:** 실행 타임라인, 이전 실행 대비 요청 변경, 후보 상태 변화, 판단 순서와 사용한 Skill을 보여 줍니다. 추가 조건을 넣으면 연결된 새 실행을 만듭니다(실제 서버 모드에서는 서버에 저장, fixture 모드에서는 브라우저 초안).
+
+## 오류 표시
+
+공통 계약의 오류 코드는 모두 각자의 제목과 다음 행동으로 보여 줍니다.
+
+- 인증·권한: `UNAUTHORIZED`, `FORBIDDEN`
+- 기록·자료: `NOT_FOUND`, `DATASET_MISMATCH`, `INVALID_*`
+- 판단 단계: `INSUFFICIENT_EVIDENCE`, `VALIDATION_FAILED`, `MODEL_UNAVAILABLE`
+- 연결·계약: `CONNECTION_FAILED`, `CONTRACT_MISMATCH`
+- 미구현: `NOT_IMPLEMENTED`
+
+연결이 실패해도 샘플 자료로 몰래 대체하지 않고, 저장 요청을 자동으로 다시 보내지 않습니다.
+
+## 계약과 자료
+
+`packages/contracts/schemas/lgax.schema.json`을 직접 가져와 Ajv Draft 2020-12로 검증합니다. 웹에 스키마를 복제하지 않습니다.
+
+- 실제 서버 모드: 브라우저는 API 응답만 사용합니다.
+- fixture 모드: 번들된 fixture도 같은 계약 검사를 통과해야 화면에 표시됩니다.
+
+모든 자료는 시연용 합성자료입니다. 실제 LG 제품 기능, 실제 고객 수요, Agent 성능을 입증하지 않습니다.
+
+## 알려진 사항
+
+- 공통 `WorkspaceClient`(`src/workspace.ts`)는 전달받은 transport를 객체 메서드로 호출합니다. 그래서 브라우저에서는 `window.fetch`를 그대로 넘기면 "Illegal invocation"이 납니다. 웹은 `liveWorkspace.ts`의 `browserFetch` 래퍼를 넘깁니다.
+- 브라우저 초안 실행(fixture 모드)은 새로고침하면 사라집니다.
 
 ## 의존성 선택
 
-버전과 잠금파일을 고정했습니다. 이 Windows 환경에서 최신 Vite의 Rolldown 네이티브 모듈이 애플리케이션 제어에 의해 차단되어, 검증한 안정 Vite 7.3.6과 공식 `@rollup/wasm-node`를 사용합니다. 보안 설정을 변경하지 않습니다. `npm ci`로 재설치한 뒤 테스트·빌드가 통과했습니다. 의존성을 변경할 때에는 같은 검증을 다시 실행하세요.
+버전과 잠금 파일을 고정했습니다. 이 Windows 환경에서는 최신 Vite의 Rolldown 네이티브 모듈이 애플리케이션 제어에 막혀서, 검증한 안정 버전 Vite 7.3.6과 공식 `@rollup/wasm-node`를 사용합니다. 보안 설정은 바꾸지 않습니다. `npm ci`로 재설치한 뒤 테스트·빌드가 통과했습니다. 의존성을 바꿀 때는 같은 검증을 다시 실행하세요.

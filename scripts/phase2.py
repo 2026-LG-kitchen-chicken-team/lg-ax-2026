@@ -6,13 +6,13 @@ not an authentication check. Actual GitHub approval/merge links belong in eviden
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
 import hashlib
 import json
-from pathlib import Path
 import re
 import subprocess
 import sys
+from datetime import UTC, datetime
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = "harness/phase2"
@@ -31,7 +31,7 @@ def write(root, path, value):
 
 
 def now():
-    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+    return datetime.now(UTC).isoformat(timespec="seconds")
 
 
 def fingerprint(root, path):
@@ -52,7 +52,7 @@ def record_errors(root, record):
             return ["versioned source path outside repository"]
         if not re.fullmatch(r"[0-9a-f]{40}", record["git_commit"]):
             return ["full source commit required"]
-        result = subprocess.run(["git", "show", f"{record['git_commit']}:{path}"], cwd=root, capture_output=True)
+        result = subprocess.run(["git", "--no-replace-objects", "show", f"{record['git_commit']}:{path}"], cwd=root, capture_output=True, check=False)
         if result.returncode or hashlib.sha256(result.stdout).hexdigest() != record.get("sha256"):
             return [f"versioned source hash mismatch: {path}"]
         return []
@@ -63,6 +63,87 @@ def record_errors(root, record):
     if any(actual[k] != record.get(k) for k in ("path", "sha256")):
         return [f"evidence changed: {actual['path']}"]
     return []
+
+
+def intake_errors(root, bundle, task):
+    """Offline integrity of PM intake; not fresh GitHub identity/PR authentication."""
+    stamp = task.get("pm_intake")
+    if stamp is None:
+        if any(row.get("action") == "PM_receive_submission" for row in task.get("history", [])):
+            return ["PM intake action requires its receipt record"]
+        return []
+    errors = record_errors(root, stamp)
+    if errors:
+        return errors
+    try:
+        actual = fingerprint(root, stamp["path"])
+    except (ValueError, OSError, TypeError):
+        return ["PM intake receipt missing locally"]
+    if any(actual[k] != stamp.get(k) for k in ("path", "sha256")):
+        return ["PM intake receipt local bytes differ from recorded fingerprint"]
+    try:
+        receipt = read(root, stamp["path"])
+    except (ValueError, OSError, TypeError):
+        return ["PM intake receipt must be readable JSON"]
+    if not isinstance(receipt, dict):
+        return ["PM intake receipt must be an object"]
+    pm = bundle["workflow"]["pm"]
+    role = next((r for r in bundle["workflow"]["roles"] if r.get("name") == task.get("owner")), {})
+    if (receipt.get("schema_version") != 1 or receipt.get("task_id") != task.get("id")
+            or receipt.get("owner") != task.get("owner") or receipt.get("pm") != pm.get("name")
+            or receipt.get("authenticated_pm") != pm.get("account")
+            or receipt.get("submitted_by") != role.get("account") or receipt.get("decision") != "received"):
+        errors.append("PM intake task/owner/PM/submitted account or decision mismatch")
+    source = receipt.get("source")
+    if not isinstance(source, dict):
+        errors.append("PM intake PR source object required")
+        source = {}
+    number = source.get("pull_request_number")
+    repo = "jeongiryang/lg-ax-2026"
+    if (not isinstance(number, int) or isinstance(number, bool) or number <= 0
+            or source.get("repo") != repo
+            or source.get("pull_request_url") != f"https://github.com/{repo}/pull/{number}"
+            or source.get("author") != role.get("account") or source.get("base_ref") != "main"
+            or source.get("kind") != "GitHub PR API + immutable Git blobs"):
+        errors.append("PM intake PR/repository/owner source mismatch")
+    if (not isinstance(source.get("merged"), bool)
+            or (source.get("state"), source.get("merged")) not in (("open", False), ("closed", True))):
+        errors.append("PM intake must reference an open or actually merged PR")
+    head = source.get("head_commit")
+    if not isinstance(head, str) or not re.fullmatch(r"[0-9a-f]{40}", head):
+        errors.append("PM intake actual full PR head required")
+    submitted = receipt.get("individual_evidence")
+    individual = task.get("individual_evidence")
+    if (not isinstance(submitted, dict) or not isinstance(individual, dict)
+            or any(submitted.get(k) != individual.get(k) for k in ("path", "sha256"))
+            or submitted.get("git_commit") != head):
+        errors.append("PM intake must match exact original owner evidence and PR head")
+    elif isinstance(head, str) and re.fullmatch(r"[0-9a-f]{40}", head):
+        errors.extend(record_errors(root, submitted))
+        if not record_errors(root, individual):
+            owner_artifact = read(root, individual["path"])
+            tested = receipt.get("owner_tested_commit")
+            if (not isinstance(owner_artifact, dict) or tested != owner_artifact.get("tested_commit")
+                    or not isinstance(tested, str) or not re.fullmatch(r"[0-9a-f]{40}", tested)):
+                errors.append("PM intake tested commit must match original owner artifact")
+            else:
+                ancestry = subprocess.run(["git", "--no-replace-objects", "merge-base", "--is-ancestor", tested, head],
+                                          cwd=root, capture_output=True, check=False)
+                if ancestry.returncode:
+                    errors.append("PM intake owner tested commit must precede submitted PR head")
+    dependencies = receipt.get("dependencies")
+    expected = [{"task_id": dep, "status": "done"} for dep in task.get("depends_on", [])]
+    if dependencies != expected:
+        errors.append("PM intake dependency snapshot mismatch")
+    if any(bundle["tasks"].get(dep, {}).get("status") != "done" for dep in task.get("depends_on", [])):
+        errors.append("PM intake unfinished dependencies")
+    try:
+        observed = datetime.fromisoformat(receipt.get("observed_at", ""))
+        if observed.tzinfo is None:
+            errors.append("PM intake observation must include timezone")
+    except (ValueError, TypeError):
+        errors.append("PM intake observation timestamp required")
+    return errors
 
 
 def load(root):
@@ -218,6 +299,7 @@ def validate(root, bundle):
         for key in ("individual_evidence", "pm_review", "merge", "integration", "completion"):
             if task.get(key):
                 errors.extend(f"{tid}/{key}: {e}" for e in record_errors(root, task[key]))
+        errors.extend(f"{tid}/pm_intake: {e}" for e in intake_errors(root, bundle, task))
         individual = task.get("individual_evidence")
         if individual and not record_errors(root, individual):
             a = read(root, individual["path"])
@@ -237,7 +319,7 @@ def validate(root, bundle):
                 if key == "merge" and (not re.fullmatch(r"[0-9a-f]{40}", a.get("merge_commit", "")) or not a.get("pull_request_url")):
                     errors.append(f"task {tid}: actual merge commit/PR URL required")
                 elif key == "merge":
-                    commit = subprocess.run(["git", "cat-file", "-t", a["merge_commit"]], cwd=root, capture_output=True, text=True)
+                    commit = subprocess.run(["git", "cat-file", "-t", a["merge_commit"]], cwd=root, capture_output=True, text=True, check=False)
                     if commit.returncode or commit.stdout.strip() != "commit":
                         errors.append(f"task {tid}: merge commit not present locally; fetch history")
                 if key == "integration":
@@ -377,7 +459,7 @@ def lifecycle(root, bundle, action, tid, artifact_path, actor):
         commit = a.get("merge_commit", "")
         if not re.fullmatch(r"[0-9a-f]{40}", commit) or not a.get("pull_request_url"):
             raise ValueError("actual merge commit and PR URL required")
-        check = subprocess.run(["git", "cat-file", "-t", commit], cwd=root, capture_output=True, text=True)
+        check = subprocess.run(["git", "cat-file", "-t", commit], cwd=root, capture_output=True, text=True, check=False)
         if check.returncode or check.stdout.strip() != "commit":
             raise ValueError("merge commit must resolve to a real local Git commit")
         task.update(status="merged", merge=stamp)
