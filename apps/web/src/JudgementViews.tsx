@@ -1,6 +1,6 @@
 import type { Evidence } from './domain';
-import { judgementView, planningExecutionView } from './judgement';
-import type { JudgementDecision, JudgementInput, JudgementOutput } from './judgement';
+import { judgementView, planningExecutionView, violationText } from './judgement';
+import type { JudgementDecision, JudgementInput, JudgementOutput, PlanningExecution, SemanticAssessment, StoredDecision } from './judgement';
 import type { RunSnapshot } from './planning';
 
 const POLARITY: Record<string, string> = { complaint: '불편', positive: '긍정', conflicting: '상충', irrelevant: '무관', uncertain: '불확실' };
@@ -17,7 +17,7 @@ function TextList({ title, items, empty }: { title: string; items: string[]; emp
  * One core judgement as the planner sees it: the core's review decision first, then the declared assessments it was
  * checked against. Fixture declarations are labelled as such so they never read as model output.
  */
-export function JudgementPanel({ input, output, decision, fixture }: { input: JudgementInput; output: JudgementOutput; decision: JudgementDecision; fixture: boolean }) {
+export function JudgementPanel({ input, output, decision, fixture }: { input: JudgementInput; output: JudgementOutput; decision: JudgementDecision | StoredDecision; fixture: boolean }) {
   const view = judgementView(input, output, decision);
   const sources = new Map<string, Evidence>(input.sources.map(item => [item.id, item]));
   const featureName = (id: string) => input.features.find(item => item.id === id)?.name ?? id;
@@ -44,6 +44,61 @@ export function JudgementPanel({ input, output, decision, fixture }: { input: Ju
     <TextList title="보류 사유" items={view.hold_reasons} />
     <TextList title="미해결" items={view.unresolved} />
     <TextList title="후보 없음 사유" items={view.no_candidate_reasons} />
+  </section>;
+}
+
+const DECISION_LABEL: Record<string, string> = { accept: '계약 검사 통과', hold: '보류', revise: '수정 필요', unresolved: '미해결 종료' };
+const VERDICT: Record<string, string> = { compliant: '준수', satisfied: '충족', violation: '위반', uncertain: '불확실' };
+const CRITERION: Record<string, string> = { mechanism: '작동 방식', difference_from_current_features: '현재 기능과 차이', unverified_assumptions: '미검증 가정', unsupported_claims: '근거 없는 단정' };
+
+function AssessmentRow({ row, target }: { row: SemanticAssessment; target: string }) {
+  const tone = row.verdict === 'violation' ? 'error' : row.verdict === 'uncertain' ? 'notice' : 'done';
+  return <li><span className={`run-status ${tone}`}>{VERDICT[row.verdict] ?? row.verdict}</span> <span className="id">{row.concept_id}</span> × {target}
+    {row.candidate_quote ? <q>{row.candidate_quote}</q> : null}<small> — {row.reason}</small>
+    {row.source_quotes?.length ? <ul className="quote-list">{row.source_quotes.map(item => <li key={`${item.evidence_id}-${item.quote}`}><q>{item.quote}</q><small>{item.evidence_id}</small></li>)}</ul> : null}</li>;
+}
+
+/**
+ * PR #60 (draft) semantic reviews: the model's own verdict per candidate × exclusion and quality criterion. The core
+ * checks only that the rows are complete and quote the originals literally, so the verdicts are declarations to read
+ * against the quotes, not an independent check. Satisfied quality rows are counted rather than listed.
+ */
+function SemanticReviews({ execution }: { execution: PlanningExecution }) {
+  const reviews = execution.semantic_reviews ?? [];
+  if (!reviews.length) return null;
+  return <section className="semantic-reviews" aria-label="의미 검토 기록">
+    <h4 className="sub">의미 검토 <small>{reviews.length}회 · {execution.execution_kind === 'fixture' ? '작성된 fixture 응답' : '판단과 같은 모델이 작성한 검토 선언'} · 코어는 인용 일치·누락만 검사</small></h4>
+    {reviews.map((review, index) => {
+      const quality = review.report.quality_assessments;
+      const flagged = quality.filter(row => row.verdict !== 'satisfied');
+      return <div key={index} className="semantic-review">
+        <p><strong>{index + 1}회차</strong> · 결정 {DECISION_LABEL[review.decision.action] ?? review.decision.action}{review.decision.violations.length ? ` · 위반 ${review.decision.violations.length}건` : ' · 위반 없음'}</p>
+        <ul>{review.report.exclusion_assessments.map((row, n) => <AssessmentRow key={`x-${n}`} row={row} target={`제외 조건 '${row.condition ?? row.condition_index}'`} />)}</ul>
+        {review.report.exclusion_assessments.length ? null : <p className="muted">제외 조건이 없어 조건별 검토가 없습니다.</p>}
+        <ul>{flagged.map((row, n) => <AssessmentRow key={`q-${n}`} row={row} target={`기준 ${CRITERION[row.criterion ?? ''] ?? row.criterion}`} />)}</ul>
+        <p className="muted">기획 품질 기준 {quality.length}건 중 충족 선언 {quality.length - flagged.length}건</p>
+        {review.report.questions.length ? <><h4>확인할 질문</h4><ul>{review.report.questions.map(item => <li key={item}>{item}</li>)}</ul></> : null}
+      </div>;
+    })}
+    {execution.decision?.action === 'accept' ? <p className="scope-flag">의미 검토도 위반 없음으로 선언했지만 같은 모델의 자기 검토입니다. 독립 검토 전이므로 기획자가 인용과 함께 확인해야 합니다.</p> : null}
+  </section>;
+}
+
+/** The core's decision when no judgement output was stored (a stage kept failing), so its violations are not lost. */
+function DecisionOnly({ decision }: { decision: StoredDecision }) {
+  return <section className="judgement-panel" aria-label="판단 계약 검사 결과">
+    <div className="judgement-head"><span className="run-status error">{DECISION_LABEL[decision.action] ?? decision.action}<small>코어 검사 결정 · {decision.action}</small></span><span className="id">내부 수정 {decision.revision_count}/2</span></div>
+    <h4>검사에서 발견한 문제 <span className="count">{decision.violations.length}건</span></h4>
+    <ul>{decision.violations.map((item, index) => <li key={`${item.code}-${index}`}>{violationText(item)}</li>)}</ul>
+  </section>;
+}
+
+/** Candidates the core produced and then turned down; kept for review, never selectable. */
+function RejectedCandidates({ output }: { output: JudgementOutput }) {
+  if (!output.concepts.length) return null;
+  return <section className="rejected-output" aria-label="거절된 후보">
+    <h4 className="sub">검사에서 거절된 마지막 후보 <small>{output.concepts.length}개 · 선택·내보내기 대상 아님</small></h4>
+    <ul>{output.concepts.map(concept => <li key={concept.id}><span className="id">{concept.id}</span> {concept.title}<span className="scope-flag"> · 거절됨</span></li>)}</ul>
   </section>;
 }
 
@@ -82,7 +137,9 @@ export function ExecutionPanel({ snapshot }: { snapshot: RunSnapshot }) {
     </dl>
     {execution.output && execution.decision
       ? <JudgementPanel input={execution.input} output={execution.output} decision={execution.decision} fixture={execution.execution_kind === 'fixture'} />
-      : <p className="muted">판단 출력이 저장되지 않았습니다({STATUS_LABEL[execution.status]}). 위의 오류와 실행 순서를 확인해 주세요.</p>}
+      : <>{execution.decision ? <DecisionOnly decision={execution.decision} /> : null}<p className="muted">판단 출력이 저장되지 않았습니다({STATUS_LABEL[execution.status]}). 위의 오류와 실행 순서를 확인해 주세요.</p></>}
+    {execution.rejected_output ? <RejectedCandidates output={execution.rejected_output} /> : null}
+    <SemanticReviews execution={execution} />
     <h4 className="sub">실행 순서 <small>trace {execution.trace.length}단계</small></h4>
     <ol className="events">{execution.trace.map((step, index) => <li key={`${step.stage}-${step.operation}-${index}`}><span className="stage">{step.stage}</span><span>{step.operation}</span>{typeof step.elapsed_ms === 'number' ? <code>{(step.elapsed_ms / 1000).toFixed(1)}s</code> : null}</li>)}</ol>
   </section>;
