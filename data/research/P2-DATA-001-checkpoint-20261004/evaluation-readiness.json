@@ -1,6 +1,6 @@
 {
-  "checked_at": "2026-10-04T22:18:57+09:00",
-  "artifact_kind": "readiness assessment, not a case manifest",
+  "checked_at": "2026-10-05T00:50:02+09:00",
+  "artifact_kind": "private material readiness, not live evaluation results",
   "development_materials": [
     {
       "path": "data/demo/dataset.json",
@@ -15,14 +15,14 @@
       "role": "R03 development/reproduction input; not independent evaluation"
     }
   ],
-  "independent_manifest_inventory": [],
-  "independence_confirmed": false,
-  "independent_cases_ready": false,
-  "private_evaluation_materials": "not inspected; not claimed absent globally",
-  "unit_test_fixture": "tests/test_prepare_evaluation.py dynamically builds fixture outputs; tool tests are not independent/live evaluation evidence",
-  "pm_manifest_contract": {
-    "url": "https://github.com/jeongiryang/lg-ax-2026/blob/main/docs/pm/evaluation.md",
-    "main_blob_sha": "e108f1a15411efd1722cf3dadc97fbcfc54d634d",
+  "historical_previous_status": {
+    "checked_at": "2026-10-04T22:18:57+09:00",
+    "independent_cases_ready": false,
+    "independence_confirmed": false
+  },
+  "latest_pm_manifest_contract": {
+    "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/blob/main/docs/pm/evaluation.md",
+    "commit": "cd3044f77760f0cf1dcaf8d9e97b13c826ae6b4a",
     "root_fields": [
       "schema_version",
       "independent_from_development",
@@ -34,71 +34,55 @@
       "request",
       "data_path",
       "output_contract_path"
-    ],
-    "required_categories": [
-      "normal",
-      "duplicate_feature",
-      "model_version_confusion",
-      "conflicting_reviews",
-      "missing_evidence",
-      "specification_change"
-    ],
-    "hashes": "original data and output contract bytes; canonical request JSON",
-    "runtime_conditions": "same model revision/digest, sampling, output budget, context length, adapter, format constraints; null for unmeasured values"
+    ]
   },
+  "private_materials_prepared": true,
   "category_readiness": [
     {
       "category": "normal",
-      "status": "not provided/verified in this checkpoint",
-      "case_id": null,
-      "data_path": null,
-      "expected_response": null
+      "input_and_expected_draft": "prepared privately from existing CORE001 heldout",
+      "pm_confirmation": "pending",
+      "live_execution": false
     },
     {
       "category": "duplicate_feature",
-      "status": "not provided/verified in this checkpoint",
-      "case_id": null,
-      "data_path": null,
-      "expected_response": null
+      "input_and_expected_draft": "prepared privately from existing CORE001 heldout",
+      "pm_confirmation": "pending",
+      "live_execution": false
     },
     {
       "category": "model_version_confusion",
-      "status": "not provided/verified in this checkpoint",
-      "case_id": null,
-      "data_path": null,
-      "expected_response": null
+      "input_and_expected_draft": "prepared privately from existing CORE001 heldout",
+      "pm_confirmation": "pending",
+      "live_execution": false
     },
     {
       "category": "conflicting_reviews",
-      "status": "not provided/verified in this checkpoint",
-      "case_id": null,
-      "data_path": null,
-      "expected_response": null
+      "input_and_expected_draft": "prepared privately from existing CORE001 heldout",
+      "pm_confirmation": "pending",
+      "live_execution": false
     },
     {
       "category": "missing_evidence",
-      "status": "not provided/verified in this checkpoint",
-      "case_id": null,
-      "data_path": null,
-      "expected_response": null
+      "input_and_expected_draft": "prepared privately from existing CORE001 heldout",
+      "pm_confirmation": "pending",
+      "live_execution": false
     },
     {
       "category": "specification_change",
-      "status": "not provided/verified in this checkpoint",
-      "case_id": null,
-      "data_path": null,
-      "expected_response": null
+      "input_and_expected_draft": "prepared privately from existing CORE001 heldout",
+      "pm_confirmation": "pending",
+      "live_execution": false
     }
   ],
+  "private_manifest": "private/evaluation/DATA001-20261005-contract-review/cases.json",
+  "public_metadata_evidence": "runs/20261004T151925Z/evaluation-materials.json",
+  "scope": "candidate contract review; full independent planning evaluation suitability not confirmed",
+  "independence_confirmed": false,
+  "expected_answers_pm_confirmed": false,
+  "full_independent_evaluation_ready": false,
   "evaluation_complete": false,
   "model_comparison_executed": false,
-  "next_independent_material_work": "separately prepared six-category cases and expected responses; do not relabel development examples or unit-test fixtures as independent",
-  "latest_recheck": {
-    "code_commit": "5fa1a62273c5f699d0619c2a088a2f5a35c7a128",
-    "pm_doc_blob": "e108f1a15411efd1722cf3dadc97fbcfc54d634d",
-    "pm_validator_blob": "47829f8323555fe41fca988363d2d32687d5741d",
-    "local_manifest_inventory": "runs/20261004T134134Z/scope-and-manifest-check.json",
-    "independent_expected_answers_ready": false,
-    "evaluation_answers_mixed_into_development_or_tuning": false
-  }
+  "answers_used_for_development_or_tuning": false,
+  "raw_cases_answers_excluded_from_pr": true
 }

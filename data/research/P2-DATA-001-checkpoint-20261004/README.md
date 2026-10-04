@@ -1,54 +1,40 @@
-# DATA-001-CHECKPOINT 부분 전달 준비
+# DATA-001 부분 전달 준비 — 2026-10-05
 
-최신 [PM CHECKPOINT](https://github.com/jeongiryang/lg-ax-2026/issues/12#issuecomment-5979831712)를 읽고 준비했다. **게시 전 사용자 검토용 로컬 묶음이며 #12 전체 완료 제출이 아니다.**
+**자료 계약과 기존 조회의 검증을 마쳤다. #12 전체 완료와 PM 검수·병합·통합은 아직 아니다.** 사용자는 이번 범위를 “#12 검증·부분 전달 준비 유지”로 확정했다.
 
-## 부분 PR로 전달할 수 있는 것
+## 이번에 확인한 결과
 
-1. 승인한 실제 세 모델의 참고팩: [JSON/CSV/요약/최소 확인](../P2-DATA-001-real-reference-20261004/README.md). 공식9건·SSG3건, 사실60개, 충돌2건·미확인7건.
-2. [traceability-check.json](traceability-check.json): 60항목의 연구 사실 ID → 출처 ID → 동일 모델·문서 버전·URL·원문 위치·확인 시각 대조. 오류0. 이 PASS는 링크 대조 범위다.
-3. [evaluation-readiness.json](evaluation-readiness.json): 개발 자료와 독립 평가 자료의 구분 및 PM 여섯 유형 manifest 계약의 준비 상태.
-4. [R03 환경/구현 증거](../R03-fridge-20261004/README.md)와 담당자의 [작업기록](../../../docs/작업기록/신진하.md)·[근거](../../../docs/작업근거/신진하.md).
+| 항목 | 결과 | 증거 |
+|---|---|---|
+| 프로젝트 실행 환경 | Python 3.11.17, uv 0.12.23, 잠금 jsonschema 4.26.0 설치·import 성공 | 최신 run의 environment-install/ready.json |
+| 기존 계약·회귀 | 계약 검사 통과, 기존 회귀 170개 통과 | contracts.json, regression.json |
+| 실제 세 제품 | Product 스키마 3건 통과, 60항목 출처 연결 오류 0 | data-contract-audit.json |
+| 기존 리뷰 | 리뷰 36건의 원문·모델·버전·자료 구분 연결 확인 | data-contract-audit.json |
+| 기존 검색 | 세 제품군 실제 HTTP 검색·원문 조회·재호출 및 오류/빈 결과 확인 | http-query.json |
+| 하네스 | Git 이력 확보 후 valid=true, errors=[] | phase2-validate-after-history.json |
+| 평가 준비 | 비공개 여섯 유형을 PM manifest 형식으로 연결, 계약 기대 결정 6/6 일치 | evaluation-materials.json |
 
-| 제품군 / 모델 | 참고 사실 수 | 설명서 개정·대표 위치 | 연결 상태 |
-|---|---:|---|---|
-| 냉장고 T876MEE1H1 | 19 | MFL71401557 Rev.00_032526 / F10 → F-M p19 | 참고팩 연결 대조 통과 |
-| 식기세척기 DUE6BGL2E | 20 | MFL71959117 Rev.07_030626 / D02 → D-M p57 | 참고팩 연결 대조 통과 |
-| 전자레인지 MW23FDI | 21 | MFL68822538 Rev.00_120925 / M02 → M-M p37 | 참고팩 연결 대조 통과 |
+공식 자료 9건과 SSG 3건에서 정리한 실제 자료는 [참고팩](../P2-DATA-001-real-reference-20261004/README.md)에 있다. 냉장고 T876MEE1H1 19항목, 식기세척기 DUE6BGL2E 20항목, 전자레인지 MW23FDI 21항목이다. 출처 차이 2건·미확인 7건은 그대로 남겼다. 실제 자료팩은 public sidecar이며 합성 전용 DemoStore에 주입하지 않았다.
 
-각 출처 참조의 개정/수집 표식을 따로 보존한다. 제품 HTML의 `unversioned@2026-10-04`와 설명서의 제조사 개정은 다를 수 있다. `F10` 등의 연구 사실 ID와 `F-M` 등의 출처 ID는 업로드 후 생성된 canonical Evidence/document ID가 아니다. 아직 등록·조회 출력이 없어 해당 ID는 null이다.
+## 버전과 범위
 
-## 개발 자료와 독립 평가 자료
+이번 기존 검사·HTTP 실행 코드는 `791c206338dc2786bb880bdd53d80f9d1c010767`이다. 이후 전달 commit과 구분한다. 최신 main `cd3044f77760f0cf1dcaf8d9e97b13c826ae6b4a`의 schema/API/기본 자료/잠금은 검사 대상과 같은 바이트지만, 170시험을 최신 main 전체 검증으로 표시하지 않는다. 비공개 사례의 계약 결정 검사에만 고정 main CORE001 코드를 사용했다.
 
-기존 합성 개발 입력, 세 실모델 참고팩, R03 재현 입력은 개발/조사용이다. 이미 개발에 사용한 입력을 독립 평가로 다시 표시하지 않았다. 확인한 `data`·`evals` JSON에 독립 사례 manifest는 없었다. private 전체는 열람하지 않아 전역 부재를 단정하지 않는다.
+[최신 run](runs/20261004T151925Z/README.md)에 명령·입력·출력·성공·실패를 연결했다. 이전 환경 실패와 초기 하네스 실패를 삭제하지 않았다. Git 이력 복구로 하네스 오류를 해결했고 PM 원본 증거는 수정하지 않았다. 이전 20파일 준비와 28파일 전달 단계의 증거도 보존했다.
 
-PM 계약은 `schema_version`, `independent_from_development`, `cases`와 사례별 `case_id/category/request/data_path/output_contract_path`를 요구한다. 정상·기능중복·모델/버전혼동·상충리뷰·근거누락·명세변경의 여섯 유형과 기대 대응은 아직 준비/검증되지 않았다. 평가 완료/실제 모델 비교/독립성 입증은 미완료다. 테스트가 생성한 fixture 결과도 독립 평가 실행으로 계산하지 않는다.
+브라우저로 최신 [#12](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/12), #13, PM DATA-001-CHECKPOINT와 main 지침·평가 안내를 읽었다. 저장소는 조직으로 이전됐고 origin을 같은 저장소의 현재 주소로 갱신했다. GitHub 커넥터의 404와 브라우저·Git 읽기 성공은 별도로 기록했다.
 
-## 게시 전에 알릴 막힘
+## 비공개 평가 자료
 
-- 프로젝트 Python3.11/uv/.venv 미확보. jsonschema는 선언/잠금에 이미 있지만 앞선 실행 환경에 없었다. 프로젝트 내부 설치 승인 대기, 새 설치/전역 변경 없음.
-- 기존 API/코어에 문서 업로드·파싱 연결이 없다. #13 구현과 공통 API/schema의 PM 편집 범위 조율이 필요하다. R03 네 단계 미실행·미충족.
-- 독립 평가 여섯 유형의 자료/기대 대응 미확보. Schema 런타임 검증도 아직 미실행이다.
-- 과거 phase2 전체 validate 실패와 얕은 clone 이력 제한은 이전 기록 그대로다. PM 공유 증거를 임의 수정하지 않았다.
-- PR 생성·push·Issue/Project 상태 전송·PM 검수·병합·통합은 수행하지 않았다. 최신 main의 지침/평가 안내는 로컬보다 새 버전임을 출처와 함께 기록했다.
+최신 main에 이미 준비된 CORE001 heldout 여섯 유형을 재사용해 `private/evaluation/DATA001-20261005-contract-review/`에 PM 형식의 자료·출력 계약·별도 기대 대응 초안을 준비했다. 개발 원문·ID와 정확히 겹치는 항목은 0건이다.
 
-## 같은 커밋과 게시 범위
+현재 자료는 제시된 후보 초안의 계약 검토용 합성 사례다. 독립성·정답 타당성·전체 상품기획 평가에 적합한지는 PM 확인 전 미확인이다. 실제 모델 평가·성능 비교·고객 수요 증거로 표시하지 않는다. 원문과 답안은 새 Issue/PR에 포함하지 않으며 개발·튜닝에 사용하지 않았다.
 
-[delivery-manifest.json](delivery-manifest.json)의 명시적 파일 목록을 부분 전달 후보로 묶는다. 이 문서·목록·작업기록·근거·실제 참고팩/진단 파일이 포함된 로컬 Git commit을 기준으로 검토한다. 실제 commit 결과는 사용자 보고와 로컬 commit receipt로 확인한다. 자체 commit SHA를 파일 안에 넣어 순환 참조를 만들지 않는다.
+## 남은 조건과 다음 작업
 
-기존 가상 모델/합성 리뷰 원문, 원본 PDF/이미지, private 자료, 환경 실행파일, 과거 선정 문서, 하네스의 정식 상태 변경은 새 전달 파일 목록에 포함하지 않는다. 게시용 제목/본문은 [partial-pr-description.md](partial-pr-description.md)에 준비했다. 게시 전에 사용자가 준비 범위와 막힘을 볼 수 있도록 보고하며 원격 게시하지 않는다.
+- R03: 문서 등록·파싱 경로가 없다. 기존 합성 조회 성공을 실제 LG 자료의 업로드→파싱→검증→조회 성공으로 계산하지 않는다. #13 구현은 이번 범위에서 제외했다.
+- R04/R05/R07/R13: 실제 판단·분석 출력에서 원문 추적과 재실행을 확인해야 한다. 데이터의 원문 연결 확인과 구분한다.
+- R06/R08: 세 제품군의 전체 처리·분석 경로에서 자료 구분과 버전 유지가 필요하다.
+- PM: 평가 초안 검토, 부분 PR 인수, 검수·실제 병합·통합 확인이 남았다.
 
-파일 표현 확인: 최초 Windows CRLF와 Git LF 차이는 저장소 규칙으로 정정했다. 수집 당시 원래 해시는 참고팩 verification.json 이력에 보존하고 전달 manifest는 현재 LF 바이트를 확인한다. 정보/원본 PDF/기존 자료 변경 없음.
-
-## 007-local 최신 실행·부분 전달 상태
-
-이번 검사 대상 코드는 `5fa1a62273c5f699d0619c2a088a2f5a35c7a128`이다. 원격 지침/Issue/PM CHECKPOINT 및 실행·평가 안내는 재조회했다. README/코어/API 일부 원격 파일은404여서 이번 최신 main 대조는 미확인이다. 이전 보고를 새 직접 확인과 구분하고 [remote-read-status.json](runs/20261004T134134Z/remote-read-status.json)에 성공/실패를 남겼다.
-
-새 [run-result.json](runs/20261004T134134Z/run-result.json)은 환경 사전조건 실패와 계약/회귀/HTTP 조회 미실행을 구분한다. 세 Python probing 및 .venv Python -V의 파일부재 오류가 실제 증거다. 프로젝트 내부 uv·Python3.11·잠금의존성 설치 승인 대기이며 전역/새 설치 없음. 기존20파일의 최초 재개 시 해시는 모두 일치했다. 이전 하네스 doing 변경과3개 미추적 연구/현황 파일을 보존하고 이번 전달 목록에서 제외한다.
-
-참고팩 수량은 직접 다시 읽어 사실60·공식9/SSG3·출처차이2·미확인7 그대로다. 이전 링크 대조 PASS는 기준커밋의 저장 증거이며 새 Schema/API 성공으로 표시하지 않는다. 냉장고 조회 입력은 기존 synthetic 자료로 고정하고 공개 실자료 sidecar를 합성 데모에 넣지 않는다. 업로드/파서 미구현은 환경 문제와 별도로 기록하며 #13 전체 구현으로 확장하지 않는다.
-
-게시 제안은 `jeongiryang/lg-ax-2026`의 `main`에 `codex/data001-lg-sourcepack-20261004` 부분 PR이다. [제목·본문 초안](partial-pr-description.md)과 [파일·해시 목록](delivery-manifest.json)을 검토한 뒤 실제 push/PR 생성은 사용자 승인으로 진행한다. 현재 원격 게시/PM 검수·병합·통합 없음.
-
-독립 평가 여섯 유형과 기대 대응은 여전히 미완료다. 최신 PM 계약과 구분 기준만 연결했고 개발·튜닝에 평가 정답을 넣지 않았다. 다음 작업 하나는 프로젝트 내부 설치 승인 후 기존 계약 검사·회귀 검사·냉장고 조회의 실제 결과를 확보하는 것이다.
-
-이번 전달 후보는 기존20파일을 기준으로 새run 증거8파일을 추가한 총28파일이다. 명시적 파일목록/해시는 delivery-manifest.json, 새실패/로컬검사 원문은 runs/20261004T134134Z/prepublication-check.json과각run파일에있다. 이 추가는수집이나#13구현이아니라버전/실행제한/검증증거기록이다.
+[PR 초안](partial-pr-description.md)과 [파일·해시 목록](delivery-manifest.json)을 준비했다. 제안 대상은 `2026-LG-kitchen-chicken-team/lg-ax-2026`의 `main`이며 head는 `codex/data001-lg-sourcepack-20261004`이다. 실제 push·PR 생성·Issue/Project 보고는 승인 전에 하지 않는다. 다음 작업 하나는 이 내용의 게시 승인 후 부분 PR을 전달하는 것이다.
