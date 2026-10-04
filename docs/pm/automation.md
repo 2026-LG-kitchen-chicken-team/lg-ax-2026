@@ -60,15 +60,17 @@ PM이 검수 → 실제 병합 → 병합 후 통합 실행 → 기존 phase2·�
 
 **현재 HTTPS 접근은 정이량 PC의 LG 전용 연결을 경유한다. 이 PC가 꺼지면 팀원의 원격 접속도 중단된다.** 서버 직접 HTTPS 공개는 서버 관리자 권한이 없어 완료하지 않았다. 연결 장애 때 Worker는 새 작업·게시를 중단한다. PC 없이 공개 접속하려면 연구실 관리자가 LG 경로의 HTTPS 연결을 별도로 제공해야 한다.
 
-네 PC의 전용 실행 계정/VM·개별 GitHub/Codex 인증·Worker 실행 확인은 각 환경에서 필요하다. Windows 설치는 `services/automation/install-worker.ps1`, Linux 예시는 `lgax-worker.service`를 따른다. 개인 PC의 환경변수 제거만으로 파일·키체인까지 격리했다고 표현하지 않는다. GitHub self-hosted runner는 현재 설치하지 않았으며 개인 PM 계정에 무제한 workflow 실행 권한을 부여하지 않는다. 고정 Worker의 승인 큐 polling을 먼저 사용하고 runner는 전용 실행 환경에서 선택적으로 추가한다.
+네 PC의 전용 실행 계정/VM·개별 GitHub 인증·선택한 Codex 또는 Claude Code 로그인·Worker 실행 확인은 각 환경에서 필요하다. [각 PC 초기 설정](../bootstrap/automation-workers.md)을 자기 AI와 진행한다. Windows 설치는 `services/automation/install-worker.ps1`, Linux 예시는 `lgax-worker.service`를 따른다. 개인 PC의 환경변수 제거만으로 파일·키체인까지 격리했다고 표현하지 않는다. GitHub self-hosted runner는 현재 설치하지 않았으며 개인 PM 계정에 무제한 workflow 실행 권한을 부여하지 않는다. 고정 Worker의 승인 큐 polling을 먼저 사용하고 runner는 전용 실행 환경에서 선택적으로 추가한다.
 
 개발 Worker의 모델/테스트와 publisher는 현재 같은 실행 사용자다. 전용 계정/VM이 개인 PC의 다른 사용자 비밀을 분리하더라도 그 실행 계정 안의 GitHub·controller 인증 파일까지 보호하지 않는다. **무인 write 운영을 켜기 전에 publisher를 별도 사용자/broker로 분리하거나 파일·네트워크 접근 경계를 실증해야 한다.** PM 관리자 인증·메일·운영 토큰을 가진 사용자에서 비신뢰 코드/모델을 실행하지 않는다. 이 단계는 아직 완료하지 않았으므로 현재 OFF를 유지한다.
 
-팀원은 자기 GitHub CLI로 로그인한 뒤 `automation.py setup --member {성명} --controller-url {위주소}`를 실행한다. GitHub 토큰은 인증 확인에만 전달하며 서버에 보관하지 않는다. 개인 자동화 토큰을 발급받고 별도 CODEX_HOME에 직접 `codex login`한다. 인증 파일을 공유하거나 여러 PC에서 복제하지 않는다. `worker.example.json`의 절대 경로를 자기 환경에 맞추고 격리를 실제 확인한 뒤 설치한다. 모델 프록시는 `python -m services.automation.model_proxy --config {개인client.json}`으로 loopback18873에 제공한다.
+팀원은 자기 GitHub CLI로 로그인한 뒤 `automation.py setup --member {성명} --controller-url {위주소}`를 실행한다. GitHub 토큰은 인증 확인에만 전달하며 서버에 보관하지 않는다. 개인 자동화 토큰을 발급받고 Codex는 별도 CODEX_HOME에서 `codex login`, Claude Code는 별도 CLAUDE_CONFIG_DIR에서 `claude auth login`한다. 인증 파일을 공유하거나 여러 PC에서 복제하지 않는다. 선택한 `worker.example.json` 또는 `worker.claude.example.json`의 절대 경로를 자기 환경에 맞추고 격리를 실제 확인한 뒤 설치한다. 고정 runtime/report bundle을 저장소 밖에 배포한다. 모델 프록시는 `python -m services.automation.model_proxy --config {개인client.json}`으로 loopback18873에 제공한다.
 
 기존 코어의 모델 설정은 `LGAX_MODEL_ADAPTER=ollama`, `LGAX_MODEL_ENDPOINT=http://127.0.0.1:18873`, `LGAX_MODEL_ID=qwen3:8b`, `LGAX_MODEL_DIGEST=500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41`이다. Worker에 프록시 URL을 설정하면 같은 값을 제공한다. 실제 생성 옵션과 사용량을 기록하며 인증 토큰을 모델 프롬프트에 넣지 않는다.
 
 ## 지원 범위와 확인 기준
+
+Claude Code도 같은 큐·ON/OFF·작업 lock·세션 기록·PR·PM 검수를 사용한다. 개인 설정의 engine으로 선택하며 현재 실행기끼리 자동 fallback하지 않는다. Claude의 실제 native 옵션/빈 로그인 거부는 점검했으나 개인 구독 로그인과 실제 모델→검사→PR pilot는 각 PC에서 남아 있다. 상세 설치·제한 도구·구독 정책과 실제 검증 범위는 [초기 설정](../bootstrap/automation-workers.md)을 따른다. CLI 버전 변경은 PM의 재검증 대상이다.
 
 OpenAI의 [CI/CD 인증 안내](https://learn.chatgpt.com/docs/auth/ci-cd-auth)는 개인 로그인 상태를 신뢰된 지속 runner에서 보존하는 고급 구성을 설명한다. 한 인증 파일을 병렬 실행·여러 PC에 공유하지 않고 만료·재로그인을 처리해야 한다. [비대화형 실행](https://learn.chatgpt.com/docs/non-interactive-mode)과 [요금/사용량](https://learn.chatgpt.com/docs/pricing)을 따른다. ChatGPT 구독 사용량과 API 별도 과금은 구분하며 API로 자동 전환하지 않는다. 무제한·24시간 성공을 보장하지 않는다.
 

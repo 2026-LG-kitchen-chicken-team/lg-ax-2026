@@ -117,3 +117,5 @@ LG Notion 페이지와 공모전 대시보드를 10/4 실제 결과로 갱신·�
 ## 개발 자동화와 병목 개선
 
 [ON/OFF·설치·기록·공유 모델 접근](../pm/automation.md)을 따른다. 초기 모드는 전원 OFF다. 중앙 서비스와 개별 Worker 설치·인증, PC 온라인을 구분한다. 정식 PM 승인·병합·Done은 기존 규칙을 유지한다.
+
+Codex와 Claude Code 중 자기 실행기를 선택할 수 있다. [각 PC의 초기 설정 안내](automation-workers.md)를 자기 AI와 함께 진행한다. Claude 사용자는 Codex 구독·로그인이 필요 없다. 웹 Claude/GitHub App 로그인과 로컬 Claude Code 로그인은 별개다.

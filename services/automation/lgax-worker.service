@@ -1,13 +1,13 @@
 # User service template. Substitute the fixed deployment paths before installing.
 # Run under a dedicated execution OS user/VM, not the PM's personal credential user.
 [Unit]
-Description=LG AX bounded Codex worker (controller defaults OFF)
+Description=LG AX bounded Codex/Claude worker (controller defaults OFF)
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=%h/.local/share/lgax-automation/python/bin/python -u %h/.local/share/lgax-automation/services/automation/worker.py --config %h/.config/lgax-automation/worker.json
+ExecStart=%h/.local/share/lgax-automation/python/bin/python -u %h/.local/share/lgax-automation/worker-reviewed/worker_entry.py --config %h/.config/lgax-automation/worker.json
 Restart=on-failure
 RestartSec=30
 UMask=0077
@@ -17,6 +17,8 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=read-only
+# Replace the selected engine directory below and ensure every path exists.
+# Claude profiles use .config/lgax-claude instead of .config/lgax-codex.
 ReadWritePaths=%h/.local/state/lgax-automation %h/.config/lgax-codex %h/.local/share/lgax-automation/clone
 
 [Install]
