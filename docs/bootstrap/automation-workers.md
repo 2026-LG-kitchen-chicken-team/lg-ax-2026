@@ -4,7 +4,7 @@
 
 검증 전 팀/개인 모두 OFF다. 초기 설정을 끝냈다고 켜지지 않는다. 최신 Worker는 [Docker 실행·검사 경계](automation-isolation.md)를 사용한다. 모델·저장소 검사에 게시 인증을 제공하지 않고 실제 canary·본인 로그인·첫 PR/보고를 확인해야 한다. 정이량의 [자동 PM](../pm/autonomous-pm.md)은 별도 정책과 PM 개인 ON이 필요하다. 중앙 HTTPS는 아직 정이량 PC를 경유한다. 네 PC의 실제 준비는 각자 근거로 확인한다.
 
-10/5 정이량 PC의 제한 pilot은 실제 Docker Codex 수정(168.109초) → 고정 validator(2.844초, 1개 테스트로 다른 프로젝트 부모 거부·같은 프로젝트 부모 허용 검증) → [PR82](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/82)의 CI 4개 성공 → [Project 보고 ACCEPTED](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/19#issuecomment-5985353509) → 독립 PM 검수·검사 → 실제 병합 `466c2b9` → 병합 후 격리 검사·[공식 스냅샷 승인 ACCEPTED](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28#issuecomment-5985418682)까지 완주했다. 앞선 cache 권한 실패와 세션 근거 경로 미승인으로 게시가 차단된 두 시도, 잘못된 첫 merge 결정의 변경 전 거부 기록은 보존했다. 자세한 고정 commit·receipt·검사 근거는 [pipeline 근거](../../evals/team-automation/20261005/pipeline-proof.json)를 따른다. 이후 pilot 팀/개인 OFF에서 `--once`가 모델 호출·변경 없이 종료했고 후속 배정은 예산 한도로 멈췄다. 현재 운영 OFF 배포·정이량 background Worker·팀원 PC 인계는 별도로 진행 중이다. 이 한 건의 성공을 다른 세 PC의 준비 완료·팀 전체 가동·상위 작업 Done·신청서 31개 요구 구현 완료로 확대하지 않는다.
+10/5 정이량 PC의 제한 pilot은 실제 Docker Codex 수정(168.109초) → 고정 validator(2.844초, 1개 테스트로 다른 프로젝트 부모 거부·같은 프로젝트 부모 허용 검증) → [PR82](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/82)의 CI 4개 성공 → [Project 보고 ACCEPTED](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/19#issuecomment-5985353509) → 독립 PM 검수·검사 → 실제 병합 `466c2b9` → 병합 후 격리 검사·[공식 스냅샷 승인 ACCEPTED](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28#issuecomment-5985418682)까지 완주했다. 앞선 cache 권한 실패와 세션 근거 경로 미승인으로 게시가 차단된 두 시도, 잘못된 첫 merge 결정의 변경 전 거부 기록은 보존했다. 자세한 고정 commit·receipt·검사 근거는 [pipeline 근거](../../evals/team-automation/20261005/pipeline-proof.json)를 따른다. 이후 pilot 팀/개인 OFF에서 `--once`가 모델 호출·변경 없이 종료했고 후속 배정은 예산 한도로 멈췄다. 운영 OFF 설정과 정이량의 PM·Worker 예약 작업은 새 전용 runtime으로 설치하고 실제 OFF 대기를 확인했다. 다른 세 PC의 초기 설정·개별 검증은 여전히 남았다. 이 한 건의 성공을 다른 세 PC의 준비 완료·팀 전체 가동·상위 작업 Done·신청서 31개 요구 구현 완료로 확대하지 않는다.
 
 ## 팀원 AI에게 먼저 전달할 지시
 
@@ -65,6 +65,25 @@ uv run --no-sync python -X utf8 C:/LGAX-tools/worker-reviewed/worker_entry.py --
 report bundle 출력의 `trusted_report_script`·`trusted_report_sha256`도 설정에 추가한다. 첫 pilot에서는 공유 모델 선택 필드를 생략하고 offline 검사를 사용한다. validator는 network none이므로 호스트의 loopback18873 모델 proxy에 연결할 수 없다. 모델/검사가 필요하다는 이유로 인증 폴더·Docker socket을 더 mount하거나 host network·privileged를 켜지 않는다. live-model 검사는 PM이 승인한 별도 연결과 실제 근거로 관리한다.
 
 서비스 등록은 Windows `services/automation/install-worker.ps1`, Linux `lgax-worker.service`의 **개인 실제 경로**를 적용한다. 현재 Windows installer는 `-DedicatedExecutionEnvironment`와 `isolation_acknowledged=true`를 요구한다. 실제 image/mount/canary 증거가 확보된 뒤 설치 호환용 선언으로만 사용하며, 이 값 자체를 readiness·ON·게시 검증으로 기록하지 않는다. Linux ReadWritePaths에도 선택 엔진 인증 폴더를 넣는다. Windows 등록은 해당 사용자가 로그인된 동안만 실행되며 sleep/offline에서는 작업할 수 없다. 설치·background 시작 시 중앙 팀/개인 OFF를 다시 확인한다.
+
+### Windows 예약 작업이 Python을 실행하지 못할 때
+
+콘솔에서 Python·preflight가 성공해도 예약 작업의 **Limited/Interactive 토큰**에서는 같은 경로를 읽지 못할 수 있다. 10/5 정이량 PC에서 uv venv의 launcher는 읽혔지만 사용자 Roaming 아래 managed CPython base는 읽히지 않아 첫 PM 실행이 exit `103`/`No Python at ...`로 종료됐다. PS5/PS7의 일반 숨김 실행은 성공했고 실제 Limited 예약 작업에서만 실패를 재현했다. 따라서 따옴표를 추측해서 고치거나 관리자 실행으로 바꾸지 않았다.
+
+이 증상이 있으면 각자 AI가 다음 절차를 수행한다. 아래 경로의 계정은 **본인의 계정**이며 다른 팀원의 runtime·인증 폴더를 복사하지 않는다.
+
+1. 팀/본인 OFF와 실행 중 작업 정리를 확인하고 실패한 예약 작업을 중단한다. Task의 첫 종료 코드·private stdout/stderr, 선택한 Python의 버전·`sys._base_executable`을 확인한다. 전체 환경변수·인증 값은 출력하지 않는다.
+2. 실제 Limited/Interactive 임시 예약 probe로 venv와 base 파일의 읽기/실행, 필요한 DLL·stdlib import를 검사한다. 일반 콘솔 성공이나 task가 잠깐 Running인 것만으로 완료 처리하지 않는다. probe는 업무·로그인·게시·ON을 하지 않으며 종료 후 임시 task를 제거한다.
+3. 검토한 **동일 CPython 버전·아키텍처 배포 폴더만** checkout·guest·AI profile 밖의 새 경로(예: `C:/LGAX-tools/choigilung/cpython-reviewed`)에 둔다. 복사 전 source/destination의 절대 경계·`.git`·reparse/link를 확인하고 실행 파일/배포 파일 hash와 함께 `LICENSE.txt` 및 포함된 제3자 고지를 보존한다. 기존 Roaming Python·다른 프로젝트·계정 ACL을 변경하지 않고 개인 홈·AI profile·GitHub/controller 토큰을 옮기지 않는다. uv-managed CPython의 공급 경로는 [uv 공식 안내](https://docs.astral.sh/uv/concepts/python-versions/#managed-python-distributions), 라이선스는 배포의 원문과 [Python 공식 안내](https://docs.python.org/3/license.html)를 대조한다(확인일 2026-10-05).
+4. 그 base의 **명시적 실행 파일 경로**로 새 venv를 만든다. PM이 검토한 main의 잠금 의존성에서 만든 hash 포함 requirements의 원본 SHA를 확인한 뒤 `--require-hashes`와 `--link-mode copy`로 복원한다. 임의 최신 의존성·다른 Python으로 fallback하지 않는다.
+
+```powershell
+uv venv --no-python-downloads --python C:/LGAX-tools/choigilung/cpython-reviewed/python.exe C:/LGAX-tools/choigilung/host-runtime-reviewed
+uv pip install --no-python-downloads --python C:/LGAX-tools/choigilung/host-runtime-reviewed/Scripts/python.exe --require-hashes --link-mode copy -r C:/LGAX-tools/choigilung/requirements-reviewed.txt
+```
+
+5. 새 경로의 `python.exe`와 실제 사용할 `pythonw.exe`를 **같은 Limited 예약 토큰**에서 무해한 probe로 실행한다. Python/base 버전·잠금 의존성·`ssl`/`sqlite3`와 실제 Worker 의존성 import·종료 코드·stderr를 확인하고 임시 task를 제거한다. 정이량 PC에서는 CPython 3.11.15와 잠금 35개 의존성, 두 실행 파일의 exit 0·주요 import를 직접 확인했다. 이 수치나 proof 경로를 다른 PC의 PASS로 복사하지 않는다.
+6. 고정 entry·config·state·본인 로그인은 그대로 두고 installer의 **본인 Python 경로만** 새 runtime으로 지정해 검토한 설치 절차로 재등록한다. 첫 실제 실행 이후 task/PID와 로그를 함께 확인한다. PM은 OFF tick의 `model_called=false`·`mutated=false`, Worker는 실제 preflight 뒤 OFF 대기와 중복 실행 없음까지 대조한다. Python probe 성공은 Docker 인증·canary·게시 검증을 대신하지 않는다.
 
 사용자 직접 필요한 부분은 자기 계정 로그인이다. 환경 준비·설정 작성·bundle·점검·자기 상태 보고는 각자의 AI가 수행한다. 설치/로그인을 할 수 없으면 원인과 다음 행동을 자기 기록/Project에 남기고 기존 수동 작업은 계속한다.
 
