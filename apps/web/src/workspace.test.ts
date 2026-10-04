@@ -1,12 +1,38 @@
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { WorkspaceClient } from './workspace';
+import { FIXTURE_RUNS } from './fixtures/planning.fixture';
 
 const token = 't'.repeat(48);
 const request = { product_group: 'fridge', target_customer: '1인 가구', use_situation: '음료를 쏟은 뒤 청소',
   improvement_task: '선반 청소 부담 감소', exclusions: [], model_ids: ['FRIDGE-A'], dataset_version: '0.1.0' };
 
 describe('shared workspace client boundaries', () => {
+  it('rejects a valid envelope with malformed analysis before views use it', async () => {
+    for (const output of [{}, { needs: 'bad', gaps: [] }, { needs: [], gaps: [{ support_status: 'invented' }] }]) {
+      const snapshot = { ...FIXTURE_RUNS[0], output };
+      const network = vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true, data: snapshot })));
+      await expect(new WorkspaceClient('', () => token, network).getRun(snapshot.run.id)).rejects.toMatchObject({ code: 'CONTRACT_MISMATCH' });
+    }
+    const valid = vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true, data: FIXTURE_RUNS[0] })));
+    expect((await new WorkspaceClient('', () => token, valid).getRun(FIXTURE_RUNS[0].run.id)).output).toEqual(FIXTURE_RUNS[0].output);
+  });
+  it('preserves a legitimate null analysis output', async () => {
+    const snapshot = { ...FIXTURE_RUNS[0], output: null };
+    const network = vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true, data: snapshot })));
+    expect((await new WorkspaceClient('', () => token, network).getRun(snapshot.run.id)).output).toBeNull();
+  });
+  it('preserves legitimate empty need and gap lists', async () => {
+    const snapshot = { ...FIXTURE_RUNS[0], output: { needs: [], gaps: [] } };
+    const network = vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true, data: snapshot })));
+    expect((await new WorkspaceClient('', () => token, network).getRun(snapshot.run.id)).output).toEqual({ needs: [], gaps: [] });
+  });
+  it('rejects malformed analysis inside a valid run-list envelope', async () => {
+    const malformed = { ...FIXTURE_RUNS[1], output: { needs: [], gaps: [{}] } };
+    const payload = { ok: true, data: { contract_version: '0.1.0', runs: [FIXTURE_RUNS[0], malformed] } };
+    const network = vi.fn().mockResolvedValue(new Response(JSON.stringify(payload)));
+    await expect(new WorkspaceClient('', () => token, network).listRuns(FIXTURE_RUNS[0].run.project_id)).rejects.toMatchObject({ code: 'CONTRACT_MISMATCH' });
+  });
   it('calls the default browser transport without a client object receiver', async () => {
     const previous = globalThis.fetch;
     globalThis.fetch = async function (this: unknown) {

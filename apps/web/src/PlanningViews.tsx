@@ -8,7 +8,7 @@ import { editSummary, END_RULE, START_RULE } from './measurement';
 import type { EditSummary, ModificationMeasurement } from './measurement';
 import type { ErrorView, EvidenceSearch, LiveWorkspace } from './liveWorkspace';
 import {
-  buildComparison, buildExport, buildRerunRequest, candidateExclusion, conceptDetailChanges, exportMarkdown, FIXTURE_NOTICE, heldItems,
+  buildComparison, buildExport, buildRerunRequest, candidateChoicesFor, conceptDetailChanges, exportMarkdown, FIXTURE_NOTICE, heldItems,
   nextRequestRevision, requestChanges, splitConditions, statusLabel,
 } from './planning';
 import type { CandidateChoice, Concept, DataMode, Feature, MissingQuestion, PlanningRequest, RequestChange, RunSnapshot } from './planning';
@@ -182,7 +182,7 @@ function ExportActions({ mode, snapshot, features, evidence, runs }: { mode: Dat
     if (format === 'json') download(`${base}.json`, 'application/json', `${JSON.stringify(doc, null, 2)}\n`);
     else download(`${base}.md`, 'text/markdown', exportMarkdown(doc));
   }
-  return <div className="export-actions"><span className={`export-check ${check.complete ? 'ok' : 'missing'}`} title="인용 근거 원문·요구사항·가정·미확인·미해결·보류 포함 여부">{check.complete ? '내보내기 점검: 누락 없음' : `내보내기 점검: 누락 ${missingCount}건`}</span><span>회의용 내보내기</span><button type="button" className="secondary-button" onClick={() => exportAs('json')}>JSON</button><button type="button" className="secondary-button" onClick={() => exportAs('md')}>문서(Markdown)</button></div>;
+  return <div className="export-actions"><span className={`export-check ${check.complete ? 'ok' : 'missing'}`} title="선택 실행의 요청·후보·근거 원문·요구사항·가정·보류·계보와 내보내기 내용의 일치 여부">{check.complete ? '내보내기 점검: 누락 없음' : `내보내기 점검: 누락·불일치 ${missingCount}건`}</span><span>회의용 내보내기</span><button type="button" className="secondary-button" onClick={() => exportAs('json')}>JSON</button><button type="button" className="secondary-button" onClick={() => exportAs('md')}>문서(Markdown)</button></div>;
 }
 
 function RunPicker({ runs, selected, onSelect }: { runs: RunSnapshot[]; selected: RunSnapshot; onSelect: (id: string) => void }) {
@@ -330,30 +330,32 @@ function MeasurementLog({ measure }: { measure: MeasureControls }) {
 /** Planner picks a role per candidate and corrects conditions; the preview shows the exact next request before rerun. */
 function RerunPanel({ mode, selected, original, onRerun, busy, measure }: { mode: DataMode; selected: RunSnapshot; original: PlanningRequest; onRerun: (request: PlanningRequest, edits: EditSummary) => Promise<void>; busy: boolean; measure: MeasureControls }) {
   const concepts = selected.run.concepts;
-  const { conditions: startConditions } = splitConditions(selected.request);
-  const [initialChoices] = useState<Record<string, CandidateChoice>>(() => Object.fromEntries(concepts.map(concept => [concept.id, selected.request.exclusions.includes(candidateExclusion(concept)) ? 'exclude' : 'keep'])));
+  const { conditions: startConditions } = splitConditions(selected.request, concepts);
+  const [initialChoices] = useState(() => candidateChoicesFor(selected.request, concepts));
   const [choices, setChoices] = useState<Record<string, CandidateChoice>>(initialChoices);
-  const [conditions, setConditions] = useState<string[]>(startConditions);
+  const nextConditionId = useRef(startConditions.length);
+  const [conditions, setConditions] = useState(() => startConditions.map((text, id) => ({ id, text })));
   const [draft, setDraft] = useState('');
   const [error, setError] = useState('');
 
   let preview: PlanningRequest | null = null;
   let previewError = '';
-  try { preview = buildRerunRequest(selected.request, concepts, choices, conditions); } catch (failure) { previewError = failure instanceof ApiError ? failure.message : '재실행 요청을 만들 수 없습니다.'; }
+  try { preview = buildRerunRequest(selected.request, concepts, choices, conditions.map(item => item.text)); } catch (failure) { previewError = failure instanceof ApiError ? failure.message : '재실행 요청을 만들 수 없습니다.'; }
   const changes = preview ? requestChanges(selected.request, preview) : [];
 
   function addDraft() {
     const text = draft.trim();
     if (!text) { setError('추가할 조건을 입력해 주세요.'); return; }
-    if (conditions.includes(text)) { setError('이미 같은 조건이 있습니다.'); return; }
-    setConditions(items => [...items, text]); setDraft(''); setError('');
+    if (conditions.some(item => item.text.trim() === text)) { setError('이미 같은 조건이 있습니다.'); return; }
+    const condition = { id: nextConditionId.current++, text };
+    setConditions(items => [...items, condition]); setDraft(''); setError('');
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!preview) return;
     if (!changes.length) { setError('바뀐 조건이 없습니다. 후보 선택이나 조건을 수정한 뒤 다시 실행해 주세요.'); return; }
-    try { await onRerun(preview, editSummary(initialChoices, choices, startConditions, splitConditions(preview).conditions)); setError(''); } catch (failure) { setError(failure instanceof ApiError ? failure.message : '새 실행을 만들지 못했습니다.'); }
+    try { await onRerun(preview, editSummary(initialChoices, choices, startConditions, splitConditions(preview, concepts).conditions)); setError(''); } catch (failure) { setError(failure instanceof ApiError ? failure.message : '새 실행을 만들지 못했습니다.'); }
   }
 
   return <form className="panel planning-panel condition-form" onSubmit={submit} aria-label="후보·조건 선택 후 재실행">
@@ -366,10 +368,10 @@ function RerunPanel({ mode, selected, original, onRerun, busy, measure }: { mode
       <span className="choice-group" role="radiogroup" aria-label={`${concept.title} 처리`}>{([['keep', '유지'], ['focus', '집중'], ['exclude', '제외']] as const).map(([value, label]) => <label key={value} className={choices[concept.id] === value ? `on ${value}` : ''}><input type="radio" name={`choice-${concept.id}`} checked={choices[concept.id] === value} onChange={() => setChoices(items => ({ ...items, [concept.id]: value }))} />{label}</label>)}</span>
     </li>)}</ul> : <p className="muted">이 실행에는 고를 후보가 없습니다. 조건만 교정해 다시 실행할 수 있습니다.</p>}
     <h4 className="sub">조건 교정 <small>제외·제약 조건</small></h4>
-    <ul className="condition-list">{conditions.map((item, index) => <li key={`${index}-${item}`}>
-      <label className="sr-only" htmlFor={`condition-${index}`}>조건 {index + 1}</label>
-      <input id={`condition-${index}`} value={item} onChange={event => setConditions(items => items.map((value, at) => at === index ? event.target.value : value))} />
-      <button type="button" className="text-button" onClick={() => setConditions(items => items.filter((_, at) => at !== index))} aria-label={`조건 ${index + 1} 삭제`}>삭제</button>
+    <ul className="condition-list">{conditions.map((item, index) => <li key={item.id}>
+      <label className="sr-only" htmlFor={`condition-${item.id}`}>조건 {index + 1}</label>
+      <input id={`condition-${item.id}`} value={item.text} onChange={event => { const text = event.target.value; setConditions(items => items.map(value => value.id === item.id ? { ...value, text } : value)); }} />
+      <button type="button" className="text-button" onClick={() => setConditions(items => items.filter(value => value.id !== item.id))} aria-label={`조건 ${index + 1} 삭제`}>삭제</button>
     </li>)}</ul>
     <div className="condition-row"><label className="sr-only" htmlFor="extra-condition">추가 조건</label><input id="extra-condition" value={draft} onChange={event => setDraft(event.target.value)} onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); addDraft(); } }} placeholder="예: 1인 가구 소형 모델만 검토" /><button type="button" className="secondary-button" onClick={addDraft}>조건 추가</button></div>
     <h4 className="sub">다음 요청 미리보기 <small>요청 회차 {preview ? nextRequestRevision(original, selected, preview) : '-'}</small></h4>
