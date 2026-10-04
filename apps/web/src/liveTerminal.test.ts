@@ -33,4 +33,3 @@ it.skipIf(process.env.LGAX_LIVE_TERMINAL !== 'true')('keeps real terminal runs, 
   agent_quality_passed: null, limitation:'Transport, storage and UI contract verification; successful quality is not asserted.' };
  writeFileSync(process.env.LGAX_TERMINAL_PROOF_FILE!, JSON.stringify(proof,null,2)+'\n');
 }, 480_000);
-
