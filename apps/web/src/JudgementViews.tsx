@@ -1,6 +1,7 @@
 import type { Evidence } from './domain';
-import { judgementView } from './judgement';
+import { judgementView, planningExecutionView } from './judgement';
 import type { JudgementDecision, JudgementInput, JudgementOutput } from './judgement';
+import type { RunSnapshot } from './planning';
 
 const POLARITY: Record<string, string> = { complaint: '불편', positive: '긍정', conflicting: '상충', irrelevant: '무관', uncertain: '불확실' };
 const SUPPORT: Record<string, string> = { explicit_supported: '설명서에 지원 명시', explicit_unsupported: '설명서에 미지원 명시', unmentioned: '설명서 미언급', conflicting: '설명서 상충' };
@@ -43,5 +44,46 @@ export function JudgementPanel({ input, output, decision, fixture }: { input: Ju
     <TextList title="보류 사유" items={view.hold_reasons} />
     <TextList title="미해결" items={view.unresolved} />
     <TextList title="후보 없음 사유" items={view.no_candidate_reasons} />
+  </section>;
+}
+
+const KIND_LABEL: Record<string, string> = { live_model: '실제 모델 실행 기록(저장된 결과)', fixture: 'fixture 실행 기록(모델 호출 아님)' };
+const STATUS_LABEL: Record<string, string> = { completed: '완료', held: '보류', failed: '실패' };
+
+/**
+ * The stored core record of one run (output.planning_execution), under the same run ID as the screen above it:
+ * original and final input, the core decision with its declarations, trace, model calls and errors. Nothing here is
+ * re-judged in the browser; malformed or inconsistent records are shown as such.
+ */
+export function ExecutionPanel({ snapshot }: { snapshot: RunSnapshot }) {
+  const view = planningExecutionView(snapshot);
+  if (view.kind === 'none') return null;
+  if (view.kind === 'invalid') return <section className="panel planning-panel execution-panel" aria-label="판단 실행 기록">
+    <div className="planning-head"><div><p className="eyebrow">CORE RECORD</p><h3>판단 실행 기록 <span className="id">{snapshot.run.id}</span></h3></div></div>
+    <div className="unresolved" role="alert"><strong>저장된 판단 기록의 형식이 맞지 않아 표시하지 않습니다</strong><ul>{view.errors.slice(0, 8).map(item => <li key={item}>{item}</li>)}</ul>{view.errors.length > 8 ? <small>외 {view.errors.length - 8}건</small> : null}</div>
+  </section>;
+  const { execution } = view;
+  const original = execution.original_input.request;
+  const revised = execution.input.revision_count;
+  return <section className="panel planning-panel execution-panel" aria-label="판단 실행 기록">
+    <div className="planning-head"><div><p className="eyebrow">CORE RECORD</p><h3>판단 실행 기록 <span className="id">{snapshot.run.id}</span></h3></div><span className={`run-status ${execution.execution_kind === 'fixture' ? 'fixture' : 'done'}`}>{KIND_LABEL[execution.execution_kind]}<small>{STATUS_LABEL[execution.status]} · 내부 수정 {revised}/2</small></span></div>
+    <dl className="run-meta">
+      <div><dt>판단 모델</dt><dd>{view.models.length ? view.models.join(', ') : '호출 기록 없음'}</dd></div>
+      <div><dt>모델 호출</dt><dd>{view.model_calls}회{view.elapsed_ms !== null ? ` · ${(view.elapsed_ms / 1000).toFixed(1)}초` : ''}</dd></div>
+      <div><dt>판단한 제품·문서</dt><dd>{execution.input.product.model_id} · 문서 {execution.input.product.document_version} · {execution.input.product.source_kind}</dd></div>
+      <div><dt>입력 원문·기능</dt><dd>{execution.input.sources.length}건 · {execution.input.features.length}개</dd></div>
+    </dl>
+    {view.problems.length ? <div className="unresolved" role="alert"><strong>저장 기록 불일치</strong><ul>{view.problems.map(item => <li key={item}>{item}</li>)}</ul></div> : null}
+    {execution.errors.length ? <div className="unresolved"><strong>실행 중 기록된 오류·검사 실패 {execution.errors.length}건</strong><ul>{execution.errors.map((item, index) => <li key={`${item.code}-${index}`}><code>{item.code}</code> {item.message}</li>)}</ul></div> : null}
+    <h4 className="sub">원 요청 <small>Agent에 그대로 전달된 조건</small></h4>
+    <dl className="run-meta">
+      <div><dt>개선 과제</dt><dd>{original.improvement_task}</dd></div>
+      <div><dt>제외 조건</dt><dd>{original.exclusions.length ? original.exclusions.join(' / ') : '없음'}</dd></div>
+    </dl>
+    {execution.output && execution.decision
+      ? <JudgementPanel input={execution.input} output={execution.output} decision={execution.decision} fixture={execution.execution_kind === 'fixture'} />
+      : <p className="muted">판단 출력이 저장되지 않았습니다({STATUS_LABEL[execution.status]}). 위의 오류와 실행 순서를 확인해 주세요.</p>}
+    <h4 className="sub">실행 순서 <small>trace {execution.trace.length}단계</small></h4>
+    <ol className="events">{execution.trace.map((step, index) => <li key={`${step.stage}-${step.operation}-${index}`}><span className="stage">{step.stage}</span><span>{step.operation}</span>{typeof step.elapsed_ms === 'number' ? <code>{(step.elapsed_ms / 1000).toFixed(1)}s</code> : null}</li>)}</ol>
   </section>;
 }

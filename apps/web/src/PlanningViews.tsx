@@ -3,6 +3,7 @@ import type { FormEvent } from 'react';
 import { ApiError } from './api';
 import { evidenceLocation } from './domain';
 import type { Evidence } from './domain';
+import { ExecutionPanel } from './JudgementViews';
 import { runStatusView } from './liveWorkspace';
 import { editSummary, END_RULE, START_RULE } from './measurement';
 import type { EditSummary, ModificationMeasurement } from './measurement';
@@ -268,6 +269,7 @@ export function ConceptsView({ mode, runs, selected, onSelect, features, evidenc
       <ComparisonTable snapshot={selected} features={features} evidence={evidenceById} />
       <ScopeNotice snapshot={selected} features={features} evidence={evidence} />
     </section>
+    <ExecutionPanel snapshot={selected} />
     <section className="panel planning-panel">
       <div className="planning-head"><div><p className="eyebrow">CANDIDATES</p><h3>콘셉트 후보 <span className="count">{selected.run.concepts.length} / 3</span></h3></div><ExportActions mode={mode} snapshot={selected} features={features} evidence={evidence} runs={runs} /></div>
       {selected.run.concepts.length ? <div className="concept-grid">{selected.run.concepts.map(concept => <article key={concept.id} className={`concept-card ${concept.status}`}>
@@ -437,6 +439,7 @@ export function HistoryView({ mode, runs, selected, onSelect, features, evidence
         {selected.run.events.length ? <><h4 className="sub">판단 순서와 사용한 Skill</h4><ol className="events">{selected.run.events.map((item, index) => <li key={`${item.stage}-${index}`}><span className="stage">{item.stage}</span><span>{item.summary}</span>{item.tool ? <code>{item.tool}</code> : null}</li>)}</ol></> : null}
         {selected.unconfirmed.length ? <div className="unresolved"><strong>미확인 사항</strong><ul>{selected.unconfirmed.map(item => <li key={item}>{item}</li>)}</ul></div> : null}
       </section>
+      <ExecutionPanel snapshot={selected} />
       <RerunPanel key={selected.run.id} mode={mode} selected={selected} original={original} onRerun={onRerun} busy={busy} measure={measure} />
     </div>
   </div>;
