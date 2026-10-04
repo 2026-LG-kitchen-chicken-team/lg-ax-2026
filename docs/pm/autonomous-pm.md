@@ -31,6 +31,7 @@ PM 코드는 편집 중인 clone/PR에서 실행하지 않는다. config·policy
 | controller_url / controller_token_file | 현재 서비스와 정이량 운영자 인증 |
 | executor | 검토 image ID·별도 workspace_root·본인 auth_root·engine·고정 network |
 | readiness_files | 담당자별 고정 private 증거 경로/해시. 실제 경계/로그인 미검증은 false |
+| released_capabilities | PM이 개별 인수를 허용한 고정 capability ID 목록. 새 배포에는 반드시 명시하며 `[]`는 모든 새 배정을 금지 |
 | poll_seconds | 제한된 상태 조회 간격 |
 | notification_hook | 선택적인 외부 고정 발송 script/해시. 미설정이면 메일 미발송 |
 
@@ -45,11 +46,41 @@ uv run --no-sync python -X utf8 C:/LGAX-tools/pm-reviewed-new/pm_entry.py --conf
 
 preflight는 GitHub 정이량 계정·controller operator·고정 정책·Docker metadata를 확인하며 모델/게시를 하지 않는다. observe는 metadata만 조회하고 검수 모델/테스트를 수행하지 않는다. once는 현재 스위치를 읽어 한 tick만 수행하며 OFF면 모델·변경을 하지 않는다. 무인 loop는 외부 고정 entry에서 `--once` 없이 실행하고 OS process lock을 유지한다.
 
+## 정이량 PC의 숨김 자동 시작
+
+`services/automation/install-pm.ps1`은 **현재 Windows 사용자 로그인 때** 외부 고정 PM loop를 실행하는 `LGAX-PM-jeongiryang` 예약 작업을 설치한다. 관리자 승격 없이 Limited/Interactive로 등록하며 숨김 PowerShell이 Python을 `-WindowStyle Hidden`으로 실행한다. 로그인하지 않았거나 PC가 꺼짐/절전/오프라인이면 계속 작업하지 못한다. 클라우드 실행이 아니다.
+
+PM이 먼저 외부 runtime·실제 개인 로그인·controller operator 인증·고정 정책·private readiness 파일·전용 state/journal을 준비한다. 설정은 PM이 결정하며 설치기가 생성하거나 인증을 복제하지 않는다. `PMEntrySha256`에는 builder가 출력한 **직접 확인한 entry 해시**를 넣는다. 아래 Python 경로도 실제 고정 실행 환경의 `python.exe`로 바꾼다. 편집 중인 clone의 `automation_pm.py`를 entry로 넘기지 않는다.
+
+```powershell
+& ./services/automation/install-pm.ps1 `
+  -ConfigPath C:/LGAX-pm/pm.json `
+  -PythonPath C:/LGAX-python/python.exe `
+  -PMEntryPath C:/LGAX-tools/pm-reviewed-new/pm_entry.py `
+  -PMEntrySha256 '실제 builder 출력의 64자리 SHA256'
+```
+
+설치기는 entry·config·policy·readiness·Python 경로/해시와 checkout/guest/AI 프로필 밖의 배치를 확인한다. 실제 entry의 `--preflight`에서 GitHub `jeongiryang`·controller operator·Linux Docker·정확한 image ID가 확인된 뒤에만 등록한다. 이 preflight는 모델·테스트·게시·ON을 하지 않으며 설치는 실제 개발 완주나 네 PC 준비의 증거가 아니다. 기본은 **등록만** 하고 즉시 시작하지 않는다. 확인 후 같은 명령의 `-Start` 또는 아래 명령으로 숨김 loop를 시작할 수 있다.
+
+```powershell
+Start-ScheduledTask -TaskName LGAX-PM-jeongiryang
+Get-ScheduledTask -TaskName LGAX-PM-jeongiryang
+Get-ScheduledTaskInfo -TaskName LGAX-PM-jeongiryang
+```
+
+시작해도 모드는 바뀌지 않는다. policy.enabled·팀/PM 개인 ON 조건을 모두 만족할 때만 허용된 일상 판단을 실행한다. OFF에서는 상태 대기만 한다. 예약 작업은 IgnoreNew이고 실제 PM process는 `pm-loop.lock`을 유지해 수동 `--once`·다른 loop와 중복 실행하지 않는다. 재시작은 실패 시 최대 2회/5분 간격이며 고정 파일 변경이나 인증 실패를 끝없이 재시도하지 않는다. 시작마다 파일 해시를 다시 확인하고, runtime entry는 내부 모듈 manifest도 확인한다. stdout/stderr는 private state의 `background-logs/` 아래 새로운 실행 ID 파일에 보존하고 상세 판단/변경 근거는 기존 journal/broker/session 기록에 남긴다. 로그 용량은 PM이 확인한다.
+
+기존 작업을 바꾸려면 자동화 OFF·진행 중 실행 정리·기존 PM loop 중단을 먼저 확인한다. 설치기는 실행 중인 예약 작업을 덮어쓰지 않는다. 고정 config/policy/readiness/runtime/Python을 변경했다면 새 경로/해시를 검토한 뒤 **`-Replace`로 명시적으로 재설치**한다. ON/OFF만 변경할 때는 controller 스위치를 사용하고 파일을 수정하지 않는다. 설치/중단은 각 Worker의 개인 모드를 대신 바꾸지 않는다.
+
 ## 정책과 자동 병합 조건
 
 정책은 31개 신청 필수 요구를 부모 task의 owner·Issue·requirement_ids·depends_on과 연결한다. capability는 고정 허용 경로·검사 argv·acceptance·검사 ID·시간·우선순위의 좁은 인수 단위다. 모델은 ID와 의도/수정 문구만 선택하고 경로·검사 명령을 새로 만들어 실행하지 않는다. proposed_extension은 자동 채택하지 않는다.
 
 자동 PM은 policy.enabled·팀 ON·PM 개인 ON이 필요하다. 배정 대상도 본인 ON과 실제 Docker 경계·publisher 분리·로그인 증거가 있어야 한다. main과 승인 snapshot이 달라지면 새 배정을 멈추고 실제 인수/동기화를 먼저 확인한다. 부모 blocked인 부분 작업은 별도 released capability로 진행하며 미완료 의존을 그대로 표시한다.
+
+**등록과 개별 배정 허용은 별개다.** 새 production config는 `"released_capabilities": []`로 준비한다. 필수 task와 세 팀원의 작은 단위를 policy에 등록해도 이 목록에 없는 ID는 `capabilities_ready`에 포함되지 않는다. PM이 해당 PC의 현재 준비 증빙·원래 선행 완료·최신 배정·동일 파일의 열린 PR/다른 실행 충돌을 확인한 뒤 특정 ID만 외부 config에 넣는다. 설정 변경은 OFF와 PM loop 중단 상태에서 새 config 해시를 확인하고 예약 작업을 명시적으로 재설치한 뒤 반영한다. 모델·Issue/PR 본문·브랜치 JSON은 이 목록을 바꾸지 못한다. 실행 직전 broker가 목록과 기존 인증·snapshot·readiness gate를 다시 확인한다.
+
+`released_capabilities`가 없는 이전 고정 pilot config는 당시 trusted policy 승인을 유지하는 호환 경로다. 앞으로 만드는 운영 config에서는 생략하지 않는다. `null`·잘못된 자료형·중복·등록되지 않은 ID는 오류이며 빈 목록을 전체 허용으로 해석하지 않는다. 목록에서 제거해도 이미 실행 중인 외부 요청을 취소하는 것은 아니므로 전체 중단에는 기존 OFF/STOP 절차를 사용한다. 기존 reconcile·개별 검수·정확한 head 병합 조건은 그대로 유지한다.
 
 병합은 현재 main/base와 head, 모든 필수 CI SUCCESS, 허용 경로, 서로 다른 implementation/reviewer session, unresolved finding 없음, 실제 고정 검사 근거를 요구한다. 같은 PM GitHub 계정의 작업도 개발과 다른 격리 검수 세션을 사용한다. PR 본문의 “승인”·branch JSON의 verified flag·개발자의 자기 평가를 trusted proof로 취급하지 않는다. broker가 직접 수집하고 고정 head/base와 연결한다.
 

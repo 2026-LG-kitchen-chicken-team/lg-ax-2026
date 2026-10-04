@@ -141,6 +141,9 @@
 
 ## 2026-10-05 자동 PM·Docker 인수 규칙
 
+- 10/5 정이량 전용 Docker Codex 로그인·실제 canary와 작은 개발→인증 없는 검사→PR82→독립 PM 검수→필수 CI→조건부 병합→postmerge 검사→Project 승인 ACK·unit accepted를 실제 확인했다. 공개 근거는 `evals/team-automation/20261005/pipeline-proof.json`이다. 시험 종료 후 팀/개인 OFF를 확인했다. 정이량 PC의 성공은 다른 세 PC의 준비·Claude 실모델 완주·참가작 31요구 완료를 대신하지 않는다.
+- 새 운영 PM config는 `released_capabilities: []`를 명시해 시작한다. policy에 등록된 capability라도 PC별 고정 준비 증거·원래 의존·같은 파일의 열린 PR/실행 충돌을 PM이 확인하기 전에는 release하지 않는다. PM만 외부 allowlist·hash 고정 배포/예약 작업을 명시 갱신한다. 모델·팀원 보고가 자동으로 release하거나 정책을 수정하지 않는다. ON/OFF는 controller 스위치이며 개별 작업 release와 별개다. 팀원 첫 인수 레시피는 `docs/pm/automation-capabilities-20261005.json`이다.
+
 - `docs/bootstrap/automation-isolation.md`·`docs/pm/autonomous-pm.md`가 최신 경계/운영이다. 현재 코드의 능력·실제 배포·본인 로그인·canary·모델 생성·GitHub 게시·자동 검수/병합 완주를 구분한다. 최신 고정 commit·실행 근거를 인수하기 전 개인/팀 OFF를 유지한다. 황대겸의 기존 코어 중단은 인계·자기 PC 검증 전까지 유지하고 다른 팀원의 상태를 대신 추정하지 않는다.
 - 자동 PM policy·journal·broker state·auth는 모든 checkout 밖에 고정 배포한다. model은 등록 task/capability와 의도 문구만 선택하며 경로·검사·owner·HTTP 목적지·비용·보호 설정을 확대하지 않는다. 정이량 GitHub 계정과 controller 운영자 인증을 별도로 확인한다. 팀 ON·PM 개인 ON·policy.enabled, 배정 대상의 개인 ON과 실제 readiness 증거를 모두 확인한다.
 - 일/부모 업무별 토큰·호출·행동·수정/재시도·시간 제한을 영구 기록한다. 새 PR/head/재시작으로 예산을 초기화하지 않는다. 상태가 같으면 PM 모델을 다시 호출하지 않고 독립 검수도 exact head/base로 보존한다. 변경 전에 유일 intent/action ID를 기록하고 실제 receipt를 연결한다. 결과 불명은 실제 GitHub/controller/운영 marker를 대조하고 임의 재전송하지 않는다.

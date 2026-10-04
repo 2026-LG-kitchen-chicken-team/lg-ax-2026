@@ -172,6 +172,17 @@ class AutonomousPMTests(unittest.TestCase):
         self.assertNotIn("allowed_paths", context["capabilities"][CAP])
         self.assertTrue(self.calls[0][1]["additionalProperties"] is False)
 
+    def test_model_context_explains_action_specific_instruction_constraints(self):
+        contract = self.pm._context(self.broker.state)["action_contract"]
+        for kind in ("merge", "reconcile", "wait", "escalate"):
+            self.assertIn("MUST be []", contract[kind])
+        self.assertIn("Nonempty", contract["assign"])
+        self.assertIn("Nonempty", contract["request_changes"])
+        # Clarifying model context never weakens the enforcement boundary.
+        for kind in ("merge", "reconcile"):
+            with self.assertRaises(PMError):
+                self.pm.validate_action(decision(kind, instructions=["Proceed"]), self.broker.state)
+
     def test_unchanged_event_and_clock_churn_never_rebill(self):
         self.assertEqual(self.pm.tick()["state"], "applied")
         self.clock_value += 50
@@ -321,6 +332,47 @@ class AutonomousPMTests(unittest.TestCase):
         self.broker.state["prs"][0]["changed_paths"] += [".github/workflows/harness.yml"]
         with self.assertRaises(ValueError):
             self.pm.validate_action(decision("merge"), self.broker.state)
+
+    def test_merge_accepts_only_two_new_exact_trusted_job_records(self):
+        pr = self.broker.state["prs"][0]
+        records = [f"docs/{directory}/세션/정이량/current-job.md"
+                   for directory in ("작업기록", "작업근거")]
+        pr.update(job_id="current-job", added_paths=records)
+        pr["changed_paths"] += records
+        self.assertEqual(self.pm.validate_action(decision("merge"), self.broker.state)["expected_head"], HEAD)
+        self.assertEqual(self.pm.policy["capabilities"][CAP]["allowed_paths"], ["tests/test_pilot.py"])
+
+    def test_session_exception_never_authorizes_history_other_members_or_generic_docs(self):
+        for path in ("docs/작업기록/세션/정이량/old-job.md", "docs/작업근거/세션/황대겸/current-job.md",
+                     "docs/작업기록/정이량.md", "docs/작업기록/세션/정이량/current-job.md/extra.md",
+                     "docs/pm/anything.md"):
+            with self.subTest(path=path):
+                state = observation()
+                state["prs"][0].update(job_id="current-job", changed_paths=["tests/test_pilot.py", path], added_paths=[path])
+                with self.assertRaises(PMError):
+                    self.pm.validate_action(decision("merge"), state)
+        # A broad policy declaration still cannot overwrite personal history.
+        self.pm.policy["capabilities"][CAP]["allowed_paths"] += ["docs/작업기록", "docs/작업근거"]
+        state = observation()
+        old = "docs/작업기록/세션/정이량/old-job.md"
+        state["prs"][0].update(job_id="current-job", changed_paths=[old], added_paths=[old])
+        with self.assertRaisesRegex(PMError, "new immutable session"):
+            self.pm.validate_action(decision("merge"), state)
+
+    def test_session_exception_requires_valid_trusted_job_id_and_actual_addition(self):
+        record = "docs/작업기록/세션/정이량/current-job.md"
+        for job_id in (None, "", "../current-job", "current/job", "current.job", [], "a" * 101):
+            with self.subTest(job_id=job_id):
+                state = observation()
+                state["prs"][0].update(job_id=job_id, changed_paths=[record], added_paths=[record])
+                with self.assertRaises(PMError):
+                    self.pm.validate_action(decision("merge"), state)
+        for added in (None, [], {record}, ["tests/test_pilot.py"]):
+            with self.subTest(added=added):
+                state = observation()
+                state["prs"][0].update(job_id="current-job", changed_paths=[record], added_paths=added)
+                with self.assertRaisesRegex(PMError, "new immutable session"):
+                    self.pm.validate_action(decision("merge"), state)
 
     def test_revision_keeps_contracts_and_uses_original_capability(self):
         self.response = decision("request_changes", instructions=["Correct client HTTP 403 handling"])

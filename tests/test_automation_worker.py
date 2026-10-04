@@ -17,6 +17,7 @@ from services.automation.worker import (
     WorkerConfig,
     allowed_path,
     check_scope,
+    codex_argv,
     exclusive_lock,
     execute_job,
     isolated_environment,
@@ -76,6 +77,18 @@ class WorkerTests(unittest.TestCase):
                        {"validation_commands": []}):
             with self.subTest(update=update), self.assertRaises(ValueError):
                 validate_job({**self.job, **update}, "unknownamed")
+
+    def test_codex_container_uses_outer_boundary_native_keeps_inner_sandbox(self):
+        stage = self.root / "argv-artifacts"
+        stage.mkdir()
+        for kind, native_mode in (("implementation", "workspace-write"), ("review", "read-only")):
+            job = {**self.job, "kind": kind}
+            with patch("services.automation.worker.shutil.which", return_value="codex"):
+                native = codex_argv(self.config, job, stage)
+            self.assertEqual(native[native.index("--sandbox") + 1], native_mode)
+            container = codex_argv(replace(self.config, executor_image="sha256:" + "a" * 64), job, stage)
+            self.assertEqual(container[container.index("--sandbox") + 1], "danger-full-access")
+            self.assertNotIn("--dangerously-bypass-approvals-and-sandbox", container)
 
     def test_review_requires_fixed_head(self):
         with self.assertRaises(ValueError):

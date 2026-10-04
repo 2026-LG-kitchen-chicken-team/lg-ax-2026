@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import tempfile
 import time
 import unittest
@@ -18,7 +19,7 @@ from unittest.mock import patch
 from services.automation.pm import AutonomousPM, PMError, fingerprint, stable_observation
 from services.automation.pm_broker import DockerPMDriver, LiveGitHub, TrustedPMBroker
 from services.automation.state import ACCOUNTS, PM, REPO
-from services.automation.worker import exclusive_lock
+from services.automation.worker import exclusive_lock, session_records
 
 BASE, HEAD, MERGED = "a" * 40, "b" * 40, "c" * 40
 TASK, CAP, ACTION = "P2-PM-003", "client-unit", "pm-" + "d" * 40
@@ -216,7 +217,7 @@ class BrokerTests(unittest.TestCase):
     def evidence(self):
         pr = self.broker.observe(collect=False)["prs"][0]
         capability = self.broker.policy["capabilities"][CAP]
-        self.broker._review(pr, capability, "implementation-session")
+        self.broker._review(pr, capability, self.broker._unit(pr["number"])["implementation_session_id"])
         key = fingerprint({"commit": HEAD, "head": HEAD, "base": BASE, "capability": capability, "postmerge": False})
         self.broker.state["proofs"][key] = {"verified": True, "collector": "trusted_pm", "head": HEAD, "base": BASE,
             "commit": HEAD, "result": "passed", "checks": ["client-unit"], "evidence_sha256": "e" * 64,
@@ -231,6 +232,22 @@ class BrokerTests(unittest.TestCase):
         self.github.login = "unknownamed"
         with self.assertRaises(PMError):
             self.broker.authenticate()
+
+    def test_trusted_git_resets_helpers_and_uses_fixed_gh_without_global_config(self):
+        response = SimpleNamespace(returncode=0, stdout=b"fixed metadata\n")
+        with patch("services.automation.pm_broker.subprocess.run", return_value=response) as run:
+            observed = TrustedPMBroker._git(self.broker, ["fetch", "--no-tags", "origin", HEAD])
+        argv = run.call_args.args[0]
+        reset = argv.index("credential.helper=")
+        fixed = argv.index("credential.helper=!gh auth git-credential")
+        self.assertLess(reset, fixed)
+        self.assertEqual(argv[reset - 1], "-c")
+        self.assertEqual(argv[fixed - 1], "-c")
+        self.assertEqual(argv[-4:], ["fetch", "--no-tags", "origin", HEAD])
+        self.assertEqual(run.call_args.kwargs["cwd"], self.broker.repository)
+        self.assertEqual(run.call_args.kwargs["env"]["GIT_CONFIG_NOSYSTEM"], "1")
+        self.assertEqual(run.call_args.kwargs["env"]["GIT_CONFIG_GLOBAL"], os.devnull)
+        self.assertEqual(observed, "fixed metadata")
 
     def test_off_observation_does_not_run_review(self):
         self.add_unit()
@@ -300,12 +317,102 @@ class BrokerTests(unittest.TestCase):
         final = json.loads(self.github.comments[0]["body"].split("\n", 1)[1])
         self.assertEqual(final["details"]["mail_state"], "not_required_self_assignment")
 
+    def test_assignment_adds_only_fresh_exact_session_paths_without_changing_policy(self):
+        action, expected = self.action("assign")
+        original = deepcopy(action)
+        self.broker.execute(ACTION, action, expected)
+        packet = next(body for route, body in self.controller.calls if route == "/v1/jobs")
+        records = session_records(packet, PM)
+        self.assertEqual(packet["allowed_paths"], ["tests/test_pilot.py", *records])
+        self.assertEqual(action, original)
+        self.assertEqual(self.broker.policy["capabilities"][CAP]["allowed_paths"], ["tests/test_pilot.py"])
+        self.assertEqual(records, [f"docs/{directory}/세션/정이량/auto-{'d' * 40}.md"
+                                   for directory in ("작업기록", "작업근거")])
+
+    def test_actual_publication_records_pass_broker_and_exact_pm_gate_together(self):
+        action, expected = self.action("assign")
+        self.broker.execute(ACTION, action, expected)
+        packet = next(body for route, body in self.controller.calls if route == "/v1/jobs")
+        records = session_records(packet, PM)
+        self.controller.status["jobs"][0].update(status="review_requested", result={
+            "pr_url": f"https://github.com/{REPO}/pull/81", "head_commit": HEAD})
+        self.github.changed_files = [{"filename": path, "status": "added"}
+                                    for path in packet["allowed_paths"]]
+        self.evidence()
+        observed = self.broker.observe(collect=False)
+        pr = observed["prs"][0]
+        self.assertEqual(pr["job_id"], packet["job_id"])
+        self.assertTrue(set(records) <= set(pr["added_paths"]))
+        self.assertEqual(self.action("merge")[0]["expected_head"], HEAD)
+        # Existing, renamed and deleted current-session records cannot become
+        # new artifacts merely because a trusted job ID is present.
+        for status in ("modified", "renamed", "removed"):
+            with self.subTest(status=status):
+                self.github.changed_files[1]["status"] = status
+                with self.assertRaisesRegex(PMError, "new immutable session"):
+                    self.action("merge")
+
+    def test_observation_takes_job_identity_only_from_registered_host_unit(self):
+        self.add_unit()
+        self.controller.status["jobs"] = [{"job_id": "initial-job", "owner": PM, "task_id": TASK,
+            "status": "review_requested", "result": {"job_id": "branch-claim", "pr_url": f"https://github.com/{REPO}/pull/81",
+                                                       "head_commit": HEAD}}]
+        self.assertEqual(self.broker.observe(collect=False)["prs"][0]["job_id"], "initial-job")
+
     def test_off_after_decision_refuses_before_remote_intent(self):
         action, expected = self.action("assign")
         self.controller.status["global_mode"] = "off"
         receipt = self.broker.execute(ACTION, action, expected)
         self.assertEqual(receipt["outcome"], "rejected")
         self.assertEqual(self.github.comments, [])
+
+    def test_explicit_empty_release_denies_assignment_even_when_worker_ready_and_on(self):
+        self.broker.config["released_capabilities"] = []
+        self.assertEqual(self.broker.observe(collect=False)["capabilities_ready"], [])
+        with self.assertRaisesRegex(PMError, "not released"):
+            self.action("assign")
+        self.assertEqual(self.github.comments, [])
+        self.assertEqual(self.controller.status["jobs"], [])
+
+    def test_release_is_exact_allowlist_and_registered_is_not_automatically_ready(self):
+        self.broker.policy["capabilities"]["other-unit"] = deepcopy(self.broker.policy["capabilities"][CAP])
+        self.broker.config["released_capabilities"] = [CAP]
+        self.assertEqual(self.broker.observe(collect=False)["capabilities_ready"], [CAP])
+        action, expected = self.action("assign")
+        self.assertEqual(self.broker.execute(ACTION, action, expected)["outcome"], "applied")
+        self.assertEqual(len(self.controller.status["jobs"]), 1)
+
+    def test_legacy_pilot_config_keeps_existing_trusted_policy_release(self):
+        self.assertNotIn("released_capabilities", self.broker.config)
+        self.assertEqual(self.broker.observe(collect=False)["capabilities_ready"], [CAP])
+        self.assertEqual(self.action("assign")[0]["capability_id"], CAP)
+
+    def test_release_reconciled_capability_does_not_reopen_it(self):
+        self.broker.config["released_capabilities"] = [CAP]
+        self.add_unit()
+        self.broker.state["units"]["initial-job"]["reconciled"] = True
+        self.assertEqual(self.broker.observe(collect=False)["capabilities_ready"], [])
+
+    def test_invalid_release_is_rejected_before_broker_state_or_model_calls(self):
+        for value in (None, True, CAP, {}, [1], [CAP, CAP], ["unknown-unit"], ["../unit"]):
+            with self.subTest(value=value):
+                config = {**self.config, "released_capabilities": value,
+                          "state_dir": str(self.root / "invalid-release-state")}
+                with self.assertRaisesRegex(PMError, "released capabilities"):
+                    TrustedPMBroker(config, github=self.github, controller=self.controller,
+                                    executor=self.executor, driver=self.driver)
+                self.assertFalse(Path(config["state_dir"]).exists())
+        self.assertEqual(self.github.comments, [])
+        self.assertEqual(self.executor.calls, [])
+
+    def test_revoked_release_after_decision_is_rechecked_before_any_publication(self):
+        self.broker.config["released_capabilities"] = [CAP]
+        action, expected = self.action("assign")
+        self.broker.config["released_capabilities"] = []
+        receipt = self.broker.execute(ACTION, action, expected)
+        self.assertEqual(receipt["outcome"], "rejected")
+        self.assertEqual(self.github.comments, [])
+        self.assertEqual(self.controller.status["jobs"], [])
 
     def test_duplicate_action_lookup_does_not_reenqueue(self):
         action, expected = self.action("assign")
@@ -413,6 +520,7 @@ class BrokerTests(unittest.TestCase):
 
     def test_canary_metadata_not_boolean_alone_controls_readiness(self):
         proof = {"collector": "trusted_pm", "account": PM, "verified_at": time.time(),
+                 "image_id": self.executor.config.image,
                  "execution_isolation_verified": True, "publisher_separation_verified": True, "login_verified": True,
                  "authentication": {"verified": True, "source": "actual_isolated_cli", "engine": "codex"},
                  "boundary": {"proof_kind": "actual_harmless_container_not_mounted_boundary", "publisher_readable": True,
@@ -547,6 +655,95 @@ class DriverTests(unittest.TestCase):
             driver = DockerPMDriver(executor, state_dir=root / "state", heartbeat=lambda: True)
             with self.assertRaises(PMError):
                 driver({}, {}, 30)
+
+
+class ReadinessImagePinTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.pm_image = "sha256:" + "a" * 64
+        self.worker_image = "sha256:" + "b" * 64
+        self.account = "unknownamed"
+        self.broker = SimpleNamespace(config={"readiness_files": {}},
+            policy={"tasks": {"P2-CORE-002": {"owner": self.account}}},
+            executor=SimpleNamespace(config=SimpleNamespace(image=self.pm_image)))
+
+    def proof(self, image):
+        return {"collector": "trusted_pm", "account": self.account, "verified_at": time.time(),
+                "image_id": image, "execution_isolation_verified": True,
+                "publisher_separation_verified": True, "login_verified": True,
+                "authentication": {"verified": True, "source": "actual_isolated_cli", "engine": "codex"},
+                "boundary": {"proof_kind": "actual_harmless_container_not_mounted_boundary", "publisher_readable": True,
+                    "containers": {role: {"workspace_readable": True, "publisher_canary_readable": False,
+                        "docker_socket_readable": False, "ai_profile_readable": role == "model",
+                        "external_network_reachable": False,
+                        "observed_boundary": {"backend": "docker", "image_id": image,
+                                              "publisher_credentials_mounted": False}}
+                        for role in ("model", "validator")}}}
+
+    def register(self, proof, *, approved=None):
+        path = self.root / (proof["account"] + "-readiness.json")
+        path.write_text(json.dumps(proof), encoding="utf-8")
+        item = {"path": str(path), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+        if approved is not None:
+            item["approved_executor_image"] = approved
+        self.broker.config["readiness_files"][proof["account"]] = item
+        return item
+
+    def observed(self, *, account=None):
+        return TrustedPMBroker._readiness(self.broker)[account or self.account]
+
+    def test_missing_explicit_pin_preserves_same_pm_image_compatibility(self):
+        self.register(self.proof(self.pm_image))
+        self.assertTrue(all(self.observed().values()))
+
+    def test_different_worker_image_is_not_auto_approved_from_proof(self):
+        self.register(self.proof(self.worker_image))
+        self.assertFalse(any(self.observed().values()))
+        self.assertNotIn("approved_executor_image", self.broker.config["readiness_files"][self.account])
+
+    def test_trusted_per_member_exact_image_pin_accepts_independent_build(self):
+        self.register(self.proof(self.worker_image), approved=self.worker_image)
+        self.assertTrue(all(self.observed().values()))
+        self.assertEqual(self.broker.executor.config.image, self.pm_image)
+
+    def test_proof_top_image_and_both_role_images_must_match_trusted_pin(self):
+        for key in ("top", "model", "validator", "missing_top"):
+            proof = self.proof(self.worker_image)
+            if key == "top":
+                proof["image_id"] = self.pm_image
+            elif key == "missing_top":
+                proof.pop("image_id")
+            else:
+                proof["boundary"]["containers"][key]["observed_boundary"]["image_id"] = self.pm_image
+            self.register(proof, approved=self.worker_image)
+            with self.subTest(key=key):
+                self.assertFalse(any(self.observed().values()))
+
+    def test_mutable_invalid_image_approval_fails_closed(self):
+        for value in ("lgax:latest", "sha256:" + "A" * 64, "sha256:" + "b" * 63,
+                      "repo@sha256:" + "b" * 64, "", 123):
+            self.register(self.proof(self.worker_image), approved=value)
+            with self.subTest(value=value), self.assertRaises(PMError):
+                self.observed()
+
+    def test_readiness_file_hash_still_pinned_for_approved_worker_image(self):
+        item = self.register(self.proof(self.worker_image), approved=self.worker_image)
+        with Path(item["path"]).open("a", encoding="utf-8") as stream:
+            stream.write(" ")
+        with self.assertRaises(PMError):
+            self.observed()
+
+    def test_member_image_approval_does_not_apply_to_other_member(self):
+        self.register(self.proof(self.worker_image), approved=self.worker_image)
+        other = self.proof(self.worker_image)
+        other["account"] = "ginaginaring"
+        self.broker.policy["tasks"]["P2-DATA-002"] = {"owner": "ginaginaring"}
+        self.register(other)  # No PM-reviewed image pin for this other owner.
+        actual = TrustedPMBroker._readiness(self.broker)
+        self.assertTrue(all(actual[self.account].values()))
+        self.assertFalse(any(actual["ginaginaring"].values()))
 
 
 class DestinationTests(unittest.TestCase):

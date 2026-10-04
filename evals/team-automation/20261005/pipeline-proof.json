@@ -1,0 +1,172 @@
+{
+  "schema_version": "1.0",
+  "observed_at": "2026-10-04T23:06:58Z",
+  "scope": "One explicitly approved workspace-parent regression pilot on jeongiryang's PC; not four-PC readiness or product completion",
+  "repository": "2026-LG-kitchen-chicken-team/lg-ax-2026",
+  "account": "jeongiryang",
+  "executor_image": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+  "production_automation_enabled": false,
+  "production_mode_source": "Root PM reports production team and member modes remain OFF; this isolated pilot used its own approved queue",
+  "historical_attempts_preserved": [
+    {
+      "job_id": "auto-29fc984db577e386d1ee27c66d1ebf206d727509",
+      "attempt": 1,
+      "generation": 1,
+      "state": "blocked",
+      "model_returncode": 0,
+      "model_elapsed_seconds": 24.609,
+      "validator_returncode": 2,
+      "validator_elapsed_seconds": 1.11,
+      "reason": "Read-only /opt/uv-cache initialization was denied; fixed validator failure prevented publication",
+      "publication": false,
+      "local_evidence": "C:/LGAX-state/jeongiryang/pm-pilot/worker/runs/auto-29fc984db577e386d1ee27c66d1ebf206d727509-attempt1-g1/checkpoint.json"
+    },
+    {
+      "job_id": "auto-29fc984db577e386d1ee27c66d1ebf206d727509",
+      "attempt": 2,
+      "generation": 3,
+      "state": "blocked",
+      "model_returncode": 0,
+      "model_elapsed_seconds": 177.64,
+      "validator_returncode": 0,
+      "validator_elapsed_seconds": 3.516,
+      "validator_tests_passed": 2,
+      "reason": "Required immutable evidence session record was outside the original approved packet paths; publication was refused",
+      "publication": false,
+      "local_evidence": "C:/LGAX-state/jeongiryang/pm-pilot/worker/runs/auto-29fc984db577e386d1ee27c66d1ebf206d727509-attempt2-g3/checkpoint.json"
+    }
+  ],
+  "successful_worker_run": {
+    "job_id": "auto-922e2ad82bdc1e1c7701cf381ed1bd4e8011f0ba",
+    "attempt": 1,
+    "generation": 1,
+    "started_at": "2026-10-04T22:51:43.637182+00:00",
+    "finished_at": "2026-10-04T22:55:20.536960+00:00",
+    "base_commit": "f2cbf017835a22dc58eba866664df42ea3836307",
+    "head_commit": "3605e0b1b9271f197240bc8696b608569b59e905",
+    "state": "review_requested",
+    "container_authentication_verified": true,
+    "model_returncode": 0,
+    "model_elapsed_seconds": 168.109,
+    "validator": {
+      "argv": ["uv", "run", "--no-sync", "python", "-m", "unittest", "tests.test_workspace_client_pilot", "-v"],
+      "returncode": 0,
+      "elapsed_seconds": 2.844,
+      "tests_passed": 1,
+      "conditions_verified": [
+        "Other-project parent rejected with HTTP 422/INVALID_ARGUMENT and saved histories/original run preserved",
+        "Same-project parent accepted and request_revision incremented"
+      ],
+      "count_note": "The new run combines both conditions in one unittest. The earlier blocked attempt2 had two separate tests."
+    },
+    "publication": {
+      "pushed": true,
+      "pr_number": 82,
+      "pr_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/82",
+      "observed_pr_state": "MERGED",
+      "ci_checks_successful": 4,
+      "ci_workflows": ["python-and-harness", "web"],
+      "ci_note": "Two successful invocations of each workflow; fixed PR head was checked via GitHub CLI"
+    },
+    "project_report": {
+      "state": "ACCEPTED",
+      "task_id": "P2-PM-003",
+      "reported_state": "review_requested",
+      "project_updated": true,
+      "report_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/19#issuecomment-5985347509",
+      "receipt_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/19#issuecomment-5985353509",
+      "meaning": "Authenticated self-report accepted; not PM approval, merge, dependency release or final Done"
+    },
+    "local_evidence_root": "C:/LGAX-state/jeongiryang/pm-pilot/worker/runs/auto-922e2ad82bdc1e1c7701cf381ed1bd4e8011f0ba-attempt1-g1",
+    "private_artifact_sha256": {
+      "checkpoint.json": "d16e98ddf912d239251cdb6203e42d81e5f337d13fbd0da794ed6d75a2c5653f",
+      "publication.json": "c352ea66ec212a9c465f7edaee0c95dd279f6e226917a4162a4e9ce32dbfeaf1",
+      "validation-0.log": "6c485cdc58153aded13db68ca244973a8b49b7a5a38abf73fe5659313a03257c",
+      "agent.jsonl": "9771ddd3af002d5b2ae4e3b7155e163112de515b23fdab5c4ffe2078471528ee",
+      "project-report-receipt.txt": "98b7d3a528e2a93a7cce9e6d6da8b88793928a3697ec5c74b1637283a12e446b"
+    }
+  },
+  "independent_pm_model_review": {
+    "session_id": "pm-review-c53fe2efdffa418e9b99bbe62221bef5",
+    "outcome": "approve",
+    "review_mode": "Read-only Docker model review of the bounded diff; tests and commit identity not independently executed by the model",
+    "input_tokens": 18898,
+    "output_tokens": 150,
+    "events_sha256": "d2183041d8373cf4b0b2daa7e8359571c229f476949d75c9cc20befccccd6ae9",
+    "local_evidence": "C:/LGAX-state/jeongiryang/pm-pilot/broker/driver/pm-review-c53fe2efdffa418e9b99bbe62221bef5/proof.json"
+  },
+  "pm_completion": {
+    "trusted_fixed_head_review_completed": true,
+    "review_evidence_sha256": "b7c69570ae15f192b1df55b1e1320a5fae7f4cbbd2925f4cd0cfa488ddfd71e0",
+    "pre_merge_integration_evidence_sha256": "cbeafe676ad085ef120548f8cb341b92cc8d31d5d38d40a08c14a60a442c160a",
+    "merge_action_id": "pm-ba7d1d1d22f39b3c66e9d4447eea9f77c1052a1a",
+    "merge_receipt_sha256": "99426ba3d3517bfd78ea9a35b207a2fffe5685ba4f9443a2046f26f90a1c21d2",
+    "merge_commit": "466c2b927db2c4546ce0b2fde1d9cd3235d48edd",
+    "merged_at": "2026-10-04T23:03:22Z",
+    "post_merge_reconcile_completed": true,
+    "reconcile_action_id": "pm-8b9069be9172fb75a0fa818c554451a23ee08092",
+    "reconcile_receipt_sha256": "c09ed98ab730e7f84f1114cdeab4bd2d2f0906e388923f196234feca08c1a16e",
+    "post_merge_integration_evidence_sha256": "b95316bd64005934e6bff99392d71257ecde113b10ec88b87212a184280f1c6a",
+    "integration_checks": {
+      "name": "workspace-parent-isolation-pilot",
+      "pre_merge_result": "passed",
+      "post_merge_result": "passed",
+      "post_merge_commit": "466c2b927db2c4546ce0b2fde1d9cd3235d48edd",
+      "readonly_validation_workspace": true,
+      "validator_network": "none",
+      "validator_auth_mounted": false,
+      "host_repo_code_executed": false
+    },
+    "project_pm_approval_receipt_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28#issuecomment-5985418682",
+    "project_pm_approval_receipt": "ACCEPTED",
+    "unit_reconciled": true,
+    "formal_parent_task_done": false,
+    "application_requirements_verified_by_this_pilot": 0,
+    "status": "One bounded Worker-to-PR-to-independent-PM-review-to-merge-to-post-merge-reconciliation pilot completed"
+  },
+  "pm_action_contract_recovery": {
+    "first_merge_decision": "rejected",
+    "rejected_session_id": "pm-decision-40d5786378e6413b8be70cac3f864a84",
+    "rejected_events_sha256": "69cfcb46f947efbb22e2a2319c06f7f044b608b11de99a75243f5ef22af0b312",
+    "rejected_instructions_count": 2,
+    "reason": "Model supplied nonempty instructions for a merge action, contrary to the fixed action contract",
+    "privileged_mutation_before_rejection": false,
+    "preserved_original_failure": true,
+    "fix": "Clarified empty-instructions requirement for non-assignment actions, then froze the reviewed updated runtime",
+    "root_reported_regression_tests_passed": 90,
+    "updated_runtime_source_commit": "bbd964c7d35f1798184d745417699b348805fbeb",
+    "operator_explicit_resume_after_fix": true,
+    "budgets_retained": true
+  },
+  "bounded_stop_and_handoff": {
+    "pilot_team_mode": "off",
+    "pilot_own_mode": "off",
+    "other_members_readiness": false,
+    "subsequent_off_once_model_called": false,
+    "subsequent_off_once_mutated": false,
+    "task_budget_exhausted": true,
+    "extra_assignment_after_budget": false,
+    "budget_reset": false,
+    "production_off_deployment": "in progress",
+    "own_background_worker_installation": "in progress",
+    "member_pc_handoff": "in progress",
+    "source": "Root PM actual final pilot and OFF check report; production rollout is a separate gate"
+  },
+  "notion_sync": {
+    "lg_page": "https://app.notion.com/p/3e7b3295f8cb81fdb730f6ef105a927c",
+    "dashboard": "https://app.notion.com/p/3e7b3295f8cb8165a146d70ab4c0e8d6",
+    "updated_and_refetched": true,
+    "latest_pipeline_and_remaining_gates_present": true,
+    "historical_pr77_pr78_sections_preserved": true,
+    "official_schedule_and_unrelated_contest_content_preserved": true,
+    "existing_lg_pdf_attachments_preserved": 2,
+    "verification": "After reversing the requested inserted summary and historical-heading edits, both fetched page bodies equal their prior bodies with only empty-line spacing normalized"
+  },
+  "limits": [
+    "This proves a single bounded regression pilot, not the application's 31 requirements or customer value",
+    "Production automation and the other three member PCs have not been enabled or certified by this evidence",
+    "Actual own Codex container authentication does not establish Claude container authentication on team PCs",
+    "A reviewed image, canary and successful Worker PR do not guarantee unattended availability or unlimited subscription usage",
+    "The independent model's approve outcome is advisory until the trusted PM's fixed-head and integration gates pass"
+  ]
+}

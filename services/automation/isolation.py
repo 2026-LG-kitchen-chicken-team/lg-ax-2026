@@ -323,7 +323,10 @@ class DockerExecutor:
             "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8", "PYTHONDONTWRITEBYTECODE": "1",
             "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": "/dev/null", "GIT_TERMINAL_PROMPT": "0",
             "GIT_ASKPASS": "", "SSH_ASKPASS": "", "GH_CONFIG_DIR": "/home/executor/empty-gh",
-            "UV_CACHE_DIR": "/opt/uv-cache", "UV_PROJECT_ENVIRONMENT": "/opt/lgax-venv",
+            # Even --no-sync uv touches cache metadata such as sdists-v9/.git.
+            # Keep installed dependencies fixed/read-only, but cache writes in
+            # this container's empty private tmpfs, never the image seed cache.
+            "UV_CACHE_DIR": "/home/executor/uv-cache", "UV_PROJECT_ENVIRONMENT": "/opt/lgax-venv",
             "UV_OFFLINE": "1", "npm_config_cache": "/home/executor/npm-cache",
             "npm_config_offline": "true", "npm_config_audit": "false", "npm_config_fund": "false",
             "PYTHONPATH": ":".join("/workspace/" + path for path in (
