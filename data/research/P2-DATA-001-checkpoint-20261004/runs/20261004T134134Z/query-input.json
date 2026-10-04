@@ -1,0 +1,30 @@
+{
+  "scenario": "existing synthetic fridge query only; no upload/parser or real product ingestion claim",
+  "q": "선반",
+  "model_id": "FRIDGE-A",
+  "document_version": "1.0",
+  "expected_evidence_metadata": {
+    "id": "MANUAL-001",
+    "model_id": "FRIDGE-A",
+    "document_version": "1.0",
+    "source_kind": "synthetic",
+    "source_type": "manual",
+    "source_id": "FRIDGE-A-MANUAL-v1.0",
+    "locator": {
+      "page": 1,
+      "section": "선반 분리"
+    }
+  },
+  "expected_data_source": "existing data/demo/dataset.json",
+  "expected_data_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+  "code_commit": "5fa1a62273c5f699d0619c2a088a2f5a35c7a128",
+  "http_path": "/api/evidence/search",
+  "metadata_checks": [
+    "same model and selected document version",
+    "evidence ID/source ID/locator/version/source kind identical to original fixture",
+    "GET /api/evidence/{id} returns original evidence",
+    "wrong model/version gives existing error, not other-model evidence"
+  ],
+  "runtime_status": "not_started; installation approval pending",
+  "raw_example_policy": "complete fictional example/response text stays in ignored tmp if executed; tracked results will contain metadata and checks only"
+}

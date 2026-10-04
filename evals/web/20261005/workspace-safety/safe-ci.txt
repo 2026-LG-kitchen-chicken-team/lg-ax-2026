@@ -1,0 +1,17 @@
+## case 1: port 5173 busy (dummy listener)
+
+> @lgax/planning-workspace@0.1.0 ci:safe
+> node scripts/safe-ci.mjs
+
+[ci:safe] 포트 5173에서 개발 서버가 실행 중입니다. npm ci는 node_modules를 지우므로 그 서버가 깨집니다.
+[ci:safe] 서버를 멈춘 뒤 다시 실행하거나, 별도 worktree에서 설치하세요: git worktree add <경로> <브랜치>
+exit=2
+node_modules entries before=100 after=100
+
+## case 2: port free
+
+npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+
+added 143 packages in 4s
+exit=0
+node_modules entries after=100

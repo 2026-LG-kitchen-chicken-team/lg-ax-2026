@@ -302,6 +302,11 @@ export interface ExportDocument {
   lineage: { run_id: string; previous_run_id: string | null; request_revision: number; status: Run['status']; created_at: string }[];
   /** The stored core record (decision, terminal reasons, semantic review); null when the run has none. */
   judgement?: ExportJudgement | null;
+  /**
+   * The stored core record exactly as saved (trace, model calls with prompts and raw completions, semantic reviews with
+   * their reviewed originals), so a meeting export keeps the full original and not only the summary above. JSON only.
+   */
+  execution_record?: unknown;
   evidence: { id: string; model_id: string; document_version: string; source_type: string; source_kind: string; source_id: string; location: string; text: string }[];
   completeness: ExportCompleteness;
 }
@@ -358,6 +363,7 @@ export function buildExport(mode: DataMode, snapshot: RunSnapshot, features: Fea
     scope_warnings: scopeWarnings(snapshot, features, evidence),
     lineage: runLineage(snapshot, runs).map(item => ({ run_id: item.run.id, previous_run_id: item.previous_run_id, request_revision: item.request_revision, status: item.run.status, created_at: item.created_at })),
     judgement: exportJudgement(snapshot),
+    execution_record: storedExecution(snapshot),
     evidence: [...cited].sort().map(id => {
       const item = evidenceById.get(id);
       return item
@@ -409,6 +415,7 @@ ${item.requirement}`));
     ['근거 부족 보류', doc.held, expectedHeld], ['검토 범위 밖 문서 버전', doc.scope_warnings, expectedScope], ['실행 계보', doc.lineage, expectedLineage],
     ['인용 근거 ID', doc.evidence.map(item => item.id).sort(), [...cited].sort()],
     ['판단 실행 기록', doc.judgement ?? null, exportJudgement(snapshot)],
+    ['원 실행 기록', doc.execution_record ?? null, storedExecution(snapshot)],
   ];
   const result = {
     missing_evidence: [...cited].filter(id => !withText.has(id)),
@@ -443,14 +450,22 @@ function cell(text: string): string {
 const DECISION_TEXT: Record<string, string> = { accept: '계약 검사 통과(의미 검증 아님)', hold: '보류', revise: '수정 중', unresolved: '미해결 종료' };
 const STATUS_TEXT: Record<string, string> = { completed: '완료', held: '보류', failed: '실패' };
 
+/** The run's stored planning_execution, copied as is (null when the run has none). */
+export function storedExecution(snapshot: RunSnapshot): unknown {
+  const raw = (snapshot.output as Record<string, unknown> | null)?.planning_execution;
+  return raw === undefined || raw === null ? null : structuredClone(raw);
+}
+
+const RAW_NOTE = '- 원 실행 기록 전체(trace·모델 호출의 프롬프트와 원 응답·의미 검토 원본)는 JSON 내보내기의 `execution_record`에 저장된 그대로 들어 있습니다.';
+
 function judgementMarkdown(judgement: ExportJudgement | null): string[] {
   if (!judgement) return [];
   const list = (title: string, items: string[]) => [`${title}:`, ...(items.length ? items.map(item => `- ${item}`) : ['- 없음']), ''];
-  if (!judgement.record_valid) return ['## 판단 실행 기록', '', '- **저장된 판단 기록의 형식이 맞지 않아 결과로 쓰지 않았습니다.**', ...judgement.record_errors.map(item => `- ${item}`), ''];
+  if (!judgement.record_valid) return ['## 판단 실행 기록', '', '- **저장된 판단 기록의 형식이 맞지 않아 결과로 쓰지 않았습니다.**', ...judgement.record_errors.map(item => `- ${item}`), RAW_NOTE, ''];
   return [
     '## 판단 실행 기록', '',
     `- 실행 종류: ${judgement.execution_kind === 'live_model' ? '실제 모델 실행 기록' : 'fixture(모델 호출 아님)'} · 종료 상태: ${STATUS_TEXT[judgement.status]} · 코어 결정: ${judgement.decision ? DECISION_TEXT[judgement.decision] ?? judgement.decision : '없음'}`,
-    `- 모델: ${judgement.models.join(', ') || '호출 기록 없음'} · 호출 ${judgement.model_calls}회`, '',
+    `- 모델: ${judgement.models.join(', ') || '호출 기록 없음'} · 호출 ${judgement.model_calls}회`, RAW_NOTE, '',
     ...list('검사에서 발견한 문제', judgement.violations),
     ...(judgement.record_problems.length ? list('저장 기록 불일치', judgement.record_problems) : []),
     ...(judgement.errors.length ? list('실행 오류', judgement.errors.map(item => `${item.code}: ${item.message}`)) : []),
