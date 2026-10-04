@@ -5,7 +5,9 @@ from copy import deepcopy
 
 import test_planning_agent as fixtures
 from jsonschema import Draft202012Validator
+from lgax_core.judgement_contract import schema_for as judgement_schema
 from lgax_core.planning_agent import generation_schema
+from lgax_core.skill_runner import schema_for as skill_schema
 
 
 class PlanningPromptTests(unittest.TestCase):
@@ -86,18 +88,42 @@ class PlanningPromptTests(unittest.TestCase):
         self.assertIn("unmentioned/insufficient_evidence", compare)
         concept = result["model_calls"][2]["prompt"].split("DATA_JSON:\n", 1)[0]
         self.assertIn("assumptions/requirements", concept)
-        self.assertIn("정상적으로 적절한 신규 후보가 없으면", concept)
+        self.assertIn("충분한 근거로 판단했지만 적절한 신규 후보가 없으면", concept)
+        self.assertIn("실제 판단 근거가 부족하면", concept)
 
     def test_concept_prompt_allows_new_hypotheses_without_fabricating_existing_facts(self):
         case, agent, _transport = self.fixture()
         result = agent.run(case.payload)
         concept = result["model_calls"][2]["prompt"].split("DATA_JSON:\n", 1)[0]
-        self.assertIn("현재 설명서에 없는 형태·기능·서비스를 기획 가설로 제안할 수", concept)
-        self.assertIn("기존 기능의 사실 근거", concept)
-        self.assertIn("제조·성능·인증·효과를 이미 검증한 제품처럼 주장하지", concept)
-        self.assertIn("적절한 신규 후보가 없으면 concepts는 비우고", concept)
+        self.assertIn("현재 설명서에 없는 형태·기능·서비스도 기획 가설로 제안할 수", concept)
+        self.assertIn("잔여 불편을 줄이는 작동 방식", concept)
+        self.assertIn("현재 기능·사용 조건과 다른 점", concept)
+        self.assertIn("기존 기능의 사실은 sources", concept)
+        self.assertIn("미검증 제조 가능성·용량·안전성·효과", concept)
+        self.assertIn("status는 proposed 또는 needs_review", concept)
+        self.assertIn("적절한 신규 후보가 없으면 concepts=[]", concept)
+        self.assertIn("필요한 확인 질문·보류 사유", concept)
+        self.assertIn("사유 필드는 해당 입력의 판단문", concept)
+        self.assertNotIn("추출을 보류하지", concept)
         self.assertNotIn(case.output["concepts"][0]["title"], concept)
         self.assertNotIn("자료에 없는 근거를 만들지", concept)
+
+    def test_generation_definitions_do_not_shadow_contract_or_exclude_new_candidates(self):
+        case, _agent, _transport = self.fixture()
+        declarations = fixtures.stages_for(case.output)
+        contract_definitions = judgement_schema("output")["$defs"]
+        for stage in declarations:
+            skill_definitions = skill_schema(stage, "output")["$defs"]
+            for name in skill_definitions.keys() & contract_definitions.keys():
+                self.assertEqual(skill_definitions[name], contract_definitions[name], (stage, name))
+            schema = generation_schema(stage)
+            Draft202012Validator.check_schema(schema)
+            # Traversing a nonempty candidate exercises the local Concept reference;
+            # empty arrays from live runs alone would not prove it is usable.
+            self.assertFalse(list(Draft202012Validator(schema).iter_errors(declarations[stage])), stage)
+        candidate = declarations["concept_draft"]["result"]["concepts"][0]
+        self.assertTrue(candidate["assumptions"])
+        self.assertEqual(candidate["status"], "proposed")
 
     def test_generated_hypothesis_stays_needs_review_with_unchanged_source_facts(self):
         def proposed(skill, _context, value, _count):
