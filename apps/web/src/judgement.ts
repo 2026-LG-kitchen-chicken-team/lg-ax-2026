@@ -250,6 +250,25 @@ function inputErrors(label: string, value: unknown): string[] {
   ];
 }
 
+const text = (value: unknown) => typeof value === 'string' && value.trim() !== '';
+const RECORD_ITEMS: Record<string, { strings: string[]; numbers?: string[] }> = {
+  trace: { strings: ['stage', 'operation'], numbers: ['elapsed_ms'] },
+  model_calls: { strings: ['stage', 'skill_id', 'model_id', 'model_digest'], numbers: ['revision_count'] },
+  errors: { strings: ['code', 'message'] },
+};
+
+/** Item-level shape of trace, model_calls and errors, so a malformed entry is reported instead of breaking the screen. */
+function recordItemErrors(raw: Record<string, unknown>): string[] {
+  return Object.entries(RECORD_ITEMS).flatMap(([key, rule]) => Array.isArray(raw[key]) ? (raw[key] as unknown[]).flatMap((item, index) => {
+    const at = `/${key}/${index}`;
+    if (!isObject(item)) return [`${at} must be an object`];
+    return [
+      ...rule.strings.filter(field => !text(item[field])).map(field => `${at}/${field} must be a non-empty string`),
+      ...(rule.numbers ?? []).filter(field => item[field] !== undefined && typeof item[field] !== 'number').map(field => `${at}/${field} must be a number`),
+    ];
+  }) : []);
+}
+
 function semanticReviewErrors(value: unknown): string[] {
   if (!Array.isArray(value)) return ['/semantic_reviews must be an array'];
   return value.flatMap((item, index) => {
@@ -276,6 +295,7 @@ export function planningExecutionView(snapshot: RunSnapshot): ExecutionView {
   if (raw.execution_kind !== 'fixture' && raw.execution_kind !== 'live_model') found.push('/execution_kind must be fixture or live_model');
   if (!['completed', 'held', 'failed'].includes(raw.status as string)) found.push('/status must be completed, held or failed');
   for (const key of ['trace', 'model_calls', 'errors']) if (!Array.isArray(raw[key])) found.push(`/${key} must be an array`);
+  found.push(...recordItemErrors(raw));
   found.push(...inputErrors('original_input', raw.original_input), ...inputErrors('input', raw.input));
   if (raw.output !== null) found.push(...judgementOutputErrors(raw.output).map(item => `/output${item}`));
   if (raw.decision !== null) found.push(...errors(validateStoredDecision, raw.decision).map(item => `/decision${item}`));
@@ -312,5 +332,64 @@ export function runSources(snapshot: RunSnapshot | undefined, features: Feature[
   return {
     features: [...structuredClone(own.features), ...features.filter(item => !featureIds.has(item.id))],
     evidence: [...structuredClone(own.sources), ...evidence.filter(item => !sourceIds.has(item.id))],
+  };
+}
+
+/**
+ * Candidates the planner may keep/focus/exclude for the next run. A run whose stored core record is malformed, or did
+ * not end in an accepted decision, offers none even if candidates were stored with it. Runs without a core record
+ * (fixtures, request-only drafts) keep the stored candidates as before.
+ */
+export function selectableConcepts(snapshot: RunSnapshot): RunSnapshot['run']['concepts'] {
+  const view = planningExecutionView(snapshot);
+  if (view.kind === 'none') return snapshot.run.concepts;
+  if (view.kind === 'invalid' || view.execution.status !== 'completed' || view.execution.decision?.action !== 'accept') return [];
+  return snapshot.run.concepts;
+}
+
+/** Why a rerun from this run starts without a usable judgement, or null when the base run was accepted. */
+export function rerunBaseNotice(snapshot: RunSnapshot): string | null {
+  const view = planningExecutionView(snapshot);
+  if (view.kind === 'none') return null;
+  if (view.kind === 'invalid') return '이 실행의 판단 기록 형식이 맞지 않아 후보를 고를 수 없습니다. 조건만 고쳐 새로 요청할 수 있으며, 이전 판단을 이어받지 않습니다.';
+  const { status, decision } = view.execution;
+  if (status === 'completed' && decision?.action === 'accept') return snapshot.run.concepts.length ? null : '이 실행은 후보 없이 끝났습니다. 조건을 고쳐 새로 요청할 수 있습니다.';
+  const reason = status === 'held' ? '보류' : '실패';
+  return `이 실행은 ${reason}로 끝나 채택된 후보가 없습니다${decision ? '' : '(코어 결정 없음)'}. 조건을 고쳐 새로 요청하면 새 판단이 실행되며, 이 실행의 결과를 성공으로 이어받지 않습니다.`;
+}
+
+export interface ExportSemanticRow { round: number; concept_id: string; target: string; verdict: string; candidate_quote: string; reason: string }
+/** The core record of a run as it goes into JSON/Markdown exports: decision, terminal reasons and semantic review. */
+export type ExportJudgement =
+  | { record_valid: false; record_errors: string[] }
+  | {
+    record_valid: true; execution_kind: PlanningExecution['execution_kind']; status: PlanningExecution['status'];
+    decision: StoredDecision['action'] | null; violations: string[]; record_problems: string[]; errors: { code: string; message: string }[];
+    questions: string[]; hold_reasons: string[]; unresolved: string[]; no_candidate_reasons: string[];
+    rejected_candidates: { id: string; title: string }[]; semantic_reviews: { round: number; action: string; violations: string[] }[];
+    semantic_rows: ExportSemanticRow[]; models: string[]; model_calls: number;
+  };
+
+export function exportJudgement(snapshot: RunSnapshot): ExportJudgement | null {
+  const view = planningExecutionView(snapshot);
+  if (view.kind === 'none') return null;
+  if (view.kind === 'invalid') return { record_valid: false, record_errors: [...view.errors] };
+  const { execution } = view;
+  const output = execution.output;
+  const reviews = execution.semantic_reviews ?? [];
+  const unique = (items: string[]) => [...new Set(items)];
+  return {
+    record_valid: true, execution_kind: execution.execution_kind, status: execution.status, decision: execution.decision?.action ?? null,
+    violations: (execution.decision?.violations ?? []).map(violationText), record_problems: [...view.problems],
+    errors: execution.errors.map(item => ({ code: item.code, message: item.message })),
+    questions: unique([...(output?.questions ?? []), ...(output?.gaps ?? []).flatMap(gap => gap.questions), ...reviews.flatMap(review => review.report.questions)]),
+    hold_reasons: [...(output?.hold_reasons ?? [])], unresolved: [...(output?.unresolved ?? [])], no_candidate_reasons: [...(output?.no_candidate_reasons ?? [])],
+    rejected_candidates: (execution.rejected_output?.concepts ?? []).map(concept => ({ id: concept.id, title: concept.title })),
+    semantic_reviews: reviews.map((review, index) => ({ round: index + 1, action: review.decision.action, violations: review.decision.violations.map(violationText) })),
+    semantic_rows: reviews.flatMap((review, index) => [...review.report.exclusion_assessments, ...review.report.quality_assessments].map(row => ({
+      round: index + 1, concept_id: row.concept_id, target: row.condition !== undefined ? `제외 조건: ${row.condition}` : `기준: ${row.criterion ?? ''}`,
+      verdict: row.verdict, candidate_quote: row.candidate_quote, reason: row.reason,
+    }))),
+    models: [...view.models], model_calls: view.model_calls,
   };
 }
