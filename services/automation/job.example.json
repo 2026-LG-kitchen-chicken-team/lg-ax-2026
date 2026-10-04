@@ -1,0 +1,25 @@
+{
+  "job_id": "example-data-small-unit",
+  "owner": "ginaginaring",
+  "task_id": "P2-DATA-002",
+  "assignment_id": "PM-20261005-EXAMPLE",
+  "base_commit": "0000000000000000000000000000000000000000",
+  "title": "예시만: 한 입력팩 검색 검사",
+  "prompt": "실제 PM 배정·고정 코드·입출력·경로·검수 조건으로 교체한다. 이 예시는 실행하지 않는다.",
+  "approved": false,
+  "approval_reference": "실제 PM 승인 전",
+  "kind": "implementation",
+  "allowed_paths": [
+    "data/research/example-new-run",
+    "tests/test_example_new_run.py",
+    "docs/작업기록/세션/신진하/example-data-small-unit.md",
+    "docs/작업근거/세션/신진하/example-data-small-unit.md"
+  ],
+  "validation_commands": [["uv", "run", "--no-sync", "python", "-m", "unittest", "tests.test_example_new_run"]],
+  "shared_resources": [],
+  "priority": 10,
+  "timeout_seconds": 1800,
+  "max_attempts": 2,
+  "formal_task_dependencies": ["P2-DATA-001"],
+  "dependency_job_ids": []
+}

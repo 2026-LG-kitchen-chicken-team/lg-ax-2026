@@ -107,12 +107,13 @@ function RequestView({ data, group, modelId, mode, live }: { data: BootstrapData
         return;
       }
       if (live) {
-        // Saving succeeds as a record; it is reported separately from analysis, which the server marks not_implemented.
+        // Saving succeeds as a record; it is reported separately from analysis. A server without the planning runner
+        // marks the run not_implemented; with it, the heading names the judgement's terminal state instead.
         const saved = await live.save(request, continueProject);
         if (saved) {
           const status = runStatusView(saved.run.status);
           const where = continueProject ? `기존 프로젝트의 변경 요청으로 저장했습니다(이전 실행 ${saved.previous_run_id ?? '없음'})` : '새 프로젝트로 저장했습니다';
-          setResult({ code: saved.run.status === 'not_implemented' ? 'SAVED_NOT_IMPLEMENTED' : 'SAVED', message: `${where}. 실행 ${saved.run.id} · 요청 회차 ${saved.request_revision} · ${status.label}: ${status.detail}` });
+          setResult({ code: SAVED_CODE[saved.run.status] ?? 'SAVED', message: `${where}. 실행 ${saved.run.id} · 요청 회차 ${saved.request_revision} · ${status.label}: ${status.detail}` });
         }
         return;
       }
@@ -137,10 +138,19 @@ function RequestView({ data, group, modelId, mode, live }: { data: BootstrapData
     <label className="field-label" htmlFor="planning-situation">사용 상황</label><textarea id="planning-situation" rows={2} value={situation} onChange={event => setSituation(event.target.value)} />
     <label className="field-label" htmlFor="planning-excluded">제외 조건 <small>한 줄에 하나씩</small></label><textarea id="planning-excluded" rows={2} value={excluded} onChange={event => setExcluded(event.target.value)} />
     <div className="form-footer"><p>{footer}</p><button className="primary-button" type="submit" disabled={!data || busy}>{busy ? '서버 확인 중…' : mode === 'fixture' ? '요청 규격 검사' : live ? unchanged ? '같은 요청 다시 기록' : continueProject ? '변경 요청 저장' : '새 프로젝트로 저장' : '요청 연결 확인'}<ArrowIcon /></button></div>
-    {result ? <div className={`inline-message ${['NOT_IMPLEMENTED', 'FIXTURE_ONLY', 'SAVED', 'SAVED_NOT_IMPLEMENTED', 'NEEDS_INFO'].includes(result.code) ? 'notice' : 'error'}`} role="status"><strong>{result.code === 'NOT_IMPLEMENTED' ? '기획 실행 연결이 준비 중입니다' : result.code === 'FIXTURE_ONLY' ? '요청 규격 확인 완료(전송 안 함)' : result.code.startsWith('SAVED') ? '요청 저장 완료 · 분석 결과 아님' : result.code === 'NEEDS_INFO' ? '확인이 필요한 정보가 있습니다 · 저장하지 않음' : '요청을 처리하지 못했습니다'}</strong><p>{result.message}</p><code>{result.code}</code></div> : null}
+    {result ? <div className={`inline-message ${['NOT_IMPLEMENTED', 'FIXTURE_ONLY', 'SAVED', 'SAVED_NOT_IMPLEMENTED', 'SAVED_COMPLETED', 'SAVED_HELD', 'NEEDS_INFO'].includes(result.code) ? 'notice' : 'error'}`} role="status"><strong>{result.code === 'NOT_IMPLEMENTED' ? '기획 실행 연결이 준비 중입니다' : result.code === 'FIXTURE_ONLY' ? '요청 규격 확인 완료(전송 안 함)' : result.code.startsWith('SAVED') ? SAVED_TITLE[result.code] ?? '요청 저장 완료' : result.code === 'NEEDS_INFO' ? '확인이 필요한 정보가 있습니다 · 저장하지 않음' : '요청을 처리하지 못했습니다'}</strong><p>{result.message}</p><code>{result.code}</code></div> : null}
     <RequestInsights questions={questions} changes={changes} revision={revision} mode={mode} />
   </form><aside className="request-guide panel"><p className="eyebrow">WORKFLOW</p><h3>요청에서 기획안까지</h3><ol>{['자료 조회', '니즈 구조화', '기능 대조', '콘셉트 작성', '검토·수정'].map((title, index) => <li key={title}><span>{String(index + 1).padStart(2, '0')}</span><div><strong>{title}</strong><small>{index === 0 ? '원문 조회 구현' : '실행 연결 예정'}</small></div></li>)}</ol><p className="guide-note">최대 3개 후보와 확인할 가정을 제시하고, 근거가 부족하면 보류하는 흐름으로 개발합니다.</p></aside></div>;
 }
+
+// The save heading says what the server actually did: stored a request only, or ran the judgement to a terminal state.
+const SAVED_CODE: Record<string, string> = { not_implemented: 'SAVED_NOT_IMPLEMENTED', completed: 'SAVED_COMPLETED', held: 'SAVED_HELD', failed: 'SAVED_FAILED' };
+const SAVED_TITLE: Record<string, string> = {
+  SAVED_NOT_IMPLEMENTED: '요청 저장 완료 · 분석 결과 아님',
+  SAVED_COMPLETED: '요청 저장 · 판단 완료(계약 검사 통과 · 의미 미검증)',
+  SAVED_HELD: '요청 저장 · 판단 보류(후보 없음)',
+  SAVED_FAILED: '요청 저장 · 판단 실패',
+};
 
 export default function App() {
   const [view, setView] = useState<View>('evidence');

@@ -1,0 +1,31 @@
+{
+  "assignment_id": "PM-20261005-WEB-AUTOMATION-PREP",
+  "task_id": "P2-WEB-003",
+  "purpose": "실제 모델 호출이 포함된 웹 흐름을 작은 시연 단위로 검증",
+  "source": "2026-10-05 사용자의 모두 진행/반영 승인과 PM 병목 개선 배정",
+  "instructions": [
+    "현재 팀·개인 자동화는 모두 OFF다. 기존 사람 지시 방식으로 자기 개발을 계속하고 ON으로 임의 변경하지 않는다. docs/pm/automation.md·최신 AGENTS.md/CLAUDE.md·Project1·자기 Issue/기록을 먼저 읽는다.",
+    "자기 PC의 전용 실행 환경·개인 GitHub/Codex 인증 준비 가능 여부를 확인하고 재개 기록에 남긴다. Publisher/model 인증 파일 경계 검증 전 무인 write를 켜지 않는다. PM 토큰·인증 파일을 공유하지 않는다.",
+    "검수 대기에는 다른 승인 범위·별도 작업 공간을 사용한다. 시작 전 automation.py reserve로 파일/자원을 예약하고 끝나면 release한다. 자동 작업은 불변 세션 두 문서, 수동 작업은 기존 상세 개인 기록을 남긴다.",
+    "공유 모델은 개인 setup→loopback model_proxy→기존 StructuredModelClient 경로로 접근한다. 현재 공개 연결은 정이량 PC가 온라인일 때만 가능하므로 연결 실패를 실제 blocked/재시도 대기로 기록한다. 모델 id/digest/생성 옵션·입출력·실패를 고정 증빙으로 남긴다.",
+    "PR73 부분 인수의 현재 fixture/저장실행 증빙은 모델0호출임을 유지한다. 기존 #25/#26의 화면 연결을 계속하고 한 시나리오의 실제 model→API→웹 재실행 증빙을 분리한다.",
+    "실제 모델 E2E는 LGAX_E2E_REQUIRE_LIVE_MODEL=1과 모델ID/digest핀을 명시한다. 실제 호출·metadata·validated결과 조건이 없으면 성공으로 보고하지 않는다. 자료/판단 의존이 부족한 경우 오류/보류 화면과 필요한 입력을 상세 기록한다."
+  ],
+  "requirement_ids": [
+    "R18",
+    "R19",
+    "R20",
+    "R21",
+    "R22",
+    "R23"
+  ],
+  "acceptance": [
+    "작업 의도·AI 해석·실제 수행·검사·미완료·재개 위치·남은 사용자 행동을 상세 기록하고 같은 고정 commit의 자기 근거와 연결한다.",
+    "인증된 자기보고의 ACCEPTED와 PR head를 확인한다. 설치 준비/샘플 검사/부분 인수와 실제 Worker 완주·전체 과제 완료를 구분한다.",
+    "작업 종료 보고에는 현재까지 진척·남은 일·본인이 해야 할 행동을 반드시 포함한다."
+  ],
+  "next_action": "최길웅의 기존 담당 작업을 계속하면서 개인 실행 환경과 한 작은 실제 검증 단위의 준비/막힘을 자기 Issue에 보고한다.",
+  "pm_account": "jeongiryang",
+  "recipient_account": "choigilung",
+  "assignment_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25#issuecomment-5984166989"
+}

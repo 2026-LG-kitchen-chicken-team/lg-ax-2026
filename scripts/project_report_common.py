@@ -94,7 +94,10 @@ def source_link(url, repo, name, kind):
     path, _ = repo_url(url, repo)
     m = re.fullmatch(r"blob/([0-9a-f]{40})/(.+)", path)
     expected = f"docs/{'작업기록' if kind == 'log' else '작업근거'}/{name}.md"
-    if not m or m[2] != expected:
+    session_prefix = f"docs/{'작업기록' if kind == 'log' else '작업근거'}/세션/{name}/"
+    own_session = bool(m and m[2].startswith(session_prefix) and
+                       re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,119}\.md", m[2][len(session_prefix):]))
+    if not m or (m[2] != expected and not own_session):
         raise ValueError(f"{kind} must link to your own {expected} at a full immutable commit")
     return m[1], m[2]
 

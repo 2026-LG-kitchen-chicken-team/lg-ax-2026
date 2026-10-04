@@ -373,6 +373,12 @@ export function rerunBaseNotice(snapshot: RunSnapshot): string | null {
   return `이 실행은 ${reason}로 끝나 채택된 후보가 없습니다${decision ? '' : '(코어 결정 없음)'}. 조건을 고쳐 새로 요청할 수 있으며 실제 판단 여부는 새 실행 결과로 확인합니다. 이 실행의 결과를 성공으로 이어받지 않습니다.`;
 }
 
+/** What kind of record this is; a live run that stopped before any model call is not presented as model output. */
+export function executionKindText(kind: string, modelCalls: number): string {
+  if (kind === 'fixture') return 'fixture 실행 기록(모델 호출 아님)';
+  return modelCalls > 0 ? '실제 모델 실행 기록(저장된 결과)' : '실제 모델 경로 · 모델 호출 전에 중단';
+}
+
 export interface ExportSemanticRow { round: number; concept_id: string; target: string; verdict: string; candidate_quote: string; reason: string }
 /** The core record of a run as it goes into JSON/Markdown exports: decision, terminal reasons and semantic review. */
 export type ExportJudgement =

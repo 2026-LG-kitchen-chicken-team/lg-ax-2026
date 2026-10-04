@@ -1,5 +1,5 @@
 import type { Evidence } from './domain';
-import { judgementView, planningExecutionView, violationText } from './judgement';
+import { executionKindText, judgementView, planningExecutionView, violationText } from './judgement';
 import type { JudgementDecision, JudgementInput, JudgementOutput, PlanningExecution, SemanticAssessment, StoredDecision } from './judgement';
 import type { RunSnapshot } from './planning';
 
@@ -116,7 +116,6 @@ function OutputWithoutDecision({ output, status }: { output: JudgementOutput; st
   </section>;
 }
 
-const KIND_LABEL: Record<string, string> = { live_model: '실제 모델 실행 기록(저장된 결과)', fixture: 'fixture 실행 기록(모델 호출 아님)' };
 const STATUS_LABEL: Record<string, string> = { completed: '완료', held: '보류', failed: '실패' };
 
 /**
@@ -135,7 +134,7 @@ export function ExecutionPanel({ snapshot }: { snapshot: RunSnapshot }) {
   const original = execution.original_input.request;
   const revised = execution.input.revision_count;
   return <section className="panel planning-panel execution-panel" aria-label="판단 실행 기록">
-    <div className="planning-head"><div><p className="eyebrow">CORE RECORD</p><h3>판단 실행 기록 <span className="id">{snapshot.run.id}</span></h3></div><span className={`run-status ${execution.execution_kind === 'fixture' ? 'fixture' : 'done'}`}>{KIND_LABEL[execution.execution_kind]}<small>{STATUS_LABEL[execution.status]} · 내부 수정 {revised}/2</small></span></div>
+    <div className="planning-head"><div><p className="eyebrow">CORE RECORD</p><h3>판단 실행 기록 <span className="id">{snapshot.run.id}</span></h3></div><span className={`run-status ${execution.execution_kind === 'fixture' ? 'fixture' : 'done'}`}>{executionKindText(execution.execution_kind, view.model_calls)}<small>{STATUS_LABEL[execution.status]} · 내부 수정 {revised}/2</small></span></div>
     <dl className="run-meta">
       <div><dt>판단 모델</dt><dd>{view.models.length ? view.models.join(', ') : '호출 기록 없음'}</dd></div>
       <div><dt>모델 호출</dt><dd>{view.model_calls}회{view.elapsed_ms !== null ? ` · ${(view.elapsed_ms / 1000).toFixed(1)}초` : ''}</dd></div>

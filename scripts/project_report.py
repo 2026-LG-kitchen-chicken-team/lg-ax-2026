@@ -132,7 +132,8 @@ def main():
             registered = policy["tasks"].get(args.task_id)
             if not registered:
                 raise ValueError("unknown task")
-            head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, check=True).stdout.decode().strip()
+            head = (None if args.log_url and args.evidence_url else
+                    subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, check=True).stdout.decode().strip())
             root_url = f"https://github.com/{policy['repo']}/blob/{head}/"
             report = {"task_id": args.task_id, "status": args.status, "summary": args.summary,
                       "next_action": args.next_action,

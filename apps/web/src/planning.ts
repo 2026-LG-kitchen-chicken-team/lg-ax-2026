@@ -5,7 +5,7 @@ import { ApiError } from './api';
 import { evidenceLocation } from './domain';
 import type { Evidence, ProductGroup } from './domain';
 // judgement.ts also imports from this module; neither uses the other at module load, so the cycle is safe.
-import { exportJudgement } from './judgement';
+import { executionKindText, exportJudgement } from './judgement';
 import type { ExportJudgement } from './judgement';
 
 export type DataMode = 'live' | 'fixture';
@@ -464,7 +464,7 @@ function judgementMarkdown(judgement: ExportJudgement | null): string[] {
   if (!judgement.record_valid) return ['## 판단 실행 기록', '', '- **저장된 판단 기록의 형식이 맞지 않아 결과로 쓰지 않았습니다.**', ...judgement.record_errors.map(item => `- ${item}`), RAW_NOTE, ''];
   return [
     '## 판단 실행 기록', '',
-    `- 실행 종류: ${judgement.execution_kind === 'live_model' ? '실제 모델 실행 기록' : 'fixture(모델 호출 아님)'} · 종료 상태: ${STATUS_TEXT[judgement.status]} · 코어 결정: ${judgement.decision ? DECISION_TEXT[judgement.decision] ?? judgement.decision : '없음'}`,
+    `- 실행 종류: ${executionKindText(judgement.execution_kind, judgement.model_calls)} · 종료 상태: ${STATUS_TEXT[judgement.status]} · 코어 결정: ${judgement.decision ? DECISION_TEXT[judgement.decision] ?? judgement.decision : '없음'}`,
     `- 모델: ${judgement.models.join(', ') || '호출 기록 없음'} · 호출 ${judgement.model_calls}회`, RAW_NOTE, '',
     ...list('검사에서 발견한 문제', judgement.violations),
     ...(judgement.record_problems.length ? list('저장 기록 불일치', judgement.record_problems) : []),
