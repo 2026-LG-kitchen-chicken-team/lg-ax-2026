@@ -4,7 +4,7 @@
 
 ## 인수 범위
 
-- WEB PR68 고정 cfca7faa5f5ef42df5254fa21f52cbccd0124e7c의 실제 변경19파일, DATA PR69 고정2691ad194be9f0f1c85963ad27ac60626d888738의 실제 변경136파일만 현재main671ec2b에 선택 적용했다. 과거 main 전체 tree를 덮어쓰지 않았으며 네 개인 기록과 원본/실패 증거를 보존했다. [고정 파일·해시](../../evals/pm-review/20261005-late-handoffs/sources.json).
+- WEB PR68 고정 cfca7faa5f5ef42df5254fa21f52cbccd0124e7c의 실제 변경19파일, DATA PR69 고정2691ad194be9f0f1c85963ad27ac60626d888738의 실제 변경136파일만 현재main671ec2b에 선택 적용했다. 최종 조회에서 WEB head dfc24eb55ff8c91301dc3f83f29cd0de9d5e118b의 추가 owner 기록4행도 그대로 인수했다(기능 diff0). 과거 main 전체 tree를 덮어쓰지 않았으며 네 개인 기록과 원본/실패 증거를 보존했다. [고정 파일·해시](../../evals/pm-review/20261005-late-handoffs/sources.json).
 - 웹 JSON 내보내기에 planning_execution 원본 전체·trace·모델 호출/prompt/raw completion·reviewed 입력/출력을 포함하고 원본과 비교한다. Markdown은 판단 요약과 전체 JSON 위치를 안내한다. PM이 npm 재설치 전 포트 관측 실패를 빈 포트로 처리하던 결함을 수정했다. 연결 거절만 미사용이고 timeout·권한·네트워크 오류면 설치를 차단한다. 이것은 지정 포트 관측이며 설치 경쟁/다른 프로세스 잠금까지 보장하지 않는다.
 - 자료 등록/공용 조회 코드와 세 제품 공용 설명서 자료팩은 부분 인수다. 실제 고객 리뷰0·모델 호출0이며 HTTP201은 저장 성공일 수 있어 실제 AI 성공과 구분한다. 승인 원문 PDF/CSV·DB·원응답은 담당자 private에 유지한다. 임의 문서/OCR·전체 검색과 독립 평가 미완료.
 - PM이 원 PDF를 변조/삭제해도 DB 캐시의 이전 근거 조회가 성공하는 결함을 재현하고 수정했다. 조회 전에 보존 원문의 존재/SHA를 확인하며 직접 store·재시작·evidence/search 경로에서 SOURCE_CHANGED를 반환한다. 변조/삭제 회귀2개를 추가했다.
