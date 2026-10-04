@@ -50,6 +50,8 @@ safe-mode에서는 CLAUDE.md가 자동 로딩되지 않으므로 작업 prompt�
 
 ## 공통 bundle·점검·서비스
 
+`--preflight`는 격리 확인이 false여도 로그인·연결 metadata만 점검할 수 있으며 실제 값과 execution_started=false를 출력한다. 일반 Worker 실행은 여전히 isolation_acknowledged=false를 거부한다. preflight 성공을 무인 write 승인으로 바꾸지 않는다.
+
 PM 검토 main의 깨끗한 clone에서 아래 두 bundle을 **저장소 밖 새 폴더**에 만든다. Worker entry는 worker/process/Claude 모듈의 해시를 확인하고 변경되면 실행을 거부한다. 보고 entry도 자기 종속 코드/정책의 해시를 확인한다. 출력의 실제 경로/해시를 개인 설정에 넣는다. 이 해시 검사는 같은 OS 계정의 비밀 격리를 대신하지 않는다.
 
 ```powershell

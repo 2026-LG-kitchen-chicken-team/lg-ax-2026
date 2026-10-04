@@ -154,7 +154,7 @@ class WorkerConfig:
         return home
 
     @classmethod
-    def load(cls, path: Path):
+    def load(cls, path: Path, *, require_isolation: bool = True):
         data = json.loads(path.read_text(encoding="utf-8"))
         if data.get("engine", "codex") not in {"codex", "claude"}:
             raise ValueError("worker engine must be codex or claude")
@@ -169,7 +169,9 @@ class WorkerConfig:
             path_keys}})
         if result.account not in ACCOUNTS or not 10 <= result.poll_seconds <= 300:
             raise ValueError("registered account and bounded polling interval required")
-        if not result.isolation_acknowledged:
+        if type(result.isolation_acknowledged) is not bool:
+            raise ValueError("deployment isolation acknowledgement must be a boolean")
+        if require_isolation and not result.isolation_acknowledged:
             raise ValueError("dedicated execution-user/VM deployment boundary must be acknowledged")
         if result.agent_home.is_relative_to(result.repository) or result.repository.is_relative_to(result.agent_home):
             raise ValueError("Agent home must be a separate persistent private directory")
@@ -726,7 +728,7 @@ def main():
     parser.add_argument("--once", action="store_true", help="one claim attempt, without enabling automation")
     parser.add_argument("--preflight", action="store_true", help="check identity/auth/config only; no model/job")
     args = parser.parse_args()
-    config = WorkerConfig.load(args.config)
+    config = WorkerConfig.load(args.config, require_isolation=not args.preflight)
     config.state_dir.mkdir(parents=True, exist_ok=True)
     config.agent_home.mkdir(parents=True, exist_ok=True)
     if os.name != "nt":
@@ -739,7 +741,9 @@ def main():
         if args.preflight:
             client.request("/v1/status")
             print(json.dumps({"account": config.account, "engine": config.engine, "preflight": "passed",
-                              "model_executed": False, "engine_preflight": authentication}))
+                              "model_executed": False, "engine_preflight": authentication,
+                              "isolation_acknowledged": config.isolation_acknowledged,
+                              "execution_started": False}))
             return
         while True:
             try:

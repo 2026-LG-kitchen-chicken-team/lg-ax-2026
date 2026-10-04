@@ -78,11 +78,19 @@ class ClaudeWorkerTests(unittest.TestCase):
         actual = WorkerConfig.load(path)
         self.assertEqual(actual.agent_home, self.root / "codex-auth")
 
+    def test_metadata_preflight_preserves_unacknowledged_isolation_without_permitting_execution(self):
+        path = self.write_config(isolation_acknowledged=False)
+        actual = WorkerConfig.load(path, require_isolation=False)
+        self.assertIs(actual.isolation_acknowledged, False)
+        with self.assertRaisesRegex(ValueError, "deployment boundary"):
+            WorkerConfig.load(path)
+
     def test_invalid_engine_home_turns_model_or_unacknowledged_deployment_refused(self):
         for overrides in ({"engine": "chat"}, {"claude_home": None}, {"claude_home": "relative"},
                           {"claude_home": str(self.repo / "auth")}, {"claude_max_turns": True},
                           {"claude_max_turns": 101}, {"claude_model": "unapproved"},
                           {"claude_version": "latest"}, {"claude_version": "2.1.250"},
+                          {"isolation_acknowledged": "false"},
                           {"isolation_acknowledged": False}):
             with self.subTest(overrides=overrides), self.assertRaises(ValueError):
                 WorkerConfig.load(self.write_config(**overrides))
