@@ -9,7 +9,7 @@ import type { EditSummary, ModificationMeasurement } from './measurement';
 import type { ErrorView, EvidenceSearch, LiveWorkspace } from './liveWorkspace';
 import {
   buildComparison, buildExport, buildRerunRequest, candidateChoicesFor, conceptDetailChanges, exportMarkdown, FIXTURE_NOTICE, heldItems,
-  nextRequestRevision, requestChanges, splitConditions, statusLabel,
+  nextRequestRevision, requestChanges, scopeWarnings, scopeWarningText, splitConditions, statusLabel,
 } from './planning';
 import type { CandidateChoice, Concept, DataMode, Feature, MissingQuestion, PlanningRequest, RequestChange, RunSnapshot } from './planning';
 import { ArrowIcon, SearchIcon } from './icons';
@@ -219,6 +219,7 @@ function CandidateMatrix({ snapshot }: { snapshot: RunSnapshot }) {
 function CandidateReview({ snapshot, concept, features, evidence }: { snapshot: RunSnapshot; concept: Concept; features: Feature[]; evidence: Map<string, Evidence> }) {
   const gaps = (snapshot.output?.gaps ?? []).filter(gap => concept.gap_ids.includes(gap.id));
   const held = heldItems(snapshot);
+  const outOfScope = new Set(scopeWarnings(snapshot, features, [...evidence.values()]).filter(item => item.kind === 'evidence').map(item => item.id));
   return <div className="candidate-review">
     <div className="review-col">
       <h4>판단 근거</h4>
@@ -242,12 +243,19 @@ function CandidateReview({ snapshot, concept, features, evidence }: { snapshot: 
       <h4>근거 원문 <span className="count">{concept.evidence_ids.length}건</span></h4>
       <ul className="quote-list">{concept.evidence_ids.map(id => {
         const item = evidence.get(id);
-        return <li key={id}>{item ? <><q>{item.text}</q><small>{id} · {sourceKindLabel(item.source_kind)} · {item.source_type === 'review' ? '고객 리뷰' : '제품 설명서'} · {item.model_id} · 문서 {item.document_version} · {evidenceLocation(item)}</small></> : <span className="missing-note">{id} · 원문을 찾을 수 없습니다(자료 누락)</span>}</li>;
+        return <li key={id}>{item ? <><q>{item.text}</q><small>{id} · {sourceKindLabel(item.source_kind)} · {item.source_type === 'review' ? '고객 리뷰' : '제품 설명서'} · {item.model_id} · 문서 {item.document_version} · {evidenceLocation(item)}{outOfScope.has(id) ? <span className="scope-flag"> · 검토 범위 밖 문서 버전</span> : null}</small></> : <span className="missing-note">{id} · 원문을 찾을 수 없습니다(자료 누락)</span>}</li>;
       })}</ul>
       <h4>보류·미해결 <span className="count">{held.length}건</span></h4>
       {held.length ? <ul className="held-list">{held.map(item => <li key={`${item.kind}-${item.text}`}><span className={`status-pill ${item.kind}`}>{item.kind === 'insufficient_evidence' ? '근거 부족·보류' : '미해결'}</span>{item.text}{item.questions.length ? <small>{item.questions.join(' / ')}</small> : null}</li>)}</ul> : <p className="muted">보류된 항목이 없습니다.</p>}
     </div>
   </div>;
+}
+
+/** Citations from a document version the run is not pinned to (document-update case) stay visible, never merged silently. */
+function ScopeNotice({ snapshot, features, evidence }: { snapshot: RunSnapshot; features: Feature[]; evidence: Evidence[] }) {
+  const warnings = scopeWarnings(snapshot, features, evidence);
+  if (!warnings.length) return null;
+  return <div className="scope-notice" role="note"><strong>검토 범위 밖 문서 버전 {warnings.length}건</strong><span>이 실행의 고정 문서 버전({Object.entries(snapshot.document_versions).map(([model, version]) => `${model} ${version}`).join(', ')})과 다른 자료입니다. 문서 범위를 바꾸려면 기획자가 결정해야 합니다.</span><ul>{warnings.map(item => <li key={`${item.kind}-${item.id}`}>{scopeWarningText(item)}</li>)}</ul></div>;
 }
 
 export function ConceptsView({ mode, runs, selected, onSelect, features, evidence }: PlanningProps) {
@@ -258,6 +266,7 @@ export function ConceptsView({ mode, runs, selected, onSelect, features, evidenc
     <section className="panel planning-panel">
       <div className="planning-head"><div><p className="eyebrow">COMPARISON</p><h3>불편·기존 기능 대조표</h3></div><div className="head-tools"><RunStatus snapshot={selected} mode={mode} /><RunPicker runs={runs} selected={selected} onSelect={onSelect} /></div></div>
       <ComparisonTable snapshot={selected} features={features} evidence={evidenceById} />
+      <ScopeNotice snapshot={selected} features={features} evidence={evidence} />
     </section>
     <section className="panel planning-panel">
       <div className="planning-head"><div><p className="eyebrow">CANDIDATES</p><h3>콘셉트 후보 <span className="count">{selected.run.concepts.length} / 3</span></h3></div><ExportActions mode={mode} snapshot={selected} features={features} evidence={evidence} runs={runs} /></div>

@@ -401,7 +401,7 @@ describe('R27 meeting export', () => {
     const full = buildExport('fixture', second, features, evidence, '2026-10-04T09:00:00.000Z', FIXTURE_RUNS);
     expect(full.held.map(item => item.id)).toEqual(['GAP-FX-002']);
     expect(full.lineage.map(item => [item.run_id, item.request_revision])).toEqual([['RUN-FX-001', 0], ['RUN-FX-002', 1]]);
-    expect(full.completeness).toEqual({ complete: true, missing_evidence: [], missing_concepts: [], missing_requirements: [], missing_assumptions: [], missing_unresolved: [], missing_held: [], mismatched_fields: [] });
+    expect(full.completeness).toEqual({ complete: true, missing_evidence: [], missing_concepts: [], missing_requirements: [], missing_assumptions: [], missing_unresolved: [], missing_held: [], missing_scope_warnings: [], mismatched_fields: [] });
     const md = exportMarkdown(full);
     expect(md).toContain('## 근거 부족으로 보류한 불편');
     expect(md).toContain('RUN-FX-001 · 요청 회차 0');
