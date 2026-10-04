@@ -1,6 +1,6 @@
 # Installs an opt-in current-user worker task; never changes PowerShell policy.
 # Run in a dedicated execution account/VM. It does not enroll, log in, enable
-# automation, install a GitHub runner, or copy an existing Codex authentication.
+# automation, install a GitHub runner, or copy Codex/Claude authentication.
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)][string]$ConfigPath,

@@ -343,7 +343,7 @@ class WorkerTests(unittest.TestCase):
             def request(self, route, payload):
                 return {"job": {"state": "blocked"}}
 
-        with patch("services.automation.worker.github_identity"), patch("services.automation.worker.validate_auth"), \
+        with patch("services.automation.worker.github_identity"), patch("services.automation.worker.validate_auth", return_value=None), \
                 patch("services.automation.worker.run_bounded") as execution:
             observed = execute_job(self.config, Client(), self.job)
         execution.assert_not_called()
