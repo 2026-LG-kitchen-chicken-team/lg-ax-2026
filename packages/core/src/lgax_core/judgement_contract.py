@@ -154,11 +154,13 @@ def review_judgement(payload: Any, output: Any) -> dict:
     for source in sources.values():
         if (source["model_id"], source["document_version"]) != scope:
             flag("SOURCE_SCOPE_MISMATCH", "retrieve")
-        if source["source_kind"] != product["source_kind"]:
+        if (source["source_kind"] == "synthetic") != (product["source_kind"] == "synthetic"):
             flag("SOURCE_KIND_MISMATCH", "retrieve")
         for fid in source["feature_ids"]:
             if fid not in features:
                 flag("SOURCE_FEATURE_MISSING", "retrieve")
+            elif source["source_type"] == "manual" and source["id"] not in features[fid]["evidence_ids"]:
+                flag("SOURCE_FEATURE_LINK_MISMATCH", "retrieve")
     for feature in features.values():
         if (feature["model_id"], feature["document_version"]) != scope:
             flag("FEATURE_SCOPE_MISMATCH", "retrieve")

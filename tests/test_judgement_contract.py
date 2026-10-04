@@ -96,6 +96,20 @@ class JudgementContractTests(unittest.TestCase):
         self.payload["sources"][1]["feature_ids"] = []
         self.assert_violation("FEATURE_SOURCE_LINK_MISMATCH", "hold")
 
+    def test_real_source_kinds_are_preserved_without_requiring_identical_license(self):
+        self.payload["product"]["source_kind"] = "public"
+        self.payload["sources"][0]["source_kind"] = "public"
+        self.payload["sources"][1]["source_kind"] = "licensed"
+        before = deepcopy(self.payload)
+        self.assertEqual(self.check()["action"], "accept")
+        self.assertEqual(self.payload, before)
+
+    def test_manual_to_feature_reference_must_also_be_reciprocal(self):
+        other = deepcopy(self.payload["sources"][1])
+        other["id"] = "SECOND-MANUAL"
+        self.payload["sources"].append(other)
+        self.assert_violation("SOURCE_FEATURE_LINK_MISMATCH", "hold")
+
     def test_changed_evidence_must_be_in_current_snapshot(self):
         self.payload["changed_evidence_ids"] = ["REMOVED-OR-MISSING"]
         self.assert_violation("CHANGED_EVIDENCE_MISSING", "hold")
