@@ -1,0 +1,86 @@
+{
+  "pm": "정이량",
+  "authenticated_pm": "jeongiryang",
+  "observations": [
+    "Four-area fixture foundation and product-scope reset verified at actual merged commit. Unsupported fixture product groups disabled.",
+    "WEB001 actions complete; real semantic outputs remain later work."
+  ],
+  "limitations": [
+    "WEB001 fixture outputs are authored samples, not Agent predictions",
+    "Full R02/R14/R21/R25/R27/31-requirement coverage and benefit evaluation are not granted."
+  ],
+  "task_id": "P2-WEB-001",
+  "owner": "최길웅",
+  "individual_evidence_sha256": "3b629fd15cf73a79fb10649d550be6da74e26c5693ad481b1cd95221c1a9acea",
+  "result": "pass",
+  "execution_kind": "fixture",
+  "tested_commit": "bcb44b69280130cee836b3db5a2985552e4e461f",
+  "code_versions": [
+    {
+      "path": "apps/web/src/App.tsx",
+      "sha256": "157d614a7f94b0f5f067f896817a5b670787e58454d267c72d49bc554d2689f6",
+      "git_commit": "bcb44b69280130cee836b3db5a2985552e4e461f"
+    },
+    {
+      "path": "apps/web/src/PlanningViews.tsx",
+      "sha256": "8f67c90a2e6a418fba458c89fdd9b24a9dff20c7b6ba061778645e5f5115dd15",
+      "git_commit": "bcb44b69280130cee836b3db5a2985552e4e461f"
+    },
+    {
+      "path": "apps/web/src/liveWorkspace.ts",
+      "sha256": "b2a72fd08bd5f2ca69735a18f72a1e4beea0f127967e8f1d2ab9e24f26e51e2a",
+      "git_commit": "bcb44b69280130cee836b3db5a2985552e4e461f"
+    },
+    {
+      "path": "apps/web/src/workspace.ts",
+      "sha256": "f6857b11ba642de5678e39cbcde357bde7a2a5cab96bcfb6a41b1ae8e3bfd764",
+      "git_commit": "bcb44b69280130cee836b3db5a2985552e4e461f"
+    }
+  ],
+  "source_versions": [
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "sha256": "d7cf46d9a980b00ad786ec46feaf3d31e4094f56ff0899d8bab59bdf95a9bad5",
+      "git_commit": "bcb44b69280130cee836b3db5a2985552e4e461f"
+    },
+    {
+      "path": "data/demo/planning_requests.json",
+      "sha256": "89b445290a48646844279ffc2c08b6284e0a1402d9c736cb197013659742e54a",
+      "git_commit": "bcb44b69280130cee836b3db5a2985552e4e461f"
+    }
+  ],
+  "checks": [
+    {
+      "name": "checks.json",
+      "passed": true,
+      "evidence": {
+        "path": "evals/pm-web-review/20261004/merged/checks.json",
+        "sha256": "7b0d7665289d28494476bd018ac642c3dde1688f115dc696916343691ce14077"
+      }
+    },
+    {
+      "name": "browser-checks.json",
+      "passed": true,
+      "evidence": {
+        "path": "evals/pm-web-review/20261004/browser-checks.json",
+        "sha256": "62dd54683a751ee42634b374e73352de8fa27ae54de1140b8fd4db41113ed643"
+      }
+    },
+    {
+      "name": "workspace-mcp-live.json",
+      "passed": true,
+      "evidence": {
+        "path": "evals/pm-web-review/20261004/workspace-mcp-live.json",
+        "sha256": "0a9b95a3a5c74993e6718f5371ad86df128a93b7091d3f32892481ae3093e1cc"
+      }
+    },
+    {
+      "name": "export-checks.json",
+      "passed": true,
+      "evidence": {
+        "path": "evals/pm-web-review/20261004/export-checks.json",
+        "sha256": "c12bc29a0dd508534ab48bdb60e4efba028d4ea0c11e5245eaf2ba02f1ee890c"
+      }
+    }
+  ]
+}

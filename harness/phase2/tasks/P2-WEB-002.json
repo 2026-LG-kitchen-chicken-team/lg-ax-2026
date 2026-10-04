@@ -18,15 +18,60 @@
     "실제 서버의 모델·버전·근거를 표시한다.",
     "오류·빈 결과·미지원·보류를 올바르게 표시한다."
   ],
-  "status": "pending",
+  "status": "done",
   "scope": "required",
   "issue_url": "https://github.com/jeongiryang/lg-ax-2026/issues/24",
   "branch": null,
-  "individual_evidence": null,
-  "pm_review": null,
-  "merge": null,
-  "integration": null,
-  "completion": null,
+  "individual_evidence": {
+    "path": "evals/web/20261004/p2-web-002-r2/individual-evidence.json",
+    "sha256": "e751ab68a4e55dbcf9302ba12ee7aca9c1c760b30eea1b951e9f0e7d2def3e57"
+  },
+  "pm_review": {
+    "path": "evals/pm-web-review/20261004/merged/web-002-review.json",
+    "sha256": "031e475bc97cfbd64478ba7bbe14b80b729f60b9fd476002728c26de3ac0d99f"
+  },
+  "merge": {
+    "path": "evals/pm-web-review/20261004/merged/web-002-merge.json",
+    "sha256": "b94fc76d6443f52760a520fe538f64c424f0b98943ed5b1813df143ddf9747fe"
+  },
+  "integration": {
+    "path": "evals/pm-web-review/20261004/merged/web-002-integration.json",
+    "sha256": "75bc015deb6d0b951f4b3c602b10f23202a7ff64b047990033488f8fba960cd4"
+  },
+  "completion": {
+    "path": "evals/pm-web-review/20261004/merged/web-002-completion.json",
+    "sha256": "72192e51e9be5b54ae6d4e13c83912338992102f1bdc314cd81f81774baa4fd5"
+  },
   "block_reason": null,
-  "history": []
+  "history": [
+    {
+      "at": "2026-10-04T10:37:36+00:00",
+      "action": "PM_receive_submission",
+      "status": "individual_verified"
+    },
+    {
+      "at": "2026-10-04T10:37:37+00:00",
+      "action": "review",
+      "status": "pm_approved"
+    },
+    {
+      "at": "2026-10-04T10:37:37+00:00",
+      "action": "merge",
+      "status": "merged"
+    },
+    {
+      "at": "2026-10-04T10:37:38+00:00",
+      "action": "verify",
+      "status": "integration_verified"
+    },
+    {
+      "at": "2026-10-04T10:37:38+00:00",
+      "action": "complete",
+      "status": "done"
+    }
+  ],
+  "pm_intake": {
+    "path": "evals/pm-web-review/20261004/merged/web002-intake.json",
+    "sha256": "307c40179951bc4296e2c2b95792e25225099121ff9b91c7fc5260991a4af5cb"
+  }
 }
