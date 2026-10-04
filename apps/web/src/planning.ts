@@ -132,11 +132,15 @@ export function buildComparison(output: RunOutput, features: Feature[], evidence
 }
 
 // R21: an added condition becomes a new linked run. Without a connected Agent the run stays not_implemented.
-export function draftRunWithCondition(base: RunSnapshot, original: PlanningRequest, condition: string, id: string, createdAt: string): RunSnapshot {
+export function requestWithCondition(base: PlanningRequest, condition: string): PlanningRequest {
   const text = condition.trim();
   if (!text) throw new ApiError('INVALID_ARGUMENT', '추가할 조건을 입력해 주세요.');
-  if (base.request.exclusions.includes(text)) throw new ApiError('INVALID_ARGUMENT', '이미 같은 조건이 요청에 포함되어 있습니다.');
-  const request: PlanningRequest = { ...base.request, exclusions: [...base.request.exclusions, text] };
+  if (base.exclusions.includes(text)) throw new ApiError('INVALID_ARGUMENT', '이미 같은 조건이 요청에 포함되어 있습니다.');
+  return { ...base, exclusions: [...base.exclusions, text] };
+}
+
+export function draftRunWithCondition(base: RunSnapshot, original: PlanningRequest, condition: string, id: string, createdAt: string): RunSnapshot {
+  const request = requestWithCondition(base.request, condition);
   const draft: RunSnapshot = {
     run: {
       id, project_id: base.run.project_id, dataset_version: base.run.dataset_version, contract_version: '0.1.0',
