@@ -16,3 +16,5 @@ uv run python -m unittest discover -s tests -p test_ci_web_e2e.py -v
 ```
 
 `--probe` does not start Vite, Playwright or a browser. Full browser execution by this helper is limited to Linux CI. Existing local browser verification uses the project's approved computer-use path. The three browser case definitions must not be silently dropped or skipped; if their intended count changes, update the explicit helper gate and review that change with PM.
+
+The cleanup summary's `isolated_ports_released` means that the helper's TCP listeners no longer accept connections. An explicit loopback connection refusal is required; timeout and other connection errors fail closed. OS TCP `TIME_WAIT` after a graceful shutdown is not a live service and does not fail this check. The independent child-process reap check remains required; no process is killed merely to make a port check pass.

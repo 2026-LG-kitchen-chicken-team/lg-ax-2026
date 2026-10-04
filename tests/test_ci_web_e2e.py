@@ -25,6 +25,35 @@ class CiWebE2ETests(unittest.TestCase):
             with socket.create_connection((ci_web_e2e.HOST, occupied), timeout=2):
                 pass
 
+    def test_active_listener_is_not_released(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listener:
+            listener.bind((ci_web_e2e.HOST, 0))
+            listener.listen()
+            listener.settimeout(2)
+            port = listener.getsockname()[1]
+            self.assertFalse(ci_web_e2e.port_available(port))
+            accepted, _ = listener.accept()
+            accepted.close()
+
+    def test_closed_listener_with_time_wait_is_released(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listener:
+            listener.bind((ci_web_e2e.HOST, 0))
+            listener.listen()
+            listener.settimeout(2)
+            port = listener.getsockname()[1]
+            with socket.create_connection((ci_web_e2e.HOST, port), timeout=2) as client:
+                accepted, _ = listener.accept()
+                # Server closes first, making its local port enter TIME_WAIT when
+                # the peer acknowledges the FIN and then closes its side.
+                accepted.shutdown(socket.SHUT_WR)
+                self.assertEqual(client.recv(1), b"")
+                accepted.close()
+        self.assertTrue(ci_web_e2e.port_available(port))
+
+    def test_listener_timeout_does_not_count_as_released(self):
+        with patch.object(socket, "create_connection", side_effect=TimeoutError):
+            self.assertFalse(ci_web_e2e.port_available(19001))
+
     def test_browser_summary_drops_token_error_console_and_attachments(self):
         raw = {"suites": [{"specs": [{"title": "live: connect, save a request on server", "tests": [{
             "status": "unexpected", "results": [{"status": "failed", "error": {"message": "Bearer SECRET"},

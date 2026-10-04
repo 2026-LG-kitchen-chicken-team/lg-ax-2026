@@ -47,9 +47,14 @@ def reserve_ports(count: int) -> list[int]:
 
 
 def port_available(port: int) -> bool:
+    # Cleanup requires the owned listener to be gone, not a TCP TIME_WAIT-free bind.
+    # A connection accepted by any live listener fails this check. Only an explicit
+    # refusal proves no listener; timeouts/other errors remain fail-closed.
     try:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            sock.bind((HOST, port))
+        # Windows may report an explicit loopback refusal only after about 2s.
+        with socket.create_connection((HOST, port), timeout=3):
+            return False
+    except ConnectionRefusedError:
         return True
     except OSError:
         return False
