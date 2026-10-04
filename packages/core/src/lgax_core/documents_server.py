@@ -15,7 +15,7 @@ from .documents import MAX_BYTES, DocumentRepository
 from .errors import DomainError
 
 
-def create_app(repository: DocumentRepository, token: str):
+def create_app(repository: DocumentRepository, token: str, *, original_media_type="application/pdf"):
     if len(token) < 32:
         raise ValueError("Local document token must have at least 32 characters")
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
@@ -46,7 +46,7 @@ def create_app(repository: DocumentRepository, token: str):
         async for chunk in request.stream():
             data.extend(chunk)
             if len(data) > MAX_BYTES:
-                raise DomainError("INVALID_DOCUMENT", "PDF 허용 크기를 초과했습니다.", {})
+                raise DomainError("INVALID_DOCUMENT", "문서 허용 크기를 초과했습니다.", {})
         # Run the bounded extraction off the async event loop.
         from starlette.concurrency import run_in_threadpool
         record = await run_in_threadpool(repository.upload, document_id, bytes(data))
@@ -58,7 +58,7 @@ def create_app(repository: DocumentRepository, token: str):
 
     @app.get("/api/documents/{document_id}/original")
     def original(document_id: str):
-        return Response(repository.original(document_id), media_type="application/pdf")
+        return Response(repository.original(document_id), media_type=original_media_type)
 
     @app.get("/api/evidence/search")
     def search(q: str, model_id: str | None = None, document_version: str | None = None, limit: int = 10):
