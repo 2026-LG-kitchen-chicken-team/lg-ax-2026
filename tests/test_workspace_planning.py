@@ -103,6 +103,26 @@ class WorkspacePlanningTests(unittest.TestCase):
         reopened = WorkspaceStore(self.path, self.evidence)
         self.assertEqual(reopened.get_run(result["run"]["id"], "planner"), result)
 
+    def test_empty_trace_labels_become_failed_and_preserve_rejected_execution(self):
+        fixture = FixtureRunner()
+        for label in ("stage", "operation"):
+            for value in ("", " \t\n "):
+                with self.subTest(label=label, value=value):
+                    def invalid(request, versions, evidence, label=label, value=value):
+                        execution = fixture(request, versions, evidence)
+                        execution["trace"][0][label] = value
+                        return execution
+
+                    store, pid = self.store(invalid)
+                    saved = store.create_run(pid, self.request, "planner", "api")
+                    validate("WorkspaceRunSnapshot", saved)
+                    self.assertEqual(saved["run"]["status"], "failed")
+                    self.assertEqual(saved["run"]["concepts"], [])
+                    execution = saved["output"]["planning_execution"]
+                    self.assertEqual(execution["errors"][0]["code"], "CONTRACT_MISMATCH")
+                    self.assertEqual(execution["rejected_execution"]["trace"][0][label], value)
+                    self.assertEqual(store.get_run(saved["run"]["id"], "planner"), saved)
+
     def test_changed_input_is_new_run_and_user_revision_is_separate_from_agent_retry(self):
         runner = FixtureRunner(revisions=2)
         store, pid = self.store(runner)

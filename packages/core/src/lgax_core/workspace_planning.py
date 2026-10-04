@@ -126,7 +126,8 @@ def planning_run_fields(execution: Any, payload: dict) -> tuple[dict, dict]:
     for item in execution.get("trace", []):
         stage = item.get("stage", "review")
         operation = item.get("operation", "planning")
-        if not isinstance(stage, str) or not isinstance(operation, str):
+        if (not isinstance(stage, str) or not stage.strip()
+                or not isinstance(operation, str) or not operation.strip()):
             raise DomainError("CONTRACT_MISMATCH", "판단 실행 이벤트 규격이 맞지 않습니다.", {})
         events.append({"stage": stage, "tool": operation,
                        "summary": f"{operation} 실행 기록 · {execution['execution_kind']}", "evidence_ids": []})
