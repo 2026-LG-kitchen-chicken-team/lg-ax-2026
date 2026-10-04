@@ -123,6 +123,8 @@ class ModelConfig:
     expected_digest: str
     timeout_seconds: float = 120.0
     max_response_bytes: int = 131072
+    max_output_tokens: int = 256
+    context_tokens: int = 4096
 
     def __post_init__(self) -> None:
         try:
@@ -155,6 +157,12 @@ class ModelConfig:
         if (isinstance(self.max_response_bytes, bool) or not isinstance(self.max_response_bytes, int)
                 or not 1 <= self.max_response_bytes <= 1048576):
             raise _fail("INVALID_ARGUMENT", "invalid_response_limit")
+        if (isinstance(self.context_tokens, bool) or not isinstance(self.context_tokens, int)
+                or not 1024 <= self.context_tokens <= 32768
+                or isinstance(self.max_output_tokens, bool) or not isinstance(self.max_output_tokens, int)
+                or not 32 <= self.max_output_tokens <= 8192
+                or self.max_output_tokens > self.context_tokens - 512):
+            raise _fail("INVALID_ARGUMENT", "invalid_generation_budget")
         object.__setattr__(self, "endpoint", self.endpoint.rstrip("/"))
 
 
@@ -259,6 +267,10 @@ class _ModelAdapter:
             "constraint_mode": "native_schema_and_local_validation" if self.backend_schema_enforced
             else "prompt_and_local_validation",
             "elapsed_ms": round((self._clock() - started) * 1000, 3),
+            "generation_settings": {"temperature": 0, "num_ctx": self.config.context_tokens,
+                                    "num_predict": self.config.max_output_tokens,
+                                    "seed": 42 if self.adapter_name == "ollama" else None},
+            "done_reason": output.get("done_reason") if isinstance(output.get("done_reason"), str) else None,
             **before,
         }
         for name in ("prompt_eval_count", "eval_count"):
@@ -296,6 +308,8 @@ class LabModelAdapter(_ModelAdapter):
         return {"service_source_sha256": source}
 
     def _generate(self, prompt: str, schema: dict[str, Any], deadline: float) -> dict[str, Any]:
+        if (self.config.max_output_tokens, self.config.context_tokens) != (256, 4096):
+            raise _fail("INVALID_ARGUMENT", "lab_generation_budget_is_fixed")
         return self._request("POST", "/generate", deadline, {"prompt": prompt})
 
 
@@ -321,7 +335,8 @@ class OllamaAdapter(_ModelAdapter):
         return self._request("POST", "/api/generate", deadline, {
             "model": self.config.model_id, "prompt": prompt, "format": schema,
             "stream": False, "think": False,
-            "options": {"temperature": 0, "seed": 42, "num_ctx": 4096, "num_predict": 256},
+            "options": {"temperature": 0, "seed": 42, "num_ctx": self.config.context_tokens,
+                        "num_predict": self.config.max_output_tokens},
             "keep_alive": "5m",
         })
 
@@ -342,9 +357,12 @@ class StructuredModelClient:
         try:
             timeout = float(values.get("LGAX_MODEL_TIMEOUT_SECONDS", "120"))
             limit = int(values.get("LGAX_MODEL_MAX_RESPONSE_BYTES", "131072"))
+            output_tokens = int(values.get("LGAX_MODEL_MAX_OUTPUT_TOKENS", "256"))
+            context_tokens = int(values.get("LGAX_MODEL_CONTEXT_TOKENS", "4096"))
         except (ValueError, TypeError):
             raise _fail("INVALID_ARGUMENT", "invalid_model_environment") from None
-        config = ModelConfig(values[names[1]], values[names[2]], values[names[3]], timeout, limit)
+        config = ModelConfig(values[names[1]], values[names[2]], values[names[3]], timeout, limit,
+                             output_tokens, context_tokens)
         return cls((LabModelAdapter if kind == "lab" else OllamaAdapter)(config))
 
     def close(self) -> None:
@@ -384,12 +402,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--model", required=True)
     parser.add_argument("--digest", required=True)
     parser.add_argument("--timeout", type=float, default=120)
+    parser.add_argument("--max-output-tokens", type=int, default=256,
+                        help="Output limit, 32..8192 tokens (Lab requires 256).")
+    parser.add_argument("--context-tokens", type=int, default=4096,
+                        help="Context limit, 1024..32768 tokens, with at least 512 reserved for input (Lab requires 4096).")
     parser.add_argument("--prompt-file", type=Path, required=True)
     parser.add_argument("--schema-file", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
-        config = ModelConfig(args.endpoint, args.model, args.digest, args.timeout)
+        config = ModelConfig(args.endpoint, args.model, args.digest, args.timeout,
+                             max_output_tokens=args.max_output_tokens, context_tokens=args.context_tokens)
         if args.prompt_file.stat().st_size > 64000 or args.schema_file.stat().st_size > _SCHEMA_BYTES_LIMIT:
             raise _fail("INVALID_ARGUMENT", "input_file_too_large")
         prompt = args.prompt_file.read_text("utf-8")

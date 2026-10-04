@@ -158,14 +158,18 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    if (mode !== 'live') return;
     const controller = new AbortController();
+    let current = true;
     setState({ status: 'loading' });
-    loadBootstrap(controller.signal).then(data => setState({ status: 'ready', data })).catch(error => {
-      if (error instanceof Error && error.name === 'AbortError') return;
+    loadBootstrap(controller.signal).then(data => {
+      if (current) setState({ status: 'ready', data });
+    }).catch(error => {
+      if (!current || error instanceof Error && error.name === 'AbortError') return;
       setState({ status: 'error', message: friendlyError(error), code: error instanceof ApiError ? error.code : 'UNKNOWN_ERROR' });
     });
-    return () => controller.abort();
-  }, [reload]);
+    return () => { current = false; controller.abort(); };
+  }, [mode, reload]);
 
   const active = mode === 'fixture' ? fixtureState : state;
   const data = active.status === 'ready' ? active.data : undefined;
@@ -189,12 +193,27 @@ export default function App() {
   const products = data?.products.filter(product => product.product_group === group) ?? [];
   const modelId = products.some(product => product.model_id === modelChoice) ? modelChoice : products[0]?.model_id ?? '';
   const allModelEvidence = data?.evidence.filter(item => item.model_id === modelId) ?? [];
-  const visibleEvidence = filterEvidence(data?.evidence ?? [], { modelId, query, type });
+  const visibleEvidence = modelId ? filterEvidence(data?.evidence ?? [], { modelId, query, type }) : [];
   const selected = visibleEvidence.find(item => item.id === selectedId) ?? visibleEvidence[0];
   const currentNav = NAV.find(item => item.id === view)!;
 
   function selectGroup(next: ProductGroup) {
+    if (mode === 'fixture' && next !== FIXTURE_ORIGINAL_REQUEST.product_group) return;
     setGroup(next); setModelChoice(''); setSelectedId(''); setQuery(''); setType('all');
+  }
+
+  function changeMode(next: DataMode) {
+    if (next === mode) return;
+    // Invalidate pending live chains before fixture actions become available.
+    // A request already sent to the server cannot be rolled back by a mode switch.
+    if (next === 'fixture') workspace.disconnect();
+    setMode(next);
+    setGroup(next === 'fixture' ? FIXTURE_ORIGINAL_REQUEST.product_group : 'fridge');
+    setModelChoice(next === 'fixture' ? FIXTURE_ORIGINAL_REQUEST.model_ids[0] : '');
+    setSelectedId(''); setQuery(''); setType('all'); setRunChoice('');
+    setFormSeed(value => value + 1);
+    // Cached live data is not displayed as the result of a fresh connection check.
+    if (next === 'live') setState({ status: 'loading' });
   }
 
   return <div className="workspace">
@@ -206,11 +225,14 @@ export default function App() {
       <div className="sidebar-lower"><p>고객의 말에서<br /><strong>새로운 기회의 근거로.</strong></p><div className="sidebar-stage"><span className="status-dot" />개발 프레임워크 · v0.1</div></div>
     </aside>
     <div className="main-shell">
-      <header className="topbar"><div className="breadcrumb">상품기획 작업실<span>/</span><strong>{currentNav.label}</strong></div><div className="topbar-right"><ModeSwitch mode={mode} onChange={next => { setMode(next); if (next === 'fixture') selectGroup('fridge'); else setSelectedId(''); }} /><div className="connection-status">{mode === 'fixture' ? <><span className="status-dot loading" />fixture 사용 · 서버 미사용</> : <><span className={`status-dot ${state.status}`} />{state.status === 'ready' ? '공통 API 연결됨' : state.status === 'loading' ? 'API 연결 확인 중' : 'API 연결 오류'}</>}</div></div></header>
+      <header className="topbar"><div className="breadcrumb">상품기획 작업실<span>/</span><strong>{currentNav.label}</strong></div><div className="topbar-right"><ModeSwitch mode={mode} onChange={changeMode} /><div className="connection-status">{mode === 'fixture' ? <><span className="status-dot loading" />fixture 사용 · 공통 API 요청 안 함</> : <><span className={`status-dot ${state.status}`} />{state.status === 'ready' ? '공통 API 연결됨' : state.status === 'loading' ? 'API 연결 확인 중' : 'API 연결 오류'}</>}</div></div></header>
       <main id="main-content">
         <section className="hero"><div><p className="eyebrow">EVIDENCE-LED KITCHEN PLANNING</p><h1>근거에서 시작하는<br />키친 기획.</h1><p>고객의 불편과 제품의 기능을 함께 살펴보고,<br className="desktop-break" /> 아직 해결되지 않은 기회를 검토하는 작업실입니다.</p></div><div className="hero-stats"><div><strong>{data?.products.length ?? '—'}</strong><span>등록된 모델</span></div><div><strong>{data?.evidence.length ?? '—'}</strong><span>조회 가능한 근거</span></div><p>{mode === 'fixture' ? `계약 fixture · FRIDGE-A 예시만 포함` : data ? `공통 계약 ${data.contract_version} · 시연용 합성자료` : '공통 API에서 자료를 불러옵니다'}</p></div></section>
         {mode === 'fixture' ? <FixtureBanner /> : <WorkspaceBar workspace={workspace} onScopeChange={() => setFormSeed(value => value + 1)} />}
-        <section className="scenario-grid" aria-label="제품군 선택">{SCENARIOS.map(scenario => <button key={scenario.group} onClick={() => selectGroup(scenario.group)} className={`scenario-card ${group === scenario.group ? 'selected' : ''}`} aria-pressed={group === scenario.group}><ApplianceIcon kind={scenario.group} /><span className="scenario-copy"><strong>{scenario.title}</strong><span>{scenario.subtitle}</span></span><span className="scenario-count">{data ? `${data.products.filter(product => product.product_group === scenario.group).length}개 모델` : '연결 대기'}</span></button>)}</section>
+        <section className="scenario-grid" aria-label="제품군 선택">{SCENARIOS.map(scenario => {
+          const unavailable = mode === 'fixture' && scenario.group !== FIXTURE_ORIGINAL_REQUEST.product_group;
+          return <button key={scenario.group} disabled={unavailable} onClick={() => selectGroup(scenario.group)} className={`scenario-card ${group === scenario.group ? 'selected' : ''}`} aria-pressed={group === scenario.group}><ApplianceIcon kind={scenario.group} /><span className="scenario-copy"><strong>{scenario.title}</strong><span>{scenario.subtitle}</span></span><span className="scenario-count">{unavailable ? 'fixture 미제공' : data ? `${data.products.filter(product => product.product_group === scenario.group).length}개 모델` : '연결 대기'}</span></button>;
+        })}</section>
         {active.status === 'error' ? <div className="api-error" role="alert"><div><strong>자료를 불러오지 못했습니다</strong><p>{active.message}</p><code>{active.code}</code></div><button className="secondary-button" onClick={() => setReload(value => value + 1)}>다시 연결</button></div> : null}
         <div className="section-top"><div><p className="eyebrow">{currentNav.number} / WORKSPACE</p><h2>{currentNav.label}</h2></div><div className="model-select"><label htmlFor="product-model">검토 모델</label><select id="product-model" value={modelId} disabled={!products.length} onChange={event => { setModelChoice(event.target.value); setSelectedId(''); }}>{products.length ? products.map(product => <option key={product.model_id} value={product.model_id}>{product.model_id} · {productName(product)}</option>) : <option value="">자료 연결 대기</option>}</select></div></div>
         {view === 'evidence' ? <section className="evidence-workspace panel">

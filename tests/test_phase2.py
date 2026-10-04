@@ -1,14 +1,25 @@
-import copy
 import json
-from pathlib import Path
 import shutil
 import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 from scripts.phase2 import (
-    ROOT, BASE, adopt_extension, artifact_errors, cover_requirement, fingerprint, finish_task,
-    gate, lifecycle, load, ready_tasks, record_check, validate, write,
+    BASE,
+    ROOT,
+    adopt_extension,
+    artifact_errors,
+    cover_requirement,
+    fingerprint,
+    finish_task,
+    gate,
+    lifecycle,
+    load,
+    ready_tasks,
+    record_check,
+    validate,
+    write,
 )
 
 
@@ -35,6 +46,7 @@ class Phase2Tests(unittest.TestCase):
         for task in self.bundle["tasks"].values():
             task.update(status="pending" if task["depends_on"] else "ready", individual_evidence=None,
                         pm_review=None, merge=None, integration=None, completion=None, history=[])
+            task.pop("pm_intake", None)
             if task.get("scope") == "proposed_extension":
                 task["adoption"] = None
             write(self.root, f"{BASE}/tasks/{task['id']}.json", task)
@@ -125,6 +137,12 @@ class Phase2Tests(unittest.TestCase):
     def test_other_owner_cannot_finish(self):
         with self.assertRaises(ValueError):
             finish_task(self.root, self.bundle, self.tid, self.artifact(), "ginaginaring")
+
+    def test_validate_rejects_missing_pm_intake_receipt(self):
+        self.finished()
+        self.bundle["tasks"][self.tid]["pm_intake"] = {"path": "missing-intake.json", "sha256": "0" * 64}
+        errors = validate(self.root, self.bundle)
+        self.assertTrue(any("pm_intake" in error and "evidence missing" in error for error in errors))
 
     def test_cannot_finish_with_uncompleted_dependencies(self):
         with self.assertRaisesRegex(ValueError, "dependencies"):

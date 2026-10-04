@@ -1,8 +1,15 @@
+// @vitest-environment jsdom
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { act, createElement } from 'react';
+import { createRoot } from 'react-dom/client';
+import type { Root } from 'react-dom/client';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import App from './App';
+import datasetSource from '../../../data/demo/dataset.json';
+import planningRequestsSource from '../../../data/demo/planning_requests.json';
+import * as api from './api';
 import { parseBootstrap } from './api';
-import type { Evidence } from './domain';
+import type { BootstrapData, Evidence } from './domain';
 import { FIXTURE_BOOTSTRAP, FIXTURE_DATASET_SHA256, FIXTURE_ORIGINAL_REQUEST, FIXTURE_RUNS } from './fixtures/planning.fixture';
 import {
   buildComparison, buildExport, canonical, conceptChanges, contractErrors, draftRunWithCondition, exportMarkdown,
@@ -10,10 +17,129 @@ import {
 } from './planning';
 import type { Feature, PlanningRequest } from './planning';
 
-const dataset = JSON.parse(readFileSync(new URL('../../../data/demo/dataset.json', import.meta.url), 'utf8'));
+const dataset = datasetSource as unknown as BootstrapData;
 const evidence = FIXTURE_BOOTSTRAP.evidence as Evidence[];
 const features = FIXTURE_BOOTSTRAP.features as unknown as Feature[];
 const [first, second] = FIXTURE_RUNS;
+
+describe('fixture and live view scope', () => {
+  let host: HTMLDivElement;
+  let root: Root;
+  const liveBootstrap: BootstrapData = { ...FIXTURE_BOOTSTRAP, ...dataset };
+
+  beforeEach(() => {
+    vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true);
+    host = document.createElement('div');
+    document.body.append(host);
+    root = createRoot(host);
+  });
+  afterEach(async () => {
+    await act(async () => root.unmount());
+    host.remove();
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  async function mount() { await act(async () => root.render(createElement(App))); }
+  async function click(selector: string, label: string) {
+    const button = [...host.querySelectorAll<HTMLButtonElement>(selector)].find(item => item.textContent?.includes(label));
+    expect(button, label).toBeDefined();
+    await act(async () => button!.click());
+  }
+
+  it('only permits the fixture refrigerator and never attaches its concepts to another appliance', async () => {
+    const bootstrap = vi.spyOn(api, 'loadBootstrap').mockResolvedValue(liveBootstrap);
+    await mount();
+    await click('.mode-switch button', '계약 fixture');
+    const [fridge, dishwasher, microwave] = host.querySelectorAll<HTMLButtonElement>('.scenario-card');
+    expect(fridge.disabled).toBe(false);
+    expect(dishwasher.disabled).toBe(true);
+    expect(microwave.disabled).toBe(true);
+    expect(dishwasher.textContent).toContain('fixture 미제공');
+    await act(async () => { dishwasher.click(); microwave.click(); });
+    expect(fridge.getAttribute('aria-pressed')).toBe('true');
+    expect(host.querySelector<HTMLSelectElement>('#product-model')!.value).toBe('FRIDGE-A');
+    await click('.nav-item', '콘셉트 검토');
+    expect(host.textContent).toContain('오염 구획만 꺼내는 분리 청소 트레이');
+    expect(bootstrap).toHaveBeenCalledTimes(1);
+  });
+
+  it('resets appliance, model and evidence filters when entering fixture and reloads live data on return', async () => {
+    const bootstrap = vi.spyOn(api, 'loadBootstrap').mockResolvedValue(liveBootstrap);
+    await mount();
+    await click('.scenario-card', '식기세척기');
+    expect(host.querySelector<HTMLSelectElement>('#product-model')!.value).toBe('DISHWASHER-A');
+    await click('.evidence-types button', '제품 설명서');
+    const input = host.querySelector<HTMLInputElement>('input[type="search"]')!;
+    await act(async () => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(input, '없는검색어');
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    expect(host.querySelectorAll('.evidence-card')).toHaveLength(0);
+    await click('.mode-switch button', '계약 fixture');
+    expect(host.querySelector<HTMLSelectElement>('#product-model')!.value).toBe('FRIDGE-A');
+    expect(host.querySelector<HTMLInputElement>('input[type="search"]')!.value).toBe('');
+    expect(host.querySelector('.evidence-types button.active')!.textContent).toContain('전체');
+    expect(host.querySelectorAll('.evidence-card').length).toBe(FIXTURE_BOOTSTRAP.evidence.length);
+    expect(host.querySelector('[aria-label="선택한 근거 상세"]')!.textContent).toContain('FRIDGE-A');
+    await click('.mode-switch button', '실제 서버');
+    expect(bootstrap).toHaveBeenCalledTimes(2);
+    expect([...host.querySelectorAll<HTMLButtonElement>('.scenario-card')].every(button => !button.disabled)).toBe(true);
+    await click('.nav-item', '콘셉트 검토');
+    expect(host.textContent).not.toContain('오염 구획만 꺼내는 분리 청소 트레이');
+  });
+
+  it('aborts an old bootstrap request and ignores its response after a newer live response', async () => {
+    let finishOld!: (data: BootstrapData) => void;
+    let finishNew!: (data: BootstrapData) => void;
+    const bootstrap = vi.spyOn(api, 'loadBootstrap')
+      .mockImplementationOnce(() => new Promise(resolve => { finishOld = resolve; }))
+      .mockImplementationOnce(() => new Promise(resolve => { finishNew = resolve; }));
+    await mount();
+    const oldSignal = bootstrap.mock.calls[0][0]!;
+    await click('.mode-switch button', '계약 fixture');
+    expect(oldSignal.aborted).toBe(true);
+    expect(host.querySelector('.connection-status')!.textContent).toContain('공통 API 요청 안 함');
+    await click('.mode-switch button', '실제 서버');
+    expect(host.querySelector('.connection-status')!.textContent).toContain('API 연결 확인 중');
+    await act(async () => finishNew(liveBootstrap));
+    expect(host.querySelector('.hero-stats strong')!.textContent).toBe(String(liveBootstrap.products.length));
+    // The mock deliberately ignores AbortSignal to verify the separate stale-response guard.
+    await act(async () => finishOld(FIXTURE_BOOTSTRAP));
+    expect(host.querySelector('.hero-stats strong')!.textContent).toBe(String(liveBootstrap.products.length));
+    expect(host.querySelector('.connection-status')!.textContent).toContain('공통 API 연결됨');
+  });
+
+  it('shows no evidence when the selected appliance has no registered model', async () => {
+    vi.spyOn(api, 'loadBootstrap').mockResolvedValue(FIXTURE_BOOTSTRAP);
+    await mount();
+    await click('.scenario-card', '식기세척기');
+    expect(host.querySelector<HTMLSelectElement>('#product-model')!.value).toBe('');
+    expect(host.querySelectorAll('.evidence-card')).toHaveLength(0);
+    expect(host.querySelector('[aria-label="선택한 근거 상세"]')).toBeNull();
+  });
+
+  it('ends the authenticated live session when entering fixture, without making a workspace request', async () => {
+    vi.spyOn(api, 'loadBootstrap').mockResolvedValue(liveBootstrap);
+    const workspaceFetch = vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      ok: true, data: { projects: [], contract_version: '0.1.0' },
+    })));
+    vi.stubGlobal('fetch', workspaceFetch);
+    await mount();
+    const token = host.querySelector<HTMLInputElement>('#workspace-token')!;
+    await act(async () => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(token, 'fixture-test-credential'.padEnd(48, 'x'));
+      token.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    await act(async () => host.querySelector<HTMLFormElement>('.workspace-actions')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })));
+    expect(host.querySelector('.workspace-state small')!.textContent).toContain('연결됨');
+    expect(workspaceFetch).toHaveBeenCalledTimes(1);
+    await click('.mode-switch button', '계약 fixture');
+    await click('.mode-switch button', '실제 서버');
+    expect(host.querySelector('.workspace-state small')!.textContent).toContain('미연결');
+    expect(workspaceFetch).toHaveBeenCalledTimes(1);
+  });
+});
 
 describe('contract fixture', () => {
   it('passes the shared bootstrap contract through the same parser as the live API', () => {
@@ -125,7 +251,7 @@ describe('R27 meeting export', () => {
     expect(markdown).toContain('| FRIDGE-A | NEED-FX-001');
   });
   it('accepts the shared multi-model sample requests', () => {
-    const samples = JSON.parse(readFileSync(new URL('../../../data/demo/planning_requests.json', import.meta.url), 'utf8')) as PlanningRequest[];
+    const samples = planningRequestsSource as PlanningRequest[];
     expect(samples[0].model_ids).toEqual(['FRIDGE-A', 'FRIDGE-B', 'FRIDGE-C']);
     for (const sample of samples) {
       expect(contractErrors('PlanningRequest', sample)).toEqual([]);
