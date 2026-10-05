@@ -9,10 +9,12 @@ import threading
 import unittest
 from dataclasses import replace
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from services.automation.process import run_bounded
 from services.automation.worker import (
+    MAX_REVIEW_DIFF_BYTES,
     REPO,
     ControllerClient,
     WorkerConfig,
@@ -25,12 +27,15 @@ from services.automation.worker import (
     load_result,
     normalized_path,
     prepare_worktree,
+    prompt_for,
     publish,
     send_project_report,
     session_records,
+    stage_review_diff,
     validate_auth,
     validate_commands,
     validate_job,
+    verify_review_diff,
 )
 
 
@@ -257,6 +262,104 @@ class WorkerTests(unittest.TestCase):
                 self.assertRaisesRegex(ValueError, "fetch no longer matches approved"):
             prepare_worktree(self.config, review, run)
         self.assertFalse((run / "worktree").exists())
+
+    def test_review_capsule_preserves_exact_scoped_diff_and_fixed_prompt_input(self):
+        review, _remote, _main_head = self.review_git_fixture()
+        base = self.git("rev-parse", review["review_head"] + "^").stdout.decode().strip()
+        review.update(base_commit=base, allowed_paths=["packages/core/a.py"])
+        stage = self.root / "review-input"
+        stage.mkdir()
+        capsule = stage_review_diff(self.config, review, self.repository, stage)
+        expected = self.git("diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--no-color",
+                            "--full-index", "--binary", base, review["review_head"], "--",
+                            ":(literal)packages/core/a.py").stdout
+        raw = (stage / "revision-reference.patch").read_bytes()
+        self.assertEqual(raw, expected)
+        self.assertIn(b"+review\n", raw)
+        self.assertNotIn(b"+main\n", raw)
+        self.assertEqual(capsule["base_commit"], base)
+        self.assertEqual(capsule["review_head"], review["review_head"])
+        self.assertEqual(capsule["sha256"], hashlib.sha256(expected).hexdigest())
+        self.assertEqual(capsule["bytes"], len(expected))
+        prompt = prompt_for({**review, "review_diff": capsule}, self.config.account)
+        for required in ("/artifacts/revision-reference.patch", base, review["review_head"],
+                         capsule["sha256"], "do not apply", "Do not fetch, authenticate"):
+            self.assertIn(required, prompt)
+        self.assertNotIn(review["lease_token"], prompt)
+        self.assertNotIn(str(self.config.token_file), prompt)
+        self.assertNotIn(str(self.config.codex_home), prompt)
+
+    def test_bridge_review_with_no_write_paths_receives_full_fixed_diff(self):
+        review, _remote, _main_head = self.review_git_fixture()
+        review.update(base_commit=self.git("rev-parse", review["review_head"] + "^").stdout.decode().strip(),
+                      allowed_paths=[])
+        stage = self.root / "bridge-review-input"
+        stage.mkdir()
+        capsule = stage_review_diff(self.config, review, self.repository, stage)
+        self.assertEqual(capsule["scope"], "whole_approved_pr_read_only")
+        self.assertEqual(capsule["allowed_paths"], [])
+        self.assertIn(b"+review\n", (stage / "revision-reference.patch").read_bytes())
+
+    def test_review_capsule_tampering_and_nonregular_inputs_are_rejected(self):
+        review, _remote, _main_head = self.review_git_fixture()
+        review["base_commit"] = self.git("rev-parse", review["review_head"] + "^").stdout.decode().strip()
+        stage = self.root / "tampered-review-input"
+        stage.mkdir()
+        capsule = stage_review_diff(self.config, review, self.repository, stage)
+        verify_review_diff(stage, capsule)
+        target = stage / "revision-reference.patch"
+        target.write_bytes(b"changed input\n")
+        with self.assertRaisesRegex(ValueError, "Agent changed"):
+            verify_review_diff(stage, capsule)
+        target.unlink()
+        target.mkdir()
+        with self.assertRaises(ValueError):
+            verify_review_diff(stage, capsule)
+        target.rmdir()
+        outside = self.root / "outside-review-fixture"
+        outside.write_bytes(b"fixture must not be followed\n")
+        try:
+            target.symlink_to(outside)
+        except OSError:
+            self.skipTest("symlink privilege is unavailable after content/directory checks")
+        with self.assertRaises(ValueError):
+            verify_review_diff(stage, capsule)
+        self.assertEqual(outside.read_bytes(), b"fixture must not be followed\n")
+
+    def test_oversized_review_capsule_is_rejected_before_model_or_docker(self):
+        review, _remote, _main_head = self.review_git_fixture()
+        base = self.git("rev-parse", review["review_head"] + "^").stdout.decode().strip()
+        (self.repository / "packages/core/a.py").write_text("x" * (MAX_REVIEW_DIFF_BYTES + 1024) + "\n")
+        self.git("commit", "-qam", "oversized review fixture")
+        head = self.git("rev-parse", "HEAD").stdout.decode().strip()
+        review.update(base_commit=base, review_head=head, allowed_paths=["packages/core/a.py"])
+        config = replace(self.config, executor_image="sha256:" + "a" * 64,
+                         execution_root=self.root / "execution")
+        client = SimpleNamespace(heartbeat=lambda _job: True, request=lambda *_args: {})
+        with patch("services.automation.worker.github_identity"), \
+                patch("services.automation.worker.validate_auth", return_value=None), \
+                patch("services.automation.worker.prepare_worktree",
+                      return_value=(self.repository, "fixture-review", head, [], [])), \
+                patch("services.automation.worker.DockerExecutor") as docker:
+            observed = execute_job(config, client, review)
+        self.assertEqual(observed["state"], "blocked")
+        self.assertIn("128 KiB input bound", observed["reason"])
+        docker.assert_not_called()
+        capsule = config.execution_root / "CORE-1-attempt2-g3/artifacts/revision-reference.patch"
+        self.assertFalse(capsule.exists())
+
+    def test_review_capsule_does_not_transform_implementation_revision_input(self):
+        stage = self.root / "implementation-input"
+        stage.mkdir()
+        with patch("services.automation.worker.git") as fixed_git:
+            self.assertIsNone(stage_review_diff(self.config, self.job, self.repository, stage))
+        fixed_git.assert_not_called()
+        self.assertEqual(list(stage.iterdir()), [])
+        review = {**self.job, "kind": "review", "prompt": "\nLGAX-INERT-REVISION-V1\n"}
+        with patch("services.automation.worker.git") as fixed_git, \
+                self.assertRaisesRegex(ValueError, "cannot transform"):
+            stage_review_diff(self.config, review, self.repository, stage)
+        fixed_git.assert_not_called()
 
     def test_public_worker_example_has_supported_fields_and_safe_offline_default(self):
         source = Path(__file__).resolve().parents[1] / "services/automation/worker.example.json"
