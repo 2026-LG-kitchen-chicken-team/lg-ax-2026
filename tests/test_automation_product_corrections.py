@@ -256,6 +256,7 @@ class ProductCorrectionTests(unittest.TestCase):
             "capability_id": CORE_CORRECTIONS[0], "instructions": ["Fix the evidenced failure"],
             "formal_task_dependencies": ["P2-CORE-001"], "approved_snapshot_commit": self.main, "base_commit": self.main}
         broker = object.__new__(TrustedPMBroker)
+        broker.policy = self.broker.policy
         broker.orchestration, broker.state = self.live, self.broker.state
         assignment, packet, previous = broker._prepare_assignment("pm-" + "1" * 40, action, observation=self.observation)
         self.assertIsNone(previous)
