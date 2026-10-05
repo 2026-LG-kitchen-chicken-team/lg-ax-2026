@@ -18,14 +18,19 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
-from jsonschema import Draft202012Validator
-from lgax_contracts import CONTRACT_VERSION, load_schema
+from jsonschema import Draft202012Validator, ValidationError
+from lgax_contracts import CONTRACT_VERSION, load_schema, validate
 
 from .errors import DomainError
 from .store import DemoStore
 
 SKILL_IDS = ("evidence_lookup", "need_extract", "product_compare", "concept_draft", "review_revision")
 EXECUTION_KINDS = ("deterministic", "live_model", "fixture")
+
+
+def _digest(value: Any) -> str:
+    return hashlib.sha256(json.dumps(value, ensure_ascii=False, sort_keys=True,
+                                    allow_nan=False).encode("utf-8")).hexdigest()
 
 
 def _array(items: dict, **constraints) -> dict:
@@ -130,16 +135,69 @@ class Handler:
 class SkillRuntime:
     """One execution contract shared by local CLI and future API/MCP calls."""
 
-    def __init__(self, store: DemoStore | None = None):
+    def __init__(self, store: DemoStore | None = None, *, request: dict | None = None):
         self.store = store if store is not None else DemoStore()
         self._handlers = {"evidence_lookup": Handler(self._lookup, "demo-store:literal-token-count", "deterministic")}
-
+        # A runtime groups observed calls, not a claim that every Skill ran.
+        # The optional request is the canonical PlanningRequest, never backend
+        # configuration. Legacy callers that omit it are explicitly unlinked.
+        if request is not None:
+            try:
+                validate("PlanningRequest", request)
+                _digest(request)
+            except (ValidationError, TypeError, ValueError, UnicodeError, RecursionError):
+                raise DomainError("INVALID_ARGUMENT", "원 요청이 PlanningRequest 계약과 맞지 않습니다.") from None
+        self._request = deepcopy(request)
+        self._execution_id = f"skills-{uuid4().hex}"
+        self._dataset_sha256: str | None = None
+        self._contract_sha256 = _digest(load_schema())
         self._records: list[dict[str, Any]] = []
 
     @property
     def records(self) -> list[dict[str, Any]]:
         """Return detached observations; these are not trusted collector evidence."""
         return deepcopy(self._records)
+
+    @property
+    def trace(self) -> dict[str, Any]:
+        """Detached replay context and actual calls; no inferred model success."""
+        return deepcopy({"record_version": 2, "execution_id": self._execution_id,
+                         "contract_version": CONTRACT_VERSION, "contract_sha256": self._contract_sha256,
+                         "request": self._request,
+                         "request_sha256": _digest(self._request) if self._request is not None else None,
+                         "dataset_sha256": self._dataset_sha256,
+                         "records": self._records, "trusted_collector_verified": False})
+
+    def _provenance(self, payload: dict, record: dict) -> None:
+        # This runner's current response contract accepts synthetic sources only.
+        # Validate rather than silently relabelling a future real-data store.
+        try:
+            dataset = self.store.bootstrap()["data"]
+            validate("BootstrapResponse", {"ok": True, "data": dataset})
+        except ValidationError:
+            raise DomainError("VALIDATION_FAILED", "자료 스냅샷이 공통 계약과 맞지 않습니다.") from None
+        if any(item["source_kind"] != "synthetic"
+               for field in ("products", "reviews", "evidence") for item in dataset[field]):
+            raise DomainError("VALIDATION_FAILED", "현재 Skill 계약은 합성 자료만 지원합니다.")
+        digest = _digest(dataset)
+        scope = (payload["model_id"], payload["document_version"])
+        products = [item for item in dataset["products"] if item["model_id"] == scope[0]]
+        record["provenance"] = deepcopy({
+            "dataset_sha256": digest, "manifest": dataset["manifest"],
+            "products": products,
+            "features": [item for item in dataset["features"]
+                         if (item["model_id"], item["document_version"]) == scope],
+            "sources": [item for item in dataset["evidence"]
+                        if (item["model_id"], item["document_version"]) == scope],
+        })
+        if self._dataset_sha256 is not None and digest != self._dataset_sha256:
+            raise DomainError("VALIDATION_FAILED", "같은 실행 중 자료 내용 또는 버전이 변경되었습니다.")
+        if self._request is not None and (
+                payload["model_id"] not in self._request["model_ids"]
+                or dataset["manifest"]["version"] != self._request["dataset_version"]
+                or any(p["product_group"] != self._request["product_group"] for p in products)):
+            raise DomainError("VALIDATION_FAILED", "Skill 자료 범위와 원 요청이 다릅니다.")
+        self._dataset_sha256 = digest
 
     def register_handler(self, skill_id: str, handler: Callable, *, backend_id: str,
                          execution_kind: str, replace: bool = False) -> None:
@@ -253,17 +311,26 @@ class SkillRuntime:
                                             payload["document_version"], payload.get("limit", 10))["data"]
         return {key: result[key] for key in ("query", "items", "total", "search_method")}
 
-    def execute(self, skill_id: str, payload: Any, *, retry_of: str | None = None) -> dict[str, Any]:
+    def execute(self, skill_id: str, payload: Any, *, retry_of: str | None = None,
+                revision_of: str | None = None) -> dict[str, Any]:
         """Record one call without changing the public response schema.
 
         Only schema-valid, UTF-8 JSON inputs are retained. Retries are explicit,
         local to this runtime, and separate from the business revision budget.
+        revision_of links changed inputs without spending or resetting that
+        budget. Handler-internal model calls/retries are not observed here.
         """
         record = {
-            "record_version": 1, "run_id": f"skill-{uuid4().hex}", "skill_id": skill_id,
+            "record_version": 2, "run_id": f"skill-{uuid4().hex}", "skill_id": skill_id,
+            "execution_id": self._execution_id, "sequence": len(self._records) + 1,
+            "previous_run_id": self._records[-1]["run_id"] if self._records else None,
+            "contract_sha256": self._contract_sha256,
+            "request_sha256": _digest(self._request) if self._request is not None else None,
+            "provenance": None, "revision_of": revision_of, "change": None,
             "contract_version": CONTRACT_VERSION, "started_at": datetime.now(UTC).isoformat(),
             "input": None, "input_sha256": None, "stage": "input_validation",
-            "tool": {"backend_id": None, "execution_kind": None, "called": False},
+            "tool": {"backend_id": None, "execution_kind": None, "called": False,
+                     "observation": "handler_boundary", "model_call_count": None},
             "retry_of": retry_of, "retry_count": 0, "automatic_retries": 0,
             "trusted_collector_verified": False,
         }
@@ -282,16 +349,35 @@ class SkillRuntime:
             record["input"] = json.loads(encoded)
             record["input_sha256"] = hashlib.sha256(encoded).hexdigest()
             record["stage"] = "retry_validation"
+            if retry_of is not None and revision_of is not None:
+                raise DomainError("INVALID_ARGUMENT", "재시도와 변경 실행은 별도로 연결해야 합니다.")
             if retry_of is not None:
                 previous = next((r for r in self._records if r["run_id"] == retry_of), None)
                 if (previous is None or previous["skill_id"] != skill_id
                         or previous["input_sha256"] != record["input_sha256"]
-                        or previous["stage"] in ("input_validation", "retry_validation")
+                        or previous["stage"] in ("input_validation", "retry_validation", "revision_validation")
                         or previous["decision"]["status"] not in ("failed", "held")
                         or previous["retry_count"] >= 2
                         or any(r["retry_of"] == retry_of and r["retry_count"] > 0 for r in self._records)):
                     raise DomainError("INVALID_ARGUMENT", "동일 입력의 실패/보류에 최대 두 번 순차 재시도할 수 있습니다.")
                 record["retry_count"] = previous["retry_count"] + 1
+            if revision_of is not None:
+                record["stage"] = "revision_validation"
+                previous = next((r for r in self._records if r["run_id"] == revision_of), None)
+                if (previous is None or previous["skill_id"] != skill_id or previous["input"] is None
+                        or previous["stage"] in ("input_validation", "retry_validation", "revision_validation")
+                        or previous["input_sha256"] == record["input_sha256"]
+                        or any(previous["input"][key] != payload[key]
+                               for key in ("model_id", "document_version"))):
+                    raise DomainError("INVALID_ARGUMENT", "같은 Skill·제품·문서의 변경 입력만 연결할 수 있습니다.")
+                if skill_id == "review_revision":
+                    prior_count = (previous["output"]["data"]["result"]["revision_count"]
+                                   if previous["output"]["ok"] else previous["input"]["revision_count"])
+                    if payload["revision_count"] != prior_count:
+                        raise DomainError("INVALID_ARGUMENT", "연결한 수정 실행의 회차를 유지해야 합니다.")
+                record["change"] = {"before_input": deepcopy(previous["input"]),
+                                    "before_output": deepcopy(previous["output"]),
+                                    "after_input": deepcopy(record["input"])}
             response = self._execute_once(skill_id, record["input"], record)
         except DomainError as error:
             response = error.response()
@@ -306,6 +392,16 @@ class SkillRuntime:
             decision={"status": "held" if reasons else "succeeded" if response["ok"] else "failed",
                       "hold_reasons": reasons},
             output=deepcopy(response), error=deepcopy(error), finished_at=datetime.now(UTC).isoformat())
+        if record["change"] is not None:
+            record["change"]["after_output"] = deepcopy(response)
+        if skill_id == "review_revision" and response["ok"]:
+            record["revision"] = {
+                "before": {key: deepcopy(record["input"][key])
+                           for key in ("needs", "gaps", "concepts", "revision_count")},
+                "after": {key: deepcopy(result[key])
+                          for key in ("needs", "gaps", "concepts", "revision_count")},
+                "changes": deepcopy(result["changes"]),
+            }
         self._records.append(record)
         return response
 
@@ -314,8 +410,13 @@ class SkillRuntime:
             return DomainError("INVALID_ARGUMENT", "등록된 Skill ID가 아닙니다.", {"skill_id": skill_id}).response()
         try:
             self._validate(skill_id, "input", payload)
+            record["stage"] = "provenance_validation"
+            self._provenance(payload, record)
             record["stage"] = "context_validation"
             context = self._context(skill_id, payload)
+            sources = {item["id"]: item for item in record["provenance"]["sources"]}
+            if any(self._evidence(eid, payload) != sources.get(eid) for eid in context):
+                raise DomainError("VALIDATION_FAILED", "조회 근거와 자료 스냅샷 원문이 다릅니다.")
             record["stage"] = "handler_selection"
             handler = self._handlers.get(skill_id)
             if handler is None:
@@ -330,6 +431,9 @@ class SkillRuntime:
             record["stage"] = "handler_call"
             record["tool"]["called"] = True
             result = handler.callback(deepcopy(payload), self.store)
+            record["stage"] = "provenance_validation"
+            if _digest(self.store.bootstrap()["data"]) != record["provenance"]["dataset_sha256"]:
+                raise DomainError("VALIDATION_FAILED", "Skill 호출 중 자료가 변경되었습니다.")
             record["stage"] = "output_validation"
             response = {"ok": True, "data": {"skill_id": skill_id, "contract_version": CONTRACT_VERSION,
                         "execution_kind": handler.execution_kind, "backend_id": handler.backend_id,
@@ -374,6 +478,8 @@ class SkillRuntime:
                                 raise DomainError("VALIDATION_FAILED", "수정 근거가 입력 문맥에 없습니다.", {})
                             used.add(evidence_id)
             response["data"]["sources"] = [self._evidence(evidence_id, payload) for evidence_id in sorted(used)]
+            if any(item != sources.get(item["id"]) for item in response["data"]["sources"]):
+                raise DomainError("VALIDATION_FAILED", "출력 근거와 자료 스냅샷 원문이 다릅니다.")
             self._validate(skill_id, "output", response)
             record["stage"] = "completed"
             return response
@@ -409,7 +515,7 @@ def cli_main(skill_id: str) -> int:
         # Execution errors belong to the runtime and retain their run record;
         # they must never be reclassified as input-file reading errors.
         result = runtime.execute(skill_id, payload)
-    trace = {"records": runtime.records, "cli_error": cli_error}
+    trace = {**runtime.trace, "cli_error": cli_error}
     try:
         # ASCII escaping keeps even error details safely writable as UTF-8 JSON.
         trace_text = json.dumps(trace, ensure_ascii=True, indent=2) + "\n"
