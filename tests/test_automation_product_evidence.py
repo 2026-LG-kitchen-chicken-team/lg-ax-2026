@@ -244,6 +244,37 @@ class ProductEvidenceTests(unittest.TestCase):
         self.assertEqual(entry["state"], "partial")
         self.assertTrue(all(row["outcome"] == "missing" for row in entry["verdicts"].values()))
 
+    def test_reviewed_fourteen_case_envelope_retains_failures_and_refuses_fifteenth(self):
+        from services.automation import product_rpc
+
+        self.broker.config["product_evidence"]["max_product_cases_per_task"] = 14
+        rpc_source = self.root / "reviewed-rpc-envelope.py"
+        raw = Path(product_rpc.__file__).read_bytes()
+        histories = {}
+        for revision in range(7):
+            rpc_source.write_bytes(raw + f"\n# reviewed fixture revision {revision}\n".encode())
+            with patch.object(product_rpc, "__file__", str(rpc_source)):
+                producer = ProductEvidenceProducer(self.broker)
+                with patch.object(producer, "_case", side_effect=PMError("fixture service failure")) as case:
+                    self.assertFalse(producer(self.fixture.contract, MAIN, (self.fixture.unit,), self.store).coverage)
+                    self.assertEqual(case.call_count, 1)
+                for key, record in histories.items():
+                    self.assertEqual(producer.state["runs"][key], record)
+                histories = copy.deepcopy(producer.state["runs"])
+        self.assertEqual(sum(len(row["case_ids_reserved"]) for row in histories.values()), 14)
+        rpc_source.write_bytes(raw + b"\n# eighth reviewed fixture revision\n")
+        with patch.object(product_rpc, "__file__", str(rpc_source)):
+            producer = ProductEvidenceProducer(self.broker)
+            with patch.object(producer, "_case") as case, self.assertRaises(CompletionError):
+                producer(self.fixture.contract, MAIN, (self.fixture.unit,), self.store)
+            case.assert_not_called()
+            self.assertEqual(producer.state["runs"], histories)
+        self.broker.config["product_evidence"]["max_product_cases_per_task"] = 15
+        producer = ProductEvidenceProducer(self.broker)
+        with patch.object(producer, "_case") as case, self.assertRaises(ValueError):
+            producer(self.fixture.contract, MAIN, (self.fixture.unit,), self.store)
+        case.assert_not_called()
+
     def test_busy_reviewer_before_reservation_reuses_real_cases_without_spending_review(self):
         self.driver.busy = True
         self.assertFalse(self.run_fixture().coverage)

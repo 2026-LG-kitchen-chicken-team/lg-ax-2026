@@ -494,7 +494,10 @@ class ProductEvidenceProducer:
         require("live_model" in contract.execution_kinds, "source does not authorize actual model execution")
         positive(self.options.get("max_generations_per_case"), 12)
         positive(self.options.get("max_product_tokens_per_case"), 1000000)
-        positive(self.options.get("max_product_cases_per_task"), 10)
+        # Explicit reviewed envelope: retain historical reservations, allow the
+        # transport verification plus at most two bounded correction validations.
+        # Changing evaluator source never refunds a previous reserved case.
+        positive(self.options.get("max_product_cases_per_task"), 14)
         require(type(self.options.get("timeout_seconds")) is int and 1 <= self.options["timeout_seconds"] <= 3600,
                 "bounded product execution timeout required")
         settings = self.options.get("settings")
