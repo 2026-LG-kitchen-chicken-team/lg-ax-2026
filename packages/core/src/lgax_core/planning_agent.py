@@ -89,6 +89,56 @@ def generation_schema(skill_id: str, *, review_evidence_ids: list[str] | None = 
             "$defs": included}
 
 
+def _compare_citation_feedback(payload: dict, output: dict, decision: dict) -> list[dict] | None:
+    """Retry omitted citations only when the frozen input actually supplies them.
+
+    The grounding review remains unchanged. No citation or support judgement is
+    repaired here; the model must produce a new comparison within the shared
+    correction budget, and that output must pass the ordinary review again.
+    """
+    codes = {item["code"] for item in decision["violations"]}
+    if (decision["action"] != "hold" or not codes
+            or not codes <= {"GAP_MANUAL_MISSING", "UNSUPPORTED_WITHOUT_MANUAL"}):
+        return None
+    assessments = {item["gap_id"]: item for item in output["gap_assessments"]}
+    # Genuine missing or conflicting comparison evidence is still a hold even
+    # when another Gap happens to have a correctable citation omission.
+    if any(item["support_basis"] in ("unmentioned", "conflicting")
+           or item["resolution"] == "unknown" for item in assessments.values()):
+        return None
+    features = {item["id"]: item for item in payload["features"]}
+    sources = {item["id"]: item for item in payload["sources"]}
+    needs = {item["id"]: item for item in output["needs"]}
+    product = payload["product"]
+    feedback = []
+    for gap in output["gaps"]:
+        linked = {eid for fid in gap["feature_ids"] if fid in features
+                  for eid in features[fid]["evidence_ids"]}
+        missing = linked - set(gap["evidence_ids"])
+        unsupported_without_manual = (assessments[gap["id"]]["support_basis"] == "explicit_unsupported"
+                                      and not any(sources.get(eid, {}).get("source_type") == "manual"
+                                                  for eid in gap["evidence_ids"]))
+        if not missing and not unsupported_without_manual:
+            continue
+        if not linked or any(fid not in features for fid in gap["feature_ids"]):
+            return None
+        for eid in linked:
+            source = sources.get(eid)
+            if (source is None or source["source_type"] != "manual" or not source["text"].strip()
+                    or any(source[key] != product[key] for key in
+                           ("model_id", "document_version", "source_kind"))
+                    or any(fid not in source["feature_ids"] for fid in gap["feature_ids"]
+                           if eid in features[fid]["evidence_ids"])):
+                return None
+        feedback.append({"code": "COMPARE_CITATION_OMISSION", "stage": "compare",
+                         "gap_id": gap["id"], "need_id": gap["need_id"],
+                         "required_review_evidence_ids": deepcopy(needs[gap["need_id"]]["evidence_ids"]),
+                         "linked_manual_evidence_ids": sorted(linked),
+                         "instruction": "입력에 있는 원문을 다시 읽고 리뷰와 선택한 기능의 설명서 ID 전체를 인용하세요. "
+                                        "현재 기능의 문서상 지원과 희망 결과에 대한 잔여 불편을 별도로 판단하세요."})
+    return feedback or None
+
+
 class _RecordingAdapter:
     """Keep the verified raw completion without changing the PM model client."""
     def __init__(self, adapter: Any, record: dict):
@@ -292,6 +342,8 @@ class PlanningAgent:
                         "upstream_assessments의 desired_outcomes와 리뷰 극성을 참고하고 Need의 의미를 바꾸지 마세요. "
                         "각 입력 Need마다 Gap을 반환하고 gap_assessments에는 결과 Gap의 ID마다 정확히 한 번 판단을 넣으세요. "
                         "Gap은 원 Need의 리뷰 근거와 feature_ids에 연결된 설명서 근거 전체를 인용해야 합니다. "
+                        "출력 전에 각 Gap.evidence_ids가 그 Need.evidence_ids와 선택한 모든 Feature.evidence_ids를 "
+                        "빠짐없이 포함하는지 확인하세요. feature_ids에만 연결하고 설명서 ID 인용을 생략하면 안 됩니다. "
                         "support_status와 support_basis는 feature_ids로 비교한 현재 기능 자체의 문서상 지원 여부입니다. "
                         "그 현재 기능이 설명서에 명시되어 있으면, 희망 결과를 완전히 풀지 못해도 supported/explicit_supported입니다. "
                         "희망 결과를 위한 새로운 해결책이 문서에 없다는 이유로 명시된 현재 기능을 unmentioned로 바꾸지 마세요. "
@@ -477,6 +529,17 @@ class PlanningAgent:
                 decision = review_judgement(payload, current)
                 result["output"] = deepcopy(current)
                 event("review", "review_judgement", {"input_sha256": input_digest(payload)}, decision)
+                citation_feedback = _compare_citation_feedback(payload, current, decision)
+                if citation_feedback is not None:
+                    original_decision = deepcopy(decision)
+                    revise = payload["revision_count"] < 2
+                    decision = {**decision, "action": "revise" if revise else "unresolved",
+                                "next_revision_count": payload["revision_count"] + int(revise),
+                                "rerun_from": "compare" if revise else None}
+                    retry_feedback = citation_feedback
+                    event("review", "compare_citation_retry", {"input_sha256": input_digest(payload)},
+                          {"original_decision": original_decision, "decision": deepcopy(decision),
+                           "feedback": deepcopy(citation_feedback)})
                 if decision["valid"] and decision["action"] == "accept" and not current["concepts"]:
                     context = {"request": payload["request"], "product": payload["product"],
                                "sources": payload["sources"], "features": payload["features"],

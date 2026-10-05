@@ -13,3 +13,7 @@ python -m lgax_core.planning_agent --dataset evals/pm-intake/20261006/core/synth
 ```
 
 입력/출력 경로는 별개이며 매번 새 출력에 저장한다. 기본 standalone Skill CLI는 임의 모델을 시작하지 않는다. PlanningAgent의 `model_calls` 원문 전송/응답, `skill_trace.records` 실제 handler 호출, `correction_budget.attempts`, `revision_session.audit`, `semantic_reviews`, `no_candidate_reviews`를 함께 대조한다. fixture, live_model, 규칙 검사, 독립 품질 판정을 구분한다. 실모델 3제품 정상/변경 반복, 독립 평가와 강한 일반 LLM 기준선은 미완료이다.
+
+`actual-fridge-normal-compare-rejected.json`은 인수 source `37f7e3fd0e76eff8115941e7d456ffdf6424d0d4`의 실제 8B 냉장고 정상 실행에서 나온 Need/Compare 응답과 원 입력을 보존한다. 설명서 MANUAL-001이 실제로 입력에 있었지만 모델은 모든 Gap에서 이를 인용하지 않았고 기존 선반 분리 기능을 명시적 미지원으로 잘못 판단했다. 원래 실행은 두 호출 뒤 `GAP_MANUAL_MISSING`/`UNSUPPORTED_WITHOUT_MANUAL`로 보류됐고 내부 수정 회차는 0이었다. 이 JSON의 원본 출력 hash는 원 실행과의 대응이며, 새 테스트에서 응답을 재생하는 것은 실모델 재실행이나 수정된 결과의 품질 증명이 아니다.
+
+후속 좁은 수정은 정확한 제품·문서·자료 종류의 연결된 설명서 원문이 모두 이미 있을 때만 누락 비교를 같은 최대 2회 예산으로 모델에 다시 요청한다. 원문 ID를 자동 추가하거나 판단을 자동 승인하지 않는다. 원 자료가 없거나 비교 근거가 미언급·상충·불명확이면 보류를 유지한다. 별도 후속 문제로, 구조상 유효한 `held` 결과는 현재 semantic/no_candidate review 경로에 들어가지 않아 모델이 만든 근거 없는 보류 사유를 의미 검토로 잡지 못할 수 있다. 이번 수정은 그 범위를 확장하지 않으며 원 실패의 질문·보류문을 후속 재현 근거로 보존한다.
