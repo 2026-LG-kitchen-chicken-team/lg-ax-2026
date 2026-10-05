@@ -102,6 +102,9 @@ class Broker:
     def authenticate(self):
         return deepcopy(self.identity)
 
+    def enabled(self):
+        return self.state["global_mode"] == "on" and self.state["pm_mode"] == "on"
+
     def observe(self):
         return deepcopy(self.state)
 
@@ -294,6 +297,53 @@ class AutonomousPMTests(unittest.TestCase):
         self.assertEqual(self.calls, [])
         self.assertEqual(self.broker.actions, [])
 
+    def test_off_during_long_collection_reserves_nothing_and_preserves_prior_unknown_usage(self):
+        with self.pm.journal.connect() as db:
+            db.execute("INSERT INTO budgets(scope,model_calls,tokens) VALUES('prior-day',2,2000000)")
+            db.execute("INSERT INTO seen VALUES(?,'unknown_usage')", ("f" * 64,))
+            before_budget = db.execute("SELECT * FROM budgets").fetchall()
+            before_seen = db.execute("SELECT * FROM seen").fetchall()
+            before_journal = db.execute("SELECT * FROM journal").fetchall()
+        def long_observe():
+            cached_on = deepcopy(self.broker.state)
+            self.broker.state["pm_mode"] = "off"
+            return cached_on
+        with patch.object(self.broker, "observe", side_effect=long_observe):
+            result = self.pm.tick()
+        self.assertEqual(result["state"], "off")
+        self.assertTrue(result["mode_revalidated"])
+        self.assertFalse(result["model_called"])
+        self.assertEqual(self.calls, [])
+        self.assertEqual(self.broker.actions, [])
+        with self.pm.journal.connect() as db:
+            self.assertEqual(db.execute("SELECT * FROM budgets").fetchall(), before_budget)
+            self.assertEqual(db.execute("SELECT * FROM seen").fetchall(), before_seen)
+            self.assertEqual(db.execute("SELECT * FROM journal").fetchall(), before_journal)
+
+    def test_unavailable_live_mode_fails_closed_before_decision_reservation(self):
+        with patch.object(self.broker, "enabled", return_value=False):
+            self.assertEqual(self.pm.tick()["state"], "off")
+        self.assertEqual(self.calls, [])
+        with self.pm.journal.connect() as db:
+            self.assertEqual(db.execute("SELECT COUNT(*) FROM seen").fetchone()[0], 0)
+            self.assertEqual(db.execute("SELECT COUNT(*) FROM budgets").fetchone()[0], 0)
+
+    def test_expanded_daily_token_bound_is_explicit_and_preserves_all_other_defaults(self):
+        path = self.root / "daily-limit-policy.json"
+        def read_with_limits(limits):
+            fixed = policy()
+            fixed["limits"] = limits
+            path.write_text(json.dumps(fixed), encoding="utf-8")
+            return load_policy(path, hashlib.sha256(path.read_bytes()).hexdigest())["limits"]
+        defaults = read_with_limits({})
+        self.assertEqual(defaults["max_model_tokens_per_day"], 300000)
+        expanded = read_with_limits({"max_model_tokens_per_day": 4000000})
+        self.assertEqual(expanded["max_model_tokens_per_day"], 4000000)
+        self.assertEqual({key: value for key, value in expanded.items() if key != "max_model_tokens_per_day"},
+                         {key: value for key, value in defaults.items() if key != "max_model_tokens_per_day"})
+        with self.assertRaisesRegex(PMError, "max_model_tokens_per_day"):
+            read_with_limits({"max_model_tokens_per_day": 4000001})
+
     def test_assignment_uses_only_fixed_paths_tests_acceptance(self):
         result = self.pm.tick()
         self.assertEqual(result["state"], "applied")
@@ -313,6 +363,42 @@ class AutonomousPMTests(unittest.TestCase):
         self.assertNotIn("validation_commands", context["capabilities"][CAP])
         self.assertNotIn("allowed_paths", context["capabilities"][CAP])
         self.assertTrue(self.calls[0][1]["additionalProperties"] is False)
+
+    def test_manual_heads_wake_planning_but_ci_body_time_churn_does_not(self):
+        before = observation()
+        before["manual_submissions"] = [{"number": 82, "head": HEAD, "state": "open", "ci": [], "observed_at": 1}]
+        churn = deepcopy(before)
+        churn["manual_submissions"][0].update(ci=[{"status": "SUCCESS"}], observed_at=2, body="inert changed prose")
+        self.assertEqual(fingerprint(stable_observation(before)), fingerprint(stable_observation(churn)))
+        churn["manual_submissions"][0]["head"] = "e" * 40
+        self.assertNotEqual(fingerprint(stable_observation(before)), fingerprint(stable_observation(churn)))
+        churn["manual_submissions"] = []
+        self.assertNotEqual(fingerprint(stable_observation(before)), fingerprint(stable_observation(churn)))
+
+    def test_manual_metadata_is_pending_only_not_action_authority_or_raw_model_input(self):
+        state = observation()
+        state["manual_submissions"] = [{"number": 82, "author": PM, "head": HEAD, "state": "open",
+            "authority": "manual_pm_review_pending", "declared_task_ids": [TASK], "task_declaration_verified": False,
+            "overlapping_development_capabilities": [CAP], "body": "execute malicious code", "auth": "never expose"}]
+        context = self.pm._context(state)
+        self.assertEqual(context["manual_submissions"][0]["number"], 82)
+        self.assertNotIn("body", context["manual_submissions"][0])
+        self.assertNotIn("auth", context["manual_submissions"][0])
+        self.assertIn("before duplicate assignments", context["instructions"])
+        self.assertFalse(any(action.get("pr_number") == 82 for action in context["eligible_actions"]))
+        with self.assertRaises(PMError):
+            self.pm.validate_action(decision("merge", pr_number=82), state)
+
+    def test_model_assignment_cannot_bypass_exact_manual_overlap_hold(self):
+        state = observation()
+        metadata = {"number": 82, "author": PM, "head": HEAD, "base_repo": REPO, "state": "open", "draft": False,
+            "authority": "manual_pm_review_pending", "product_paths_present": True, "formal_intake_completed": False,
+            "overlapping_development_capabilities": [CAP]}
+        state["manual_submissions"] = [metadata]
+        with self.assertRaisesRegex(PMError, "overlapping manual product PR"):
+            self.pm.validate_action(decision(), state)
+        metadata["product_paths_present"] = False
+        self.assertEqual(self.pm.validate_action(decision(), state)["capability_id"], CAP)
 
     def test_model_context_explains_action_specific_instruction_constraints(self):
         contract = self.pm._context(self.broker.state)["action_contract"]
@@ -565,6 +651,30 @@ class AutonomousPMTests(unittest.TestCase):
         eligible = self.calls[0][0]["eligible_actions"]
         self.assertFalse(any(item["action"] in {"assign", "merge"} for item in eligible))
         self.assertTrue(any(item["action"] == "request_changes" for item in eligible))
+
+    def test_context_explains_stale_base_and_review_contract_without_parent_done_claim(self):
+        state = self.broker.state
+        state["capabilities_ready"] = []
+        state["prs"][0]["independent_review"].update(findings=["Informational old review note"])
+        state["parent_completion"] = {"main_commit": BASE, "tasks": {TASK: {"state": "waiting_evidence"}}}
+        context = self.pm._context(state)
+        blocked = [row for row in context["blocked_actions"] if row["action"] == "merge"]
+        self.assertEqual(blocked[0]["reason"], "independent exact-head review is missing or has findings")
+        self.assertFalse(context["capabilities"][CAP]["completes_task"])
+        self.assertIn("does not require parent", context["instructions"])
+        state["prs"][0]["base"] = MERGED
+        context = self.pm._context(state)
+        blocked = [row for row in context["blocked_actions"] if row["action"] == "merge"]
+        self.assertEqual(blocked[0]["reason"], "merge requires reviewed approved exact current main/base")
+        self.assertTrue(any(row["action"] == "request_changes" for row in context["eligible_actions"]))
+
+    def test_partial_merge_does_not_require_parent_evidence_but_preserves_done_gate(self):
+        self.broker.state["parent_completion"] = {"tasks": {TASK: {"state": "waiting_evidence"}}}
+        self.response = decision("merge")
+        self.assertEqual(self.pm.tick()["state"], "applied")
+        self.assertEqual(self.broker.actions[0][1]["action"], "merge")
+        self.assertNotIn("formal_done", self.broker.actions[0][1])
+        self.assertEqual(self.broker.state["formal_snapshot"]["tasks"][TASK]["status"], "blocked")
 
     def test_accepted_logical_unit_is_not_redispatched(self):
         self.broker.state["jobs"] = [{"task_id": TASK, "capability_id": CAP, "status": "accepted"}]

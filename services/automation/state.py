@@ -8,6 +8,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import math
 import re
 import secrets
 import sqlite3
@@ -21,6 +22,10 @@ ACCOUNTS = ("jeongiryang", "unknownamed", "ginaginaring", "choigilung")
 PM = "jeongiryang"
 REPO = "2026-LG-kitchen-chicken-team/lg-ax-2026"
 ACTIVE = ("running", "stopping", "orphaned")
+WORKER_STALE_SECONDS = 180
+WORKER_RUNTIME_VERSION = "worker-presence-v1"
+WORKER_IDLE_PHASES = {"starting", "idle", "profile_busy"}
+WORKER_JOB_PHASES = {"preflight", "model", "validating", "publishing"}
 SAFE_EXECUTABLES = {"uv", "python", "python3", "npm", "node"}
 FORBIDDEN = (
     "private", ".git", ".github", ".codex", ".claude", "agents.md", "claude.md", ".gitignore",
@@ -114,6 +119,13 @@ class Store:
                     event TEXT NOT NULL,details TEXT NOT NULL);
                 CREATE TABLE IF NOT EXISTS identities(
                     account TEXT PRIMARY KEY,token_digest TEXT NOT NULL,changed REAL NOT NULL);
+                CREATE TABLE IF NOT EXISTS worker_presence(
+                    account TEXT PRIMARY KEY,instance_id TEXT NOT NULL,received_at REAL NOT NULL,
+                    reported_at REAL NOT NULL,metadata TEXT NOT NULL);
+                CREATE TABLE IF NOT EXISTS worker_presence_sessions(
+                    account TEXT NOT NULL,instance_id TEXT NOT NULL,sequence INTEGER NOT NULL,
+                    reported_at REAL NOT NULL,retired INTEGER NOT NULL DEFAULT 0,
+                    PRIMARY KEY(account,instance_id));
             """)
             db.execute("INSERT OR IGNORE INTO settings VALUES('mode','off')")
             for account in self.accounts:
@@ -169,9 +181,93 @@ class Store:
             events = [dict(row) for row in db.execute("SELECT * FROM events ORDER BY id DESC LIMIT 40")]
             return {"global_mode": mode, "members": {r[0]: bool(r[1]) for r in db.execute("SELECT * FROM members")},
                     "jobs": jobs, "reservations": reservations, "events": events,
+                    "workers": self._worker_presence_status(db),
                     "formal_snapshot": json.loads(db.execute("SELECT value FROM settings WHERE key='formal_snapshot'").fetchone()[0]),
                     "observed_at": self.clock(), "viewer": account,
                     "notice": "Automation review_requested/accepted is not formal phase2 Done or human merge approval."}
+
+    def _worker_presence_status(self, db):
+        observed_at = self.clock()
+        rows = {row["account"]: row for row in db.execute("SELECT * FROM worker_presence")}
+        enrolled = {row[0] for row in db.execute("SELECT account FROM identities")}
+        result = {}
+        for account in self.accounts:
+            registered = (account in self.config.get("worker_token_digests", {}) or account in enrolled or
+                          (account != self.pm and account in self.config.get("token_digests", {})))
+            row = rows.get(account)
+            if row:
+                age = max(0, observed_at - row["received_at"])
+                result[account] = {**json.loads(row["metadata"]), "registered": registered,
+                    "last_seen_at": row["received_at"], "reported_at": row["reported_at"],
+                    "age_seconds": age, "presence": "online" if age < WORKER_STALE_SECONDS else "stale"}
+            else:
+                result[account] = {"registered": registered, "presence": "never_seen",
+                                   "last_seen_at": None, "reported_at": None, "age_seconds": None}
+            result[account].update(stale_after_seconds=WORKER_STALE_SECONDS,
+                evidence_kind="authenticated_worker_self_report",
+                limitation="Recent fixed-worker metadata is not a readiness, model/test success, "
+                           "job completion or independent proof of the entire PC's health.")
+        return result
+
+    def worker_presence(self, account, body):
+        """Metadata only: never renew a lease, opt in, claim, retry or approve."""
+        required = {"schema_version", "source", "runtime_version", "runtime_sha256", "engine", "phase",
+                    "instance_id", "sequence", "reported_at", "job_id", "lease_token"}
+        if (account not in self.accounts or not isinstance(body, dict) or set(body) != required or
+                type(body["schema_version"]) is not int or body["schema_version"] != 1 or
+                body["source"] != "fixed_worker" or body["runtime_version"] != WORKER_RUNTIME_VERSION or
+                not isinstance(body["engine"], str) or body["engine"] not in {"codex", "claude"} or
+                not isinstance(body["phase"], str) or body["phase"] not in WORKER_IDLE_PHASES | WORKER_JOB_PHASES or
+                not isinstance(body["runtime_sha256"], str) or
+                not re.fullmatch(r"[0-9a-f]{64}", body["runtime_sha256"]) or
+                not isinstance(body["instance_id"], str) or
+                not re.fullmatch(r"[0-9a-f]{32}", body["instance_id"])):
+            raise ControlError("fixed worker metadata has invalid fields or source", 422)
+        integer(body["sequence"], "worker sequence", 1, 2147483647)
+        reported_at, received_at = body["reported_at"], self.clock()
+        if (type(reported_at) not in {int, float} or not -1e12 <= reported_at <= 1e12 or
+                not math.isfinite(reported_at) or
+                abs(received_at - reported_at) >= WORKER_STALE_SECONDS):
+            raise ControlError("worker report timestamp is stale or invalid", 422)
+        job_id, token = body["job_id"], body["lease_token"]
+        if body["phase"] in WORKER_IDLE_PHASES:
+            if job_id is not None or token is not None:
+                raise ControlError("idle worker metadata cannot claim a job", 422)
+        elif (not isinstance(job_id, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,100}", job_id) or
+              not isinstance(token, str) or not 1 <= len(token) <= 256):
+            raise ControlError("active worker metadata needs its current job lease", 422)
+        with self.transaction() as db:
+            if job_id is not None:
+                # Inspect the original fence without _expire or UPDATE: this
+                # endpoint cannot keep abandoned work alive or change history.
+                job = db.execute("SELECT * FROM jobs WHERE id=?", (job_id,)).fetchone()
+                if (job is None or json.loads(job["packet"])["owner"] != account or
+                        job["status"] not in {"running", "stopping"} or not job["lease_hash"] or
+                        not hmac.compare_digest(digest(token), job["lease_hash"]) or
+                        job["lease_expires"] <= received_at or job["run_deadline"] <= received_at):
+                    raise ControlError("worker metadata does not own a live job lease", 403)
+            session = db.execute("SELECT * FROM worker_presence_sessions WHERE account=? AND instance_id=?",
+                                 (account, body["instance_id"])).fetchone()
+            previous = db.execute("SELECT * FROM worker_presence WHERE account=?", (account,)).fetchone()
+            if session:
+                if (session["retired"] or body["sequence"] <= session["sequence"] or
+                        reported_at < session["reported_at"]):
+                    raise ControlError("stale, duplicate or retired worker metadata refused")
+            elif previous and reported_at < previous["reported_at"]:
+                raise ControlError("new worker instance must have a fresh timestamp")
+            else:
+                db.execute("UPDATE worker_presence_sessions SET retired=1 WHERE account=?", (account,))
+            db.execute("INSERT INTO worker_presence_sessions VALUES(?,?,?,?,0) "
+                       "ON CONFLICT(account,instance_id) DO UPDATE SET sequence=excluded.sequence,"
+                       "reported_at=excluded.reported_at", (account, body["instance_id"], body["sequence"], reported_at))
+            metadata = {key: body[key] for key in ("source", "runtime_version", "runtime_sha256", "engine", "phase",
+                                                 "instance_id", "sequence", "job_id")}
+            db.execute("INSERT INTO worker_presence VALUES(?,?,?,?,?) ON CONFLICT(account) DO UPDATE SET "
+                       "instance_id=excluded.instance_id,received_at=excluded.received_at,"
+                       "reported_at=excluded.reported_at,metadata=excluded.metadata",
+                       (account, body["instance_id"], received_at, reported_at, json.dumps(metadata)))
+        return {"accepted": True, "account": str(account), "server_time": received_at,
+                "stale_after_seconds": WORKER_STALE_SECONDS, "metadata_only": True}
 
     def _public_job(self, row):
         packet = json.loads(row["packet"])
