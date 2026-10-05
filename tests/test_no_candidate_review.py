@@ -22,7 +22,7 @@ class NoCandidateReviewTests(unittest.TestCase):
     def setUp(self):
         fixtures.PlanningAgentTests.setUp(self)
         artifact = Path(__file__).resolve().parents[1] / (
-            "evals/core-live-completion/20261005/thinking-8b-02-recommended-sampling.json")
+            "evals/pm-intake/20261006/core/originals/thinking-8b-02-recommended-sampling.json")
         self.false_output = json.loads(artifact.read_text("utf-8"))["output"]
 
     def agent(self, alter=None):

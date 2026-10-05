@@ -52,7 +52,7 @@ class SemanticReviewTests(unittest.TestCase):
         self.assertTrue(list(Draft202012Validator(schema).iter_errors(self.report)))
 
     def test_live_assessment_reason_can_be_quoted_to_request_correction(self):
-        folder = ROOT / "evals/core-live-completion/20261005"
+        folder = ROOT / "evals/pm-intake/20261006/core/originals"
         case = next(c for c in json.loads((folder / "blinded-review-fresh/review.json").read_text("utf-8"))["cases"]
                     if c["case_id"] == "HOLD-01")
         self.payload = case["request"]
