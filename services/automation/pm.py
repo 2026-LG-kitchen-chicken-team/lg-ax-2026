@@ -16,7 +16,7 @@ import json
 import re
 import sqlite3
 import time
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from copy import deepcopy
 from pathlib import Path
 from typing import Protocol
@@ -51,6 +51,10 @@ DECISION_SCHEMA = {
 
 class PMError(ValueError):
     """A bounded, sanitized policy rejection. Never include private paths/HTTP bodies."""
+
+
+class PMDriverBusy(PMError):
+    """Trusted driver could not acquire its profile mutex before any call began."""
 
 
 class PMBroker(Protocol):
@@ -666,6 +670,25 @@ class AutonomousPM:
                         "reason": "Prior mutation has no verified outcome; no repeat or new operation."}
         return None
 
+    def _decision_call(self, observation, event, day, limits):
+        # Acquire the real profile mutex before reserving billable work. A
+        # separate check/release would race with a Worker claiming that profile.
+        reserve = getattr(self.decide, "reserve_profile", None)
+        with reserve() if reserve else nullcontext():
+            with self.journal.connect() as db:
+                # Once reserved, a crash/unknown usage remains fail-closed and
+                # this same event must not be billed again automatically.
+                db.execute("INSERT INTO seen VALUES(?,'decision_started')", (event,))
+                db.execute("UPDATE budgets SET model_calls=model_calls+1 WHERE scope=?", (day,))
+                self.journal.append(db, "decision_started", {"fingerprint": event})
+            try:
+                return self.decide(self._context(observation), deepcopy(DECISION_SCHEMA),
+                                   limits["decision_timeout_seconds"])
+            except PMDriverBusy:
+                # Only acquisition before the journal reservation is cost-free.
+                # A driver failure after that point cannot refund unknown usage.
+                raise PMError("isolated driver failed after decision reservation") from None
+
     def _tick(self):
         self.journal.verify()
         load_policy(self.policy_path, self.policy_digest)  # Detect live policy tampering, never silently reload.
@@ -691,15 +714,9 @@ class AutonomousPM:
             failures = db.execute("SELECT value FROM metadata WHERE key='driver_failures'").fetchone()
             if failures and int(failures[0]) >= limits["max_driver_failures"]:
                 return {"state": "driver_halted", "model_called": False}
-            # Persist before calling; a process crash cannot repeatedly bill an
-            # unchanged event. A trusted operator changes resume_nonce to retry.
-            db.execute("INSERT INTO seen VALUES(?,'decision_started')", (event,))
-            db.execute("UPDATE budgets SET model_calls=model_calls+1 WHERE scope=?", (day,))
-            self.journal.append(db, "decision_started", {"fingerprint": event})
         tokens, raw = None, None
         try:
-            result = self.decide(self._context(observation), deepcopy(DECISION_SCHEMA),
-                                 limits["decision_timeout_seconds"])
+            result = self._decision_call(observation, event, day, limits)
             if not isinstance(result, dict) or set(result) != {"decision", "usage"}:
                 raise PMError("isolated PM driver result must include exact decision and usage")
             usage = result["usage"]
@@ -708,6 +725,8 @@ class AutonomousPM:
             tokens = sum(number(usage[key], "model token usage", 0, 2000000) for key in usage)
             raw = normalize_decision(result["decision"])
             action = self.validate_action(raw, observation)
+        except PMDriverBusy:
+            raise  # No journal reservation/call was made; poll only on the next tick.
         except Exception as exc:  # noqa: BLE001 - external isolated driver; sanitized fail-closed boundary.
             with self.journal.connect() as db:
                 # Unknown usage spends the remaining day budget. A rejected
@@ -789,5 +808,8 @@ class AutonomousPM:
         with exclusive_bridge_lock(self.journal.path.with_suffix(".lock")):
             try:
                 return self._tick()
+            except PMDriverBusy:
+                return {"state": "wait", "reason": "own AI profile is busy before model execution",
+                        "model_called": False, "mutated": False}
             except (PMError, ValueError, TypeError, KeyError, OSError) as exc:
                 return {"state": "halted", "error_type": type(exc).__name__, "mutated": False}

@@ -8,17 +8,22 @@ import tempfile
 import unittest
 from copy import deepcopy
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from services.automation.pm import (
     AutonomousPM,
     Journal,
+    PMDriverBusy,
     PMError,
     fingerprint,
     load_policy,
     normalize_decision,
     stable_observation,
 )
+from services.automation.pm_broker import DockerPMDriver
 from services.automation.state import ACCOUNTS, PM, REPO
+from services.automation.worker import exclusive_lock
 
 BASE, HEAD, MERGED, PROOF = "a" * 40, "b" * 40, "c" * 40, "d" * 64
 TASK, CAP = "P2-PM-003", "workspace-pilot"
@@ -142,6 +147,69 @@ class AutonomousPMTests(unittest.TestCase):
     def driver(self, context, schema, timeout):
         self.calls.append((deepcopy(context), schema, timeout))
         return {"decision": deepcopy(self.response), "usage": deepcopy(self.usage)}
+
+    def profile_driver(self):
+        profile = self.root / "profile"
+        profile.mkdir()
+        executor = SimpleNamespace(config=SimpleNamespace(auth_root=profile))
+        return DockerPMDriver(executor, state_dir=self.root / "driver-state", heartbeat=lambda: True)
+
+    def test_worker_profile_contention_does_not_charge_or_poison_same_event(self):
+        driver = self.profile_driver()
+        self.pm.decide = driver
+        proof = {"result": decision(), "usage": deepcopy(self.usage)}
+        with patch.object(driver, "_call", return_value=proof) as model:
+            with exclusive_lock(driver.executor.config.auth_root / "lgax-worker.lock"):
+                for _ in range(3):
+                    result = self.pm.tick()
+                    self.assertEqual(result["state"], "wait")
+                    self.assertFalse(result["model_called"])
+                    self.assertFalse(result["mutated"])
+                self.assertEqual(model.call_count, 0)
+                with self.pm.journal.connect() as db:
+                    self.assertEqual(db.execute("SELECT COUNT(*) FROM seen").fetchone()[0], 0)
+                    self.assertEqual(db.execute("SELECT COUNT(*) FROM journal").fetchone()[0], 0)
+                    self.assertEqual(db.execute("SELECT SUM(model_calls+tokens+actions) FROM budgets").fetchone()[0], 0)
+                    self.assertIsNone(db.execute("SELECT value FROM metadata WHERE key='driver_failures'").fetchone())
+            # Release alone suffices: no new fingerprint, nonce or quota reset.
+            self.assertEqual(self.pm.tick()["state"], "applied")
+            self.assertEqual(model.call_count, 1)
+            self.assertEqual(self.pm.tick()["state"], "unchanged")
+            self.assertEqual(model.call_count, 1)
+
+    def test_profile_reservation_spans_journal_start_and_model_call(self):
+        driver = self.profile_driver()
+        self.pm.decide = driver
+        def model(*_args, **_kwargs):
+            with self.pm.journal.connect() as db:
+                self.assertEqual(db.execute("SELECT COUNT(*) FROM seen WHERE state='decision_started'").fetchone()[0], 1)
+                self.assertEqual(db.execute("SELECT SUM(model_calls) FROM budgets").fetchone()[0], 1)
+            with self.assertRaises(OSError), exclusive_lock(driver.executor.config.auth_root / "lgax-worker.lock"):
+                self.fail("journal reservation released the profile before the call")
+            return {"result": decision(), "usage": deepcopy(self.usage)}
+        with patch.object(driver, "_call", side_effect=model):
+            self.assertEqual(self.pm.tick()["state"], "applied")
+        with exclusive_lock(driver.executor.config.auth_root / "lgax-worker.lock"):
+            pass
+
+    def test_failure_after_model_reservation_keeps_unknown_usage_fail_closed(self):
+        for failure in (OSError("fixture I/O failure after execution"), PMDriverBusy("not a pre-call acquisition")):
+            with self.subTest(error=type(failure).__name__):
+                driver = self.profile_driver()
+                self.pm.decide = driver
+                with patch.object(driver, "_call", side_effect=failure) as model:
+                    result = self.pm.tick()
+                self.assertEqual(result["state"], "decision_rejected")
+                self.assertTrue(result["model_called"])
+                self.assertEqual(model.call_count, 1)
+                with self.pm.journal.connect() as db:
+                    budget = db.execute("SELECT model_calls,tokens FROM budgets WHERE scope LIKE 'day:%'").fetchone()
+                    self.assertEqual(budget, (1, self.pm.policy["limits"]["max_model_tokens_per_day"]))
+                    self.assertEqual(db.execute("SELECT state FROM seen").fetchone()[0], "rejected")
+                    self.assertEqual(db.execute("SELECT value FROM metadata WHERE key='driver_failures'").fetchone()[0], "1")
+                # Fresh independent test state; no operational ledger is touched.
+                self.temp.cleanup()
+                self.setUp()
 
     def test_off_does_not_call_model_or_mutate(self):
         for key, value in (("global_mode", "off"), ("global_mode", "stop"), ("pm_mode", "off")):

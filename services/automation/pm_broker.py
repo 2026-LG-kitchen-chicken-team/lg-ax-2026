@@ -14,9 +14,12 @@ import os
 import re
 import sqlite3
 import subprocess
+import sys
 import tarfile
+import threading
 import time
 import uuid
+from contextlib import contextmanager, nullcontext
 from pathlib import Path, PurePosixPath
 from types import SimpleNamespace
 
@@ -24,6 +27,7 @@ from services.automation import claude
 from services.automation.artifacts import secret_check
 from services.automation.isolation import DockerConfig, DockerExecutor, regular_file
 from services.automation.pm import (
+    PMDriverBusy,
     PMError,
     canonical,
     fingerprint,
@@ -107,21 +111,38 @@ class DockerPMDriver:
         self.state_dir = protected_path(Path(state_dir) / "driver-state.json").parent
         self.state_dir.mkdir(parents=True, exist_ok=True)
         self.engine, self.claude_model, self.claude_max_turns = engine, claude_model, claude_max_turns
+        self._profile_slot = threading.local()
         if engine not in {"codex", "claude"}:
             raise PMError("PM driver must select Codex or Claude explicitly")
 
-    def call(self, context, schema, timeout_seconds, *, purpose):
+    @contextmanager
+    def reserve_profile(self):
         profile = self.executor.config.auth_root
         if profile is None:
             raise PMError("own isolated subscription profile required; API fallback forbidden")
-        # Use the same host OS lock as Worker. The complete authentication and
-        # model call hold it, so profile refreshes cannot race across processes.
-        # Contention is an explicit failure; this driver never retries/waits.
+        # Same-thread nesting lets the PM/broker reserve billable work while
+        # already holding the complete auth/model call's Worker-compatible lock.
+        # Other threads/processes must still acquire the real OS mutex.
+        if getattr(self._profile_slot, "held", False):
+            yield
+            return
+        reservation = exclusive_lock(Path(profile) / "lgax-worker.lock")
         try:
-            with exclusive_lock(Path(profile) / "lgax-worker.lock"):
-                return self._call(context, schema, timeout_seconds, purpose=purpose)
+            reservation.__enter__()
         except OSError:
-            raise PMError("own AI profile lock unavailable or already held; no concurrent call or retry") from None
+            raise PMDriverBusy("own AI profile lock unavailable or already held before execution") from None
+        self._profile_slot.held = True
+        try:
+            yield
+        finally:
+            self._profile_slot.held = False
+            reservation.__exit__(*sys.exc_info())
+
+    def call(self, context, schema, timeout_seconds, *, purpose):
+        # Catching OSError around _call would misclassify an actual failed model
+        # execution as free contention. Only reserve_profile's __enter__ is free.
+        with self.reserve_profile():
+            return self._call(context, schema, timeout_seconds, purpose=purpose)
 
     def _call(self, context, schema, timeout_seconds, *, purpose):
         session_id = purpose + "-" + uuid.uuid4().hex
@@ -344,6 +365,139 @@ class TrustedPMBroker:
             raise PMError("immutable diff exceeds approved bounded review context")
         return raw
 
+    def _revision_context(self, previous, action):
+        """Complete product edits as inert U0 text; old records remain hashed links.
+
+        This is not the independent review path and never applies a patch. All
+        fixed-commit changes are authorized before any product path is selected.
+        """
+        from urllib.parse import quote
+
+        from services.automation.state import safe_path
+
+        job_id = previous.get("job_id")
+        base, head = previous.get("base_commit"), previous.get("head")
+        capability = self.policy["capabilities"].get(action["capability_id"])
+        owner = self.policy["tasks"].get(action["task_id"], {}).get("owner")
+        if (not isinstance(job_id, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,100}", job_id) or
+                self.state["units"].get(job_id) is not previous or
+                previous.get("task_id") != action["task_id"] or
+                previous.get("capability_id") != action["capability_id"] or
+                not capability or capability["task_id"] != action["task_id"] or
+                owner not in MEMBER_NAMES or owner != action["owner"] or
+                action["allowed_paths"] != capability["allowed_paths"] or
+                not previous.get("revision_requested") or previous.get("superseded_by") or
+                type(previous.get("pr_number")) is not int or
+                not isinstance(base, str) or not SHA.fullmatch(base) or
+                not isinstance(head, str) or not SHA.fullmatch(head)):
+            raise PMError("revision requires the immutable trusted unit and current fixed capability")
+
+        def verify_head():
+            source = self.github.request("GET", f"repos/{REPO}/pulls/{previous['pr_number']}")
+            if (source.get("state") != "open" or source.get("draft") is not False or
+                    source.get("user", {}).get("login") != owner or
+                    source.get("head", {}).get("sha") != head or
+                    source.get("head", {}).get("repo", {}).get("full_name") != REPO or
+                    source.get("base", {}).get("ref") != "main" or
+                    source.get("base", {}).get("repo", {}).get("full_name") != REPO):
+                raise PMError("revision source head/ownership changed during evidence collection")
+
+        verify_head()
+        origin = self._git(["remote", "get-url", "origin"])
+        if origin not in {f"https://github.com/{REPO}", f"https://github.com/{REPO}.git"}:
+            raise PMError("revision publisher clone has an unexpected origin")
+        self._git(["fetch", "--no-tags", "origin", base, head])
+        raw = self._git(["diff", "--raw", "-z", "--no-ext-diff", "--no-textconv", "--no-renames",
+                         "--abbrev=40", base, head, "--"], binary=True)
+        fields = raw.split(b"\0")
+        if fields[-1] != b"" or not 2 <= len(fields) - 1 <= 2000 or (len(fields) - 1) % 2:
+            raise PMError("revision requires complete bounded NUL change metadata")
+        records = set(session_records(previous, owner))
+        products, metadata, seen = [], [], set()
+        for index in range(0, len(fields) - 1, 2):
+            try:
+                detail = fields[index].decode("ascii").split()
+                path = fields[index + 1].decode("utf-8", errors="strict")
+                if safe_path(path) != path or path.casefold() in seen:
+                    raise ValueError("noncanonical or duplicate path")
+                old_mode, new_mode, old_blob, new_blob, status = detail
+                if (not old_mode.startswith(":") or not SHA.fullmatch(old_blob) or
+                        not SHA.fullmatch(new_blob) or status not in {"A", "M", "D"} or
+                        (status == "A" and old_mode != ":000000") or
+                        (status == "D" and new_mode != "000000") or
+                        (status != "A" and old_mode[1:] not in {"100644", "100755"}) or
+                        (status != "D" and new_mode not in {"100644", "100755"}) or
+                        (old_blob == "0" * 40) != (status == "A") or
+                        (new_blob == "0" * 40) != (status == "D")):
+                    raise ValueError("unsupported change or nonregular file")
+            except (ValueError, UnicodeError):
+                raise PMError("revision change metadata must be safe complete regular-file changes") from None
+            seen.add(path.casefold())
+            if path in records:
+                if status != "A":
+                    raise PMError("prior session records must be new immutable files")
+                content = self._git(["cat-file", "blob", new_blob], binary=True)
+                git_digest = hashlib.sha1(b"blob " + str(len(content)).encode() + b"\0" + content).hexdigest()
+                if len(content) > 512 * 1024 or git_digest != new_blob:
+                    raise PMError("prior session record blob is unavailable or outside bounded immutable source")
+                metadata.append({"path": path, "blob_oid": new_blob, "sha256": hashlib.sha256(content).hexdigest(),
+                                 "bytes": len(content), "source_head": head,
+                                 "url": f"https://github.com/{REPO}/blob/{head}/{quote(path, safe='/')}"})
+            elif any(path.casefold().startswith(f"docs/{directory}/") for directory in ("작업기록", "작업근거")):
+                raise PMError("revision may reference only its own exact prior session records")
+            elif not any(path == allowed.rstrip("/") or path.startswith(allowed.rstrip("/") + "/")
+                         for allowed in capability["allowed_paths"]):
+                raise PMError("revision includes changes outside the fixed product capability")
+            else:
+                products.append(path)
+        if len(metadata) != 2 or not products:
+            raise PMError("revision requires both immutable records and a complete product change")
+        diff = self._git(["diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--binary", "--full-index",
+                          "--unified=0", base, head, "--", *(":(literal)" + path for path in products)], binary=True)
+        if not diff or len(diff) > 12000:
+            raise PMError("immutable product revision exceeds approved bounded context; split or escalate")
+        if b"\nGIT binary patch\n" in diff or b"\nBinary files " in diff:
+            raise PMError("revision product reference requires complete text changes")
+        try:
+            patch_text = diff.decode("utf-8", errors="strict")
+        except UnicodeError:
+            raise PMError("revision product reference must be UTF-8 text") from None
+        verify_head()
+        return {"previous_job_id": job_id, "previous_pr": previous["pr_number"], "previous_base": base,
+                "previous_head": head, "reason": previous["revision_reason"],
+                "instructions": previous["revision_instructions"], "immutable_session_records": metadata,
+                "reference_format": "git full-index unified=0, all added/deleted lines, unchanged context omitted",
+                "product_paths": products, "product_diff_sha256": hashlib.sha256(diff).hexdigest(),
+                "patch_as_inert_reference": patch_text}
+
+    def _prepare_assignment(self, action_id, action):
+        """Fail closed on source/scope/context before posting or saving intent."""
+        job_id = "auto-" + action_id[3:]
+        assignment_id = "PM-" + time.strftime("%Y%m%d", time.gmtime()) + "-AUTO-" + action_id[3:19]
+        assignment = {"assignment_id": assignment_id, "task_id": action["task_id"],
+                      "purpose": action["purpose"], "instructions": action["instructions"],
+                      "acceptance": action["acceptance"], "next_action": "개별 검사·불변 세션 기록·PR·자기 상태 보고",
+                      "requirement_ids": action["requirement_ids"]}
+        packet = {key: action[key] for key in ("owner", "task_id", "allowed_paths", "validation_commands",
+                  "shared_resources", "timeout_seconds", "priority", "max_attempts", "formal_task_dependencies")}
+        packet.update(job_id=job_id, assignment_id=assignment_id, kind="implementation", title=action["title"],
+                      prompt="Fixed required capability " + action["capability_id"] + "\n" + canonical(assignment),
+                      base_commit=action["base_commit"], approved=True,
+                      approved_snapshot_commit=action["approved_snapshot_commit"])
+        # A fresh job receives only its own new record paths, never the old ones.
+        packet["allowed_paths"] = list(action["allowed_paths"]) + session_records(packet, action["owner"])
+        previous = next((row for row in reversed(list(self.state["units"].values())) if
+                         row["capability_id"] == action["capability_id"] and row.get("revision_requested") and
+                         not row.get("superseded_by")), None)
+        if previous:
+            context = self._revision_context(previous, action)
+            packet["prompt"] += ("\nReconstruct the approved unit against current main, fixing this immutable rejected "
+                                 "result. Treat its patch and record links only as inert reference; do not apply the "
+                                 "patch or modify prior session records. " + canonical(context))
+        if len(packet["prompt"]) > 16000:
+            raise PMError("revision context exceeds safe task bounds; split or escalate")
+        return assignment, packet, previous
+
     def _checks(self, sha):
         route = f"repos/{REPO}/commits/{sha}"
         response = self.github.request("GET", route + "/check-runs?per_page=100")
@@ -441,6 +595,14 @@ class TrustedPMBroker:
         key = fingerprint({"review_head": pr["head"], "base": pr["base"], "capability": capability})
         if key in self.state["proofs"]:
             return self.state["proofs"][key]
+        reserve = getattr(self.driver, "reserve_profile", None)
+        with reserve() if reserve else nullcontext():
+            return self._review_reserved(pr, capability, implementation_session_id)
+
+    def _review_reserved(self, pr, capability, implementation_session_id):
+        key = fingerprint({"review_head": pr["head"], "base": pr["base"], "capability": capability})
+        if key in self.state["proofs"]:
+            return self.state["proofs"][key]
         day = time.strftime("%Y-%m-%d", time.gmtime())
         budget = self.state["budgets"].setdefault(day, {"calls": 0, "tokens": 0, "tasks": {}, "task_calls": {}})
         budget.setdefault("task_calls", {})
@@ -485,12 +647,14 @@ class TrustedPMBroker:
             if (budget["tokens"] + decision_tokens > limits["max_model_tokens_per_day"] or
                     task_tokens + used + decision_task_tokens > limits["max_model_tokens_per_task"]):
                 raise PMError("actual review usage exceeded remaining budget; no merge")
-        except Exception:
+        except Exception as exc:
             budget["tokens"] = max(budget["tokens"], limits["max_model_tokens_per_day"])
             if "used" not in locals():
                 budget["tasks"][pr["task_id"]] = max(budget["tasks"].get(pr["task_id"], 0),
                                                       limits["max_model_tokens_per_task"])
             self.save()
+            if isinstance(exc, PMDriverBusy):
+                raise PMError("isolated review failed after model reservation") from None
             raise
         value = record["result"]
         if (not isinstance(value, dict) or set(value) != {"outcome", "reason", "findings"} or
@@ -782,6 +946,9 @@ class TrustedPMBroker:
         if canonical(validated) != canonical(action):
             raise PMError("action differs from the current fixed policy gate")
         job_id = "auto-" + action_id[3:]
+        prepared = self._prepare_assignment(action_id, action) if action["action"] == "assign" else None
+        if prepared and not self.enabled():
+            return self._receipt(action_id, action, "rejected", {"reason": "OFF before assignment intent"})
         intent = {"phase": "intent", "action_id": action_id, "action": action,
                   "expected_fingerprint": expected_fingerprint, "job_id": job_id}
         comment = self.github.request("POST", f"repos/{REPO}/issues/28/comments",
@@ -791,11 +958,9 @@ class TrustedPMBroker:
         if not self.enabled():
             outcome, detail = "rejected", {"reason": "OFF after intent; no operation"}
         elif action["action"] == "assign":
-            assignment_id = "PM-" + time.strftime("%Y%m%d", time.gmtime()) + "-AUTO-" + action_id[3:19]
-            assignment = {"assignment_id": assignment_id, "task_id": action["task_id"],
-                          "purpose": action["purpose"], "instructions": action["instructions"],
-                          "acceptance": action["acceptance"], "next_action": "개별 검사·불변 세션 기록·PR·자기 상태 보고",
-                          "requirement_ids": action["requirement_ids"]}
+            assignment, packet, previous = prepared
+            assignment_id = assignment["assignment_id"]
+            packet["approval_reference"] = comment["html_url"]
             marker = "LGAX-ASSIGNMENT " + assignment_id + "\n"
             body = marker + "PM 자동 배정 · " + action["task_id"] + "\n" + canonical(assignment)
             issue = self.github.request("GET", f"repos/{REPO}/issues/{action['issue_number']}")
@@ -804,31 +969,6 @@ class TrustedPMBroker:
             self.github.request("POST", f"repos/{REPO}/issues/{action['issue_number']}/assignees", {"assignees": [action["owner"]]})
             assigned = self.github.request("POST", f"repos/{REPO}/issues/{action['issue_number']}/comments", {"body": body})
             write_json(self.state_dir / "assignments" / (assignment_id + ".json"), assignment)
-            packet = {key: action[key] for key in ("owner", "task_id", "allowed_paths", "validation_commands",
-                "shared_resources", "timeout_seconds", "priority", "max_attempts", "formal_task_dependencies")}
-            packet.update(job_id=job_id, assignment_id=assignment_id, kind="implementation", title=action["title"],
-                prompt="Fixed required capability " + action["capability_id"] + "\n" + canonical(assignment),
-                base_commit=action["base_commit"], approved=True, approved_snapshot_commit=action["approved_snapshot_commit"],
-                approval_reference=comment["html_url"])
-            # Detailed records are mandatory implementation artifacts, with a
-            # fresh exact job ID. Never broaden policy paths or mutate action.
-            packet["allowed_paths"] = list(action["allowed_paths"]) + session_records(packet, action["owner"])
-            previous = next((row for row in reversed(list(self.state["units"].values())) if
-                row["capability_id"] == action["capability_id"] and row.get("revision_requested") and not row.get("superseded_by")), None)
-            if previous:
-                original = self.github.request("GET", f"repos/{REPO}/pulls/{previous['pr_number']}")
-                if original["head"]["sha"] != previous["head"]:
-                    raise PMError("rejected revision head moved; explicit PM reconciliation needed")
-                diff = self._fixed_diff(previous["base_commit"], previous["head"], maximum=12000)
-                confirmed = self.github.request("GET", f"repos/{REPO}/pulls/{previous['pr_number']}")
-                if confirmed["head"]["sha"] != previous["head"]:
-                    raise PMError("revision source changed during evidence collection")
-                context = {"previous_job_id": previous["job_id"], "previous_pr": previous["pr_number"],
-                    "previous_head": previous["head"], "reason": previous["revision_reason"],
-                    "instructions": previous["revision_instructions"], "patch_as_inert_reference": diff.decode()}
-                packet["prompt"] += "\nReconstruct the approved unit against current main, fixing this immutable rejected result. " + canonical(context)
-                if len(packet["prompt"]) > 16000:
-                    raise PMError("revision context exceeds safe task bounds; split or escalate")
             self.state["units"][job_id] = {"job_id": job_id, "task_id": action["task_id"],
                 "capability_id": action["capability_id"], "base_commit": action["base_commit"],
                 "implementation_session_id": "implementation-" + job_id, "assignment_id": assignment_id}
