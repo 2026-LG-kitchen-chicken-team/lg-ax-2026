@@ -225,21 +225,25 @@ export function splitConditions(request: PlanningRequest, concepts: Concept[] = 
   };
 }
 
-export interface ConceptDetailChange { id: string; title: string; status: [Concept['status'] | null, Concept['status'] | null]; added: { requirements: string[]; assumptions: string[]; evidence_ids: string[] }; removed: { requirements: string[]; assumptions: string[]; evidence_ids: string[] } }
+export interface ConceptTextChange { before: string; after: string }
+export interface ConceptDetailChange { id: string; title: string; status: [Concept['status'] | null, Concept['status'] | null]; added: { requirements: string[]; assumptions: string[]; evidence_ids: string[] }; removed: { requirements: string[]; assumptions: string[]; evidence_ids: string[] }; text: { title: ConceptTextChange | null; differentiation: ConceptTextChange | null } }
 
 /** Field-level before/after for each candidate, so a revision shows what changed inside a concept, not only its status. */
 export function conceptDetailChanges(before: RunSnapshot | undefined, after: RunSnapshot): ConceptDetailChange[] {
   const previous = new Map((before?.run.concepts ?? []).map(item => [item.id, item]));
   const current = new Map(after.run.concepts.map(item => [item.id, item]));
   const diff = (a: string[] = [], b: string[] = []) => b.filter(item => !a.includes(item));
+  // Text is compared verbatim; only a candidate present in both runs has a before/after text pair.
+  const textChange = (a: string | undefined, b: string | undefined): ConceptTextChange | null => a === undefined || b === undefined || a === b ? null : { before: a, after: b };
   return [...new Set([...previous.keys(), ...current.keys()])].map(id => {
     const old = previous.get(id); const next = current.get(id);
     return {
+      text: { title: textChange(old?.title, next?.title), differentiation: textChange(old?.differentiation, next?.differentiation) },
       id, title: (next ?? old)!.title, status: [old?.status ?? null, next?.status ?? null] as [Concept['status'] | null, Concept['status'] | null],
       added: { requirements: diff(old?.requirements, next?.requirements), assumptions: diff(old?.assumptions, next?.assumptions), evidence_ids: diff(old?.evidence_ids, next?.evidence_ids) },
       removed: { requirements: diff(next?.requirements, old?.requirements), assumptions: diff(next?.assumptions, old?.assumptions), evidence_ids: diff(next?.evidence_ids, old?.evidence_ids) },
     };
-  }).filter(change => change.status[0] !== change.status[1] || Object.values(change.added).some(list => list.length) || Object.values(change.removed).some(list => list.length));
+  }).filter(change => change.status[0] !== change.status[1] || change.text.title || change.text.differentiation || Object.values(change.added).some(list => list.length) || Object.values(change.removed).some(list => list.length));
 }
 
 export interface HeldItem { kind: 'insufficient_evidence' | 'unresolved'; id: string | null; text: string; questions: string[] }

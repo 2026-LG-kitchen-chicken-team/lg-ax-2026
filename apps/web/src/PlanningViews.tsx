@@ -13,7 +13,7 @@ import {
   buildComparison, buildExport, buildRerunRequest, candidateChoicesFor, conceptDetailChanges, exportMarkdown, FIXTURE_NOTICE, heldItems,
   nextRequestRevision, requestChanges, scopeWarnings, scopeWarningText, splitConditions, statusLabel,
 } from './planning';
-import type { CandidateChoice, Concept, DataMode, Feature, MissingQuestion, PlanningRequest, RequestChange, RunSnapshot } from './planning';
+import type { CandidateChoice, Concept, ConceptTextChange, DataMode, Feature, MissingQuestion, PlanningRequest, RequestChange, RunSnapshot } from './planning';
 import { ArrowIcon, SearchIcon } from './icons';
 import './planning.css';
 
@@ -403,9 +403,18 @@ function DetailChanges({ previous, selected }: { previous: RunSnapshot | undefin
   const changes = conceptDetailChanges(previous, selected);
   if (!changes.length) return <p className="muted">후보 변화가 없습니다.</p>;
   const list = (label: string, items: string[], sign: '+' | '−') => items.length ? <li className={sign === '+' ? 'added' : 'removed'}><strong>{sign} {label}</strong>{items.join(' / ')}</li> : null;
+  // Plain React text with preserved line breaks: no HTML or markdown is interpreted, and an empty value is labelled, not hidden.
+  const textStyle = { whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' } as const;
+  const shown = (text: string) => text === '' ? '(비어 있음)' : text;
+  const textDiff = (label: string, change: ConceptTextChange | null) => change ? <li className="text-change" data-field={label}>
+    <strong>{label} 변경</strong>
+    <span className="removed" style={textStyle}>변경 전: {shown(change.before)}</span>
+    <span className="added" style={textStyle}>변경 후: {shown(change.after)}</span>
+  </li> : null;
   return <ul className="status-changes">{changes.map(item => <li key={item.id} className="detail-change">
     <div className="detail-change-top"><span><span className="id">{item.id}</span>{item.title}</span><span className="status-flow"><span className={`status-pill ${item.status[0] ?? 'none'}`}>{statusLabel(item.status[0])}</span><ArrowIcon /><span className={`status-pill ${item.status[1] ?? 'none'}`}>{statusLabel(item.status[1])}</span></span></div>
     <ul className="field-diff">
+      {textDiff('제목', item.text.title)}{textDiff('차별점', item.text.differentiation)}
       {list('요구사항', item.added.requirements, '+')}{list('요구사항', item.removed.requirements, '−')}
       {list('가정', item.added.assumptions, '+')}{list('가정', item.removed.assumptions, '−')}
       {list('근거', item.added.evidence_ids, '+')}{list('근거', item.removed.evidence_ids, '−')}
