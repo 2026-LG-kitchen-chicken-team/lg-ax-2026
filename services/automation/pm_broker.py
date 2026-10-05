@@ -64,6 +64,10 @@ REVIEW_SCHEMA = {"type": "object", "additionalProperties": False,
     "required": ["outcome", "reason", "findings"]}
 
 
+class ProductCorrectionRejected(PMError):
+    """Known pure correction preparation refusal, before a remote intent."""
+
+
 class LiveGitHub:
     """Fixed gh API destinations and bounded output; no shell or arbitrary URL."""
 
@@ -316,7 +320,7 @@ class TrustedPMBroker:
                 "released_capabilities" not in self.config):
             return None
         ready = set(observation["capabilities_ready"]) & self._released_capabilities()
-        plan = self.orchestration.plan["capabilities"]
+        plan = self.orchestration.capabilities
         for cap_id in sorted(ready & plan.keys(), key=lambda key: (-plan[key]["priority"], key)):
             cap = self.policy["capabilities"].get(cap_id)
             if not cap or cap.get("completes_task") is True:
@@ -528,7 +532,7 @@ class TrustedPMBroker:
                 "product_paths": products, "product_diff_sha256": hashlib.sha256(diff).hexdigest(),
                 "patch_as_inert_reference": patch_text}
 
-    def _prepare_assignment(self, action_id, action):
+    def _prepare_assignment(self, action_id, action, *, observation=None):
         """Fail closed on source/scope/context before posting or saving intent."""
         job_id = "auto-" + action_id[3:]
         assignment_id = "PM-" + time.strftime("%Y%m%d", time.gmtime()) + "-AUTO-" + action_id[3:19]
@@ -536,12 +540,31 @@ class TrustedPMBroker:
                       "purpose": action["purpose"], "instructions": action["instructions"],
                       "acceptance": action["acceptance"], "next_action": "개별 검사·불변 세션 기록·PR·자기 상태 보고",
                       "requirement_ids": action["requirement_ids"]}
+        from services.automation.backlog import CORE_CORRECTIONS
+
+        if action["capability_id"] in CORE_CORRECTIONS:
+            # execute just recollected this observation from immutable bytes.
+            if observation is None:
+                raise ProductCorrectionRejected("fresh product observation required")
+            feedback = self.orchestration._product_correction_feedback(observation)
+            fixed = feedback.get(action["capability_id"])
+            if (not fixed or fixed.get("main_commit") != action["base_commit"] or
+                    fixed.get("dispatches_used", 2) >= 2 or fixed.get("already_dispatched") is not False or
+                    fixed != observation.get("product_corrections", {}).get(action["capability_id"])):
+                raise ProductCorrectionRejected("product correction evidence changed before intent")
+            assignment["product_correction"] = fixed
+            assignment["instructions"] = list(assignment["instructions"]) + [
+                "Reproduce these exact public fixture inputs and semantic codes. Original output/relay hashes link the protected PM proof; you do not need PM-private files. Preserve the two internal Agent repairs and all evidence/contract checks. A transport escalation is not a core defect."]
         packet = {key: action[key] for key in ("owner", "task_id", "allowed_paths", "validation_commands",
                   "shared_resources", "timeout_seconds", "priority", "max_attempts", "formal_task_dependencies")}
         packet.update(job_id=job_id, assignment_id=assignment_id, kind="implementation", title=action["title"],
                       prompt="Fixed required capability " + action["capability_id"] + "\n" + canonical(assignment),
                       base_commit=action["base_commit"], approved=True,
                       approved_snapshot_commit=action["approved_snapshot_commit"])
+        if action["capability_id"] in CORE_CORRECTIONS:
+            # Legacy action normalization defaults to two attempts; the fixed
+            # correction protocol permits one Worker execution for this job.
+            packet["max_attempts"] = 1
         # A fresh job receives only its own new record paths, never the old ones.
         packet["allowed_paths"] = list(action["allowed_paths"]) + session_records(packet, action["owner"])
         previous = next((row for row in reversed(list(self.state["units"].values())) if
@@ -1073,7 +1096,15 @@ class TrustedPMBroker:
         from services.automation.pm import PMPreparationRejected
 
         try:
-            prepared = self._prepare_assignment(action_id, action) if action["action"] == "assign" else None
+            prepared = self._prepare_assignment(action_id, action, observation=observation) if action["action"] == "assign" else None
+        except ProductCorrectionRejected:
+            detail = {"pre_intent": True, "remote_side_effects": False,
+                      "reason_code": "product_feedback_changed_or_unavailable"}
+            receipt = self._receipt(action_id, action, "rejected", detail)
+            self.state["actions"][action_id] = {"phase": "receipt", "action_id": action_id, "action": action,
+                                              "receipt": receipt, "details": detail}
+            self.save()
+            return receipt
         except PMPreparationRejected as exc:
             # This typed error can originate only in the fixed pure preparation
             # bounds above. Network/remote mutation failures stay unknown.
@@ -1091,6 +1122,8 @@ class TrustedPMBroker:
             return self._receipt(action_id, action, "rejected", {"reason": "OFF before assignment intent"})
         intent = {"phase": "intent", "action_id": action_id, "action": action,
                   "expected_fingerprint": expected_fingerprint, "job_id": job_id}
+        if prepared and "product_correction" in prepared[0]:
+            intent["product_correction"] = prepared[0]["product_correction"]
         comment = self.github.request("POST", f"repos/{REPO}/issues/28/comments",
                                       {"body": self._marker(action_id) + "\n" + canonical(intent)})
         self.state["actions"][action_id] = intent
@@ -1112,6 +1145,8 @@ class TrustedPMBroker:
             self.state["units"][job_id] = {"job_id": job_id, "task_id": action["task_id"],
                 "capability_id": action["capability_id"], "base_commit": action["base_commit"],
                 "implementation_session_id": "implementation-" + job_id, "assignment_id": assignment_id}
+            if "product_correction" in assignment:
+                self.state["units"][job_id]["product_correction"] = assignment["product_correction"]
             self.save()
             receipt = self.controller.request("/v1/jobs", packet)
             if receipt.get("registered") is not True:
@@ -1173,6 +1208,8 @@ class TrustedPMBroker:
         receipt = self._receipt(action_id, action, outcome, detail)
         completed = {"phase": "receipt", "action_id": action_id, "action": action,
                      "receipt": receipt, "details": detail}
+        if "product_correction" in intent:
+            completed["product_correction"] = intent["product_correction"]
         self.github.request("PATCH", f"repos/{REPO}/issues/comments/{comment['id']}",
                             {"body": self._marker(action_id) + "\n" + canonical(completed)})
         self.state["actions"][action_id] = completed
