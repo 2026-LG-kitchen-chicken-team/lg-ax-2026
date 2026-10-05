@@ -13,7 +13,7 @@ import {
   buildComparison, buildExport, buildRerunRequest, candidateChoicesFor, conceptDetailChanges, exportMarkdown, FIXTURE_NOTICE, heldItems,
   nextRequestRevision, requestChanges, scopeWarnings, scopeWarningText, splitConditions, statusLabel,
 } from './planning';
-import type { CandidateChoice, Concept, DataMode, Feature, MissingQuestion, PlanningRequest, RequestChange, RunSnapshot } from './planning';
+import type { CandidateChoice, Concept, ConceptTextChange, DataMode, Feature, MissingQuestion, PlanningRequest, RequestChange, RunSnapshot } from './planning';
 import { ArrowIcon, SearchIcon } from './icons';
 import './planning.css';
 
@@ -403,9 +403,21 @@ function DetailChanges({ previous, selected }: { previous: RunSnapshot | undefin
   const changes = conceptDetailChanges(previous, selected);
   if (!changes.length) return <p className="muted">후보 변화가 없습니다.</p>;
   const list = (label: string, items: string[], sign: '+' | '−') => items.length ? <li className={sign === '+' ? 'added' : 'removed'}><strong>{sign} {label}</strong>{items.join(' / ')}</li> : null;
+  // Plain React text: line breaks are preserved by CSS only, no HTML or markdown is interpreted. An empty value gets a label in a separate element.
+  const textStyle = { whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', margin: 0 } as const;
+  const side = (role: 'before' | 'after', label: string, text: string) => <div className={role === 'before' ? 'removed' : 'added'} style={{ display: 'grid', gap: 2 }}>
+    <strong>{label}</strong>
+    {text === '' ? <em data-empty="true">(비어 있음)</em> : <span data-role={role} style={textStyle}>{text}</span>}
+  </div>;
+  const textDiff = (field: 'title' | 'differentiation', label: string, change: ConceptTextChange | null) => change ? <li data-text-change={field} style={{ display: 'grid', gap: 4, alignItems: 'start' }}>
+    <strong>{label} 변경</strong>
+    {side('before', '변경 전', change.before)}
+    {side('after', '변경 후', change.after)}
+  </li> : null;
   return <ul className="status-changes">{changes.map(item => <li key={item.id} className="detail-change">
     <div className="detail-change-top"><span><span className="id">{item.id}</span>{item.title}</span><span className="status-flow"><span className={`status-pill ${item.status[0] ?? 'none'}`}>{statusLabel(item.status[0])}</span><ArrowIcon /><span className={`status-pill ${item.status[1] ?? 'none'}`}>{statusLabel(item.status[1])}</span></span></div>
     <ul className="field-diff">
+      {textDiff('title', '제목', item.text.title)}{textDiff('differentiation', '차별점', item.text.differentiation)}
       {list('요구사항', item.added.requirements, '+')}{list('요구사항', item.removed.requirements, '−')}
       {list('가정', item.added.assumptions, '+')}{list('가정', item.removed.assumptions, '−')}
       {list('근거', item.added.evidence_ids, '+')}{list('근거', item.removed.evidence_ids, '−')}
@@ -439,7 +451,7 @@ export function HistoryView({ mode, runs, selected, onSelect, features, evidence
         </dl>
         <h4 className="sub">요청 변경</h4>
         {changes.length ? <table className="change-table"><thead><tr><th>항목</th><th>변경 전</th><th>변경 후</th></tr></thead><tbody>{changes.map(item => <tr key={item.field}><th>{item.label}</th><td>{item.before}</td><td>{item.after}</td></tr>)}</tbody></table> : <p className="muted">이전 기준과 요청이 같습니다.</p>}
-        <h4 className="sub">후보 변화 <small>상태·요구사항·가정·근거</small></h4>
+        <h4 className="sub">후보 변화 <small>제목·차별점·상태·요구사항·가정·근거</small></h4>
         <DetailChanges previous={previous} selected={selected} />
         {selected.run.events.length ? <><h4 className="sub">판단 순서와 사용한 Skill</h4><ol className="events">{selected.run.events.map((item, index) => <li key={`${item.stage}-${index}`}><span className="stage">{item.stage}</span><span>{item.summary}</span>{item.tool ? <code>{item.tool}</code> : null}</li>)}</ol></> : null}
         {selected.unconfirmed.length ? <div className="unresolved"><strong>미확인 사항</strong><ul>{selected.unconfirmed.map(item => <li key={item}>{item}</li>)}</ul></div> : null}
