@@ -237,6 +237,27 @@ class PublisherTests(unittest.TestCase):
             self.tick()
         self.assertNotIn("merge", self.remote.effects)
 
+    def test_distinct_push_and_pr_runs_pass_but_untrusted_app_blocks(self):
+        original = self.remote.request
+        trusted = False
+
+        def runs(method, path, body=None):
+            row = original(method, path, body)
+            if path.endswith("/check-runs?per_page=100"):
+                first = row["check_runs"][0]
+                if not trusted:
+                    first["app"] = {"id": 999}
+                row["check_runs"].append(dict(first))
+                row["total_count"] = 2
+            return row
+
+        with patch.object(self.remote, "request", side_effect=runs):
+            with self.assertRaises(CompletionError):
+                self.tick()
+            self.assertNotIn("merge", self.remote.effects)
+            trusted = True
+            self.assertIsNotNone(self.tick())
+
     def test_unknown_pr_creation_is_never_blindly_retried(self):
         self.remote.unknown_pr = True
         self.assertIsNone(self.tick())

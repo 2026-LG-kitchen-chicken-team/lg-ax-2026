@@ -332,8 +332,11 @@ class CompletionPublisher:
             return False
         _require(all(row.get("app", {}).get("id") == self.broker.config.get("required_ci_app_id", 15368)
                      for name in required for row in by_name[name]), "required CI must come from trusted GitHub Actions")
-        _require(all(len(rows) == 1 for rows in by_name.values()) and
-                 all(row.get("conclusion") == "success" for row in checks), "CI failure, duplicate or non-success blocks publication")
+        # push and pull_request workflows legitimately produce two distinct
+        # runs with the same context. Every observed run must pass, rather than
+        # treating their context names as duplicate evidence.
+        _require(all(row.get("conclusion") == "success" for row in checks),
+                 "CI failure or non-success blocks publication")
         return True
 
     def __call__(self, contract, candidate, store):
