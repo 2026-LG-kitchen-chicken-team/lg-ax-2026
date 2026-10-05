@@ -157,7 +157,7 @@ def main():
 
 - 기준 main: `{BASE}`. PR74 고정 head: `{PR_HEAD}`. main의 plan/dataset 바이트가 이 PR head와 같음을 확인했다.
 - PR74는 PM이 닫았고 해당 자료 일부는 PR75/main에 인수됐다. PR74 자체 병합·DATA001 정식 완료·R03 인정·의존 해제를 주장하지 않는다.
-- 실행별 원본 source SHA와 파일 SHA256은 `pdf-run*/audit.json`, `model-run1/model-result.json`에 있다. 모델 실행 당시 스크립트는 `model-run1/executed_model_check.py`, 인코딩 실패 당시 스크립트는 `pdf-run2/executed_audit_pdf.py`에 보존했다. 현재 model_check.py의 변경은 import 정렬뿐이며 실제 모델 재실행은 하지 않았다.
+- 실행별 원본 source SHA와 파일 SHA256은 `pdf-run*/audit.json`, `model-run1/model-result.json`에 있다. 모델 실행 당시 스크립트는 `model-run1/executed_model_check.py.txt`, 인코딩 실패 당시 스크립트는 `pdf-run2/executed_audit_pdf.py.txt`에 보존했다. 현재 model_check.py의 변경은 import 정렬뿐이며 실제 모델 재실행은 하지 않았다.
 - 최종 게시 commit은 #12 자기보고의 두 고정 문서 링크로 연결한다. 이 README의 기준 commit은 실행 시점의 코드이며 게시 commit과 구분한다.
 
 ## 문서 버전과 적용 범위

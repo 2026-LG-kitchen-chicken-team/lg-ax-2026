@@ -30,7 +30,7 @@ def main():
                         'stdout': process.stdout, 'stderr': process.stderr})
     audit = json.loads((OUT / 'pdf-run3/audit.json').read_text(encoding='utf-8'))
     model = json.loads((OUT / 'model-run1/model-result.json').read_text(encoding='utf-8'))
-    executed = OUT / 'model-run1/executed_model_check.py'
+    executed = OUT / 'model-run1/executed_model_check.py.txt'
     source_hash = next(value for key, value in model['source_sha256'].items() if key.endswith('model_check.py'))
     provenance = {
         'audit_54_checks_pass': len(audit['checks']) == 54 and audit['passed'],
