@@ -1,0 +1,15 @@
+{
+  "first_attempt": {
+    "script": "tmp/data001-run-20261005T0649/finalize_local.py",
+    "failed": true,
+    "error": "AssertionError: credential marker found; do not hand off",
+    "cause": "검사 스크립트 자신의 ghp_/github_pat_ 탐지 문자열을 실제 토큰으로 잘못 판정",
+    "individual_process_exit_code_captured": false,
+    "shell_return_code": 0,
+    "shell_return_code_scope": "뒤의 지침 검사 명령 종료코드; 첫 목록 검사 성공이 아님",
+    "handoff_manifest_created": false,
+    "original_script_snapshot_preserved": true
+  },
+  "second_attempt": {"failed": true, "error": "PowerShell ParserError: Missing argument in parameter list", "shell_exit_code": 1, "python_execution_started": false, "model_data_changed": false},
+  "repair": "토큰 접두어만이 아닌 충분한 길이의 실제 토큰 패턴을 검사하는 별도 v2 스크립트로 수정. 셸 문자열 조립 대신 파일 도구로 편집했다. 비밀 값은 출력하지 않음. 기존 모델·자료·계약 변경 없음"
+}
