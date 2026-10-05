@@ -1,0 +1,84 @@
+{
+  "tested_snapshot_digest": "cd8743d64c5e7f40f8180eea7fcd1738a8c09db50f65cae2f69d25b3b7df1ade",
+  "executor_image_sha256": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+  "auth_root_mounted": false,
+  "network": "none",
+  "model_calls": 0,
+  "results": [
+    {
+      "argv": [
+        "uv",
+        "run",
+        "--offline",
+        "--no-sync",
+        "python",
+        "-m",
+        "unittest",
+        "tests.test_api_run_failure_contract",
+        "-v"
+      ],
+      "returncode": 0,
+      "stopped_reason": null,
+      "elapsed_seconds": 8.766000000061467,
+      "log_sha256": "d42de2c69c9b3ac4ef820b4750899f3361f2c11d0df7fcf413237649606a6fb1",
+      "zero_auth_network_boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "--offline",
+        "--no-sync",
+        "python",
+        "-m",
+        "unittest",
+        "tests.test_workspace_api",
+        "-v"
+      ],
+      "returncode": 0,
+      "stopped_reason": null,
+      "elapsed_seconds": 3.375,
+      "log_sha256": "c88b4b2417a53b444fd2bc305c4b573e9a6d6ff369f0002fce2bae3e16f3f74b",
+      "zero_auth_network_boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    }
+  ],
+  "checked_source_bytes_unchanged_after_tests": true,
+  "all_checks_passed": true,
+  "source_commit": "2438544d1057e7a8f990cb62d3366df8a0af71a8",
+  "original_job": "auto-5b3f96ede19a1c0e89369a7be13740a18b57b51c",
+  "original_job_status": "blocked",
+  "original_model_total_tokens": 1200958,
+  "additional_model_calls": 0,
+  "original_job_or_cost_rewritten": false,
+  "scope": "Manual partial intake: safe API error envelopes and synthetic HTTP regressions; no parent Done"
+}

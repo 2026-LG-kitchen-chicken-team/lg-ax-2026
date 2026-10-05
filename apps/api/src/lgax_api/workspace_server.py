@@ -2,6 +2,7 @@
 
 import argparse
 import json
+from copy import deepcopy
 from pathlib import Path
 from typing import Annotated
 
@@ -21,6 +22,67 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from .workspace_auth import TokenRegistry
 
 ORIGINS = {"http://127.0.0.1:5173", "http://localhost:5173"}
+
+_ERROR_MESSAGES = {
+    "UNAUTHORIZED": "작업실 인증을 확인해 주세요.",
+    "FORBIDDEN": "이 작업을 수행할 권한이 없습니다.",
+    "NOT_FOUND": "작업 기록을 찾을 수 없습니다.",
+    "INVALID_ARGUMENT": "작업실 입력 값을 확인해 주세요.",
+    "INVALID_MODEL_ID": "제품 모델을 확인해 주세요.",
+    "INVALID_DOCUMENT_VERSION": "문서 버전을 확인해 주세요.",
+    "INVALID_EVIDENCE_ID": "근거 ID를 확인해 주세요.",
+    "DATASET_MISMATCH": "저장된 자료 범위와 현재 자료가 다릅니다.",
+    "NOT_IMPLEMENTED": "요청한 실행 기능 또는 자료 범위는 아직 지원하지 않습니다.",
+    "MODEL_UNAVAILABLE": "판단 모델 실행을 완료하지 못했습니다.",
+    "CONNECTION_FAILED": "작업실 처리 중 연결 또는 저장에 실패했습니다.",
+    "CONTRACT_MISMATCH": "판단 실행 기록이 공통 규격과 다릅니다.",
+    "VALIDATION_FAILED": "판단 결과 검사를 통과하지 못했습니다.",
+    "INSUFFICIENT_EVIDENCE": "판단에 필요한 근거가 부족합니다.",
+}
+
+
+def public_error(code: str) -> dict:
+    """Never serialize exception messages/details, including adapter diagnostics."""
+    if code not in _ERROR_MESSAGES:
+        code = "CONTRACT_MISMATCH"
+    return DomainError(code, _ERROR_MESSAGES[code]).response()
+
+
+def public_run(snapshot: dict) -> dict:
+    """Keep source/judgement snapshots intact; redact private failure diagnostics.
+
+    The same projection is used for POST, GET and history, including older rows.
+    Rejected adapter records remain in the private store, never on the wire.
+    """
+    result = deepcopy(snapshot)
+
+    def diagnostics(value):
+        if isinstance(value, list):
+            return [diagnostics(item) for item in value]
+        if isinstance(value, dict):
+            if "code" in value and "message" in value:
+                code = value["code"]
+                return public_error(code if isinstance(code, str) else "CONTRACT_MISMATCH")["error"]
+            return {key: diagnostics(item) for key, item in value.items()
+                    if key != "rejected_execution"}
+        return value
+
+    output = result.get("output")
+    if isinstance(output, dict) and isinstance(output.get("planning_execution"), dict):
+        execution = output["planning_execution"]
+        # Only diagnostic fields are projected: source text, versions, input,
+        # checked judgement, decision and model provenance are not rewritten.
+        for key in ("trace", "model_calls"):
+            if key in execution:
+                execution[key] = diagnostics(execution[key])
+        errors = execution.get("errors", [])
+        execution["errors"] = [
+            public_error(item.get("code") if isinstance(item, dict)
+                         and isinstance(item.get("code"), str) else "CONTRACT_MISMATCH")["error"]
+            for item in (errors if isinstance(errors, list) else [errors])
+        ]
+        execution.pop("rejected_execution", None)
+    return result
 
 
 def error_status(error: DomainError) -> int:
@@ -57,7 +119,7 @@ def create_workspace_app(db_path: Path, registry: TokenRegistry, *,
         if request.headers.get("origin") is not None and request.headers["origin"] not in ORIGINS:
             return JSONResponse(
                 status_code=403,
-                content=DomainError("FORBIDDEN", "허용되지 않은 작업실 출처입니다.").response(),
+                content=public_error("FORBIDDEN"), headers={"Cache-Control": "no-store"},
             )
         if request.method != "OPTIONS" and request.url.path.startswith("/api/workspace"):
             try:
@@ -65,14 +127,19 @@ def create_workspace_app(db_path: Path, registry: TokenRegistry, *,
                 if request.method != "GET":
                     request.state.principal.require_write()
             except DomainError as error:
-                return JSONResponse(status_code=error_status(error), content=error.response())
-        response = await call_next(request)
+                return JSONResponse(status_code=error_status(error), content=public_error(error.code),
+                                    headers={"Cache-Control": "no-store"})
+        try:
+            response = await call_next(request)
+        except Exception:  # noqa: BLE001 -- HTTP boundary must hide private storage/adapter diagnostics.
+            return JSONResponse(status_code=500, content=public_error("CONNECTION_FAILED"),
+                                headers={"Cache-Control": "no-store"})
         response.headers["Cache-Control"] = "no-store"
         return response
 
     @app.exception_handler(DomainError)
     async def domain_error(request: Request, error: DomainError):
-        return JSONResponse(status_code=error_status(error), content=error.response())
+        return JSONResponse(status_code=error_status(error), content=public_error(error.code))
 
     @app.exception_handler(ValidationError)
     async def schema_error(request: Request, error: ValidationError):
@@ -89,8 +156,15 @@ def create_workspace_app(db_path: Path, registry: TokenRegistry, *,
         )
 
     def wrap(definition, data):
+        if definition == "WorkspaceRunResponse":
+            data = public_run(data)
+        elif definition == "WorkspaceRunsResponse":
+            data = {**data, "runs": [public_run(snapshot) for snapshot in data["runs"]]}
         result = {"ok": True, "data": data}
-        validate(definition, result)
+        try:
+            validate(definition, result)
+        except ValidationError as error:
+            raise DomainError("CONTRACT_MISMATCH", _ERROR_MESSAGES["CONTRACT_MISMATCH"]) from error
         return result
 
     @app.get("/health")
