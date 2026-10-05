@@ -1,0 +1,111 @@
+"""Output-preservation regressions on a no-auth source copy."""
+import hashlib
+import importlib.util
+import json
+import sys
+import unittest
+from pathlib import Path
+from unittest.mock import patch
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+ORIGINALS = ROOT / "originals"
+
+
+def module(name, path):
+    spec = importlib.util.spec_from_file_location(name, ROOT / path)
+    value = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(value)
+    return value
+
+
+def run(value, args):
+    with patch.object(sys, "argv", [value.__file__, *args]):
+        return value.main()
+
+
+def hashes():
+    paths = json.loads((ROOT / "independent-fixture-inputs/frozen-artifact-paths.json").read_text())
+    return {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest() for p in paths}
+
+
+class PreservationCases(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.before = hashes()
+        cls.fresh = ROOT / "evals/fixture-fresh-preparation"
+        cls.report = ROOT / "evals/fixture-reports/preparation.json"
+
+    @classmethod
+    def tearDownClass(cls):
+        if hashes() != cls.before:
+            raise AssertionError("Historical evidence was changed by a preservation test")
+
+    def test_G01_existing_preparation_refused_before_inputs(self):
+        value = module("guard_existing", "scripts/prepare_data003_benchmark.py")
+        with self.assertRaisesRegex(ValueError, "Preserve existing preparation"):
+            run(value, ["--source-directory", "/does-not-exist"])
+
+    def test_G02_fresh_directory_and_explicit_version(self):
+        value = module("guard_fresh", "scripts/prepare_data003_benchmark.py")
+        run(value, ["--source-directory", str(ORIGINALS), "--output-directory", str(self.fresh),
+                    "--dataset-version", "DATA003-dev-preservation-fixture.1"])
+        data = json.loads((self.fresh / "corpus.json").read_text())
+        self.assertEqual(data["dataset_version"], "DATA003-dev-preservation-fixture.1")
+        self.assertEqual(len(data["evidence"]), 27)
+        self.assertEqual(len(json.loads((self.fresh / "queries.json").read_text())), 15)
+
+    def test_G03_new_preparation_verified_to_separate_report(self):
+        value = module("guard_verify_fresh", "scripts/verify_data003_preparation.py")
+        run(value, ["--source-directory", str(ORIGINALS), "--preparation-directory", str(self.fresh),
+                    "--report", str(self.report)])
+        data = json.loads(self.report.read_text())
+        self.assertEqual(data["status"], "pass")
+        self.assertEqual(data["errors"], [])
+        self.assertFalse((self.fresh / "validation.json").exists())
+
+    def test_G04_existing_validation_refused(self):
+        value = module("guard_verify_existing", "scripts/verify_data003_preparation.py")
+        with self.assertRaisesRegex(ValueError, "Preserve existing validation"):
+            run(value, ["--source-directory", "/does-not-exist"])
+
+    def test_G05_second_report_write_refused(self):
+        value = module("guard_verify_same", "scripts/verify_data003_preparation.py")
+        with self.assertRaisesRegex(ValueError, "Preserve existing validation"):
+            run(value, ["--source-directory", str(ORIGINALS), "--preparation-directory", str(self.fresh),
+                        "--report", str(self.report)])
+
+    def test_G06_followup_existing_report_refused(self):
+        value = module("guard_followup", "scripts/verify_data003_followup.py")
+        with self.assertRaisesRegex(ValueError, "Preserve existing verification"):
+            run(value, ["--source-directory", "/does-not-exist"])
+
+    def test_G07_followup_escape_refused(self):
+        value = module("guard_followup_escape", "scripts/verify_data003_followup.py")
+        with self.assertRaisesRegex(ValueError, "Report must stay in evals"):
+            run(value, ["--source-directory", "/does-not-exist", "--report", "/tmp/unsafe-report.json"])
+
+    def test_G08_review_report_existing_directory_refused(self):
+        value = module("guard_summary", "scripts/summarize_data003_live.py")
+        with self.assertRaisesRegex(ValueError, "Preserve existing review report"):
+            run(value, ["--retrieval", "/unused", "--ocr", "/unused", "--source-directory", "/unused",
+                        "--report-directory", str(ROOT / "evals/data003-live/20261005")])
+
+    def test_G09_review_report_new_directory_not_old_output(self):
+        value = module("guard_summary_fresh", "scripts/summarize_data003_live.py")
+        target = ROOT / "evals/fixture-new-review"
+        with self.assertRaises(FileNotFoundError):
+            run(value, ["--retrieval", "/missing", "--ocr", "/missing", "--source-directory", "/unused",
+                        "--report-directory", str(target)])
+        self.assertTrue(target.is_dir())
+        self.assertEqual(list(target.iterdir()), [])
+
+    def test_G10_preparation_escape_refused(self):
+        value = module("guard_prepare_escape", "scripts/prepare_data003_benchmark.py")
+        with self.assertRaisesRegex(ValueError, "Preparation output must stay in evals"):
+            run(value, ["--source-directory", "/unused", "--output-directory", "/tmp/unsafe-preparation"])
+
+
+if __name__ == "__main__":
+    unittest.main()
+
