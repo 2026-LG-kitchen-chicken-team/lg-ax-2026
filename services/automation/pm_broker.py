@@ -573,7 +573,7 @@ class TrustedPMBroker:
         # Build tools need to create dependencies/output. Only this disposable
         # Git archive is writable; no checkout, credentials or auth are mounted.
         # Every original source byte must remain identical after each check.
-        source_bytes = {p.relative_to(work).as_posix(): hashlib.sha256(regular_file(p)).hexdigest()
+        source_bytes = {p.relative_to(work).as_posix(): hashlib.sha256(regular_file(p, maximum=MAX_SOURCE)).hexdigest()
                         for p in work.rglob("*") if p.is_file()}
         log_dir = self.state_dir / "integration" / key
         log_dir.mkdir(parents=True, exist_ok=False)
@@ -582,7 +582,7 @@ class TrustedPMBroker:
             response = self.executor.run(argv, cwd=work, env={}, output=log_dir / f"check-{index}.log",
                 artifacts=artifacts, timeout_seconds=min(1800, capability.get("timeout_seconds", 1800)),
                 heartbeat=self.enabled, role="validator", readonly_workspace=False)
-            source_unchanged = all(hashlib.sha256(regular_file(work / path)).hexdigest() == expected
+            source_unchanged = all(hashlib.sha256(regular_file(work / path, maximum=MAX_SOURCE)).hexdigest() == expected
                                    for path, expected in source_bytes.items())
             rows.append({"argv": argv, "returncode": response.returncode, "stopped_reason": response.stopped_reason,
                          "source_unchanged": source_unchanged, "boundary": self.executor.last_boundary})
