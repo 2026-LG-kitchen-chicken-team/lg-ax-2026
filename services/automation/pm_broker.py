@@ -25,7 +25,13 @@ from types import SimpleNamespace
 
 from services.automation import claude
 from services.automation.artifacts import secret_check
-from services.automation.isolation import DockerConfig, DockerExecutor, regular_file
+from services.automation.isolation import (
+    DockerConfig,
+    DockerExecutor,
+    IsolationProfileBusy,
+    create_docker_executor,
+    regular_file,
+)
 from services.automation.pm import (
     DIGEST,
     IDENTIFIER,
@@ -265,7 +271,12 @@ class TrustedPMBroker:
             for key in ("workspace_root", "auth_root"):
                 if options.get(key) is not None:
                     options[key] = Path(options[key])
-            executor = DockerExecutor(DockerConfig(**options))
+            try:
+                executor = create_docker_executor(DockerConfig(**options))
+            except IsolationProfileBusy:
+                raise PMDriverBusy("own AI profile busy before PM startup; no model call began") from None
+            except RuntimeError:
+                raise PMError("PM executor startup could not prove safe stopped profile state") from None
         self.executor = executor
         self.driver = driver or DockerPMDriver(executor, state_dir=self.state_dir / "driver",
                                                heartbeat=self.enabled, engine=executor.config.engine)

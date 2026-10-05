@@ -14,12 +14,15 @@ from dataclasses import replace
 from pathlib import Path
 from unittest.mock import patch
 
+from services.automation import isolation
 from services.automation.isolation import (
     ARTIFACT_NAMES,
     OWNED_LABEL,
     DockerConfig,
     DockerExecutor,
+    IsolationProfileBusy,
     cleanup_auth_runtime,
+    create_docker_executor,
     export_workspace,
     prepare_build_context,
     redact_output,
@@ -578,6 +581,83 @@ class RuntimeCacheCleanupTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             cleanup_auth_runtime(self.auth, self.auth / "cache", docker_call=lambda args: "")
         self.assertTrue((self.auth / "tmp").is_dir())
+
+    def test_startup_busy_worker_retains_runtime_and_never_queries_docker_or_reads_auth(self):
+        from services.automation.worker import exclusive_lock
+
+        launch = self.cache_fixture()
+        (self.auth / "auth.json").write_text("inert fixture credentials must stay untouched")
+        with exclusive_lock(self.auth / "lgax-worker.lock"), patch(
+                "services.automation.isolation.subprocess.run") as docker, patch(
+                "services.automation.isolation._authentication_directory") as authenticate, \
+                self.assertRaises(IsolationProfileBusy):
+            create_docker_executor(self.config)
+        docker.assert_not_called()
+        authenticate.assert_not_called()
+        self.assertTrue(launch.is_dir())
+        self.assertFalse((self.auth.parent / ".lgax-cli-runtime-cache").exists())
+
+    def test_stopped_startup_quarantines_only_known_runtime_under_exact_worker_mutex(self):
+        from services.automation.worker import exclusive_lock
+
+        self.cache_fixture()
+        credential = self.auth / "auth.json"
+        credential.write_bytes(b"inert credential fixture")
+        calls = []
+
+        def docker(arguments):
+            calls.append(arguments)
+            with self.assertRaises(OSError), exclusive_lock(self.auth / "lgax-worker.lock"):
+                pass
+            return ""
+        exe = "C:/Docker/docker.exe" if os.name == "nt" else "/usr/bin/docker"
+        with patch("services.automation.isolation.shutil.which", return_value=exe):
+            executor = create_docker_executor(self.config, docker_call=docker)
+        self.assertIsInstance(executor, DockerExecutor)
+        self.assertEqual(calls, [["ps", "--quiet"]])
+        self.assertFalse((self.auth / "tmp").exists())
+        self.assertEqual(credential.read_bytes(), b"inert credential fixture")
+        self.assertFalse(any(path.name == "auth.json" for path in
+                             (self.auth.parent / ".lgax-cli-runtime-cache").rglob("*")))
+
+    def test_startup_unknown_link_anywhere_refuses_before_recognized_cache_movement(self):
+        self.cache_fixture()
+        ordinary = self.root / "outside"
+        ordinary.write_text("harmless")
+        os.link(ordinary, self.auth / "unknown-linked-file")
+        with patch("services.automation.isolation.subprocess.run") as docker, self.assertRaises(ValueError):
+            create_docker_executor(self.config)
+        docker.assert_not_called()
+        self.assertTrue((self.auth / "tmp").exists())
+        self.assertFalse((self.auth.parent / ".lgax-cli-runtime-cache").exists())
+
+    def test_active_profile_mount_is_not_cleaned_even_if_mutex_is_free(self):
+        self.cache_fixture()
+        rows = [{"Mounts": [{"Source": str(self.auth), "Destination": "/agent-auth"}]}]
+        with self.assertRaises(ValueError):
+            create_docker_executor(self.config, docker_call=lambda args:
+                "a" * 64 if args[0] == "ps" else json.dumps(rows))
+        self.assertTrue((self.auth / "tmp").exists())
+        self.assertFalse((self.auth.parent / ".lgax-cli-runtime-cache").exists())
+
+    def test_active_profile_contents_never_enter_or_block_auth_free_validator(self):
+        executor = IsolationTests.executor(self)
+        outside = self.root / "outside"
+        outside.write_text("harmless")
+        os.link(outside, self.auth / "active-generated-link")
+        with patch("services.automation.isolation._authentication_directory",
+                   wraps=isolation._authentication_directory) as authenticate:
+            args = executor._create_arguments("lgax-executor-test", "own-token", ["python", "-c", "pass"],
+                cwd=self.work, artifacts=self.artifacts, env={}, role="validator", timeout_seconds=10,
+                readonly_workspace=True)
+            authenticate.assert_not_called()
+            self.assertNotIn("destination=/agent-auth", " ".join(args))
+            self.assertIn("none", args)
+            with self.assertRaises(ValueError):
+                executor._create_arguments("lgax-executor-test", "own-token", ["python", "-c", "pass"],
+                    cwd=self.work, artifacts=self.artifacts, env={}, role="model", timeout_seconds=10,
+                    readonly_workspace=True)
+            self.assertEqual(authenticate.call_count, 1)
 
 
 @unittest.skipUnless(os.environ.get("LGAX_TEST_EXECUTOR_IMAGE"), "explicit reviewed Docker image required for real proof")

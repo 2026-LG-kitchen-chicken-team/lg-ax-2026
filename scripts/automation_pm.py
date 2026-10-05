@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT))
 
 from services.automation.github_bridge import exclusive_bridge_lock
 from services.automation.isolation import regular_file
-from services.automation.pm import AutonomousPM, PMError, protected_path
+from services.automation.pm import AutonomousPM, PMDriverBusy, PMError, protected_path
 from services.automation.pm_broker import TrustedPMBroker
 
 
@@ -28,7 +28,16 @@ def main(argv=None):
         interval = config.get("poll_seconds", 30)
         if type(interval) is not int or not 10 <= interval <= 300:
             raise PMError("bounded PM polling interval required")
-        broker = TrustedPMBroker(config)
+        while True:
+            try:
+                broker = TrustedPMBroker(config)
+                break
+            except PMDriverBusy:
+                print(json.dumps({"state": "wait", "reason": "own AI profile busy before PM startup",
+                                  "model_called": False, "mutated": False}, ensure_ascii=False), flush=True)
+                if args.once or args.observe or args.preflight:
+                    return 0
+                time.sleep(interval)
         pm = AutonomousPM(policy_path=config["policy_file"], policy_sha256=config["policy_sha256"],
                           journal_path=config["journal_file"], broker=broker, decide=broker.driver)
         with exclusive_bridge_lock(Path(config["state_dir"]) / "pm-loop.lock"):

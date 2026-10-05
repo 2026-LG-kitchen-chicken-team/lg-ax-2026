@@ -19,7 +19,7 @@ import threading
 import time
 import uuid
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 if __package__:
@@ -82,11 +82,11 @@ def regular_file(path: Path, *, maximum: int = MAX_ARTIFACT_BYTES) -> bytes:
     return data
 
 
-def _authentication_directory(value: Path) -> Path:
-    """A dedicated profile cannot contain junctions/sockets to host services."""
-    root = _plain_directory(value, "AI profile")
+def _authentication_entries(root: Path, *, stopped_runtime=False):
     entries = 0
     for current, directories, files in os.walk(root, followlinks=False):
+        if stopped_runtime and Path(current) == root:
+            directories[:] = [name for name in directories if name != "tmp"]
         for name in directories:
             _plain_directory(Path(current) / name, "AI profile child")
         for name in files:
@@ -98,6 +98,11 @@ def _authentication_directory(value: Path) -> Path:
         if entries > 10000:
             raise ValueError("dedicated AI profile exceeds bounded entry count")
     return root
+
+
+def _authentication_directory(value: Path) -> Path:
+    """A dedicated profile cannot contain junctions/sockets to host services."""
+    return _authentication_entries(_plain_directory(value, "AI profile"))
 
 
 def _canonical_host_source(value: str) -> str:
@@ -150,6 +155,10 @@ def cleanup_auth_runtime(auth_root: Path, cache_root: Path, *, docker_executable
         count += len(directories) + len(names)
         if count > 1024:
             raise ValueError("Codex runtime cache exceeds bounded entry count")
+    # Check every other profile entry BEFORE quarantine, so an unknown link
+    # cannot cause even recognized cache movement. This metadata-only exception
+    # never validates a mounted model profile; final full validation is strict.
+    _authentication_entries(auth, stopped_runtime=True)
 
     if docker_call is None:
         executable = shutil.which(docker_executable)
@@ -244,6 +253,48 @@ class DockerConfig:
                         (Path.home() / ".claude").resolve()}:
                 raise ValueError("personal desktop AI/home profiles cannot be mounted; use a dedicated worker login")
         return self
+
+
+class IsolationProfileBusy(RuntimeError):
+    """The owner's real profile mutex was busy before any authentication read."""
+
+
+def create_docker_executor(config: DockerConfig, *, docker_call: Callable | None = None):
+    """Construct a PM executor only while holding the Worker's exact OS lock.
+
+    A busy owner is a free startup wait. Recognized runtime quarantine still
+    requires an actual no-active-mount Docker proof. No authentication file is
+    read, copied or moved, and no unknown link is accepted by the constructor.
+    """
+    if config.auth_root is None:
+        return DockerExecutor(config)
+    replace(config, auth_root=None).validate()
+    auth = _plain_directory(config.auth_root, "AI profile")
+    root = _plain_directory(config.workspace_root, "workspace root")
+    if (auth.is_relative_to(root) or root.is_relative_to(auth) or auth == Path(auth.anchor) or
+            auth in {Path.home().resolve(), (Path.home() / ".codex").resolve(), (Path.home() / ".claude").resolve()}):
+        raise ValueError("a disjoint dedicated AI profile is required before startup")
+    lock_path = auth / "lgax-worker.lock"
+    if lock_path.exists() or lock_path.is_symlink():
+        metadata = lock_path.lstat()
+        if (not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1 or
+                getattr(metadata, "st_file_attributes", 0) & 0x400):
+            raise ValueError("own AI profile lock must be an ordinary single-link file")
+    if __package__:
+        from .worker import exclusive_lock
+    else:
+        from worker import exclusive_lock
+    reservation = exclusive_lock(lock_path)
+    try:
+        reservation.__enter__()
+    except OSError:
+        raise IsolationProfileBusy("own AI profile is busy before startup validation") from None
+    try:
+        cleanup_auth_runtime(auth, auth.parent / ".lgax-cli-runtime-cache",
+                             docker_executable=config.docker_executable, docker_call=docker_call)
+        return DockerExecutor(config)
+    finally:
+        reservation.__exit__(None, None, None)
 
 
 def redact_output(value: bytes) -> bytes:
