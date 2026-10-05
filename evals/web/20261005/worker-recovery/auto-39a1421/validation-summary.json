@@ -1,0 +1,64 @@
+{
+ "kind": "manual_recovery_isolated_validation",
+ "branch_ref": "codex/recover-auto-39a1421",
+ "commit": "186e370998637539cd6833e00026aabc4e8a430c",
+ "image": "sha256:98b8695564be6287745790bc88ccfcb769faee7d8572c31de12f857f8c797b02",
+ "role": "validator",
+ "network": "none",
+ "authentication_mounted": false,
+ "isolation_code_commit": "c05ee880b160353414180e689f32a42dd23c2d64",
+ "checks": [
+  {
+   "argv": [
+    "npm",
+    "--prefix",
+    "apps/web",
+    "ci",
+    "--offline",
+    "--ignore-scripts",
+    "--no-audit",
+    "--no-fund"
+   ],
+   "returncode": 0,
+   "elapsed_seconds": 30.0,
+   "stopped_reason": null
+  },
+  {
+   "argv": [
+    "npm",
+    "--prefix",
+    "apps/web",
+    "run",
+    "test"
+   ],
+   "returncode": 0,
+   "elapsed_seconds": 647.7,
+   "stopped_reason": null
+  },
+  {
+   "argv": [
+    "npm",
+    "--prefix",
+    "apps/web",
+    "run",
+    "typecheck"
+   ],
+   "returncode": 0,
+   "elapsed_seconds": 15.3,
+   "stopped_reason": null
+  },
+  {
+   "argv": [
+    "npm",
+    "--prefix",
+    "apps/web",
+    "run",
+    "build"
+   ],
+   "returncode": 0,
+   "elapsed_seconds": 22.3,
+   "stopped_reason": null
+  }
+ ],
+ "passed": true
+}

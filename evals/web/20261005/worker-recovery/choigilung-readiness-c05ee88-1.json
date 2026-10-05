@@ -1,0 +1,76 @@
+{
+  "collector": "trusted_pm",
+  "account": "choigilung",
+  "verified_at": 1791207517.9819336,
+  "execution_isolation_verified": true,
+  "publisher_separation_verified": true,
+  "login_verified": true,
+  "authentication": {
+    "verified": true,
+    "source": "actual_isolated_cli",
+    "engine": "claude",
+    "model_generation_executed": false
+  },
+  "boundary": {
+    "proof_kind": "actual_harmless_container_not_mounted_boundary",
+    "publisher_readable": true,
+    "canary_sha256": "96a737a0fcc3b13ef3d4311c170a93650b06252756cd611cfa42f12932d3cf98",
+    "containers": {
+      "model": {
+        "workspace_readable": true,
+        "publisher_canary_readable": false,
+        "protected_path_attempts": 4,
+        "ai_profile_readable": true,
+        "docker_socket_readable": false,
+        "external_network_reachable": true,
+        "observed_boundary": {
+          "backend": "docker",
+          "image_id": "sha256:98b8695564be6287745790bc88ccfcb769faee7d8572c31de12f857f8c797b02",
+          "role": "model",
+          "uid": 1000,
+          "readonly_root": true,
+          "caps_dropped": true,
+          "no_new_privileges": true,
+          "network": "bridge",
+          "mount_targets": [
+            "/agent-auth",
+            "/artifacts",
+            "/workspace"
+          ],
+          "publisher_credentials_mounted": false,
+          "ai_profile_mounted": true
+        }
+      },
+      "validator": {
+        "workspace_readable": true,
+        "publisher_canary_readable": false,
+        "protected_path_attempts": 4,
+        "ai_profile_readable": false,
+        "docker_socket_readable": false,
+        "external_network_reachable": false,
+        "observed_boundary": {
+          "backend": "docker",
+          "image_id": "sha256:98b8695564be6287745790bc88ccfcb769faee7d8572c31de12f857f8c797b02",
+          "role": "validator",
+          "uid": 1000,
+          "readonly_root": true,
+          "caps_dropped": true,
+          "no_new_privileges": true,
+          "network": "none",
+          "mount_targets": [
+            "/artifacts",
+            "/workspace"
+          ],
+          "publisher_credentials_mounted": false,
+          "ai_profile_mounted": false
+        }
+      }
+    },
+    "real_secret_used": false,
+    "ai_login_validated": false,
+    "model_generation_executed": false
+  },
+  "image_id": "sha256:98b8695564be6287745790bc88ccfcb769faee7d8572c31de12f857f8c797b02",
+  "github_publication_verified": false,
+  "automation_enabled": false
+}
