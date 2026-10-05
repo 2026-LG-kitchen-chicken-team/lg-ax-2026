@@ -21,7 +21,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -124,11 +124,14 @@ class EvidenceStore:
 class ParentCollector:
     def __init__(self, broker, *, requirement_collector: Callable[
             [TaskContract, str, tuple[AcceptedUnit, ...], EvidenceStore], EvidenceBundle] | None = None,
-            publisher: Callable[[TaskContract, CompletionReceipt, EvidenceStore], Publication | None] | None = None):
+            publisher: Callable[[TaskContract, CompletionReceipt, EvidenceStore], Publication | None] | None = None,
+            pending_resumer: Callable[[EvidenceStore], Sequence[dict]] | None = None):
         self.broker = broker
         self.store = EvidenceStore(broker.state_dir / "parent-evidence")
         self.requirement_collector = requirement_collector or self._registered_evidence
         self.publisher = publisher
+        # Publisher is a fixed host-code object, never a name from model/config.
+        self.pending_resumer = pending_resumer or getattr(publisher, "resume_pending", None)
         self.assessment_path = self.store.root / "assessments.json"
 
     def _source(self, path: str, commit: str) -> ArtifactRef:
@@ -529,8 +532,29 @@ class ParentCollector:
         coverage. ON/OFF is never changed; publishing additionally requires ON.
         """
         self.broker.authenticate()
+        resumed = {}
+        if self.pending_resumer is not None and self.broker.enabled():
+            rows = self.pending_resumer(self.store)
+            _check(isinstance(rows, (list, tuple)) and len(rows) <= 31, "bounded fixed publication resumption required")
+            for row in rows:
+                task_id, publication = row["task_id"], row["publication"]
+                _check(task_id in self.broker.policy["tasks"] and task_id not in resumed and
+                       isinstance(publication, Publication), "invalid resumed publication")
+                registered = self.store.index.get("published_completions", {}).get(task_id, {})
+                completion = ArtifactRef.parse(registered.get("completion"))
+                candidate = CompletionReceipt(self.store.read(completion), completion.sha256)
+                _check(dependency_release_allowed(candidate, publication.commit, publication.snapshot_ack,
+                                                   self.store.registry, self.store.read),
+                       "resumed publication not actually admitted/acknowledged")
+                resumed[task_id] = {"state": "completed", "published_commit": publication.commit,
+                                    "completion_sha256": completion.sha256}
         main = self.broker.github.request("GET", f"repos/{REPO}/commits/main")["sha"]
-        _check(main == observation.get("main_commit") and SHA.fullmatch(main), "main moved before collection")
+        _check(SHA.fullmatch(main), "actual main identity required")
+        if resumed and main != observation.get("main_commit"):
+            result = {"schema_version": 1, "main_commit": main, "tasks": resumed, "must_reobserve": True}
+            write_json(self.assessment_path, result)
+            return result
+        _check(main == observation.get("main_commit"), "main moved before collection")
         selected = task_ids or tuple(self.broker.policy["tasks"])
         _check(len(selected) == len(set(selected)) and set(selected) <= set(self.broker.policy["tasks"]),
                "collection task outside fixed policy")
@@ -573,6 +597,8 @@ class ParentCollector:
                            "next_unit_needed": None if assessed.next_unit_needed is None else {
                                "task_id": task_id, "requirement_ids": list(assessed.next_unit_needed.requirement_ids),
                                "action_criteria": list(assessed.next_unit_needed.action_criteria),
+                               "allowed_execution_kinds": list(contract.execution_kinds),
+                               "application_validation_required": bool(assessed.missing_requirements),
                                "reason": assessed.next_unit_needed.reason}}
                 if assessed.complete:
                     candidate = assessed.receipt

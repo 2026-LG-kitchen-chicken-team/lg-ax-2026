@@ -15,8 +15,8 @@ from services.automation.completion import (
     digest,
     validate_completion_bundle,
 )
-from services.automation.parent_collector import EvidenceBundle, EvidenceStore, ParentCollector
-from tests.test_automation_completion import MAIN, TASK, Fixture
+from services.automation.parent_collector import EvidenceBundle, EvidenceStore, ParentCollector, Publication
+from tests.test_automation_completion import MAIN, PUBLISHED, TASK, Fixture
 
 
 class GitFixtureBroker:
@@ -187,6 +187,35 @@ class ParentCollectorTests(unittest.TestCase):
                   "tasks": {TASK: {"owner": "unknownamed", "status": "done"}}}}
         with self.assertRaises(CompletionError):
             self.collector._legacy_dependency(TASK, self.broker.main, status)
+
+    def test_pending_publication_resumes_after_main_changes_only_with_actual_admission_ack(self):
+        f = Fixture()
+        candidate = f.assessment().receipt
+        broker = self.broker
+        broker.main = PUBLISHED
+        calls = []
+        collector = ParentCollector(broker)
+
+        def resume(store):
+            calls.append(True)
+            completion = store.admit("parent_completion", PUBLISHED, candidate.raw)
+            ack = store.admit("snapshot_ack", PUBLISHED, {"schema_version": 1, "kind": "snapshot_ack",
+                "repo": REPO, "approved_commit": PUBLISHED, "outcome": "accepted",
+                "project_receipt": "actual-project-ack", "controller_receipt": "actual-controller-ack",
+                "task_states": {TASK: "done"}, "completion_digests": {TASK: candidate.sha256}})
+            store.index["published_completions"] = {TASK: {"completion": completion.as_dict(), "snapshot_ack": ack.as_dict()}}
+            store.save()
+            return [{"task_id": TASK, "publication": Publication(PUBLISHED, ack)}]
+
+        collector.pending_resumer = resume
+        with self.assertRaises(CompletionError):
+            collector.tick({"main_commit": MAIN})
+        self.assertEqual(calls, [])  # OFF cannot resume the fixed publisher.
+        broker.enabled = lambda: True
+        result = collector.tick({"main_commit": MAIN})
+        self.assertTrue(result["must_reobserve"])
+        self.assertEqual(result["tasks"][TASK]["state"], "completed")
+        self.assertEqual(calls, [True])
 
 
 if __name__ == "__main__":
