@@ -27,3 +27,5 @@
 다음: PM은 data-document-store-frozen-snapshot을 독립 인수하고 실제 등록/검색 경로에 통합한다. CORE 담당은 NON_COMPLAINT_AS_NEED·GAP_MANUAL_MISSING·GAP_REVIEW_MISSING·희망결과 누락을 실제 실패에 따라 수정한다. 독립 평가의 전체입력/정답검토 후 필요한 실패만 다시 실행한다. 새 게시 승인 뒤 exact head의PR/Issue/ACCEPTED, PM최종검수·병합·통합 후#12완료를 판정한다.
 
 - 범위/한계: 최초 wrapper API속성 및 fixture 버전/스키마 오류, 문서 어댑터 선택 오류·평가CLI필수인수누락을 각 원 실패로 보존하고 소스/결과 버전을 구분한다. 새실행의 raw prompt/response·독립 자료/답안은 PR에 넣지 않는다. 현재ChatGPT가 수동 source diff를 작성했고 별도 coding CLI의 모델 생성으로 가장하지 않았다. 제품Qwen12응답과 coding/규칙검사를 구분한다.
+
+- 게시 승인: 사용자가 새 수정본23파일/b504bc6의 main 대상 PR·#12 게시 질문에 “새 수정본 PR·#12 게시 승인 (추천)”으로 직접 답했다. 승인 범위는 저장 자료 보호 수정/검사/실제 실행 실패의 부분 전달이며 #12 Done·PM 병합·독립 채점 승인으로 바꾸지 않는다. 코드/테스트/모델 입력/원 결과 바이트는 승인 전 검증한 것과 동일하다.
