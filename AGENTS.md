@@ -150,7 +150,7 @@
 - 자동 PM policy·journal·broker state·auth는 모든 checkout 밖에 고정 배포한다. model은 등록 task/capability와 의도 문구만 선택하며 경로·검사·owner·HTTP 목적지·비용·보호 설정을 확대하지 않는다. 정이량 GitHub 계정과 controller 운영자 인증을 별도로 확인한다. 팀 ON·PM 개인 ON·policy.enabled, 배정 대상의 개인 ON과 실제 readiness 증거를 모두 확인한다.
 - 일/부모 업무별 토큰·호출·행동·수정/재시도·시간 제한을 영구 기록한다. 새 PR/head/재시작으로 예산을 초기화하지 않는다. 상태가 같으면 PM 모델을 다시 호출하지 않고 독립 검수도 exact head/base로 보존한다. 변경 전에 유일 intent/action ID를 기록하고 실제 receipt를 연결한다. 결과 불명은 실제 GitHub/controller/운영 marker를 대조하고 임의 재전송하지 않는다.
 - 저장소 코드를 호스트 게시 인증 사용자로 실행하지 않는다. 검사는 별도 소스 복사본과 network=none/zero-auth 환경에서 수행하고, 종료 뒤 bytes/hash·scope·링크·유출·공유 Git 설정을 확인한 일반 파일만 깨끗한 별도 worktree로 옮긴다. 실제 host canary 읽기 성공은 GitHub 게시 성공이 아니며 model-role Python canary는 유료 모델 생성 증거가 아니다.
-- 자동 배정 메일은 별도 외부 고정 발송 hook와 실제 receipt가 필요하다. 이 채팅의 Gmail 연결을 CLI가 자동 상속한다고 가정하지 않는다. prepared/unconfigured/unknown을 sent로 바꾸지 않는다. 새 자동 session 로그는 불변 파일로 남기고 의도·해석·행동·검사·실패·미완료·다음 행동·현재 사용자 직접 할 일을 반드시 보고한다.
+- 자동 배정 메일은 검증한 보호 CLI Gmail transport 또는 기존 외부 고정 발송 hook와 실제 SENT receipt가 필요하다. CLI transport는 별도 인증 프로필과 발신 계정을 직접 확인하며 이 채팅의 도구를 자동 상속했다고 가정하지 않는다. prepared/unconfigured/unknown을 sent로 바꾸지 않는다. 새 자동 session 로그는 불변 파일로 남기고 의도·해석·행동·검사·실패·미완료·다음 행동·현재 사용자 직접 할 일을 반드시 보고한다.
 
 
 ## 2026-10-05 세 연결 이후 연쇄 CLI 운영
