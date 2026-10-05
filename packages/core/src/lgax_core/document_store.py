@@ -14,6 +14,7 @@ class DocumentStore(EvidenceReader):
         if dataset.get("artifact_kind") != "document_dataset":
             raise ValueError("Expected explicit document_dataset")
         self._dataset = deepcopy(dataset)
+        dataset = self._dataset
         for collection, definition in [("products", "Product"), ("reviews", "Review"),
                                        ("features", "Feature"), ("evidence", "Evidence")]:
             if not isinstance(dataset.get(collection), list):
