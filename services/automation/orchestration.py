@@ -58,7 +58,7 @@ class Orchestration:
                                            workspace=config["connector_workspace"], timeout_seconds=45)
             self.mail = MailBroker(config, gmail=transport)
         self._mail_checked = False
-        self._mail_poll_at = 0.0
+        self._mail_poll_at = None
         self.parent = None
         self._parent_key = None
         self._parent_result = None
@@ -174,7 +174,7 @@ class Orchestration:
         if not self._mail_checked:
             self.mail.preflight()
             self._mail_checked = True
-        if poll and time.monotonic() - self._mail_poll_at >= 60:
+        if poll and (self._mail_poll_at is None or time.monotonic() - self._mail_poll_at >= 60):
             self.mail.poll_replies(limit=20)
             self._mail_poll_at = time.monotonic()
         return self.mail.observation_events(limit=20)

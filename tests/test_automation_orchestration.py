@@ -219,6 +219,31 @@ class OrchestrationBrokerBoundaryTests(unittest.TestCase):
         self.assertEqual(preflight_calls, 1)
         self.assertEqual(poll_calls, 1)
 
+    def test_first_poll_runs_at_zero_uptime_then_obeys_interval(self):
+        mail = SimpleNamespace(preflight=Mock(), poll_replies=Mock(), observation_events=Mock(return_value=[]))
+        self.broker.orchestration.mail = mail
+        with patch("time.monotonic", return_value=0.0):
+            self.broker.orchestration.mail_tick()
+        self.assertEqual(mail.poll_replies.call_count, 1)
+        self.assertEqual(self.broker.orchestration._mail_poll_at, 0.0)
+        with patch("time.monotonic", return_value=59.0):
+            self.broker.orchestration.mail_tick()
+        self.assertEqual(mail.poll_replies.call_count, 1)
+        with patch("time.monotonic", return_value=60.0):
+            self.broker.orchestration.mail_tick()
+        self.assertEqual(mail.poll_replies.call_count, 2)
+        self.assertEqual(mail.preflight.call_count, 1)
+
+    def test_poll_false_keeps_first_poll_pending_at_low_uptime(self):
+        mail = SimpleNamespace(preflight=Mock(), poll_replies=Mock(), observation_events=Mock(return_value=[]))
+        self.broker.orchestration.mail = mail
+        with patch("time.monotonic", return_value=1.0):
+            self.broker.orchestration.mail_tick(poll=False)
+            self.assertIsNone(self.broker.orchestration._mail_poll_at)
+            mail.poll_replies.assert_not_called()
+            self.broker.orchestration.mail_tick()
+        self.assertEqual(mail.poll_replies.call_count, 1)
+
     def test_cached_report_survives_poll_failure_without_network_revalidation(self):
         event = {"event_id": "gmail:fixed-local-reply", "authority": "report_only", "task_id": broker_fixture.TASK}
         mail = SimpleNamespace(preflight=Mock(), poll_replies=Mock(side_effect=OSError("transport unavailable")),
