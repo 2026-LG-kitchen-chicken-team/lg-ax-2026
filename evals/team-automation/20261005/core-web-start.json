@@ -77,7 +77,7 @@
     }
   ],
   "source_receipts": {
-    "controller_status_sha256": "1f8effe47f29cb05cffbed9b48d1a898f8e95816ef11ff7f3f4e09ae78f5a592",
+    "controller_status_sha256": "79bacb6a2a24b235cd5a3b24ebe691510e4492bdfffa8cc6f3f1aaf8a8fb4412",
     "core_config_receipt_sha256": "c06f41523a906d6e8c584567b96399260bcadc5cc2f8c29fbaa8732bdb2ef4de",
     "broker_state_sha256": "53aaf1f78025ca13019d1ab6896040578bfa4d2b323f215d7494103dfbc0e5d1",
     "recent_journal": [
@@ -132,5 +132,11 @@
     "actual_generation_validation_publication_not_yet_confirmed": true,
     "product_done": 5,
     "requirements_verified": 0
+  },
+  "metadata_correction": {
+    "reason": "Hash the preserved controller file bytes, including Windows newline encoding, rather than its decoded stdout string. Public observation JSON is canonical LF for Git.",
+    "original_decoded_stdout_sha256": "1f8effe47f29cb05cffbed9b48d1a898f8e95816ef11ff7f3f4e09ae78f5a592",
+    "preserved_controller_filename": "core-web-controller-status-20261005T002123.json",
+    "observation_unchanged": true
   }
 }
