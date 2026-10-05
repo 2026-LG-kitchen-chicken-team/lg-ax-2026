@@ -135,7 +135,7 @@ export function RevisionTimeline({ runs, selectedId, original, mode, onSelect }:
     <p className="hint">{mode === 'fixture' ? '화면 확인용 합성 예시 · 실제 Agent 실행 결과가 아닙니다.' : '서버에 저장된 실행 기록 · 자료 성격은 각 실행의 근거 원문에서 확인하세요.'}</p>
     {problems.length ? <div className="unresolved" role="alert" data-held="true"><strong>연결 보류</strong><ul>{problems.map(item => <li key={item}>{item}</li>)}</ul></div> : null}
     <ol className="timeline">{entries.map(entry => <li key={entry.run_id} data-run-id={entry.run_id} data-causes={entry.causes.join(' ')} aria-current={entry.run_id === selectedId ? 'true' : undefined}>
-      <button type="button" className={entry.run_id === selectedId ? 'active' : ''} onClick={() => onSelect?.(entry.run_id)}>
+      <button type="button" className={entry.run_id === selectedId ? 'active' : ''} aria-current={entry.run_id === selectedId ? 'true' : undefined} onClick={() => onSelect?.(entry.run_id)}>
         <span className="id">{entry.run_id}</span><strong>요청 회차 {entry.request_revision} · {entry.causes.map(cause => CAUSE_LABEL[cause]).join(' + ')}</strong>
         <small>{entry.previous_run_id ? `← ${entry.previous_run_id}` : '첫 실행(원 요청 기준)'}</small>
       </button>
