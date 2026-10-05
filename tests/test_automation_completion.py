@@ -20,6 +20,7 @@ from services.automation.completion import (
     dependency_release_allowed,
     digest,
     load_contract,
+    validate_completion_bundle,
 )
 
 BASE = "1" * 40
@@ -369,6 +370,39 @@ class CompletionTests(unittest.TestCase):
         raw = b'{"schema_version":1,"kind":"parent_acceptance","kind":"notification"}'
         ref = f.put(raw, "parent_acceptance")
         self.assertHeld(f.assessment(parent_acceptance=ref))
+
+    def test_offline_formal_bundle_revalidates_every_link_and_candidate_bytes(self):
+        f = self.f
+        receipt = f.assessment().receipt
+        receipt_ref = f.put(receipt.raw)
+        bundle = {"schema_version": 1, "protocol": "trusted_auto_parent_v1", "task_id": TASK,
+                  "source_commit": BASE, "tested_commit": MAIN,
+                  "sources": {"requirements": f.requirements_ref.as_dict(), "task": f.task_ref.as_dict(),
+                              "policy": f.policy_ref.as_dict()},
+                  "accepted_units": [{k: getattr(f.unit, k).as_dict() for k in ("acceptance", "review", "merge", "postmerge")}],
+                  "requirements": [{"requirement_id": c.requirement_id, "job_id": c.job_id,
+                                    "execution": c.execution.as_dict(), "acceptance": c.acceptance.as_dict()} for c in f.coverage],
+                  "dependencies": [], "parent_acceptance": f.parent.as_dict(), "parent_receipt": receipt_ref.as_dict(),
+                  "admissions": {k: {"kind": v.kind, "commit": v.commit, "collected_by": v.collected_by}
+                                 for k, v in f.admissions.items()}}
+        self.assertEqual(validate_completion_bundle(bundle, f.read, expected_task_id=TASK,
+                         expected_receipt_sha256=receipt.sha256).raw, receipt.raw)
+        for failure in ("task", "partial", "receipt", "scope", "admission"):
+            with self.subTest(failure=failure):
+                bad = copy.deepcopy(bundle)
+                expected_task = TASK
+                if failure == "task":
+                    expected_task = "P2-OTHER"
+                elif failure == "partial":
+                    bad["requirements"].pop()
+                elif failure == "receipt":
+                    bad["parent_receipt"]["sha256"] = "f" * 64
+                elif failure == "scope":
+                    bad["sources"]["task"]["commit"] = HEAD
+                else:
+                    del bad["admissions"][f.coverage[0].execution.sha256]
+                with self.assertRaises((CompletionError, KeyError)):
+                    validate_completion_bundle(bad, f.read, expected_task_id=expected_task)
 
 
 if __name__ == "__main__":

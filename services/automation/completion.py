@@ -552,3 +552,64 @@ def dependency_release_allowed(receipt: CompletionReceipt, published_commit: str
         return bool(_ack(ack, payload["task_id"], receipt.sha256, published_commit))
     except (CompletionError, OSError, KeyError, TypeError, ValueError):
         return False
+
+
+def validate_completion_bundle(bundle: dict, read: Reader, *, expected_task_id: str | None = None,
+                               expected_receipt_sha256: str | None = None) -> CompletionReceipt:
+    """Offline integrity gate for ``trusted_auto_parent_v1`` formal records.
+
+    The exported admission manifest is a declaration in offline CI, *not* proof
+    of authentication/execution. The live broker must compare every exported
+    admission against its protected actual-observation store before proposing
+    publication and require the real dual ACK before releasing dependencies.
+    ``read`` resolves immutable logical refs to the exported exact byte assets;
+    no import, Git command, model, test or filesystem operation occurs here.
+
+    Formal task fields reference this bundle/receipt rather than inventing an
+    original-owner legacy lifecycle across several different merged commits.
+    """
+    try:
+        _require(isinstance(bundle, dict) and bundle.get("schema_version") == 1 and
+                 bundle.get("protocol") == "trusted_auto_parent_v1", "invalid completion bundle protocol")
+        task_id = bundle["task_id"]
+        _require(expected_task_id is None or task_id == expected_task_id, "completion bundle task mismatch")
+        admissions = bundle["admissions"]
+        _require(isinstance(admissions, dict), "offline admission manifest required")
+        registry = TrustedReceiptRegistry({k: Admission(**v) for k, v in admissions.items()})
+        sources = bundle["sources"]
+        _require(isinstance(sources, dict) and set(sources) == {"requirements", "task", "policy"},
+                 "completion bundle fixed sources missing")
+        contract = load_contract(task_id, bundle["source_commit"],
+                                 *(ArtifactRef.parse(sources[k]) for k in ("requirements", "task", "policy")),
+                                 registry, read)
+        unit_rows, coverage_rows, dependency_rows = (bundle[k] for k in ("accepted_units", "requirements", "dependencies"))
+        _require(all(isinstance(rows, list) for rows in (unit_rows, coverage_rows, dependency_rows)),
+                 "completion bundle arrays missing")
+        units = []
+        for row in unit_rows:
+            _require(isinstance(row, dict) and set(row) == {"acceptance", "review", "merge", "postmerge"},
+                     "invalid bundled unit")
+            units.append(AcceptedUnit(*(ArtifactRef.parse(row[k]) for k in ("acceptance", "review", "merge", "postmerge"))))
+        coverage = []
+        for row in coverage_rows:
+            _require(isinstance(row, dict) and set(row) == {"requirement_id", "job_id", "execution", "acceptance"},
+                     "invalid bundled requirement")
+            coverage.append(RequirementEvidence(row["requirement_id"], row["job_id"],
+                                                ArtifactRef.parse(row["execution"]), ArtifactRef.parse(row["acceptance"])))
+        dependencies = []
+        for row in dependency_rows:
+            _require(isinstance(row, dict) and set(row) == {"task_id", "completion", "snapshot_ack"},
+                     "invalid bundled dependency")
+            dependencies.append(DependencyEvidence(row["task_id"], ArtifactRef.parse(row["completion"]),
+                                                    ArtifactRef.parse(row["snapshot_ack"])))
+        assessed = assess_parent(contract, units, coverage, ArtifactRef.parse(bundle["parent_acceptance"]),
+                                 dependencies, registry, read, bundle["tested_commit"])
+        _require(assessed.complete and assessed.receipt is not None, "bundled parent evidence is incomplete")
+        receipt_ref = ArtifactRef.parse(bundle["parent_receipt"])
+        _require(receipt_ref.commit == bundle["tested_commit"] and
+                 (expected_receipt_sha256 is None or receipt_ref.sha256 == expected_receipt_sha256) and
+                 _bytes(receipt_ref, read) == assessed.receipt.raw and receipt_ref.sha256 == assessed.receipt.sha256,
+                 "bundled completion receipt differs from validated actual chain")
+        return assessed.receipt
+    except (KeyError, TypeError) as exc:
+        raise CompletionError("malformed completion bundle") from exc
