@@ -11,6 +11,7 @@ import httpx
 from jsonschema import Draft202012Validator
 from lgax_core.judgement_contract import input_digest, review_judgement
 from lgax_core.model_client import ModelConfig, OllamaAdapter, StructuredModelClient
+from lgax_core.no_candidate_review import CRITERIA as NO_CANDIDATE_CRITERIA
 from lgax_core.planning_agent import PlanningAgent, generation_schema, main
 from lgax_core.semantic_review import QUALITY
 from lgax_core.store import DemoStore
@@ -58,6 +59,15 @@ def semantic_for(context):
                                     for c in context["concepts"] for criterion in QUALITY], "questions": []}
 
 
+def no_candidate_for(context):
+    source = context["sources"][0]
+    return {"input_sha256": context["input_sha256"], "output_sha256": context["output_sha256"],
+            "assessments": [{"criterion": criterion, "verdict": "consistent", "reason": "테스트 검토 선언",
+                             "candidate_quote": context["judgement"]["no_candidate_reasons"][0],
+                             "source_quotes": [{"evidence_id": source["id"], "quote": source["text"]}]}
+                            for criterion in NO_CANDIDATE_CRITERIA], "questions": []}
+
+
 class Transport:
     def __init__(self, stages, alter=None):
         self.stages, self.alter = stages, alter
@@ -72,7 +82,26 @@ class Transport:
             context = json.loads(sent["prompt"].split("DATA_JSON:\n", 1)[1])
             skill = sent["prompt"].split("업무=", 1)[1].split(".", 1)[0]
             self.posts.append({"skill": skill, "context": context, "request": sent})
-            value = semantic_for(context) if skill == "semantic_review" else deepcopy(self.stages[skill])
+            if skill == "review_revision":
+                original = context
+                context = {**original["context"], "previous": original["previous"],
+                           "feedback": [json.loads(item) for item in original["previous"]["violations"]]}
+                need, compare, concept = (self.stages[key] for key in
+                                           ("need_extract", "product_compare", "concept_draft"))
+                value = {"result": {"needs": deepcopy(need["result"]["needs"]),
+                                    "gaps": deepcopy(compare["result"]["gaps"]),
+                                    "concepts": deepcopy(concept["result"]["concepts"]),
+                                    "unresolved": deepcopy(compare["result"]["unresolved"]),
+                                    "revision_count": context["revision_count"], "changes": []},
+                         "status": "completed", "desired_outcomes": deepcopy(need["result"]["desired_outcomes"]),
+                         "review_assessments": deepcopy(need["review_assessments"]),
+                         "gap_assessments": deepcopy(compare["gap_assessments"]),
+                         "concept_assessments": deepcopy(concept["concept_assessments"]),
+                         **{key: deepcopy(concept[key]) for key in
+                            ("questions", "hold_reasons", "no_candidate_reasons")}}
+            else:
+                value = (semantic_for(context) if skill == "semantic_review" else
+                         no_candidate_for(context) if skill == "no_candidate_review" else deepcopy(self.stages[skill]))
             if self.alter:
                 value = self.alter(skill, context, value, len(self.posts))
             body = {"model": MODEL, "done": True, "done_reason": "stop",
@@ -86,6 +115,15 @@ class PlanningAgentTests(unittest.TestCase):
     def setUp(self):
         self.payload = read("normal.input.json")
         self.output = read("normal.fixture-output.json")
+
+    def test_need_generation_cannot_cite_manual_as_customer_review(self):
+        review_ids = [source["id"] for source in self.payload["sources"] if source["source_type"] == "review"]
+        schema = generation_schema("need_extract", review_evidence_ids=review_ids)
+        value = stages_for(self.output)["need_extract"]
+        self.assertFalse(list(Draft202012Validator(schema).iter_errors(value)))
+        value["result"]["needs"][0]["evidence_ids"].append(next(
+            source["id"] for source in self.payload["sources"] if source["source_type"] == "manual"))
+        self.assertTrue(list(Draft202012Validator(schema).iter_errors(value)))
 
     def agent(self, alter=None, *, dataset=None, stages=None):
         transport = Transport(stages_for(self.output) if stages is None else stages, alter)

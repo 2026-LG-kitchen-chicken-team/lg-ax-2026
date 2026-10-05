@@ -16,7 +16,7 @@ class CorrectionBudget:
     """Atomically spend a correction before attempting it, with no refund/reset."""
 
     OPERATIONS = ("stage_retry", "review_revision")
-    CLOSE_REASONS = ("hold", "backend_failure", "policy_changed", "unresolved")
+    CLOSE_REASONS = ("hold", "backend_failure", "policy_changed", "unresolved", "completed")
 
     def __init__(self, *, initial_count: int = 0):
         # Nonzero input is only for an owner-verified existing run, never model text.

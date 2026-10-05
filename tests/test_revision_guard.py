@@ -8,6 +8,7 @@ from pathlib import Path
 
 import httpx
 from jsonschema import Draft202012Validator
+from lgax_core.correction_budget import CorrectionBudget
 from lgax_core.errors import DomainError
 from lgax_core.model_client import ModelConfig, OllamaAdapter, StructuredModelClient
 from lgax_core.revision_guard import RevisionSession, ScopedReadTools, revision_schema
@@ -74,7 +75,7 @@ class RevisionGuardTests(unittest.TestCase):
                         **{key: deepcopy(self.original[key]) for key in ("needs", "gaps", "concepts")},
                         "violations": ["DUPLICATE_CONCEPT"], "changed_evidence_ids": [], "revision_count": 0}
 
-    def session(self, alter=None, *, dataset=None):
+    def session(self, alter=None, *, dataset=None, budget=None):
         transport = ModelTransport(self.original, alter)
         adapter = OllamaAdapter(ModelConfig("http://127.0.0.1:18864", MODEL, DIGEST,
                                             max_output_tokens=2048, context_tokens=8192),
@@ -82,15 +83,91 @@ class RevisionGuardTests(unittest.TestCase):
         client = StructuredModelClient(adapter)
         self.addCleanup(client.close)
         store = DemoStore(dataset_for(self.context) if dataset is None else dataset)
-        session = RevisionSession(client, self.context, store, execution_kind="fixture")
+        session = RevisionSession(client, self.context, store, execution_kind="fixture", budget=budget)
         runtime = SkillRuntime(store)
         session.install(runtime)
         return session, runtime, transport
+
+    def test_bound_analysis_is_copied_to_revision_without_resetting_budget(self):
+        session, runtime, transport = self.session()
+        original = deepcopy(self.original)
+        session.bind_previous_judgement(self.original)
+        self.original["review_assessments"][0]["reason"] = "caller mutation after binding"
+        response = runtime.execute("review_revision", self.payload)
+        self.assertTrue(response["ok"], response)
+        declarations = transport.posts[0]["previous_declarations"]
+        self.assertEqual(declarations["review_assessments"], original["review_assessments"])
+        self.assertEqual(declarations["desired_outcomes"], original["desired_outcomes"])
+        self.assertEqual(session.snapshot["correction_budget"]["revision_count"], 1)
+
+    def test_invalid_or_changed_previous_analysis_is_rejected_before_model_attempt(self):
+        session, runtime, transport = self.session()
+        changed = deepcopy(self.original)
+        changed["input_sha256"] = "b" * 64
+        with self.assertRaises(DomainError):
+            session.bind_previous_judgement(changed)
+        session.bind_previous_judgement(self.original)
+        self.payload["concepts"][0]["title"] = "unbound candidate"
+        response = runtime.execute("review_revision", self.payload)
+        self.assertFalse(response["ok"])
+        self.assertEqual(response["error"]["details"]["reason"], "previous_judgement_changed")
+        self.assertFalse(transport.posts)
+        self.assertEqual(session.snapshot["revision_count"], 0)
+
+    def test_manual_cannot_be_regenerated_as_a_review_in_revision_contract(self):
+        def alter(value, _context):
+            value["review_assessments"].append({
+                "evidence_id": "DEV-01-MANUAL", "polarity": "positive", "reason": "manual is not a review"})
+            return value
+        session, runtime, transport = self.session(alter)
+        response = runtime.execute("review_revision", self.payload)
+        self.assertFalse(response["ok"])
+        self.assertEqual(len(transport.posts), 1)
+        self.assertEqual(session.snapshot["revision_count"], 1)
+        self.assertIsNone(session.snapshot["judgement"])
 
     def execute(self, runtime, count=0):
         payload = deepcopy(self.payload)
         payload["revision_count"] = count
         return runtime.execute("review_revision", payload)
+
+    def test_external_stage_retry_is_visible_and_second_claim_still_executes(self):
+        budget = CorrectionBudget()
+        session, runtime, transport = self.session(budget=budget)
+        budget.claim(expected_revision_count=0, operation="stage_retry")
+        self.assertEqual(session.snapshot["revision_count"], 1)
+        response = self.execute(runtime, 1)
+        self.assertTrue(response["ok"], response)
+        self.assertEqual(response["data"]["result"]["revision_count"], 2)
+        self.assertEqual(len(transport.posts), 1)
+        self.assertEqual(session.snapshot["correction_budget"], budget.snapshot)
+        self.assertFalse(self.execute(runtime, 2)["ok"])
+        self.assertEqual(len(transport.posts), 1)
+
+    def test_external_hold_closes_revision_path_without_spending_or_calling(self):
+        budget = CorrectionBudget()
+        session, runtime, transport = self.session(budget=budget)
+        budget.close(reason="hold")
+        self.assertFalse(self.execute(runtime)["ok"])
+        self.assertTrue(session.snapshot["closed"])
+        self.assertEqual(session.snapshot["correction_budget"]["terminal_reason"], "hold")
+        self.assertEqual(session.snapshot["revision_count"], 0)
+        self.assertFalse(transport.posts)
+
+    def test_failed_revision_spends_shared_budget_and_blocks_external_third_claim(self):
+        budget = CorrectionBudget()
+        session, runtime, transport = self.session(lambda *_: "{broken", budget=budget)
+        self.assertFalse(self.execute(runtime)["ok"])
+        self.assertEqual(budget.snapshot["revision_count"], 1)
+        budget.claim(expected_revision_count=1, operation="stage_retry")
+        self.assertFalse(self.execute(runtime, 2)["ok"])
+        self.assertEqual(len(transport.posts), 1)
+        self.assertTrue(session.snapshot["closed"])
+
+    def test_session_cannot_reset_an_existing_budget_to_context_zero(self):
+        with self.assertRaises(DomainError) as error:
+            self.session(budget=CorrectionBudget(initial_count=1))
+        self.assertEqual(error.exception.details["reason"], "budget_context_mismatch")
 
     def test_registered_skill_returns_valid_corrected_objects_and_source_provenance(self):
         session, runtime, transport = self.session()

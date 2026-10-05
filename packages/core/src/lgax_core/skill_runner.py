@@ -22,6 +22,7 @@ from jsonschema import Draft202012Validator, ValidationError
 from lgax_contracts import CONTRACT_VERSION, load_schema, validate
 
 from .errors import DomainError
+from .document_store import DocumentStore
 from .store import DemoStore
 
 SKILL_IDS = ("evidence_lookup", "need_extract", "product_compare", "concept_draft", "review_revision")
@@ -95,7 +96,7 @@ def schema_for(skill_id: str, direction: str) -> dict:
         data = _object({**common, "skill_id": {"const": skill_id}, "contract_version": {"const": CONTRACT_VERSION},
                         "execution_kind": {"enum": list(EXECUTION_KINDS)},
                         "backend_id": {"type": "string", "minLength": 1},
-                        "source_kind": {"const": "synthetic"},
+                        "source_kind": _ref("SourceKind"),
                         "result": _object(result_fields[skill_id],
                                            ["concepts", "hold_reasons"] if skill_id == "concept_draft" else None),
                          "sources": _array(_ref("Evidence"))})
@@ -169,21 +170,32 @@ class SkillRuntime:
                          "records": self._records, "trusted_collector_verified": False})
 
     def _provenance(self, payload: dict, record: dict) -> None:
-        # This runner's current response contract accepts synthetic sources only.
-        # Validate rather than silently relabelling a future real-data store.
+        # An explicit document container keeps its canonical source types. It
+        # never gains demo-manifest claims or authentication from its contents.
         try:
             dataset = self.store.bootstrap()["data"]
-            validate("BootstrapResponse", {"ok": True, "data": dataset})
-        except ValidationError:
+            if dataset.get("artifact_kind") == "document_dataset":
+                DocumentStore(dataset)
+                version = dataset.get("dataset_version")
+                if not isinstance(version, str) or not version.strip():
+                    raise ValueError("Explicit document dataset version required")
+                if any(item["source_kind"] not in {"public", "synthetic"}
+                       for field in ("products", "reviews", "evidence") for item in dataset[field]):
+                    raise ValueError("This intake accepts public or synthetic originals only")
+            else:
+                validate("BootstrapResponse", {"ok": True, "data": dataset})
+                if any(item["source_kind"] != "synthetic"
+                       for field in ("products", "reviews", "evidence") for item in dataset[field]):
+                    raise ValueError("Demo originals must remain synthetic")
+                version = dataset["manifest"]["version"]
+        except (ValidationError, ValueError, TypeError, KeyError):
             raise DomainError("VALIDATION_FAILED", "자료 스냅샷이 공통 계약과 맞지 않습니다.") from None
-        if any(item["source_kind"] != "synthetic"
-               for field in ("products", "reviews", "evidence") for item in dataset[field]):
-            raise DomainError("VALIDATION_FAILED", "현재 Skill 계약은 합성 자료만 지원합니다.")
         digest = _digest(dataset)
         scope = (payload["model_id"], payload["document_version"])
         products = [item for item in dataset["products"] if item["model_id"] == scope[0]]
         record["provenance"] = deepcopy({
-            "dataset_sha256": digest, "manifest": dataset["manifest"],
+            "dataset_sha256": digest, "manifest": dataset.get("manifest"),
+            "artifact_kind": dataset.get("artifact_kind", "demo_dataset"), "dataset_version": version,
             "products": products,
             "features": [item for item in dataset["features"]
                          if (item["model_id"], item["document_version"]) == scope],
@@ -194,7 +206,7 @@ class SkillRuntime:
             raise DomainError("VALIDATION_FAILED", "같은 실행 중 자료 내용 또는 버전이 변경되었습니다.")
         if self._request is not None and (
                 payload["model_id"] not in self._request["model_ids"]
-                or dataset["manifest"]["version"] != self._request["dataset_version"]
+                or version != self._request["dataset_version"]
                 or any(p["product_group"] != self._request["product_group"] for p in products)):
             raise DomainError("VALIDATION_FAILED", "Skill 자료 범위와 원 요청이 다릅니다.")
         self._dataset_sha256 = digest
@@ -438,7 +450,8 @@ class SkillRuntime:
             response = {"ok": True, "data": {"skill_id": skill_id, "contract_version": CONTRACT_VERSION,
                         "execution_kind": handler.execution_kind, "backend_id": handler.backend_id,
                         "model_id": payload["model_id"], "document_version": payload["document_version"],
-                        "source_kind": "synthetic", "result": result, "sources": []}}
+                        "source_kind": record["provenance"]["products"][0]["source_kind"],
+                        "result": result, "sources": []}}
             self._validate(skill_id, "output", response)
             if skill_id == "evidence_lookup":
                 item_ids = [item["id"] for item in result["items"]]

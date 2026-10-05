@@ -1,0 +1,97 @@
+{
+  "request": {
+    "product_group": "dishwasher",
+    "target_customer": "식기세척기를 사용하는 사용자",
+    "use_situation": "오염 정도에 맞는 세척 코스를 선택할 때",
+    "improvement_task": "세척 코스 선택과 결과 확인을 돕는 안내 서비스 기획",
+    "exclusions": [
+      "사용자의 확인 없이 세척 코스를 자동 변경하지 않는다"
+    ],
+    "model_ids": [
+      "DISHWASHER-A"
+    ],
+    "dataset_version": "0.1.0"
+  },
+  "product": {
+    "model_id": "DISHWASHER-A",
+    "name": "가상 식기세척기 A",
+    "product_group": "dishwasher",
+    "document_version": "1.0",
+    "source_kind": "synthetic"
+  },
+  "sources": [
+    {
+      "id": "MANUAL-004",
+      "model_id": "DISHWASHER-A",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "manual",
+      "source_id": "DISHWASHER-A-MANUAL-v1.0",
+      "locator": {
+        "page": 4,
+        "section": "기본 적재 안내"
+      },
+      "text": "기본 적재 그림과 자동 세척 코스를 제공합니다. 큰 식기는 회전 날개를 막지 않도록 배치합니다.",
+      "feature_ids": [
+        "FEATURE-004"
+      ]
+    },
+    {
+      "id": "REVIEW-EVIDENCE-031",
+      "model_id": "DISHWASHER-A",
+      "text": "큰 접시와 냄비를 같이 넣을 때 어디에 놓아야 하는지 모르겠어요.",
+      "source_kind": "synthetic",
+      "source_type": "review",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 32
+      },
+      "feature_ids": []
+    },
+    {
+      "id": "REVIEW-EVIDENCE-032",
+      "model_id": "DISHWASHER-A",
+      "text": "설명서의 식기 조합과 우리 집 식기 조합이 달라요.",
+      "source_kind": "synthetic",
+      "source_type": "review",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 33
+      },
+      "feature_ids": []
+    },
+    {
+      "id": "REVIEW-EVIDENCE-033",
+      "model_id": "DISHWASHER-A",
+      "text": "긴 손잡이가 회전 날개를 막는지 확인하고 싶어요.",
+      "source_kind": "synthetic",
+      "source_type": "review",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 34
+      },
+      "feature_ids": []
+    }
+  ],
+  "features": [
+    {
+      "id": "FEATURE-004",
+      "model_id": "DISHWASHER-A",
+      "document_version": "1.0",
+      "name": "기본 적재 안내",
+      "description": "기본 적재 그림과 자동 세척 코스를 제공합니다. 큰 식기는 회전 날개를 막지 않도록 배치합니다.",
+      "conditions": [
+        "회전 날개 간섭 확인"
+      ],
+      "evidence_ids": [
+        "MANUAL-004"
+      ]
+    }
+  ],
+  "revision_count": 0,
+  "max_concepts": 3,
+  "changed_evidence_ids": []
+}
