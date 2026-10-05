@@ -110,6 +110,15 @@ class SubmissionReplayTests(unittest.TestCase):
                 files = {key: value for key, value in self.files.items() if key != name}
                 self.assert_issue(self.verify(files=files), 'MISSING_SKILL')
 
+    def test_archived_document_version_is_preserved_but_not_current_run_evidence(self):
+        products = {item['model_id']: item for item in self.dataset['products']}
+        archived = next(item for item in self.dataset['evidence']
+                        if item['document_version'] != products[item['model_id']]['document_version'])
+        self.assertTrue(self.verify()['ok'])
+        changed = deepcopy(self.record)
+        changed['run']['evidence_ids'] = [archived['id']]
+        self.assert_issue(self.verify(changed), 'PRODUCT_VERSION_MISMATCH')
+
     def test_missing_original_and_wrong_hash(self):
         for field, value, code in [('path', 'missing.txt', 'MISSING_SOURCE'),
                                    ('sha256', '0' * 64, 'ORIGINAL_HASH_MISMATCH')]:

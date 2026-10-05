@@ -222,8 +222,14 @@ def verify_replay(archive_bytes: bytes, replay: dict, *, expected_commit: str,
         expected_sources = set()
         for item in dataset['evidence']:
             product = products.get(item['model_id'])
-            _require(product is not None and all(product[k] == item[k]
-                     for k in ('document_version', 'source_kind')), 'PRODUCT_VERSION_MISMATCH', 'evidence')
+            # A bundle retains old document versions for change comparison.
+            # Only evidence actually used by this run must match its current
+            # product version; every archived source still needs an exact
+            # document provenance entry below.
+            _require(product is not None and product['source_kind'] == item['source_kind']
+                     and (item['id'] not in used or
+                          product['document_version'] == item['document_version']),
+                     'PRODUCT_VERSION_MISMATCH', 'evidence')
             expected_sources.add(tuple(item[k] for k in fields))
         _require(set(sources) == expected_sources, 'DOCUMENT_PROVENANCE_MISMATCH', 'documents')
         commands = replay.get('commands')
