@@ -285,7 +285,13 @@ class SubmissionReplayTests(unittest.TestCase):
         with patch('evals.submission_replay.MAX_FILES', 1):
             self.assert_issue(self.verify(), 'ARCHIVE_LIMIT')
         with patch('evals.submission_replay.MAX_FILE_BYTES', 1):
-            self.assert_issue(self.verify(), 'ARCHIVE_LIMIT')
+            self.assert_issue(self.verify(), 'RECORD_LIMIT')
+            # The record limit is checked before ZIP members. Exercise the
+            # archive bound directly without weakening production ordering.
+            from evals.submission_replay import _archive, ReplayError
+            with self.assertRaises(ReplayError) as raised:
+                _archive(data)
+            self.assertEqual(raised.exception.code, 'ARCHIVE_LIMIT')
 
 
 if __name__ == '__main__':
