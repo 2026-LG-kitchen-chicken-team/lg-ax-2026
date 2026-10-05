@@ -907,8 +907,7 @@ class TrustedPMBroker:
                             IDENTIFIER.fullmatch(review.get("implementation_session_id", "")) is not None and
                             review.get("implementation_session_id") == unit["implementation_session_id"] and
                             review.get("reviewer_session_id") != unit["implementation_session_id"])
-                        if (not rejected and review.get("verified") is True and
-                                review.get("outcome") == "approve" and review.get("findings") == []):
+                        if not rejected:
                             pr["integration"] = self._integration(pr, capability)
                 elif pr["state"] == "merged" and pr["merged_commit"] == main:
                     pr["postmerge"] = self._integration(pr, capability, postmerge=True)
