@@ -20,6 +20,7 @@ import threading
 import time
 import uuid
 from contextlib import contextmanager, nullcontext
+from copy import deepcopy
 from pathlib import Path, PurePosixPath
 from types import SimpleNamespace
 
@@ -41,11 +42,12 @@ from services.automation.pm import (
     fingerprint,
     identifiers,
     load_policy,
+    manual_overlap_capabilities,
     protected_path,
     stable_observation,
     text,
 )
-from services.automation.state import MEMBER_NAMES, PM, REPO
+from services.automation.state import ACCOUNTS, MEMBER_NAMES, PM, REPO, ControlError, overlap, safe_path
 from services.automation.worker import (
     ControllerClient,
     exclusive_lock,
@@ -57,6 +59,7 @@ from services.automation.worker import (
 SHA = re.compile(r"[0-9a-f]{40}")
 ACTION_ID = re.compile(r"pm-[0-9a-f]{40}")
 MAX_SOURCE = 256 * 1024 * 1024
+MAX_MANUAL_PRS = 40
 REVIEW_SCHEMA = {"type": "object", "additionalProperties": False,
     "properties": {"outcome": {"type": "string", "enum": ["approve", "request_changes"],
                                "description": "Approve the bounded implementation unit only when no blocking defect exists."},
@@ -324,6 +327,7 @@ class TrustedPMBroker:
                 "released_capabilities" not in self.config):
             return None
         ready = set(observation["capabilities_ready"]) & self._released_capabilities()
+        ready -= manual_overlap_capabilities(observation)
         plan = self.orchestration.capabilities
         for cap_id in sorted(ready & plan.keys(), key=lambda key: (-plan[key]["priority"], key)):
             cap = self.policy["capabilities"].get(cap_id)
@@ -617,6 +621,76 @@ class TrustedPMBroker:
                            "SUCCESS" if row["state"] == "success" else
                            "PENDING" if row["state"] == "pending" else "FAILURE", "id": row.get("id")})
         return result
+
+    def _manual_submissions(self, *, collect):
+        """Observe unregistered PR metadata only; never adopt or execute its code.
+
+        The mutation reread uses the same sanitized snapshot. Only a later
+        collection can announce a new manual head; CI churn alone is not a new
+        billable decision. No PR body, patch, comment or credential is retained.
+        """
+        cached = self.state.get("manual_submissions", [])
+        if not collect:
+            return deepcopy(cached)
+        registered = {unit.get("pr_number") for unit in self.state["units"].values()}
+        try:
+            rows = self.github.pages(f"repos/{REPO}/pulls?state=open&sort=created&direction=desc", maximum_pages=2)
+            rows = [row for row in rows if row.get("number") not in registered and row.get("state") == "open"
+                    and row.get("draft") is False and row.get("user", {}).get("login") in ACCOUNTS
+                    and row.get("base", {}).get("repo", {}).get("full_name") == REPO]
+            if len(rows) > MAX_MANUAL_PRS:
+                raise PMError("manual PR metadata exceeded bounded collection")
+            result = []
+            for row in rows:
+                number, head = row.get("number"), row.get("head", {}).get("sha", "")
+                if type(number) is not int or not 1 <= number <= 1000000 or not SHA.fullmatch(head):
+                    raise PMError("manual PR immutable identity malformed")
+                # One bounded first page is enough for detection, never for
+                # formal intake. A large PR remains visible with incomplete
+                # file metadata instead of disappearing from the pending list.
+                files = self.github.request("GET", f"repos/{REPO}/pulls/{number}/files?per_page=100&page=1")
+                if not isinstance(files, list) or len(files) > 100:
+                    raise PMError("manual PR changed-file metadata malformed")
+                paths, protected_count = set(), 0
+                for item in files:
+                    for value in (item.get("filename"), item.get("previous_filename")):
+                        if value is None:
+                            continue
+                        try:
+                            paths.add(safe_path(value))
+                        except ControlError:
+                            protected_count += 1  # Summarize; never expose private/auth paths.
+                raw_declaration = str(row.get("title") or "")[:300] + "\n" + str(row.get("body") or "")[:16000]
+                declared = sorted(task for task in self.policy["tasks"] if re.search(
+                    r"(?<![A-Za-z0-9_-])" + re.escape(task) + r"(?![A-Za-z0-9_-])", raw_declaration))
+                # This is classification metadata, not proof of the declaration.
+                product = any(path.startswith(("apps/", "packages/core/", "data/", "skills/", "services/inference/"))
+                              for path in paths)
+                overlaps = sorted(key for key, cap in self.policy["capabilities"].items()
+                                  if cap.get("development_only") is True and any(
+                                      overlap(path, allowed) for path in paths for allowed in cap["allowed_paths"]))
+                ref = row.get("base", {}).get("ref", "")
+                ref = ref if isinstance(ref, str) and re.fullmatch(r"[A-Za-z0-9_./-]{1,200}", ref) else "redacted"
+                checks = [{key: check[key] for key in ("context", "head", "status")}
+                          for check in self._checks(head) if check.get("context") in self.policy["required_ci_contexts"]]
+                result.append({"number": number, "author": row["user"]["login"], "head": head,
+                    "base_ref": ref, "base_repo": REPO, "state": "open", "draft": False,
+                    "ci": checks, "changed_paths": sorted(paths)[:60], "protected_paths_present": protected_count > 0,
+                    "protected_path_count": protected_count, "file_metadata_complete":
+                        row.get("changed_files", len(files)) == len(files) and len(files) < 100 and len(paths) <= 60,
+                    "declared_task_ids": declared, "task_declaration_verified": False,
+                    "overlapping_development_capabilities": overlaps, "product_paths_present": product,
+                    "readiness_or_operations_only": not product,
+                    "authority": "manual_pm_review_pending", "formal_intake_completed": False})
+        except PMError:
+            # An unavailable read is not an empty inbox or a completed review.
+            self.state["manual_submission_scan"] = "unavailable_cached_metadata"
+            self.save()
+            return deepcopy(cached)
+        result.sort(key=lambda item: item["number"])
+        self.state.update(manual_submissions=result, manual_submission_scan="collected_metadata_only")
+        self.save()
+        return deepcopy(result)
 
     def _readiness(self):
         result = {}
@@ -943,13 +1017,15 @@ class TrustedPMBroker:
                 total["tokens"] += day_budget.get("tasks", {}).get(task_id, 0)
         external_usage = {"day": {"model_calls": budget.get("calls", 0), "tokens": budget.get("tokens", 0)},
                           "tasks": lifetime_tasks}
+        manual_submissions = self._manual_submissions(collect=collect)
         observation = {"repo": REPO, "main_commit": main, "global_mode": status["global_mode"],
                 "pm_mode": "on" if status.get("members", {}).get(PM) else "off", "members": status["members"],
                 "formal_snapshot": status["formal_snapshot"], "jobs": jobs, "prs": prs,
                 "worker_presence": status.get("workers", {}),
                 "capabilities_ready": ready, "readiness": self._readiness(),
                 "operator_resume_nonce": self.config.get("operator_resume_nonce", "initial"),
-                "external_usage": external_usage}
+                "external_usage": external_usage, "manual_submissions": manual_submissions,
+                "manual_submission_scan": self.state.get("manual_submission_scan", "not_collected")}
         self.orchestration.synchronize(observation, collect=collect)
         # Read the same immutable inbox in execution revalidation. Omitting the
         # key (even for no replies) changes stable_observation's fingerprint.

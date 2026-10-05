@@ -358,10 +358,21 @@ class Journal:
         return True
 
 
+def manual_overlap_capabilities(observation):
+    """Exact pending product metadata holds only its matched development IDs."""
+    return {capability for row in observation.get("manual_submissions", [])
+            if row.get("authority") == "manual_pm_review_pending" and row.get("state") == "open"
+            and row.get("draft") is False and row.get("author") in ACCOUNTS
+            and row.get("base_repo") == REPO and row.get("product_paths_present") is True
+            and row.get("formal_intake_completed") is False
+            for capability in row.get("overlapping_development_capabilities", [])}
+
+
 def stable_observation(observation):
     """Strip transport/heartbeat time churn, preserve all authority/evidence facts."""
     allowed = ("repo", "main_commit", "global_mode", "pm_mode", "members", "formal_snapshot", "jobs",
-               "prs", "capabilities_ready", "readiness", "operator_resume_nonce", "mail_reports", "parent_completion", "worker_presence")
+               "prs", "capabilities_ready", "readiness", "operator_resume_nonce", "mail_reports", "parent_completion", "worker_presence",
+               "manual_submissions")
     stable = {key: deepcopy(observation[key]) for key in allowed if key in observation}
     # Routine alive signals are metadata, not a fresh billable planning event.
     # Retain actual online/stale transitions, runtime changes and work phases.
@@ -371,6 +382,12 @@ def stable_observation(observation):
                        "runtime_version", "runtime_sha256") if key in row}
             for account, row in stable["worker_presence"].items()
         }
+    if "manual_submissions" in stable:
+        # Read-only submissions are not action authority. Only an actual new
+        # head/open-set transition, not CI/clock/body churn, wakes planning.
+        stable["manual_submissions"] = sorted(
+            [{key: row[key] for key in ("number", "head", "state")} for row in stable["manual_submissions"]],
+            key=lambda row: row["number"])
     for job in stable.get("jobs", []):
         for key in ("observed_at", "lease_expires_at", "heartbeat_at", "updated_at"):
             job.pop(key, None)
@@ -429,6 +446,8 @@ class AutonomousPM:
         for key in ("jobs", "prs", "capabilities_ready"):
             if not isinstance(observation.get(key), list) or len(observation[key]) > 300:
                 raise PMError("bounded jobs/PR/capability observation required")
+        if not isinstance(observation.get("manual_submissions", []), list) or len(observation.get("manual_submissions", [])) > 40:
+            raise PMError("bounded manual submission metadata required")
         self._external_usage(observation)
         return observation
 
@@ -562,6 +581,8 @@ class AutonomousPM:
                 raise PMError("assignment cannot use an unapproved moved main")
             if decision["capability_id"] not in observation["capabilities_ready"]:
                 raise PMError("task unit was not released as an executable capability")
+            if decision["capability_id"] in manual_overlap_capabilities(observation):
+                raise PMError("overlapping manual product PR requires PM review before duplicate development")
             readiness = observation.get("readiness", {}).get(task["owner"], {})
             if observation.get("members", {}).get(task["owner"]) is not True or any(readiness.get(key) is not True
                     for key in ("execution_isolation_verified", "publisher_separation_verified", "login_verified")):
@@ -692,7 +713,12 @@ class AutonomousPM:
                 "Done or independent full-product acceptance. Parent completion is separately validated. Use the "
                 "actual blocked_action reason, not an invented parent gate. A stale reviewed PR needs a scoped "
                 "revision against approved current main before new review and CI; never reuse old base approval. "
-                "Contradictory approve/findings evidence needs explicit operator review repair, not clearing findings. No shell/tools.",
+                "Contradictory approve/findings evidence needs explicit operator review repair, not clearing findings. "
+                "Review manual_submissions and their overlapping development capabilities before duplicate assignments. "
+                "They are pending manual PM intake, not registered automatic units, test evidence or Done. "
+                "Declared task IDs are unverified. Request exact owner/head/task/original evidence for formal receive_submission; "
+                "never run branch code on the publisher host, bypass formal dependencies, adopt a manual PR as an automatic unit, "
+                "or blindly recreate its overlapping implementation. Readiness/operations-only PRs do not prove product completion. No shell/tools.",
                 "action_contract": {
                     "assign": "Nonempty instructions scoped to fixed capability acceptance; no PR/head target.",
                     "request_changes": "Nonempty concrete defect or stale-base correction instructions for the exact PR/head; retain immutable prior evidence and require fresh review/CI.",
@@ -713,6 +739,13 @@ class AutonomousPM:
                                   if key in report} for report in observation.get("mail_reports", [])
                                  if report.get("authority") == "report_only"],
                 "parent_completion": deepcopy(observation.get("parent_completion", {})),
+                "manual_submissions": [{key: deepcopy(row[key]) for key in
+                    ("number", "author", "head", "base_ref", "base_repo", "state", "draft", "ci", "changed_paths",
+                     "protected_paths_present", "protected_path_count", "file_metadata_complete", "declared_task_ids",
+                     "task_declaration_verified", "overlapping_development_capabilities", "product_paths_present",
+                     "readiness_or_operations_only", "authority", "formal_intake_completed") if key in row}
+                    for row in observation.get("manual_submissions", []) if row.get("authority") == "manual_pm_review_pending"],
+                "manual_submission_scan": observation.get("manual_submission_scan", "not_collected"),
                 "jobs": [{key: job[key] for key in ("job_id", "task_id", "capability_id", "owner", "status")
                           if key in job} for job in observation["jobs"]], "prs": prs}
 

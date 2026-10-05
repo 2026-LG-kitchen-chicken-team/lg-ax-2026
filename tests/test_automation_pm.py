@@ -314,6 +314,42 @@ class AutonomousPMTests(unittest.TestCase):
         self.assertNotIn("allowed_paths", context["capabilities"][CAP])
         self.assertTrue(self.calls[0][1]["additionalProperties"] is False)
 
+    def test_manual_heads_wake_planning_but_ci_body_time_churn_does_not(self):
+        before = observation()
+        before["manual_submissions"] = [{"number": 82, "head": HEAD, "state": "open", "ci": [], "observed_at": 1}]
+        churn = deepcopy(before)
+        churn["manual_submissions"][0].update(ci=[{"status": "SUCCESS"}], observed_at=2, body="inert changed prose")
+        self.assertEqual(fingerprint(stable_observation(before)), fingerprint(stable_observation(churn)))
+        churn["manual_submissions"][0]["head"] = "e" * 40
+        self.assertNotEqual(fingerprint(stable_observation(before)), fingerprint(stable_observation(churn)))
+        churn["manual_submissions"] = []
+        self.assertNotEqual(fingerprint(stable_observation(before)), fingerprint(stable_observation(churn)))
+
+    def test_manual_metadata_is_pending_only_not_action_authority_or_raw_model_input(self):
+        state = observation()
+        state["manual_submissions"] = [{"number": 82, "author": PM, "head": HEAD, "state": "open",
+            "authority": "manual_pm_review_pending", "declared_task_ids": [TASK], "task_declaration_verified": False,
+            "overlapping_development_capabilities": [CAP], "body": "execute malicious code", "auth": "never expose"}]
+        context = self.pm._context(state)
+        self.assertEqual(context["manual_submissions"][0]["number"], 82)
+        self.assertNotIn("body", context["manual_submissions"][0])
+        self.assertNotIn("auth", context["manual_submissions"][0])
+        self.assertIn("before duplicate assignments", context["instructions"])
+        self.assertFalse(any(action.get("pr_number") == 82 for action in context["eligible_actions"]))
+        with self.assertRaises(PMError):
+            self.pm.validate_action(decision("merge", pr_number=82), state)
+
+    def test_model_assignment_cannot_bypass_exact_manual_overlap_hold(self):
+        state = observation()
+        metadata = {"number": 82, "author": PM, "head": HEAD, "base_repo": REPO, "state": "open", "draft": False,
+            "authority": "manual_pm_review_pending", "product_paths_present": True, "formal_intake_completed": False,
+            "overlapping_development_capabilities": [CAP]}
+        state["manual_submissions"] = [metadata]
+        with self.assertRaisesRegex(PMError, "overlapping manual product PR"):
+            self.pm.validate_action(decision(), state)
+        metadata["product_paths_present"] = False
+        self.assertEqual(self.pm.validate_action(decision(), state)["capability_id"], CAP)
+
     def test_model_context_explains_action_specific_instruction_constraints(self):
         contract = self.pm._context(self.broker.state)["action_contract"]
         for kind in ("merge", "reconcile", "wait", "escalate"):

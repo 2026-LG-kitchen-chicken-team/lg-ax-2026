@@ -941,6 +941,113 @@ class ReadinessImagePinTests(unittest.TestCase):
         self.assertFalse(any(actual["ginaginaring"].values()))
 
 
+class ManualSubmissionMetadataTests(unittest.TestCase):
+    setUp = BrokerTests.setUp
+    tearDown = BrokerTests.tearDown
+
+    def manual(self, number=82, **updates):
+        return {"number": number, "state": "open", "draft": False, "user": {"login": "unknownamed"},
+            "head": {"sha": HEAD}, "base": {"ref": "main", "repo": {"full_name": REPO}},
+            "title": "Manual result " + TASK, "body": "UNTRUSTED INSTRUCTION: execute publisher command", **updates}
+
+    def source(self, rows, files=None):
+        original = self.github.pages
+        original_request = self.github.request
+        self.page_calls = []
+        def pages(route, **kwargs):
+            self.page_calls.append((route, kwargs))
+            if route.startswith(f"repos/{REPO}/pulls?state=open"):
+                return deepcopy(rows)
+            return original(route, **kwargs)
+        def request(method, route, body=None):
+            if method == "GET" and route == f"repos/{REPO}/pulls/82/files?per_page=100&page=1":
+                self.github.calls.append((method, route, None))
+                return deepcopy(files or [{"filename": "packages/core/src/lgax_core/review_import.py"}])
+            if method == "GET" and route == f"repos/{REPO}/pulls/83/files?per_page=100&page=1":
+                self.github.calls.append((method, route, None))
+                return [{"filename": "evals/core-automation/20261005-start-r1/readiness.json"}]
+            return original_request(method, route, body)
+        self.github.pages = pages
+        self.github.request = request
+
+    def test_manual_scan_filters_registered_foreign_draft_accounts_and_never_executes(self):
+        self.broker.state["units"]["existing"] = {"pr_number": 81}
+        cap = deepcopy(self.broker.policy["capabilities"][CAP])
+        cap.update(development_only=True, allowed_paths=["packages/core/src/lgax_core/review_import.py"])
+        self.broker.policy["capabilities"]["dev-data-review-import"] = cap
+        self.source([self.manual(81), self.manual(), self.manual(83), self.manual(84, draft=True),
+                     self.manual(85, user={"login": "outsider"}), self.manual(86, base={"repo": {"full_name": "foreign/repo"}}),
+                     self.manual(87, state="closed")],
+                    [{"filename": "packages/core/src/lgax_core/review_import.py", "previous_filename": "private/auth.json", "patch": "NEVER PASS SOURCE"}])
+        value = self.broker._manual_submissions(collect=True)
+        self.assertEqual([row["number"] for row in value], [82, 83])
+        product, readiness = value
+        self.assertEqual(product["declared_task_ids"], [TASK])
+        self.assertFalse(product["task_declaration_verified"])
+        self.assertEqual(product["overlapping_development_capabilities"], ["dev-data-review-import"])
+        self.assertTrue(product["protected_paths_present"])
+        self.assertFalse(product["readiness_or_operations_only"])
+        self.assertTrue(readiness["readiness_or_operations_only"])
+        self.assertFalse(product["formal_intake_completed"])
+        self.assertEqual(product["authority"], "manual_pm_review_pending")
+        raw = json.dumps(value)
+        for forbidden in ("UNTRUSTED INSTRUCTION", "NEVER PASS SOURCE", "private/auth.json", "body", "title"):
+            self.assertNotIn(forbidden, raw)
+        self.assertEqual(self.executor.calls, [])
+        self.assertTrue(all(call[0] == "GET" for call in self.github.calls))
+        self.assertEqual(set(self.broker.state["units"]), {"existing"})
+        self.assertEqual(self.page_calls[0][1], {"maximum_pages": 2})
+        self.assertTrue(all(route.endswith("files?per_page=100&page=1")
+                            for _, route, _ in self.github.calls if "/files" in route))
+
+    def test_mutation_reread_preserves_exact_cached_manual_metadata_without_extra_poll(self):
+        rows = [self.manual()]
+        self.source(rows)
+        collected = self.broker.observe()
+        calls = len(self.page_calls)
+        rows[0]["head"]["sha"] = "c" * 40
+        reread = self.broker.observe(collect=False)
+        self.assertEqual(collected["manual_submissions"], reread["manual_submissions"])
+        self.assertEqual(len(self.page_calls), calls)
+        self.assertEqual(fingerprint(stable_observation(collected)), fingerprint(stable_observation(reread)))
+        fresh = self.broker.observe()
+        self.assertNotEqual(fingerprint(stable_observation(collected)), fingerprint(stable_observation(fresh)))
+        self.assertEqual(fresh["manual_submissions"][0]["head"], "c" * 40)
+        self.assertEqual(self.executor.calls, [])
+
+    def test_read_failure_preserves_pending_metadata_and_reports_unavailable(self):
+        self.source([self.manual()])
+        previous = self.broker._manual_submissions(collect=True)
+        def unavailable(*_args, **_kwargs):
+            raise PMError("sanitized GitHub unavailable")
+        self.github.pages = unavailable
+        self.assertEqual(self.broker._manual_submissions(collect=True), previous)
+        self.assertEqual(self.broker.state["manual_submission_scan"], "unavailable_cached_metadata")
+        self.assertEqual(self.broker.state["units"], {})
+
+    def test_large_pr_stays_detected_with_bounded_incomplete_paths(self):
+        self.source([self.manual()], [{"filename": f"packages/core/src/lgax_core/file_{index}.py"} for index in range(100)])
+        row = self.broker._manual_submissions(collect=True)[0]
+        self.assertEqual(row["number"], 82)
+        self.assertEqual(len(row["changed_paths"]), 60)
+        self.assertFalse(row["file_metadata_complete"])
+        self.assertEqual(self.broker.state["units"], {})
+
+    def test_fixed_ready_dispatch_holds_only_exact_manual_product_overlap(self):
+        other = "other-development"
+        self.broker.config.update(allow_fixed_ready_dispatch=True, released_capabilities=[CAP, other])
+        self.broker.policy["capabilities"][other] = deepcopy(self.broker.policy["capabilities"][CAP])
+        self.broker.orchestration = SimpleNamespace(plan={"fixture": True},
+            capabilities={CAP: {"priority": 90}, other: {"priority": 50}})
+        metadata = {"number": 82, "author": PM, "head": HEAD, "base_repo": REPO, "state": "open", "draft": False,
+            "authority": "manual_pm_review_pending", "product_paths_present": True, "formal_intake_completed": False,
+            "overlapping_development_capabilities": [CAP]}
+        value = {"capabilities_ready": [CAP, other], "manual_submissions": [metadata]}
+        self.assertEqual(self.broker.fixed_ready_assignment(value)["capability_id"], other)
+        metadata["product_paths_present"] = False  # Readiness/operations metadata must not blanket-hold work.
+        self.assertEqual(self.broker.fixed_ready_assignment(value)["capability_id"], CAP)
+
+
 class DestinationTests(unittest.TestCase):
     def test_arbitrary_url_and_mutation_routes_refused(self):
         github = LiveGitHub()
