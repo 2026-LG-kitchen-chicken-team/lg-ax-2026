@@ -555,7 +555,7 @@ class ProductEvidenceTests(unittest.TestCase):
             ProductCaseBinding("bad-case", CASES["fridge-normal"], DATASET, ("R30",))
 
     def test_deterministic_guard_binding_has_no_generation_permission(self):
-        from services.automation.product_rpc import REQUEST, FileRelay, RPCError, write_file
+        from services.automation.product_rpc import FileRelay, RPCError, write_request
         from tests.test_automation_product_rpc import RUN, request
 
         artifacts, private = self.root / "guard-artifacts", self.root / "guard-private"
@@ -565,7 +565,7 @@ class ProductEvidenceTests(unittest.TestCase):
         relay = FileRelay(artifacts, private / "relay.json", RUN, settings=SETTINGS, max_generations=1,
                          max_tokens=100, enabled=lambda: True, upstream=lambda *args: calls.append(args),
                          allow_generation=False)
-        write_file(artifacts / REQUEST, request())
+        write_request(artifacts, 1, request())
         with self.assertRaises(RPCError):
             relay.step()
         self.assertFalse(calls)

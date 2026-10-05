@@ -19,8 +19,7 @@ from pathlib import Path
 
 import httpx
 
-REQUEST = "product-request.json"
-RESPONSE = "product-response.json"
+MAX_REQUESTS = 40
 MODEL = "qwen3:8b"
 DIGEST = "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41"
 MAX_REQUEST = 65536
@@ -141,6 +140,70 @@ def write_file(path: Path, value, *, enabled=None) -> None:
             time.sleep(0.01)
 
 
+def mailbox_paths(artifacts: Path, kind: str, sequence: int) -> tuple[Path, Path]:
+    """Only forty fixed identities in each direction, never arbitrary paths."""
+    if kind not in {"request", "response"}:
+        raise RPCError("mailbox direction outside fixed allowlist")
+    if type(sequence) is not int or not 1 <= sequence <= MAX_REQUESTS:
+        raise RPCError("sequence exceeds fixed mailbox bound")
+    return (artifacts / f"product-{kind}-{sequence:02d}.json",
+            artifacts / f"product-{kind}-{sequence:02d}.ready")
+
+
+def response_paths(artifacts: Path, sequence: int) -> tuple[Path, Path]:
+    return mailbox_paths(artifacts, "response", sequence)
+
+
+def request_paths(artifacts: Path, sequence: int) -> tuple[Path, Path]:
+    return mailbox_paths(artifacts, "request", sequence)
+
+
+def write_mailbox(artifacts: Path, kind: str, sequence: int, value, *, enabled) -> None:
+    """Publish complete immutable bytes, then a zero-byte readiness marker.
+
+    Link publication is atomic and refuses any existing target on Windows and
+    POSIX. The guest does not open the response until the temporary hard link
+    has been removed and the ordinary single-link bytes have been rechecked.
+    There is no response replacement, delivery retry, or upstream replay.
+    """
+    path, ready = mailbox_paths(artifacts, kind, sequence)
+    temporary = path.with_suffix(".tmp")
+    for target in (path, ready, temporary):
+        plain_parents(target)
+        if target.exists() or target.is_symlink():
+            raise RPCError("immutable mailbox identity already exists")
+    raw = encode(value)
+    maximum = MAX_REQUEST if kind == "request" else MAX_RESPONSE * 2
+    if len(raw) > maximum:
+        raise RPCError("immutable mailbox exceeded fixed bound")
+    if not enabled():
+        raise RPCError("OFF prevented immutable mailbox preparation")
+    with temporary.open("xb") as stream:
+        stream.write(raw)
+    if read_file(temporary, maximum) != raw:
+        raise RPCError("immutable mailbox temporary bytes changed")
+    if not enabled():
+        raise RPCError("OFF prevented immutable mailbox publication")
+    # os.link never replaces an existing file, including a planted symlink.
+    os.link(temporary, path, follow_symlinks=False)
+    temporary.unlink()
+    if read_file(path, maximum) != raw:
+        raise RPCError("immutable mailbox published bytes changed")
+    plain_parents(ready)
+    if not enabled():
+        raise RPCError("OFF prevented immutable mailbox readiness")
+    with ready.open("xb"):
+        pass
+
+
+def write_response(artifacts: Path, sequence: int, value, *, enabled) -> None:
+    write_mailbox(artifacts, "response", sequence, value, enabled=enabled)
+
+
+def write_request(artifacts: Path, sequence: int, value) -> None:
+    write_mailbox(artifacts, "request", sequence, value, enabled=lambda: True)
+
+
 def positive(value, maximum):
     if type(value) is not int or not 1 <= value <= maximum:
         raise RPCError("invalid fixed execution bound")
@@ -224,7 +287,7 @@ class FileRelay:
                  allow_generation=True):
         if IDENTITY.fullmatch(run_id) is None:
             raise RPCError("fixed product run identity required")
-        plain_parents(artifacts / REQUEST)
+        plain_parents(request_paths(artifacts, 1)[0])
         # Journal parents are created by the trusted caller, never from a guest
         # requested path. Check before resolve so links cannot be hidden.
         plain_parents(journal)
@@ -263,25 +326,29 @@ class FileRelay:
             raise RPCError("relay halted; explicit operator recovery required")
         if not self.enabled():
             raise RPCError("product execution is OFF")
-        request_path = self.artifacts / REQUEST
-        if not request_path.exists():
-            return False
-        try:
-            value = decode(read_file(request_path, MAX_REQUEST))
-        except RPCReadUnstable:
-            return False  # No reservation or upstream call until stable bytes.
         rows = self.state["requests"]
-        sequence = value.get("sequence") if isinstance(value, dict) else None
-        if rows and sequence == rows[-1]["sequence"]:
-            if value.get("request_sha256") != rows[-1]["request_sha256"] or value != rows[-1]["request"]:
+        if rows:
+            prior, prior_ready = request_paths(self.artifacts, rows[-1]["sequence"])
+            if not prior_ready.exists() or read_file(prior_ready, 0) != b"":
+                raise RPCError("processed request readiness changed")
+            previous = decode(read_file(prior, MAX_REQUEST))
+            if previous.get("request_sha256") != rows[-1]["request_sha256"] or previous != rows[-1]["request"]:
                 raise RPCError("processed request mutated")
             if rows[-1]["state"] != "completed":
                 raise RPCError("ambiguous reserved request cannot be replayed")
+        if len(rows) >= MAX_REQUESTS:
             return False
+        sequence = len(rows) + 1
+        request_path, ready = request_paths(self.artifacts, sequence)
+        if not ready.exists() and not ready.is_symlink():
+            return False
+        if read_file(ready, 0) != b"":
+            raise RPCError("immutable request readiness marker changed")
+        value = decode(read_file(request_path, MAX_REQUEST))
         generation = checked_request(value, self.run_id, len(rows) + 1, self.settings)
         if generation and not self.allow_generation:
             raise RPCError("zero-model guard cannot request a generation")
-        if len(rows) >= 40 or (generation and (self.state["generations"] >= self.max_generations or
+        if len(rows) >= MAX_REQUESTS or (generation and (self.state["generations"] >= self.max_generations or
                                               self.state["tokens"] >= self.max_tokens)):
             raise RPCError("product request/generation/token bound exhausted")
         row = {"sequence": sequence, "request_sha256": value["request_sha256"], "request": value,
@@ -324,7 +391,7 @@ class FileRelay:
             self._save()
             if not self.enabled() or self.state["tokens"] > self.max_tokens:
                 raise RPCError("OFF or actual product token bound exceeded")
-            write_file(self.artifacts / RESPONSE, {"schema_version": 1, "run_id": self.run_id,
+            write_response(self.artifacts, sequence, {"schema_version": 1, "run_id": self.run_id,
                 "sequence": sequence, "request_sha256": value["request_sha256"], "response_sha256": sha(raw),
                 "response_base64": row["response_base64"]}, enabled=self.enabled)
         except Exception as exc:  # noqa: BLE001 - retain an ambiguous cost, disclose no endpoint/private response.
@@ -351,6 +418,8 @@ class FileTransport(httpx.BaseTransport):
         if (request.url.scheme != "http" or request.url.host != "127.0.0.1" or request.url.port != 18873 or request.url.query or
                 request.url.username or request.url.password or request.url.fragment):
             raise httpx.TransportError("only the fixed virtual loopback product endpoint is allowed")
+        if self.sequence >= MAX_REQUESTS:
+            raise httpx.TransportError("fixed product request count exhausted")
         self.sequence += 1
         raw = request.read()
         body = decode(raw) if raw else None
@@ -359,19 +428,20 @@ class FileTransport(httpx.BaseTransport):
         value["request_sha256"] = sha(encode(value))
         if len(encode(value)) > MAX_REQUEST:
             raise httpx.TransportError("bounded product request exceeded")
-        write_file(self.artifacts / REQUEST, value)
+        write_request(self.artifacts, self.sequence, value)
         started = time.monotonic()
         while time.monotonic() - started < self.timeout_seconds:
-            path = self.artifacts / RESPONSE
-            if path.exists():
-                try:
-                    response = decode(read_file(path, MAX_RESPONSE * 2))
-                except RPCReadUnstable:
-                    time.sleep(self.poll_seconds)
-                    continue  # Same request, no rewrite or upstream replay.
+            path, ready = response_paths(self.artifacts, self.sequence)
+            if ready.exists() or ready.is_symlink():
+                if read_file(ready, 0) != b"":
+                    raise RPCError("immutable mailbox readiness marker changed")
+                response = decode(read_file(path, MAX_RESPONSE * 2))
+                if response.get("sequence") != self.sequence:
+                    raise httpx.TransportError("immutable response sequence changed")
                 if response.get("sequence") == self.sequence:
                     if (set(response) != {"schema_version", "run_id", "sequence", "request_sha256", "response_sha256", "response_base64"}
-                            or response.get("schema_version") != 1 or response.get("run_id") != self.run_id or
+                            or type(response.get("schema_version")) is not int or response.get("schema_version") != 1
+                            or type(response.get("sequence")) is not int or response.get("run_id") != self.run_id or
                             response.get("request_sha256") != value["request_sha256"]):
                         raise httpx.TransportError("product response identity changed")
                     try:

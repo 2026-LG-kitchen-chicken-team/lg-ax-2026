@@ -15,9 +15,8 @@ from lgax_core.model_client import ModelConfig, OllamaAdapter, StructuredModelCl
 from services.automation import product_rpc
 from services.automation.product_rpc import (
     DIGEST,
+    MAX_REQUESTS,
     MODEL,
-    REQUEST,
-    RESPONSE,
     FileRelay,
     FileTransport,
     ProxyEndpoint,
@@ -28,11 +27,17 @@ from services.automation.product_rpc import (
     decode,
     encode,
     read_file,
+    request_paths,
+    response_paths,
     sha,
     write_file,
+    write_request,
+    write_response,
 )
 
 RUN = "product-" + "a" * 40
+RESPONSE = "legacy-response-fixture.json"
+REQUEST = "legacy-request-fixture.json"
 SETTINGS = {"temperature": 0, "seed": 42, "num_ctx": 8192, "num_predict": 512}
 
 
@@ -154,70 +159,64 @@ class ProductRPCTests(unittest.TestCase):
     def test_processed_identical_request_not_replayed_and_mutation_rejected(self):
         relay = self.relay()
         value = request()
-        write_file(self.artifacts / REQUEST, value)
+        write_request(self.artifacts, value["sequence"], value)
         self.assertTrue(relay.step())
         self.assertFalse(relay.step())
         self.assertFalse(self.relay().step())
         self.assertEqual(len(self.calls), 1)
         value["body"]["prompt"] = "Changed after execution"
         value["request_sha256"] = sha(encode({key: data for key, data in value.items() if key != "request_sha256"}))
-        write_file(self.artifacts / REQUEST, value)
+        request_paths(self.artifacts, value["sequence"])[0].write_bytes(encode(value))
         with self.assertRaises(RPCError):
             relay.step()
         self.assertEqual(len(self.calls), 1)
 
-    def test_windows_exchange_two_sharing_failures_retry_only_same_response_not_upstream(self):
+    def test_immutable_delivery_never_replaces_previous_response_or_replays_upstream(self):
         relay = self.relay()
-        write_file(self.artifacts / REQUEST, request())
-        original, attempts = Path.replace, []
-
-        def shared_reader(source, target):
-            if source.name == "product-response.tmp":
-                attempts.append(source.read_bytes())
-                if len(attempts) <= 2:
-                    error = PermissionError("fixture Windows reader denied delete-sharing")
-                    error.winerror = 5
-                    raise error
+        original = Path.replace
+        def reject_response_exchange(source, target):
+            if source.parent == self.artifacts and source.name.startswith("product-response-"):
+                raise AssertionError("immutable responses must not replace a polled file")
             return original(source, target)
-        with patch.object(product_rpc.os, "name", "nt"), patch.object(Path, "replace", shared_reader):
+        with patch.object(Path, "replace", reject_response_exchange):
+            write_request(self.artifacts, 1, request())
             self.assertTrue(relay.step())
-        self.assertEqual(len(attempts), 3)
-        self.assertEqual(len(set(attempts)), 1)
-        self.assertEqual(len(self.calls), 1)
-        self.assertEqual(relay.state["generations"], 1)
+            first, ready = response_paths(self.artifacts, 1)
+            original_bytes = first.read_bytes()
+            self.assertEqual(ready.read_bytes(), b"")
+            value = request(2, method="GET", path="/api/tags")
+            value["body"] = None
+            value["request_sha256"] = sha(encode({k: v for k, v in value.items() if k != "request_sha256"}))
+            write_request(self.artifacts, value["sequence"], value)
+            self.assertTrue(relay.step())
+            self.assertEqual(first.read_bytes(), original_bytes)
+            self.assertTrue(response_paths(self.artifacts, 2)[1].exists())
+            self.assertFalse(relay.step())
+            self.assertFalse(self.relay().step())
+        self.assertEqual(len(self.calls), 2)
         self.assertEqual(relay.state["tokens"], 18)
-        self.assertEqual(relay.state["requests"][0]["state"], "completed")
-        self.assertEqual(decode((self.artifacts / RESPONSE).read_bytes())["response_sha256"], sha(completion()))
 
-    def test_permanent_windows_exchange_denial_is_bounded_and_does_not_replay_completion(self):
-        relay = self.relay()
-        write_file(self.artifacts / REQUEST, request())
-        original, attempts = Path.replace, []
-        now = [0.0]
-
-        def permanent_reader(source, target):
-            if source.name == "product-response.tmp":
-                attempts.append(source.read_bytes())
-                error = PermissionError("fixture permanent Windows denial")
-                error.winerror = 32
-                raise error
-            return original(source, target)
-        def advance(seconds):
-            now[0] += seconds
-        with patch.object(product_rpc.os, "name", "nt"), patch.object(Path, "replace", permanent_reader), \
-                patch.object(product_rpc.time, "monotonic", lambda: now[0]), patch.object(product_rpc.time, "sleep", advance), \
-                self.assertRaises(RPCError):
-            relay.step()
-        self.assertGreaterEqual(now[0], 1)
-        self.assertLess(now[0], 1.02)
-        self.assertEqual(len(set(attempts)), 1)
-        self.assertEqual(relay.state["failure"], "PermissionError")
-        self.assertEqual(len(self.calls), 1)
-        self.assertEqual(relay.state["tokens"], 18)
-        self.assertFalse((self.artifacts / RESPONSE).exists())
-        with self.assertRaises(RPCError):
-            relay.step()
-        self.assertEqual(len(self.calls), 1)
+    def test_existing_immutable_response_identity_is_never_overwritten_or_replayed(self):
+        for selected in ("response", "ready", "temp"):
+            with self.subTest(selected=selected):
+                artifacts = self.root / selected
+                artifacts.mkdir()
+                target, ready = response_paths(artifacts, 1)
+                planted = {"response": target, "ready": ready, "temp": target.with_suffix(".tmp")}[selected]
+                planted.write_bytes(b"planted")
+                calls = []
+                relay = FileRelay(artifacts, self.private / (selected + ".json"), RUN, settings=SETTINGS,
+                    max_generations=2, max_tokens=100, enabled=lambda: self.on,
+                    upstream=lambda *args, recorded=calls: recorded.append(args) or completion())
+                write_request(artifacts, 1, request())
+                with self.assertRaises(RPCError):
+                    relay.step()
+                self.assertEqual(planted.read_bytes(), b"planted")
+                self.assertEqual(len(calls), 1)
+                self.assertEqual(relay.state["tokens"], 18)
+                with self.assertRaises(RPCError):
+                    relay.step()
+                self.assertEqual(len(calls), 1)
 
     def test_atomic_retry_refuses_changed_temp_bytes_and_off_before_delivery(self):
         for mode in ("tampered", "off"):
@@ -274,23 +273,22 @@ class ProductRPCTests(unittest.TestCase):
                     replacement.unlink()
                 target.unlink()
 
-    def test_unstable_request_is_repolled_without_any_reservation_or_upstream_replay(self):
+    def test_published_request_replacement_fails_before_any_reservation_or_upstream(self):
         relay = self.relay()
-        write_file(self.artifacts / REQUEST, request())
+        write_request(self.artifacts, 1, request())
         original, first = product_rpc.read_file, [True]
 
         def atomic_read(path, maximum):
-            if path.name == REQUEST and first[0]:
+            if path == request_paths(self.artifacts, 1)[0] and first[0]:
                 first[0] = False
                 raise RPCReadUnstable("fixture ordinary atomic exchange")
             return original(path, maximum)
         with patch.object(product_rpc, "read_file", atomic_read):
-            self.assertFalse(relay.step())
+            with self.assertRaises(RPCReadUnstable):
+                relay.step()
             self.assertEqual(relay.state["requests"], [])
             self.assertFalse(self.calls)
-            self.assertTrue(relay.step())
-        self.assertEqual(len(self.calls), 1)
-        self.assertEqual(relay.state["generations"], 1)
+        self.assertEqual(relay.state["generations"], 0)
 
     @unittest.skipIf(os.name == "nt", "Linux permits replacing an inode while its reader is still open")
     def test_linux_atomic_exchange_discards_old_unlinked_descriptor_without_relaxing_hardlinks(self):
@@ -309,27 +307,178 @@ class ProductRPCTests(unittest.TestCase):
             read_file(target, 30)
         self.assertEqual(read_file(target, 30), b"new")
 
-    def test_unstable_response_repolls_same_request_without_rewriting_or_hiding_bad_json(self):
+    def test_published_response_replacement_is_fatal_without_request_rewrite(self):
         value = request()
         response = {"schema_version": 1, "run_id": RUN, "sequence": 1, "request_sha256": value["request_sha256"],
                     "response_sha256": sha(completion()), "response_base64": base64.b64encode(completion()).decode()}
-        write_file(self.artifacts / RESPONSE, response)
-        original, first = product_rpc.read_file, [True]
-
-        def atomic_read(path, maximum):
-            if path.name == RESPONSE and first[0]:
-                first[0] = False
-                raise RPCReadUnstable("fixture ordinary atomic exchange")
+        write_response(self.artifacts, 1, response, enabled=lambda: True)
+        original = product_rpc.read_file
+        def unstable(path, maximum):
+            if path == response_paths(self.artifacts, 1)[0]:
+                raise RPCReadUnstable("fixture illegal exchange after immutable publication")
             return original(path, maximum)
         transport = FileTransport(self.artifacts, RUN, timeout_seconds=1, poll_seconds=0.001)
-        with patch.object(product_rpc, "read_file", atomic_read), patch.object(
-                product_rpc, "write_file", wraps=product_rpc.write_file) as writes:
-            actual = transport.handle_request(httpx.Request("POST", "http://127.0.0.1:18873/api/generate", json=generation()))
-            self.assertEqual(actual.read(), completion())
+        with patch.object(product_rpc, "read_file", unstable), patch.object(
+                product_rpc, "write_request", wraps=product_rpc.write_request) as writes:
+            with self.assertRaises(RPCReadUnstable):
+                transport.handle_request(httpx.Request("POST", "http://127.0.0.1:18873/api/generate", json=generation()))
             self.assertEqual(writes.call_count, 1)
-        (self.artifacts / RESPONSE).write_bytes(b"invalid json")
+        self.assertFalse(self.calls)
+
+
+    def test_fixed_response_names_and_request_limit_refuse_noncanonical_identity(self):
+        for value in (0, 41, True, "1", 1.0, None):
+            with self.subTest(value=value), self.assertRaises(RPCError):
+                response_paths(self.artifacts, value)
+        self.assertEqual(response_paths(self.artifacts, 40)[0].name, "product-response-40.json")
+        transport = FileTransport(self.artifacts, RUN, timeout_seconds=0.01)
+        transport.sequence = MAX_REQUESTS
+        with self.assertRaises(httpx.TransportError):
+            transport.handle_request(httpx.Request("GET", "http://127.0.0.1:18873/api/tags"))
+        self.assertFalse(request_paths(self.artifacts, 1)[0].exists())
+
+    def test_response_is_not_read_before_ready_or_from_another_sequence(self):
+        value = request()
+        envelope = {"schema_version": 1, "run_id": RUN, "sequence": 1,
+            "request_sha256": value["request_sha256"], "response_sha256": sha(completion()),
+            "response_base64": base64.b64encode(completion()).decode()}
+        target, ready = response_paths(self.artifacts, 1)
+        # A future response and a fully written-but-not-published current response
+        # are never polled while waiting for current sequence readiness.
+        write_response(self.artifacts, 2, {"invalid": "future fixture"}, enabled=lambda: True)
+        target.write_bytes(encode(envelope))
+        original, reads = product_rpc.read_file, []
+        def tracked(path, maximum):
+            reads.append(path)
+            return original(path, maximum)
+        def publish_ready():
+            time.sleep(0.03)
+            with ready.open("xb"):
+                pass
+        thread = threading.Thread(target=publish_ready)
+        thread.start()
+        try:
+            with patch.object(product_rpc, "read_file", tracked):
+                actual = FileTransport(self.artifacts, RUN, timeout_seconds=1, poll_seconds=0.005).handle_request(
+                    httpx.Request("POST", "http://127.0.0.1:18873/api/generate", json=generation()))
+                self.assertEqual(actual.read(), completion())
+        finally:
+            thread.join(2)
+        self.assertEqual([p for p in reads if p.name.startswith("product-response-")], [ready, target])
+        self.assertFalse(self.calls)
+
+    def test_atomic_no_replace_publication_hides_intermediate_hardlink_from_reader(self):
+        value = request()
+        envelope = {"schema_version": 1, "run_id": RUN, "sequence": 1,
+            "request_sha256": value["request_sha256"], "response_sha256": sha(completion()),
+            "response_base64": base64.b64encode(completion()).decode()}
+        target, ready = response_paths(self.artifacts, 1)
+        original, observed = os.link, []
+        def link_and_observe(source, destination, **kwargs):
+            original(source, destination, **kwargs)
+            self.assertEqual(target.stat().st_nlink, 2)
+            self.assertFalse(ready.exists())
+            observed.append(True)
+        with patch.object(product_rpc.os, "link", link_and_observe):
+            write_response(self.artifacts, 1, envelope, enabled=lambda: True)
+        self.assertEqual(observed, [True])
+        self.assertEqual(target.stat().st_nlink, 1)
+        self.assertFalse(target.with_suffix(".tmp").exists())
+        self.assertEqual(read_file(ready, 0), b"")
+        self.assertEqual(decode(read_file(target, 10000)), envelope)
         with self.assertRaises(RPCError):
-            transport.handle_request(httpx.Request("POST", "http://127.0.0.1:18873/api/generate", json=generation()))
+            write_response(self.artifacts, 1, envelope, enabled=lambda: True)
+
+    def test_tampered_publication_or_off_after_link_has_no_ready_marker(self):
+        for selected in ("tamper", "off"):
+            with self.subTest(selected=selected):
+                artifacts = self.root / ("publish-" + selected)
+                artifacts.mkdir()
+                target, ready = response_paths(artifacts, 1)
+                original = os.link
+                def altered(source, destination, link=original, mode=selected, dest=target, **kwargs):
+                    link(source, destination, **kwargs)
+                    if mode == "tamper":
+                        dest.write_bytes(b"changed actual bytes")
+                    else:
+                        self.on = False
+                self.on = True
+                with patch.object(product_rpc.os, "link", altered), self.assertRaises(RPCError):
+                    write_response(artifacts, 1, {"actual": "fixture"}, enabled=lambda: self.on)
+                self.assertFalse(ready.exists())
+
+    def test_ready_marker_and_response_links_and_identity_remain_fatal(self):
+        value = request()
+        envelope = {"schema_version": 1, "run_id": RUN, "sequence": 1,
+            "request_sha256": value["request_sha256"], "response_sha256": sha(completion()),
+            "response_base64": base64.b64encode(completion()).decode()}
+        for selected in ("ready_nonempty", "ready_hardlink", "response_hardlink", "wrong_sequence", "boolean_sequence", "wrong_run", "wrong_request"):
+            with self.subTest(selected=selected):
+                artifacts = self.root / ("verify-" + selected)
+                artifacts.mkdir()
+                target, ready = response_paths(artifacts, 1)
+                forged = copy.deepcopy(envelope)
+                if selected == "wrong_sequence": forged["sequence"] = 2
+                if selected == "boolean_sequence": forged["sequence"] = True
+                if selected == "wrong_run": forged["run_id"] = "product-" + "b" * 40
+                if selected == "wrong_request": forged["request_sha256"] = "f" * 64
+                write_response(artifacts, 1, forged, enabled=lambda: True)
+                if selected == "ready_nonempty": ready.write_bytes(b"changed")
+                if selected == "ready_hardlink": os.link(ready, artifacts / "alias")
+                if selected == "response_hardlink": os.link(target, artifacts / "alias")
+                with self.assertRaises((RPCError, httpx.TransportError)):
+                    FileTransport(artifacts, RUN, timeout_seconds=0.1).handle_request(
+                        httpx.Request("POST", "http://127.0.0.1:18873/api/generate", json=generation()))
+                self.assertFalse(self.calls)
+
+    def test_completed_request_mutation_or_deletion_blocks_next_dispatch(self):
+        for mode in ("bytes", "deleted", "marker_deleted", "marker_changed"):
+            with self.subTest(mode=mode):
+                artifacts = self.root / ("prior-" + mode)
+                artifacts.mkdir()
+                calls = []
+                relay = FileRelay(artifacts, self.private / ("prior-" + mode + ".json"), RUN, settings=SETTINGS,
+                    max_generations=2, max_tokens=100, enabled=lambda: True,
+                    upstream=lambda *args, recorded=calls: recorded.append(args) or completion())
+                write_request(artifacts, 1, request())
+                relay.step()
+                write_request(artifacts, 2, request(2))
+                prior, ready = request_paths(artifacts, 1)
+                if mode == "bytes": prior.write_bytes(b"{}")
+                if mode == "deleted": prior.unlink()
+                if mode == "marker_deleted": ready.unlink()
+                if mode == "marker_changed": ready.write_bytes(b"changed")
+                with self.assertRaises((RPCError, OSError)):
+                    relay.step()
+                self.assertEqual(len(calls), 1)
+                self.assertEqual(relay.state["tokens"], 18)
+                self.assertEqual(relay.state["generations"], 1)
+                self.assertEqual(len(relay.state["requests"]), 1)
+
+    def test_all_forty_fixed_exchanges_finish_without_accessing_sequence_41(self):
+        relay = self.relay()
+        original, inspected = product_rpc.mailbox_paths, []
+        def fixed_names(artifacts, kind, sequence):
+            inspected.append((kind, sequence))
+            self.assertLessEqual(sequence, MAX_REQUESTS)
+            return original(artifacts, kind, sequence)
+        with patch.object(product_rpc, "mailbox_paths", fixed_names):
+            for sequence in range(1, MAX_REQUESTS + 1):
+                value = request(sequence, method="GET", path="/api/tags")
+                value["body"] = None
+                value["request_sha256"] = sha(encode({k: v for k, v in value.items() if k != "request_sha256"}))
+                write_request(self.artifacts, sequence, value)
+                self.assertTrue(relay.step())
+            self.assertFalse(relay.step())
+            self.assertFalse(self.relay().step())
+        self.assertEqual(len(self.calls), MAX_REQUESTS)
+        self.assertEqual(relay.state["tokens"], 0)
+        self.assertEqual(relay.state["generations"], 0)
+        self.assertEqual(len(list(self.artifacts.iterdir())), MAX_REQUESTS * 4)
+        self.assertTrue(all(sequence <= MAX_REQUESTS for _, sequence in inspected))
+        self.assertFalse(any(path.suffix == ".tmp" for path in self.artifacts.iterdir()))
+        with self.assertRaises(RPCError):
+            write_request(self.artifacts, 41, request(41))
 
     def test_reserved_unknown_cost_restart_never_replays(self):
         relay = self.relay()
@@ -338,7 +487,7 @@ class ProductRPCTests(unittest.TestCase):
                                      "state": "reserved", "generation": True}]
         relay.state["generations"] = 1
         relay._save()
-        write_file(self.artifacts / REQUEST, value)
+        write_request(self.artifacts, value["sequence"], value)
         restored = self.relay()
         with self.assertRaises(RPCError):
             restored.step()
@@ -351,20 +500,22 @@ class ProductRPCTests(unittest.TestCase):
                 journal = self.private / "relay.json"
                 if journal.exists():
                     journal.unlink()
+                for fixture in request_paths(self.artifacts, 1):
+                    if fixture.exists(): fixture.unlink()
                 relay = self.relay(upstream=lambda *_args, raw=raw: raw)
-                write_file(self.artifacts / REQUEST, request())
+                write_request(self.artifacts, 1, request())
                 with self.assertRaises(RPCError):
                     relay.step()
                 self.assertEqual(relay.state["tokens"], 100)
                 self.assertTrue(relay.state["requests"][0]["usage_unknown"])
-                self.assertFalse((self.artifacts / RESPONSE).exists())
+                self.assertFalse(response_paths(self.artifacts, 1)[0].exists())
                 with self.assertRaises(RPCError):
                     self.relay().step()
 
     def test_off_before_call_and_during_completion_never_delivers(self):
         relay = self.relay()
         self.on = False
-        write_file(self.artifacts / REQUEST, request())
+        write_request(self.artifacts, 1, request())
         with self.assertRaises(RPCError):
             relay.step()
         self.assertFalse(self.calls)
@@ -378,7 +529,7 @@ class ProductRPCTests(unittest.TestCase):
             relay.step()
         self.assertEqual(relay.state["tokens"], 18)
         self.assertEqual(relay.state["requests"][0]["state"], "completed")
-        self.assertFalse((self.artifacts / RESPONSE).exists())
+        self.assertFalse(response_paths(self.artifacts, 1)[0].exists())
 
     def test_off_during_durable_reservation_cancels_before_any_upstream_call(self):
         relay = self.relay()
@@ -389,7 +540,7 @@ class ProductRPCTests(unittest.TestCase):
             if relay.state["requests"]:
                 self.on = False
         relay._save = save_and_turn_off
-        write_file(self.artifacts / REQUEST, request())
+        write_request(self.artifacts, 1, request())
         with self.assertRaises(RPCError):
             relay.step()
         self.assertFalse(self.calls)
@@ -398,7 +549,7 @@ class ProductRPCTests(unittest.TestCase):
         self.assertEqual(row["state"], "cancelled_before_dispatch")
         self.assertFalse(row["dispatch_started"])
         self.assertFalse(row["usage_unknown"])
-        self.assertFalse((self.artifacts / RESPONSE).exists())
+        self.assertFalse(response_paths(self.artifacts, 1)[0].exists())
         restarted = self.relay()
         self.assertEqual(restarted.state["tokens"], 0)
         with self.assertRaises(RPCError):
@@ -407,18 +558,21 @@ class ProductRPCTests(unittest.TestCase):
 
     def test_generation_limit_survives_restart_and_actual_token_overage_holds(self):
         relay = self.relay(max_generations=1)
-        write_file(self.artifacts / REQUEST, request())
+        write_request(self.artifacts, 1, request())
         relay.step()
-        write_file(self.artifacts / REQUEST, request(2))
+        write_request(self.artifacts, 2, request(2))
         with self.assertRaises(RPCError):
             self.relay(max_generations=1).step()
         self.assertEqual(len(self.calls), 1)
         (self.private / "relay.json").unlink()
-        (self.artifacts / RESPONSE).unlink()
-        write_file(self.artifacts / REQUEST, request())
+        response_paths(self.artifacts, 1)[0].unlink()
+        response_paths(self.artifacts, 1)[1].unlink()
+        request_paths(self.artifacts, 1)[0].unlink()
+        request_paths(self.artifacts, 1)[1].unlink()
+        write_request(self.artifacts, 1, request())
         with self.assertRaises(RPCError):
             self.relay(max_tokens=10).step()
-        self.assertFalse((self.artifacts / RESPONSE).exists())
+        self.assertFalse(response_paths(self.artifacts, 1)[0].exists())
 
     def test_identity_route_schema_settings_and_pin_refused(self):
         for mutate in (
@@ -438,11 +592,10 @@ class ProductRPCTests(unittest.TestCase):
                          {**SETTINGS, "seed": 0}, {**SETTINGS, "num_predict": 32768}):
             with self.subTest(settings=settings), self.assertRaises(RPCError):
                 checked_settings(settings)
-        write_file(self.artifacts / REQUEST, request(method="GET", path="/api/tags", body=None))
         value = request(method="GET", path="/api/tags")
         value["body"] = None
         value["request_sha256"] = sha(encode({key: data for key, data in value.items() if key != "request_sha256"}))
-        write_file(self.artifacts / REQUEST, value)
+        write_request(self.artifacts, value["sequence"], value)
         with self.assertRaises(RPCError):
             self.relay(upstream=lambda *_args: encode({"models": [{"name": MODEL, "digest": "f" * 64}]})).step()
 
@@ -465,7 +618,7 @@ class ProductRPCTests(unittest.TestCase):
                     "http://127.0.0.1:18873/api/tags?token=secret", "https://example.invalid/api/tags"):
             with self.subTest(url=url), self.assertRaises(httpx.TransportError):
                 transport.handle_request(httpx.Request("GET", url))
-        self.assertFalse((self.artifacts / REQUEST).exists())
+        self.assertFalse(request_paths(self.artifacts, 1)[0].exists())
 
     def test_regular_bytes_preserved_and_link_hardlink_temp_and_duplicate_json_refused(self):
         target = self.artifacts / REQUEST
@@ -497,14 +650,14 @@ class ProductRPCTests(unittest.TestCase):
         value = request()
         response = {"schema_version": 1, "run_id": RUN, "sequence": 1, "request_sha256": value["request_sha256"],
                     "response_sha256": "f" * 64, "response_base64": base64.b64encode(completion()).decode()}
-        write_file(self.artifacts / RESPONSE, response)
+        write_response(self.artifacts, 1, response, enabled=lambda: True)
         transport = FileTransport(self.artifacts, RUN, timeout_seconds=0.05)
         with self.assertRaises(httpx.TransportError):
             transport.handle_request(httpx.Request("POST", "http://127.0.0.1:18873/api/generate", json=generation()))
 
     def test_config_or_origin_change_cannot_reset_reserved_accounting(self):
         relay = self.relay()
-        write_file(self.artifacts / REQUEST, request())
+        write_request(self.artifacts, 1, request())
         relay.step()
         with self.assertRaises(RPCError):
             FileRelay(self.artifacts, self.private / "relay.json", RUN, settings=copy.deepcopy(SETTINGS),
