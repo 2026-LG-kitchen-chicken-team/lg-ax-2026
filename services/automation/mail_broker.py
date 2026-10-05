@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import base64
 import hashlib
-import html
 import json
 import re
 import sqlite3
@@ -302,7 +301,6 @@ class MailBroker:
                             "Message-ID": rfc_id, "Date": formatdate(self.clock(), usegmt=True)}.items():
             message[name] = value
         message.set_content(text)
-        message.add_alternative("<p>" + html.escape(text).replace("\n", "<br>") + "</p>", subtype="html")
         return message.as_bytes(), rfc_id
 
     def _receipt(self, db, action_id, *, status, message=None):
@@ -389,7 +387,7 @@ class MailBroker:
                 if stored["status"] != "prepared":
                     try:
                         return self._reconcile(db, stored)
-                    except MailError:
+                    except (MailError, RuntimeError):
                         return self._receipt(db, action_id, status="unknown")
                 db.execute("UPDATE deliveries SET status='sending' WHERE action_id=?", (action_id,))
                 self._journal(db, {"kind": "mail_sending", "action_id": action_id})
@@ -402,14 +400,19 @@ class MailBroker:
                     if message.get("id") != mid or not self._verified_sent(message, stored):
                         raise MailError("actual Gmail SENT identity did not match the fixed assignment")
                     return self._receipt(db, action_id, status="sent", message=message)
-                except (MailError, OSError, ValueError):
+                except (MailError, OSError, ValueError, RuntimeError):
                     return self._receipt(db, action_id, status="unknown")
 
     def _body(self, payload, depth=0):
         if depth > 8 or not isinstance(payload, dict) or payload.get("filename"):
             return ""
         if payload.get("mimeType") == "text/plain":
-            raw = payload.get("body", {}).get("data", "")
+            part = payload.get("body", {})
+            if isinstance(part.get("content"), str) and not part.get("data"):
+                if len(part["content"]) > 16000:
+                    raise MailError("reply body exceeds its fixed bound")
+                return part["content"]
+            raw = part.get("data", "")
             if not isinstance(raw, str) or len(raw) > 32000:
                 raise MailError("reply body exceeds its fixed bound")
             try:

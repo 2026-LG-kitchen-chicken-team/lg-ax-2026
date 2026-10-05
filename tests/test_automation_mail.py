@@ -260,6 +260,51 @@ class MailBrokerTests(unittest.TestCase):
         self.assertEqual(self.broker.deliver(self.source)["status"], "unknown")
         self.assertEqual(self.gmail.sent_count, 1)
 
+    def test_outgoing_mime_is_a_single_plaintext_notification_for_fixed_connector(self):
+        self.broker.deliver(self.source)
+        raw = next(payload["raw"] for method, route, payload, _ in self.gmail.calls if method == "POST")
+        message = BytesParser(policy=policy.default).parsebytes(base64.urlsafe_b64decode(raw))
+        self.assertFalse(message.is_multipart())
+        self.assertEqual(message.get_content_type(), "text/plain")
+        self.assertIn(ACTION, str(message["Subject"]))
+        self.assertIn("LGAX-REPORT", message.get_content())
+
+    def test_connector_runtime_timeout_after_send_is_unknown_and_only_reconciled(self):
+        original = self.gmail.request
+        def uncertain(method, route, payload=None, params=None):
+            result = original(method, route, payload, params)
+            if method == "POST":
+                raise RuntimeError("fixture connector response timeout after delivery")
+            return result
+        self.gmail.request = uncertain
+        self.assertEqual(self.broker.deliver(self.source)["status"], "unknown")
+        self.assertEqual(self.broker.deliver(self.source)["status"], "sent")
+        self.assertEqual(self.gmail.sent_count, 1)
+
+    def test_connector_direct_plaintext_content_alias_verifies_sent_and_collects_reply(self):
+        self.broker.custom_message_id = False
+        self.gmail.supports_custom_message_id = False
+        original = self.gmail.request
+        def content_alias(method, route, payload=None, params=None):
+            result = original(method, route, payload, params)
+            messages = result.get("messages", []) if route.startswith("threads/") else [result]
+            for message in messages:
+                if "payload" in message and "data" in message["payload"].get("body", {}):
+                    data = message["payload"]["body"]["data"]
+                    message["payload"]["body"] = {"content": base64.urlsafe_b64decode(data).decode()}
+            return result
+        self.gmail.request = content_alias
+        self.assertTrue(self.broker.deliver(self.source)["verified_sent"])
+        self.gmail.reply(self.report())
+        self.assertEqual(self.broker.poll_replies()["reports_collected"], 1)
+
+    def test_json_escaped_credential_is_checked_after_decoding_before_pm_observation(self):
+        self.broker.deliver(self.source)
+        source = self.report(summary="ghp_" + "x" * 30).replace("ghp_", "gh\\u0070_")
+        self.gmail.reply(source)
+        self.assertEqual(self.broker.poll_replies()["quarantined"], 1)
+        self.assertEqual(self.broker.observation_events(), [])
+
 
 class GmailRESTTests(unittest.TestCase):
     def setUp(self):

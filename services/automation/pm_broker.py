@@ -652,6 +652,8 @@ class TrustedPMBroker:
                     task_tokens + used + decision_task_tokens > limits["max_model_tokens_per_task"]):
                 raise PMError("actual review usage exceeded remaining budget; no merge")
         except Exception as exc:
+            # Actual known usage remains actual even when it crosses a task/day
+            # gate. Only genuinely unknown execution cost consumes the quota.
             if used is None:
                 budget["tokens"] = max(budget["tokens"], limits["max_model_tokens_per_day"])
                 budget["tasks"][pr["task_id"]] = max(budget["tasks"].get(pr["task_id"], 0),

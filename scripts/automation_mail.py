@@ -62,7 +62,7 @@ def main(argv=None):
             if args.once:
                 return 0
             time.sleep(args.interval)
-    except (MailError, ValueError, OSError, KeyError, TypeError):
+    except (MailError, ValueError, OSError, KeyError, TypeError, RuntimeError):
         print(json.dumps({"status": "unconfigured_or_refused", "verified_sent": False,
                           "reason": "mail authentication/configuration/evidence needs operator verification"}), file=sys.stderr)
         return 1
