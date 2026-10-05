@@ -1,0 +1,428 @@
+{
+  "task_id": "P2-DATA-002",
+  "stage": 2,
+  "result": "pass",
+  "code_commit": "2691ad194be9f0f1c85963ad27ac60626d888738",
+  "execution_kind": "live_local_registration",
+  "model_calls": 0,
+  "ocr_used": false,
+  "common_schema_api_changed": false,
+  "formal_task_completion": false,
+  "checks": [
+    {
+      "name": "pinned_imports",
+      "passed": true
+    },
+    {
+      "name": "PDF_original_hash",
+      "passed": true
+    },
+    {
+      "name": "PDF_excerpt_whitespace_alignment",
+      "passed": true,
+      "method": "same words, exact raw pypdf whitespace span",
+      "page": 19
+    },
+    {
+      "name": "PDF_excerpt_words_unchanged",
+      "passed": true
+    },
+    {
+      "name": "CSV_lossless_header_conversion",
+      "passed": true,
+      "rows": 36,
+      "original_sha256": "3c7560aec2d3fa855590baf097b3514aa348ee40a77037c69ef358b413f488b9",
+      "transport_sha256": "64e83d42c65b1af18040c6a4cdac9a7f6b14fca63041005f6d79f6c9faaec4ab"
+    },
+    {
+      "name": "POST /api/documents/REVIEWS-CSV-v1.0",
+      "passed": true,
+      "method": "POST",
+      "path": "/api/documents/REVIEWS-CSV-v1.0",
+      "status": 400,
+      "response_sha256": "673e69f695715c04a53e99f02f2b4faca311742250f0bda34e81b91a7fc07c91",
+      "expected_code": "PARSING_FAILED"
+    },
+    {
+      "name": "POST /api/documents/F-M",
+      "passed": true,
+      "method": "POST",
+      "path": "/api/documents/F-M",
+      "status": 200,
+      "response_sha256": "987e6ea2ad15b86fadd3ff665c4238781b609752db0ca698c170d33f4a121560"
+    },
+    {
+      "name": "POST /api/documents/REVIEWS-CSV-v1.0",
+      "passed": true,
+      "method": "POST",
+      "path": "/api/documents/REVIEWS-CSV-v1.0",
+      "status": 200,
+      "response_sha256": "24d16ac8f7f1f973c69856137d9a4a3b6ac5cce9b73515d81dbaffe52ac5354b"
+    },
+    {
+      "name": "GET /api/documents/F-M",
+      "passed": true,
+      "method": "GET",
+      "path": "/api/documents/F-M",
+      "status": 200,
+      "response_sha256": "987e6ea2ad15b86fadd3ff665c4238781b609752db0ca698c170d33f4a121560"
+    },
+    {
+      "name": "GET /api/documents/F-M/original",
+      "passed": true,
+      "method": "GET",
+      "path": "/api/documents/F-M/original",
+      "status": 200,
+      "response_sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815"
+    },
+    {
+      "name": "registered_original_hash /api/documents/F-M",
+      "passed": true
+    },
+    {
+      "name": "POST /api/documents/F-M",
+      "passed": true,
+      "method": "POST",
+      "path": "/api/documents/F-M",
+      "status": 200,
+      "response_sha256": "7135a93efee2944083700172f49fde8f0abcdd4e70501013b6a59de26ce37a8f"
+    },
+    {
+      "name": "idempotent_registration /api/documents/F-M",
+      "passed": true
+    },
+    {
+      "name": "GET /api/documents/REVIEWS-CSV-v1.0",
+      "passed": true,
+      "method": "GET",
+      "path": "/api/documents/REVIEWS-CSV-v1.0",
+      "status": 200,
+      "response_sha256": "24d16ac8f7f1f973c69856137d9a4a3b6ac5cce9b73515d81dbaffe52ac5354b"
+    },
+    {
+      "name": "GET /api/documents/REVIEWS-CSV-v1.0/original",
+      "passed": true,
+      "method": "GET",
+      "path": "/api/documents/REVIEWS-CSV-v1.0/original",
+      "status": 200,
+      "response_sha256": "64e83d42c65b1af18040c6a4cdac9a7f6b14fca63041005f6d79f6c9faaec4ab"
+    },
+    {
+      "name": "registered_original_hash /api/documents/REVIEWS-CSV-v1.0",
+      "passed": true
+    },
+    {
+      "name": "POST /api/documents/REVIEWS-CSV-v1.0",
+      "passed": true,
+      "method": "POST",
+      "path": "/api/documents/REVIEWS-CSV-v1.0",
+      "status": 200,
+      "response_sha256": "24d16ac8f7f1f973c69856137d9a4a3b6ac5cce9b73515d81dbaffe52ac5354b"
+    },
+    {
+      "name": "idempotent_registration /api/documents/REVIEWS-CSV-v1.0",
+      "passed": true
+    },
+    {
+      "name": "PDF_scope_metadata",
+      "passed": true
+    },
+    {
+      "name": "CSV_scope_metadata",
+      "passed": true
+    },
+    {
+      "name": "POST /api/documents/REVIEWS-CSV-v1.0",
+      "passed": true,
+      "method": "POST",
+      "path": "/api/documents/REVIEWS-CSV-v1.0",
+      "status": 400,
+      "response_sha256": "673e69f695715c04a53e99f02f2b4faca311742250f0bda34e81b91a7fc07c91",
+      "expected_code": "PARSING_FAILED"
+    },
+    {
+      "name": "POST /api/documents/REVIEWS-CSV-v1.0",
+      "passed": true,
+      "method": "POST",
+      "path": "/api/documents/REVIEWS-CSV-v1.0",
+      "status": 400,
+      "response_sha256": "673e69f695715c04a53e99f02f2b4faca311742250f0bda34e81b91a7fc07c91",
+      "expected_code": "PARSING_FAILED"
+    },
+    {
+      "name": "POST /api/documents/F-M",
+      "passed": true,
+      "method": "POST",
+      "path": "/api/documents/F-M",
+      "status": 400,
+      "response_sha256": "d5a576d01bfe63badc96c48e663882b028f2fb3ec78d379fed396510107108bb",
+      "expected_code": "SOURCE_MISMATCH"
+    },
+    {
+      "name": "POST /api/documents/WRONG-MODEL",
+      "passed": true,
+      "method": "POST",
+      "path": "/api/documents/WRONG-MODEL",
+      "status": 404,
+      "response_sha256": "db081f127354c6a76b2bba9387f588dfbd068c8e36581703ff888e33e238e340",
+      "expected_code": "INVALID_DOCUMENT_ID"
+    },
+    {
+      "name": "GET /api/documents/F-M",
+      "passed": true,
+      "method": "GET",
+      "path": "/api/documents/F-M",
+      "status": 401,
+      "response_sha256": "7b8106d7777b0611a17ba55103dd69308c5fbe747cb1ed42a67805fb00bddc6d",
+      "expected_code": "UNAUTHORIZED"
+    },
+    {
+      "name": "POST /api/documents/F-M",
+      "passed": true,
+      "method": "POST",
+      "path": "/api/documents/F-M",
+      "status": 403,
+      "response_sha256": "10d6e19771e05bc03e4caf1ab546e7102f08bb6f413d3ff858a09fcc20d2f7da",
+      "expected_code": "INVALID_ORIGIN"
+    },
+    {
+      "name": "trusted_plan_missing document_version",
+      "passed": true,
+      "exception_type": "KeyError",
+      "limitation": "Trusted server configuration rejection; not a public metadata API"
+    },
+    {
+      "name": "trusted_plan_missing source_kind",
+      "passed": true,
+      "exception_type": "KeyError",
+      "limitation": "Trusted server configuration rejection; not a public metadata API"
+    },
+    {
+      "name": "GET /api/documents/F-M",
+      "passed": true,
+      "method": "GET",
+      "path": "/api/documents/F-M",
+      "status": 200,
+      "response_sha256": "987e6ea2ad15b86fadd3ff665c4238781b609752db0ca698c170d33f4a121560"
+    },
+    {
+      "name": "GET /api/documents/F-M/original",
+      "passed": true,
+      "method": "GET",
+      "path": "/api/documents/F-M/original",
+      "status": 200,
+      "response_sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815"
+    },
+    {
+      "name": "server_restart_preserves /api/documents/F-M",
+      "passed": true
+    },
+    {
+      "name": "GET /api/documents/REVIEWS-CSV-v1.0",
+      "passed": true,
+      "method": "GET",
+      "path": "/api/documents/REVIEWS-CSV-v1.0",
+      "status": 200,
+      "response_sha256": "24d16ac8f7f1f973c69856137d9a4a3b6ac5cce9b73515d81dbaffe52ac5354b"
+    },
+    {
+      "name": "GET /api/documents/REVIEWS-CSV-v1.0/original",
+      "passed": true,
+      "method": "GET",
+      "path": "/api/documents/REVIEWS-CSV-v1.0/original",
+      "status": 200,
+      "response_sha256": "64e83d42c65b1af18040c6a4cdac9a7f6b14fca63041005f6d79f6c9faaec4ab"
+    },
+    {
+      "name": "server_restart_preserves /api/documents/REVIEWS-CSV-v1.0",
+      "passed": true
+    },
+    {
+      "name": "STEP1_and_existing_sources_preserved",
+      "passed": true
+    }
+  ],
+  "private_output": "private\\data002-step2\\verified",
+  "servers_stopped": true,
+  "source_archive_sha256": "485f6064de13c7ec913b15b22ffba50fe76ee690ba124c3d5e08253c7d720c67",
+  "source_files": [
+    {
+      "path": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step2-source-verified\\packages\\core\\src\\lgax_core\\documents.py",
+      "sha256": "ad708479232ce44f637037b93d832f6578c1b38a13cfe13369d073c7aa6807c3"
+    },
+    {
+      "path": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step2-source-verified\\packages\\core\\src\\lgax_core\\document_store.py",
+      "sha256": "d101613f981ce92bab376692b04831ab3b3f25416e94c495c4042e40a68a4b45"
+    },
+    {
+      "path": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step2-source-verified\\packages\\core\\src\\lgax_core\\documents_server.py",
+      "sha256": "eee20d2afbbe1fa2c720ac7440f9c3348964a4e0ac42160731ddedafbbbc5d99"
+    },
+    {
+      "path": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step2-source-verified\\packages\\core\\src\\lgax_core\\review_csv.py",
+      "sha256": "d0ea7093c8bdffcca4bdc4bb17669f62d27f603fefe7d99df6b8d15e0d3a8612"
+    },
+    {
+      "path": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step2-source-verified\\packages\\core\\src\\lgax_core\\review_csv_server.py",
+      "sha256": "29cb31906c1c6d24803803f55365c235dc9f6be2bdc058bf15e3fa33aa65db1e"
+    },
+    {
+      "path": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step2-source-verified\\packages\\core\\src\\lgax_core\\pdf_text_worker.py",
+      "sha256": "a0ce23d590a57121b6abfa8573859f5833e3fd69d9577a2304b6ac4ba6199e1d"
+    },
+    {
+      "path": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step2-source-verified\\packages\\core\\src\\lgax_core\\store.py",
+      "sha256": "2dba0b34a62b58f704fc1fc617e9113d7cdb277819cd5b72d3df1849411245fe"
+    },
+    {
+      "path": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step2-source-verified\\packages\\contracts\\schemas\\lgax.schema.json",
+      "sha256": "d7cf46d9a980b00ad786ec46feaf3d31e4094f56ff0899d8bab59bdf95a9bad5"
+    }
+  ],
+  "runner": {
+    "path": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\data\\research\\P2-DATA-002-step2-20261005\\run_registration.py",
+    "sha256": "86bc06aac6737ed9515b2d4ecffba27334fb48dd476590768d36250ee775275a"
+  },
+  "pdf_excerpt_alignment": {
+    "STEP1_expected_text_sha256": "f5143e93e120a6106b58ab02a7f903d6f3d018dc4f2fb29dbd81beba1aa4a610",
+    "registered_raw_text_sha256": "47f0688c0036bf447905984496e0310fbef5f98ced1e7091653f22a44fda6939",
+    "only_whitespace_differs": true,
+    "page": 19
+  },
+  "server_commands": [
+    {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "lgax_core.documents_server",
+        "--directory",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\private\\data002-step2\\verified\\pdf-store",
+        "--plan",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\data\\research\\P2-DATA-002-step2-20261005\\runs\\verified\\trusted-document-plan.json",
+        "--extractor-python",
+        "C:\\Users\\user\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "--token-file",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\private\\data002-step2\\verified\\token.txt",
+        "--port",
+        "59701"
+      ],
+      "pid": 22308
+    },
+    {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "lgax_core.review_csv_server",
+        "--directory",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\private\\data002-step2\\verified\\csv-store",
+        "--dataset",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\private\\data002-step2\\verified\\dataset.json",
+        "--token-file",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\private\\data002-step2\\verified\\token.txt",
+        "--port",
+        "59702"
+      ],
+      "pid": 23576
+    },
+    {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "lgax_core.documents_server",
+        "--directory",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\private\\data002-step2\\verified\\pdf-store",
+        "--plan",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\data\\research\\P2-DATA-002-step2-20261005\\runs\\verified\\trusted-document-plan.json",
+        "--extractor-python",
+        "C:\\Users\\user\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "--token-file",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\private\\data002-step2\\verified\\token.txt",
+        "--port",
+        "59701"
+      ],
+      "pid": 43024
+    },
+    {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "lgax_core.review_csv_server",
+        "--directory",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\private\\data002-step2\\verified\\csv-store",
+        "--dataset",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\private\\data002-step2\\verified\\dataset.json",
+        "--token-file",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\private\\data002-step2\\verified\\token.txt",
+        "--port",
+        "59702"
+      ],
+      "pid": 18624
+    }
+  ],
+  "registered": {
+    "pdf": {
+      "document_id": "F-M",
+      "model_id": "T876MEE1H1",
+      "document_version": "MFL71401557 Rev.00_032526",
+      "source_kind": "public",
+      "sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815",
+      "page_count": 40,
+      "evidence_id": "DATA002-FM-P19-SHELF-01"
+    },
+    "csv": {
+      "document_id": "REVIEWS-CSV-v1.0",
+      "sha256": "64e83d42c65b1af18040c6a4cdac9a7f6b14fca63041005f6d79f6c9faaec4ab",
+      "source_kind": "synthetic",
+      "original_role": "derived_transport_from_existing_demo_json",
+      "review_count": 36,
+      "evidence_count": 42,
+      "model_ids": [
+        "FRIDGE-A",
+        "FRIDGE-B",
+        "FRIDGE-C",
+        "DISHWASHER-A",
+        "MICROWAVE-A"
+      ],
+      "document_versions": [
+        "1.0"
+      ],
+      "parser": "stdlib.csv",
+      "validated_contract": "DemoDataset",
+      "ocr_used": false
+    }
+  },
+  "conversion": {
+    "input": {
+      "path": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\data\\research\\P2-DATA-002-step1-20261005\\reviews-v1.0.csv",
+      "sha256": "3c7560aec2d3fa855590baf097b3514aa348ee40a77037c69ef358b413f488b9"
+    },
+    "transport_sha256": "64e83d42c65b1af18040c6a4cdac9a7f6b14fca63041005f6d79f6c9faaec4ab",
+    "rows_equal": true,
+    "header_order_changed_only": true
+  },
+  "preserved_hashes": {
+    "data/demo/dataset.json": true,
+    "data/research/P2-DATA-001-real-reference-20261004/reference-pack.json": true,
+    "data/research/R03-fridge-20261004/case-input.json": true,
+    "harness/phase2/tasks/P2-DATA-002.json": true,
+    "packages/contracts/schemas/lgax.schema.json": true,
+    "packages/core/src/lgax_core/store.py": true,
+    "data/research/P2-DATA-002-step1-20261005/reviews-v1.0.csv": true,
+    "data/research/P2-DATA-002-step1-20261005/expected-records.json": true,
+    "data/research/P2-DATA-002-step1-20261005/control-plan.json": true,
+    "data/research/P2-DATA-002-step1-20261005/input-selection.json": true
+  },
+  "checked_at_kst": "2026-10-05T04:14:07+09:00"
+}

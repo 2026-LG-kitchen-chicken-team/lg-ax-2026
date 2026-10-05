@@ -1,0 +1,280 @@
+"""Register STEP1 inputs using the pinned existing PR69 code, with actual loopback HTTP."""
+from __future__ import annotations
+
+import argparse
+import csv
+from datetime import datetime, timedelta, timezone
+import hashlib
+import io
+import json
+import os
+from pathlib import Path
+import secrets
+import socket
+import subprocess
+import sys
+import tarfile
+import time
+
+COMMIT = "2691ad194be9f0f1c85963ad27ac60626d888738"
+ROOT = Path(__file__).resolve().parents[3]
+OUT = Path(__file__).resolve().parent
+STEP1 = ROOT / "data/research/P2-DATA-002-step1-20261005"
+EXTRACTOR = Path(r"C:\Users\user\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe")
+CODE = ("documents.py", "document_store.py", "documents_server.py", "review_csv.py",
+        "review_csv_server.py", "pdf_text_worker.py", "store.py")
+
+
+def read(path):
+    return json.loads(path.read_text(encoding="utf-8-sig"))
+
+
+def write(path, value):
+    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def stamp(path):
+    return {"path": str(path), "sha256": sha(path.read_bytes())}
+
+
+def port():
+    with socket.socket() as server:
+        server.bind(("127.0.0.1", 0))
+        return server.getsockname()[1]
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--run-id", required=True)
+    args = parser.parse_args()
+    if not args.run_id or any(c not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_" for c in args.run_id):
+        raise ValueError("Use a fresh alphanumeric run-id")
+    public = OUT / "runs" / args.run_id
+    private = ROOT / "private/data002-step2" / args.run_id
+    baseline = ROOT / "tmp" / ("data002-step2-source-" + args.run_id)
+    if any(p.exists() for p in (public, private, baseline)):
+        raise ValueError("Run destinations must be new; existing evidence is never overwritten")
+    for path in (public, private, baseline):
+        path.mkdir(parents=True)
+    report = {"task_id": "P2-DATA-002", "stage": 2, "result": "running", "code_commit": COMMIT,
+              "execution_kind": "live_local_registration", "model_calls": 0, "ocr_used": False,
+              "common_schema_api_changed": False, "formal_task_completion": False,
+              "checks": [], "private_output": str(private.relative_to(ROOT)), "servers_stopped": False}
+    processes = []
+    log_handles = []
+    clients = []
+    report_file = public / "registration-checks.json"
+    preserved = read(STEP1 / "runs/initial/verification.json")
+    original_hashes = {**preserved["source_hashes_preserved"],
+                      **{item["path"]: item["sha256"] for item in preserved["outputs"]}}
+
+    def check(name, passed, **details):
+        report["checks"].append({"name": name, "passed": bool(passed), **details})
+        if not passed:
+            raise AssertionError(name)
+
+    try:
+        archive = subprocess.run(["git", "archive", "--format=tar", COMMIT], cwd=ROOT,
+                                 capture_output=True, check=True).stdout
+        report["source_archive_sha256"] = sha(archive)
+        with tarfile.open(fileobj=io.BytesIO(archive), mode="r:") as source:
+            source.extractall(baseline, filter="data")
+        paths = [baseline / "packages/core/src", baseline / "packages/contracts/src"]
+        sys.path[:0] = [str(p) for p in paths]
+        from lgax_core import documents, review_csv
+        from lgax_core.errors import DomainError
+        import httpx
+        check("pinned_imports", all(Path(m.__file__).resolve().is_relative_to(baseline.resolve())
+                                    for m in (documents, review_csv)))
+        report["source_files"] = [stamp(baseline / "packages/core/src/lgax_core" / name) for name in CODE]
+        report["source_files"].append(stamp(baseline / "packages/contracts/schemas/lgax.schema.json"))
+        report["runner"] = stamp(Path(__file__))
+        selection = read(STEP1 / "input-selection.json")
+        pdf = next(item for item in selection["inputs"] if item["format"] == "pdf")
+        pdf_data = Path(pdf["local_path"]).read_bytes()
+        check("PDF_original_hash", sha(pdf_data) == pdf["sha256"])
+        expected = read(STEP1 / "expected-records.json")["pdf"]
+        reference = read(ROOT / "data/research/P2-DATA-001-real-reference-20261004/reference-pack.json")
+        origin = next(item for item in reference["sources"] if item["id"] == pdf["source_id"])
+        item = expected["expected_excerpt"]
+        did = pdf["source_id"]
+        plan = {"artifact_kind": "trusted_document_plan", "dataset_version": "DATA002-STEP2-20261005",
+                "documents": [{"document_id": did, "product": expected["product"],
+                               "document_version": pdf["document_version"], "source_kind": pdf["source_kind"],
+                               "sha256": pdf["sha256"], "url": pdf["source_url"],
+                               "checked_at": origin["checked_at"], "features": [],
+                               "selections": [{"page": item["locator"]["page"],
+                                               "section": item["locator"]["section"], "excerpt": item["text"],
+                                               "evidence_id": item["id"], "feature_ids": []}]}]}
+        write(public / "trusted-document-plan.json", plan)
+        dataset = read(ROOT / "data/demo/dataset.json")
+        csv_first = (STEP1 / "reviews-v1.0.csv").read_bytes()
+        csv_data = review_csv.serialize_existing_reviews(dataset)
+        first_rows = list(csv.DictReader(io.StringIO(csv_first.decode("utf-8"))))
+        converted_rows = list(csv.DictReader(io.StringIO(csv_data.decode("utf-8"))))
+        check("CSV_lossless_header_conversion", first_rows == converted_rows, rows=len(first_rows),
+              original_sha256=sha(csv_first), transport_sha256=sha(csv_data))
+        (private / "reviews-transport.csv").write_bytes(csv_data)
+        write(private / "dataset.json", dataset)
+        token = secrets.token_urlsafe(32)
+        (private / "token.txt").write_text(token, encoding="utf-8")
+        env = os.environ.copy()
+        env["PYTHONPATH"] = os.pathsep.join(map(str, paths))
+        env["PYTHONDONTWRITEBYTECODE"] = "1"
+        headers = {"Authorization": "Bearer " + token}
+
+        def start(kind, number):
+            if kind == "pdf":
+                argv = [sys.executable, "-B", "-X", "utf8", "-m", "lgax_core.documents_server",
+                        "--directory", str(private / "pdf-store"), "--plan", str(public / "trusted-document-plan.json"),
+                        "--extractor-python", str(EXTRACTOR), "--token-file", str(private / "token.txt"),
+                        "--port", str(number)]
+            else:
+                argv = [sys.executable, "-B", "-X", "utf8", "-m", "lgax_core.review_csv_server",
+                        "--directory", str(private / "csv-store"), "--dataset", str(private / "dataset.json"),
+                        "--token-file", str(private / "token.txt"), "--port", str(number)]
+            log = (private / (kind + "-server-" + str(len(processes)) + ".log")).open("w", encoding="utf-8")
+            log_handles.append(log)
+            process = subprocess.Popen(argv, cwd=baseline, env=env, stdout=log, stderr=log,
+                                       creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+            processes.append(process)
+            report.setdefault("server_commands", []).append({"argv": argv, "pid": process.pid})
+            client = httpx.Client(base_url=f"http://127.0.0.1:{number}", headers=headers, timeout=100)
+            clients.append(client)
+            deadline = time.monotonic() + 20
+            while time.monotonic() < deadline:
+                if process.poll() is not None:
+                    raise RuntimeError(kind + " server exited; inspect private server log")
+                try:
+                    response = client.get("/health", timeout=0.5)
+                    if response.status_code == 200:
+                        return process, client
+                except httpx.TransportError:
+                    pass
+                time.sleep(0.1)
+            raise RuntimeError(kind + " server readiness timeout")
+
+        def exchange(client, method, path, *, content=None, extra_headers=None, expected_status=200, expected_code=None):
+            response = client.request(method, path, content=content, headers=extra_headers)
+            entry = {"method": method, "path": path, "status": response.status_code,
+                     "response_sha256": sha(response.content)}
+            if response.headers.get("content-type", "").startswith("application/json"):
+                value = response.json()
+                write(private / ("response-" + str(len(report["checks"])) + ".json"), value)
+            else:
+                value = None
+            if expected_code is not None:
+                entry["expected_code"] = expected_code
+            check(method + " " + path, response.status_code == expected_status
+                  and (expected_code is None or value.get("error", {}).get("code") == expected_code), **entry)
+            return response, value
+
+        pdf_port, csv_port = port(), port()
+        while csv_port == pdf_port:
+            csv_port = port()
+        pdf_process, pdf_client = start("pdf", pdf_port)
+        csv_process, csv_client = start("csv", csv_port)
+        csv_id = dataset["reviews"][0]["source_id"]
+        pdf_path, csv_path = "/api/documents/" + did, "/api/documents/" + csv_id
+        # Keep the initial incompatible STEP1 header as an observed, expected rejection.
+        exchange(csv_client, "POST", csv_path, content=csv_first, expected_status=400, expected_code="PARSING_FAILED")
+        _, pdf_result = exchange(pdf_client, "POST", pdf_path, content=pdf_data)
+        _, csv_result = exchange(csv_client, "POST", csv_path, content=csv_data)
+        for client, path, original, first in [(pdf_client, pdf_path, pdf_data, pdf_result),
+                                            (csv_client, csv_path, csv_data, csv_result)]:
+            _, metadata = exchange(client, "GET", path)
+            response, _ = exchange(client, "GET", path + "/original")
+            check("registered_original_hash " + path, response.content == original
+                  and metadata == first and metadata["data"]["sha256"] == sha(original))
+            _, again = exchange(client, "POST", path, content=original)
+            check("idempotent_registration " + path,
+                  again["data"]["sha256"] == metadata["data"]["sha256"])
+        check("PDF_scope_metadata", pdf_result["data"]["product"] == expected["product"]
+              and pdf_result["data"]["document_version"] == pdf["document_version"]
+              and pdf_result["data"]["source_kind"] == "public"
+              and pdf_result["data"]["dataset"]["evidence"][0] == item)
+        check("CSV_scope_metadata", csv_result["data"]["review_count"] == 36
+              and csv_result["data"]["model_ids"] == [p["model_id"] for p in dataset["products"]]
+              and csv_result["data"]["document_versions"] == ["1.0"]
+              and csv_result["data"]["source_kind"] == "synthetic")
+        for suffix, changed in [("model_id", "WRONG-MODEL"), ("document_version", "2.0")]:
+            records = [dict(row) for row in converted_rows]
+            records[0][suffix] = changed
+            stream = io.StringIO(newline="")
+            writer = csv.DictWriter(stream, fieldnames=review_csv.FIELDS, lineterminator="\n")
+            writer.writeheader()
+            writer.writerows(records)
+            exchange(csv_client, "POST", csv_path, content=stream.getvalue().encode("utf-8"),
+                     expected_status=400, expected_code="PARSING_FAILED")
+        exchange(pdf_client, "POST", pdf_path, content=pdf_data + b"\nchanged-version",
+                 expected_status=400, expected_code="SOURCE_MISMATCH")
+        exchange(pdf_client, "POST", "/api/documents/WRONG-MODEL", content=pdf_data,
+                 expected_status=404, expected_code="INVALID_DOCUMENT_ID")
+        exchange(pdf_client, "GET", pdf_path, extra_headers={"Authorization": "Bearer invalid"},
+                 expected_status=401, expected_code="UNAUTHORIZED")
+        exchange(pdf_client, "POST", pdf_path, content=pdf_data,
+                 extra_headers={"Origin": "https://unrelated.example"},
+                 expected_status=403, expected_code="INVALID_ORIGIN")
+        for field in ("document_version", "source_kind"):
+            broken = json.loads(json.dumps(plan))
+            broken["documents"][0].pop(field)
+            try:
+                documents.DocumentRepository(private / ("missing-" + field), broken, str(EXTRACTOR))
+            except (KeyError, ValueError, DomainError) as error:
+                check("trusted_plan_missing " + field, True, exception_type=type(error).__name__,
+                      limitation="Trusted server configuration rejection; not a public metadata API")
+            else:
+                check("trusted_plan_missing " + field, False)
+        for process in (pdf_process, csv_process):
+            process.terminate()
+            process.wait(timeout=10)
+        _, pdf_reopened = start("pdf", pdf_port)
+        _, csv_reopened = start("csv", csv_port)
+        for client, path, expected_result, original in [(pdf_reopened, pdf_path, pdf_result, pdf_data),
+                                                       (csv_reopened, csv_path, csv_result, csv_data)]:
+            _, metadata = exchange(client, "GET", path)
+            response, _ = exchange(client, "GET", path + "/original")
+            check("server_restart_preserves " + path, metadata == expected_result and response.content == original)
+        report["registered"] = {"pdf": {"document_id": did, "model_id": pdf["model_id"],
+                                       "document_version": pdf["document_version"], "source_kind": "public",
+                                       "sha256": sha(pdf_data), "page_count": pdf_result["data"]["page_count"],
+                                       "evidence_id": item["id"]},
+                                "csv": csv_result["data"]}
+        report["conversion"] = {"input": stamp(STEP1 / "reviews-v1.0.csv"),
+                                "transport_sha256": sha(csv_data), "rows_equal": True,
+                                "header_order_changed_only": True}
+        report["preserved_hashes"] = {name: sha((ROOT / name).read_bytes()) == expected_sha
+                                     for name, expected_sha in original_hashes.items()}
+        check("STEP1_and_existing_sources_preserved", all(report["preserved_hashes"].values()))
+        report["result"] = "pass"
+    except Exception as error:
+        report["result"] = "fail"
+        report["failure"] = {"type": type(error).__name__, "message": str(error)}
+        raise
+    finally:
+        for client in clients:
+            client.close()
+        for process in processes:
+            if process.poll() is None:
+                process.terminate()
+                try:
+                    process.wait(timeout=10)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait(timeout=10)
+        for handle in log_handles:
+            handle.close()
+        report["servers_stopped"] = all(p.poll() is not None for p in processes)
+        report["checked_at_kst"] = datetime.now(timezone(timedelta(hours=9))).isoformat(timespec="seconds")
+        write(report_file, report)
+        print(json.dumps({"result": report["result"], "checks": len(report["checks"]),
+                          "servers_stopped": report["servers_stopped"],
+                          "evidence": str(report_file.relative_to(ROOT))}, ensure_ascii=False))
+
+
+if __name__ == "__main__":
+    main()

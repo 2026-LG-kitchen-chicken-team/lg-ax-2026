@@ -2,7 +2,42 @@
 
 2026-10-05 사용자 승인으로 두 실행기를 제공한다. **각자 선호하는 실행기 하나를 선택**한다. 배정·작업 잠금·상세 기록·검사·PR·Project 보고·PM 검수는 동일하다. Claude Code 사용자는 Codex 로그인이나 구독을 추가할 필요가 없다.
 
-검증 전 팀/개인 모두 OFF다. 초기 설정을 끝냈다고 켜지지 않는다. 최신 Worker는 [Docker 실행·검사 경계](automation-isolation.md)를 사용한다. 모델·저장소 검사에 게시 인증을 제공하지 않고 실제 canary·본인 로그인·첫 PR/보고를 확인해야 한다. 정이량의 [자동 PM](../pm/autonomous-pm.md)은 별도 정책과 PM 개인 ON이 필요하다. 중앙 HTTPS는 아직 정이량 PC를 경유한다. 네 PC의 실제 준비는 각자 근거로 확인한다.
+새 PC의 검증 전 개인 모드는 OFF로 준비한다. 초기 설정을 끝냈다고 켜지지 않는다. 최신 Worker는 [Docker 실행·검사 경계](automation-isolation.md)를 사용한다. 모델·저장소 검사에 게시 인증을 제공하지 않고 실제 canary·본인 로그인·첫 PR/보고를 확인해야 한다. 정이량의 [자동 PM](../pm/autonomous-pm.md)은 별도 정책과 PM 개인 ON이 필요하다. 중앙 HTTPS는 아직 정이량 PC를 경유한다. 네 PC의 실제 준비는 각자 근거로 확인한다.
+
+## 최신 큐 적용과 기존 Worker 업데이트
+
+10/5 사용자는 팀과 네 개인 ON, 담당자 자기 구현·검사·소스 검수, 사람 승인 0명과 관리자 bypass 유지, 의미 있는 연속 배정을 지시했다. [24개 개발 큐](../pm/development-queue-20261005.json)는 각 담당자 6개의 fixture 기반 `development_only` 단위다. 새 중앙 정책·고정 실행 코드·네 PC 적용은 이 문서 기준 **배포 대기**이며 현재 실제 상태는 [운영 Issue #28](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28)과 자기 인증 상태 조회로 확인한다.
+
+**저장소 main을 갱신해도 이미 설치한 외부 frozen Worker는 자동 업데이트되지 않는다.** PM이 전달한 정확한 CI source commit, Worker 변경 사항, 적용한 정책/큐 해시와 아래 절차를 확인한다. 이전 로그인·중앙 등록·state·세션·실패·사용량을 보존하며 이유 없이 재등록하거나 인증을 복사하지 않는다.
+
+1. 자기 계정·담당 Issue·현재 작업과 중앙 모드/잠금을 읽는다. 자기 Worker를 갱신해야 하면 PM에 범위를 보고하고 해당 Worker만 안전하게 일시 중단한다. 다른 팀원의 ON/실행은 바꾸지 않는다. 실행 중/고아 job은 종료 확인 없이 잠금을 풀거나 같은 작업을 다시 실행하지 않는다.
+2. PM이 Issue28에 고정한 **40자리 source commit과 해당 CI의 필수 검사 전체 성공**을 확인한다. 새 깨끗한 작업 공간에 그 commit을 준비한다. 일반 최신 main이나 팀원 PR 이름만으로 운영 코드 승인을 대신하지 않는다. 원본 로컬 작업을 강제로 reset하지 않는다.
+3. 같은 source에서 저장소 밖의 **새 경로**로 Worker/report bundle을 생성한다. entry SHA256·종속 manifest·source commit·실제 image ID를 본인 근거에 기록한다. 원 bundle 파일을 고쳐 재사용하지 않는다. image 변경이 필요하면 본인 실제 image/canary 근거를 PM에게 제출해 해당 계정 pin으로 인수한다. 다른 PC의 image 값이나 인증 폴더를 복사하지 않는다.
+4. 본인 설정의 runtime/report 경로를 새 bundle로 연결하고 고정 entry의 `--preflight`를 실행한다. 자기 GitHub 계정·저장소 권한·중앙 연결·선택 CLI의 컨테이너 버전/본인 로그인·격리 metadata를 확인한다. 이미 유효한 로그인은 다시 요구하지 않는다. preflight 성공만으로 실제 개발·게시·제품 완료를 주장하지 않는다.
+5. 기존 Task를 중지한 상태에서 같은 본인 설정/state/토큰을 사용하는 새 entry를 명시적으로 재등록한다. Limited 실행 사용자와 실제 Python 경로도 그대로 검증한다. 중복 Task/프로세스·동일 state/AI profile 점유가 없는지 확인하고 새 Task action·PID·첫 로그를 읽는다. 설치기는 개인/팀 모드를 자동 변경하지 않는다.
+6. 사용자 승인된 ON 목표에 따라 본인 모드를 연결하고, 고정 Ready job의 실제 claim→자기 구현/검사/소스 검수→불변 기록→PR/보고를 관측한다. PM은 배포 승인·중앙 accepted·병합 후 인수로 결과를 확인한다. 접속·준비·인증·경로 충돌이 막히면 증거와 다음 행동을 보고하며 ON만으로 준비 완료를 표시하지 않는다.
+
+아래 경로는 **예시**이며 본인의 새 외부 경로·계정·설정을 사용한다. bundle 생성은 위의 exact CI source 작업 공간에서 수행한다.
+
+```powershell
+uv run --no-sync python -X utf8 scripts/build_worker_runtime.py --output C:/LGAX-tools/my-account/worker-reviewed-new
+uv run --no-sync python -X utf8 scripts/build_worker_report_bundle.py --output C:/LGAX-tools/my-account/report-reviewed-new
+& 'C:/LGAX-tools/my-account/host-runtime-reviewed/Scripts/python.exe' 'C:/LGAX-tools/my-account/worker-reviewed-new/worker_entry.py' --config 'C:/LGAX-state/my-account/worker.json' --preflight
+# 기존 자기 Task의 실행 종료·설정 검토를 마친 뒤 새 entry로 등록
+& ./services/automation/install-worker.ps1 -ConfigPath 'C:/LGAX-state/my-account/worker.json' -PythonPath 'C:/LGAX-tools/my-account/host-runtime-reviewed/Scripts/python.exe' -WorkerPath 'C:/LGAX-tools/my-account/worker-reviewed-new/worker_entry.py' -DedicatedExecutionEnvironment -Start
+```
+
+### 원 Git128 장애의 본인 publisher 검사
+
+신진하의 원 Git128 기록은 보존한다. 재시작이나 전원 ON은 원인을 해결한 증거가 아니다. 본인 AI는 실패 checkpoint의 정확한 단계·실행 계정·종료 코드·가린 stderr·고정 commit을 읽고, **실제로 Task를 실행하는 본인 publisher 사용자**에서 `gh api user --jq .login`, clone origin/권한, 같은 고정 commit의 읽기/fetch를 확인한다. 일반 대화 창의 로그인 성공을 다른 Task 사용자 성공으로 대신하지 않는다. 인증이 포함된 URL·전체 환경변수·토큰·키체인 내용은 출력하지 않는다.
+
+실제 원인에 필요한 clone/경로/실행 사용자/도구만 최소 수정한다. 모델과 validator가 publisher 인증을 읽게 하거나 같은 오류를 무한 재시도하지 않는다. 수리 전후 단계·현재 source/runtime·원 실패 보존·게시 가능 여부를 기록한다. PM의 제한된 재시도 인계와 종료 확인을 거쳐 자기 새 job으로 시험한다. 결과 불명의 이전 게시나 실행은 재시도하지 않고 먼저 관측으로 확인한다.
+
+### 자기 검수와 종료 보고
+
+각 담당 AI는 테스트 실행 외에 자기 diff·정상/오류/반례·자료/계약 유지·부작용·미실행 조건을 검토하고 발견한 결함을 수정한다. 자기 검수 항목과 실제 결과를 불변 세션 근거에 남긴 뒤 자기 PR head로 보고한다. 사람 승인 0명은 이 책임이나 자동 CI/독립 검수/통합/부모 완료 조건을 제거하지 않는다. 모델 검수 `findings`는 차단 결함만 적고 approve이면 `[]`, 정보성 설명과 남은 전체 제품 검증은 reason에 적는다.
+
+끝날 때 **현재 적용한 source·entry·image·모드/실행 수준 / 남은 설정·실행·제품 작업 / 다음 행동·담당 / 사용자가 직접 할 일**을 보고한다. 로그인이나 본인 확인이 실제로 필요한 경우만 사용자에게 요청하며, 직접 할 일이 없으면 없다고 적는다. 아래 초기 pilot·OFF·전용 로그인 인계는 각 시점의 역사로 보존하며 최신 배포 지시와 현재 상태를 먼저 따른다.
 
 10/5 정이량 PC의 제한 pilot은 실제 Docker Codex 수정(168.109초) → 고정 validator(2.844초, 1개 테스트로 다른 프로젝트 부모 거부·같은 프로젝트 부모 허용 검증) → [PR82](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/82)의 CI 4개 성공 → [Project 보고 ACCEPTED](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/19#issuecomment-5985353509) → 독립 PM 검수·검사 → 실제 병합 `466c2b9` → 병합 후 격리 검사·[공식 스냅샷 승인 ACCEPTED](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28#issuecomment-5985418682)까지 완주했다. 앞선 cache 권한 실패와 세션 근거 경로 미승인으로 게시가 차단된 두 시도, 잘못된 첫 merge 결정의 변경 전 거부 기록은 보존했다. 자세한 고정 commit·receipt·검사 근거는 [pipeline 근거](../../evals/team-automation/20261005/pipeline-proof.json)를 따른다. 이후 pilot 팀/개인 OFF에서 `--once`가 모델 호출·변경 없이 종료했고 후속 배정은 예산 한도로 멈췄다. 운영 OFF 설정과 정이량의 PM·Worker 예약 작업은 새 전용 runtime으로 설치하고 실제 OFF 대기를 확인했다. 이는 pilot 종료 당시의 관측이다. 이후 세 PC 원본 readiness 인수·개발 착수와 현재 장애/개인 모드는 `docs/pm/team-start-20261005.md` 및 실제 controller를 확인한다. 이 한 건의 성공을 다른 세 PC의 준비 완료·팀 전체 가동·상위 작업 Done·신청서 31개 요구 구현 완료로 확대하지 않는다.
 

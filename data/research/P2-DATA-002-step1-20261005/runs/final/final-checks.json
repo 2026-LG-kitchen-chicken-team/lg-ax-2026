@@ -1,0 +1,94 @@
+{
+  "task_id": "P2-DATA-002",
+  "stage": 1,
+  "result": "pass",
+  "checked_at_kst": "2026-10-05T03:55:46+09:00",
+  "execution_kind": "preparation_integrity_only",
+  "service_executed": false,
+  "source_hashes_match_initial": {
+    "data/demo/dataset.json": true,
+    "data/research/P2-DATA-001-real-reference-20261004/reference-pack.json": true,
+    "data/research/R03-fridge-20261004/case-input.json": true,
+    "harness/phase2/tasks/P2-DATA-002.json": true,
+    "packages/contracts/schemas/lgax.schema.json": true,
+    "packages/core/src/lgax_core/store.py": true
+  },
+  "output_hashes_match_initial": {
+    "data/research/P2-DATA-002-step1-20261005/reviews-v1.0.csv": true,
+    "data/research/P2-DATA-002-step1-20261005/expected-records.json": true,
+    "data/research/P2-DATA-002-step1-20261005/control-plan.json": true,
+    "data/research/P2-DATA-002-step1-20261005/input-selection.json": true
+  },
+  "builder_hash_matches_initial": true,
+  "pdf_hash_matches": true,
+  "checks": {
+    "agent_rules": {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "PASS: AGENTS.md and CLAUDE.md are byte-identical\n",
+      "stderr": ""
+    },
+    "contracts": {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "scripts/check_contracts.py"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"status\": \"pass\", \"definitions\": 30, \"models\": 5, \"reviews\": 36, \"planning_requests\": 3, \"analysis_implemented\": false}\n",
+      "stderr": ""
+    },
+    "phase2": {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "scripts/phase2.py",
+        "validate"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"valid\": true,\n  \"errors\": [],\n  \"meaning\": \"record structure/evidence integrity only\",\n  \"legacy\": \"stale\"\n}\n",
+      "stderr": ""
+    },
+    "diff_whitespace": {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "phase2_valid": true,
+  "task_status": "pending",
+  "working_tree": {
+    "argv": [
+      "git",
+      "status",
+      "--short"
+    ],
+    "exit_code": 0,
+    "stdout": " M \"docs/\\354\\236\\221\\354\\227\\205\\352\\267\\274\\352\\261\\260/\\354\\213\\240\\354\\247\\204\\355\\225\\230.md\"\n M \"docs/\\354\\236\\221\\354\\227\\205\\352\\270\\260\\353\\241\\235/\\354\\213\\240\\354\\247\\204\\355\\225\\230.md\"\n M harness/phase2/tasks/P2-DATA-001.json\n?? data/research/P2-DATA-002-step1-20261005/\n?? \"data/research/\\354\\202\\254\\353\\241\\200\\354\\204\\240\\354\\240\\225_2026-10-04.md\"\n?? \"data/research/\\354\\236\\220\\353\\243\\214\\355\\231\\225\\353\\263\\264\\355\\230\\204\\355\\231\\251_2026-10-04.json\"\n?? \"data/research/\\354\\236\\220\\353\\243\\214\\355\\231\\225\\353\\263\\264\\355\\230\\204\\355\\231\\251_2026-10-04.md\"\n",
+    "stderr": ""
+  },
+  "code_commit": "7cc25fba66e4d0f4a19ef9eebbaa9268937ce1c4",
+  "not_run": [
+    "production ingestion/parser/API/MCP",
+    "model inference",
+    "independent evaluation",
+    "web checks",
+    "full regression"
+  ]
+}

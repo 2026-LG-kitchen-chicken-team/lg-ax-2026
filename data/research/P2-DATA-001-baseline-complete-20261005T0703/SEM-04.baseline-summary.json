@@ -1,0 +1,49 @@
+{
+  "status": "returned",
+  "latency_ms": 16641.0,
+  "orchestration_attempts": 0,
+  "transport_generation_attempts": 1,
+  "verified_completions": 1,
+  "input_tokens": 4236,
+  "output_tokens": 1394,
+  "errors": [],
+  "decision": {
+    "valid": false,
+    "action": "revise",
+    "revision_count": 0,
+    "next_revision_count": 1,
+    "rerun_from": "needs",
+    "violations": [
+      {
+        "code": "NON_COMPLAINT_AS_NEED",
+        "stage": "needs"
+      },
+      {
+        "code": "GAP_REVIEW_MISSING",
+        "stage": "compare"
+      },
+      {
+        "code": "SUPPORT_BASIS_MISMATCH",
+        "stage": "compare"
+      },
+      {
+        "code": "CONCEPT_WITHOUT_CONFIRMED_GAP",
+        "stage": "concepts"
+      },
+      {
+        "code": "DUPLICATION_COMPARISON_INCOMPLETE",
+        "stage": "concepts"
+      },
+      {
+        "code": "COMPLETED_WITH_UNRESOLVED",
+        "stage": "review"
+      }
+    ]
+  },
+  "semantic_reviews": 0,
+  "backend_input_truncation_independently_verified": false,
+  "semantic_quality_independently_graded": false,
+  "case_id": "SEM-04",
+  "raw_result_sha256": "4d1e43387d836da97730af12fc136bde36aacdf414cd67fd99d711064e7ec628",
+  "raw_result_kept_private": true
+}

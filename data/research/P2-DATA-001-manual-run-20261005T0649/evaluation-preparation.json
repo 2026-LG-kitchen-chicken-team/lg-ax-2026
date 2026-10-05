@@ -1,0 +1,155 @@
+{
+  "command": [
+    "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\scripts\\prepare_evaluation.py",
+    "--cases",
+    "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\private\\evaluation\\SEM-stage45-20261005\\cases.json",
+    "--agent-results",
+    "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\private\\model-execution\\DATA001-20261005T0649\\agent.results.json",
+    "--baseline-results",
+    "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\private\\model-execution\\DATA001-20261005T0649\\single_prompt_baseline.results.json",
+    "--output-dir",
+    "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\private\\model-execution\\DATA001-20261005T0649\\reviewer-packet",
+    "--key-file",
+    "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data001-stage123\\private\\model-execution\\DATA001-20261005T0649\\pm-only-mapping.json",
+    "--seed",
+    "42"
+  ],
+  "exit_code": 2,
+  "stdout": "",
+  "stderr": "Evaluation preparation rejected: Both methods must declare the entire case dataset available without truncation\n",
+  "unproven_truncation_none_not_claimed": true,
+  "independent_answer_validity_confirmed": false,
+  "independent_reviewer_assigned": false,
+  "performance_or_winner_claimed": false,
+  "cases": [
+    {
+      "case_id": "SEM-01",
+      "category": "normal",
+      "independently_graded": false,
+      "agent": {
+        "terminal_status": "failed",
+        "contract_valid": false,
+        "action": null,
+        "generation_attempts": 6,
+        "verified_transport_completions": 5,
+        "raw_file_sha256": "2b108942991230c66250e05f781b20718f6b5f60d73618fea781a8a40c8aae94"
+      },
+      "single_prompt_baseline": {
+        "terminal_status": "returned",
+        "contract_valid": false,
+        "action": "revise",
+        "generation_attempts": 1,
+        "verified_transport_completions": 1,
+        "raw_file_sha256": "370a443dbe983fa3f54607a55362e38ed2b32af8c7c20910df55b2b7910365b4"
+      }
+    },
+    {
+      "case_id": "SEM-02",
+      "category": "duplicate_feature",
+      "independently_graded": false,
+      "agent": {
+        "terminal_status": "held",
+        "contract_valid": true,
+        "action": "hold",
+        "generation_attempts": 5,
+        "verified_transport_completions": 5,
+        "raw_file_sha256": "2e2b22010897282fdea082a0b8968ba1dbf4785e5689247c52013d3d5bb311a7"
+      },
+      "single_prompt_baseline": {
+        "terminal_status": "returned",
+        "contract_valid": false,
+        "action": "revise",
+        "generation_attempts": 1,
+        "verified_transport_completions": 1,
+        "raw_file_sha256": "8fd5dae83ec188410f290bfff077a7e3b34577f5d9344e64c6a05f5f059f016b"
+      }
+    },
+    {
+      "case_id": "SEM-03",
+      "category": "model_version_confusion",
+      "independently_graded": false,
+      "agent": {
+        "terminal_status": "held",
+        "contract_valid": false,
+        "action": null,
+        "generation_attempts": 0,
+        "verified_transport_completions": 0,
+        "raw_file_sha256": "81c1c1ec6226a96c8d73e38a81542a2439bc0852e2489a4c94db1dceb2d2f90c"
+      },
+      "single_prompt_baseline": {
+        "terminal_status": "returned",
+        "contract_valid": false,
+        "action": "hold",
+        "generation_attempts": 1,
+        "verified_transport_completions": 1,
+        "raw_file_sha256": "e72563bba385f22cc013e0faf0af915af1d7c9180f86bd28380650ea33b4a402"
+      }
+    },
+    {
+      "case_id": "SEM-04",
+      "category": "conflicting_reviews",
+      "independently_graded": false,
+      "agent": {
+        "terminal_status": "held",
+        "contract_valid": false,
+        "action": "hold",
+        "generation_attempts": 2,
+        "verified_transport_completions": 2,
+        "raw_file_sha256": "a510c1bc8d38e97defd530464490ef055db163bae0dce86c78e95e98d514540e"
+      },
+      "single_prompt_baseline": {
+        "terminal_status": "returned",
+        "contract_valid": false,
+        "action": "revise",
+        "generation_attempts": 1,
+        "verified_transport_completions": 1,
+        "raw_file_sha256": "4d1e43387d836da97730af12fc136bde36aacdf414cd67fd99d711064e7ec628"
+      }
+    },
+    {
+      "case_id": "SEM-05",
+      "category": "missing_evidence",
+      "independently_graded": false,
+      "agent": {
+        "terminal_status": "held",
+        "contract_valid": false,
+        "action": "hold",
+        "generation_attempts": 3,
+        "verified_transport_completions": 3,
+        "raw_file_sha256": "4b964b4be9513ff0a6e246ec9f8a2e6f4224fa809a1436722cba06954901d4bd"
+      },
+      "single_prompt_baseline": {
+        "terminal_status": "returned",
+        "contract_valid": false,
+        "action": "hold",
+        "generation_attempts": 1,
+        "verified_transport_completions": 1,
+        "raw_file_sha256": "2c2d56275d5fbaf88ed1e95db76d29169c54abf6ff9ba1887f79cca4b27e5bbc"
+      }
+    },
+    {
+      "case_id": "SEM-06",
+      "category": "specification_change",
+      "independently_graded": false,
+      "agent": {
+        "terminal_status": "failed",
+        "contract_valid": false,
+        "action": "unresolved",
+        "generation_attempts": 5,
+        "verified_transport_completions": 5,
+        "raw_file_sha256": "63a751183dd666c1a340b729d01c7b75b0e51387eb3f91a6e239074a25b3dc87"
+      },
+      "single_prompt_baseline": {
+        "terminal_status": "returned",
+        "contract_valid": false,
+        "action": "revise",
+        "generation_attempts": 1,
+        "verified_transport_completions": 1,
+        "raw_file_sha256": "e2a02d022de174ece1a54fc1ec567fd887a2d86ecf0f8aea2f3deac484f42ae1"
+      }
+    }
+  ]
+}

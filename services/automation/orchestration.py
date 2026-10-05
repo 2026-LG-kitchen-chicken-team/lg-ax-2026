@@ -19,15 +19,238 @@ from services.automation.backlog import (
     append_progress,
     collector_candidates,
     load_backlog,
+    ready_development_units,
     ready_product_corrections,
     ready_units,
+    validate_development_registry,
     validate_product_correction_registry,
     verify_progress,
 )
 from services.automation.isolation import regular_file
-from services.automation.pm import PMError, fingerprint, protected_path
-from services.automation.state import REPO
+from services.automation.pm import PMError, canonical, fingerprint, protected_path
+from services.automation.state import PM, REPO
 from services.automation.worker import write_json
+
+DEVELOPMENT_PROJECT = {
+    "id": "PVT_kwDOFCE5QM4Blr0A", "owner": "2026-LG-kitchen-chicken-team", "number": 1,
+    "url": "https://github.com/orgs/2026-LG-kitchen-chicken-team/projects/1",
+    "fields": {"Status": "PVTSSF_lADOFCE5QM4Blr0AzhkXp80",
+               "다음 행동": "PVTF_lADOFCE5QM4Blr0AzhkXp-I",
+               "실행 증빙": "PVTF_lADOFCE5QM4Blr0AzhkXp9w",
+               "최근 배정": "PVTF_lADOFCE5QM4Blr0AzhkXp-M"},
+    "statuses": {"Todo": "f75ad846", "In Progress": "47fc9ee4", "Done": "98236657"}}
+
+
+class DevelopmentIssueMirror:
+    """Fixed PM metadata publisher. No model, dispatch, Issue close or parent Done.
+
+    Only four compiled fields on this organization's existing Project may be
+    written. Readback precedes durable cache acceptance; unknown outcomes are
+    reread next time as idempotent field assignments, never counted as applied.
+    """
+
+    def __init__(self, orchestration, options):
+        self.live, self.broker = orchestration, orchestration.broker
+        if not isinstance(options, dict) or set(options) != {"path", "sha256"}:
+            raise PMError("protected development Issue map needs only path and sha256")
+        self.path, self.digest = protected_path(options["path"]), options["sha256"]
+        self.mapping = self._read()
+
+    def _read(self):
+        raw = regular_file(self.path, maximum=128 * 1024)
+        if hashlib.sha256(raw).hexdigest() != self.digest:
+            raise PMError("protected development Issue map changed")
+        value = json.loads(raw)
+        expected = {"schema_version", "repo", "project", "registration_receipt", "capabilities"}
+        if (not isinstance(value, dict) or set(value) != expected or value["schema_version"] != 1 or
+                value["repo"] != REPO or value["project"] != DEVELOPMENT_PROJECT):
+            raise PMError("development Issue map cannot select another Project or fields")
+        receipt = value["registration_receipt"]
+        if (not isinstance(receipt, dict) or set(receipt) != {"path", "sha256", "commit"} or
+                receipt["path"] != "docs/pm/development-queue-issues-20261005.json" or
+                not re.fullmatch(r"[a-f0-9]{64}", str(receipt["sha256"])) or
+                not re.fullmatch(r"[a-f0-9]{40}", str(receipt["commit"]))):
+            raise PMError("fixed original registration receipt provenance required")
+        caps = value["capabilities"]
+        declared = (self.live.development_registry or {}).get("capabilities", {})
+        if not isinstance(caps, dict) or len(caps) != 24 or set(caps) != set(declared):
+            raise PMError("development Issue map must bind exactly the 24 protected units")
+        seen = {"number": set(), "issue_id": set(), "project_item_id": set()}
+        for key, row in caps.items():
+            cap = self.broker.policy["capabilities"].get(key)
+            if (not isinstance(row, dict) or set(row) != {"owner", "parent_task_id", "parent_issue_number",
+                    "number", "issue_id", "url", "project_item_id", "capability_fingerprint"} or
+                    cap != declared[key] or row["owner"] != cap["owner"] or row["parent_task_id"] != cap["task_id"] or
+                    row["capability_fingerprint"] != fingerprint(cap) or
+                    row["parent_issue_number"] != self.live.plan["tasks"][cap["task_id"]]["issue_number"] or
+                    row["url"] != f"https://github.com/{REPO}/issues/{row['number']}" or
+                    type(row["number"]) is not int or not 1 <= row["number"] <= 1_000_000 or
+                    type(row["issue_id"]) is not int or row["issue_id"] <= 0 or
+                    not isinstance(row["project_item_id"], str) or
+                    not re.fullmatch(r"PVTI_[A-Za-z0-9_-]{10,100}", row["project_item_id"])):
+                raise PMError("development Issue identity, owner, parent or capability scope changed")
+            for name, identities in seen.items():
+                if row[name] in identities:
+                    raise PMError("development Issue map identities must be unique")
+                identities.add(row[name])
+        return value
+
+    def _graphql(self, query, variables):
+        raw = self.broker.github.command(["api", "--hostname", "github.com", "graphql", "--input", "-"],
+            data=canonical({"query": query, "variables": variables}).encode())
+        result = json.loads(raw)
+        if not isinstance(result, dict) or result.get("errors") or not isinstance(result.get("data"), dict):
+            raise PMError("development Project operation was not confirmed")
+        return result["data"]
+
+    def _project(self):
+        query = """query($p:ID!){node(id:$p){... on ProjectV2{id number url owner{... on Organization{login}}
+          fields(first:30){pageInfo{hasNextPage} nodes{... on ProjectV2Field{id name}
+            ... on ProjectV2SingleSelectField{id name options{id name}}}}
+          items(first:100){pageInfo{hasNextPage} nodes{id content{... on Issue{id number url repository{nameWithOwner}}}
+            fieldValues(first:30){pageInfo{hasNextPage} nodes{... on ProjectV2ItemFieldTextValue{text field{... on ProjectV2Field{id}}}
+              ... on ProjectV2ItemFieldSingleSelectValue{name optionId field{... on ProjectV2SingleSelectField{id}}}}}}}}}}"""
+        project = self._graphql(query, {"p": DEVELOPMENT_PROJECT["id"]}).get("node")
+        if (not isinstance(project, dict) or any(project.get(key) != DEVELOPMENT_PROJECT[key]
+                for key in ("id", "number", "url")) or
+                project.get("owner", {}).get("login") != DEVELOPMENT_PROJECT["owner"] or
+                project["fields"]["pageInfo"]["hasNextPage"] or project["items"]["pageInfo"]["hasNextPage"]):
+            raise PMError("actual development Project identity or bounded metadata changed")
+        fields = {row.get("id"): row for row in project["fields"]["nodes"]}
+        for name, field_id in DEVELOPMENT_PROJECT["fields"].items():
+            if fields.get(field_id, {}).get("name") != name:
+                raise PMError("actual allowed development Project field changed")
+        options = fields[DEVELOPMENT_PROJECT["fields"]["Status"]].get("options", [])
+        if {row["name"]: row["id"] for row in options} != DEVELOPMENT_PROJECT["statuses"]:
+            raise PMError("actual development status options changed")
+        items = {row["id"]: row for row in project["items"]["nodes"]}
+        for row in self.mapping["capabilities"].values():
+            item = items.get(row["project_item_id"], {})
+            content = item.get("content") or {}
+            if (content.get("url") != row["url"] or content.get("number") != row["number"] or
+                    content.get("repository", {}).get("nameWithOwner") != REPO or
+                    item.get("fieldValues", {}).get("pageInfo", {}).get("hasNextPage") is not False):
+                raise PMError("actual development Issue and Project item association changed")
+        return items
+
+    @staticmethod
+    def _values(item):
+        values = {}
+        for row in item["fieldValues"]["nodes"]:
+            field = row.get("field", {}).get("id")
+            if field in DEVELOPMENT_PROJECT["fields"].values():
+                if field in values:
+                    raise PMError("development Project contains duplicate field values")
+                values[field] = row.get("text", row.get("name"))
+        return values
+
+    def _facts(self, key, observation, progress):
+        row = self.mapping["capabilities"][key]
+        cap = self.broker.policy["capabilities"][key]
+        jobs = {job["job_id"]: job for job in observation["jobs"]}
+        units = [unit for unit in self.broker.state["units"].values()
+                 if unit.get("capability_id") == key and not unit.get("superseded_by")]
+        if len(units) > 1:
+            raise PMError("development Project needs one current job per unit")
+        state, action, evidence, allocation = "Todo", "대기 · 선행 인수/원 부모 PR/Worker 준비 확인", "", "미배정 · 실제 자동 claim은 별도"
+        if key in observation.get("capabilities_ready", []):
+            action = "Ready · PM의 고정 개발 배정 대기"
+        if units:
+            unit = units[0]
+            job = jobs.get(unit.get("job_id"))
+            if (not job or unit.get("task_id") != cap["task_id"] or job.get("task_id") != cap["task_id"] or
+                    job.get("owner") != cap["owner"] or job.get("capability_id") != key or
+                    not re.fullmatch(r"[A-Za-z0-9_-]{1,120}", str(unit.get("job_id"))) or
+                    not re.fullmatch(r"[a-f0-9]{40}", str(unit.get("base_commit")))):
+                raise PMError("actual controller job does not match development unit ownership")
+            status = job.get("status")
+            actions = {"pending": "배정됨 · Worker claim 대기", "running": "실행 중 · 구현/검사/자기 검수",
+                       "review_requested": "검수 대기 · PR/CI/통합 확인", "completed_review": "검수 결과 인수 대기",
+                       "stopping": "중단 처리 대기 · 기존 실행/증빙 보존", "blocked": "막힘 · PM 원인 검토; 자동 재시도 없음",
+                       "failed": "실패 · PM 원인 검토; 자동 재시도 없음", "orphaned": "연결/lease 확인 대기; 자동 재시도 없음",
+                       "accepted": "실제 인수 증빙 대기 · 부모 Done은 별도"}
+            if status not in actions:
+                raise PMError("unrecognized actual development queue status")
+            state = "Todo" if status == "pending" else "In Progress"
+            action = actions[status]
+            if unit.get("revision_requested"):
+                action = "수정 작업 대기 · 원 PR 보존; 새 bounded 작업/검수 필요"
+            elif unit.get("reconciled") and status == "accepted" and progress.get(key) in {"accepted", "parent_verified"}:
+                state, action = "Done", "개발 단위 인수 완료 · 부모 품질/독립 평가/제출은 별도"
+            number = unit.get("pr_number")
+            if number is not None:
+                if type(number) is not int or number <= 0 or not re.fullmatch(r"[a-f0-9]{40}", str(unit.get("head"))):
+                    raise PMError("bounded development PR identity required")
+                evidence = f"https://github.com/{REPO}/pull/{number} · head {unit['head']} · job {unit['job_id']}"
+            allocation = f"{row['owner']} · job {unit['job_id']} · base {unit['base_commit']}"
+        return {"Status": state, "다음 행동": action, "실행 증빙": evidence, "최근 배정": allocation}
+
+    def synchronize(self, observation, *, collect=False):
+        # Execution revalidation and OFF polling are strictly read-only. Keep
+        # metadata cache out of model observation so this mirror cannot wake AI.
+        self.mapping = self._read()
+        if not collect or observation.get("global_mode") != "on" or observation.get("pm_mode") != "on":
+            return {"state": "read_only", "updated": 0, "model_called": False}
+        progress = self.live._progress()
+        desired = {key: self._facts(key, observation, progress) for key in self.mapping["capabilities"]}
+        cache = self.broker.state.setdefault("development_project_mirror", {"map_sha256": self.digest, "items": {}})
+        if (not isinstance(cache, dict) or set(cache) != {"map_sha256", "items"} or
+                cache.get("map_sha256") != self.digest or not isinstance(cache.get("items"), dict) or
+                not set(cache["items"]) <= set(desired) or
+                any(not isinstance(value, str) or not re.fullmatch(r"[a-f0-9]{64}", value)
+                    for value in cache["items"].values())):
+            raise PMError("development Project cache requires explicit map migration")
+        changed = {key: fields for key, fields in desired.items()
+                   if cache["items"].get(key) != fingerprint({"map": self.digest, "fields": fields})}
+        if not changed:
+            return {"state": "unchanged", "updated": 0, "model_called": False}
+        if self.broker.authenticate() != {"account": PM, "operator": True} or not self.broker.enabled():
+            raise PMError("authenticated ON PM required for development Project updates")
+        items = self._project()
+        parents = {}
+        # Validate every changed Issue before the first write in this batch.
+        for key in changed:
+            row = self.mapping["capabilities"][key]
+            actual = self.broker.github.request("GET", f"repos/{REPO}/issues/{row['number']}")
+            if (actual.get("id") != row["issue_id"] or actual.get("html_url") != row["url"] or
+                    {v.get("login") for v in actual.get("assignees", [])} != {row["owner"]} or
+                    f"<!-- lgax-development-capability:{key} -->" not in (actual.get("body") or "")):
+                raise PMError("actual development Issue identity/owner/marker changed")
+            parent = row["parent_issue_number"]
+            if parent not in parents:
+                parents[parent] = self.broker.github.request("GET", f"repos/{REPO}/issues/{parent}/sub_issues?per_page=100")
+            if not any(child.get("id") == row["issue_id"] for child in parents[parent]):
+                raise PMError("actual development Issue parent relationship changed")
+        updated = 0
+        for key, fields in changed.items():
+            item_id = self.mapping["capabilities"][key]["project_item_id"]
+            existing = self._values(items[item_id])
+            mutations, variables = [], {"p": DEVELOPMENT_PROJECT["id"], "i": item_id}
+            for name, value in fields.items():
+                field_id = DEVELOPMENT_PROJECT["fields"][name]
+                if existing.get(field_id, "") == value:
+                    continue
+                index = len(mutations)
+                variables[f"f{index}"] = field_id
+                variables[f"v{index}"] = {"singleSelectOptionId": DEVELOPMENT_PROJECT["statuses"][value]} if name == "Status" else {"text": value}
+                mutations.append(f'v{index}:updateProjectV2ItemFieldValue(input:{{projectId:$p,itemId:$i,fieldId:$f{index},value:$v{index}}}){{projectV2Item{{id}}}}')
+            if mutations:
+                declaration = ",".join(["$p:ID!", "$i:ID!"] + [part for index in range(len(mutations))
+                    for part in (f"$f{index}:ID!", f"$v{index}:ProjectV2FieldValue!")])
+                response = self._graphql("mutation(" + declaration + "){" + " ".join(mutations) + "}", variables)
+                if any(response.get(f"v{index}", {}).get("projectV2Item", {}).get("id") != item_id for index in range(len(mutations))):
+                    raise PMError("development Project update outcome remains unknown")
+                # ACK alone is insufficient; accept the cache only after actual
+                # field values have been observed on the same immutable item.
+                current = self._project()
+                actual = self._values(current[item_id])
+                if any(actual.get(DEVELOPMENT_PROJECT["fields"][name], "") != value for name, value in fields.items()):
+                    raise PMError("development Project update readback did not match")
+                items = current
+            cache["items"][key] = fingerprint({"map": self.digest, "fields": fields})
+            self.broker.save()
+            updated += 1
+        return {"state": "applied", "updated": updated, "model_called": False}
 
 
 class Orchestration:
@@ -36,6 +259,7 @@ class Orchestration:
         options = broker.config.get("backlog")
         self.plan = None
         self.correction_registry = self.correction_plan = None
+        self.development_registry = self.development_plan = None
         if options:
             self.plan = load_backlog(protected_path(options["path"]), options["sha256"],
                                      registered_tasks=broker.policy["tasks"])
@@ -62,6 +286,25 @@ class Orchestration:
             if any(row.get("capability_id") not in CORE_CORRECTIONS for row in broker.state.get("correction_ledger", [])):
                 raise PMError("correction history cannot contain original unit events")
             verify_progress(self.correction_plan, broker.state.get("correction_ledger", []))
+        registry = broker.config.get("development_queue_registry")
+        if registry:
+            if not self.plan or not isinstance(registry, dict) or set(registry) != {"path", "sha256"}:
+                raise PMError("a pinned original backlog and protected development registry are required")
+            raw = regular_file(protected_path(registry["path"]))
+            if hashlib.sha256(raw).hexdigest() != registry["sha256"]:
+                raise PMError("protected development queue registry changed")
+            self.development_registry = json.loads(raw)
+            self.development_plan = validate_development_registry(self.plan, self.development_registry)
+            for key, cap in self.development_registry["capabilities"].items():
+                if broker.policy["capabilities"].get(key) != cap:
+                    raise PMError("development registry and deployed policy differ")
+            if any(row.get("capability_id") not in self.development_registry["capabilities"]
+                   for row in broker.state.get("development_ledger", [])):
+                raise PMError("development history cannot contain original or correction unit events")
+            verify_progress(self.development_plan, broker.state.get("development_ledger", []))
+        self.development_issues = None
+        if "development_issue_registry" in broker.config:
+            self.development_issues = DevelopmentIssueMirror(self, broker.config["development_issue_registry"])
         self.mail = None
         mail = broker.config.get("mail")
         if mail:
@@ -111,8 +354,12 @@ class Orchestration:
     def _event(self, cap_id, suffix, event, receipt):
         broker = self.broker
         event_id = event + "-" + fingerprint({"cap": cap_id, "id": suffix})[:48]
-        key = "correction_ledger" if cap_id in CORE_CORRECTIONS else "backlog_ledger"
-        plan = self.correction_plan if key == "correction_ledger" else self.plan
+        if self.development_registry and cap_id in self.development_registry["capabilities"]:
+            key, plan = "development_ledger", self.development_plan
+        elif cap_id in CORE_CORRECTIONS:
+            key, plan = "correction_ledger", self.correction_plan
+        else:
+            key, plan = "backlog_ledger", self.plan
         broker.state[key] = append_progress(plan,
             broker.state.get(key, []), event_id=event_id,
             capability_id=cap_id, event=event, receipt=receipt)
@@ -120,13 +367,38 @@ class Orchestration:
 
     @property
     def capabilities(self):
-        return (self.correction_plan or self.plan)["capabilities"] if self.plan else {}
+        result = deepcopy(self.plan["capabilities"]) if self.plan else {}
+        if self.correction_registry:
+            result.update(self.correction_registry["capabilities"])
+        if self.development_registry:
+            result.update(self.development_registry["capabilities"])
+        return result
 
     def _progress(self):
         value = verify_progress(self.plan, self.broker.state.get("backlog_ledger", []))
         if self.correction_plan:
             value |= verify_progress(self.correction_plan, self.broker.state.get("correction_ledger", []))
+        if self.development_plan:
+            value |= verify_progress(self.development_plan, self.broker.state.get("development_ledger", []))
         return value
+
+    def development_dependency_jobs(self, capability_id, observation):
+        """Derive immutable accepted queue dependencies from protected receipts."""
+        if not self.development_registry or capability_id not in self.development_registry["capabilities"]:
+            raise PMError("only an externally pinned offline development unit may use implementation prerequisites")
+        cap = self.development_registry["capabilities"][capability_id]
+        progress, jobs = self._progress(), {row["job_id"]: row for row in observation["jobs"]}
+        result = []
+        for prerequisite in cap["development_prerequisites"]:
+            if progress.get(prerequisite) not in {"accepted", "parent_verified"}:
+                raise PMError("development prerequisite has no independently accepted receipt")
+            candidates = [unit for unit in self.broker.state["units"].values()
+                if unit.get("capability_id") == prerequisite and unit.get("reconciled") and
+                not unit.get("superseded_by") and jobs.get(unit["job_id"], {}).get("status") == "accepted"]
+            if len(candidates) != 1:
+                raise PMError("development prerequisite needs one actual accepted queue job")
+            result.append(candidates[0]["job_id"])
+        return result
 
     def _correction_dispatches(self):
         """Intents count conservatively: unknown delivery never buys a retry."""
@@ -450,6 +722,31 @@ class Orchestration:
                 parent["product_feedback"] = deepcopy(next(iter(feedback.values())))
             parent["product_escalations"] = deepcopy(observation.get("product_escalations", []))
             write_json(self.broker.state_dir / "backlog-observation.json", observation["backlog"])
+        if self.development_registry:
+            # Prior offers hold owner/path/resource authority in this same tick;
+            # a second registry cannot invent parallel jobs for the same owner.
+            offers = observation["capabilities_ready"]
+            selection = deepcopy(observation)
+            held_paths, held_resources = [], []
+            for key in offers:
+                cap = self.capabilities[key]
+                selection["jobs"].append({"owner": cap["owner"], "status": "pending"})
+                held_paths.extend(cap["allowed_paths"])
+                held_resources.extend(cap.get("shared_resources", []))
+            result = ready_development_units(self.plan, self.development_registry, selection,
+                self.broker.state.get("backlog_ledger", []), self.broker.state.get("development_ledger", []),
+                held_paths=held_paths, held_resources=held_resources)
+            observation["capabilities_ready"] += [key for key in result["ready"]
+                if key in self.broker._released_capabilities() and key not in held]
+            observation["backlog"]["waiting"].update(result["waiting"])
+            for key in held:
+                if key in self.development_registry["capabilities"]:
+                    observation["backlog"]["waiting"][key] = "fixed_assignment_preparation_rejected_requires_PM_followup"
+            observation["backlog"]["development_registry_digest"] = result["registry_digest"]
+            observation["backlog"]["development_units"] = len(self.development_registry["capabilities"])
+            write_json(self.broker.state_dir / "backlog-observation.json", observation["backlog"])
+        if self.development_issues is not None:
+            self.development_issues.synchronize(observation, collect=collect)
 
     def mail_snapshot(self):
         """Read immutable local inbox events without profile/auth/network calls."""

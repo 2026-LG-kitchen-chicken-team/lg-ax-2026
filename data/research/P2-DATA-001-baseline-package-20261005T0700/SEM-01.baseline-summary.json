@@ -1,0 +1,37 @@
+{
+  "status": "returned",
+  "latency_ms": 17797.0,
+  "orchestration_attempts": 0,
+  "transport_generation_attempts": 1,
+  "verified_completions": 1,
+  "input_tokens": 5321,
+  "output_tokens": 1372,
+  "errors": [],
+  "decision": {
+    "valid": false,
+    "action": "revise",
+    "revision_count": 0,
+    "next_revision_count": 1,
+    "rerun_from": "needs",
+    "violations": [
+      {
+        "code": "ASSESSMENT_COVERAGE",
+        "stage": "needs"
+      },
+      {
+        "code": "GAP_REVIEW_MISSING",
+        "stage": "compare"
+      },
+      {
+        "code": "COMPLETED_WITH_UNRESOLVED",
+        "stage": "review"
+      }
+    ]
+  },
+  "semantic_reviews": 0,
+  "backend_input_truncation_independently_verified": false,
+  "semantic_quality_independently_graded": false,
+  "case_id": "SEM-01",
+  "raw_result_sha256": "370a443dbe983fa3f54607a55362e38ed2b32af8c7c20910df55b2b7910365b4",
+  "raw_result_kept_private": true
+}

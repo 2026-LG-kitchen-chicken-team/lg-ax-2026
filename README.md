@@ -1,12 +1,18 @@
 # LG AX 해커톤 작업실
 
+**10/5 20:16 후속:** 전원 ON·PM 상시 루프를 유지하며 수동 PR128/130을 실제 CI 뒤 병합했다. PR127은 개인 기록 충돌 해결 대기다. 자동 #121은 합성 테스트 문자열의 게시 검사로 blocked가 되어 원 실패/비용을 보존하고 추가 모델 호출 없이 API 코드를 별도 회수·격리 검사했다. 다른 PC의 Worker 적용/오류 인수와 최신 main의 중앙 승인 연결은 별도 확인한다. 전체 참가작은 미완료이며 [운영 인계](docs/pm/continuous-team-20261005.md)와 Issue28의 최신 checkpoint를 따른다.
+
+
 이 프로젝트는 **LG전자와 함께하는 국립창원대학교 AX 해커톤 대회**만 다룹니다. `공모전 계획`의 LG 관련 대화·공식 자료를 2026-09-27에 이관했습니다.
 
 최신 10/5 추가 PR68/69 부분 인수·실제 검증/잔여 조건은 [PM 추가 인수](docs/pm/pr-late-handoffs-20261005.md)를 따른다. 전체 Agent/최종 제출 미완료.
 
 ## 현재 상태
 
-10/5 15:32 기준 사용자 승인한 **연쇄 배정·제품 실행 근거·PM CLI 메일**을 통합했다. PR99·100은 실제 병합·병합 후 검사·Project/중앙 인수를 마쳤다. 새 운영 버전은 배포·사전검사 완료이며, 이 PR의 병합/상태 동기화 후 상시 PM을 시작한다. 최신 실제 가동 여부는 [운영 Issue #28](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28)과 [상시 운영 안내](docs/pm/orchestration-live-20261005.md)를 따른다. 팀·PM·황대겸·최길웅 ON, 신진하만 원 Git128 진단 대기로 개인 OFF다. 참가작 전체 완료와 구분한다.
+**10/5 전원 ON·확대 개발 큐:** GitHub 인적 승인0/PM bypass 유지·owner 자기검수와 신규24개 기능 Issue103~126을 구성했다. CI4/native1,103검사 뒤 고정 PM/본인 Worker를 실제 배포·Running 확인했다. 18:57 관측의 all4 ON·WEB 실제 running·DATA Git128 blocked는 역사 시각이며 최신 상태는 운영 Issue28을 재조회한다. 다른 PC의 새 Worker 적용과 성공 실행·전체31요구/최종 제출은 별도다. 사용자 보고의 과거 수동 작업도 actual PR을 검수하고 중복 과제만 보류해 이어받는다. [현재 운영과 인계](docs/pm/continuous-team-20261005.md)·정이량014/E027을 읽는다.
+
+
+10/5 15:44 **연쇄 배정·제품 실행 근거·PM CLI 메일** 통합 후 상시 PM/Worker의 실제 Running을 확인했다. PR95·99·100의 병합·병합 후 검사·Project/중앙 인수를 마쳤고 다음 PM003 웹/API/MCP 연결 작업이 자동 배정·실행 중이다. 최신 가동 여부는 [운영 Issue #28](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28)과 [상시 운영 안내](docs/pm/orchestration-live-20261005.md)를 따른다. 팀·PM·황대겸·최길웅 ON, 신진하만 원 Git128 진단 대기로 개인 OFF다. 참가작 전체 완료와 구분한다.
 
 | 항목 | 상태 |
 |---|---|

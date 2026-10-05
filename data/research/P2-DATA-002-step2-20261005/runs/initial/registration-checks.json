@@ -1,0 +1,133 @@
+{
+  "task_id": "P2-DATA-002",
+  "stage": 2,
+  "result": "fail",
+  "code_commit": "2691ad194be9f0f1c85963ad27ac60626d888738",
+  "execution_kind": "live_local_registration",
+  "model_calls": 0,
+  "ocr_used": false,
+  "common_schema_api_changed": false,
+  "formal_task_completion": false,
+  "checks": [
+    {
+      "name": "pinned_imports",
+      "passed": true
+    },
+    {
+      "name": "PDF_original_hash",
+      "passed": true
+    },
+    {
+      "name": "CSV_lossless_header_conversion",
+      "passed": true,
+      "rows": 36,
+      "original_sha256": "3c7560aec2d3fa855590baf097b3514aa348ee40a77037c69ef358b413f488b9",
+      "transport_sha256": "64e83d42c65b1af18040c6a4cdac9a7f6b14fca63041005f6d79f6c9faaec4ab"
+    },
+    {
+      "name": "POST /api/documents/REVIEWS-CSV-v1.0",
+      "passed": true,
+      "method": "POST",
+      "path": "/api/documents/REVIEWS-CSV-v1.0",
+      "status": 400,
+      "response_sha256": "673e69f695715c04a53e99f02f2b4faca311742250f0bda34e81b91a7fc07c91",
+      "expected_code": "PARSING_FAILED"
+    },
+    {
+      "name": "POST /api/documents/F-M",
+      "passed": false,
+      "method": "POST",
+      "path": "/api/documents/F-M",
+      "status": 400,
+      "response_sha256": "53901b1ffdaa24fcd6b633f4163488535b2b130848ff020bfc91fcfde34f1483"
+    }
+  ],
+  "private_output": "private\\data002-step2\\initial",
+  "servers_stopped": true,
+  "source_archive_sha256": "485f6064de13c7ec913b15b22ffba50fe76ee690ba124c3d5e08253c7d720c67",
+  "source_files": [
+    {
+      "path": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step2-source-initial\\packages\\core\\src\\lgax_core\\documents.py",
+      "sha256": "ad708479232ce44f637037b93d832f6578c1b38a13cfe13369d073c7aa6807c3"
+    },
+    {
+      "path": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step2-source-initial\\packages\\core\\src\\lgax_core\\document_store.py",
+      "sha256": "d101613f981ce92bab376692b04831ab3b3f25416e94c495c4042e40a68a4b45"
+    },
+    {
+      "path": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step2-source-initial\\packages\\core\\src\\lgax_core\\documents_server.py",
+      "sha256": "eee20d2afbbe1fa2c720ac7440f9c3348964a4e0ac42160731ddedafbbbc5d99"
+    },
+    {
+      "path": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step2-source-initial\\packages\\core\\src\\lgax_core\\review_csv.py",
+      "sha256": "d0ea7093c8bdffcca4bdc4bb17669f62d27f603fefe7d99df6b8d15e0d3a8612"
+    },
+    {
+      "path": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step2-source-initial\\packages\\core\\src\\lgax_core\\review_csv_server.py",
+      "sha256": "29cb31906c1c6d24803803f55365c235dc9f6be2bdc058bf15e3fa33aa65db1e"
+    },
+    {
+      "path": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step2-source-initial\\packages\\core\\src\\lgax_core\\pdf_text_worker.py",
+      "sha256": "a0ce23d590a57121b6abfa8573859f5833e3fd69d9577a2304b6ac4ba6199e1d"
+    },
+    {
+      "path": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step2-source-initial\\packages\\core\\src\\lgax_core\\store.py",
+      "sha256": "2dba0b34a62b58f704fc1fc617e9113d7cdb277819cd5b72d3df1849411245fe"
+    },
+    {
+      "path": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step2-source-initial\\packages\\contracts\\schemas\\lgax.schema.json",
+      "sha256": "d7cf46d9a980b00ad786ec46feaf3d31e4094f56ff0899d8bab59bdf95a9bad5"
+    }
+  ],
+  "runner": {
+    "path": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\data\\research\\P2-DATA-002-step2-20261005\\run_registration.py",
+    "sha256": "bcbbd491c96fffc87391f3931907262b3370dfdb38679b764768c28a3dcb9263"
+  },
+  "server_commands": [
+    {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "lgax_core.documents_server",
+        "--directory",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\private\\data002-step2\\initial\\pdf-store",
+        "--plan",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\data\\research\\P2-DATA-002-step2-20261005\\runs\\initial\\trusted-document-plan.json",
+        "--extractor-python",
+        "C:\\Users\\user\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "--token-file",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\private\\data002-step2\\initial\\token.txt",
+        "--port",
+        "55012"
+      ],
+      "pid": 20020
+    },
+    {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "lgax_core.review_csv_server",
+        "--directory",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\private\\data002-step2\\initial\\csv-store",
+        "--dataset",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\private\\data002-step2\\initial\\dataset.json",
+        "--token-file",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\private\\data002-step2\\initial\\token.txt",
+        "--port",
+        "55013"
+      ],
+      "pid": 35684
+    }
+  ],
+  "failure": {
+    "type": "AssertionError",
+    "message": "POST /api/documents/F-M"
+  },
+  "checked_at_kst": "2026-10-05T04:10:24+09:00"
+}

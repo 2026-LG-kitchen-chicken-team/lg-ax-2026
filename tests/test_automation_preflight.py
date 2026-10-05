@@ -44,6 +44,7 @@ class WorkerPreflightTests(unittest.TestCase):
                 patch.object(worker, "exclusive_lock", side_effect=locks or (lambda path: nullcontext())), \
                 patch.object(worker, "github_identity"), \
                 patch.object(worker, "ControllerClient") as client, \
+                patch.object(worker, "WorkerPresence"), \
                 patch.object(worker, "DockerExecutor") as docker, \
                 patch.object(worker, "validate_auth") as host, \
                 patch.object(worker, "validate_container_auth", side_effect=failure,
