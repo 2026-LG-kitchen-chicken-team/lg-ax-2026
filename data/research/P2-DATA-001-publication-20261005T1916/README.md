@@ -26,3 +26,5 @@
 사용 방법: `publication-manifest.json`으로 공개 파일/원 로컬 파일의 버전을 구분하고, `../P2-DATA-001-manual-run-20261005T0649/execution-overview.json`에서 모델별 상태를 확인한다. `evaluation-preparation.json`은 평가 준비의 실제 거절, `closing-checks.json`은 기존 코드의 검사 명령·출력을 보존한다. 기준선 첫3개는baseline-package0700, 나머지3개와 합성 개발 실행은baseline-complete0703이다. baseline-complete의 여섯 preflight 계획 중 실제 해당 경로로 생성한 것은 뒤3개이며 앞3개는 이전 공백 축약 실행 결과다.
 
 새 모델 재실행과 독립 검수는 최신 PM 담당/고정 실행 조건을 먼저 확인한다. 현재 열린 PR91·Worker 원 실패와 충돌하는 자동 재시도나 상태 전환을 이 증거 전달로 시작하지 않는다.
+
+부분 게시: [PR128](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/128) 생성 확인. #12 인증 보고와 자동 접수는 새 게시기록 head를 고정한 뒤 확인한다.
