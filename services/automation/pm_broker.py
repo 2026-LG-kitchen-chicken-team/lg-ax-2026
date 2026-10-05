@@ -27,6 +27,8 @@ from services.automation import claude
 from services.automation.artifacts import secret_check
 from services.automation.isolation import DockerConfig, DockerExecutor, regular_file
 from services.automation.pm import (
+    DIGEST,
+    IDENTIFIER,
     PMDriverBusy,
     PMError,
     canonical,
@@ -793,8 +795,23 @@ class TrustedPMBroker:
                     if compare.get("merge_base_commit", {}).get("sha") != main:
                         pr["mergeable"] = False
                     else:
-                        pr["independent_review"] = self._review(pr, capability, unit["implementation_session_id"])
-                        pr["integration"] = self._integration(pr, capability)
+                        review = self._review(pr, capability, unit["implementation_session_id"])
+                        pr["independent_review"] = review
+                        # A verified correction for this exact immutable unit
+                        # cannot merge. Retain the review, but save integration
+                        # work until a new head receives independent approval.
+                        rejected = (review.get("verified") is True and review.get("collector") == "trusted_pm" and
+                            review.get("outcome") == "request_changes" and review.get("head") == pr["head"] and
+                            review.get("base") == pr["base"] and review.get("capability_fingerprint") == fingerprint(capability) and
+                            review.get("reviewer") in self.policy["independent_reviewers"] and
+                            review.get("independent") is True and
+                            DIGEST.fullmatch(review.get("evidence_sha256", "")) is not None and
+                            IDENTIFIER.fullmatch(review.get("reviewer_session_id", "")) is not None and
+                            IDENTIFIER.fullmatch(review.get("implementation_session_id", "")) is not None and
+                            review.get("implementation_session_id") == unit["implementation_session_id"] and
+                            review.get("reviewer_session_id") != unit["implementation_session_id"])
+                        if not rejected:
+                            pr["integration"] = self._integration(pr, capability)
                 elif pr["state"] == "merged" and pr["merged_commit"] == main:
                     pr["postmerge"] = self._integration(pr, capability, postmerge=True)
             # Already collected exact evidence is available during mutation's no-call reread.
