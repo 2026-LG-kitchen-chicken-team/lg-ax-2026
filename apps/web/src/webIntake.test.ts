@@ -31,6 +31,7 @@ describe('PM integrated planner screens', () => {
     expect(host.textContent).toContain('합성 자료');
     await click('수정 이력');
     expect(host.querySelector('[data-revision-timeline]')).not.toBeNull();
+    expect([...host.querySelectorAll('.timeline-panel .run-picker option')].map(item => item.getAttribute('value'))).toEqual(FIXTURE_RUNS.map(item => item.run.id));
     expect(host.textContent).toContain('사용자 조건 변경');
     expect(host.querySelector('[aria-label="추가 질문에 답변"]')).not.toBeNull();
     expect(host.querySelector('[aria-label="이전 실행과 결과 비교"]')).not.toBeNull();

@@ -497,6 +497,7 @@ export function HistoryView({ mode, runs, selected, onSelect, features, evidence
 
   return <div className="history-layout">
     <section className="panel planning-panel timeline-panel" aria-label="실행 기록">
+      <RunPicker runs={runs} selected={selected} onSelect={onSelect} />
       <RevisionTimeline runs={runs} selectedId={selected.run.id} original={original} mode={mode} onSelect={onSelect} />
       <p className="hint">{mode === 'fixture' ? 'RUN-FX는 계약 fixture 예시이고, 추가한 초안은 새로고침하면 사라집니다.' : '작업실 서버에 저장된 실행 기록입니다. 기록은 수정되지 않고 새 실행으로만 이어집니다.'}</p>
       <MeasurementLog measure={measure} />
