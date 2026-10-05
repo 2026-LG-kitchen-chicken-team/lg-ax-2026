@@ -20,6 +20,7 @@ import threading
 import time
 import uuid
 from contextlib import contextmanager, nullcontext
+from copy import deepcopy
 from pathlib import Path, PurePosixPath
 from types import SimpleNamespace
 
@@ -41,11 +42,12 @@ from services.automation.pm import (
     fingerprint,
     identifiers,
     load_policy,
+    manual_overlap_capabilities,
     protected_path,
     stable_observation,
     text,
 )
-from services.automation.state import MEMBER_NAMES, PM, REPO
+from services.automation.state import ACCOUNTS, MEMBER_NAMES, PM, REPO, ControlError, overlap, safe_path
 from services.automation.worker import (
     ControllerClient,
     exclusive_lock,
@@ -57,10 +59,15 @@ from services.automation.worker import (
 SHA = re.compile(r"[0-9a-f]{40}")
 ACTION_ID = re.compile(r"pm-[0-9a-f]{40}")
 MAX_SOURCE = 256 * 1024 * 1024
+MAX_MANUAL_PRS = 40
 REVIEW_SCHEMA = {"type": "object", "additionalProperties": False,
-    "properties": {"outcome": {"type": "string", "enum": ["approve", "request_changes"]},
-                   "reason": {"type": "string"},
-                   "findings": {"type": "array", "items": {"type": "string"}}},
+    "properties": {"outcome": {"type": "string", "enum": ["approve", "request_changes"],
+                               "description": "Approve the bounded implementation unit only when no blocking defect exists."},
+                   "reason": {"type": "string", "minLength": 1, "maxLength": 2000,
+                              "description": "Review rationale, including observations and separate remaining parent acceptance."},
+                   "findings": {"type": "array", "maxItems": 30,
+                                "description": "Blocking code or acceptance defects only. MUST be [] when outcome is approve. Put informational notes and parent-completion limits in reason.",
+                                "items": {"type": "string", "minLength": 1, "maxLength": 2000}}},
     "required": ["outcome", "reason", "findings"]}
 
 
@@ -320,6 +327,7 @@ class TrustedPMBroker:
                 "released_capabilities" not in self.config):
             return None
         ready = set(observation["capabilities_ready"]) & self._released_capabilities()
+        ready -= manual_overlap_capabilities(observation)
         plan = self.orchestration.capabilities
         for cap_id in sorted(ready & plan.keys(), key=lambda key: (-plan[key]["priority"], key)):
             cap = self.policy["capabilities"].get(cap_id)
@@ -557,6 +565,13 @@ class TrustedPMBroker:
                 "Reproduce these exact public fixture inputs and semantic codes. Original output/relay hashes link the protected PM proof; you do not need PM-private files. Preserve the two internal Agent repairs and all evidence/contract checks. A transport escalation is not a core defect."]
         packet = {key: action[key] for key in ("owner", "task_id", "allowed_paths", "validation_commands",
                   "shared_resources", "timeout_seconds", "priority", "max_attempts", "formal_task_dependencies")}
+        cap = self.policy["capabilities"][action["capability_id"]]
+        if cap.get("development_only") is True:
+            if observation is None or packet["formal_task_dependencies"] or packet["max_attempts"] != 1:
+                raise PMError("offline development packet needs fresh protected prerequisite verification")
+            packet["dependency_job_ids"] = self.orchestration.development_dependency_jobs(action["capability_id"], observation)
+            assignment["development_only"] = True
+            assignment["parent_completion"] = "This offline implementation unit never grants parent Done or releases final evaluation/submission dependencies."
         packet.update(job_id=job_id, assignment_id=assignment_id, kind="implementation", title=action["title"],
                       prompt="Fixed required capability " + action["capability_id"] + "\n" + canonical(assignment),
                       base_commit=action["base_commit"], approved=True,
@@ -606,6 +621,82 @@ class TrustedPMBroker:
                            "SUCCESS" if row["state"] == "success" else
                            "PENDING" if row["state"] == "pending" else "FAILURE", "id": row.get("id")})
         return result
+
+    def refresh_manual_submissions(self):
+        """Fixed-dispatch polling reads metadata without product/model collection."""
+        rows = self._manual_submissions(collect=True)
+        return {"manual_submissions": rows,
+                "manual_submission_scan": self.state.get("manual_submission_scan", "not_collected")}
+
+    def _manual_submissions(self, *, collect):
+        """Observe unregistered PR metadata only; never adopt or execute its code.
+
+        The mutation reread uses the same sanitized snapshot. Only a later
+        collection can announce a new manual head; CI churn alone is not a new
+        billable decision. No PR body, patch, comment or credential is retained.
+        """
+        cached = self.state.get("manual_submissions", [])
+        if not collect:
+            return deepcopy(cached)
+        registered = {unit.get("pr_number") for unit in self.state["units"].values()}
+        try:
+            rows = self.github.pages(f"repos/{REPO}/pulls?state=open&sort=created&direction=desc", maximum_pages=2)
+            rows = [row for row in rows if row.get("number") not in registered and row.get("state") == "open"
+                    and row.get("draft") is False and row.get("user", {}).get("login") in ACCOUNTS
+                    and row.get("base", {}).get("repo", {}).get("full_name") == REPO]
+            if len(rows) > MAX_MANUAL_PRS:
+                raise PMError("manual PR metadata exceeded bounded collection")
+            result = []
+            for row in rows:
+                number, head = row.get("number"), row.get("head", {}).get("sha", "")
+                if type(number) is not int or not 1 <= number <= 1000000 or not SHA.fullmatch(head):
+                    raise PMError("manual PR immutable identity malformed")
+                # One bounded first page is enough for detection, never for
+                # formal intake. A large PR remains visible with incomplete
+                # file metadata instead of disappearing from the pending list.
+                files = self.github.request("GET", f"repos/{REPO}/pulls/{number}/files?per_page=100&page=1")
+                if not isinstance(files, list) or len(files) > 100:
+                    raise PMError("manual PR changed-file metadata malformed")
+                paths, protected_count = set(), 0
+                for item in files:
+                    for value in (item.get("filename"), item.get("previous_filename")):
+                        if value is None:
+                            continue
+                        try:
+                            paths.add(safe_path(value))
+                        except ControlError:
+                            protected_count += 1  # Summarize; never expose private/auth paths.
+                raw_declaration = str(row.get("title") or "")[:300] + "\n" + str(row.get("body") or "")[:16000]
+                declared = sorted(task for task in self.policy["tasks"] if re.search(
+                    r"(?<![A-Za-z0-9_-])" + re.escape(task) + r"(?![A-Za-z0-9_-])", raw_declaration))
+                # This is classification metadata, not proof of the declaration.
+                product = any(path.startswith(("apps/", "packages/core/", "data/", "skills/", "services/inference/"))
+                              for path in paths)
+                overlaps = sorted(key for key, cap in self.policy["capabilities"].items()
+                                  if cap.get("development_only") is True and any(
+                                      overlap(path, allowed) for path in paths for allowed in cap["allowed_paths"]))
+                ref = row.get("base", {}).get("ref", "")
+                ref = ref if isinstance(ref, str) and re.fullmatch(r"[A-Za-z0-9_./-]{1,200}", ref) else "redacted"
+                checks = [{key: check[key] for key in ("context", "head", "status")}
+                          for check in self._checks(head) if check.get("context") in self.policy["required_ci_contexts"]]
+                result.append({"number": number, "author": row["user"]["login"], "head": head,
+                    "base_ref": ref, "base_repo": REPO, "state": "open", "draft": False,
+                    "ci": checks, "changed_paths": sorted(paths)[:60], "protected_paths_present": protected_count > 0,
+                    "protected_path_count": protected_count, "file_metadata_complete":
+                        row.get("changed_files", len(files)) == len(files) and len(files) < 100 and len(paths) <= 60,
+                    "declared_task_ids": declared, "task_declaration_verified": False,
+                    "overlapping_development_capabilities": overlaps, "product_paths_present": product,
+                    "readiness_or_operations_only": not product,
+                    "authority": "manual_pm_review_pending", "formal_intake_completed": False})
+        except PMError:
+            # An unavailable read is not an empty inbox or a completed review.
+            self.state["manual_submission_scan"] = "unavailable_cached_metadata"
+            self.save()
+            return deepcopy(cached)
+        result.sort(key=lambda item: item["number"])
+        self.state.update(manual_submissions=result, manual_submission_scan="collected_metadata_only")
+        self.save()
+        return deepcopy(result)
 
     def _readiness(self):
         result = {}
@@ -692,15 +783,61 @@ class TrustedPMBroker:
         return proof
 
     def _review(self, pr, capability, implementation_session_id):
-        key = fingerprint({"review_head": pr["head"], "base": pr["base"], "capability": capability})
+        key, supersedes = self._review_key(pr, capability, implementation_session_id)
         if key in self.state["proofs"]:
             return self.state["proofs"][key]
         reserve = getattr(self.driver, "reserve_profile", None)
         with reserve() if reserve else nullcontext():
-            return self._review_reserved(pr, capability, implementation_session_id)
+            return self._review_reserved(pr, capability, implementation_session_id, key=key, supersedes=supersedes)
 
-    def _review_reserved(self, pr, capability, implementation_session_id):
-        key = fingerprint({"review_head": pr["head"], "base": pr["base"], "capability": capability})
+    def _review_key(self, pr, capability, implementation_session_id):
+        """An operator-pinned one-session repair never overwrites a prior review.
+
+        A known contradictory legacy approve/findings receipt is the only
+        eligible source. Unknown cost, rejection, a changed head/base, and
+        normal approval remain outside this explicit migration capability.
+        """
+        original = fingerprint({"review_head": pr["head"], "base": pr["base"], "capability": capability})
+        revision = self.config.get("review_contract_revision")
+        if revision is None:
+            return original, None
+        if (not isinstance(revision, dict) or set(revision) != {"version", "targets"} or
+                type(revision["version"]) is not int or revision["version"] != 2 or not isinstance(revision["targets"], list) or
+                not 1 <= len(revision["targets"]) <= 10):
+            raise PMError("review contract revision requires an explicit bounded operator pin")
+        identities = set()
+        selected = None
+        for target in revision["targets"]:
+            if (not isinstance(target, dict) or set(target) != {"pr_number", "head", "base", "prior_evidence_sha256"} or
+                    type(target["pr_number"]) is not int or target["pr_number"] < 1 or
+                    any(not isinstance(target[name], str) or not SHA.fullmatch(target[name]) for name in ("head", "base")) or
+                    not isinstance(target["prior_evidence_sha256"], str) or
+                    not DIGEST.fullmatch(target["prior_evidence_sha256"])):
+                raise PMError("review contract target must pin its exact original receipt")
+            identity = (target["pr_number"], target["head"], target["base"])
+            if identity in identities:
+                raise PMError("duplicate review contract revision target")
+            identities.add(identity)
+            if identity == (pr["number"], pr["head"], pr["base"]):
+                selected = target
+        if selected is None:
+            return original, None
+        prior = self.state["proofs"].get(original, {})
+        if (prior.get("verified") is not True or prior.get("collector") != "trusted_pm" or
+                prior.get("head") != pr["head"] or prior.get("base") != pr["base"] or
+                prior.get("outcome") != "approve" or not isinstance(prior.get("findings"), list) or not prior["findings"] or
+                prior.get("independent") is not True or prior.get("reviewer") not in self.policy["independent_reviewers"] or
+                prior.get("implementation_session_id") != implementation_session_id or
+                not IDENTIFIER.fullmatch(prior.get("reviewer_session_id", "")) or
+                prior["reviewer_session_id"] == implementation_session_id or
+                prior.get("capability_fingerprint") != fingerprint(capability) or
+                prior.get("evidence_sha256") != selected["prior_evidence_sha256"]):
+            raise PMError("review contract revision cannot retry unknown usage or unpinned evidence")
+        return fingerprint({"review_head": pr["head"], "base": pr["base"], "capability": capability,
+                            "review_contract_version": 2, "supersedes": selected["prior_evidence_sha256"]}), selected["prior_evidence_sha256"]
+
+    def _review_reserved(self, pr, capability, implementation_session_id, *, key=None, supersedes=None):
+        key = key or fingerprint({"review_head": pr["head"], "base": pr["base"], "capability": capability})
         if key in self.state["proofs"]:
             return self.state["proofs"][key]
         day = time.strftime("%Y-%m-%d", time.gmtime())
@@ -733,6 +870,10 @@ class TrustedPMBroker:
         self.save()
         raw = self._fixed_diff(pr["base"], pr["head"])
         context = {"purpose": "Independent fixed-commit code review; do not trust developer claims.",
+                   "review_contract": {"version": 2, "findings": "blocking_defects_only; approve MUST have []",
+                       "informational_notes": "Use reason for passing observations and validation limitations.",
+                       "acceptance_scope": "Review this fixed implementation unit. Parent Done and independent full-product acceptance remain separate gates; do not invent a defect solely because they are pending."},
+                   "completes_task": capability.get("completes_task", False),
                    "head": pr["head"], "base": pr["base"], "acceptance": capability["acceptance"],
                    "scope": capability["allowed_paths"], "diff": raw.decode("utf-8", errors="strict")}
         used = None
@@ -772,6 +913,13 @@ class TrustedPMBroker:
                  "implementation_session_id": implementation_session_id, "outcome": value["outcome"],
                  "findings": value["findings"], "evidence_sha256": fingerprint(record),
                  "capability_fingerprint": fingerprint(capability)}
+        proof["review_contract_version"] = 2
+        if supersedes:
+            proof["supersedes_review_evidence_sha256"] = supersedes
+        if value["outcome"] == "approve" and value["findings"]:
+            # A new contradictory output is a known measured failed review,
+            # never an approval or a reason to retry this immutable key.
+            proof.update(verified=False, outcome="invalid", reason_code="approve_has_blocking_findings")
         self.state["proofs"][key] = proof
         self.save()
         return proof
@@ -851,11 +999,13 @@ class TrustedPMBroker:
                 elif pr["state"] == "merged" and pr["merged_commit"] == main:
                     pr["postmerge"] = self._integration(pr, capability, postmerge=True)
             # Already collected exact evidence is available during mutation's no-call reread.
-            for proof in self.state["proofs"].values():
+            review_key, _ = self._review_key(pr, capability, unit["implementation_session_id"])
+            for proof_key, proof in self.state["proofs"].items():
                 if (proof.get("head") == pr["head"] and proof.get("base") == pr["base"] and
                         proof.get("capability_fingerprint") == fingerprint(capability)):
                     if "reviewer_session_id" in proof:
-                        pr.setdefault("independent_review", proof)
+                        if proof_key == review_key:
+                            pr.setdefault("independent_review", proof)
                     elif proof.get("commit") == pr.get("merged_commit"):
                         pr.setdefault("postmerge", proof)
                     elif proof.get("commit") == pr["head"]:
@@ -873,12 +1023,15 @@ class TrustedPMBroker:
                 total["tokens"] += day_budget.get("tasks", {}).get(task_id, 0)
         external_usage = {"day": {"model_calls": budget.get("calls", 0), "tokens": budget.get("tokens", 0)},
                           "tasks": lifetime_tasks}
+        manual_submissions = self._manual_submissions(collect=collect)
         observation = {"repo": REPO, "main_commit": main, "global_mode": status["global_mode"],
                 "pm_mode": "on" if status.get("members", {}).get(PM) else "off", "members": status["members"],
                 "formal_snapshot": status["formal_snapshot"], "jobs": jobs, "prs": prs,
+                "worker_presence": status.get("workers", {}),
                 "capabilities_ready": ready, "readiness": self._readiness(),
                 "operator_resume_nonce": self.config.get("operator_resume_nonce", "initial"),
-                "external_usage": external_usage}
+                "external_usage": external_usage, "manual_submissions": manual_submissions,
+                "manual_submission_scan": self.state.get("manual_submission_scan", "not_collected")}
         self.orchestration.synchronize(observation, collect=collect)
         # Read the same immutable inbox in execution revalidation. Omitting the
         # key (even for no replies) changes stable_observation's fingerprint.
