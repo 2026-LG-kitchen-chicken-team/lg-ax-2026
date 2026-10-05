@@ -50,7 +50,7 @@ export function subjectFromGap(gap: Gap, label: string): TraceSubject {
 const sameSource = (a: Evidence, b: Evidence) => a.text === b.text && a.model_id === b.model_id && a.document_version === b.document_version && a.source_kind === b.source_kind
   && JSON.stringify(a.locator) === JSON.stringify(b.locator);
 
-function classify(id: string, scope: TraceScope, current: Evidence | undefined, judged: Evidence | undefined): { status: TraceStatus; note: string } {
+function classify(scope: TraceScope, current: Evidence | undefined, judged: Evidence | undefined): { status: TraceStatus; note: string } {
   if (!current) {
     return judged
       ? { status: 'deleted', note: '판단 당시 입력에는 있었지만 현재 자료에는 없습니다. 마지막으로 판단에 쓰인 원문을 보여 주며 근거로 인정하지 않습니다.' }
@@ -78,7 +78,7 @@ export function buildEvidenceTrace(options: { subject: TraceSubject; scope: Trac
   const rows: TraceRow[] = ids.map(id => {
     const now = current.get(id);
     const then = judged.get(id);
-    const { status, note } = classify(id, scope, now, then);
+    const { status, note } = classify(scope, now, then);
     const shown = now ?? then ?? null;
     const role: TraceRole = shown ? shown.source_type === 'manual' ? 'manual' : 'review' : manualExpected.has(id) ? 'manual' : 'unknown';
     return { id, status, role, source: shown, current: status === 'changed' ? now ?? null : null, note };
