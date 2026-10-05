@@ -484,7 +484,8 @@ class PlanningAgent:
                     valid_previous_analysis = True
                     context = {"request": payload["request"], "product": payload["product"],
                                "sources": payload["sources"], "features": payload["features"],
-                               "concepts": current["concepts"], "revision_count": payload["revision_count"],
+                               "concepts": current["concepts"], "concept_assessments": current["concept_assessments"],
+                               "revision_count": payload["revision_count"],
                                "input_sha256": input_digest(payload), "output_sha256": input_digest(current),
                                "skill_input": {"constraints": payload["request"]["exclusions"]}, "feedback": feedback}
                     try:

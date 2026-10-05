@@ -1,0 +1,44 @@
+{
+  "observed_at": "2026-10-06T00:26:26.411935+09:00",
+  "core_regression_tests_passed": 103,
+  "test_modules": [
+    "test_semantic_review",
+    "test_semantic_recorded_reviews",
+    "test_planning_agent",
+    "test_revision_guard",
+    "test_no_candidate_review"
+  ],
+  "new_regressions": 3,
+  "changed_files_ruff": "pass",
+  "agent_rules": "pass",
+  "harness": "pass",
+  "phase2": "pass",
+  "contracts": "pass",
+  "source_sha256": {
+    "packages/core/src/lgax_core/planning_agent.py": "c25ddb54e86914b3eb6ff07b05316cb9f596c1392975e9c5402d7d70e51d7203",
+    "packages/core/src/lgax_core/semantic_review.py": "e6b3e27cbf9ad247866d43217cf7f889f9610652c68ea0195193d3392bae2620",
+    "tests/test_semantic_review.py": "a1b63f1b7a96bf1cf2ac909944ae0abc4763b55b0eafd1d83c1b1220fc13a649"
+  },
+  "log_sha256": {
+    "core-regression-tests.txt": "9f59c6cad02cb4f71b8876a8d6555153e2c79adfae0dac1f039e6ac4523c6aef",
+    "changed-files-ruff.txt": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "sync_agent_rules.txt": "7e0a7002be1c8a6a929966a18bc7207035beabeef3065614f21a9b6265ca789d",
+    "harness.txt": "e99f0b312c5f65cac0e4753aa3d76ba94c88329a533221fd84f90bfdc81dae5d",
+    "phase2.txt": "6e84f7ccf1d99593ee0bf819047eb956d33efeb0f2863bbecbebdca299bd1e42",
+    "check_contracts.txt": "1e1b81f4c2607b74aca9deb8fd8bf0f1b048508d317d21f36ed1b59fca45661b"
+  },
+  "source_copy": true,
+  "blank_home_and_no_inherited_auth_environment": true,
+  "python_network_guard": "connect/bind/getaddrinfo/sendto blocked",
+  "isolation_limit": "Same OS identity, read-only installed dependencies and Git object store; no OS credential boundary claim.",
+  "preserved_initial_check_failures": [
+    "sandbox denied compiled DLL loading before tests",
+    "Git executable missing from blank PATH",
+    "Windows CRLF in Git alternate-object path"
+  ],
+  "production_model_regression_runs": 0,
+  "live27b_regression": "deferred_by_user_to_later_PR_update",
+  "independent_ai_scores_are_unchanged": true,
+  "formal_evaluation_complete": false,
+  "pm_acceptance": false
+}

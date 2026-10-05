@@ -56,3 +56,7 @@ HOLD06의 이전1.0 별도 실행은 fresh-holdout-prior-execution/summary.json:
 통합 전 Python505개 통과. 최신main c05ee88 통합 후 전체1219개 검사에서 코어 재사용 기대 경로를 공유 Session에 맞추고 예산/실패/고립 검사를 유지했다. 최종 전체에는 변경하지 않은 Worker 테스트의 Windows CRLF 기대2건 실패/7skip이 남는다. 이를 전체 Python 성공으로 보고하지 않는다. 변경 파일 Ruff/diff/계약·지침·harness·phase2 검사는 통과했고 전체 Ruff에는 기존 다른 파일 import-order6건이 있다. 웹302passed/5skip·safe-ci4개·build, MCPstdio/HTTP 각각5호출, inference guard6개가 통과했다. 원 로그는 verification 아래에 보존했다. 원격 CI는 실제 PR head에서 별도 확인한다.
 본인 임시 서비스는 UID/cwd/환경을 재검증하고 supervisor 종료 요청으로 중지했다.18866 해제·캐시 유지와 기존 PM18864/runtime/model pin 보존은 resource-cleanup.json에서 확인한다. 타 GPU/서비스/기존 다운로드를 종료·삭제·교체하지 않았다. 신규 배정/Worker 운영은 다루지 않았다.
 미완료: 독립 검토 점수·사례 난도/독립성 검수·모델 선택/의미 품질 채택·PM 승인/병합/통합/Done. 현재 실행 pack은 검수 가능한 실제 근거이며 제품의 실제 LG 사양·시장 효용·제조/안전 효과를 입증하지 않는다.
+
+## 2026-10-06 독립 AI 채점 추가
+
+위 점수 미수집 상태는 당시 원 수집 기록이다. 기존6사례·12출력을 별도 문맥 AI가 채점한 [독립 AI 평가](independent-ai-assessment/README.md)를 추가했다. Agent pass2/fail1/uncertain3, 기준선 pass3/fail3이며 평가 한계·원 판정·해시를 보존한다. HOLD-01의 근거 없는 물리적 불가능 단정이 발견되어 해당 판단 사유도 의미 검토/후보별 인용 검사에 포함하도록 코드를 보완했다. 관련 코어103개와 정적 검사는 통과했지만 수정 코드의 실제27B 검토는 이번에 미실행이며 추후 이 PR에 추가한다. 채점 완료를 공식 평가·모델 채택·PM 승인/Done으로 바꾸지 않는다.

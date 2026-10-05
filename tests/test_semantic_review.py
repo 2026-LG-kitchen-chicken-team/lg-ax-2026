@@ -51,6 +51,50 @@ class SemanticReviewTests(unittest.TestCase):
         self.report["exclusion_assessments"][0]["condition"] = "설명서의 사용 조건을 충족해야 함"
         self.assertTrue(list(Draft202012Validator(schema).iter_errors(self.report)))
 
+    def test_live_assessment_reason_can_be_quoted_to_request_correction(self):
+        folder = ROOT / "evals/core-live-completion/20261005"
+        case = next(c for c in json.loads((folder / "blinded-review-fresh/review.json").read_text("utf-8"))["cases"]
+                    if c["case_id"] == "HOLD-01")
+        self.payload = case["request"]
+        self.output = deepcopy(case["outputs"]["B"]["raw_output"])
+        original = deepcopy(self.output)
+        self.report = declaration(self.payload, self.output)
+        row = next(r for r in self.report["quality_assessments"] if r["criterion"] == "unsupported_factual_claims")
+        row.update(verdict="violation", candidate_quote=self.output["concept_assessments"][0]["reason"],
+                   reason="청소 접근의 어려움만 있으며 물리적인 세정 불가능은 원문에서 입증되지 않았다",
+                   source_quotes=[{"evidence_id": s["id"], "quote": s["text"]} for s in self.payload["sources"]])
+        Draft202012Validator(schema_for_review(self.payload, self.output, literal_choices=True)).validate(self.report)
+        for count, action in ((0, "revise"), (1, "revise"), (2, "unresolved")):
+            self.payload["revision_count"] = count
+            self.report["input_sha256"] = input_digest(self.payload)
+            self.assertEqual(self.review()["action"], action)
+            self.assertEqual(semantic_feedback(self.report)[0]["details"]["candidate_quote"],
+                             self.output["concept_assessments"][0]["reason"])
+        self.assertEqual(self.output, original)
+
+    def test_assessment_quote_must_belong_to_its_own_candidate(self):
+        second = deepcopy(self.output["concepts"][0])
+        second["id"] = "SECOND"
+        self.output["concepts"].append(second)
+        first = self.output["concept_assessments"][0]
+        self.output["concept_assessments"].append({**deepcopy(first), "concept_id": "SECOND",
+                                                "reason": "두 번째 후보만의 별도 사실 단정"})
+        self.report = declaration(self.payload, self.output)
+        row = next(r for r in self.report["quality_assessments"]
+                   if r["concept_id"] == self.output["concepts"][0]["id"])
+        row["candidate_quote"] = self.output["concept_assessments"][-1]["reason"]
+        with self.assertRaises(DomainError) as caught:
+            self.review()
+        self.assertEqual(caught.exception.details["reason"], "candidate_quote_not_literal")
+
+    def test_assessment_quote_cannot_use_other_candidate_or_changed_output_hash(self):
+        reason = self.output["concept_assessments"][0]["reason"]
+        self.report["quality_assessments"][0]["candidate_quote"] = reason
+        self.assertEqual(self.review()["action"], "accept")
+        self.output["concept_assessments"][0]["reason"] += " 바뀐 판단 사유"
+        with self.assertRaises(DomainError):
+            self.review()
+
     def test_coverage_is_cartesian_for_multiple_candidates_conditions_not_just_first(self):
         second = deepcopy(self.output["concepts"][0])
         second["id"] = "SECOND"
@@ -192,6 +236,7 @@ class SemanticPipelineTests(unittest.TestCase):
         record = result["model_calls"][-1]
         self.assertEqual(record["metadata"]["revision"], fixtures.DIGEST)
         self.assertEqual(record["request_context"]["request"], case.payload["request"])
+        self.assertEqual(record["request_context"]["concept_assessments"], result["output"]["concept_assessments"])
         self.assertTrue(record["raw_response"])
         self.assertEqual(result["semantic_reviews"][0]["decision"]["action"], "accept")
 

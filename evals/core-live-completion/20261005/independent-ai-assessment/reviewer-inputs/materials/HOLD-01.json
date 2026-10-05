@@ -1,0 +1,154 @@
+{
+  "input": {
+    "request": {
+      "product_group": "fridge",
+      "target_customer": "해당 주방 가전의 가정 사용자",
+      "use_situation": "자료에 서술된 같은 사용 경험을 검토한다.",
+      "improvement_task": "매주 문 고무 패킹을 닦지만 접힌 안쪽 모서리에 빵가루가 남아 손가락을 밀어 넣어야 한다.",
+      "exclusions": [
+        "다른 모델 기능 혼용",
+        "근거 없는 효과 단정"
+      ],
+      "model_ids": [
+        "HOLD-20261005-01-MODEL"
+      ],
+      "dataset_version": "HOLD-20261005-01-frozen-v1.0"
+    },
+    "product": {
+      "model_id": "HOLD-20261005-01-MODEL",
+      "name": "별도 고정 합성 fridge",
+      "product_group": "fridge",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "HOLD-20261005-01-REVIEW",
+        "model_id": "HOLD-20261005-01-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "HOLD-20261005-01-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "매주 문 고무 패킹을 닦지만 접힌 안쪽 모서리에 빵가루가 남아 손가락을 밀어 넣어야 한다.",
+        "feature_ids": []
+      },
+      {
+        "id": "HOLD-20261005-01-MANUAL",
+        "model_id": "HOLD-20261005-01-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "HOLD-20261005-01-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능과 사용 조건"
+        },
+        "text": "문 고무 패킹은 문을 연 상태에서 젖은 천으로 닦을 수 있다. 패킹은 사용자 분리 부품이 아니다.",
+        "feature_ids": [
+          "HOLD-20261005-01-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "HOLD-20261005-01-FEATURE",
+        "model_id": "HOLD-20261005-01-MODEL",
+        "document_version": "1.0",
+        "name": "자료에 명시된 현재 기능",
+        "description": "문 고무 패킹은 문을 연 상태에서 젖은 천으로 닦을 수 있다. 패킹은 사용자 분리 부품이 아니다.",
+        "conditions": [
+          "문서에 기재된 사용 조건에 따른다."
+        ],
+        "evidence_ids": [
+          "HOLD-20261005-01-MANUAL"
+        ]
+      }
+    ],
+    "revision_count": 0,
+    "max_concepts": 2,
+    "changed_evidence_ids": []
+  },
+  "dataset": {
+    "manifest": {
+      "dataset_id": "HOLD-20261005-01",
+      "version": "HOLD-20261005-01-frozen-v1.0",
+      "description": "새 고정 합성 자료; 독립 검수 전",
+      "source_kind": "synthetic",
+      "model_count": 1,
+      "review_count": 1,
+      "analysis_implemented": false
+    },
+    "products": [
+      {
+        "model_id": "HOLD-20261005-01-MODEL",
+        "name": "별도 고정 합성 fridge",
+        "product_group": "fridge",
+        "document_version": "1.0",
+        "source_kind": "synthetic"
+      }
+    ],
+    "reviews": [
+      {
+        "id": "ROW-HOLD-20261005-01-REVIEW",
+        "evidence_id": "HOLD-20261005-01-REVIEW",
+        "model_id": "HOLD-20261005-01-MODEL",
+        "text": "매주 문 고무 패킹을 닦지만 접힌 안쪽 모서리에 빵가루가 남아 손가락을 밀어 넣어야 한다.",
+        "source_kind": "synthetic",
+        "document_version": "1.0",
+        "source_id": "HOLD-20261005-01-CSV",
+        "locator": {
+          "row": 2
+        }
+      }
+    ],
+    "evidence": [
+      {
+        "id": "HOLD-20261005-01-REVIEW",
+        "model_id": "HOLD-20261005-01-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "HOLD-20261005-01-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "매주 문 고무 패킹을 닦지만 접힌 안쪽 모서리에 빵가루가 남아 손가락을 밀어 넣어야 한다.",
+        "feature_ids": []
+      },
+      {
+        "id": "HOLD-20261005-01-MANUAL",
+        "model_id": "HOLD-20261005-01-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "HOLD-20261005-01-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능과 사용 조건"
+        },
+        "text": "문 고무 패킹은 문을 연 상태에서 젖은 천으로 닦을 수 있다. 패킹은 사용자 분리 부품이 아니다.",
+        "feature_ids": [
+          "HOLD-20261005-01-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "HOLD-20261005-01-FEATURE",
+        "model_id": "HOLD-20261005-01-MODEL",
+        "document_version": "1.0",
+        "name": "자료에 명시된 현재 기능",
+        "description": "문 고무 패킹은 문을 연 상태에서 젖은 천으로 닦을 수 있다. 패킹은 사용자 분리 부품이 아니다.",
+        "conditions": [
+          "문서에 기재된 사용 조건에 따른다."
+        ],
+        "evidence_ids": [
+          "HOLD-20261005-01-MANUAL"
+        ]
+      }
+    ]
+  }
+}

@@ -35,9 +35,12 @@ INSTRUCTIONS = (
     "요청·사용 조건을 지켜야 한다는 requirements는 설계 요구이며 입증된 성능 주장이 아닙니다. "
     "검증 가정이 명시됐다는 이유만으로 uncertain/violation으로 판정하지 마세요. "
     "unsupported_factual_claims는 새 가설·설계 요구사항과 확인된 제품 사실을 구분했는지를 검사합니다. "
+    "후보 본문뿐 아니라 같은 concept_id의 concept_assessments.reason도 검사하세요. "
+    "그 사유에 담긴 기존 제품의 기능 부재·물리적 불가능·원인 단정도 원문 사실과 대조해야 합니다. "
+    "사용 불편이나 문서 미언급을 불가능·부재라는 확정 사실로 확대하지 마세요. "
     "특정 효과 수치나 실현 가능성을 이미 확인된 사실로 단정한 경우에는 해당 문구와 근거를 대조해 violation을 기록하세요. "
     "exclusion의 verdict는 compliant/violation/uncertain이고 quality는 satisfied/violation/uncertain입니다. "
-    "candidate_quote는 해당 후보의 원문 일부를 그대로 인용하세요. "
+    "candidate_quote는 해당 후보 또는 같은 concept_id의 concept_assessments 원문 일부를 그대로 인용하세요. "
     "인용문을 요약·합성·교정하지 말고 해당 후보의 한 문자열 필드 안에서 연속된 부분을 복사하세요. "
     "기준 설명이 없는 quality violation만 candidate_quote=''를 허용합니다. source_quotes는 현재 sources의 ID/원문 일부만 쓰세요. "
     "이유는 해당 조건·후보·자료의 판단문입니다. reason에서 기준을 충족한다고 설명하면 verdict도 통과 값이어야 합니다. "
@@ -68,7 +71,8 @@ def schema_for_review(payload: dict, output: dict, *, literal_choices: bool = Fa
               "candidate_quote": {"type": "string"}, "source_quotes": {"type": "array", "items": source_quote}}
     if literal_choices:
         shared["candidate_quote"]["enum"] = list(dict.fromkeys(
-            [""] + [text for candidate in output["concepts"] for text in _strings(candidate) if text.strip()]))
+            [""] + [text for candidate in output["concepts"]
+                    for text in _candidate_strings(output, candidate["id"]) if text.strip()]))
 
     def rows(extra: dict, count: int) -> dict:
         fields = {**shared, **extra}
@@ -87,7 +91,7 @@ def schema_for_review(payload: dict, output: dict, *, literal_choices: bool = Fa
         "quality_assessments": rows({"criterion": {"enum": list(QUALITY), "description":
             "mechanism=구체 구조/동작 설명 있음; difference_from_current_features=기존 기능과 차이 설명 있음; "
             "unverified_assumptions=가설의 미검증 전제를 assumptions에 표시함; "
-            "unsupported_factual_claims=근거 없는 성능/효과/실현 가능성을 검증된 사실로 단정하지 않음"}}, len(ids) * len(QUALITY)),
+            "unsupported_factual_claims=후보 본문/판정 사유의 기존 제품 사실·성능·효과·실현성을 근거 없이 단정하지 않음"}}, len(ids) * len(QUALITY)),
         "questions": {"type": "array", "items": text, "uniqueItems": True},
     }
     return {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
@@ -104,6 +108,16 @@ def _strings(value: Any):
         for key, item in value.items():
             if key not in ("id", "gap_ids", "evidence_ids", "status", "kind"):
                 yield from _strings(item)
+
+
+def _candidate_strings(output: dict, concept_id: str):
+    """Bind factual justifications to their own candidate, including review reasons."""
+    for candidate in output["concepts"]:
+        if candidate["id"] == concept_id:
+            yield from _strings(candidate)
+    for assessment in output.get("concept_assessments", []):
+        if assessment["concept_id"] == concept_id:
+            yield from _strings(assessment["reason"])
 
 
 def semantic_feedback(report: dict) -> list[dict]:
@@ -143,7 +157,7 @@ def review_semantics(payload: dict, output: dict, report: Any) -> dict:
                 seen_quality.add(key)
             quote = row["candidate_quote"]
             if (not quote.strip() and not (category == "quality" and row["verdict"] == "violation" and quote == "")) or (
-                quote and not any(quote in text for text in _strings(concepts[candidate]))
+                quote and not any(quote in text for text in _candidate_strings(output, candidate))
             ):
                 invalid("candidate_quote_not_literal")
             for citation in row["source_quotes"]:
