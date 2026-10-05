@@ -168,6 +168,8 @@ def replay(args) -> dict:
         require(digest == pins[case_id]["output_sha256"], f"Recorded output bytes changed: {case_id}")
         records[case_id], file_hashes[case_id] = record, digest
     dataset, dataset_file_hash = read_record(args.dataset, maximum=16_777_216)
+    require(all(dataset_file_hash == item["dataset_sha256"] for item in pins.values()),
+            "Dataset file bytes differ from the actually recorded six-case source")
     store, runner = DemoStore(dataset), RecordedRunner(records, pins)
     owner_token, viewer_token, outsider_token = (secrets.token_urlsafe(48) for _ in range(3))
     principal = "recorded-replay-owner"
@@ -184,8 +186,9 @@ def replay(args) -> dict:
         credential.chmod(0o600)
         app = create_workspace_app(temp / "workspace.sqlite", registry, planning_runner=runner, evidence_store=store)
         workspace = app.state.workspace
-        require(all(workspace.dataset_sha256 == item["dataset_sha256"] for item in pins.values()),
-                "Dataset differs from the actually recorded six-case source")
+        # Producer runs pin the source file bytes; WorkspaceStore independently
+        # pins canonical JSON content. Keep both conventions, never equate them.
+        workspace_dataset_sha256 = workspace.dataset_sha256
         with http_server(app) as url:
             with httpx.Client(base_url=url, trust_env=False, timeout=60,
                               headers={"Authorization": "Bearer " + owner_token, "X-LGAX-Client": "web"}) as client:
@@ -235,6 +238,7 @@ def replay(args) -> dict:
                                      "recorded_source_commit": pins[case_id]["source_commit"],
                                      "recorded_output_sha256": file_hashes[case_id], "original_input_sha256": input_digest(execution["original_input"]),
                                      "dataset_sha256": workspace.dataset_sha256, "stored_execution_unchanged": True,
+                                     "recorded_dataset_file_sha256": dataset_file_hash,
                                      "actual_http_readback_equal": True})
                         previous, preserved_parent = saved["run"]["id"], deepcopy(saved)
                 first_project = projects[0]["project"]["id"]
@@ -267,6 +271,7 @@ def replay(args) -> dict:
               "new_model_calls": 0, "historical_quality_failures_preserved": True, "quality_complete": False,
               "historical_model_calls": sum(item["actual_calls"] for item in pins.values()),
               "application_requirements_complete": False, "dataset_file_sha256": dataset_file_hash,
+              "workspace_canonical_dataset_sha256": workspace_dataset_sha256,
               "recorded_summary_sha256": summary_hash, "cases": rows,
               "checks": {"actual_loopback_http": True, "ephemeral_sqlite": True, "guest_minted_tokens_only": True,
                          "original_input_exact": True, "parent_run_immutable": True, "same_http_mcp_ids_and_snapshots": True,
