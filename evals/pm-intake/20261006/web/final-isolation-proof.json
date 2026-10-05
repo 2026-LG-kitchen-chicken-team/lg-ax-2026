@@ -1,0 +1,120 @@
+{
+  "source_commit": "d268debb73362ed4449e5990c4e42dac2341a9d9",
+  "source_archive_sha256": "8579f577e475ea2bec4851167eae6f5d9ca873c59ddddba850c3d59fc0a1d898",
+  "checks": [
+    {
+      "argv": [
+        "npm",
+        "--prefix",
+        "apps/web",
+        "ci",
+        "--offline",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "returncode": 0,
+      "stop": null,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    {
+      "argv": [
+        "node",
+        "--input-type=module",
+        "--eval",
+        "import { resolve } from 'node:path'; import { pathToFileURL } from 'node:url'; const entry = pathToFileURL(resolve('apps/web/node_modules/vitest/vitest.mjs')).href; process.chdir('apps/web'); process.argv = ['node', 'vitest', 'run', 'src/revisionTimeline.test.ts', 'src/webIntake.test.ts', 'src/conceptTextChanges.test.ts', 'src/measurement.scope.test.ts', 'src/round2Live.test.ts', 'src/clarificationPanel.test.ts']; await import(entry);"
+      ],
+      "returncode": 0,
+      "stop": null,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    {
+      "argv": [
+        "npm",
+        "--prefix",
+        "apps/web",
+        "run",
+        "typecheck"
+      ],
+      "returncode": 0,
+      "stop": null,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    {
+      "argv": [
+        "npm",
+        "--prefix",
+        "apps/web",
+        "run",
+        "build"
+      ],
+      "returncode": 0,
+      "stop": null,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    }
+  ],
+  "source_changed": [],
+  "zero_auth": true,
+  "model_calls": 0,
+  "all_pass": true
+}

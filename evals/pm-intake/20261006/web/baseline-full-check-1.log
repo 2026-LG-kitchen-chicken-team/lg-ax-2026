@@ -1,0 +1,73 @@
+
+> @lgax/planning-workspace@0.1.0 test
+> vitest run && node --test scripts/safe-ci.check.mjs
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/workspace/apps/web[39m
+
+ [32m✓[39m src/planning.test.ts [2m([22m[2m42 tests[22m[2m)[22m[33m 403[2mms[22m[39m
+ [32m✓[39m src/round2Live.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 271[2mms[22m[39m
+ [32m✓[39m src/liveWorkspace.state.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+ [32m✓[39m src/liveResults.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 192[2mms[22m[39m
+ [32m✓[39m src/measurement.scope.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 664[2mms[22m[39m
+ [32m✓[39m src/terminalUx.test.ts [2m([22m[2m29 tests[22m[2m)[22m[32m 183[2mms[22m[39m
+ [32m✓[39m src/judgement.test.ts [2m([22m[2m47 tests[22m[2m)[22m[32m 74[2mms[22m[39m
+ [32m✓[39m src/caseMatrix.test.ts [2m([22m[2m37 tests[22m[2m)[22m[32m 223[2mms[22m[39m
+ [32m✓[39m src/liveWorkspace.test.ts [2m([22m[2m11 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m src/coreRecords.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 142[2mms[22m[39m
+ [32m✓[39m src/revisionTimeline.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 51[2mms[22m[39m
+ [32m✓[39m src/evidenceTracePanel.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/conceptTextChanges.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 127[2mms[22m[39m
+ [32m✓[39m src/workspace.test.ts [2m([22m[2m12 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[32m 66[2mms[22m[39m
+ [32m✓[39m src/executionSafety.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 55[2mms[22m[39m
+ [32m✓[39m src/clarificationPanel.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 68[2mms[22m[39m
+ [32m✓[39m src/measurement.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [2m[90m↓[39m[22m src/liveCaseMatrix.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+ [32m✓[39m src/webIntake.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 137[2mms[22m[39m
+ [32m✓[39m src/reasonText.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m src/api.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [2m[90m↓[39m[22m src/livePlanning.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/liveTerminal.test.ts [2m([22m[2m1 test[22m[2m | [22m[33m1 skipped[39m[2m)[22m
+ [32m✓[39m src/liveModelProof.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m src/terminalLabels.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/domain.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m23 passed[39m[22m[2m | [22m[33m3 skipped[39m[90m (26)[39m
+[2m      Tests [22m [1m[32m343 passed[39m[22m[2m | [22m[33m5 skipped[39m[90m (348)[39m
+[2m   Start at [22m 23:13:46
+[2m   Duration [22m 486.09s[2m (transform 1.54s, setup 0ms, import 93.65s, tests 2.86s, environment 326.76s)[22m
+
+TAP version 13
+# Subtest: only a refused connection means free; a connected server is busy
+ok 1 - only a refused connection means free; a connected server is busy
+  ---
+  duration_ms: 0.598667
+  type: 'test'
+  ...
+# Subtest: permissions, network errors and timeout are unknown rather than free
+ok 2 - permissions, network errors and timeout are unknown rather than free
+  ---
+  duration_ms: 0.918423
+  type: 'test'
+  ...
+# Subtest: unknown observation and busy port never invoke installation
+ok 3 - unknown observation and busy port never invoke installation
+  ---
+  duration_ms: 0.196123
+  type: 'test'
+  ...
+# Subtest: all observed ports free permits exactly one install and propagates its result
+ok 4 - all observed ports free permits exactly one install and propagates its result
+  ---
+  duration_ms: 0.117202
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 113.379647
