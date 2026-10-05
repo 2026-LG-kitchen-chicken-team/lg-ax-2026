@@ -21,6 +21,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import uuid
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -370,29 +371,62 @@ class ParentCollector:
                                                ArtifactRef.parse(r["snapshot_ack"])) for r in saved.get("dependencies", []))
         return EvidenceBundle(coverage, None if parent is None else ArtifactRef.parse(parent), dependencies)
 
-    def _legacy_validation(self, main: str) -> ArtifactRef:
-        cached = self.store.index.get("legacy_validation", {}).get(main)
+    def _legacy_validation(self, main: str, task_ref: ArtifactRef, sources: dict, references: list[ArtifactRef]) -> ArtifactRef:
+        bundle = {"schema_version": 1, "protocol": "legacy_frozen_integrity_v1", "main_commit": main,
+                  "task": task_ref.as_dict(), "sources": sources,
+                  "artifacts": [ref.as_dict() for ref in sorted(set(references), key=lambda ref: (ref.path, ref.commit))]}
+        key = fingerprint(bundle)
+        cached = self.store.index.get("legacy_validation", {}).get(key)
         if cached:
             ref = ArtifactRef.parse(cached)
             _check(self.store.registry.permits(ref, "legacy_validation"), "unadmitted legacy integrity check")
             proof = json.loads(self.store.read(ref))
+            _check(ref.commit == main and proof.get("commit") == main and
+                   proof.get("protocol") == "legacy_frozen_integrity_v1" and proof.get("bundle_sha256") == key,
+                   "stale/different legacy frozen validation")
             self._boundary(proof["boundary"], "validator")
             return ref
         _check(self.broker.enabled(), "legacy isolated validation requires enabled collection")
-        work, artifacts = self.broker._source(main, "parent-legacy-integrity")
-        output = self.store.root / f"legacy-validate-{main}.log"
-        argv = ["uv", "run", "--no-sync", "python", "-X", "utf8", "scripts/phase2.py", "validate"]
+        # Minimal frozen data, never a repository archive or .git mount. The
+        # validator is the fixed deployed pure helper, not branch code.
+        from services.automation import completion as completion_module
+
+        root = self.broker.executor.config.workspace_root / ("legacy-integrity-" + uuid.uuid4().hex)
+        work, artifacts = root / "workspace", root / "artifacts"
+        work.mkdir(parents=True)
+        artifacts.mkdir()
+        assets = work / "assets"
+        assets.mkdir()
+        _check(0 < len(bundle["artifacts"]) <= 1000, "bounded legacy artifact set required")
+        total, copied = 0, set()
+        for ref in (ArtifactRef.parse(value) for value in bundle["artifacts"]):
+            if ref.sha256 in copied:
+                continue
+            raw = self.store.read(ref)
+            total += len(raw)
+            _check(len(raw) <= 2 * 1024 * 1024 and total <= 16 * 1024 * 1024, "legacy frozen bytes exceed safe bounds")
+            (assets / (ref.sha256 + ".blob")).write_bytes(raw)
+            copied.add(ref.sha256)
+        write_json(work / "bundle.json", bundle)
+        (work / "_trusted_completion.py").write_bytes(regular_file(Path(completion_module.__file__), maximum=2 * 1024 * 1024))
+        script = ("import json,pathlib,runpy; m=runpy.run_path('_trusted_completion.py'); "
+                  "b=json.loads(pathlib.Path('bundle.json').read_bytes()); "
+                  "r=lambda ref:pathlib.Path('assets',ref.sha256+'.blob').read_bytes(); "
+                  "m['validate_legacy_bundle'](b,r); print('historical frozen integrity passed; no product replay')")
+        output = self.store.root / f"legacy-validate-{key}.log"
+        argv = ["python", "-I", "-c", script]
         result = self.broker.executor.run(argv, cwd=work, env={}, output=output, artifacts=artifacts,
             timeout_seconds=120, heartbeat=self.broker.enabled, role="validator", readonly_workspace=True)
         self._boundary(self.broker.executor.last_boundary, "validator")
-        _check(result.returncode == 0 and not result.stopped_reason, "legacy phase2 integrity validation failed")
-        log = self.store.blob(f"control/legacy-validate-{main}.log", main,
+        _check(result.returncode == 0 and not result.stopped_reason, "legacy frozen integrity validation failed")
+        log = self.store.blob(f"control/legacy-validate-{key}.log", main,
                               regular_file(output, maximum=2 * 1024 * 1024))
         ref = self.store.admit("legacy_validation", main, {"schema_version": 1, "kind": "legacy_validation",
-            "commit": main, "argv": argv, "returncode": result.returncode,
+            "commit": main, "protocol": "legacy_frozen_integrity_v1", "bundle_sha256": key,
+            "argv": argv, "returncode": result.returncode,
             "boundary": self.broker.executor.last_boundary, "output": log.as_dict(),
             "limits": "offline integrity only; not new application/model or requirement coverage"})
-        self.store.index.setdefault("legacy_validation", {})[main] = ref.as_dict()
+        self.store.index.setdefault("legacy_validation", {})[key] = ref.as_dict()
         self.store.save()
         return ref
 
@@ -464,12 +498,13 @@ class ParentCollector:
         _check(task.get("id") == task_id and task.get("status") == "done" and
                MEMBERS.get(task.get("owner")) == registered.get("owner") and task.get("scope") == "required",
                "legacy source task differs from current approved snapshot")
-        sources, records = {}, {}
+        sources, records, references = {}, {}, [task_ref]
         for key in ("individual_evidence", "pm_review", "merge", "integration", "completion"):
             original = task.get(key, {})
             ref = self._source(original["path"], main)
             _check(ref.sha256 == original.get("sha256"), "legacy full-chain bytes mismatch")
             sources[key] = ref.as_dict()
+            references.append(ref)
             records[key] = json.loads(self.store.read(ref))
         individual, review, merge, integration, completion = (records[k] for k in
             ("individual_evidence", "pm_review", "merge", "integration", "completion"))
@@ -487,7 +522,10 @@ class ParentCollector:
         _check(isinstance(commit, str) and SHA.fullmatch(commit) and integration.get("tested_commit") == commit,
                "legacy postmerge tested source mismatch")
         url = merge.get("pull_request_url", "")
-        match = re.fullmatch(r"https://github\.com/" + re.escape(REPO) + r"/pull/([1-9][0-9]*)", url)
+        # Exact two identities of the transferred LG repository; original
+        # evidence is retained, live API checks always use canonical REPO.
+        match = re.fullmatch(r"https://github\.com/(?:" + re.escape(REPO) +
+                             r"|jeongiryang/lg\-ax\-2026)/pull/([1-9][0-9]*)", url)
         _check(match is not None, "legacy actual canonical PR required")
         pr = self.broker.github.request("GET", f"repos/{REPO}/pulls/{match[1]}")
         _check(pr.get("merged") is True and pr.get("merge_commit_sha") == commit and
@@ -499,21 +537,37 @@ class ParentCollector:
         self.broker._git(["merge-base", "--is-ancestor", commit, main])
         # Both original owner and independent PM artifacts retain checks. Hash
         # every linked output and PM postmerge source version as fixed data.
+        fetched = {main, commit}
         for record in (individual, integration):
             checks = record.get("checks", [])
             _check(bool(checks) and all(c.get("passed") is True for c in checks), "legacy execution checks incomplete")
             for check in checks:
                 raw_ref = check.get("evidence", {})
-                ref = self._source(raw_ref["path"], main)
+                version = raw_ref.get("git_commit", main)
+                _check(isinstance(version, str) and SHA.fullmatch(version), "legacy frozen output commit required")
+                if version not in fetched:
+                    self.broker._git(["fetch", "--no-tags", "origin", version])
+                    self.broker._git(["merge-base", "--is-ancestor", version, main])
+                    fetched.add(version)
+                ref = self._source(raw_ref["path"], version)
                 _check(ref.sha256 == raw_ref.get("sha256"), "legacy check output changed")
+                references.append(ref)
             _check(record.get("observations") and record.get("limitations"), "legacy execution limits missing")
-        for field in ("code_versions", "source_versions"):
-            _check(bool(integration.get(field)), "legacy postmerge versions missing")
-            for original in integration[field]:
-                _check(original.get("git_commit", commit) == commit, "legacy version differs from tested merge")
-                ref = self._source(original["path"], commit)
-                _check(ref.sha256 == original.get("sha256"), "legacy tested source changed")
-        validation = self._legacy_validation(main)
+            for field in ("code_versions", "source_versions"):
+                _check(bool(record.get(field)), "legacy execution versions missing")
+                for original in record[field]:
+                    version = original.get("git_commit", main)
+                    _check(isinstance(version, str) and SHA.fullmatch(version), "legacy frozen version commit required")
+                    if record is integration:
+                        _check(original.get("git_commit", commit) == commit, "legacy version differs from tested merge")
+                    if version not in fetched:
+                        self.broker._git(["fetch", "--no-tags", "origin", version])
+                        self.broker._git(["merge-base", "--is-ancestor", version, main])
+                        fetched.add(version)
+                    ref = self._source(original["path"], version)
+                    _check(ref.sha256 == original.get("sha256"), "legacy tested source changed")
+                    references.append(ref)
+        validation = self._legacy_validation(main, task_ref, sources, references)
         approval_ref = snapshot.get("approval_reference", "")
         ack_url = re.match(r"https://github\.com/" + re.escape(REPO) + r"/issues/28#issuecomment-([1-9][0-9]*)", approval_ref)
         _check(ack_url is not None, "legacy actual Project approval reference missing")
@@ -523,6 +577,9 @@ class ParentCollector:
         project = {"approval_url": f"https://github.com/{REPO}/issues/28#issuecomment-{source_id[1]}",
                    "receipt_url": ack_url[0], "commit": main}
         self._project_ack(project, main)
+        _check(self.broker.github.request("GET", f"repos/{REPO}/commits/main")["sha"] == main and
+               self.broker.controller.request("/v1/status").get("formal_snapshot") == snapshot,
+               "main/controller moved before legacy dependency admission")
         normalized = self.store.admit("parent_completion", main, {"schema_version": 1, "kind": "parent_completion",
             "task_id": task_id, "owner": registered["owner"], "actor": PM, "decision": "complete", "tested_commit": commit,
             "origin_protocol": "legacy_phase2_full_chain", "source_task": task_ref.as_dict(), "sources": sources,

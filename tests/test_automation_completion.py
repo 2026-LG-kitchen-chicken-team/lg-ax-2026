@@ -21,6 +21,7 @@ from services.automation.completion import (
     digest,
     load_contract,
     validate_completion_bundle,
+    validate_legacy_bundle,
 )
 
 BASE = "1" * 40
@@ -156,6 +157,40 @@ class Fixture:
                          "completion_digests": {task: completion_sha256}}, "snapshot_ack", commit)
 
 
+def legacy_fixture(merge_repo=REPO):
+    """Historical metadata fixture; not application execution evidence."""
+    values, refs = {}, []
+
+    def put(path, value, commit=MAIN):
+        raw = value if isinstance(value, bytes) else json.dumps(value).encode()
+        ref = ArtifactRef(path, digest(raw), commit)
+        values[(path, commit)] = raw
+        refs.append(ref)
+        return ref
+
+    code = put("packages/core/legacy.py", b"Frozen code\n", BASE)
+    log = put("evals/legacy/check.log", b"Original historical fixture check\n")
+    version = {"path": code.path, "sha256": code.sha256, "git_commit": BASE}
+    individual = put("evals/legacy/individual.json", {"task_id": TASK, "owner": "황대겸", "result": "pass",
+        "execution_kind": "fixture", "tested_commit": BASE, "observations": ["Historical fixture check"],
+        "limitations": ["No live model/requirement coverage"], "code_versions": [version], "source_versions": [version],
+        "checks": [{"name": "old fixture test", "passed": True, "evidence": {"path": log.path, "sha256": log.sha256}}]})
+    common = {"task_id": TASK, "pm": "정이량", "individual_evidence_sha256": individual.sha256}
+    review = put("evals/legacy/review.json", {**common, "decision": "approved"})
+    merge = put("evals/legacy/merge.json", {**common, "merge_commit": BASE, "pull_request_url": f"https://github.com/{merge_repo}/pull/51"})
+    integration = put("evals/legacy/integration.json", {**json.loads(values[(individual.path, MAIN)]), **common,
+                                                          "tested_commit": BASE})
+    completion = put("evals/legacy/completion.json", {**common, "decision": "complete",
+                                                      "integration_evidence_sha256": integration.sha256})
+    sources = dict(zip(("individual_evidence", "pm_review", "merge", "integration", "completion"),
+                       (individual, review, merge, integration, completion), strict=True))
+    task = put(f"harness/phase2/tasks/{TASK}.json", {"id": TASK, "owner": "황대겸", "status": "done", "scope": "required",
+        "allowed_execution_kinds": ["fixture"], **{k: {"path": r.path, "sha256": r.sha256} for k, r in sources.items()}})
+    bundle = {"schema_version": 1, "protocol": "legacy_frozen_integrity_v1", "main_commit": MAIN,
+        "task": task.as_dict(), "sources": {k: r.as_dict() for k, r in sources.items()}, "artifacts": [r.as_dict() for r in refs]}
+    return bundle, lambda ref: values[(ref.path, ref.commit)], values
+
+
 class CompletionTests(unittest.TestCase):
     def setUp(self):
         self.f = Fixture()
@@ -173,6 +208,34 @@ class CompletionTests(unittest.TestCase):
         self.assertEqual(self.f.store, before)
         self.assertFalse(result.receipt.payload["dependency_release_allowed"])
         self.assertEqual({c["requirement_id"] for c in result.receipt.payload["coverage"]}, {"R01", "R02"})
+
+    def test_legacy_frozen_integrity_validates_original_bytes_without_git_or_new_execution(self):
+        bundle, read, _ = legacy_fixture()
+        self.assertIsNone(validate_legacy_bundle(bundle, read))
+        self.assertEqual(json.loads(read(ArtifactRef.parse(bundle["sources"]["individual_evidence"])))
+                         ["execution_kind"], "fixture")
+
+    def test_legacy_frozen_integrity_rejects_missing_versions_tamper_and_wrong_chain(self):
+        bundle, read, values = legacy_fixture()
+        code = next(ArtifactRef.parse(r) for r in bundle["artifacts"] if r["path"].endswith("legacy.py"))
+        values[(code.path, code.commit)] = b"Changed after observation"
+        with self.assertRaises(CompletionError):
+            validate_legacy_bundle(bundle, read)
+
+    def test_legacy_transfer_keeps_original_exact_repository_alias_without_expanding_scope(self):
+        bundle, read, _ = legacy_fixture("jeongiryang/lg-ax-2026")
+        self.assertIsNone(validate_legacy_bundle(bundle, read))
+        bundle, read, _ = legacy_fixture("untrusted/lg-ax-2026")
+        with self.assertRaises(CompletionError):
+            validate_legacy_bundle(bundle, read)
+        bundle, read, _ = legacy_fixture()
+        bundle["artifacts"] = [r for r in bundle["artifacts"] if not r["path"].endswith("legacy.py")]
+        with self.assertRaises(CompletionError):
+            validate_legacy_bundle(bundle, read)
+        bundle, read, _ = legacy_fixture()
+        bundle["sources"]["completion"] = bundle["sources"]["pm_review"]
+        with self.assertRaises(CompletionError):
+            validate_legacy_bundle(bundle, read)
 
     def test_accepted_small_unit_and_verified_flags_never_cover_parent(self):
         unit = self.f.unit

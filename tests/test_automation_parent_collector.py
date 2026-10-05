@@ -2,6 +2,7 @@
 
 import json
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -16,7 +17,7 @@ from services.automation.completion import (
     validate_completion_bundle,
 )
 from services.automation.parent_collector import EvidenceBundle, EvidenceStore, ParentCollector, Publication
-from tests.test_automation_completion import MAIN, PUBLISHED, TASK, Fixture
+from tests.test_automation_completion import MAIN, PUBLISHED, TASK, Fixture, legacy_fixture
 
 
 class GitFixtureBroker:
@@ -187,6 +188,41 @@ class ParentCollectorTests(unittest.TestCase):
                   "tasks": {TASK: {"owner": "unknownamed", "status": "done"}}}}
         with self.assertRaises(CompletionError):
             self.collector._legacy_dependency(TASK, self.broker.main, status)
+
+    def test_legacy_validator_uses_only_frozen_assets_fixed_pure_helper_and_no_git(self):
+        bundle, read, _ = legacy_fixture()
+        refs = [ArtifactRef.parse(value) for value in bundle["artifacts"]]
+        for ref in refs:
+            self.collector.store.blob(ref.path, ref.commit, read(ref))
+        boundary = {"backend": "docker", "role": "validator", "image_id": self.broker.executor.config.image,
+                    "uid": 1000, "readonly_root": True, "caps_dropped": True, "no_new_privileges": True,
+                    "publisher_credentials_mounted": False, "ai_profile_mounted": False, "network": "none"}
+        self.broker.executor.config.workspace_root = self.root / "isolated"
+        self.broker.enabled = lambda: True
+        runs = []
+
+        def fixture_executor(argv, **options):
+            # Local test runner of the fixed pure helper, not a Docker proof.
+            work = options["cwd"]
+            self.assertFalse((work / ".git").exists())
+            self.assertFalse((work / "scripts").exists())
+            self.assertEqual(options["role"], "validator")
+            self.assertTrue(options["readonly_workspace"])
+            self.assertEqual(options["env"], {})
+            runs.append(argv)
+            result = subprocess.run([sys.executable, *argv[1:]], cwd=work, capture_output=True, check=False)
+            options["output"].write_bytes(result.stdout + result.stderr)
+            self.broker.executor.last_boundary = boundary
+            return SimpleNamespace(returncode=result.returncode, stopped_reason=None)
+
+        self.broker.executor.run = fixture_executor
+        task = ArtifactRef.parse(bundle["task"])
+        proof = self.collector._legacy_validation(MAIN, task, bundle["sources"], refs)
+        self.assertEqual(self.collector._legacy_validation(MAIN, task, bundle["sources"], refs), proof)
+        self.assertEqual(len(runs), 1)
+        self.assertEqual(runs[0][:3], ["python", "-I", "-c"])
+        self.assertEqual(self.broker.calls, [])
+        self.assertIn("not new application/model", json.loads(self.collector.store.read(proof))["limits"])
 
     def test_pending_publication_resumes_after_main_changes_only_with_actual_admission_ack(self):
         f = Fixture()

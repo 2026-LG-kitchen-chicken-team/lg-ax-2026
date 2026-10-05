@@ -554,6 +554,87 @@ def dependency_release_allowed(receipt: CompletionReceipt, published_commit: str
         return False
 
 
+def validate_legacy_bundle(bundle: dict, read: Reader) -> None:
+    """Bounded offline integrity of historical bytes, never Git/auth truth.
+
+    The fixed host collector must first read ordinary actual Git blobs, verify
+    real merge/ancestry and current authenticated Done/Project acceptance. This
+    pure gate preserves the original declared execution kinds and limitations;
+    it neither replays product tests nor creates new requirement coverage.
+    """
+    try:
+        _require(bundle.get("schema_version") == 1 and bundle.get("protocol") == "legacy_frozen_integrity_v1",
+                 "invalid legacy integrity protocol")
+        main = bundle["main_commit"]
+        _require(isinstance(main, str) and SHA.fullmatch(main) is not None, "legacy fixed main required")
+        task_ref = ArtifactRef.parse(bundle["task"])
+        _require(task_ref.commit == main, "legacy task source differs from current main")
+        task = json.loads(_bytes(task_ref, read))
+        _require(task.get("status") == "done" and task.get("scope") == "required" and
+                 task.get("owner") in MEMBERS, "legacy historical required task missing")
+        sources = bundle["sources"]
+        keys = ("individual_evidence", "pm_review", "merge", "integration", "completion")
+        _require(isinstance(sources, dict) and set(sources) == set(keys), "legacy full chain required")
+        artifacts = bundle["artifacts"]
+        _require(isinstance(artifacts, list) and 0 < len(artifacts) <= 1000, "bounded legacy artifacts required")
+        by_path = {}
+        for value in artifacts:
+            ref = ArtifactRef.parse(value)
+            key = (ref.path, ref.commit)
+            _require(key not in by_path, "duplicate legacy artifact")
+            _bytes(ref, read)
+            by_path[key] = ref
+
+        def original_ref(original):
+            ref = by_path[(original["path"], original.get("git_commit", main))]
+            _require(ref.sha256 == original.get("sha256"), "legacy original reference hash mismatch")
+            return ref
+
+        records = {}
+        for key in keys:
+            ref = ArtifactRef.parse(sources[key])
+            _require(ref == original_ref(task[key]), "legacy task references different chain bytes")
+            records[key] = json.loads(_bytes(ref, read))
+        individual, review, merge, integration, completed = (records[key] for key in keys)
+        _require(all(row.get("task_id") == task["id"] for row in records.values()) and
+                 individual.get("owner") == task["owner"] and
+                 all(row.get("pm") == "정이량" and row.get("individual_evidence_sha256") == sources["individual_evidence"]["sha256"]
+                     for row in (review, merge, integration, completed)) and
+                 review.get("decision") == "approved" and completed.get("decision") == "complete" and
+                 completed.get("integration_evidence_sha256") == sources["integration"]["sha256"],
+                 "legacy original lifecycle mismatch")
+        merged = merge.get("merge_commit")
+        _require(isinstance(merged, str) and SHA.fullmatch(merged) is not None and
+                 integration.get("tested_commit") == merged and
+                 re.fullmatch(r"https://github\.com/(?:" + re.escape(REPO) + r"|jeongiryang/lg\-ax\-2026)/pull/[1-9][0-9]*",
+                              merge.get("pull_request_url", "")) is not None, "legacy merge/integration identity mismatch")
+        kinds = task.get("allowed_execution_kinds")
+        _require(isinstance(kinds, list) and bool(kinds), "legacy source execution kinds missing")
+        for row in (individual, integration):
+            _require(row.get("result") == "pass" and row.get("execution_kind") in kinds and
+                     isinstance(row.get("tested_commit"), str) and SHA.fullmatch(row["tested_commit"]) is not None and
+                     "REPLACE_WITH_ACTUAL_RESULT" not in json.dumps(row, ensure_ascii=False), "legacy passing observation missing")
+            for field in ("observations", "limitations", "checks", "code_versions", "source_versions"):
+                _require(isinstance(row.get(field), list) and 0 < len(row[field]) <= 1000,
+                         "legacy execution fields missing/unbounded")
+            for check in row["checks"]:
+                _require(isinstance(check, dict) and check.get("name") and check.get("passed") is True,
+                         "legacy execution check incomplete")
+                original_ref(check["evidence"])
+            for field in ("code_versions", "source_versions"):
+                for original in row[field]:
+                    original_ref(original)
+            if row["execution_kind"] == "live_model":
+                models = row.get("models")
+                _require(isinstance(models, list) and bool(models) and all(isinstance(model, dict) and
+                         all(model.get(key) for key in ("model_id", "revision", "license", "runtime", "settings"))
+                         for model in models), "legacy model provenance missing")
+    except (KeyError, TypeError, ValueError, OSError) as exc:
+        if isinstance(exc, CompletionError):
+            raise
+        raise CompletionError("malformed or incomplete legacy frozen bundle") from exc
+
+
 def validate_completion_bundle(bundle: dict, read: Reader, *, expected_task_id: str | None = None,
                                expected_receipt_sha256: str | None = None) -> CompletionReceipt:
     """Offline integrity gate for ``trusted_auto_parent_v1`` formal records.
