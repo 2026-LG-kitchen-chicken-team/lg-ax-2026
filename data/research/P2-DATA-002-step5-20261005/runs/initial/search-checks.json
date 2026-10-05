@@ -1,0 +1,2179 @@
+{
+  "task_id": "P2-DATA-002",
+  "stage": 5,
+  "result": "fail",
+  "code_commit": "bbf4e1c1da0106e140c6c7e87f7159e6f0fe3532",
+  "model_calls": 0,
+  "ocr_used": false,
+  "private_evaluation_read": false,
+  "formal_task_completion": false,
+  "published": false,
+  "three_product_flow_executed": false,
+  "checks": [
+    {
+      "name": "imports_from_pinned_source",
+      "passed": true
+    },
+    {
+      "name": "STEP34_scope_execution_passed",
+      "passed": true
+    },
+    {
+      "name": "copied_registration_hashes",
+      "passed": true
+    },
+    {
+      "name": "HTTP-1",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/documents/F-M",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "987e6ea2ad15b86fadd3ff665c4238781b609752db0ca698c170d33f4a121560",
+      "private_body": "private\\data002-step5\\initial\\http-1.body"
+    },
+    {
+      "name": "HTTP-2",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/documents/F-M/original",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815",
+      "private_body": "private\\data002-step5\\initial\\http-2.body"
+    },
+    {
+      "name": "HTTP_original_and_metadata_pdf",
+      "passed": true
+    },
+    {
+      "name": "HTTP-3",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/documents/REVIEWS-CSV-v1.0",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "24d16ac8f7f1f973c69856137d9a4a3b6ac5cce9b73515d81dbaffe52ac5354b",
+      "private_body": "private\\data002-step5\\initial\\http-3.body"
+    },
+    {
+      "name": "HTTP-4",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/documents/REVIEWS-CSV-v1.0/original",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "64e83d42c65b1af18040c6a4cdac9a7f6b14fca63041005f6d79f6c9faaec4ab",
+      "private_body": "private\\data002-step5\\initial\\http-4.body"
+    },
+    {
+      "name": "HTTP_original_and_metadata_csv",
+      "passed": true
+    },
+    {
+      "name": "actual_pdf_reextraction_40_pages",
+      "passed": true
+    },
+    {
+      "name": "HTTP-5",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "5cdc254e52b348ae5aba5f2af5b4228ece07acd6d9c4081dc008b818dd4142c3",
+        "model_id": "FRIDGE-A",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "944be6232b34845756819d260f94a604edae9cd61448568223d0dd75cf6cb3ba",
+      "private_body": "private\\data002-step5\\initial\\http-5.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-001",
+      "passed": true
+    },
+    {
+      "name": "HTTP-6",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-001",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "acbd3d22fbf996c631cfb5201d5b77a41a2751ac40e59a9e133c0b3d8315ef91",
+      "private_body": "private\\data002-step5\\initial\\http-6.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-001",
+      "passed": true
+    },
+    {
+      "name": "HTTP-7",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "1454efe298b9fbe5f43c028e82f71e38aa6d2c2bdf8e281bbc47b15e173fb6ed",
+        "model_id": "FRIDGE-A",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "7710cfb3ee6a26ce000c9be82cb8a5cadf661a84631001bc8169638fa2c84004",
+      "private_body": "private\\data002-step5\\initial\\http-7.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-002",
+      "passed": true
+    },
+    {
+      "name": "HTTP-8",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-002",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "858b7455d5e724f3447b1378575b9b3d3afcfd5937c67679a9dacbdfc403e689",
+      "private_body": "private\\data002-step5\\initial\\http-8.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-002",
+      "passed": true
+    },
+    {
+      "name": "HTTP-9",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "484dcd4726c76a46f721e98beb30c4061a7d9e5b19c644ced33ffb42ee3c4ac1",
+        "model_id": "FRIDGE-A",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "8ace71031f0a1946b6e643077955db26681d8c574ac8ea6ae0acbaf4d9ed5aee",
+      "private_body": "private\\data002-step5\\initial\\http-9.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-003",
+      "passed": true
+    },
+    {
+      "name": "HTTP-10",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-003",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "bc1f825d443cbe98ffd236bf39a9896324b986152f8aed47f3d5d33670396627",
+      "private_body": "private\\data002-step5\\initial\\http-10.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-003",
+      "passed": true
+    },
+    {
+      "name": "HTTP-11",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "88043f71182af527cc63cdb0e240f200383f17619e87cd9d6957a572d6abf0ca",
+        "model_id": "FRIDGE-A",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "d33d9a4e1ae44db3283d28a5057c38f115092a73ab482781e72112ba88497dc3",
+      "private_body": "private\\data002-step5\\initial\\http-11.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-004",
+      "passed": true
+    },
+    {
+      "name": "HTTP-12",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-004",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "9cc1f137b51cf49a2fbaa089ab9b393471e12043505535b00dfa267f77d56811",
+      "private_body": "private\\data002-step5\\initial\\http-12.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-004",
+      "passed": true
+    },
+    {
+      "name": "HTTP-13",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "849af5338716069a9969dc0c7652ca2ced82e215c9469762b4e5c923b9b58743",
+        "model_id": "FRIDGE-A",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "3531d4386a73937a1e08406d7a8476caf57519faa45a43e65559149aa02e30ee",
+      "private_body": "private\\data002-step5\\initial\\http-13.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-005",
+      "passed": true
+    },
+    {
+      "name": "HTTP-14",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-005",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "79fe929854d29792298dd67bb3868a2e0d52b34b08cc8d0f740d00c4dfe6e2c2",
+      "private_body": "private\\data002-step5\\initial\\http-14.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-005",
+      "passed": true
+    },
+    {
+      "name": "HTTP-15",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "8dcbc36c8d51613be586180e2606b954e3d8efc996bf401ebf871e70a92a33f1",
+        "model_id": "FRIDGE-A",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "fb9787bb27563c8a17d648ffaf2f505ad98f7557487f6ee27b46bbceac649a8b",
+      "private_body": "private\\data002-step5\\initial\\http-15.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-006",
+      "passed": true
+    },
+    {
+      "name": "HTTP-16",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-006",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "39919b7ff283ba7e9ac6fe6bce7def2887678157b62e6a9edf1482cea8c79707",
+      "private_body": "private\\data002-step5\\initial\\http-16.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-006",
+      "passed": true
+    },
+    {
+      "name": "HTTP-17",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "245ed997c11d5ce8c94baac4b2c1c61178c481d15b6be1488dd578e2ac87db4f",
+        "model_id": "FRIDGE-A",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "f08a031d32bef5e2d9a7be98ac3a8cefcd0938bc309fe14d216bbf3328c77e11",
+      "private_body": "private\\data002-step5\\initial\\http-17.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-007",
+      "passed": true
+    },
+    {
+      "name": "HTTP-18",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-007",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "5f93f751ad7e6b8d4d219c9cf6b86634b7f167bb5140c1238fcfcaf5fac3ceb0",
+      "private_body": "private\\data002-step5\\initial\\http-18.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-007",
+      "passed": true
+    },
+    {
+      "name": "HTTP-19",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "2bee93024ad61f211b7ab424c8425b1f72ee43e42cd27d5b3a52ab02e1c82bc0",
+        "model_id": "FRIDGE-A",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "c1e489d6db0228efd086c95d7540d0a774c2b4b41f497a609e16bc3c289906e7",
+      "private_body": "private\\data002-step5\\initial\\http-19.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-008",
+      "passed": true
+    },
+    {
+      "name": "HTTP-20",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-008",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "6738fa0d2bf9c7a2343eeee178258a56ddbdbc92933ac6a3c5bad313f5b89ac7",
+      "private_body": "private\\data002-step5\\initial\\http-20.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-008",
+      "passed": true
+    },
+    {
+      "name": "HTTP-21",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "f7932ae8872a7bd0bb2c2795de4c68a4ee67da4652fdaedc3546c9d202a9a7f4",
+        "model_id": "FRIDGE-A",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "1e72440c104bb523bccc4b79e6189cf37c3289b8ab954c24c6fbd5d573efa634",
+      "private_body": "private\\data002-step5\\initial\\http-21.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-009",
+      "passed": true
+    },
+    {
+      "name": "HTTP-22",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-009",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "044719817ecfc957d697609e875088855d39564e548375b325d4714bf25fd87a",
+      "private_body": "private\\data002-step5\\initial\\http-22.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-009",
+      "passed": true
+    },
+    {
+      "name": "HTTP-23",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "2f76ad29f3f24e09e23b0646c90e13bb25c6a580443477f3589cc183666737fc",
+        "model_id": "FRIDGE-A",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "f145f676f35135eeb7a54401e50414116ff6820eba108de7ea1cd998296c469f",
+      "private_body": "private\\data002-step5\\initial\\http-23.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-010",
+      "passed": true
+    },
+    {
+      "name": "HTTP-24",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-010",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "0ef59602d1e87bf88f98ca98320e6e61e76d749a5b362ac4bf48980675c3f3be",
+      "private_body": "private\\data002-step5\\initial\\http-24.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-010",
+      "passed": true
+    },
+    {
+      "name": "HTTP-25",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "5cdc254e52b348ae5aba5f2af5b4228ece07acd6d9c4081dc008b818dd4142c3",
+        "model_id": "FRIDGE-B",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "39b45cb9926a99d5df4d67e4b184bc128b8561476acbf024d485ac61f1f89087",
+      "private_body": "private\\data002-step5\\initial\\http-25.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-011",
+      "passed": true
+    },
+    {
+      "name": "HTTP-26",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-011",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "956f5c06a08a2175049448996d433619bcd983a3562b852e40e75aaf59ecde24",
+      "private_body": "private\\data002-step5\\initial\\http-26.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-011",
+      "passed": true
+    },
+    {
+      "name": "HTTP-27",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "1454efe298b9fbe5f43c028e82f71e38aa6d2c2bdf8e281bbc47b15e173fb6ed",
+        "model_id": "FRIDGE-B",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "36dc6d72b513e1fc9f135205268b044ea50468e520dd14cf12c6439f893d2819",
+      "private_body": "private\\data002-step5\\initial\\http-27.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-012",
+      "passed": true
+    },
+    {
+      "name": "HTTP-28",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-012",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "f7b24e896b518a3be3520a2deba2d2228e9b57dfc0f9a77d2c457117ce5eb4ab",
+      "private_body": "private\\data002-step5\\initial\\http-28.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-012",
+      "passed": true
+    },
+    {
+      "name": "HTTP-29",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "484dcd4726c76a46f721e98beb30c4061a7d9e5b19c644ced33ffb42ee3c4ac1",
+        "model_id": "FRIDGE-B",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "836420643d73187fa33da4feab32d2270b527a42b65b5de914684b524eae7122",
+      "private_body": "private\\data002-step5\\initial\\http-29.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-013",
+      "passed": true
+    },
+    {
+      "name": "HTTP-30",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-013",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "487635c672663bd6886dc968f84942ad7a9b5017ce9b37a2614e7b25559f3a64",
+      "private_body": "private\\data002-step5\\initial\\http-30.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-013",
+      "passed": true
+    },
+    {
+      "name": "HTTP-31",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "88043f71182af527cc63cdb0e240f200383f17619e87cd9d6957a572d6abf0ca",
+        "model_id": "FRIDGE-B",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "fed3a991b8cd1e0a1ac979ef9a3439106c1f9150d44dc9f951b5d46403ddff97",
+      "private_body": "private\\data002-step5\\initial\\http-31.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-014",
+      "passed": true
+    },
+    {
+      "name": "HTTP-32",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-014",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "5d8e45bd5b1bd40c3a1d395c554373370c0d88d00767bd51791f56d6fed0aa93",
+      "private_body": "private\\data002-step5\\initial\\http-32.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-014",
+      "passed": true
+    },
+    {
+      "name": "HTTP-33",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "849af5338716069a9969dc0c7652ca2ced82e215c9469762b4e5c923b9b58743",
+        "model_id": "FRIDGE-B",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "a8c7f5b2d23b68d45cf6d3b75b7980817e2248e7bdbdf7fe8a2115d5f590e3af",
+      "private_body": "private\\data002-step5\\initial\\http-33.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-015",
+      "passed": true
+    },
+    {
+      "name": "HTTP-34",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-015",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "6f17bed71616e6e2c8b62e577654f646d55919935bf750cb5f440a6a40e5a2fe",
+      "private_body": "private\\data002-step5\\initial\\http-34.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-015",
+      "passed": true
+    },
+    {
+      "name": "HTTP-35",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "8dcbc36c8d51613be586180e2606b954e3d8efc996bf401ebf871e70a92a33f1",
+        "model_id": "FRIDGE-B",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "406b37cd8451a16aa6a1de81688b114bb641fa82b5e82753733042c4f57451b6",
+      "private_body": "private\\data002-step5\\initial\\http-35.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-016",
+      "passed": true
+    },
+    {
+      "name": "HTTP-36",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-016",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "dd3f9b75b81c7d4b82be8166cc3099b70e3b2d9f563b12ccb4e8c6f8b5e47100",
+      "private_body": "private\\data002-step5\\initial\\http-36.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-016",
+      "passed": true
+    },
+    {
+      "name": "HTTP-37",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "245ed997c11d5ce8c94baac4b2c1c61178c481d15b6be1488dd578e2ac87db4f",
+        "model_id": "FRIDGE-B",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "699103e8c732443160ce841e6b0b3074fec774bd2952b6cb8dbac6d54cc504b8",
+      "private_body": "private\\data002-step5\\initial\\http-37.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-017",
+      "passed": true
+    },
+    {
+      "name": "HTTP-38",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-017",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "3871201618abe0157c66dff971ff6b7bfba7ee11666714b064a2486450c27520",
+      "private_body": "private\\data002-step5\\initial\\http-38.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-017",
+      "passed": true
+    },
+    {
+      "name": "HTTP-39",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "2bee93024ad61f211b7ab424c8425b1f72ee43e42cd27d5b3a52ab02e1c82bc0",
+        "model_id": "FRIDGE-B",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "cd1a874aea98a0dc81352ca00bb136d69da3b55874f777865a055f1b50aeb852",
+      "private_body": "private\\data002-step5\\initial\\http-39.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-018",
+      "passed": true
+    },
+    {
+      "name": "HTTP-40",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-018",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "d56f3edfd732447042f290bda05babc9d9353d533bfa008a269fe28c67a236b3",
+      "private_body": "private\\data002-step5\\initial\\http-40.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-018",
+      "passed": true
+    },
+    {
+      "name": "HTTP-41",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "f7932ae8872a7bd0bb2c2795de4c68a4ee67da4652fdaedc3546c9d202a9a7f4",
+        "model_id": "FRIDGE-B",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "51ecbeeb2e0523ace83bec799164ebc81eed2fa6b53bffc16cf2dde2491b5686",
+      "private_body": "private\\data002-step5\\initial\\http-41.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-019",
+      "passed": true
+    },
+    {
+      "name": "HTTP-42",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-019",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "063432c2ef8853bd6ea0d79ddb776e2bd126ce77daa80f51f348a7e8468ef2c5",
+      "private_body": "private\\data002-step5\\initial\\http-42.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-019",
+      "passed": true
+    },
+    {
+      "name": "HTTP-43",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "2f76ad29f3f24e09e23b0646c90e13bb25c6a580443477f3589cc183666737fc",
+        "model_id": "FRIDGE-B",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "ebba287dd0ef3d15a996589e12c2efaf489a52938251897f65d21721e74260f8",
+      "private_body": "private\\data002-step5\\initial\\http-43.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-020",
+      "passed": true
+    },
+    {
+      "name": "HTTP-44",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-020",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "59ac6513a5d0dad94215d26e3e3a9ab2ad1631ca9ada76c9197adb88a48c81a3",
+      "private_body": "private\\data002-step5\\initial\\http-44.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-020",
+      "passed": true
+    },
+    {
+      "name": "HTTP-45",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "5cdc254e52b348ae5aba5f2af5b4228ece07acd6d9c4081dc008b818dd4142c3",
+        "model_id": "FRIDGE-C",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "9e7afa0f86efe3dd9b8694608d9fed3b9d1e282a8b43db69bb58d486bd57f90c",
+      "private_body": "private\\data002-step5\\initial\\http-45.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-021",
+      "passed": true
+    },
+    {
+      "name": "HTTP-46",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-021",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "91f9f47cfa1368c55b441174721d4579a9efe7749f64e80ee0b4291b5a2abcab",
+      "private_body": "private\\data002-step5\\initial\\http-46.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-021",
+      "passed": true
+    },
+    {
+      "name": "HTTP-47",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "1454efe298b9fbe5f43c028e82f71e38aa6d2c2bdf8e281bbc47b15e173fb6ed",
+        "model_id": "FRIDGE-C",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "55851bae931f1b9a612b5890ad102b67e2f0989d1b149cc8d4ac5b3dfd973643",
+      "private_body": "private\\data002-step5\\initial\\http-47.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-022",
+      "passed": true
+    },
+    {
+      "name": "HTTP-48",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-022",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "5e174fc2f4f33bc8bdab5f438c9c5cced523737be65c1212afd18ac820bb0ed4",
+      "private_body": "private\\data002-step5\\initial\\http-48.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-022",
+      "passed": true
+    },
+    {
+      "name": "HTTP-49",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "484dcd4726c76a46f721e98beb30c4061a7d9e5b19c644ced33ffb42ee3c4ac1",
+        "model_id": "FRIDGE-C",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "9aecd5bb44e65dce028e9979e0473fd8f6e21bf1d7ca67f9ebc77bd936408823",
+      "private_body": "private\\data002-step5\\initial\\http-49.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-023",
+      "passed": true
+    },
+    {
+      "name": "HTTP-50",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-023",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "f1bfc6c704f4451b45c8f184a9f0c61ca8951dfd18f1eb7c9078c96409ab6080",
+      "private_body": "private\\data002-step5\\initial\\http-50.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-023",
+      "passed": true
+    },
+    {
+      "name": "HTTP-51",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "88043f71182af527cc63cdb0e240f200383f17619e87cd9d6957a572d6abf0ca",
+        "model_id": "FRIDGE-C",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "223e779f4bda1da49f9ba797483c05c01339ae1867ff5cd52e2545abae0f3708",
+      "private_body": "private\\data002-step5\\initial\\http-51.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-024",
+      "passed": true
+    },
+    {
+      "name": "HTTP-52",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-024",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "3b665600af40d8ef922c80319c71044fb4c8f2f5fdcc40a13788aa46cf956e88",
+      "private_body": "private\\data002-step5\\initial\\http-52.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-024",
+      "passed": true
+    },
+    {
+      "name": "HTTP-53",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "849af5338716069a9969dc0c7652ca2ced82e215c9469762b4e5c923b9b58743",
+        "model_id": "FRIDGE-C",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "8666ec735b04b0f485d2c0852d7cb5576aa85ca31526a30a24e3ac04c6b4129b",
+      "private_body": "private\\data002-step5\\initial\\http-53.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-025",
+      "passed": true
+    },
+    {
+      "name": "HTTP-54",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-025",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "a1fd07a22474a5fc85ac237f1ef4956fbb05119f59e777769fb8e85f8a6c7f5d",
+      "private_body": "private\\data002-step5\\initial\\http-54.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-025",
+      "passed": true
+    },
+    {
+      "name": "HTTP-55",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "8dcbc36c8d51613be586180e2606b954e3d8efc996bf401ebf871e70a92a33f1",
+        "model_id": "FRIDGE-C",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "e01b5eb8ae937fdbbc53321cf71c2cfea4e2c64b071c284d65514782b5c84295",
+      "private_body": "private\\data002-step5\\initial\\http-55.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-026",
+      "passed": true
+    },
+    {
+      "name": "HTTP-56",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-026",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "698a0f30e7abbec74f12a85f218a4ed41d486fcd4bf66a5ca051b091a6233dc6",
+      "private_body": "private\\data002-step5\\initial\\http-56.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-026",
+      "passed": true
+    },
+    {
+      "name": "HTTP-57",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "245ed997c11d5ce8c94baac4b2c1c61178c481d15b6be1488dd578e2ac87db4f",
+        "model_id": "FRIDGE-C",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "6f4b69e4539df9fa01b22c7cd10cc72f988a019a3461342f6778d1210ac4d096",
+      "private_body": "private\\data002-step5\\initial\\http-57.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-027",
+      "passed": true
+    },
+    {
+      "name": "HTTP-58",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-027",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "90b0924fc9d0c56166758d55bf879e01feff4c35c683f88931ee34920a15fe1f",
+      "private_body": "private\\data002-step5\\initial\\http-58.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-027",
+      "passed": true
+    },
+    {
+      "name": "HTTP-59",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "2bee93024ad61f211b7ab424c8425b1f72ee43e42cd27d5b3a52ab02e1c82bc0",
+        "model_id": "FRIDGE-C",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "34018a70bfd9d12157efd1bb21fcf203e7cd70b3c48f9dc2563f6258a4b5f897",
+      "private_body": "private\\data002-step5\\initial\\http-59.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-028",
+      "passed": true
+    },
+    {
+      "name": "HTTP-60",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-028",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "8064c1cc4c8f07e1f5de2d04915e7f7d3b115c95a6a2f170c58e1f1007141327",
+      "private_body": "private\\data002-step5\\initial\\http-60.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-028",
+      "passed": true
+    },
+    {
+      "name": "HTTP-61",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "f7932ae8872a7bd0bb2c2795de4c68a4ee67da4652fdaedc3546c9d202a9a7f4",
+        "model_id": "FRIDGE-C",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "3bd5a5d7841fd74f5c41f66a77615ab3e4e217d69a737b4eda9d40ac4ebca20d",
+      "private_body": "private\\data002-step5\\initial\\http-61.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-029",
+      "passed": true
+    },
+    {
+      "name": "HTTP-62",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-029",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "39071278264747f9a508faeb64d290b548580cae19a0d9050dbdaacd354b9759",
+      "private_body": "private\\data002-step5\\initial\\http-62.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-029",
+      "passed": true
+    },
+    {
+      "name": "HTTP-63",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "2f76ad29f3f24e09e23b0646c90e13bb25c6a580443477f3589cc183666737fc",
+        "model_id": "FRIDGE-C",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "c5c50f53d9245c1d6d4ba790f63fd4f4bcb642507d16acd384c9f806eb544e03",
+      "private_body": "private\\data002-step5\\initial\\http-63.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-030",
+      "passed": true
+    },
+    {
+      "name": "HTTP-64",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-030",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "3337f91930e468b661a8959c804549a6545e9df854b1ae08dfd1a0fbc6fd7707",
+      "private_body": "private\\data002-step5\\initial\\http-64.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-030",
+      "passed": true
+    },
+    {
+      "name": "HTTP-65",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "b02ea4813673cf6f364d194f20af978a8f21d1231e87fe56b14d848452c0f5c6",
+        "model_id": "DISHWASHER-A",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "71c7089635231d6e486b2cc53bd0968073a86f64e9954ee44740656e1240ccb0",
+      "private_body": "private\\data002-step5\\initial\\http-65.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-031",
+      "passed": true
+    },
+    {
+      "name": "HTTP-66",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-031",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "f483f57d8f4a451444d9957cd02392db0ca88546acce4452b9613acf8ce09511",
+      "private_body": "private\\data002-step5\\initial\\http-66.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-031",
+      "passed": true
+    },
+    {
+      "name": "HTTP-67",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "286e5c03c1ae87aa35b75a442010e53a057cdc498b8eccab3099aef17948c079",
+        "model_id": "DISHWASHER-A",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "58a6a2922ea6e16e53020c22dad2a871d172e3086230f347033d333d042f2a22",
+      "private_body": "private\\data002-step5\\initial\\http-67.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-032",
+      "passed": true
+    },
+    {
+      "name": "HTTP-68",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-032",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "56334295d25638fa244e23686763bfc40a65ef21a4c75856b3e9a0555eddda62",
+      "private_body": "private\\data002-step5\\initial\\http-68.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-032",
+      "passed": true
+    },
+    {
+      "name": "HTTP-69",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "4308f5c85ce5d6d4c760442e7b89bbf8909c9c463022a2b3b047ab8a3ace4fed",
+        "model_id": "DISHWASHER-A",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "0044f6cddd365778d096ff295279cf3c6bb5d147c329e4d2aedd7b9f17f25b97",
+      "private_body": "private\\data002-step5\\initial\\http-69.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-033",
+      "passed": true
+    },
+    {
+      "name": "HTTP-70",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-033",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "b70881655aec6d5d81a1d2cd604ef1c64e1c8bc2c5f8a464710a64eb5b984ac7",
+      "private_body": "private\\data002-step5\\initial\\http-70.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-033",
+      "passed": true
+    },
+    {
+      "name": "HTTP-71",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "b4f8d5ac3a04370bf4d794cc9cc080237f13369dfb7f95881721136c448d1c1f",
+        "model_id": "MICROWAVE-A",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "9d9e644d5c091f9e1e18f0de666ee0fddd85486594c1c8cc0b48425655139e25",
+      "private_body": "private\\data002-step5\\initial\\http-71.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-034",
+      "passed": true
+    },
+    {
+      "name": "HTTP-72",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-034",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "80c21a58d037a5ba0b04bb9fb3fb0f870bcad946be1d0c0e886081151cb7a70c",
+      "private_body": "private\\data002-step5\\initial\\http-72.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-034",
+      "passed": true
+    },
+    {
+      "name": "HTTP-73",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "ad03d7270f4609e09ff7d0786f9dfce22241cc5f76c264316e1598530ff75a10",
+        "model_id": "MICROWAVE-A",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "c5f0234338b1a585956a0267c96630bcf8dab99d12f3d808d1b59cdd6f36d95a",
+      "private_body": "private\\data002-step5\\initial\\http-73.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-035",
+      "passed": true
+    },
+    {
+      "name": "HTTP-74",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-035",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "acb0452a1c7a4b8e09fccd20418211c413ba1f2f83274b5d305f8a67f9b6d47e",
+      "private_body": "private\\data002-step5\\initial\\http-74.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-035",
+      "passed": true
+    },
+    {
+      "name": "HTTP-75",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "6cf366b515d6861e33b59e7ecc84eafa7f0ace9e17a2b6fe0adab183c1379153",
+        "model_id": "MICROWAVE-A",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "672d4771162ad696d32f312eed83df2ee2cacc967e1818baf5c4ef235da66061",
+      "private_body": "private\\data002-step5\\initial\\http-75.body"
+    },
+    {
+      "name": "CSV_scope_REVIEW-036",
+      "passed": true
+    },
+    {
+      "name": "HTTP-76",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-036",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "0d6528cde1ca7d266488b5510ec7a0e5fe98b47828602a73d3701c8027c836e5",
+      "private_body": "private\\data002-step5\\initial\\http-76.body"
+    },
+    {
+      "name": "CSV_original_row_trace_REVIEW-036",
+      "passed": true
+    },
+    {
+      "name": "HTTP-77",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "559ba8d865b463fd2833c2f98c92d400d761798fde0fda3fd0b0b212b890e696",
+        "model_id": "T876MEE1H1",
+        "document_version": "MFL71401557 Rev.00_032526",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "81165a6fdd24da7c4daf5fc3a0afac9e601492c5634f17160c458443ee89924f",
+      "private_body": "private\\data002-step5\\initial\\http-77.body"
+    },
+    {
+      "name": "PDF_search_exact_registered_scope",
+      "passed": true
+    },
+    {
+      "name": "HTTP-78",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/DATA002-FM-P19-SHELF-01",
+      "params_q_is_sha256": {},
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "8adcc07963fbce513a2b20dd55f15f8697c654236ab3213a2a34fbcccd6cf53b",
+      "private_body": "private\\data002-step5\\initial\\http-78.body"
+    },
+    {
+      "name": "PDF_original_page_span_trace",
+      "passed": true
+    },
+    {
+      "name": "HTTP-79",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "9e646a8aed73df013bd1d15cae59e2788f658c3e06d26ecb8288ab2a1c90a329",
+        "model_id": "FRIDGE-A",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "2f7e9d497e0aea63e2827b440f491f4f9b15f1507af070b217eece757710befc",
+      "private_body": "private\\data002-step5\\initial\\http-79.body"
+    },
+    {
+      "name": "positive_model_version_isolation_FRIDGE-A_1.0",
+      "passed": true
+    },
+    {
+      "name": "HTTP-80",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "9e646a8aed73df013bd1d15cae59e2788f658c3e06d26ecb8288ab2a1c90a329",
+        "model_id": "FRIDGE-A",
+        "document_version": "2.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "2d92abd7a516b0a78f4ba65f7dab380257cb37217c8bb0206ab8a72ef66dd83a",
+      "private_body": "private\\data002-step5\\initial\\http-80.body"
+    },
+    {
+      "name": "positive_model_version_isolation_FRIDGE-A_2.0",
+      "passed": true
+    },
+    {
+      "name": "HTTP-81",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "9e646a8aed73df013bd1d15cae59e2788f658c3e06d26ecb8288ab2a1c90a329",
+        "model_id": "FRIDGE-B",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "b9f85763309701ae7ddb5d3ea33240c344612aa5ba1e40cfad467c4973373645",
+      "private_body": "private\\data002-step5\\initial\\http-81.body"
+    },
+    {
+      "name": "positive_model_version_isolation_FRIDGE-B_1.0",
+      "passed": true
+    },
+    {
+      "name": "HTTP-82",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "9e646a8aed73df013bd1d15cae59e2788f658c3e06d26ecb8288ab2a1c90a329",
+        "model_id": "FRIDGE-C",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "7c051f0b71d74856e721f8dcb450a703a814e379cfe73dedfd0ff0f5c2fd3bfa",
+      "private_body": "private\\data002-step5\\initial\\http-82.body"
+    },
+    {
+      "name": "positive_model_version_isolation_FRIDGE-C_1.0",
+      "passed": true
+    },
+    {
+      "name": "HTTP-83",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "9e646a8aed73df013bd1d15cae59e2788f658c3e06d26ecb8288ab2a1c90a329",
+        "model_id": "DISHWASHER-A",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "444a7615863c89ee2f7cebab81374f126c117042c9f92a178a8bd6df41b79bb6",
+      "private_body": "private\\data002-step5\\initial\\http-83.body"
+    },
+    {
+      "name": "positive_model_version_isolation_DISHWASHER-A_1.0",
+      "passed": true
+    },
+    {
+      "name": "HTTP-84",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "9e646a8aed73df013bd1d15cae59e2788f658c3e06d26ecb8288ab2a1c90a329",
+        "model_id": "MICROWAVE-A",
+        "document_version": "1.0",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "c2c0cdb52aafee335c3c97e9e0d8dd4cf3b0499b755c5f5618518187d7594e3f",
+      "private_body": "private\\data002-step5\\initial\\http-84.body"
+    },
+    {
+      "name": "positive_model_version_isolation_MICROWAVE-A_1.0",
+      "passed": true
+    },
+    {
+      "name": "HTTP-85",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "9e646a8aed73df013bd1d15cae59e2788f658c3e06d26ecb8288ab2a1c90a329",
+        "limit": 50
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "bcb0d435dace5812cee414b44d64e9a2a2354be2ace7330b96b5c0167fb377d6",
+      "private_body": "private\\data002-step5\\initial\\http-85.body"
+    },
+    {
+      "name": "unfiltered_search_requires_explicit_consumer_scope",
+      "passed": true
+    },
+    {
+      "name": "HTTP-86",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "559ba8d865b463fd2833c2f98c92d400d761798fde0fda3fd0b0b212b890e696",
+        "limit": 1
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "39904ebfd4b8351e0cfb5f78570eeb958248806e2d426bb6c2d8108abfc267f5",
+      "private_body": "private\\data002-step5\\initial\\http-86.body"
+    },
+    {
+      "name": "limit_changes_items_but_keeps_total",
+      "passed": true
+    },
+    {
+      "name": "HTTP-87",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "559ba8d865b463fd2833c2f98c92d400d761798fde0fda3fd0b0b212b890e696",
+        "model_id": "NO-SUCH-MODEL"
+      },
+      "expected_status": 404,
+      "actual_status": 404,
+      "expected_error": "INVALID_MODEL_ID",
+      "response_sha256": "87ec1c766ab02911accb73832997f88200f0cbce13c8da8cfcb60198b2fc3051",
+      "private_body": "private\\data002-step5\\initial\\http-87.body"
+    },
+    {
+      "name": "HTTP-88",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "559ba8d865b463fd2833c2f98c92d400d761798fde0fda3fd0b0b212b890e696",
+        "model_id": "T876MEE1H1",
+        "document_version": "NO-SUCH-VERSION"
+      },
+      "expected_status": 400,
+      "actual_status": 400,
+      "expected_error": "INVALID_DOCUMENT_VERSION",
+      "response_sha256": "6689a9838d48039092954923d777ab16cd20c8f5ce98d250a85069da50160d3c",
+      "private_body": "private\\data002-step5\\initial\\http-88.body"
+    },
+    {
+      "name": "HTTP-89",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "559ba8d865b463fd2833c2f98c92d400d761798fde0fda3fd0b0b212b890e696",
+        "document_version": "MFL71401557 Rev.00_032526"
+      },
+      "expected_status": 400,
+      "actual_status": 400,
+      "expected_error": "INVALID_ARGUMENT",
+      "response_sha256": "3fddb207e0a5b872e56d3ef5efddda9e40fa4926c577866f98b1c0cb9c417102",
+      "private_body": "private\\data002-step5\\initial\\http-89.body"
+    },
+    {
+      "name": "HTTP-90",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "36a9e7f1c95b82ffb99743e0c5c4ce95d83c9a430aac59f84ef3cbfab6145068"
+      },
+      "expected_status": 400,
+      "actual_status": 400,
+      "expected_error": "INVALID_ARGUMENT",
+      "response_sha256": "f55021a104f08bc1d7ae1ecd40d3bcdb481ef397c6ec7c59198d938801fb6f50",
+      "private_body": "private\\data002-step5\\initial\\http-90.body"
+    },
+    {
+      "name": "HTTP-91",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "bb7208bc9b5d7c04f1236a82a0093a5e33f40423d5ba8d4266f7092c3ba43b62"
+      },
+      "expected_status": 400,
+      "actual_status": 400,
+      "expected_error": "INVALID_ARGUMENT",
+      "response_sha256": "8af0270441ea68984d10d4d08421146c516213776937359d4bd4e66746193d45",
+      "private_body": "private\\data002-step5\\initial\\http-91.body"
+    },
+    {
+      "name": "HTTP-92",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "35efe7cd50906793500e0857dd3c8ceb75e3473ac13b913093b13740acfc64fc"
+      },
+      "expected_status": 400,
+      "actual_status": 400,
+      "expected_error": "INVALID_ARGUMENT",
+      "response_sha256": "f55021a104f08bc1d7ae1ecd40d3bcdb481ef397c6ec7c59198d938801fb6f50",
+      "private_body": "private\\data002-step5\\initial\\http-92.body"
+    },
+    {
+      "name": "HTTP-93",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "559ba8d865b463fd2833c2f98c92d400d761798fde0fda3fd0b0b212b890e696",
+        "limit": 0
+      },
+      "expected_status": 400,
+      "actual_status": 400,
+      "expected_error": "INVALID_ARGUMENT",
+      "response_sha256": "8581d553a5eb810b99e3847b13599ce339baa7690a00f21b90347e3be4207cb5",
+      "private_body": "private\\data002-step5\\initial\\http-93.body"
+    },
+    {
+      "name": "HTTP-94",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "559ba8d865b463fd2833c2f98c92d400d761798fde0fda3fd0b0b212b890e696",
+        "limit": 51
+      },
+      "expected_status": 400,
+      "actual_status": 400,
+      "expected_error": "INVALID_ARGUMENT",
+      "response_sha256": "8581d553a5eb810b99e3847b13599ce339baa7690a00f21b90347e3be4207cb5",
+      "private_body": "private\\data002-step5\\initial\\http-94.body"
+    },
+    {
+      "name": "HTTP-95",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "559ba8d865b463fd2833c2f98c92d400d761798fde0fda3fd0b0b212b890e696",
+        "limit": "bad"
+      },
+      "expected_status": 422,
+      "actual_status": 422,
+      "expected_error": null,
+      "response_sha256": "4246106ba61ea67c39d38d8b6bc73da2d2174687dda06b010bbb7d2e696f9c66",
+      "private_body": "private\\data002-step5\\initial\\http-95.body"
+    },
+    {
+      "name": "HTTP-96",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {},
+      "expected_status": 422,
+      "actual_status": 422,
+      "expected_error": null,
+      "response_sha256": "b4c06bad0e2c8f15a44868902a70e9b84ab453138d8209f06470fc484620f96a",
+      "private_body": "private\\data002-step5\\initial\\http-96.body"
+    },
+    {
+      "name": "HTTP-97",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/NO-SUCH-EVIDENCE",
+      "params_q_is_sha256": {},
+      "expected_status": 404,
+      "actual_status": 404,
+      "expected_error": "INVALID_EVIDENCE_ID",
+      "response_sha256": "9da6272b48cb02cbb6e04a0e7055ddd76ea4ea77ba85f0572ac8738986779195",
+      "private_body": "private\\data002-step5\\initial\\http-97.body"
+    },
+    {
+      "name": "HTTP-98",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "57e64ca65600793b239cb0e25b2a8990d7086d626af1e2adff083e9046232dfa",
+        "model_id": "T876MEE1H1",
+        "document_version": "MFL71401557 Rev.00_032526"
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "e7108f8e5b81ccefb20e871fae2235c675ebf81ed683ab7cf27974f93255c6f3",
+      "private_body": "private\\data002-step5\\initial\\http-98.body"
+    },
+    {
+      "name": "zero_results_are_empty_evidence_pdf",
+      "passed": true
+    },
+    {
+      "name": "HTTP-99",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "559ba8d865b463fd2833c2f98c92d400d761798fde0fda3fd0b0b212b890e696",
+        "model_id": "NO-SUCH-MODEL"
+      },
+      "expected_status": 404,
+      "actual_status": 404,
+      "expected_error": "INVALID_MODEL_ID",
+      "response_sha256": "87ec1c766ab02911accb73832997f88200f0cbce13c8da8cfcb60198b2fc3051",
+      "private_body": "private\\data002-step5\\initial\\http-99.body"
+    },
+    {
+      "name": "HTTP-100",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "559ba8d865b463fd2833c2f98c92d400d761798fde0fda3fd0b0b212b890e696",
+        "model_id": "FRIDGE-A",
+        "document_version": "NO-SUCH-VERSION"
+      },
+      "expected_status": 400,
+      "actual_status": 400,
+      "expected_error": "INVALID_DOCUMENT_VERSION",
+      "response_sha256": "6689a9838d48039092954923d777ab16cd20c8f5ce98d250a85069da50160d3c",
+      "private_body": "private\\data002-step5\\initial\\http-100.body"
+    },
+    {
+      "name": "HTTP-101",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "559ba8d865b463fd2833c2f98c92d400d761798fde0fda3fd0b0b212b890e696",
+        "document_version": "1.0"
+      },
+      "expected_status": 400,
+      "actual_status": 400,
+      "expected_error": "INVALID_ARGUMENT",
+      "response_sha256": "3fddb207e0a5b872e56d3ef5efddda9e40fa4926c577866f98b1c0cb9c417102",
+      "private_body": "private\\data002-step5\\initial\\http-101.body"
+    },
+    {
+      "name": "HTTP-102",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "36a9e7f1c95b82ffb99743e0c5c4ce95d83c9a430aac59f84ef3cbfab6145068"
+      },
+      "expected_status": 400,
+      "actual_status": 400,
+      "expected_error": "INVALID_ARGUMENT",
+      "response_sha256": "f55021a104f08bc1d7ae1ecd40d3bcdb481ef397c6ec7c59198d938801fb6f50",
+      "private_body": "private\\data002-step5\\initial\\http-102.body"
+    },
+    {
+      "name": "HTTP-103",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "bb7208bc9b5d7c04f1236a82a0093a5e33f40423d5ba8d4266f7092c3ba43b62"
+      },
+      "expected_status": 400,
+      "actual_status": 400,
+      "expected_error": "INVALID_ARGUMENT",
+      "response_sha256": "8af0270441ea68984d10d4d08421146c516213776937359d4bd4e66746193d45",
+      "private_body": "private\\data002-step5\\initial\\http-103.body"
+    },
+    {
+      "name": "HTTP-104",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "35efe7cd50906793500e0857dd3c8ceb75e3473ac13b913093b13740acfc64fc"
+      },
+      "expected_status": 400,
+      "actual_status": 400,
+      "expected_error": "INVALID_ARGUMENT",
+      "response_sha256": "f55021a104f08bc1d7ae1ecd40d3bcdb481ef397c6ec7c59198d938801fb6f50",
+      "private_body": "private\\data002-step5\\initial\\http-104.body"
+    },
+    {
+      "name": "HTTP-105",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "559ba8d865b463fd2833c2f98c92d400d761798fde0fda3fd0b0b212b890e696",
+        "limit": 0
+      },
+      "expected_status": 400,
+      "actual_status": 400,
+      "expected_error": "INVALID_ARGUMENT",
+      "response_sha256": "8581d553a5eb810b99e3847b13599ce339baa7690a00f21b90347e3be4207cb5",
+      "private_body": "private\\data002-step5\\initial\\http-105.body"
+    },
+    {
+      "name": "HTTP-106",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "559ba8d865b463fd2833c2f98c92d400d761798fde0fda3fd0b0b212b890e696",
+        "limit": 51
+      },
+      "expected_status": 400,
+      "actual_status": 400,
+      "expected_error": "INVALID_ARGUMENT",
+      "response_sha256": "8581d553a5eb810b99e3847b13599ce339baa7690a00f21b90347e3be4207cb5",
+      "private_body": "private\\data002-step5\\initial\\http-106.body"
+    },
+    {
+      "name": "HTTP-107",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "559ba8d865b463fd2833c2f98c92d400d761798fde0fda3fd0b0b212b890e696",
+        "limit": "bad"
+      },
+      "expected_status": 422,
+      "actual_status": 422,
+      "expected_error": null,
+      "response_sha256": "4246106ba61ea67c39d38d8b6bc73da2d2174687dda06b010bbb7d2e696f9c66",
+      "private_body": "private\\data002-step5\\initial\\http-107.body"
+    },
+    {
+      "name": "HTTP-108",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {},
+      "expected_status": 422,
+      "actual_status": 422,
+      "expected_error": null,
+      "response_sha256": "b4c06bad0e2c8f15a44868902a70e9b84ab453138d8209f06470fc484620f96a",
+      "private_body": "private\\data002-step5\\initial\\http-108.body"
+    },
+    {
+      "name": "HTTP-109",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/NO-SUCH-EVIDENCE",
+      "params_q_is_sha256": {},
+      "expected_status": 404,
+      "actual_status": 404,
+      "expected_error": "INVALID_EVIDENCE_ID",
+      "response_sha256": "9da6272b48cb02cbb6e04a0e7055ddd76ea4ea77ba85f0572ac8738986779195",
+      "private_body": "private\\data002-step5\\initial\\http-109.body"
+    },
+    {
+      "name": "HTTP-110",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "57e64ca65600793b239cb0e25b2a8990d7086d626af1e2adff083e9046232dfa",
+        "model_id": "FRIDGE-A",
+        "document_version": "1.0"
+      },
+      "expected_status": 200,
+      "actual_status": 200,
+      "expected_error": null,
+      "response_sha256": "c07166950be90eb838ab290804fd04474fe4760eb15edb681ef7862e4b989b9e",
+      "private_body": "private\\data002-step5\\initial\\http-110.body"
+    },
+    {
+      "name": "zero_results_are_empty_evidence_csv",
+      "passed": true
+    },
+    {
+      "name": "HTTP-111",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/DATA002-FM-P19-SHELF-01",
+      "params_q_is_sha256": {},
+      "expected_status": 404,
+      "actual_status": 404,
+      "expected_error": "INVALID_EVIDENCE_ID",
+      "response_sha256": "280c1838ff0ba15fc6951ab52c8126e832e473393f6f79708497695c8df2ebeb",
+      "private_body": "private\\data002-step5\\initial\\http-111.body"
+    },
+    {
+      "name": "HTTP-112",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/REVIEW-EVIDENCE-001",
+      "params_q_is_sha256": {},
+      "expected_status": 404,
+      "actual_status": 404,
+      "expected_error": "INVALID_EVIDENCE_ID",
+      "response_sha256": "e838a6c41bb5bb0430b1d0a5a781badfc593dcb5a97997991e922ac3f7bc326a",
+      "private_body": "private\\data002-step5\\initial\\http-112.body"
+    },
+    {
+      "name": "HTTP-113",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "559ba8d865b463fd2833c2f98c92d400d761798fde0fda3fd0b0b212b890e696",
+        "model_id": "T876MEE1H1"
+      },
+      "expected_status": 404,
+      "actual_status": 404,
+      "expected_error": "INVALID_MODEL_ID",
+      "response_sha256": "6b98cc2e275c05811f76791074615e4831bb5cee3d9d96c1445a5643bb1b7ede",
+      "private_body": "private\\data002-step5\\initial\\http-113.body"
+    },
+    {
+      "name": "HTTP-114",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "559ba8d865b463fd2833c2f98c92d400d761798fde0fda3fd0b0b212b890e696",
+        "model_id": "FRIDGE-A"
+      },
+      "expected_status": 404,
+      "actual_status": 404,
+      "expected_error": "INVALID_MODEL_ID",
+      "response_sha256": "a57f837672301e071c9c57b9fa3777fc5732b34bab7e9a161b2b3b7a4b57e6f4",
+      "private_body": "private\\data002-step5\\initial\\http-114.body"
+    },
+    {
+      "name": "HTTP-115",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "559ba8d865b463fd2833c2f98c92d400d761798fde0fda3fd0b0b212b890e696",
+        "model_id": "T876MEE1H1",
+        "document_version": "MFL71401557 Rev.00_032526",
+        "limit": 50
+      },
+      "expected_status": 401,
+      "actual_status": 401,
+      "expected_error": "UNAUTHORIZED",
+      "response_sha256": "7b8106d7777b0611a17ba55103dd69308c5fbe747cb1ed42a67805fb00bddc6d",
+      "private_body": "private\\data002-step5\\initial\\http-115.body"
+    },
+    {
+      "name": "HTTP-116",
+      "passed": true,
+      "boundary": "actual_loopback_HTTP",
+      "path": "/api/evidence/search",
+      "params_q_is_sha256": {
+        "q": "559ba8d865b463fd2833c2f98c92d400d761798fde0fda3fd0b0b212b890e696",
+        "model_id": "T876MEE1H1",
+        "document_version": "MFL71401557 Rev.00_032526",
+        "limit": 50
+      },
+      "expected_status": 403,
+      "actual_status": 403,
+      "expected_error": "INVALID_ORIGIN",
+      "response_sha256": "10d6e19771e05bc03e4caf1ab546e7102f08bb6f413d3ff858a09fcc20d2f7da",
+      "private_body": "private\\data002-step5\\initial\\http-116.body"
+    },
+    {
+      "name": "public_unmentioned_features_not_claimed",
+      "passed": true
+    },
+    {
+      "name": "own_listener_closed_before_restart_pdf",
+      "passed": false
+    }
+  ],
+  "http_requests": 116,
+  "private_output": "private\\data002-step5\\initial",
+  "source_archive_sha256": "ea9558dee808653449df3b00a40bc2bcf4bb0a12d670f5b5070012212f9610e6",
+  "source_files": [
+    {
+      "path": "tmp\\data002-step5-source-initial\\packages\\core\\src\\lgax_core\\documents.py",
+      "sha256": "6b66ead753aa9bec0890a4ad55d22345ef36852b0045c781ed25f46825b3577c"
+    },
+    {
+      "path": "tmp\\data002-step5-source-initial\\packages\\core\\src\\lgax_core\\document_store.py",
+      "sha256": "d101613f981ce92bab376692b04831ab3b3f25416e94c495c4042e40a68a4b45"
+    },
+    {
+      "path": "tmp\\data002-step5-source-initial\\packages\\core\\src\\lgax_core\\documents_server.py",
+      "sha256": "eee20d2afbbe1fa2c720ac7440f9c3348964a4e0ac42160731ddedafbbbc5d99"
+    },
+    {
+      "path": "tmp\\data002-step5-source-initial\\packages\\core\\src\\lgax_core\\review_csv.py",
+      "sha256": "d0ea7093c8bdffcca4bdc4bb17669f62d27f603fefe7d99df6b8d15e0d3a8612"
+    },
+    {
+      "path": "tmp\\data002-step5-source-initial\\packages\\core\\src\\lgax_core\\review_csv_server.py",
+      "sha256": "29cb31906c1c6d24803803f55365c235dc9f6be2bdc058bf15e3fa33aa65db1e"
+    },
+    {
+      "path": "tmp\\data002-step5-source-initial\\packages\\core\\src\\lgax_core\\store.py",
+      "sha256": "2dba0b34a62b58f704fc1fc617e9113d7cdb277819cd5b72d3df1849411245fe"
+    },
+    {
+      "path": "tmp\\data002-step5-source-initial\\packages\\core\\src\\lgax_core\\pdf_text_worker.py",
+      "sha256": "a0ce23d590a57121b6abfa8573859f5833e3fd69d9577a2304b6ac4ba6199e1d"
+    },
+    {
+      "path": "tmp\\data002-step5-source-initial\\packages\\contracts\\schemas\\lgax.schema.json",
+      "sha256": "d7cf46d9a980b00ad786ec46feaf3d31e4094f56ff0899d8bab59bdf95a9bad5"
+    }
+  ],
+  "runner": {
+    "path": "data\\research\\P2-DATA-002-step5-20261005\\run_search.py",
+    "sha256": "1bd5ef82635e385c7397b44cd9af65a6dbc2dd1bb005e378c607b5fcf9f681fd"
+  },
+  "previous_completion_report": {
+    "path": "data\\research\\P2-DATA-002-step34-20261005\\runs\\initial\\completion-review.json",
+    "sha256": "d8f8e4ac6a8a5178c8ba6809972533c6e10c0b812b5ca5ed1e72226c07245d64"
+  },
+  "server_commands": [
+    {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "lgax_core.documents_server",
+        "--directory",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\private\\data002-step5\\initial\\pdf-store",
+        "--token-file",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\private\\data002-step5\\initial\\token.txt",
+        "--port",
+        "50644",
+        "--plan",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\private\\data002-step5\\initial\\plan.json",
+        "--extractor-python",
+        "C:\\Users\\user\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe"
+      ],
+      "pid": 17236
+    },
+    {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "lgax_core.review_csv_server",
+        "--directory",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\private\\data002-step5\\initial\\csv-store",
+        "--token-file",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\private\\data002-step5\\initial\\token.txt",
+        "--port",
+        "50652",
+        "--dataset",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\private\\data002-step5\\initial\\dataset.json"
+      ],
+      "pid": 4228
+    }
+  ],
+  "ports": {
+    "pdf": 50644,
+    "csv": 50652
+  },
+  "failure": {
+    "type": "AssertionError",
+    "message": "own_listener_closed_before_restart_pdf"
+  },
+  "servers_stopped": true,
+  "port_closure": [
+    {
+      "port": 50644,
+      "connect_code": 10035,
+      "closed": false
+    },
+    {
+      "port": 50652,
+      "connect_code": 10035,
+      "closed": false
+    }
+  ],
+  "all_own_listeners_closed": false,
+  "checked_at_kst": "2026-10-05T05:20:08+09:00"
+}
