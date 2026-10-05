@@ -1,5 +1,6 @@
 """Opt-in persistence integration; all model responses here are explicit fixtures."""
 
+import asyncio
 import json
 import sqlite3
 import unittest
@@ -21,6 +22,8 @@ from lgax_core.planning_agent import PlanningAgent
 from lgax_core.store import DemoStore
 from lgax_core.workspace import WorkspaceStore
 from lgax_core.workspace_planning import EnvPlanningRunner, build_planning_input
+from lgax_mcp.workspace_client import WorkspaceClient
+from lgax_mcp.workspace_server import create_workspace_mcp
 from test_planning_agent import semantic_for
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -230,6 +233,28 @@ class WorkspacePlanningTests(unittest.TestCase):
         self.assertEqual(saved["run"]["status"], "failed")
         self.assertEqual(saved["run"]["revision_count"], 0)
 
+    def test_completed_run_requires_matching_final_acceptance(self):
+        fixture = FixtureRunner()
+        good = fixture(self.request, self.versions, self.evidence)["decision"]
+        decisions = [None, {**good, "action": "revise"}, {**good, "valid": False},
+                     {**good, "revision_count": 1}, {**good, "revision_count": False},
+                     {**good, "violations": [{"code": "SEMANTIC_REJECTION", "stage": "concepts"}]}]
+        for decision in decisions:
+            with self.subTest(decision=decision):
+                def rejected(request, versions, evidence):
+                    execution = fixture(request, versions, evidence)
+                    execution["decision"] = deepcopy(decision)
+                    return execution
+
+                store, pid = self.store(rejected)
+                saved = store.create_run(pid, self.request, "planner", "web")
+                self.assertEqual(saved["run"]["status"], "failed")
+                self.assertEqual(saved["run"]["concepts"], [])
+                execution = saved["output"]["planning_execution"]
+                self.assertEqual(execution["errors"][0]["code"], "CONTRACT_MISMATCH")
+                self.assertEqual(execution["rejected_execution"]["decision"], decision)
+                self.assertEqual(store.get_run(saved["run"]["id"], "planner"), saved)
+
     def test_held_output_cannot_publish_another_model_or_source(self):
         fixture = FixtureRunner(status="held")
 
@@ -309,6 +334,78 @@ class WorkspacePlanningTests(unittest.TestCase):
 
 class WorkspacePlanningApiTests(unittest.TestCase):
     setUp = WorkspacePlanningTests.setUp
+
+    def mcp_call(self, api, role, name, **arguments):
+        # Actual MCP tool dispatch and WorkspaceClient serialization against the
+        # actual ASGI API/store. Only HTTP transport and model are fixtures.
+        def forward(request):
+            response = api.request(request.method, str(request.url),
+                                   headers=dict(request.headers), content=request.content)
+            return httpx.Response(response.status_code, content=response.content,
+                                  headers=dict(response.headers))
+
+        token = {"editor": "e", "viewer": "v", "other": "o"}[role] * 48
+        proxy = WorkspaceClient("http://127.0.0.1", token, transport=httpx.MockTransport(forward))
+        result = asyncio.run(create_workspace_mcp(proxy).call_tool(name, arguments))
+        if isinstance(result, tuple):
+            return result[1]
+        if isinstance(result, dict):
+            return result
+        return json.loads(result[0].text)
+
+    def test_web_and_mcp_share_snapshot_and_changed_input_history(self):
+        runner = FixtureRunner(revisions=2)
+        api, pid, headers = self.api(runner)
+        first = api.post(f"/api/workspace/projects/{pid}/runs",
+                         headers={**headers["editor"], "X-LGAX-Client": "web"},
+                         json={"request": self.request, "previous_run_id": None,
+                               "unconfirmed": ["합성자료 검증"]}).json()
+        rid = first["data"]["run"]["id"]
+        self.assertEqual(first["data"]["run"]["status"], "completed")
+        self.assertEqual(self.mcp_call(api, "viewer", "get_workspace_run", run_id=rid), first)
+        execution = first["data"]["output"]["planning_execution"]
+        self.assertEqual(execution["original_input"]["sources"], self.payload["sources"])
+        self.assertEqual(execution["original_input"]["product"], self.payload["product"])
+        self.assertEqual(execution["output"]["input_sha256"], input_digest(execution["input"]))
+        changed = {**self.request, "exclusions": ["자동 세척 제외"]}
+        second = self.mcp_call(api, "editor", "create_workspace_run", project_id=pid,
+                               request=changed, previous_run_id=rid)
+        self.assertTrue(second["ok"])
+        saved = second["data"]
+        self.assertEqual(saved["client"], "mcp")
+        self.assertEqual(saved["request_revision"], 1)
+        self.assertEqual(saved["run"]["revision_count"], 2)
+        self.assertEqual(saved["previous_run_id"], rid)
+        self.assertEqual(saved["dataset_sha256"], first["data"]["dataset_sha256"])
+        self.assertEqual(saved["document_versions"], first["data"]["document_versions"])
+        self.assertEqual(api.get(f"/api/workspace/runs/{saved['run']['id']}",
+                                 headers=headers["viewer"]).json(), second)
+        self.assertEqual(self.mcp_call(api, "viewer", "get_workspace_run", run_id=rid), first)
+        self.assertEqual(len(runner.calls), 2)  # Reads did not rerun planning.
+
+    def test_mcp_preserves_permissions_and_saved_failure_states(self):
+        for status in ("completed", "held", "failed", "not_implemented"):
+            with self.subTest(status=status):
+                runner = FixtureRunner(status=status) if status != "not_implemented" else None
+                api, pid, headers = self.api(runner)
+                saved = self.mcp_call(api, "editor", "create_workspace_run",
+                                      project_id=pid, request=self.request)
+                self.assertTrue(saved["ok"])
+                rid = saved["data"]["run"]["id"]
+                self.assertEqual(saved["data"]["run"]["status"], status)
+                self.assertEqual(api.get(f"/api/workspace/runs/{rid}",
+                                         headers=headers["viewer"]).json(), saved)
+                for role in ("viewer", "other"):
+                    denied = self.mcp_call(api, role, "create_workspace_run",
+                                           project_id=pid, request=self.request)
+                    self.assertFalse(denied["ok"])
+                    self.assertEqual(denied["error"]["code"], "FORBIDDEN")
+                denied = self.mcp_call(api, "other", "get_workspace_run", run_id=rid)
+                self.assertEqual(denied["error"]["code"], "FORBIDDEN")
+                if runner:
+                    self.assertEqual(len(runner.calls), 1)
+                else:
+                    self.assertIsNone(saved["data"]["output"])
     def api(self, runner):
         tokens = {"editor": "e" * 48, "viewer": "v" * 48, "other": "o" * 48}
         entries = [{"principal_id": "other" if role == "other" else "planner",
