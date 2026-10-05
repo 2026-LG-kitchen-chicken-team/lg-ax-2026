@@ -252,6 +252,71 @@ def artifact_errors(root, artifact, kinds):
     return errors
 
 
+def automatic_completion_errors(root, task):
+    """Check an exported multi-unit receipt's integrity, never live authority.
+
+    Authentication, actual publication and both online acknowledgements belong
+    to the separately deployed PM broker. A manifest is not their substitute.
+    """
+    from services.automation.completion import ArtifactRef, CompletionError, validate_completion_bundle
+
+    try:
+        stamp = task.get("completion") or {}
+        receipt_hash = stamp.get("parent_receipt_sha256", "")
+        if not re.fullmatch(r"[0-9a-f]{64}", receipt_hash):
+            raise ValueError("exact parent receipt digest required")
+        prefix = f"evals/automation-completion/{task['id']}/{receipt_hash}/"
+        if stamp.get("path") != prefix + "bundle.json" or task.get("status") != "done":
+            raise ValueError("automatic completion needs canonical bundle and Done state")
+        errors = record_errors(root, stamp)
+        if errors:
+            return errors
+        raw = (root / stamp["path"]).read_bytes()
+        if len(raw) > 2 * 1024 * 1024:
+            raise ValueError("completion bundle exceeds bound")
+        manifest = json.loads(raw)
+        files = manifest.get("artifact_files", {})
+        if not isinstance(files, dict) or not 1 <= len(files) <= 256:
+            raise ValueError("bounded artifact map required")
+        total = 0
+        assets = {}
+        for digest, path in files.items():
+            if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
+                raise ValueError("invalid artifact digest")
+            if path != prefix + f"assets/{digest}.blob":
+                raise ValueError("noncanonical artifact path")
+            target = root / path
+            # Reject symlinks/junctions at every component, even if they resolve
+            # inside the checkout. CI reads the same literal immutable bytes.
+            cursor = target
+            while cursor != root:
+                if cursor.is_symlink() or (hasattr(cursor, "is_junction") and cursor.is_junction()):
+                    raise ValueError("linked completion artifact prohibited")
+                cursor = cursor.parent
+            data = target.read_bytes()
+            total += len(data)
+            if len(data) > 2 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                raise ValueError("completion artifacts exceed bound")
+            if hashlib.sha256(data).hexdigest() != digest:
+                raise ValueError("completion artifact changed")
+            assets[digest] = data
+
+        def reader(ref):
+            if ref.sha256 not in assets:
+                raise ValueError("unexported completion artifact")
+            return assets[ref.sha256]
+
+        validate_completion_bundle(manifest, reader, expected_task_id=task["id"],
+                                   expected_receipt_sha256=receipt_hash)
+        source = json.loads(reader(ArtifactRef.parse(manifest["sources"]["task"])))
+        for key in ("id", "owner", "scope", "requirement_ids", "actions", "depends_on", "allowed_execution_kinds"):
+            if source.get(key) != task.get(key):
+                raise ValueError("current task differs from immutable completion contract: " + key)
+        return []
+    except (CompletionError, OSError, ValueError, KeyError, TypeError, AttributeError) as exc:
+        return ["automatic parent completion invalid: " + str(exc)]
+
+
 def validate(root, bundle):
     errors = []
     workflow = bundle["workflow"]
@@ -299,6 +364,13 @@ def validate(root, bundle):
                 errors.append(f"task {tid}: proposed extension adoption_required must be true")
             if task.get("adoption") or task.get("status") not in ("pending", "blocked", "deferred"):
                 errors.extend(f"task {tid}/adoption: {e}" for e in adoption_errors(root, bundle, task))
+        protocol = task.get("completion_protocol")
+        if protocol:
+            if protocol != "trusted_auto_parent_v1":
+                errors.append(f"task {tid}: unknown completion protocol")
+            else:
+                errors.extend(f"{tid}/completion: {e}" for e in automatic_completion_errors(root, task))
+            continue
         for key in ("individual_evidence", "pm_review", "merge", "integration", "completion"):
             if task.get(key):
                 errors.extend(f"{tid}/{key}: {e}" for e in record_errors(root, task[key]))

@@ -505,7 +505,7 @@ class BrokerTests(unittest.TestCase):
         with self.assertRaisesRegex(PMError, "merge base raced"):
             self.broker.execute(ACTION, action, expected)
 
-    def test_integration_executes_only_zero_auth_readonly_container(self):
+    def test_integration_executes_only_zero_auth_disposable_container(self):
         self.add_unit()
         pr = self.broker.observe(collect=False)["prs"][0]
         work = self.executor.config.workspace_root / "source" / "workspace"
@@ -516,8 +516,29 @@ class BrokerTests(unittest.TestCase):
             proof = self.broker._integration(pr, self.broker.policy["capabilities"][CAP])
         self.assertEqual(proof["result"], "passed")
         self.assertEqual(self.executor.calls[0][1]["role"], "validator")
-        self.assertTrue(self.executor.calls[0][1]["readonly_workspace"])
+        self.assertFalse(self.executor.calls[0][1]["readonly_workspace"])
         self.assertEqual(self.executor.calls[0][1]["env"], {})
+
+    def test_disposable_build_cannot_pass_after_mutating_original_source(self):
+        self.add_unit()
+        pr = self.broker.observe(collect=False)["prs"][0]
+        work = self.executor.config.workspace_root / "source" / "workspace"
+        artifacts = work.parent / "artifacts"
+        work.mkdir(parents=True)
+        artifacts.mkdir()
+        source = work / "original.py"
+        source.write_text("original", encoding="utf-8")
+        original_run = self.executor.run
+
+        def mutate(*args, **kwargs):
+            source.write_text("changed", encoding="utf-8")
+            return original_run(*args, **kwargs)
+
+        with patch.object(self.broker, "_source", return_value=(work, artifacts)), \
+                patch.object(self.executor, "run", side_effect=mutate):
+            proof = self.broker._integration(pr, self.broker.policy["capabilities"][CAP])
+        self.assertEqual(proof["result"], "failed")
+        self.assertEqual(proof["checks"], [])
 
     def test_review_cached_once_and_session_not_implementation(self):
         self.add_unit()

@@ -11,7 +11,11 @@ import json
 from pathlib import Path
 
 from services.automation.backlog import (
-    append_progress, collector_candidates, load_backlog, ready_units, verify_progress,
+    append_progress,
+    collector_candidates,
+    load_backlog,
+    ready_units,
+    verify_progress,
 )
 from services.automation.isolation import regular_file
 from services.automation.pm import PMError, fingerprint, protected_path
@@ -46,11 +50,22 @@ class Orchestration:
             config = json.loads(raw)
             if config.get("transport") != "codex_appserver":
                 raise PMError("live orchestration requires the verified CLI mail transport")
+            binary = regular_file(Path(config["codex_executable"]), maximum=512 * 1024 * 1024)
+            if hashlib.sha256(binary).hexdigest() != config.get("codex_executable_sha256"):
+                raise PMError("pinned CLI mail executable changed")
             transport = CodexGmailTransport(executable=config["codex_executable"],
                                            workspace=config["connector_workspace"], timeout_seconds=45)
             self.mail = MailBroker(config, gmail=transport)
         self._mail_checked = False
         self._mail_poll_at = 0.0
+        self.parent = None
+        self._parent_key = None
+        self._parent_result = None
+        if self.plan and broker.config.get("parent_completion_enabled") is True:
+            from services.automation.completion_publish import CompletionPublisher
+            from services.automation.parent_collector import ParentCollector
+
+            self.parent = ParentCollector(broker, publisher=CompletionPublisher(broker))
 
     def _event(self, cap_id, suffix, event, receipt):
         broker = self.broker
@@ -60,14 +75,16 @@ class Orchestration:
             capability_id=cap_id, event=event, receipt=receipt)
         broker.save()
 
-    def synchronize(self, observation):
+    def synchronize(self, observation, *, collect=False):
         if not self.plan:
             return
         jobs = {row["job_id"]: row for row in observation["jobs"]}
         state = verify_progress(self.plan, self.broker.state.get("backlog_ledger", []))
         # Old accepted pilot/revision jobs seed the ledger from the direct queue,
         # actual GitHub merge, and protected independent postmerge proof.
-        for unit in self.broker.state["units"].values():
+        latest = {unit["capability_id"]: unit for unit in self.broker.state["units"].values()
+                  if not unit.get("superseded_by") and unit["job_id"] in jobs}
+        for unit in latest.values():
             cap_id = unit["capability_id"]
             if cap_id not in self.plan["capabilities"] or unit.get("superseded_by"):
                 continue
@@ -116,26 +133,24 @@ class Orchestration:
         result = ready_units(self.plan, observation, self.broker.state.get("backlog_ledger", []))
         observation["capabilities_ready"] = [key for key in result["ready"]
                                               if key in self.broker._released_capabilities()]
-        # A rejected completed job can be rebuilt once its exact revision is
-        # approved; retain all old jobs and the original logical-task budgets.
-        for unit in self.broker.state["units"].values():
-            key = unit["capability_id"]
-            if unit.get("revision_requested") and not unit.get("superseded_by") and key in self.plan["capabilities"]:
-                candidate = dict(observation)
-                candidate["jobs"] = [j for j in observation["jobs"] if j.get("job_id") != unit["job_id"]]
-                ledger = self.broker.state.get("backlog_ledger", [])
-                # This existing revision is handled by the old broker gate;
-                # it must not be recreated through a generic unblocked flag.
-                if key in self.broker._released_capabilities() and not any(
-                        j.get("owner") == self.plan["capabilities"][key]["owner"] and
-                        j.get("status") in {"queued", "running", "review_requested", "orphaned"}
-                        for j in candidate["jobs"]) and not any(r.get("capability_id") == key and
-                        r.get("event") in {"accepted", "parent_verified"} for r in ledger):
-                    observation["capabilities_ready"].append(key)
         observation["backlog"] = {"plan_digest": result["plan_digest"], "waiting": result["waiting"],
                                   "parents_needing_collection": collector_candidates(self.plan,
                                       self.broker.state.get("backlog_ledger", []))}
         write_json(self.broker.state_dir / "backlog-observation.json", observation["backlog"])
+        if self.parent and collect and self.broker.enabled():
+            selected = tuple(sorted({unit["task_id"] for unit in latest.values() if unit.get("reconciled")}))
+            key = fingerprint({"main": observation["main_commit"], "units": latest,
+                               "store": self.parent.store.index})
+            # Current-head and protected evidence changes wake collection;
+            # unchanged polling does not rerun product tests or model reviews.
+            pending = self._parent_result and any(row.get("publication_pending") for row in
+                                                  self._parent_result["tasks"].values())
+            if selected and (key != self._parent_key or pending):
+                self._parent_result = self.parent.tick(observation, task_ids=selected)
+                self._parent_key = fingerprint({"main": observation["main_commit"], "units": latest,
+                                               "store": self.parent.store.index})
+            if self._parent_result:
+                observation["parent_completion"] = self._parent_result
 
     def mail_tick(self, *, poll=True):
         import time

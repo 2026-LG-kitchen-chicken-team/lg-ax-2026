@@ -6,15 +6,15 @@ the connector process. The fixed mail broker owns the permitted operations.
 from __future__ import annotations
 
 import base64
-from email import policy
-from email.parser import BytesParser
 import json
-from pathlib import Path
 import queue
 import re
 import subprocess
 import threading
 import time
+from email import policy
+from email.parser import BytesParser
+from pathlib import Path
 
 GMAIL_APP = "connector_2128aebfecb84f64a069897515042a44"
 TOOLS = frozenset({"gmail.get_profile", "gmail.send_email", "gmail.read_email",
@@ -52,8 +52,17 @@ class CodexGmailTransport:
     supports_custom_message_id = False
 
     def __init__(self, *, executable, workspace, timeout_seconds=90):
+        from services.automation.isolation import _plain_directory, regular_file
+        from services.automation.pm import protected_path
+
         self.executable = str(Path(executable).resolve(strict=True))
-        self.workspace = Path(workspace).resolve(strict=True)
+        regular_file(Path(self.executable), maximum=512 * 1024 * 1024)
+        self.workspace = protected_path(Path(workspace)).resolve(strict=True)
+        _plain_directory(self.workspace, "fixed connector workspace")
+        if any(self.workspace.iterdir()):
+            raise ConnectorError("Gmail connector workspace must be empty and outside checkouts")
+        if type(timeout_seconds) is not int or not 5 <= timeout_seconds <= 120:
+            raise ConnectorError("Bounded Gmail timeout required")
         self.timeout_seconds = timeout_seconds
         self._process = None
         self._counter = 0

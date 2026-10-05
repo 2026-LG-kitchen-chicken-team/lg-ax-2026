@@ -191,7 +191,7 @@ class MailBrokerTests(unittest.TestCase):
         self.assertNotIn("member@example.test", canonical(event))
         self.assertEqual(self.broker.poll_replies()["reports_collected"], 0)
         self.assertEqual(len(self.broker.observation_events()), 1)
-        self.assertEqual(self.state_file.read_text(), canonical(self.state))
+        self.assertEqual(self.state_file.read_text(encoding="utf-8"), canonical(self.state))
 
     def test_plain_prompt_injection_is_report_data_and_cannot_execute(self):
         self.broker.deliver(self.source)

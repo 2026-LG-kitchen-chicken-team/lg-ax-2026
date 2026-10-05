@@ -21,7 +21,7 @@ ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,99}\Z")
 SHA = re.compile(r"[a-f0-9]{40}\Z")
 DIGEST = re.compile(r"[a-f0-9]{64}\Z")
 OWNERS = {"jeongiryang", "unknownamed", "ginaginaring", "choigilung"}
-ACTIVE = {"pending", "queued", "running", "stopping", "orphaned", "review_requested", "completed_review"}
+ACTIVE = {"pending", "queued", "running", "stopping", "orphaned", "review_requested"}
 EVENTS = {"released", "assigned", "accepted", "blocked", "unblocked", "parent_verified"}
 FORBIDDEN = {".git", ".github", "private", "harness", "AGENTS.md", "CLAUDE.md", "services/automation"}
 

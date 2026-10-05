@@ -207,7 +207,10 @@ class ParentCollector:
         _check(fingerprint(detail) == proof.get("evidence_sha256") and proof.get("result") == "passed" and
                proof.get("capability_fingerprint") == fingerprint(cap) and detail.get("commit") == merged and
                detail.get("head") == unit["head"] and detail.get("base") == unit["base_commit"] and
-               detail.get("validation_workspace_readonly") is True and detail.get("host_repo_code_executed") is False,
+               (detail.get("validation_workspace_readonly") is True or
+                (detail.get("validation_source_integrity_verified") is True and
+                 re.fullmatch(r"[0-9a-f]{64}", detail.get("source_manifest_sha256", "")))) and
+               detail.get("host_repo_code_executed") is False,
                "actual postmerge source mismatch")
         rows = detail.get("checks", [])
         _check(len(rows) == len(cap["validation_commands"]), "complete actual postmerge commands required")

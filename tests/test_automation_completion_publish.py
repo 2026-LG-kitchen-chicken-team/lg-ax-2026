@@ -14,7 +14,6 @@ from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
 from services.automation.completion import ArtifactRef, CompletionError, digest
-
 from services.automation.completion_publish import CompletionPublisher
 from services.automation.pm import Journal, PMError, canonical
 from tests import test_automation_completion as fixture
@@ -77,6 +76,7 @@ class Remote:
             return {"object": {"sha": self.ref}}
         if path.endswith("/check-runs?per_page=100"):
             return {"total_count": 1, "check_runs": [{"name": "core-test", "head_sha": self.ci_head,
+                "app": {"id": 15368},
                 "status": "completed" if self.ci_success else "in_progress", "conclusion": "success"}]}
         if "/pulls/" in path:
             return self.pr

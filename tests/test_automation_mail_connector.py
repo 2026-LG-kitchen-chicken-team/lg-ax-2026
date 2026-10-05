@@ -1,8 +1,6 @@
 import base64
-from email.message import EmailMessage
-import tempfile
 import unittest
-from pathlib import Path
+from email.message import EmailMessage
 
 from services.automation.mail_connector import CodexGmailTransport, ConnectorError
 

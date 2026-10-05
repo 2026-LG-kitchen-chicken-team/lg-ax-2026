@@ -570,21 +570,30 @@ class TrustedPMBroker:
         if key in self.state["proofs"]:
             return self.state["proofs"][key]
         work, artifacts = self._source(commit, "pm-integration")
+        # Build tools need to create dependencies/output. Only this disposable
+        # Git archive is writable; no checkout, credentials or auth are mounted.
+        # Every original source byte must remain identical after each check.
+        source_bytes = {p.relative_to(work).as_posix(): hashlib.sha256(regular_file(p)).hexdigest()
+                        for p in work.rglob("*") if p.is_file()}
         log_dir = self.state_dir / "integration" / key
         log_dir.mkdir(parents=True, exist_ok=False)
         rows = []
         for index, argv in enumerate(capability["validation_commands"]):
             response = self.executor.run(argv, cwd=work, env={}, output=log_dir / f"check-{index}.log",
                 artifacts=artifacts, timeout_seconds=min(1800, capability.get("timeout_seconds", 1800)),
-                heartbeat=self.enabled, role="validator", readonly_workspace=True)
+                heartbeat=self.enabled, role="validator", readonly_workspace=False)
+            source_unchanged = all(hashlib.sha256(regular_file(work / path)).hexdigest() == expected
+                                   for path, expected in source_bytes.items())
             rows.append({"argv": argv, "returncode": response.returncode, "stopped_reason": response.stopped_reason,
-                         "boundary": self.executor.last_boundary})
-            if response.returncode or response.stopped_reason:
+                         "source_unchanged": source_unchanged, "boundary": self.executor.last_boundary})
+            if response.returncode or response.stopped_reason or not source_unchanged:
                 break
         successful = len(rows) == len(capability["validation_commands"]) and all(
-            row["returncode"] == 0 and not row["stopped_reason"] for row in rows)
+            row["returncode"] == 0 and not row["stopped_reason"] and row["source_unchanged"] for row in rows)
         detail = {"head": pr["head"], "base": pr["base"], "commit": commit, "checks": rows,
-                  "validation_workspace_readonly": True, "host_repo_code_executed": False}
+                  "validation_workspace_readonly": False,
+                  "validation_source_integrity_verified": all(row["source_unchanged"] for row in rows),
+                  "source_manifest_sha256": fingerprint(source_bytes), "host_repo_code_executed": False}
         write_json(log_dir / "proof.json", detail)
         proof = {"verified": True, "collector": "trusted_pm", "head": pr["head"], "base": pr["base"],
                  "commit": commit, "result": "passed" if successful else "failed",
@@ -766,7 +775,7 @@ class TrustedPMBroker:
                 "capabilities_ready": ready, "readiness": self._readiness(),
                 "operator_resume_nonce": self.config.get("operator_resume_nonce", "initial"),
                 "external_usage": external_usage}
-        self.orchestration.synchronize(observation)
+        self.orchestration.synchronize(observation, collect=collect)
         if collect and on:
             try:
                 observation["mail_reports"] = self.orchestration.mail_tick()

@@ -16,6 +16,7 @@ import time
 import uuid
 from pathlib import Path
 
+from services.automation.artifacts import secret_check
 from services.automation.completion import (
     DIGEST,
     ID,
@@ -27,8 +28,6 @@ from services.automation.completion import (
     CompletionError,
     digest,
 )
-
-from services.automation.artifacts import secret_check
 from services.automation.isolation import regular_file
 from services.automation.pm import Journal, PMError, canonical, fingerprint, protected_path
 from services.automation.worker import exclusive_lock, write_json
@@ -323,13 +322,16 @@ class CompletionPublisher:
         checks = response.get("check_runs", [])
         _require(type(response.get("total_count")) is int and response["total_count"] == len(checks) <= 100,
                  "complete bounded exact-head CI required")
-        required = {name for cap in contract.capabilities for name in cap.required_checks}
+        required = ({name for cap in contract.capabilities for name in cap.required_checks} |
+                    set(self.broker.policy.get("required_ci_contexts", [])))
         by_name = {}
         for row in checks:
             _require(row.get("head_sha") == entry["head"] and isinstance(row.get("name"), str), "stale CI evidence")
             by_name.setdefault(row["name"], []).append(row)
         if not required <= set(by_name) or any(row.get("status") != "completed" for row in checks):
             return False
+        _require(all(row.get("app", {}).get("id") == self.broker.config.get("required_ci_app_id", 15368)
+                     for name in required for row in by_name[name]), "required CI must come from trusted GitHub Actions")
         _require(all(len(rows) == 1 for rows in by_name.values()) and
                  all(row.get("conclusion") == "success" for row in checks), "CI failure, duplicate or non-success blocks publication")
         return True
