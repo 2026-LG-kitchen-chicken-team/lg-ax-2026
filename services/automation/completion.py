@@ -27,6 +27,7 @@ REPO = "2026-LG-kitchen-chicken-team/lg-ax-2026"
 MEMBERS = {"정이량": PM, "황대겸": "unknownamed", "신진하": "ginaginaring", "최길웅": "choigilung"}
 CATALOG = frozenset([f"R{i:02}" for i in range(1, 29)] + [f"E{i:02}" for i in range(1, 4)])
 REAL_EXECUTIONS = frozenset({"live_model", "live_service", "live_client"})
+SUPPORTED_EXECUTIONS = REAL_EXECUTIONS | {"deterministic", "fixture"}
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 DIGEST = re.compile(r"[0-9a-f]{64}\Z")
 ID = re.compile(r"[A-Za-z0-9_-]{1,100}\Z")
@@ -389,10 +390,11 @@ def _coverage(contract: TaskContract, evidence: RequirementEvidence, unit: dict,
     _require(evidence.execution.commit == evidence.acceptance.commit == current_main and
              all(execution.get(k) == v and acceptance.get(k) == v for k, v in expected.items()),
              "coverage source criterion/commit/unit mismatch")
-    _require(execution.get("execution_kind") in REAL_EXECUTIONS and
+    _require(execution.get("execution_kind") in SUPPORTED_EXECUTIONS and
              execution["execution_kind"] in contract.execution_kinds and execution.get("result") == "pass" and
              _strings(execution.get("observations"), "actual execution observations") and
-             _strings(execution.get("limitations"), "actual execution limitations"), "real requirement execution required")
+             _strings(execution.get("limitations"), "actual execution limitations"),
+             "actual source-authorized requirement execution required")
     implementation = execution.get("implementation_session_id")
     _require(isinstance(implementation, str) and ID.fullmatch(implementation) is not None and
              implementation == unit["implementation_session_id"] and

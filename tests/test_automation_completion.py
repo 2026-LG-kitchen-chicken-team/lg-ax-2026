@@ -265,6 +265,25 @@ class CompletionTests(unittest.TestCase):
         self.assertHeld(f.assessment(requirement_evidence=[RequirementEvidence("R01", JOB, old.execution, acceptance),
                                                           f.coverage[1]]))
 
+    def test_actual_algorithm_fixture_allowed_only_by_literal_source_contract(self):
+        f = self.f
+        f.task["allowed_execution_kinds"] = ["deterministic", "fixture"]
+        f.load()
+        f.unit = f.make_unit()
+        coverage = []
+        for requirement_id in ("R01", "R02"):
+            item = f.make_coverage(requirement_id)
+            execution = f.altered(item.execution, "requirement_execution", execution_kind="fixture")
+            acceptance = f.altered(item.acceptance, "requirement_acceptance", execution_sha256=execution.sha256)
+            coverage.append(RequirementEvidence(requirement_id, JOB, execution, acceptance))
+        f.coverage = coverage
+        f.parent = f.make_parent()
+        self.assertTrue(f.assessment().complete)
+        item = coverage[0]
+        execution = f.altered(item.execution, "requirement_execution", execution_kind="live_model")
+        acceptance = f.altered(item.acceptance, "requirement_acceptance", execution_sha256=execution.sha256)
+        self.assertHeld(f.assessment(requirement_evidence=[RequirementEvidence("R01", JOB, execution, acceptance), coverage[1]]))
+
     def test_source_acceptance_hash_policy_scope_and_catalog_are_mandatory(self):
         self.assertEqual(dict(self.f.contract.requirements)["R01"], criterion_digest("Execute R01"))
         for failure in ("missing-catalog", "duplicate-catalog", "scope", "owner", "requirement-link", "policy"):
