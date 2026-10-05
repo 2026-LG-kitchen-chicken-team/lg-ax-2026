@@ -334,6 +334,10 @@ class FileTransport(httpx.BaseTransport):
                         raise httpx.TransportError("invalid actual response bytes") from None
                     if len(data) > MAX_RESPONSE or sha(data) != response["response_sha256"]:
                         raise httpx.TransportError("product response bytes changed")
-                    return httpx.Response(200, content=data, request=request)
+                    # The application adapter uses client.stream()/iter_raw().
+                    # ``content=`` eagerly consumes a bytes response and makes
+                    # iter_raw fail with StreamConsumed on the first pin read.
+                    return httpx.Response(200, stream=httpx.ByteStream(data), request=request,
+                        headers={"content-length": str(len(data)), "content-type": "application/json"})
             time.sleep(self.poll_seconds)
         raise httpx.ReadTimeout("bounded actual product relay timeout", request=request)

@@ -8,6 +8,7 @@ import unittest
 from pathlib import Path
 
 import httpx
+from lgax_core.model_client import ModelConfig, OllamaAdapter, StructuredModelClient
 
 from services.automation.product_rpc import (
     DIGEST,
@@ -101,6 +102,41 @@ class ProductRPCTests(unittest.TestCase):
         self.assertEqual(base64.b64decode(row["response_base64"]), completion())
         self.assertEqual(row["response_sha256"], sha(completion()))
         self.assertEqual(relay.state["approved_origin"], {"job_id": "fixture-job"})
+
+    def test_actual_application_stream_lifecycle_reads_pins_generation_and_reuses_client(self):
+        # Fixture upstream only. Exercise the application's actual iter_raw()
+        # consumption, which plain client.get() roundtrips cannot cover.
+        relay = self.relay()
+        stop, failures = threading.Event(), []
+
+        def pump():
+            while not stop.is_set():
+                try:
+                    relay.step()
+                except (RPCError, OSError, ValueError) as exc:
+                    failures.append(exc)
+                    return
+                stop.wait(0.005)
+        thread = threading.Thread(target=pump)
+        thread.start()
+        try:
+            config = ModelConfig("http://127.0.0.1:18873", MODEL, DIGEST, timeout_seconds=2,
+                                 max_output_tokens=SETTINGS["num_predict"], context_tokens=SETTINGS["num_ctx"])
+            with StructuredModelClient(OllamaAdapter(config, transport=FileTransport(
+                    self.artifacts, RUN, timeout_seconds=2, poll_seconds=0.005))) as client:
+                for _ in range(2):
+                    result = client.generate("Fixture application input", {"type": "object"}, MODEL)
+                    self.assertEqual(result.data, {"fixture": True})
+                    self.assertEqual(result.metadata["pin_verification"], "before_and_after_generation")
+                    self.assertEqual(result.metadata["prompt_eval_count"], 11)
+                    self.assertEqual(result.metadata["eval_count"], 7)
+        finally:
+            stop.set()
+            thread.join(3)
+        self.assertFalse(failures)
+        self.assertEqual([path for _, path, _ in self.calls], ["/api/tags", "/api/generate", "/api/tags"] * 2)
+        self.assertEqual(relay.state["generations"], 2)
+        self.assertEqual(relay.state["tokens"], 36)
 
     def test_processed_identical_request_not_replayed_and_mutation_rejected(self):
         relay = self.relay()
