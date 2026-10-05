@@ -309,7 +309,7 @@ class Journal:
     def pending(self):
         with self.connect() as db:
             return [{"action_id": row[0], "body": json.loads(row[1])} for row in db.execute(
-                "SELECT action_id,body FROM actions WHERE state='intent' ORDER BY rowid")]
+                "SELECT action_id,body FROM actions WHERE state='intent' AND kind!='parent_publication' ORDER BY rowid")]
 
     def receipt(self, action_id, receipt):
         if not isinstance(receipt, dict) or receipt.get("action_id") != action_id or receipt.get("outcome") not in {
@@ -702,6 +702,9 @@ class AutonomousPM:
         if recovery:
             return recovery
         observation = self._observe()
+        parent = observation.get("parent_completion", {})
+        if parent.get("must_reobserve") or (parent.get("main_commit") and parent["main_commit"] != observation["main_commit"]):
+            return {"state": "reobserve_after_publication", "model_called": False, "mutated": False}
         if not self._is_on(observation):
             return {"state": "off", "global_mode": observation["global_mode"], "pm_mode": observation["pm_mode"],
                     "model_called": False, "mutated": False}
