@@ -48,6 +48,7 @@ class ProductCorrectionTests(unittest.TestCase):
         path.write_text(json.dumps(self.registry), encoding="utf-8")
         self.broker.config["product_correction_registry"] = {"path": str(path), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
         self.broker.policy["capabilities"] = deepcopy(self.expanded["capabilities"])
+        self.broker.policy["independent_reviewers"] = ["jeongiryang"]
         self.released = set(self.expanded["capabilities"])
         self.live = Orchestration(self.broker)
         self.result(CORE_ORIGINAL_UNITS[0])
@@ -294,6 +295,37 @@ class ProductCorrectionTests(unittest.TestCase):
         self.broker.state["correction_ledger"] = before
         with self.assertRaises(BacklogError):
             self.ready()
+
+    def test_only_independent_exact_head_rejection_can_use_remaining_correction_slot(self):
+        feedback = self.feedback()[CORE_CORRECTIONS[0]]
+        cap = self.expanded["capabilities"][CORE_CORRECTIONS[0]]
+        job = "auto-" + "1" * 40
+        self.broker.state["units"][job] = {"job_id": job, "capability_id": CORE_CORRECTIONS[0],
+            "task_id": "P2-CORE-002", "base_commit": self.main, "head": "b" * 40,
+            "implementation_session_id": "implementation-known", "revision_requested": True,
+            "product_correction": feedback}
+        self.broker.state["actions"]["pm-" + "1" * 40] = {"product_correction": feedback}
+        proof = {"verified": True, "collector": "trusted_pm", "head": "b" * 40, "base": self.main,
+            "reviewer": "jeongiryang",
+            "outcome": "request_changes", "capability_fingerprint": fingerprint(cap),
+            "implementation_session_id": "implementation-known", "reviewer_session_id": "review-distinct",
+            "evidence_sha256": "c" * 64}
+        self.assertTrue(self.feedback()[CORE_CORRECTIONS[0]]["already_dispatched"])
+        self.broker.state["proofs"]["correction-review"] = proof
+        corrected = self.feedback()[CORE_CORRECTIONS[0]]
+        self.assertFalse(corrected["already_dispatched"])
+        self.assertEqual(corrected["dispatches_used"], 1)  # Intent + unit count once.
+        self.assertEqual(corrected["revision_of"]["review_evidence_sha256"], "c" * 64)
+        for change in ({"head": "e" * 40}, {"verified": False}, {"reviewer_session_id": "implementation-known"},
+                       {"outcome": "approve"}, {"reviewer": "unregistered"}, {"evidence_sha256": "not-a-hash"}):
+            self.broker.state["proofs"]["correction-review"] = {**proof, **change}
+            with self.subTest(change=change):
+                self.assertTrue(self.feedback()[CORE_CORRECTIONS[0]]["already_dispatched"])
+        self.broker.state["proofs"]["correction-review"] = proof
+        self.broker.state["actions"]["pm-" + "2" * 40] = {"product_correction": corrected}
+        self.observation["product_corrections"] = self.feedback()
+        self.assertEqual(self.observation["product_corrections"][CORE_CORRECTIONS[0]]["dispatches_used"], 2)
+        self.assertNotIn(CORE_CORRECTIONS[0], self.ready())
 
 
 if __name__ == "__main__":

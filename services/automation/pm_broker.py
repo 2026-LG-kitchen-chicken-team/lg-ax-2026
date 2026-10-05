@@ -585,6 +585,8 @@ class TrustedPMBroker:
             from services.automation.pm import PMPreparationRejected
 
             raise PMPreparationRejected("revision_prompt_bound")
+        if action["capability_id"] in CORE_CORRECTIONS and len(packet["prompt"].encode("utf-8")) > 16000:
+            raise ProductCorrectionRejected("portable product correction prompt exceeded bounds")
         return assignment, packet, previous
 
     def _checks(self, sha):

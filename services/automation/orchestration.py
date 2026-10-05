@@ -314,7 +314,34 @@ class Orchestration:
         dispatched = any(row.get("failure_identity") == identity for row in dispatches.values())
         packet = {**evidence, "verified": True, "collector": "trusted_pm_product", "evidence_sha256": digest,
                   "dispatches_used": len(dispatches), "already_dispatched": dispatched}
-        return {key: deepcopy(packet) for key in CORE_CORRECTIONS if key in self.capabilities}
+        result = {}
+        for key in CORE_CORRECTIONS:
+            if key not in self.capabilities:
+                continue
+            value = deepcopy(packet)
+            # An unaccepted correction PR may use the remaining lifetime slot
+            # only on an actual distinct exact-head independent rejection.
+            # Restart/docs-only/new-main or a model/comment claim is not one.
+            previous = next((row for row in reversed(list(self.broker.state["units"].values())) if
+                row.get("capability_id") == key and row.get("revision_requested") and not row.get("superseded_by") and
+                not row.get("reconciled") and row.get("product_correction", {}).get("failure_identity") == identity), None)
+            if previous:
+                proof = next((p for p in self.broker.state.get("proofs", {}).values() if
+                    p.get("verified") is True and p.get("collector") == "trusted_pm" and
+                    p.get("reviewer") in self.broker.policy.get("independent_reviewers", []) and
+                    p.get("outcome") == "request_changes" and p.get("head") == previous.get("head") and
+                    p.get("base") == previous.get("base_commit") and
+                    p.get("capability_fingerprint") == fingerprint(self.broker.policy["capabilities"][key]) and
+                    p.get("implementation_session_id") == previous.get("implementation_session_id") and
+                    re.fullmatch(r"[a-f0-9]{64}", p.get("evidence_sha256", "")) and
+                    p.get("reviewer_session_id") and p["reviewer_session_id"] != p["implementation_session_id"]), None)
+                if proof:
+                    revision = {"job_id": previous["job_id"], "head": previous["head"],
+                                "review_evidence_sha256": proof["evidence_sha256"]}
+                    value.update(revision_of=revision, already_dispatched=False,
+                                 evidence_sha256=fingerprint({**evidence, "revision_of": revision}))
+            result[key] = value
+        return result
 
     def synchronize(self, observation, *, collect=False):
         if not self.plan:
