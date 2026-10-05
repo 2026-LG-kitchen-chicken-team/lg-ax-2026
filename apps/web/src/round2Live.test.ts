@@ -112,7 +112,11 @@ describe('round2 live runs (PM, Qwen3:8B, real API and storage) read as stored',
     const copy = execution(stripped);
     copy.output!.hold_reasons = [];
     copy.output!.unresolved = [];
-    copy.semantic_reviews![0].report.questions = [];
+    // The core also copies the last semantic review's questions into output.questions (and gaps keep their own), so
+    // all three stored places are cleared; otherwise the record still legitimately shows the question.
+    copy.output!.questions = [];
+    for (const gap of copy.output!.gaps) gap.questions = [];
+    for (const review of copy.semantic_reviews!) review.report.questions = [];
     const outcome = outcomeOf(stripped);
     for (const reason of record.output!.hold_reasons) expect(outcome.groups.reasons).not.toContain(reasonText(reason));
     for (const question of record.semantic_reviews![0].report.questions) expect(outcome.groups.questions).not.toContain(question);
