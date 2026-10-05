@@ -1,0 +1,166 @@
+{
+  "schema_version": "1.0",
+  "task_id": "P2-DATA-003",
+  "scope": "steps_3_4_preparation",
+  "status": "prepared_not_executed",
+  "split": "development",
+  "models": [
+    {
+      "model_id": "BAAI/bge-m3",
+      "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+      "license": "mit",
+      "source": "https://huggingface.co/BAAI/bge-m3",
+      "pinned_source": "https://huggingface.co/BAAI/bge-m3/blob/5617a9f61b028005a4858fdac845db406aefb181/README.md",
+      "verification": "2026-10-05 pinned official README metadata verified"
+    },
+    {
+      "model_id": "BAAI/bge-reranker-v2-m3",
+      "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+      "license": "apache-2.0",
+      "source": "https://huggingface.co/BAAI/bge-reranker-v2-m3",
+      "pinned_source": "https://huggingface.co/BAAI/bge-reranker-v2-m3/blob/953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e/README.md",
+      "verification": "2026-10-05 pinned official README metadata verified"
+    },
+    {
+      "model_id": "PaddlePaddle/korean_PP-OCRv5_mobile_rec",
+      "revision": "c02ecaf1f22bfd1c618cce154fd19185b47e663a",
+      "license": "apache-2.0",
+      "source": "https://huggingface.co/PaddlePaddle/korean_PP-OCRv5_mobile_rec",
+      "pinned_source": "https://huggingface.co/PaddlePaddle/korean_PP-OCRv5_mobile_rec/blob/c02ecaf1f22bfd1c618cce154fd19185b47e663a/README.md",
+      "verification": "bootstrap license record; pinned tree accessible, README web read failed"
+    }
+  ],
+  "runner_status": "protocol and inputs ready; existing bootstrap runner needs step5 adapter before these queries",
+  "legacy_runner_compatibility": [
+    "Do not pass this pack directly to scripts/model_benchmark.py: no-gold queries would divide by zero",
+    "Apply identical scope before BM25 IDF/ranking and dense/reranker selection",
+    "Add Hit@1/MRR, scope/response cases, repeated timings and raw failures without overwriting bootstrap results"
+  ],
+  "retrieval": {
+    "methods": [
+      "bm25_filtered",
+      "bge_m3_filtered",
+      "bge_m3_filtered_reranker"
+    ],
+    "unit": "one existing fact summary per exact manual location; no query/gold in model input",
+    "filter": "same resolved model_id AND exact document_version for all three methods, before ranking",
+    "unresolved_scope": "missing requested version: request revision, do not substitute current revision",
+    "foreign_scope": "reject use of another model's evidence for the target model",
+    "bm25": {
+      "implementation": "scripts/model_benchmark.py bm25",
+      "k1": 1.5,
+      "b": 0.75,
+      "tokenization": "Unicode word regex, casefold; no new Korean morphological analyzer"
+    },
+    "embedding": {
+      "pooling": "L2-normalized CLS dense vectors",
+      "max_length_tokens": 256,
+      "batch_size": 8,
+      "query_instruction": null,
+      "precision": "float32"
+    },
+    "reranker": {
+      "candidate_top_n": 10,
+      "max_length_tokens": 256,
+      "score": "raw logits",
+      "precision": "float32"
+    },
+    "ties": "score descending, evidence ID ascending",
+    "display_k": [
+      1,
+      3
+    ],
+    "primary_metric": "macro Hit@1 on the 11 questions with supported evidence",
+    "secondary_metrics": [
+      "Recall@3",
+      "MRR@3",
+      "model_mix_rate@3",
+      "version_mix_rate@3"
+    ],
+    "formulas": {
+      "Hit@1": "1 if first ID is in gold, otherwise 0; failures count 0",
+      "Recall@3": "distinct gold IDs in first 3 / number of gold IDs; failures count 0",
+      "MRR@3": "1 / first relevant rank when rank <=3, otherwise 0",
+      "model_mix_rate@3": "foreign model IDs / returned IDs; empty=NA",
+      "version_mix_rate@3": "wrong document version IDs / returned IDs; empty=NA"
+    },
+    "no_gold_policy": "4 non-answerable/scope/input cases excluded from ranking average; response disposition and prohibited claims reviewed separately",
+    "latency": {
+      "warmups_per_method": 2,
+      "measured_repeats_per_query": 5,
+      "seed": 20261005,
+      "order": "fixed shuffled query order shared across methods",
+      "reported": [
+        "median_ms",
+        "p95_ms",
+        "failure_count",
+        "cold_load_ms",
+        "index_build_ms"
+      ],
+      "boundary": "warm query embedding + structural filtering/ranking + optional reranking; cold download/load/index separate",
+      "failure_policy": "record every attempt; timeouts/failures retained, latency summary successful attempts only with failure_count"
+    },
+    "runtime": {
+      "initial_device": "same host CPU for all methods",
+      "cpu_threads": 4,
+      "torch": "2.8.0+cpu bootstrap configuration",
+      "transformers": "4.57.1 bootstrap configuration",
+      "hardware_record_required": [
+        "cpu",
+        "ram",
+        "os",
+        "device",
+        "versions",
+        "peak_rss_mb"
+      ],
+      "gpu_track": "separate run only after assigned GPU usage check; never compare CPU and GPU as same-condition latency"
+    },
+    "truncation_policy": "record actual tokenizer lengths; any truncation requires new protocol version and rerun of all methods"
+  },
+  "ocr": {
+    "methods": [
+      "pypdf_text_extraction",
+      "paddle_manual_crop_recognition"
+    ],
+    "source": "same hash-locked real text PDF pages; rendered image is not a newly collected scan",
+    "render": {
+      "dpi": 300,
+      "color": "RGB",
+      "rotation_degrees": 0,
+      "denoise": false
+    },
+    "segmentation": "manually located line/row crops; store page, pixel bbox, original raster dimensions and crop hash before running recognition",
+    "gold": "short source-located exact excerpts for CER; numeric/unit/model-column field targets independently checked against page",
+    "metrics": {
+      "CER": "Levenshtein distance / gold chars after NFC and whitespace-collapse; report per aligned crop only",
+      "numeric_field_accuracy": "correct typed values / target values",
+      "unit_accuracy": "correct explicit units / target unit fields",
+      "model_column_accuracy": "values bound to correct model/column / target fields",
+      "latency": "median/p95 + render/crop/load separately"
+    },
+    "recognizer": "korean_PP-OCRv5_mobile_rec, CPU4threads, enable_mkldnn=False; existing recognition model only",
+    "whole_page_layout_status": "not_in_this_initial_track; detector/layout model not selected; manual crop success is not whole-page OCR success",
+    "normalization": "do not drop digits, decimal dots, units, minus signs or model codes; normalize × and x only in dimension tuple field scoring"
+  },
+  "decision_policy": {
+    "mandatory": "no foreign model/version contamination; conditional/unknown status preserved",
+    "accuracy": "compare paired question results and failed cases; higher development Hit@1 alone is not independent superiority",
+    "speed": "if accuracy ties prefer simpler/lower-latency baseline, with hardware/precision equal",
+    "release": "PM reviews actual outputs, licensing/runtime and source links before method adoption and formal dependency/completion"
+  },
+  "coverage_limits": [
+    "15 authored development queries, not independent final evaluation",
+    "27 curated fact summaries, not full manuals; fridge has only 4 passages so Hit@1 is primary",
+    "one real manual revision per model; same-model old revision exclusion needs future real source",
+    "actual customer reviews=0; R13 customer inconvenience/review traceability not verified",
+    "OCR line/row crop track does not validate full-page detection or layout",
+    "existing bootstrap 6 queries/2 OCR results are historical, not scores for this pack"
+  ],
+  "execution_preflight": [
+    "resolve original source folder and verify all PDF/cache/source/output hashes",
+    "verify installed runtime + model weight revision/licenses; no automatic downloads in preparation",
+    "record CPU/RAM or authorized GPU current use, free space and process isolation",
+    "review development gold with PM; keep private independent evaluation untouched",
+    "use a new output directory; keep status not_executed until actual outputs exist"
+  ]
+}

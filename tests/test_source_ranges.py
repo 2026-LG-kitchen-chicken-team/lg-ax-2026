@@ -16,8 +16,8 @@ class SourceRangeTests(unittest.TestCase):
     def setUp(self):
         self.text = "합성 제목\n\n첫째 문단\n한글, 인용문\n\n마지막 문단\n"
         self.raw = self.text.encode("utf-8")
-        self.kwargs = dict(document_id="SYNTH-DOC", model_id="SYNTH-M1",
-                           document_version="fixture-v1", source_kind="synthetic")
+        self.kwargs = {"document_id": "SYNTH-DOC", "model_id": "SYNTH-M1",
+                       "document_version": "fixture-v1", "source_kind": "synthetic"}
         self.source = capture_source(self.raw, **self.kwargs)
         quote = "첫째 문단\n한글, 인용문"
         start = self.text.index(quote)

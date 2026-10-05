@@ -1,0 +1,442 @@
+{
+  "case_id": "dev-FRIDGE-A",
+  "kind": "synthetic",
+  "process_exit_code": 0,
+  "stopped_reason": null,
+  "relay_failures": [],
+  "reserved_generations": 5,
+  "actual_generations_with_usage": 5,
+  "tokens": 33968,
+  "raw_result_sha256": "7937ef94685a3bbcbd331fbf730f23baec1adc6481c232c3af94d0171ed3afcc",
+  "settings": {
+    "temperature": 0,
+    "seed": 42,
+    "num_ctx": 16384,
+    "num_predict": 4096
+  },
+  "model": "qwen3:8b",
+  "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+  "raw_result_kept_private": true,
+  "independent_quality_review_complete": false,
+  "backend_truncation_independently_verified": false,
+  "base_commit": "df0310ea31bbadda68b299dc96a85475cf7ecec9",
+  "document_store_sha256": "cbf5fc44dc7339e12f40fb0813833561d5984df40c0fe29ba16b9b66ce3c6bc5",
+  "supervisor_sha256": "0ec472392a480a647ed66932fd7c4683a52704a2988f3ecd669d97fb345f1a53",
+  "runner_sha256": "c90b3134f81fb6035fb75bddfb0b8c95cacbd402bb7d7afc42d76439689b2b1e",
+  "file_rpc_sha256": "57faf292178b5cdefb2f3ec56c5d16cd66b8ad50a31b5c0681118100f8579678",
+  "control_status_cache_seconds": 1,
+  "status": "failed",
+  "errors": [
+    {
+      "code": "VALIDATION_FAILED",
+      "message": "각 입력 니즈의 대조 또는 근거 부족 판단이 필요합니다.",
+      "details": {}
+    }
+  ],
+  "decision": {
+    "valid": false,
+    "action": "unresolved",
+    "revision_count": 2,
+    "next_revision_count": 2,
+    "rerun_from": null,
+    "violations": [
+      {
+        "code": "NON_COMPLAINT_AS_NEED",
+        "stage": "needs"
+      },
+      {
+        "code": "GAP_MANUAL_MISSING",
+        "stage": "compare"
+      }
+    ]
+  },
+  "review_count": 10,
+  "source_identity_checks": [
+    {
+      "evidence_id": "MANUAL-001",
+      "model_id": "FRIDGE-A",
+      "source_id": "FRIDGE-A-MANUAL-v1.0",
+      "locator": {
+        "page": 1,
+        "section": "선반 분리"
+      },
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "original_exact_match": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-001",
+      "model_id": "FRIDGE-A",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 2
+      },
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "original_exact_match": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-002",
+      "model_id": "FRIDGE-A",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 3
+      },
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "original_exact_match": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-003",
+      "model_id": "FRIDGE-A",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 4
+      },
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "original_exact_match": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-004",
+      "model_id": "FRIDGE-A",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 5
+      },
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "original_exact_match": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-005",
+      "model_id": "FRIDGE-A",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 6
+      },
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "original_exact_match": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-006",
+      "model_id": "FRIDGE-A",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 7
+      },
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "original_exact_match": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-007",
+      "model_id": "FRIDGE-A",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 8
+      },
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "original_exact_match": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-008",
+      "model_id": "FRIDGE-A",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 9
+      },
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "original_exact_match": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-009",
+      "model_id": "FRIDGE-A",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 10
+      },
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "original_exact_match": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-010",
+      "model_id": "FRIDGE-A",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 11
+      },
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "original_exact_match": true
+    }
+  ],
+  "output_reference_checks": [
+    {
+      "evidence_id": "REVIEW-EVIDENCE-004",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 5
+      },
+      "source_kind": "synthetic",
+      "same_input_scope": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-001",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 2
+      },
+      "source_kind": "synthetic",
+      "same_input_scope": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-003",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 4
+      },
+      "source_kind": "synthetic",
+      "same_input_scope": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-002",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 3
+      },
+      "source_kind": "synthetic",
+      "same_input_scope": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-005",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 6
+      },
+      "source_kind": "synthetic",
+      "same_input_scope": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-007",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 8
+      },
+      "source_kind": "synthetic",
+      "same_input_scope": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-008",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 9
+      },
+      "source_kind": "synthetic",
+      "same_input_scope": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-009",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 10
+      },
+      "source_kind": "synthetic",
+      "same_input_scope": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-010",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 11
+      },
+      "source_kind": "synthetic",
+      "same_input_scope": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-006",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 7
+      },
+      "source_kind": "synthetic",
+      "same_input_scope": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-004",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 5
+      },
+      "source_kind": "synthetic",
+      "same_input_scope": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-001",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 2
+      },
+      "source_kind": "synthetic",
+      "same_input_scope": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-003",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 4
+      },
+      "source_kind": "synthetic",
+      "same_input_scope": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-002",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 3
+      },
+      "source_kind": "synthetic",
+      "same_input_scope": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-005",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 6
+      },
+      "source_kind": "synthetic",
+      "same_input_scope": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-007",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 8
+      },
+      "source_kind": "synthetic",
+      "same_input_scope": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-008",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 9
+      },
+      "source_kind": "synthetic",
+      "same_input_scope": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-009",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 10
+      },
+      "source_kind": "synthetic",
+      "same_input_scope": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-010",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 11
+      },
+      "source_kind": "synthetic",
+      "same_input_scope": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-006",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 7
+      },
+      "source_kind": "synthetic",
+      "same_input_scope": true
+    }
+  ],
+  "recorded_model_calls": 5,
+  "actual_model_trace_checks": [
+    {
+      "same_prompt": true,
+      "same_response": true,
+      "revision": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "error": null,
+      "done_reason": "stop"
+    },
+    {
+      "same_prompt": true,
+      "same_response": true,
+      "revision": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "error": null,
+      "done_reason": "stop"
+    },
+    {
+      "same_prompt": true,
+      "same_response": true,
+      "revision": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "error": null,
+      "done_reason": "stop"
+    },
+    {
+      "same_prompt": true,
+      "same_response": true,
+      "revision": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "error": null,
+      "done_reason": "stop"
+    },
+    {
+      "same_prompt": true,
+      "same_response": true,
+      "revision": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "error": null,
+      "done_reason": "stop"
+    }
+  ],
+  "boundary_verified": true,
+  "boundary_sha256": "4b2dcb503c62e9a2ce417070a51541ef63c74fb076716a2ae9e22cba108de31d",
+  "final_agent_output_present": true,
+  "full_model_prompts_responses_and_reviews_included": false
+}

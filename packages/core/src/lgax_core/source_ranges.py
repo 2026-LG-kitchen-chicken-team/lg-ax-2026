@@ -12,8 +12,8 @@ from __future__ import annotations
 
 import hashlib
 import re
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import Mapping, Sequence
 
 from jsonschema import ValidationError
 from lgax_contracts import validate

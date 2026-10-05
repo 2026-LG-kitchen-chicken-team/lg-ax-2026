@@ -1,0 +1,219 @@
+{
+  "checked_at_kst": "2026-10-05T05:57:31.189747+09:00",
+  "task_id": "P2-DATA-003",
+  "formal_state_changed": false,
+  "remote_publication": false,
+  "status": "bounded_checks_pass_with_preserved_full_suite_retry",
+  "checks": [
+    {
+      "name": "Ruff new four scripts and one test file",
+      "exit_code": 0,
+      "result": "pass"
+    },
+    {
+      "name": "new scope/CER/typed-field unit tests",
+      "tests": 9,
+      "exit_code": 0,
+      "result": "pass"
+    },
+    {
+      "name": "existing DATA003 BM25 unit tests",
+      "tests": 8,
+      "exit_code": 0,
+      "result": "pass"
+    },
+    {
+      "name": "contracts",
+      "definitions": 30,
+      "models": 5,
+      "reviews": 36,
+      "planning_requests": 3,
+      "exit_code": 0
+    },
+    {
+      "name": "phase2 validate",
+      "valid": true,
+      "errors": [],
+      "legacy": "stale",
+      "exit_code": 0
+    },
+    {
+      "name": "AGENTS/CLAUDE byte equality",
+      "exit_code": 0
+    },
+    {
+      "name": "retrieval/Paddle dependency pip check",
+      "exit_code": 0,
+      "result": "No broken requirements found in either isolated environment"
+    },
+    {
+      "name": "frozen input/model/output verification",
+      "check_count": 216,
+      "result": "pass",
+      "exit_code": 0
+    },
+    {
+      "name": "full unit suite initial wrong editable checkout",
+      "tests": 326,
+      "failures": 4,
+      "errors": 26,
+      "exit_code": 1,
+      "adopted": false,
+      "reason": "shared main venv resolved lgax_core/lgax_api/lgax_mcp from main checkout; actual resolved file paths directly observed"
+    },
+    {
+      "name": "full unit suite correct worktree PYTHONPATH",
+      "tests": 492,
+      "failures": 1,
+      "errors": 0,
+      "exit_code": 1,
+      "reason": "existing Windows CI helper failure-path cleanup assertion false; 491 passed"
+    },
+    {
+      "name": "isolated unchanged CI helper recheck",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "exit_code": 0,
+      "result": "all pass; code unchanged; transient full-suite cleanup failure preserved"
+    },
+    {
+      "name": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "name": "model/cache/crop Git exclusion",
+      "exit_code": 0,
+      "result": "private paths ignored"
+    }
+  ],
+  "execution": {
+    "retrieval": {
+      "path": "evals/data003-live/20261005/retrieval-v1/results.json",
+      "exit_code": 0,
+      "measured_attempts": 225,
+      "warmup_attempts": 6,
+      "failed_attempts": 0
+    },
+    "ocr": {
+      "path": "evals/data003-live/20261005/ocr-v3/results.json",
+      "exit_code": 0,
+      "measured_attempts": 70,
+      "warmup_attempts": 2,
+      "failed_attempts": 0
+    }
+  },
+  "recoveries": [
+    "Default external socket WinError10013 resolved through authorized network tool escalation",
+    "Initial HF Windows symlink WinError1314 resolved with normal local_dir files; no Developer Mode/admin changes",
+    "Paddle import external legacy cache PermissionError resolved by scoped process-local tilde expansion; system HOME/USERPROFILE unchanged",
+    "Paddle Unicode absolute native file path failed; identical verified files loaded via ASCII relative paths"
+  ],
+  "not_executed": [
+    "#13 actual output integration",
+    "PM semantic gold/output review",
+    "independent final evaluation",
+    "browser test/build or MCP smoke in this task",
+    "PR/Issue comments/push/authenticated report/Notion updates"
+  ],
+  "private_log_versions": [
+    {
+      "path": "private/model-runtime/download.log",
+      "sha256": "7b4205f2a0515d46be5c5141c9c5ea3cc737b9f2d5d45a73676727ee741d6bcc",
+      "size_bytes": 5876
+    },
+    {
+      "path": "private/model-runtime/download-v2.log",
+      "sha256": "bb49a2ea70576f40a1ef86c09808e893c62f79766de433950d1c63f7bf7d68e5",
+      "size_bytes": 1447
+    },
+    {
+      "path": "private/model-runtime/torch-install.log",
+      "sha256": "f51c8b7c8d130482d59871de428860c4e764a94be377f7deef0ac922ced2e71f",
+      "size_bytes": 846889
+    },
+    {
+      "path": "private/model-runtime/retrieval-install.log",
+      "sha256": "eb93e0e25155c6d487056d0a7e74d409d8dd4b129fe9ecce1cfb8bffbdb028d9",
+      "size_bytes": 9183774
+    },
+    {
+      "path": "private/model-runtime/ocr-install.log",
+      "sha256": "437f1bbe2d66b8973a5d46bc616a329c2b70e0431492ddde40ba669bd84ced40",
+      "size_bytes": 31053628
+    },
+    {
+      "path": "private/model-runtime/retrieval-v1.log",
+      "sha256": "829c71b016473c577e6d43c16f78ceaf8cbbf42f207987f6a70ece24d095cf2c",
+      "size_bytes": 1136
+    },
+    {
+      "path": "private/model-runtime/ocr-v1.log",
+      "sha256": "e6e216603def03c42a54dad60b32e194ed7bd13cbd6cd809f7af14137b14236b",
+      "size_bytes": 6330
+    },
+    {
+      "path": "private/model-runtime/ocr-v2.log",
+      "sha256": "e59d5310a8aa48c96753a565a3c4687cc969e2cb793fd0511f79190416e0927b",
+      "size_bytes": 4899
+    },
+    {
+      "path": "private/model-runtime/ocr-v3.log",
+      "sha256": "27c78b72c1e8ee22fa36bcd9ac3a15e71db3b6895e91a09f736f8c06913a88f4",
+      "size_bytes": 2348
+    },
+    {
+      "path": "private/model-runtime/full-unit.log",
+      "sha256": "832bcd6c60b4556ac2b3e86e2300eda3ad7460556e37723f681f6597e9e0c8da",
+      "size_bytes": 95912
+    },
+    {
+      "path": "private/model-runtime/full-unit-worktree.log",
+      "sha256": "0893e074b2875834f269f1e1f2e8164dae5feeb8dbcb87fde4864ed9bde83d9a",
+      "size_bytes": 129288
+    },
+    {
+      "path": "private/model-runtime/ci-web-recheck.log",
+      "sha256": "d3569a495722f0ecfa56e2a448b5d8f7769897f98436311fa59d460d850b1edd",
+      "size_bytes": 1114
+    }
+  ],
+  "code_versions": [
+    {
+      "path": "scripts/data003_model_preflight.py",
+      "sha256": "b5a1ac344d5e712457aeb5577ff180a76adc792fc669d5afcf31aff606eb4fa2"
+    },
+    {
+      "path": "scripts/download_data003_models.py",
+      "sha256": "24e6d4e68f73749c3017fbb6a34474cebbe4920c85ef40139d43354d683a111a"
+    },
+    {
+      "path": "scripts/run_data003_models.py",
+      "sha256": "095f227a0aae0d2bd812bd0b081d71bdba83445b88182238e7fafde106e918d3"
+    },
+    {
+      "path": "scripts/summarize_data003_live.py",
+      "sha256": "a85600646de78bdc2f10e02957397522fc1ac359e9433c907acd8923afec250a"
+    },
+    {
+      "path": "tests/test_data003_models.py",
+      "sha256": "674b9640cdd42644a554ac4c5455cd2f3fca60c2482d43c2a1c7c6aa81c39b34"
+    }
+  ],
+  "runtime_freeze_versions": [
+    {
+      "path": "evals/data003-live/20261005/retrieval-requirements-freeze.txt",
+      "sha256": "fd84d722e3f4ebda3b4b9165fb59c2b8228c12c7c6535c04acfd830dd47e29a1"
+    },
+    {
+      "path": "evals/data003-live/20261005/ocr-requirements-freeze.txt",
+      "sha256": "ccfe0bf5f3c058ba9ace6f9f3cb77d6919e3d27a1f8ca79c71feb181a880d634"
+    }
+  ],
+  "cleanup_observation": {
+    "python_pid_observed_after_tests": 15380,
+    "read_only_identity_probe": "default CIM access denied; authorized read-only CIM probe found PID already absent",
+    "stop_issued": false,
+    "measurement_sessions": "retrieval-v1 and OCR-v1/v2/v3 all returned completion/exit codes"
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "created_at": "2026-10-05T06:14:46.313447+09:00",
+  "base_commit": "c6c1382faab29ffe06ee5d24c5ff0a196d5c1531",
+  "purpose": "isolated preparation for #13/#14, no formal start or completion",
+  "workspace": "data/research/P2-DATA-001-recheck-20261005T0550/search-preparation",
+  "source_dataset": {
+    "path": "data/document_datasets/lg-three-models-20261005.json",
+    "sha256": "6699cfe98196800e6a809a80b90b86ae6d5d4e799ac431165fad752a78381ac5",
+    "version": "lg-manual-scope-20261005.2",
+    "documents": 3,
+    "citations": 15,
+    "features": 9
+  },
+  "filters_before_ranking": [
+    "model_id",
+    "document_id",
+    "document_version",
+    "source hash/currentness"
+  ],
+  "candidates": [
+    {
+      "id": "BM25",
+      "k1": 1.5,
+      "b": 0.75,
+      "tokenizer_revision": "must pin before comparison"
+    },
+    {
+      "id": "BAAI/bge-m3",
+      "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+      "revision_source": "inherited team candidate, not newly independently verified",
+      "license_verification": "pending"
+    },
+    {
+      "id": "BAAI/bge-reranker-v2-m3",
+      "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+      "revision_source": "inherited team candidate, not newly independently verified",
+      "license_verification": "pending"
+    }
+  ],
+  "development_queries": [
+    {
+      "id": "DEV-SCOPE-FOLD",
+      "model_id": "T876MEE1H1",
+      "document_version": "MFL71401557 Rev.00_032526",
+      "query": "접이식 선반이 이 정확 모델에 적용되는가?",
+      "relevant_ids": [
+        "T876MEE1H1-MANUAL-F08"
+      ],
+      "expected_interpretation": "shared optional feature; exact SKU/quantity unconfirmed"
+    },
+    {
+      "id": "DEV-CLEAN",
+      "model_id": "T876MEE1H1",
+      "query": "청소할 때 전원 플러그와 물기 처리는?",
+      "relevant_ids": [
+        "T876MEE1H1-MANUAL-F11",
+        "T876MEE1H1-MANUAL-F11-P05"
+      ]
+    },
+    {
+      "id": "DEV-HEIGHT",
+      "model_id": "DUE6BGL2E",
+      "query": "상단 바구니 높이 조절 조건은?",
+      "relevant_ids": [
+        "DUE6BGL2E-MANUAL-D09",
+        "DUE6BGL2E-MANUAL-D13-P24"
+      ]
+    },
+    {
+      "id": "DEV-NOZZLE",
+      "model_id": "DUE6BGL2E",
+      "query": "큰 식기가 노즐을 가리는지 어떻게 확인하나?",
+      "relevant_ids": [
+        "DUE6BGL2E-MANUAL-D13",
+        "DUE6BGL2E-MANUAL-D14-P20"
+      ]
+    },
+    {
+      "id": "DEV-POWER",
+      "model_id": "MW23FDI",
+      "query": "조리 출력은 몇 W를 선택하나?",
+      "relevant_ids": [
+        "MW23FDI-MANUAL-M11"
+      ]
+    },
+    {
+      "id": "DEV-UNKNOWN",
+      "model_id": "MW23FDI",
+      "query": "개인 설정을 저장하는 프리셋이 지원되지 않나?",
+      "relevant_ids": [],
+      "expected_interpretation": "not established by selected citations; never infer absence"
+    }
+  ],
+  "independent_evaluation": false,
+  "ranking_executed": false,
+  "model_downloads": 0,
+  "metrics": null,
+  "superiority_or_adoption_claim": false,
+  "formal_dependencies": {
+    "P2-DATA-001": "ready/not done",
+    "P2-DATA-002": "pending",
+    "P2-DATA-003": "pending"
+  },
+  "next": "PM assignment/dependency confirmation, validate candidate cards/licenses, pin tokenizer, independent Korean answers, reserve compute before measured comparison"
+}

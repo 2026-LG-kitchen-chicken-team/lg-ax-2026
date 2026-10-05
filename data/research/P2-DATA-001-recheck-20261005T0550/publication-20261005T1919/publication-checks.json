@@ -1,0 +1,41 @@
+{
+  "observed_at": "2026-10-05T19:22:41.937558+09:00",
+  "checks": {
+    "same_3_documents_15_citations_9_features_54_pass": true,
+    "archive_bytes_preserved": true,
+    "executed_model_source_matches_original_digest": true,
+    "literal_prompt_matches_actual_input": true,
+    "semantic_failure_preserved": true,
+    "agent_rules_byte_identical": true
+  },
+  "commands": [
+    {
+      "command": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "check",
+        "data/research/P2-DATA-001-recheck-20261005T0550"
+      ],
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "-c",
+        "safe.directory=C:/Users/user/Documents/ChatGPT/LG공모전/.worktrees/data001-recheck-20261005T0550",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "warning: in the working copy of 'data/research/P2-DATA-001-recheck-20261005T0550/README.md', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'data/research/P2-DATA-001-recheck-20261005T0550/check_evidence.py', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'data/research/P2-DATA-001-recheck-20261005T0550/finalize_evidence.py', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'docs/작업근거/신진하.md', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'docs/작업기록/신진하.md', CRLF will be replaced by LF the next time Git touches it\n"
+    }
+  ],
+  "passed": true,
+  "repository_code_or_tests_executed_on_publisher_host": false,
+  "new_model_calls": 0,
+  "validation_scope": "publication/provenance only; old runtime results preserved"
+}

@@ -1,0 +1,79 @@
+{
+  "command": [
+    "uv",
+    "run",
+    "--offline",
+    "--no-sync",
+    "python",
+    "scripts/prepare_evaluation.py",
+    "--cases",
+    "_evaluation_gate_inputs/cases.json",
+    "--agent-results",
+    "_evaluation_gate_inputs/agent.results.json",
+    "--baseline-results",
+    "_evaluation_gate_inputs/single_prompt_baseline.results.json",
+    "--output",
+    "/tmp/data001-blind-review"
+  ],
+  "exit_code": 2,
+  "stopped_reason": null,
+  "stdout": "usage: prepare_evaluation.py [-h] --cases CASES --agent-results AGENT_RESULTS\n                             --baseline-results BASELINE_RESULTS --output-dir\n                             OUTPUT_DIR --key-file KEY_FILE --seed SEED\nprepare_evaluation.py: error: the following arguments are required: --key-file, --seed\n",
+  "source_execution_commit": "5af64e93b1ca413317a91893e530901fc7f5874e",
+  "current_gate_source_commit": "df0310ea31bbadda68b299dc96a85475cf7ecec9",
+  "current_gate_sha256": "06f8e7220292d75fdc0b028258968563bfd13255b9d8cc4d171f2e041607feba",
+  "source_artifact_hashes": [
+    {
+      "relative": "cases.json",
+      "sha256": "b21bc3ec7a23c3b6a6e6ddb3f2a21152c09347426121c0d7867bd32b9f6ec56f"
+    },
+    {
+      "relative": "materials/SEM-01.json",
+      "sha256": "ab773e45ce5920cb8984263641a837b1da465526f6bb2e83cf05f54d824264be"
+    },
+    {
+      "relative": "materials/SEM-02.json",
+      "sha256": "bb1ad1297360701869a4e798d7aa01758a4465c2739dd794a904bbfd1218acdb"
+    },
+    {
+      "relative": "materials/SEM-03.json",
+      "sha256": "710cb50d1d713b102f405c319af805b42c914e2e038a2cfbda15be753863b6e5"
+    },
+    {
+      "relative": "materials/SEM-04.json",
+      "sha256": "49dc92993a30a0b26d1e0b1d09cc063b9e0b709e735b395a078cb48f75003a7c"
+    },
+    {
+      "relative": "materials/SEM-05.json",
+      "sha256": "a5fc673acde2a2c6386ab04a328c58f8e3b522c0df22d8d37190d49a6de55abb"
+    },
+    {
+      "relative": "materials/SEM-06.json",
+      "sha256": "5e72cbf668d08df2a392f4a38eee2c028e2ebf18efe6037d6c1b6ae399f0c64f"
+    },
+    {
+      "relative": "schemas/output.json",
+      "sha256": "f5ebb8b0c466e0c38ff6df19dfee1446db84350d9c4a36478438d0b5aa92b7d5"
+    },
+    {
+      "relative": "agent.results.json",
+      "sha256": "7ded67df50643cb24b36944883465de3ed39fd69275c428d7952475e34557a5e"
+    },
+    {
+      "relative": "single_prompt_baseline.results.json",
+      "sha256": "7e1180babd21fb542e3921570f9c9544f6aa3419b6fe654f333abf42fca589c2"
+    }
+  ],
+  "reviewer_answers_copied_or_read": false,
+  "network": "none",
+  "auth_provided": false,
+  "unknown_truncation_changed_to_none": false,
+  "independent_grading_performed": false,
+  "source_pool_six_types": [
+    "normal",
+    "duplicate_feature",
+    "model_version_confusion",
+    "conflicting_reviews",
+    "missing_evidence",
+    "specification_change"
+  ]
+}

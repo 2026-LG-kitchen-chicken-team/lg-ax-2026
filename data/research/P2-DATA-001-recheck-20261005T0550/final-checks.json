@@ -1,0 +1,78 @@
+{
+  "observed_at": "2026-10-05T06:17:48.061224+09:00",
+  "base_commit": "c6c1382faab29ffe06ee5d24c5ff0a196d5c1531",
+  "results": [
+    {
+      "command": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "check",
+        "data/research/P2-DATA-001-recheck-20261005T0550/audit_pdf.py",
+        "data/research/P2-DATA-001-recheck-20261005T0550/model_check.py",
+        "data/research/P2-DATA-001-recheck-20261005T0550/finalize_evidence.py",
+        "data/research/P2-DATA-001-recheck-20261005T0550/check_evidence.py"
+      ],
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "PASS: AGENTS.md and CLAUDE.md are byte-identical\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "scripts/check_contracts.py"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"status\": \"pass\", \"definitions\": 30, \"models\": 5, \"reviews\": 36, \"planning_requests\": 3, \"analysis_implemented\": false}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "scripts/phase2.py",
+        "validate"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"valid\": true,\n  \"errors\": [],\n  \"meaning\": \"record structure/evidence integrity only\",\n  \"legacy\": \"stale\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "warning: in the working copy of 'docs/작업근거/신진하.md', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'docs/작업기록/신진하.md', CRLF will be replaced by LF the next time Git touches it\n"
+    }
+  ],
+  "provenance": {
+    "audit_54_checks_pass": true,
+    "executed_model_script_matches_recorded_sha256": true,
+    "final_audit_script_matches_recorded_sha256": true,
+    "model_call_count_one": true,
+    "semantic_failure_preserved": true,
+    "own_proxy_stopped": true,
+    "original_plan_hash_unchanged": true
+  },
+  "production_code_changed": false,
+  "new_model_calls": 0,
+  "passed": true
+}

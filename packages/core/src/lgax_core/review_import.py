@@ -15,9 +15,9 @@ import hashlib
 import io
 import json
 import re
+from collections.abc import Iterable, Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Iterable, Mapping, Sequence
 
 from jsonschema import ValidationError
 from lgax_contracts import validate

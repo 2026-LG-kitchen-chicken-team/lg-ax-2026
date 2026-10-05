@@ -1,0 +1,2361 @@
+--- /dev/null
++++ b/scripts/data003_model_preflight.py
+@@ -0,0 +1,86 @@
++"""Record DATA003 local resources and pinned public model metadata."""
++
++import argparse
++import importlib.metadata
++import importlib.util
++import json
++import os
++import platform
++import shutil
++import socket
++import subprocess
++import urllib.request
++from datetime import datetime, timedelta, timezone
++from pathlib import Path
++
++from run_data003_bm25 import digest, machine_metrics, read, save
++
++ROOT = Path(__file__).resolve().parents[1]
++MODELS = read(ROOT / "evals/data003-preparation/20261005/protocol.json")["models"]
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--output", type=Path, required=True)
++    parser.add_argument("--online", action="store_true")
++    args = parser.parse_args()
++    if args.output.exists():
++        raise ValueError("Preserve previous preflight; select a fresh file")
++    packages = {}
++    for module, distribution in [("torch", "torch"), ("transformers", "transformers"),
++                                 ("huggingface_hub", "huggingface-hub"), ("paddle", "paddlepaddle"),
++                                 ("paddleocr", "paddleocr"), ("paddlex", "paddlex")]:
++        present = importlib.util.find_spec(module) is not None
++        packages[module] = {"present": present,
++                            "version": importlib.metadata.version(distribution) if present else None}
++    ports = []
++    for port in (18864, 18865):
++        with socket.socket() as connection:
++            connection.settimeout(1)
++            try:
++                code = connection.connect_ex(("127.0.0.1", port))
++                ports.append({"port": port, "connected": code == 0, "socket_code": code})
++            except OSError as error:
++                ports.append({"port": port, "connected": False, "error_type": type(error).__name__})
++    models = []
++    for locked in MODELS:
++        row = {"model_id": locked["model_id"], "expected_revision": locked["revision"],
++               "expected_license": locked["license"], "status": "not_checked_online"}
++        if args.online:
++            url = f"https://huggingface.co/api/models/{locked['model_id']}/revision/{locked['revision']}"
++            try:
++                with urllib.request.urlopen(url, timeout=30) as response:
++                    info = json.load(response)
++                license_name = info.get("cardData", {}).get("license")
++                row.update(status="verified" if info["sha"] == locked["revision"]
++                           and license_name.lower() == locked["license"].lower() else "mismatch",
++                           observed_revision=info["sha"], observed_license=license_name,
++                           source=url, files=[item["rfilename"] for item in info.get("siblings", [])])
++            except (OSError, ValueError, TypeError, KeyError) as error:
++                row.update(status="failed", error_type=type(error).__name__, error=str(error))
++        models.append(row)
++    gpu = None
++    executable = shutil.which("nvidia-smi")
++    if executable:
++        result = subprocess.run([executable, "--query-gpu=name,memory.total,memory.used,utilization.gpu",
++                                 "--format=csv,noheader"], capture_output=True, text=True, timeout=15, check=False)
++        gpu = {"exit_code": result.returncode, "inventory": result.stdout.strip(), "used_for_task": False}
++    result = {"checked_at_kst": datetime.now(timezone(timedelta(hours=9))).isoformat(),
++              "python": platform.python_version(), "os": platform.platform(), "cpu": platform.processor(),
++              "logical_cpus": os.cpu_count(), **machine_metrics(), "disk_free_bytes": shutil.disk_usage(ROOT).free,
++              "packages": packages, "documented_loopback_services": ports,
++              "ssh_config_present": (Path.home() / ".ssh/config").is_file(),
++              "ssh_agent_configured": bool(os.getenv("SSH_AUTH_SOCK")), "gpu": gpu,
++              "models": models, "script_sha256": digest(__file__),
++              "remote_research_runtime": "historical Linux runtime exists in records; live SSH access not configured here",
++              "runtime_strategy": "isolated CPU environments and caches under this worktree private/model-runtime",
++              "existing_environments_modified": False, "formal_state_changed": False}
++    args.output.parent.mkdir(parents=True, exist_ok=True)
++    save(args.output, result)
++    print(json.dumps({"output": str(args.output), "disk_free_bytes": result["disk_free_bytes"],
++                      "models": [{key: row.get(key) for key in ("model_id", "status", "observed_license")} for row in models]},
++                     ensure_ascii=False))
++
++
++if __name__ == "__main__":
++    main()
+--- /dev/null
++++ b/scripts/download_data003_models.py
+@@ -0,0 +1,72 @@
++"""Download only locked official DATA003 model files into the private task cache."""
++
++import json
++import os
++import time
++from datetime import datetime, timedelta, timezone
++from hashlib import sha1
++from pathlib import Path
++
++from run_data003_bm25 import ROOT, digest, read, save
++
++
++def main():
++    cache = ROOT / "private/model-runtime/huggingface"
++    os.environ.update(HF_HOME=str(cache), HF_HUB_DISABLE_TELEMETRY="1", HF_HUB_DISABLE_XET="1")
++    from huggingface_hub import HfApi, snapshot_download
++
++    out = ROOT / "evals/data003-live/20261005/downloaded-models.json"
++    if out.exists():
++        raise ValueError("Preserve previous download manifest")
++    filenames = {
++        "BAAI/bge-m3": ["README.md", "config.json", "pytorch_model.bin", "sentencepiece.bpe.model",
++                        "special_tokens_map.json", "tokenizer.json", "tokenizer_config.json"],
++        "BAAI/bge-reranker-v2-m3": ["README.md", "config.json", "model.safetensors", "sentencepiece.bpe.model",
++                                     "special_tokens_map.json", "tokenizer.json", "tokenizer_config.json"],
++        "PaddlePaddle/korean_PP-OCRv5_mobile_rec": ["README.md", "config.json", "inference.json",
++                                                  "inference.pdiparams", "inference.yml"],
++    }
++    result = {"status": "downloading", "models": [], "script_sha256": digest(__file__),
++              "cache": "private/model-runtime/huggingface", "token_used": False,
++              "created_at_kst": datetime.now(timezone(timedelta(hours=9))).isoformat()}
++    for locked in read(ROOT / "evals/data003-preparation/20261005/protocol.json")["models"]:
++        model_id, revision = locked["model_id"], locked["revision"]
++        print(json.dumps({"stage": "download", "model_id": model_id}), flush=True)
++        started = time.perf_counter()
++        info = HfApi(token=False).model_info(model_id, revision=revision, files_metadata=True)
++        if info.sha != revision or info.card_data.license.lower() != locked["license"].lower():
++            raise ValueError("Official revision/license differs from protocol")
++        # Explicit local_dir uses normal files on Windows and requires no symlink privilege.
++        local_dir = ROOT / "private/model-runtime/models" / model_id.replace("/", "--") / revision
++        snapshot = Path(snapshot_download(model_id, revision=revision, token=False, local_dir=local_dir,
++                                         allow_patterns=filenames[model_id], max_workers=2))
++        official = {item.rfilename: item for item in info.siblings}
++        files = []
++        for name in filenames[model_id]:
++            path, metadata = snapshot / name, official[name]
++            file_hash = digest(path)
++            lfs = metadata.lfs
++            if lfs:
++                expected = lfs.sha256
++                valid = file_hash == expected
++                mechanism = "official HF LFS SHA256"
++            else:
++                contents = path.read_bytes()
++                expected = metadata.blob_id
++                valid = sha1(b"blob " + str(len(contents)).encode() + b"\0" + contents).hexdigest() == expected
++                mechanism = "official HF Git blob SHA1 plus recorded local SHA256"
++            if not valid or path.stat().st_size != metadata.size:
++                raise ValueError(f"Official file integrity mismatch: {model_id}/{name}")
++            files.append({"name": name, "sha256": file_hash, "size_bytes": path.stat().st_size,
++                          "official_hash": expected, "official_hash_check": valid, "mechanism": mechanism})
++        result["models"].append({"model_id": model_id, "revision": revision, "license": info.card_data.license,
++                                 "snapshot": snapshot.relative_to(ROOT).as_posix(), "files": files,
++                                 "download_seconds": time.perf_counter() - started})
++        save(out.with_name("download-progress.json"), result)
++    result["status"] = "verified"
++    save(out, result)
++    print(json.dumps({"stage": "complete", "model_count": len(result["models"])}), flush=True)
++
++
++if __name__ == "__main__":
++    main()
+--- /dev/null
++++ b/scripts/prepare_data003_benchmark.py
+@@ -0,0 +1,445 @@
++"""Prepare DATA003 development inputs and measurement protocol; never run models."""
++
++import argparse
++import csv
++import hashlib
++import json
++from collections import Counter
++from datetime import datetime, timedelta, timezone
++from pathlib import Path
++
++ROOT = Path(__file__).resolve().parents[1]
++OUT = ROOT / "evals/data003-preparation/20261005"
++REFERENCE = "data/research/P2-DATA-001-real-reference-20261004/reference-pack.json"
++MAPPING = "data/research/P2-DATA-001-stage123-20261005/mapping.json"
++ORIGINS = "data/research/P2-DATA-001-stage123-20261005/original-locations.json"
++PAIRS = "data/research/P2-DATA-001-stage345-20261005/model-pairs"
++MODELS = ("T876MEE1H1", "DUE6BGL2E", "MW23FDI")
++INCLUDE = {
++    "F10", "F11", "F12", "F13",
++    "D02", "D03", "D04", "D05", "D06", "D09", "D12", "D13", "D14", "D16",
++    "M02", "M03", "M04", "M06", "M07", "M08", "M11", "M12", "M13", "M14", "M15", "M17", "M18",
++}
++LABELS = {
++    "F10": "냉장실 선반 분리", "F11": "냉장고 내부 청소와 물기 제거",
++    "F12": "냉장고 벽면 최소 간격", "F13": "냉장고 문 위쪽과 설치장 간격",
++    "D02": "식기세척기 최대 용량 인용", "D03": "빌트인 제품 외형 폭 높이 깊이",
++    "D04": "빌트인 제품 무게", "D05": "식기세척기 소비 전력", "D06": "식기세척기 전원 전압 주파수",
++    "D09": "상단 식기 바구니 높이 조절 단계", "D12": "하단 상단 최상단 식기 배열",
++    "D13": "바구니 높이 조절 전 식기 비우기", "D14": "큰 식기와 상단 노즐 간섭",
++    "D16": "식기세척기 빌트인 설치 공간", "M02": "전자레인지 조리실 용량과 가용 용량",
++    "M03": "전자레인지 외형 폭 높이 깊이", "M04": "전자레인지 조리실 내부 치수",
++    "M06": "전자레인지 최대 고주파 출력", "M07": "전자레인지 정격 소비전력",
++    "M08": "전자레인지 정격 전압 주파수", "M11": "전자레인지 선택 가능한 조리 출력",
++    "M12": "간편조리 기본 출력", "M13": "간편조리 출력 설정과 적용 조건",
++    "M14": "시작 선택 버튼과 간편조리 시간 증가", "M15": "자동데우기 지정 메뉴",
++    "M17": "전자레인지 설치 여유 공간", "M18": "전자레인지 설치 높이",
++}
++
++
++def digest(path):
++    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
++
++
++def load(relative):
++    return json.loads((ROOT / relative).read_text(encoding="utf-8"))
++
++
++def save(name, value):
++    (OUT / name).write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
++
++
++def text(name, value):
++    (OUT / name).write_text(value.rstrip() + "\n", encoding="utf-8")
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--source-directory", required=True, type=Path,
++                        help="Existing private/documents-source with the three PDFs and page caches")
++    args = parser.parse_args()
++    source_dir = args.source_directory.resolve()
++    OUT.mkdir(parents=True, exist_ok=True)
++    pack, mapping, locations = load(REFERENCE), load(MAPPING), load(ORIGINS)
++    products = {p["model_id"]: p for p in pack["products"]}
++    sources = {s["id"]: s for s in pack["sources"]}
++    facts = {f["id"]: f for f in pack["facts"]}
++    mapped = {m["research_fact_id"]: m for m in mapping["mapped_use_case_facts"]}
++    manual_sources = {s["model_id"]: s for s in pack["sources"] if s["source_type"] == "manual"}
++    inputs = [REFERENCE, MAPPING, ORIGINS, "evals/bootstrap-models/retrieval-results.json",
++              "evals/bootstrap-models/ocr-results.json", "scripts/model_benchmark.py",
++              "services/inference/ocr_benchmark.py", "data/demo/dataset.json",
++              "packages/contracts/schemas/lgax.schema.json", "harness/phase2/tasks/P2-DATA-003.json"]
++    inputs += [f"{PAIRS}/{model}/dataset.json" for model in MODELS]
++    source_locks = []
++    pages = {}
++    for model in MODELS:
++        pdf, cache = source_dir / f"{model}.pdf", source_dir / f"{model}.pages.json"
++        source = manual_sources[model]
++        if digest(pdf) != source["sha256"]:
++            raise ValueError(f"Original PDF hash mismatch: {model}")
++        pages[model] = json.loads(cache.read_text(encoding="utf-8"))
++        if len(pages[model]) != source["page_count"]:
++            raise ValueError(f"Page count mismatch: {model}")
++        source_locks.append({"model_id": model, "document_version": source["document_version"],
++                             "pdf_file": pdf.name, "pdf_sha256": digest(pdf),
++                             "page_cache_file": cache.name, "page_cache_sha256": digest(cache),
++                             "page_count": len(pages[model]), "source_url": source["url"],
++                             "origin_checked_at": source["checked_at"]})
++    corpus = []
++    for fact_id in sorted(INCLUDE):
++        fact = facts[fact_id]
++        refs = [r for r in fact["source_refs"] if sources[r["source_id"]]["source_type"] == "manual"]
++        if len(refs) != 1:
++            raise ValueError(f"One exact manual reference required: {fact_id}")
++        ref = refs[0]
++        page = ref["locator"].get("page")
++        if not page or not 1 <= page <= len(pages[fact["model_id"]]):
++            raise ValueError(f"Exact page missing: {fact_id}")
++        canonical = mapped.get(fact_id)
++        evidence_id = canonical["canonical_evidence_id"] if canonical else f"DATA003-{fact['model_id']}-{fact_id}"
++        summary = LABELS[fact_id] + ": " + json.dumps(fact["value"], ensure_ascii=False)
++        if fact["unit"]:
++            summary += f"; 단위: {fact['unit']}"
++        if fact["conditions"]:
++            summary += "; 적용 조건: " + fact["conditions"]
++        corpus.append({"id": evidence_id, "research_fact_id": fact_id,
++                       "model_id": fact["model_id"], "product_group": fact["product_group"],
++                       "document_version": ref["document_version"], "source_kind": "public",
++                       "source_type": "manual", "source_id": ref["source_id"],
++                       "document_id": (canonical["document_id"] if canonical else
++                                       f"{fact['model_id']}-manual-{manual_sources[fact['model_id']]['sha256'][:12]}"),
++                       "locator": ref["locator"], "source_url": ref["url"],
++                       "original_pdf_sha256": manual_sources[fact["model_id"]]["sha256"],
++                       "text": summary, "text_kind": "existing_fact_summary_not_verbatim",
++                       "value": fact["value"], "unit": fact["unit"], "conditions": fact["conditions"],
++                       "status": fact["status"], "canonical_evidence_id":
++                       canonical["canonical_evidence_id"] if canonical else None})
++    by_fact = {e["research_fact_id"]: e for e in corpus}
++    queries = []
++
++    def question(qid, model, kind, query, gold, answer, response="answer_with_evidence", **extra):
++        rows = [by_fact[f] for f in gold]
++        queries.append({"id": qid, "split": "development", "question_origin": "authored_from_existing_sources",
++                        "product_group": products[model]["product_group"], "model_id": model,
++                        "document_version": products[model]["document_version"], "kind": kind,
++                        "query": query, "relevant_evidence_ids": [r["id"] for r in rows],
++                        "research_fact_ids": gold, "expected_answer_summary": answer,
++                        "expected_response": response, "gold_sources": [
++                            {k: r[k] for k in ("id", "model_id", "document_version", "source_id", "source_url",
++                                              "locator", "original_pdf_sha256")} for r in rows],
++                        "ranking_metric_applicable": bool(rows), **extra})
++
++    question("FR-01", MODELS[0], "literal", "냉장실 선반을 분리하기 전에 무엇부터 치워야 해?", ["F10"],
++             "선반 위의 식품을 먼저 치운다. 유리 선반이 무거우므로 주의한다.")
++    question("FR-02", MODELS[0], "paraphrase", "냉장고 안쪽을 닦은 뒤 젖은 상태로 두어도 되나?", ["F11"],
++             "부드러운 물수건으로 닦고 물기를 완전히 제거한다.")
++    question("FR-03", MODELS[0], "numeric_multi_evidence", "벽면과 문 위쪽 설치장에는 각각 최소 몇 cm를 띄워야 해?",
++             ["F12", "F13"], "벽면 10 cm, 제품 문 위쪽과 설치장 사이 2.5 cm. 일반 지원 문서와 차이를 보존한다.")
++    question("FR-04", MODELS[0], "version_unspecified", "이 냉장고의 이전 설명서도 벽과 10 cm를 띄우라고 했나?", [],
++             "이전 개정번호와 해당 원문을 요청한다. 현재 개정판으로 이전 내용을 단정하지 않는다.",
++             "request_document_version", requested_version=None, requires_version_resolution=True,
++             coverage_gap="Only current revision exists; no invented previous revision")
++    question("FR-05", MODELS[0], "foreign_model", "DUE6BGL2E의 상단 식기 바구니 높이 조절 근거를 이 냉장고에도 적용해도 되나?", [],
++             "다른 모델·제품군의 근거이므로 냉장고 기능 근거로 사용하지 않는다.", "reject_foreign_model",
++             forbidden_evidence_ids=[by_fact["D09"]["id"], by_fact["D13"]["id"]])
++    question("DW-01", MODELS[1], "literal_condition", "상단 식기 바구니는 몇 단계로 조절하며 조절 전에 무엇을 해야 해?",
++             ["D09", "D13"], "3단계. 식기 바구니를 모두 비우고 높이를 조절한다.")
++    question("DW-02", MODELS[1], "paraphrase", "큰 냄비와 작은 컵, 수저를 어느 칸에 나눠 넣으면 돼?", ["D12"],
++             "큰 식기·냄비는 하단, 작은 식기·컵은 상단, 수저류는 최상단. 사용 가능 식기인지 확인한다.")
++    question("DW-03", MODELS[1], "numeric_model_column", "빌트인 DUE6BGL2E의 폭·높이·깊이는 몇 mm야?", ["D03"],
++             "598 × 815 × 567 mm. 공용 표의 프리스탠딩 열과 구분한다.")
++    question("DW-04", MODELS[1], "condition", "큰 그릇을 넣은 후 물을 뿌리는 회전 날개가 걸리지 않게 무엇을 확인해야 해?",
++             ["D14"], "상단 바구니를 끝까지 넣고 노즐 회전을 가리는 식기 위치를 조정한다.")
++    question("DW-05", MODELS[1], "insufficient_input", "내 그릇을 전부 한 번에 넣어도 노즐에 걸리지 않는지 확정해줘.", [],
++             "식기의 크기·개수·배열·바구니 위치를 요청한다. 14인용 표기만으로 임의 조합을 보장하지 않는다.",
++             "request_dish_dimensions_and_layout", missing_inputs=["dish_dimensions", "dish_count", "layout", "basket_position"])
++    question("MW-01", MODELS[2], "literal", "수동조리에서 선택할 수 있는 출력은 몇 W야?", ["M11"],
++             "200/400/600/800/1000 W. 사용자 시간·출력 조합 저장 기능과 구분한다.")
++    question("MW-02", MODELS[2], "paraphrase", "시작 버튼을 한 번 더 누르면 데우는 시간이 얼마나 늘어나?", ["M14"],
++             "간편조리의 시작/선택 버튼 누름마다 30초 증가. 다른 시간 조절 방식과 구분한다.")
++    question("MW-03", MODELS[2], "numeric_roles", "소비전력과 최대 고주파 출력은 각각 몇 W이고 같은 값이야?",
++             ["M06", "M07"], "정격 소비전력 1570 W, 최대 고주파 출력 1000 W. 서로 다른 물리량이며 출력은 시간에 따라 바뀔 수 있다.")
++    question("MW-04", MODELS[2], "conditional_partial", "간편 조리 출력 변경 안내의 적용 조건과 전원 분리 후 유지 여부는?",
++             ["M13"], "공용 설명서의 모델별 차이를 확인한다. 문을 연 상태에서 시작/선택 약4초→출력 선택→확정. 전원 분리 후 유지 여부는 미확인.",
++             "answer_conditionally_and_mark_unknown", unknown_fact_ids=["U02"],
++             forbidden_claims=["설정이 전원 분리 후에도 반드시 유지된다", "모든 모델에 적용된다"])
++    question("MW-05", MODELS[2], "not_mentioned", "내가 만든 시간·출력 조합을 저장했다가 다시 불러오는 기능이 확실히 있나?", [],
++             "현재 설명서/참고팩에서 확인하지 못했다. 자동 메뉴와 간편조리를 저장·호출 기능으로 단정하지 않는다. 미언급은 미지원 확정이 아니다.",
++             "not_confirmed", unknown_fact_ids=["U01"],
++             forbidden_claims=["사용자 조합 저장이 지원된다", "설명서에 없으므로 미지원이다"])
++
++    retrieval_models = load("evals/bootstrap-models/retrieval-results.json")["models"]
++    ocr_model = load("evals/bootstrap-models/ocr-results.json")["model"]
++    model_cards = []
++    for model in [*retrieval_models, ocr_model]:
++        model_cards.append({k: model[k] for k in ("model_id", "revision", "license", "source")})
++        model_cards[-1]["pinned_source"] = f"{model['source']}/blob/{model['revision']}/README.md"
++        model_cards[-1]["verification"] = ("2026-10-05 pinned official README metadata verified" if
++                                           model["model_id"].startswith("BAAI/") else
++                                           "bootstrap license record; pinned tree accessible, README web read failed")
++    protocol = {
++        "schema_version": "1.0", "task_id": "P2-DATA-003", "scope": "steps_3_4_preparation",
++        "status": "prepared_not_executed", "split": "development", "models": model_cards,
++        "runner_status": "protocol and inputs ready; existing bootstrap runner needs step5 adapter before these queries",
++        "legacy_runner_compatibility": [
++            "Do not pass this pack directly to scripts/model_benchmark.py: no-gold queries would divide by zero",
++            "Apply identical scope before BM25 IDF/ranking and dense/reranker selection",
++            "Add Hit@1/MRR, scope/response cases, repeated timings and raw failures without overwriting bootstrap results",
++        ],
++        "retrieval": {
++            "methods": ["bm25_filtered", "bge_m3_filtered", "bge_m3_filtered_reranker"],
++            "unit": "one existing fact summary per exact manual location; no query/gold in model input",
++            "filter": "same resolved model_id AND exact document_version for all three methods, before ranking",
++            "unresolved_scope": "missing requested version: request revision, do not substitute current revision",
++            "foreign_scope": "reject use of another model's evidence for the target model",
++            "bm25": {"implementation": "scripts/model_benchmark.py bm25", "k1": 1.5, "b": 0.75,
++                      "tokenization": "Unicode word regex, casefold; no new Korean morphological analyzer"},
++            "embedding": {"pooling": "L2-normalized CLS dense vectors", "max_length_tokens": 256,
++                          "batch_size": 8, "query_instruction": None, "precision": "float32"},
++            "reranker": {"candidate_top_n": 10, "max_length_tokens": 256, "score": "raw logits",
++                         "precision": "float32"},
++            "ties": "score descending, evidence ID ascending", "display_k": [1, 3],
++            "primary_metric": "macro Hit@1 on the 11 questions with supported evidence",
++            "secondary_metrics": ["Recall@3", "MRR@3", "model_mix_rate@3", "version_mix_rate@3"],
++            "formulas": {
++                "Hit@1": "1 if first ID is in gold, otherwise 0; failures count 0",
++                "Recall@3": "distinct gold IDs in first 3 / number of gold IDs; failures count 0",
++                "MRR@3": "1 / first relevant rank when rank <=3, otherwise 0",
++                "model_mix_rate@3": "foreign model IDs / returned IDs; empty=NA",
++                "version_mix_rate@3": "wrong document version IDs / returned IDs; empty=NA",
++            },
++            "no_gold_policy": "4 non-answerable/scope/input cases excluded from ranking average; response disposition and prohibited claims reviewed separately",
++            "latency": {"warmups_per_method": 2, "measured_repeats_per_query": 5,
++                        "seed": 20261005, "order": "fixed shuffled query order shared across methods",
++                        "reported": ["median_ms", "p95_ms", "failure_count", "cold_load_ms", "index_build_ms"],
++                        "boundary": "warm query embedding + structural filtering/ranking + optional reranking; cold download/load/index separate",
++                        "failure_policy": "record every attempt; timeouts/failures retained, latency summary successful attempts only with failure_count"},
++            "runtime": {"initial_device": "same host CPU for all methods", "cpu_threads": 4,
++                        "torch": "2.8.0+cpu bootstrap configuration", "transformers": "4.57.1 bootstrap configuration",
++                        "hardware_record_required": ["cpu", "ram", "os", "device", "versions", "peak_rss_mb"],
++                        "gpu_track": "separate run only after assigned GPU usage check; never compare CPU and GPU as same-condition latency"},
++            "truncation_policy": "record actual tokenizer lengths; any truncation requires new protocol version and rerun of all methods",
++        },
++        "ocr": {
++            "methods": ["pypdf_text_extraction", "paddle_manual_crop_recognition"],
++            "source": "same hash-locked real text PDF pages; rendered image is not a newly collected scan",
++            "render": {"dpi": 300, "color": "RGB", "rotation_degrees": 0, "denoise": False},
++            "segmentation": "manually located line/row crops; store page, pixel bbox, original raster dimensions and crop hash before running recognition",
++            "gold": "short source-located exact excerpts for CER; numeric/unit/model-column field targets independently checked against page",
++            "metrics": {"CER": "Levenshtein distance / gold chars after NFC and whitespace-collapse; report per aligned crop only",
++                        "numeric_field_accuracy": "correct typed values / target values", "unit_accuracy": "correct explicit units / target unit fields",
++                        "model_column_accuracy": "values bound to correct model/column / target fields", "latency": "median/p95 + render/crop/load separately"},
++            "recognizer": "korean_PP-OCRv5_mobile_rec, CPU4threads, enable_mkldnn=False; existing recognition model only",
++            "whole_page_layout_status": "not_in_this_initial_track; detector/layout model not selected; manual crop success is not whole-page OCR success",
++            "normalization": "do not drop digits, decimal dots, units, minus signs or model codes; normalize × and x only in dimension tuple field scoring",
++        },
++        "decision_policy": {
++            "mandatory": "no foreign model/version contamination; conditional/unknown status preserved",
++            "accuracy": "compare paired question results and failed cases; higher development Hit@1 alone is not independent superiority",
++            "speed": "if accuracy ties prefer simpler/lower-latency baseline, with hardware/precision equal",
++            "release": "PM reviews actual outputs, licensing/runtime and source links before method adoption and formal dependency/completion",
++        },
++        "coverage_limits": ["15 authored development queries, not independent final evaluation",
++                            "27 curated fact summaries, not full manuals; fridge has only 4 passages so Hit@1 is primary",
++                            "one real manual revision per model; same-model old revision exclusion needs future real source",
++                            "actual customer reviews=0; R13 customer inconvenience/review traceability not verified",
++                            "OCR line/row crop track does not validate full-page detection or layout",
++                            "existing bootstrap 6 queries/2 OCR results are historical, not scores for this pack"],
++        "execution_preflight": ["resolve original source folder and verify all PDF/cache/source/output hashes",
++                                "verify installed runtime + model weight revision/licenses; no automatic downloads in preparation",
++                                "record CPU/RAM or authorized GPU current use, free space and process isolation",
++                                "review development gold with PM; keep private independent evaluation untouched",
++                                "use a new output directory; keep status not_executed until actual outputs exist"],
++    }
++    ocr_cases = []
++    origin_map = {o["evidence_id"]: o for doc in locations["documents"] for o in doc["origins"]}
++    for cid, model, fid in [("OCR-FR-LINE", MODELS[0], "F10"), ("OCR-DW-LINE", MODELS[1], "D09"),
++                            ("OCR-MW-LINE", MODELS[2], "M14")]:
++        evidence = by_fact[fid]
++        original = origin_map[evidence["id"]]
++        page_text = pages[model][original["page"] - 1]
++        excerpt = page_text[original["start_char"]:original["end_char"]]
++        if hashlib.sha256(excerpt.encode("utf-8")).hexdigest() != original["text_sha256"]:
++            raise ValueError(f"Original excerpt mismatch: {cid}")
++        ocr_cases.append({"id": cid, "model_id": model, "document_version": products[model]["document_version"],
++                          "kind": "source_line", "page": original["page"], "gold_text": excerpt,
++                          "gold_text_sha256": original["text_sha256"], "start_char": original["start_char"],
++                          "end_char": original["end_char"], "source_fact_ids": [fid], "field_targets": [],
++                          "crop_bbox": None, "crop_status": "locate_and_lock_before_step5", "measured": False})
++    numeric_cases = [
++        ("OCR-FR-NUM", MODELS[0], 22, ["F12", "F13"],
++         [{"label": "벽면 간격", "fact_id": "F12", "value_path": [], "value": 10, "unit": "cm"},
++          {"label": "문 위쪽과 설치장 간격", "fact_id": "F13", "value_path": [], "value": 2.5, "unit": "cm"}], False),
++        ("OCR-DW-TABLE", MODELS[1], 57, ["D02", "D03", "D04", "D05", "D06"],
++         [{"label": "빌트인 폭×높이×깊이", "fact_id": "D03", "value_path": ["width", "height", "depth"],
++           "value": [598, 815, 567], "unit": "mm", "column": "DUE 빌트인"},
++          {"label": "빌트인 무게", "fact_id": "D04", "value_path": [], "value": 45, "unit": "kg", "column": "DUE 빌트인"},
++          {"label": "최대 용량", "fact_id": "D02", "value_path": [], "value": 14, "unit": "인용"},
++          {"label": "소비전력", "fact_id": "D05", "value_path": [], "value": 1600, "unit": "W"}], True),
++        ("OCR-MW-TABLE", MODELS[2], 37, ["M02", "M03", "M06", "M07"],
++         [{"label": "MW23FDI 외형 폭×높이×깊이", "fact_id": "M03", "value_path": ["width", "height", "depth"],
++           "value": [476, 272, 369], "unit": "mm", "column": "MW23FDI"},
++          {"label": "조리실 용량", "fact_id": "M02", "value_path": ["nominal"], "value": 23, "unit": "L", "column": "MW23FDI"},
++          {"label": "가용 용량", "fact_id": "M02", "value_path": ["usable"], "value": 13, "unit": "L", "column": "MW23FDI"},
++          {"label": "정격 소비전력", "fact_id": "M07", "value_path": [], "value": 1570, "unit": "W"},
++          {"label": "최대 고주파 출력", "fact_id": "M06", "value_path": [], "value": 1000, "unit": "W",
++           "condition": "짧은 시간의 최대 출력; 시간 경과에 따라 변경 가능"}], True),
++    ]
++    for cid, model, page, fids, targets, reviewed in numeric_cases:
++        ocr_cases.append({"id": cid, "model_id": model, "document_version": products[model]["document_version"],
++                          "kind": "numeric_rows", "page": page, "gold_text": None,
++                          "source_fact_ids": fids, "field_targets": targets, "visual_table_checked": reviewed,
++                          "crop_bbox": None, "crop_status": "locate_and_lock_before_step5", "measured": False})
++    save("corpus.json", {"status": "prepared", "dataset_version": "DATA003-dev-20261005.1",
++                         "split": "development", "text_kind": "existing_fact_summary_not_verbatim",
++                         "products": list(products.values()), "evidence": corpus, "reviews": []})
++    save("queries.json", queries)
++    save("protocol.json", protocol)
++    save("ocr-cases.json", ocr_cases)
++    result_rows = [{"query_id": q["id"], "method": method, "status": "not_executed",
++                    "returned_evidence_ids": None, "hit_at_1": None, "recall_at_3": None, "mrr_at_3": None,
++                    "model_mix_rate_at_3": None, "version_mix_rate_at_3": None, "response_disposition": None,
++                    "response_check_passed": None, "median_ms": None, "p95_ms": None, "failure_count": None,
++                    "peak_rss_mb": None, "run_id": None, "latency_attempts": None, "error": None,
++                    "cold_load_ms": None, "index_build_ms": None, "actual_token_lengths": None}
++                   for q in queries for method in protocol["retrieval"]["methods"]]
++    ocr_rows = [{"case_id": c["id"], "method": method, "status": "not_executed", "prediction": None,
++                 "cer": None, "numeric_field_accuracy": None, "unit_accuracy": None,
++                 "model_column_accuracy": None, "median_ms": None, "p95_ms": None, "failure_count": None,
++                 "crop_bbox": None, "input_sha256": None, "run_id": None, "latency_attempts": None,
++                 "render_ms": None, "crop_ms": None, "cold_load_ms": None, "error": None}
++                for c in ocr_cases for method in protocol["ocr"]["methods"]]
++    save("retrieval-results-template.json", result_rows)
++    save("ocr-results-template.json", ocr_rows)
++    save("run-metadata-template.json", {
++        "status": "not_executed", "run_id": None, "started_at_kst": None, "finished_at_kst": None,
++        "protocol_sha256": None, "corpus_sha256": None, "queries_sha256": None,
++        "cpu": None, "ram_gb": None, "os": None, "device": None, "versions": None,
++        "model_weight_revisions": None, "license_checked": None, "peak_rss_mb": None,
++        "gpu_usage_before_run": None, "command": None, "raw_attempt_log": None,
++    })
++    for name, rows in [("retrieval-results-template.csv", result_rows), ("ocr-results-template.csv", ocr_rows)]:
++        with (OUT / name).open("w", newline="", encoding="utf-8-sig") as stream:
++            writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
++            writer.writeheader()
++            writer.writerows(rows)
++    table = ["# #14 개발용 질문·정답 근거표", "", "세 제품 각5문항/총15문항. 실제 고객 발화/후기가 아닌 기존 자료로 작성한 개발 질의다.",
++             "독립 평가 기대 답안은 열람하지 않았다. 정답 요약과 corpus는 사실 요약이며 설명서 전문/직접 인용이 아니다.", "",
++             "| ID | 모델 | 질문 | 기대 대응·정답 | 근거·원문 위치 |", "|---|---|---|---|---|"]
++    for q in queries:
++        refs = "<br>".join(f"{r['id']} · p{r['locator']['page']}" for r in q["gold_sources"]) or "정답 근거 없음: 추가 조건 요청/혼입 거부/미확인"
++        table.append(f"| {q['id']} | {q['model_id']} | {q['query']} | {q['expected_answer_summary']} | {refs} |")
++    table += ["", "## 고정 문서 버전", ""]
++    table += [f"- {p['model_id']}: `{p['document_version']}`" for p in products.values()]
++    table += ["", "각 ID의 원문 URL·PDF SHA256·페이지·문서 버전은 queries.json의 gold_sources와 corpus.json에 있다.",
++              "FR-04는 이전 개정번호/원문이 없는 상태를 확인한다. 가짜 옛 설명서를 생성하지 않는다.",
++              "FR-05는 기존 실제 식기세척기 근거를 냉장고에 적용하는 오류를 확인한다.",
++              "DW-05는 개인 식기 치수가 없어 판단할 수 없는 입력, MW-05는 미언급을 미지원으로 단정하지 않는 사례다."]
++    text("질문_정답근거표.md", "\n".join(table))
++    text("비교조건_측정기준.md", """# #14 비교 조건과 측정 기준
++
++현재 상태는 준비 완료/성능 미측정이다. 기계가 읽는 원본은 protocol.json이다.
++
++## 검색 비교
++
++| 방법 | 고정 설정 |
++|---|---|
++| BM25 | 기존 scripts/model_benchmark.py, k1=1.5/b=0.75, Unicode 단어·casefold |
++| BGE-M3 | 기존 고정 revision, CLS/L2 dense, FP32, max_length256, batch8 |
++| BGE-M3 + 재정렬 | 같은 BGE 후보 최대10개, 고정 reranker revision, raw logits/max_length256 |
++
++모든 방법에 같은 corpus와 **모델 ID+정확한 문서 버전 필터를 검색 전에** 적용한다.
++검색 입력은 text만 사용하며 정답/질문 분류/근거 ID를 임베딩 입력에 붙이지 않는다.
++현재 corpus는 기존 사실 요약27개다. 냉장고의4개 문단은 작으므로 Hit@1을 주 지표로 삼고 Recall@3만으로 우위를 주장하지 않는다.
++
++- 답이 있는11질문: Hit@1, Recall@3, MRR@3. 복수 정답 질문은 각 근거의 회수율을 계산한다.
++- 답이 없는4질문: 순위 평균에 넣지 않고 필요한 조건 요청·다른 모델 거부·미확인 유지 및 금지 주장 여부를 별도로 검토한다.
++- 모델/버전 혼입: 반환 근거의 메타데이터로 검사. 같은 모델의 옛 문서 원본이 없어 이 범위 검증은 추가 자료 확보 뒤 보완한다.
++- 오류/timeout은 누락하지 않고 실패로 기록한다. 빈 검색 결과의 혼입률은 NA로 둔다.
++- 같은 CPU/FP32/4threads에서 방법별 warmup2회, 질문별 측정5회. 모든 방법에 같은 순서(seed20261005)를 적용한다.
++- median/p95/실패 수·peak RSS를 기록한다. 모델 로드·색인·렌더/전송 시간은 별도 기록한다. GPU 실험은 별도 트랙이다.
++- 실제 토큰 길이를 기록한다. 잘림이 발견되면 설정 버전을 바꾸고 세 방법 모두 재실행한다.
++
++## OCR 비교
++
++세 실문서의 문장3·숫자/표3, 총6사례를 준비했다. PDF 해시·페이지·짧은 원문과 숫자/단위 정답을 고정했다.
++원본 텍스트 PDF 추출과 300DPI/RGB로 렌더한 **수동 줄/행 crop의 기존 Paddle 인식**을 비교한다.
++crop 좌표·이미지 크기·hash는 실제 실행 전 고정한다. crop 생성도 아직 실행하지 않았다.
++문자오류율(CER)은 원문과 맞춘 줄에만 적용하고, 표/도면은 숫자·단위·모델 열 연결 정확도를 따로 기록한다.
++숫자·소수점·단위·모델명은 정규화 과정에서 제거하지 않는다.
++
++기존 모델은 글자 인식 모델이다. 문서 전체의 영역 탐지·표 구조 분석 모델이 선택된 것으로 간주하지 않는다.
++수동 crop 성공을 전체 페이지 OCR 성공으로 보고하지 않는다. 실제 스캔 원본도 아직 없다.
++식기세척기 p57은 빌트인 열의598×815×567mm·45kg, 전자레인지 p37은 MW23FDI 열의깊이369mm를 원본 표로 확인했다.
++
++## 선택·완료 기준
++
++먼저 모델/버전 혼입·조건 삭제·근거 부족 단정을 해결한다. 동일 질문의 방법별 성공/실패와 정확도·시간을 함께 비교한다.
++개발 질문에서 좋아 보여도 독립 평가 우위로 표현하지 않는다. 정확도가 같으면 단순하고 빠른 기준선의 유지 여부를 검토한다.
++실제 결과·환경·실패·근거를 PM에게 인수하고 #13 경로와 통합 확인한 뒤 방법 채택·#14 최종 완료를 판정한다.
++결과 양식의 null/빈칸은 미측정이며 0점/실패0회가 아니다.
++기존 bootstrap 실행 코드는 정답 없는 질문·Hit@1/MRR·반복 측정을 지원하지 않으므로 이 질문을 그대로 전달하지 않는다.
++5단계에서 이 고정 protocol을 따르는 실행 어댑터를 연결한 뒤 측정한다. 준비 완료는 실행 어댑터 구현 완료를 뜻하지 않는다.
++""")
++    text("README.md", """# P2-DATA-003 단계3·4 준비 결과
++
++2026-10-05 사용자 요청으로 #14의 개발용 질문·정답 근거와 비교 조건·측정 양식을 작성했다.
++시작 commit b82cf9c2d063458bc3e54eb34b856c1050c93ced, 별도 codex/data003-preparation-20261005 브랜치다.
++
++- [질문·정답 근거표](질문_정답근거표.md): 제품별5문항/총15문항, 답이 있는11개와 조건/자료 부족4개.
++- [비교 조건·측정 기준](비교조건_측정기준.md): 검색3방법, 고정 모델/revision·동일 필터·측정법, OCR6사례.
++- corpus.json/queries.json/protocol.json/ocr-cases.json: 재실행용 데이터.
++- retrieval-results-template.json/csv와 ocr-results-template.json/csv: 모든 결과가 미측정 상태인 기록 양식.
++- run-metadata-template.json: 실제 실행 환경·weight revision·입력 해시·실행 명령을 기록하는 빈 양식.
++- manifest.json: 기존 자료·원문PDF/cache·준비 산출물의 버전/SHA256. validation.json: 준비 무결성 검사.
++
++## 재생성과 검사
++
++저장소 루트에서 기존 Python3.11을 사용한다. 새 설치/다운로드/모델 호출은 없다.
++
++```powershell
++python -B -X utf8 scripts/prepare_data003_benchmark.py --source-directory '기존-private/documents-source의-절대경로'
++python -B -X utf8 scripts/verify_data003_preparation.py --source-directory '같은-원문폴더의-절대경로'
++```
++
++원문PDF·전체페이지캐시는 private에 보존한다. 이 작업은 기존 #12 자료나 독립 평가 답안을 변경하지 않는다.
++HTML 사양/가격을 설명서 버전으로 바꾸거나 가짜 이전 문서·고객 리뷰를 생성하지 않았다.
++이번 corpus는 manual 자료의 사실 요약이며 #12 공통 planning dataset을 대체하지 않는다.
++
++## 이 준비의 진행 체크리스트
++
++- [x] 3단계: 세 제품의 개발 질문15개·근거27개·원문 모델/버전/페이지 연결 작성
++- [x] 4단계: 검색3방법·OCR6사례의 조건/지표·미측정 양식 작성
++- [ ] PM의 질문/근거 의미 검수와 실제 공유·인수
++- [ ] 5단계: 기존 실행 코드에 새 protocol 어댑터 연결, 환경/weight/crop 고정, 실제 측정
++- [ ] 6단계: #13 실제 문서 처리 출력으로 통합 검사
++- [ ] #14 PM 검수·병합·완료 판정
++
++## 다음 단계와 현재 한계
++
++준비만 실행했다. 검색/BGE/재정렬/OCR 측정·crop 생성·성능 개선·실제 고객 수요·#13 통합은 미실행이다.
++다음은 기존 모델/환경·라이선스/weight revision·자원 상태 확인, 개발용 정답 검토, 새 protocol 실행 어댑터 연결·OCR crop 고정 후 별도 실행 폴더에서5단계 실험이다.
++#14 정식 의존 DATA002와 PM 검수·병합·통합은 유지한다. 원격 게시/자기보고 수신·Notion 반영은 이번 준비에 포함하지 않는다.
++""")
++    outputs = [p for p in sorted(OUT.iterdir()) if p.name not in {"manifest.json", "validation.json"} and p.is_file()]
++    manifest = {"task_id": "P2-DATA-003", "status": "prepared_not_executed", "scope": "steps_3_4",
++                "created_at_kst": datetime.now(timezone(timedelta(hours=9))).isoformat(),
++                "base_commit": "b82cf9c2d063458bc3e54eb34b856c1050c93ced",
++                "counts": {"corpus": len(corpus), "queries": len(queries), "per_model": dict(Counter(q["model_id"] for q in queries)),
++                           "supported_queries": sum(bool(q["relevant_evidence_ids"]) for q in queries),
++                           "unsupported_queries": sum(not q["relevant_evidence_ids"] for q in queries),
++                           "ocr_cases": len(ocr_cases), "retrieval_template_rows": len(result_rows), "ocr_template_rows": len(ocr_rows)},
++                "source_versions": [{"path": p, "sha256": digest(ROOT / p)} for p in inputs],
++                "original_sources": source_locks,
++                "output_versions": [{"path": p.relative_to(ROOT).as_posix(), "sha256": digest(p)} for p in outputs],
++                "generator": {"path": Path(__file__).relative_to(ROOT).as_posix(), "sha256": digest(__file__)},
++                "independent_final_evaluation": {"answer_content_read": False, "modified": False,
++                                                 "assertion_scope": "generator/verifier have no evaluation path input"},
++                "formal_state_changed": False, "model_calls": 0, "ocr_calls": 0}
++    save("manifest.json", manifest)
++    print(json.dumps({"status": manifest["status"], "counts": manifest["counts"]}, ensure_ascii=False))
++
++
++if __name__ == "__main__":
++    main()
+--- /dev/null
++++ b/scripts/prepare_data003_ocr_inputs.py
+@@ -0,0 +1,190 @@
++"""Lock manual OCR crops and inspect text extraction; never run recognition."""
++
++import argparse
++import hashlib
++import importlib.metadata
++import json
++import math
++import platform
++import re
++import time
++import unicodedata
++from datetime import datetime, timedelta, timezone
++from pathlib import Path
++
++import pdfplumber
++from PIL import Image, ImageDraw
++from pypdf import PdfReader
++
++ROOT = Path(__file__).resolve().parents[1]
++PREP = ROOT / "evals/data003-preparation/20261005"
++OUT = ROOT / "evals/data003-ocr-inputs/20261005"
++PRIVATE = ROOT / "private/data003-ocr/20261005"
++NUMERIC_TEXTS = {
++    "OCR-FR-NUM": ["10 cm", "2.5 cm"],
++    "OCR-DW-TABLE": ["598 mm X 815 mm X 567 mm", "45 kg", "14인용", "1600 W"],
++    "OCR-MW-TABLE": ["476 × 272 × 369", "23 L", "13 L)", "1570 W", "1000 W*1"],
++}
++CONTEXT_BOXES = {"OCR-DW-TABLE": [55, 398, 466, 574], "OCR-MW-TABLE": [55, 482, 467, 670]}
++
++
++def digest(path):
++    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
++
++
++def load(path):
++    return json.loads(Path(path).read_text(encoding="utf-8"))
++
++
++def save(path, value):
++    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
++
++
++def compact(value):
++    return "".join(unicodedata.normalize("NFC", value).split())
++
++
++def pixel_box(points, size, page_size):
++    sx, sy = size[0] / page_size[0], size[1] / page_size[1]
++    return [max(0, math.floor(points[0] * sx)), max(0, math.floor(points[1] * sy)),
++            min(size[0], math.ceil(points[2] * sx)), min(size[1], math.ceil(points[3] * sy))]
++
++
++def locate(page, gold, case_id, index):
++    pattern = r"\s*".join(re.escape(char) for char in gold if not char.isspace())
++    matches = page.search(pattern)
++    # Physical columns were read in the original table. Identical values in a
++    # freestanding/other-model column must not select the first textual match.
++    if case_id == "OCR-DW-TABLE" and index == 0:
++        matches = [m for m in matches if m["x0"] > 300]
++    if case_id == "OCR-MW-TABLE" and index == 2:
++        matches = [m for m in matches if m["x0"] < 330]
++    if case_id == "OCR-MW-TABLE" and index == 4:
++        matches = [m for m in matches if m["top"] < 600]
++    if len(matches) != 1:
++        raise ValueError(f"Exactly one manually scoped source text required: {case_id}/{index}, found {len(matches)}")
++    return matches[0]
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--source-directory", required=True, type=Path)
++    parser.add_argument("--output", type=Path, default=OUT)
++    parser.add_argument("--private-output", type=Path, default=PRIVATE)
++    args = parser.parse_args()
++    out, private = args.output.resolve(), args.private_output.resolve()
++    if not out.is_relative_to(ROOT / "evals") or not private.is_relative_to(ROOT / "private"):
++        raise ValueError("Metadata must stay in evals and original images/text in private")
++    if out.exists() or private.exists():
++        raise ValueError("OCR input/output folders already exist; preserve them and use a new dated script/output version")
++    cases, manifest = load(PREP / "ocr-cases.json"), load(PREP / "manifest.json")
++    locks = {s["model_id"]: s for s in manifest["original_sources"]}
++    source_dir = args.source_directory.resolve()
++    for model, source in locks.items():
++        if digest(source_dir / source["pdf_file"]) != source["pdf_sha256"]:
++            raise ValueError(f"Original PDF mismatch: {model}")
++    out.mkdir(parents=True)
++    private.mkdir(parents=True)
++    records, comparisons, crop_images = [], [], []
++    for model, source in locks.items():
++        pdf = source_dir / source["pdf_file"]
++        reader = PdfReader(pdf)
++        with pdfplumber.open(pdf) as document:
++            for case in [c for c in cases if c["model_id"] == model]:
++                cid, number = case["id"], case["page"]
++                page = document.pages[number - 1]
++                start = time.perf_counter_ns()
++                extracted = reader.pages[number - 1].extract_text() or ""
++                extraction_ms = (time.perf_counter_ns() - start) / 1_000_000
++                text_path = private / f"{model}-p{number}-pypdf.txt"
++                text_path.write_text(extracted, encoding="utf-8")
++                start = time.perf_counter_ns()
++                rendered = page.to_image(resolution=300, antialias=True).original.convert("RGB")
++                render_ms = (time.perf_counter_ns() - start) / 1_000_000
++                page_path = private / f"{model}-p{number}-300dpi.png"
++                rendered.save(page_path)
++                record = {"id": cid, "model_id": model, "document_version": case["document_version"],
++                          "page": number, "source_pdf_sha256": source["pdf_sha256"], "source_url": source["source_url"],
++                          "raster_path": page_path.relative_to(ROOT).as_posix(), "raster_sha256": digest(page_path),
++                          "raster_size_px": list(rendered.size), "page_size_points": [page.width, page.height],
++                          "dpi": 300, "color": "RGB", "render_ms": render_ms, "kind": case["kind"],
++                          "rotation_degrees": 0, "denoise": False, "source_fact_ids": case["source_fact_ids"],
++                          "recognition_status": "not_executed", "regions": []}
++                golds = [case["gold_text"]] if case["gold_text"] else NUMERIC_TEXTS[cid]
++                for index, gold in enumerate(golds):
++                    match = locate(page, gold, cid, index)
++                    exact = [match["x0"], match["top"], match["x1"], match["bottom"]]
++                    padding = [0.5, 2, 0.5, 0 if cid == "OCR-MW-LINE" else 2]
++                    padded = [exact[0] - padding[0], exact[1] - padding[1], exact[2] + padding[2], exact[3] + padding[3]]
++                    bbox = pixel_box(padded, rendered.size, [page.width, page.height])
++                    crop = rendered.crop(tuple(bbox))
++                    crop_path = private / f"{cid}-{index + 1:02d}.png"
++                    crop.save(crop_path)
++                    region = {"id": f"{cid}-{index + 1:02d}", "gold_text": gold,
++                              "gold_text_sha256": hashlib.sha256(gold.encode("utf-8")).hexdigest(),
++                              "source_text_bbox_points": exact, "padding_points": padding,
++                              "crop_bbox_px": bbox, "crop_path": crop_path.relative_to(ROOT).as_posix(),
++                              "crop_size_px": list(crop.size), "crop_sha256": digest(crop_path),
++                              "field_target": case["field_targets"][index] if case["field_targets"] else None,
++                              "gold_origin": "short exact source phrase or manually located numeric value; not recognition output",
++                              "unit_in_crop": case["field_targets"][index]["unit"] in gold if case["field_targets"] else None,
++                              "column_assignment": "manual_fixed_source_coordinates_not_layout_prediction",
++                              "visual_review": "pending"}
++                    record["regions"].append(region)
++                    crop_images.append((region["id"], crop.copy()))
++                    comparisons.append({"case_id": cid, "region_id": region["id"],
++                                        "pypdf_phrase_present": compact(gold) in compact(extracted),
++                                        "page_text_sha256": digest(text_path), "page_text_path": text_path.relative_to(ROOT).as_posix(),
++                                        "page_extraction_ms": extraction_ms,
++                                        "CER": None, "numeric_field_accuracy": None, "unit_accuracy": None,
++                                        "model_column_accuracy": None,
++                                        "meaning": "reference phrase availability in extracted page, not field binding/recognition accuracy"})
++                if cid in CONTEXT_BOXES:
++                    box = pixel_box(CONTEXT_BOXES[cid], rendered.size, [page.width, page.height])
++                    context = private / f"{cid}-context.png"
++                    rendered.crop(tuple(box)).save(context)
++                    record["context"] = {"path": context.relative_to(ROOT).as_posix(), "sha256": digest(context),
++                                         "bbox_px": box, "purpose": "human inspection of model column and unit header; not a recognition crop"}
++                records.append(record)
++    width, row_height = 960, 100
++    sheet = Image.new("RGB", (width, row_height * len(crop_images)), "white")
++    draw = ImageDraw.Draw(sheet)
++    for i, (label, crop) in enumerate(crop_images):
++        draw.text((10, i * row_height + 5), label, fill="black")
++        crop.thumbnail((width - 20, 68))
++        sheet.paste(crop, (10, i * row_height + 25))
++    sheet.save(private / "crops-contact-sheet.png")
++    result = {"status": "crops_generated_awaiting_visual_review", "scope": "input_preparation_and_text_extraction_only",
++              "created_at_kst": datetime.now(timezone(timedelta(hours=9))).isoformat(),
++              "input_cases_sha256": digest(PREP / "ocr-cases.json"), "protocol_sha256": digest(PREP / "protocol.json"),
++              "script_sha256": digest(__file__), "runtime": {"python": platform.python_version(),
++              "pdfplumber": importlib.metadata.version("pdfplumber"), "pypdf": importlib.metadata.version("pypdf"),
++              "pypdfium2": importlib.metadata.version("pypdfium2"), "Pillow": importlib.metadata.version("Pillow")},
++              "counts": {"cases": len(records), "recognition_regions": len(crop_images),
++                         "phrases_found_in_text": sum(c["pypdf_phrase_present"] for c in comparisons)},
++              "cases": records, "ocr_calls": 0, "whole_page_layout_evaluated": False,
++              "limits": ["Manual segmentation and source text search are preparation, not automatic OCR/layout",
++                         "Text presence can include values in the wrong table column and cannot establish numeric field accuracy",
++                         "MW dimension mm unit is in table context, not its numeric crop; unit-in-crop is false",
++                         "Source page images and full extracted page text remain private",
++                         "OCR recognition and PM/source semantic review remain separate"]}
++    save(out / "crop-manifest.json", result)
++    save(out / "text-extraction-comparison.json", {"method": "pypdf_text_extraction", "status": "executed",
++         "comparison": "reference_phrase_presence_only", "observations": comparisons, "ocr_calls": 0})
++    (out / "README.md").write_text(
++        "# OCR 입력 준비와 PDF 텍스트 추출\n\n"
++        "설명서6페이지/6사례의 줄·수치 영역14개를 300DPI/RGB로 생성했다. 좌표·원문 해시·crop 해시를 고정한다.\n"
++        "원문 페이지 이미지·전체 추출 텍스트·crop 이미지는 private에 있고 이 폴더에는 메타데이터만 있다.\n\n"
++        "crop-manifest.json: 영역/정답/좌표·이미지 크기·hash와 시각 검토 상태.\n"
++        "text-extraction-comparison.json: pypdf 실제 추출에서 짧은 정답 구절의 존재를 대조한 결과.\n"
++        "구절 존재는 CER/숫자·단위·모델 열 정확도가 아니다. 이 점수들은 미측정 null로 둔다.\n"
++        "동일 숫자가 다른 열에도 있는 DUE 외형/MW 가용용량은 원문 열의 좌표를 수동으로 고정했다.\n"
++        "MW 외형 치수의 mm 단위는 값 crop 밖 표 머리글에 있어 context 이미지에 보존했다.\n"
++        "수동 영역 선택·PDF 텍스트 추출은 Paddle 인식이나 전체 페이지 탐지/레이아웃 평가가 아니다.\n"
++        "다음은 crop 시각 검토 기록 후 기존 인식 모델 환경을 확인하여 별도 폴더에서 실제 인식·숫자 연결을 비교한다.\n",
++        encoding="utf-8")
++    print(json.dumps({"status": result["status"], "counts": result["counts"], "ocr_calls": 0}, ensure_ascii=False))
++
++
++if __name__ == "__main__":
++    main()
+--- /dev/null
++++ b/scripts/prepare_data004_review.py
+@@ -0,0 +1,177 @@
++"""Prepare DATA004 development checks; keep private independent answers untouched."""
++
++import argparse
++import csv
++import hashlib
++import json
++from collections import Counter
++from datetime import datetime, timedelta, timezone
++from pathlib import Path
++
++ROOT = Path(__file__).resolve().parents[1]
++REFERENCE = ROOT / "data/research/P2-DATA-001-real-reference-20261004/reference-pack.json"
++OUT = ROOT / "evals/data004-preparation/20261005"
++PRIVATE = ROOT / "private/data004-development/20261005"
++CATEGORIES = {"normal", "duplicate_feature", "model_version_confusion", "conflicting_reviews", "missing_evidence", "specification_change"}
++
++
++def digest(path):
++    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
++
++
++def write(path, value):
++    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--output", type=Path, default=OUT)
++    parser.add_argument("--private-output", type=Path, default=PRIVATE)
++    args = parser.parse_args()
++    out, private = args.output.resolve(), args.private_output.resolve()
++    if not out.is_relative_to(ROOT / "evals") or not private.is_relative_to(ROOT / "private"):
++        raise ValueError("Metadata stays in evals; synthetic development inputs/expectations stay in private")
++    if out.exists() or private.exists():
++        raise ValueError("Preserve existing preparation; use a new output/version for revisions")
++    pack = json.loads(REFERENCE.read_text(encoding="utf-8"))
++    facts = {f["id"]: f for f in pack["facts"]}
++    sources = {s["id"]: s for s in pack["sources"]}
++    products = {p["model_id"]: p for p in pack["products"]}
++    criteria = [
++        ("K01", "R05,R06", "원문 연결", "근거 ID·모델·문서 버전·원문 위치·hash·public/synthetic 성격을 결과까지 유지한다."),
++        ("K02", "R05", "조건 보존", "조건부 기능·사용 전 조건·숫자/단위·제품 열을 삭제하거나 모든 모델로 확대하지 않는다."),
++        ("K03", "R05,R06", "충돌 보존", "충돌하는 모든 관찰값·출처·범위·확인일을 남기고 미해결이면 임의 평균/최신 단정으로 덮지 않는다."),
++        ("K04", "R05,R06", "모델·개정 혼동", "다른 모델·미지정 과거 개정을 현재 모델/개정 근거로 대체하지 않는다."),
++        ("K05", "R05", "근거 부족", "미언급·정보 부족은 null/미확인·추가 조건 요청으로 유지하고 미지원 또는 지원 확정으로 바꾸지 않는다."),
++        ("K06", "R05", "중복·불편 구분", "이미 있는 기능의 중복과 불편 해소 여부를 구분하고 기능 존재만으로 수요/효과를 확정하지 않는다."),
++        ("K07", "R22", "변경 이력", "변경 전후 snapshot/hash·자료 성격·버전과 원 실행을 보존하고 새 실행 ID에 변경 출처를 연결한다."),
++        ("K08", "R22", "영향 추적", "변경 근거에 의존하는 판단/후보만 재검토하고 관련 없는 근거·후보를 그대로 보존한다."),
++        ("K09", "E01", "평가 분리", "이 개발 사례를 독립 평가로 쓰지 않고 최종 입력/기대 정답은 별도 작성자/PM 검토와 비공개 경로로 분리한다."),
++        ("K10", "E01", "실행 진실성", "actual run/오류/보류·반환 근거·검수자/시각을 기록한다. 예상 대응이나 규칙 검사로 실제 결과를 채우지 않는다."),
++    ]
++    protocol = {"task_id": "P2-DATA-004", "scope": "development_preparation_only", "status": "prepared_not_executed",
++                "criteria": [{"id": key, "requirement_ids": req.split(","), "title": title, "pass_condition": condition,
++                              "failure_action": "retain original output; mark failed/held and request correction or source clarification"}
++                             for key, req, title, condition in criteria],
++                "independent_final_evaluation": {"answer_content_read": False, "modified": False, "cases_used": False},
++                "real_customer_reviews": 0, "semantic_gold_review": "pending_PM",
++                "integration_required": ["DATA002 real processed output", "core actual change/re-evaluation service", "PM independent six-type execution/review"],
++                "source_change_policy": "Only one real manufacturer revision exists per model; before/after fixtures have synthetic source IDs and DEV versions, never fake manufacturer revisions",
++                "handoff_fields": ["case_id", "type", "input_sha256", "output_run_id", "output_sha256", "source_ids",
++                                   "before_after_hashes", "affected_judgement_ids", "affected_candidate_ids", "reviewer", "reviewed_at", "observed_checks", "failure_reason"]}
++    definitions = [
++        ("N01", "normal", "T876MEE1H1", ["F10", "F11"], "선반 분리·청소 안내의 근거를 조회한다.", "answer_with_source_conditions", ["K01", "K02"]),
++        ("N02", "normal", "DUE6BGL2E", ["D09", "D13", "D14"], "바구니 조절 전 조건과 노즐 확인을 함께 조회한다.", "answer_with_source_conditions", ["K01", "K02"]),
++        ("DU01", "duplicate_feature", "MW23FDI", ["M11"], "수동 출력 선택을 신규 기능으로 제안한다.", "identify_existing_function_without_claiming_problem_resolved", ["K01", "K06"]),
++        ("DU02", "duplicate_feature", "MW23FDI", ["M14"], "시작 버튼의 30초 추가를 신규 기능으로 제안한다.", "identify_existing_function_without_claiming_problem_resolved", ["K01", "K02", "K06"]),
++        ("MV01", "model_version_confusion", "T876MEE1H1", ["F10", "D09", "D13"], "냉장고 입력에 실제 다른 모델의 바구니 근거가 섞인다.", "reject_foreign_model_evidence", ["K01", "K04"]),
++        ("MV02", "model_version_confusion", "T876MEE1H1", ["F12"], "개정번호가 없는 이전 설명서의 설치 간격을 요청한다.", "request_original_revision_without_substitution", ["K01", "K04", "K05"]),
++        ("CR01", "conflicting_reviews", "DUE6BGL2E", ["D09", "D13"], "합성 후기의 반대 의견을 빈도로 일반화하지 않는 개발 점검이다.", "preserve_both_synthetic_observations_and_conditions", ["K01", "K02", "K03"]),
++        ("CR02", "conflicting_reviews", "DUE6BGL2E", ["D14"], "합성 후기의 다른 식기 조건을 동일 조건의 모순으로 합치지 않는다.", "separate_usage_conditions_before_conflict_judgement", ["K01", "K02", "K03"]),
++        ("ME01", "missing_evidence", "MW23FDI", ["M16", "M15"], "사용자 조합 저장·호출을 자동 메뉴로 대신 확정하지 않는다.", "retain_unknown_not_unsupported", ["K01", "K05", "K06"]),
++        ("ME02", "missing_evidence", "DUE6BGL2E", ["D02", "D14"], "개인 식기의 치수·수량·배열 정보가 없는 적재 판단이다.", "request_dimensions_count_layout", ["K01", "K02", "K05"]),
++        ("SC01", "specification_change", "DUE6BGL2E", ["D09", "D03"], "바구니 단계 수를 변경한 합성 명세의 영향 추적 준비다.", "recheck_height_dependencies_keep_dimensions", ["K01", "K07", "K08"]),
++        ("SC02", "specification_change", "MW23FDI", ["M06", "M07"], "고주파 출력만 변경한 합성 명세에서 소비전력을 보존한다.", "recheck_output_dependencies_keep_consumption", ["K01", "K02", "K07", "K08"]),
++    ]
++    out.mkdir(parents=True)
++    private.mkdir(parents=True)
++    index, result_rows = [], []
++    for short_id, category, model, fids, description, disposition, applicable in definitions:
++        cid = f"DATA004-DEV-{short_id}"
++        material = {"case_id": cid, "split": "development", "question_origin": "authored_development_case",
++                    "model": products[model], "description": description, "facts": [facts[fid] for fid in fids],
++                    "sources": [sources[sid] for sid in sorted({r["source_id"] for fid in fids for r in facts[fid]["source_refs"]})],
++                    "actual_customer_review_count": 0, "synthetic_reviews": []}
++        expected = {"case_id": cid, "split": "development", "expected_disposition": disposition,
++                    "expected_source_fact_ids": fids, "criteria_ids": [*applicable, "K09", "K10"],
++                    "semantic_review_status": "draft_pending_PM", "actual_agent_output": None}
++        if category == "model_version_confusion":
++            material["requested_document_version"] = None if short_id == "MV02" else products[model]["document_version"]
++            expected["foreign_fact_ids"] = [fid for fid in fids if facts[fid]["model_id"] != model]
++        if category == "conflicting_reviews":
++            statements = (["조절 전 식기를 비우는 과정이 번거롭다는 합성 의견", "같은 비움 절차가 부담되지 않는다는 합성 의견"]
++                          if short_id == "CR01" else ["높은 접시 조합에서 노즐 간섭을 경험했다는 합성 의견",
++                                                     "낮은 그릇 조합에서는 노즐이 회전했다는 합성 의견"])
++            material["synthetic_reviews"] = [{"id": f"{cid}-SYNTHETIC-REVIEW-{i + 1}", "source_kind": "synthetic",
++                                              "document_version": "DEV-REVIEWSET-20261005.1", "model_id": model,
++                                              "text": statement, "actual_customer": False}
++                                             for i, statement in enumerate(statements)]
++        if short_id == "ME01":
++            material["coverage_gap"] = next(g for g in pack["gaps"] if g["id"] == "U01")
++            expected["forbidden_claims"] = ["설명서 미언급만으로 미지원 확정", "사용자 설정 저장 지원 확정"]
++        if short_id == "ME02":
++            material["dish_dimensions"] = material["dish_count"] = material["dish_layout"] = None
++        if category == "specification_change":
++            changed, unchanged = fids
++            before = {"dataset_version": f"{cid}-BEFORE", "facts": [facts[f] for f in fids]}
++            after = {"dataset_version": f"{cid}-AFTER", "mock_new_spec": {
++                "id": f"{cid}-SYNTHETIC-SPEC", "source_kind": "synthetic", "model_id": model,
++                "document_version": "DEV-SPEC-20261005.2", "manufacturer_revision": None,
++                "source_url": None, "locator": {"json_pointer": "/mock_new_spec/value"},
++                "replaces_fact_id_for_development_only": changed, "value": 2 if short_id == "SC01" else 900,
++                "unit": facts[changed]["unit"], "real_manufacturer_change": False}, "unchanged_fact": facts[unchanged]}
++            before_path, after_path = private / f"{cid}-before.json", private / f"{cid}-after.json"
++            write(before_path, before)
++            write(after_path, after)
++            material["before_after"] = [{"path": p.relative_to(ROOT).as_posix(), "sha256": digest(p)}
++                                        for p in (before_path, after_path)]
++            material["dependency_map"] = [
++                {"judgement_id": f"{cid}-J-CHANGED", "candidate_id": f"{cid}-C-CHANGED", "fact_ids": [changed]},
++                {"judgement_id": f"{cid}-J-UNCHANGED", "candidate_id": f"{cid}-C-UNCHANGED", "fact_ids": [unchanged]}]
++            expected["changed_fact_ids"] = [changed]
++            expected["affected_judgement_ids"] = [material["dependency_map"][0]["judgement_id"]]
++            expected["affected_candidate_ids"] = [material["dependency_map"][0]["candidate_id"]]
++            expected["unchanged_fact_ids"] = [unchanged]
++        input_path, expected_path = private / f"{cid}-input.json", private / f"{cid}-expected.json"
++        write(input_path, material)
++        write(expected_path, expected)
++        index.append({"case_id": cid, "category": category, "split": "development", "model_id": model,
++                      "description": description, "source_fact_ids": fids, "expected_disposition": disposition,
++                      "criteria_ids": expected["criteria_ids"], "has_synthetic_material": bool(material["synthetic_reviews"])
++                      or category == "specification_change", "input_path": input_path.relative_to(ROOT).as_posix(),
++                      "input_sha256": digest(input_path), "expected_path": expected_path.relative_to(ROOT).as_posix(),
++                      "expected_sha256": digest(expected_path), "actual_run_id": None, "actual_result": None})
++        result_rows += [{"case_id": cid, "criterion_id": key, "status": "not_executed", "passed": None,
++                         "observed_run_id": None, "output_sha256": None, "source_evidence_ids": None,
++                         "failure_reason": None, "reviewer": None, "reviewed_at": None}
++                        for key in expected["criteria_ids"]]
++    if len(index) != 12 or Counter(c["category"] for c in index) != Counter({category: 2 for category in CATEGORIES}):
++        raise ValueError("Two development cases for every category required")
++    write(out / "protocol.json", protocol)
++    write(out / "development-case-index.json", index)
++    write(out / "real-conflicts.json", pack["conflicts"])
++    write(out / "review-results-template.json", result_rows)
++    with (out / "review-results-template.csv").open("w", encoding="utf-8-sig", newline="") as stream:
++        writer = csv.DictWriter(stream, fieldnames=list(result_rows[0]))
++        writer.writeheader()
++        writer.writerows(result_rows)
++    write(out / "manifest.json", {"task_id": "P2-DATA-004", "status": "prepared_not_executed",
++          "created_at_kst": datetime.now(timezone(timedelta(hours=9))).isoformat(), "split": "development",
++          "cases": len(index), "category_counts": dict(Counter(c["category"] for c in index)), "criteria": len(criteria),
++          "review_template_rows": len(result_rows), "source_reference_sha256": digest(REFERENCE),
++          "generator_sha256": digest(__file__), "formal_state_changed": False, "live_service_calls": 0,
++          "independent_final_evaluation": {"answer_content_read": False, "modified": False, "completed": False}})
++    table = ["# #15 충돌·명세 변경·근거 검수 준비", "", "검사 기준10개와 개발용12사례(6유형별2개)를 작성했다.",
++             "정답 초안이며 PM 의미 검토와 실제 Agent/변경 서비스 실행은 미실행이다.", "",
++             "| 사례 | 유형 | 준비할 검수 |", "|---|---|---|"]
++    table += [f"| {c['case_id']} | {c['category']} | {c['description']} |" for c in index]
++    table += ["", "실제 원문 충돌 C01(벽면 간격/적용 범위)·C02(출시년월)는 real-conflicts.json에 원본 관찰값·미해결 상태 그대로 보존했다.",
++              "상충 리뷰 유형의 입력4개는 합성 개발 fixture이며 실제 고객 리뷰는0개다. 원문은 private에 두고 공개 자료로 제시하지 않는다.",
++              "명세변경2개는 DEV-SPEC 합성 입력이다. 실제 제조사 개정·모델 사양 변경을 확보했다고 하지 않는다.",
++              "각 변경의 before/after snapshot/hash·새 source ID·조건과 영향 받을 판단/후보·보존할 사실을 나눴다.",
++              "개발 사례/기대 답안은 private/data004-development에 재생성하며 비공개 최종 독립 평가 경로를 읽거나 수정하지 않는다.",
++              "review-results-template JSON/CSV는 미실행/결과 null이다. 이 준비를 E01 독립6유형 평가 완료로 사용하지 않는다.",
++              "", "## 진행 체크리스트", "", "- [x] 모델/버전/원문·조건·충돌·미확인·변경 영향·독립성 검사 기준 작성",
++              "- [x] 기존 실제 충돌2개 보존, 개발12사례·미실행 검수표 작성",
++              "- [ ] PM의 개발 기대 답안 의미 검토·자료 인수",
++              "- [ ] #13 실제 처리 출력으로 source ID/버전·근거 연결 검증",
++              "- [ ] 황대겸의 변경 재검토 서비스와 실제 영향/수정 결과 대조",
++              "- [ ] PM/평가 담당의 별도 독립6유형 실행·검토 및 최종 완료 판정",
++              "", "재현: 기존 Python3.11에서 scripts/prepare_data004_review.py 실행. 기존 출력이 있으면 덮어쓰기를 거부한다."]
++    (out / "README.md").write_text("\n".join(table) + "\n", encoding="utf-8")
++    print(json.dumps({"status": "prepared_not_executed", "cases": len(index), "criteria": len(criteria),
++                      "review_template_rows": len(result_rows), "real_conflicts": len(pack["conflicts"])}, ensure_ascii=False))
++
++
++if __name__ == "__main__":
++    main()
+--- /dev/null
++++ b/scripts/run_data003_bm25.py
+@@ -0,0 +1,231 @@
++"""Run the locked DATA003 BM25 development baseline; no learned model calls."""
++
++import argparse
++import csv
++import ctypes
++import hashlib
++import json
++import math
++import os
++import platform
++import random
++import statistics
++import time
++from datetime import datetime, timedelta, timezone
++from pathlib import Path
++
++from model_benchmark import bm25
++
++ROOT = Path(__file__).resolve().parents[1]
++PREP = ROOT / "evals/data003-preparation/20261005"
++DEFAULT_OUT = ROOT / "evals/data003-execution/20261005-cpu-baseline"
++
++
++def digest(path):
++    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
++
++
++def read(path):
++    return json.loads(Path(path).read_text(encoding="utf-8"))
++
++
++def save(path, data):
++    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
++
++
++def rank(query_input, evidence):
++    """Only runtime input is accepted here; gold answers never enter ranking."""
++    if not query_input["model_id"] or not query_input["document_version"]:
++        return [], "request_document_version"
++    scoped = [e for e in evidence if e["model_id"] == query_input["model_id"]
++              and e["document_version"] == query_input["document_version"]]
++    if not scoped:
++        return [], "no_evidence_for_scope"
++    scores = bm25(query_input["query"], [e["text"] for e in scoped])
++    result = sorted(zip(scoped, scores), key=lambda pair: (-pair[1], pair[0]["id"]))
++    return [{"id": e["id"], "score": score, "model_id": e["model_id"],
++             "document_version": e["document_version"]} for e, score in result[:3]], "retrieved"
++
++
++def evaluate(ranking, query):
++    relevant = set(query["relevant_evidence_ids"])
++    ids = [e["id"] for e in ranking[:3]]
++    first = next((i + 1 for i, eid in enumerate(ids) if eid in relevant), None)
++    return {
++        "hit_at_1": int(bool(ids) and ids[0] in relevant) if relevant else None,
++        "recall_at_3": len(set(ids) & relevant) / len(relevant) if relevant else None,
++        "mrr_at_3": (1 / first if first else 0) if relevant else None,
++        "model_mix_rate_at_3": sum(e["model_id"] != query["model_id"] for e in ranking) / len(ranking) if ranking else None,
++        "version_mix_rate_at_3": sum(e["document_version"] != query["document_version"] for e in ranking) / len(ranking) if ranking else None,
++    }
++
++
++def percentile95(values):
++    return sorted(values)[math.ceil(len(values) * 0.95) - 1] if values else None
++
++
++def measure(query_input, evidence, ranker=rank):
++    started = time.perf_counter_ns()
++    try:
++        ranking, disposition = ranker(query_input, evidence)
++        return {"status": "success", "ranking": ranking, "scope_disposition": disposition,
++                "error": None, "elapsed_ms": (time.perf_counter_ns() - started) / 1_000_000}
++    except (ArithmeticError, LookupError, RuntimeError, TypeError, ValueError) as exc:
++        return {"status": "failed", "ranking": [], "scope_disposition": "failed",
++                "error": f"{type(exc).__name__}: {exc}",
++                "elapsed_ms": (time.perf_counter_ns() - started) / 1_000_000}
++
++
++def machine_metrics():
++    result = {"peak_rss_mb": None, "ram_gb": None, "memory_probe": "unavailable"}
++    if os.name != "nt":
++        return result
++    from ctypes import wintypes
++
++    class ProcessMemory(ctypes.Structure):
++        _fields_ = [("cb", wintypes.DWORD), ("PageFaultCount", wintypes.DWORD)] + [
++            (name, ctypes.c_size_t) for name in (
++                "PeakWorkingSetSize", "WorkingSetSize", "QuotaPeakPagedPoolUsage", "QuotaPagedPoolUsage",
++                "QuotaPeakNonPagedPoolUsage", "QuotaNonPagedPoolUsage", "PagefileUsage", "PeakPagefileUsage")]
++
++    class MemoryStatus(ctypes.Structure):
++        _fields_ = [("dwLength", wintypes.DWORD), ("dwMemoryLoad", wintypes.DWORD)] + [
++            (name, ctypes.c_ulonglong) for name in (
++                "ullTotalPhys", "ullAvailPhys", "ullTotalPageFile", "ullAvailPageFile", "ullTotalVirtual",
++                "ullAvailVirtual", "ullAvailExtendedVirtual")]
++
++    kernel = ctypes.WinDLL("kernel32", use_last_error=True)
++    kernel.GetCurrentProcess.restype = wintypes.HANDLE
++    psapi = ctypes.WinDLL("psapi", use_last_error=True)
++    psapi.GetProcessMemoryInfo.argtypes = [wintypes.HANDLE, ctypes.POINTER(ProcessMemory), wintypes.DWORD]
++    memory = ProcessMemory()
++    memory.cb = ctypes.sizeof(memory)
++    status = MemoryStatus()
++    status.dwLength = ctypes.sizeof(status)
++    if psapi.GetProcessMemoryInfo(kernel.GetCurrentProcess(), ctypes.byref(memory), memory.cb):
++        result["peak_rss_mb"] = memory.PeakWorkingSetSize / 1024**2
++    if kernel.GlobalMemoryStatusEx(ctypes.byref(status)):
++        result["ram_gb"] = status.ullTotalPhys / 1024**3
++    result["memory_probe"] = "Windows process PeakWorkingSetSize and GlobalMemoryStatusEx"
++    return result
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--output", type=Path, default=DEFAULT_OUT)
++    parser.add_argument("--preflight-metadata", type=Path)
++    args = parser.parse_args()
++    out = args.output.resolve()
++    if not out.is_relative_to(ROOT / "evals") or out.exists():
++        raise ValueError("Use a fresh output directory under this worktree's evals")
++    manifest = read(PREP / "manifest.json")
++    for row in manifest["source_versions"] + manifest["output_versions"] + [manifest["generator"]]:
++        if digest(ROOT / row["path"]) != row["sha256"]:
++            raise ValueError(f"Prepared input hash mismatch: {row['path']}")
++    validation = read(PREP / "validation.json")
++    if validation["status"] != "pass" or validation["manifest_sha256"] != digest(PREP / "manifest.json"):
++        raise ValueError("Preparation validation is missing or stale")
++    load_started = time.perf_counter_ns()
++    corpus, queries, protocol = [read(PREP / name) for name in ("corpus.json", "queries.json", "protocol.json")]
++    input_load_ms = (time.perf_counter_ns() - load_started) / 1_000_000
++    runtime_inputs = [{"id": q["id"], "query": q["query"], "model_id": q["model_id"],
++                       "document_version": q["document_version"]} for q in queries]
++    # Explicit runtime scope for an authored request about an unidentified older revision.
++    # This is recorded input, not a classifier or a generated semantic answer.
++    for row in runtime_inputs:
++        if row["id"] == "FR-04":
++            row["document_version"] = None
++    runtime_map = {q["id"]: q for q in runtime_inputs}
++    order = list(runtime_map)
++    random.Random(protocol["retrieval"]["latency"]["seed"]).shuffle(order)
++    warmups = [measure(runtime_map[qid], corpus["evidence"]) for qid in order[:2]]
++    attempts = []
++    for repeat in range(protocol["retrieval"]["latency"]["measured_repeats_per_query"]):
++        for qid in order:
++            attempts.append({"query_id": qid, "repeat": repeat + 1, **measure(runtime_map[qid], corpus["evidence"])})
++    rows = []
++    for query in queries:
++        measured = [a for a in attempts if a["query_id"] == query["id"]]
++        successful = [a for a in measured if a["status"] == "success"]
++        observed = successful[0]["ranking"] if successful else []
++        metrics = evaluate(observed, query)
++        samples = [a["elapsed_ms"] for a in successful]
++        rows.append({"query_id": query["id"], "method": "bm25_filtered",
++                     "status": "executed" if successful else "failed", **metrics,
++                     "returned_evidence_ids": [e["id"] for e in observed],
++                     "ranking": observed, "ranking_metric_applicable": bool(query["relevant_evidence_ids"]),
++                     "scope_disposition": successful[0]["scope_disposition"] if successful else "failed",
++                     "response_disposition": "not_evaluated_retrieval_only", "response_check_passed": None,
++                     "median_ms": statistics.median(samples) if samples else None,
++                     "p95_ms": percentile95(samples), "failure_count": len(measured) - len(successful),
++                     "stable_ranking_across_repeats": all(a["ranking"] == observed for a in successful),
++                     "latency_attempts": measured})
++    scored = [r for r in rows if r["ranking_metric_applicable"]]
++    timings = [a["elapsed_ms"] for a in attempts if a["query_id"] in {r["query_id"] for r in scored}
++               and a["status"] == "success"]
++    summary = {"supported_questions": len(scored), "excluded_no_gold_questions": len(rows) - len(scored),
++               "macro_hit_at_1": statistics.mean(r["hit_at_1"] for r in scored),
++               "macro_recall_at_3": statistics.mean(r["recall_at_3"] for r in scored),
++               "macro_mrr_at_3": statistics.mean(r["mrr_at_3"] for r in scored),
++               "foreign_model_ids_returned": sum(e["model_id"] != runtime_map[r["query_id"]]["model_id"]
++                                                  for r in rows for e in r["ranking"]),
++               "wrong_version_ids_returned": sum(e["document_version"] != runtime_map[r["query_id"]]["document_version"]
++                                                  for r in rows for e in r["ranking"]),
++               "measured_attempts": len(attempts), "failed_attempts": sum(a["status"] != "success" for a in attempts),
++               "warmup_attempts": len(warmups), "median_ms_supported_attempts": statistics.median(timings) if timings else None,
++               "p95_ms_supported_attempts": percentile95(timings)}
++    result = {"status": "executed", "execution_kind": "deterministic", "method": "bm25_filtered",
++              "split": "development", "task_id": "P2-DATA-003", "summary": summary,
++              "protocol_sha256": digest(PREP / "protocol.json"), "queries_sha256": digest(PREP / "queries.json"),
++              "corpus_sha256": digest(PREP / "corpus.json"), "script_sha256": digest(__file__),
++              "legacy_bm25_sha256": digest(ROOT / "scripts/model_benchmark.py"),
++              "query_order": order, "warmups": warmups, "results": rows,
++              "environment": {"python": platform.python_version(), "os": platform.platform(),
++                              "cpu": platform.processor(), "logical_cpus": os.cpu_count(), "device": "CPU",
++                              "bm25_execution_threads": 1, "configured_model_threads_for_future": 4,
++                              "numeric_precision": "Python float (double), BM25 has no FP32 tensor",
++                              **machine_metrics()},
++              "preflight": {"metadata": read(args.preflight_metadata) if args.preflight_metadata else None,
++                            "metadata_sha256": digest(args.preflight_metadata) if args.preflight_metadata else None,
++                            "isolation": "No other work is launched by this runner; shared host background load is uncontrolled"},
++              "timing": {"input_load_ms": input_load_ms, "index_build_ms": None, "cold_model_load_ms": None,
++                         "note": "Legacy BM25 recomputes tokens/IDF on scoped corpus per query; included in timed query, no persistent index",
++                         "percentile": "nearest rank", "latency_denominator": "55 supported-query successful attempts"},
++              "created_at_kst": datetime.now(timezone(timedelta(hours=9))).isoformat(),
++              "learned_model_calls": 0, "ocr_calls": 0, "formal_state_changed": False,
++              "limitations": ["27 curated fact summaries and 15 authored queries; no independent final evaluation",
++                              "11 gold queries score retrieval only; four scope/unknown cases do not score semantic answers",
++                              "FR-04 explicitly has missing runtime version; current version is not silently substituted",
++                              "Single-thread Python BM25; future tensor methods must record actual device/threads/precision separately",
++                              "Tiny corpus latency is noisy and is not full-system performance",
++                              "No BGE/reranker/Paddle, generation, #13 integration or PM semantic gold review executed"]}
++    out.mkdir(parents=True)
++    save(out / "runtime-inputs.json", runtime_inputs)
++    save(out / "results.json", result)
++    (out / "runner-source.py").write_bytes(Path(__file__).read_bytes())
++    with (out / "results.csv").open("w", encoding="utf-8-sig", newline="") as stream:
++        fields = ["query_id", "method", "status", "hit_at_1", "recall_at_3", "mrr_at_3",
++                  "model_mix_rate_at_3", "version_mix_rate_at_3", "median_ms", "p95_ms", "failure_count", "scope_disposition"]
++        writer = csv.DictWriter(stream, fieldnames=fields)
++        writer.writeheader()
++        writer.writerows({k: r[k] for k in fields} for r in rows)
++    table = ["# BM25 개발 기준선 실제 실행", "", "기존 27개 사실 요약, 15문항 중 근거가 있는 11문항의 검색 지표다.", "",
++             f"- Hit@1: {summary['macro_hit_at_1']:.4f}", f"- Recall@3: {summary['macro_recall_at_3']:.4f}",
++             f"- MRR@3: {summary['macro_mrr_at_3']:.4f}",
++             f"- 실제 측정: {len(attempts)}회, 실패 {summary['failed_attempts']}회; warmup {len(warmups)}회 별도",
++             f"- 모델/버전 혼입 ID: {summary['foreign_model_ids_returned']}/{summary['wrong_version_ids_returned']}개",
++             "", "| 질문 | Hit@1 | Recall@3 | MRR@3 | 반환 근거 |", "|---|---|---|---|---|"]
++    for r in rows:
++        table.append(f"| {r['query_id']} | {r['hit_at_1']} | {r['recall_at_3']} | {r['mrr_at_3']} | {' / '.join(r['returned_evidence_ids']) or '없음'} |")
++    table += ["", "None은 순위 평가 제외다. 무정답 질의의 최종 답변·추가 조건 요청·금지 주장 준수는 미평가다.",
++              "FR-04의 미지정 과거 문서 버전은 별도 runtime input에서 null로 고정해 현재 문서 검색을 하지 않았다.",
++              "기존 tokenizer/BM25 공식과 점수 ID 순 정렬을 유지했다. 형태소 분석·질문/정답 기반 튜닝은 없다.",
++              "실패·반환 점수·질문별 반복 시간은 results.json에 있다. 개발 기준선이며 실제 고객 수요나 독립 평가 우위를 뜻하지 않는다.",
++              "Python BM25는 한 스레드/float64로 실행했다. FP32/4threads는 이후 tensor 모델 설정이며 두 종류를 동일하다고 표시하지 않는다.",
++              "새 출력 폴더 인자로 scripts/run_data003_bm25.py를 실행해 재현한다. 기존 준비/기존 bootstrap 결과를 덮어쓰지 않는다."]
++    (out / "README.md").write_text("\n".join(table) + "\n", encoding="utf-8")
++    print(json.dumps({"status": "executed", "summary": summary}, ensure_ascii=False))
++
++
++if __name__ == "__main__":
++    main()
+--- /dev/null
++++ b/scripts/run_data003_models.py
+@@ -0,0 +1,366 @@
++"""Offline CPU DATA003 retrieval and manual-crop recognition using locked models."""
++
++import argparse
++import csv
++import importlib.metadata
++import json
++import os
++import platform
++import random
++import re
++import statistics
++import time
++import unicodedata
++from datetime import datetime, timedelta, timezone
++from pathlib import Path
++from unittest.mock import patch
++
++from run_data003_bm25 import ROOT, digest, evaluate, machine_metrics, measure, percentile95, rank, read, save
++
++PREP = ROOT / "evals/data003-preparation/20261005"
++OCR = ROOT / "evals/data003-ocr-inputs/20261005-v2"
++DOWNLOAD = ROOT / "evals/data003-live/20261005/downloaded-models.json"
++
++
++def normalization(text):
++    return " ".join(unicodedata.normalize("NFC", text).split())
++
++
++def distance(left, right):
++    previous = list(range(len(right) + 1))
++    for index, first in enumerate(left, 1):
++        row = [index]
++        for offset, second in enumerate(right, 1):
++            row.append(min(row[-1] + 1, previous[offset] + 1, previous[offset - 1] + (first != second)))
++        previous = row
++    return previous[-1]
++
++
++def field_scores(region, recognized):
++    target = region["field_target"]
++    if target is None:
++        return {"numeric_correct": None, "numeric_total": 0, "numeric_field_correct": None,
++                "explicit_unit_correct": None, "unit_total": 0, "model_column_accuracy": None}
++    text = normalization(recognized)
++    # Only an explicit, source-preserved footnote is removed for typed-value scoring.
++    # CER always uses the complete recognition, including that footnote.
++    if "*" in region["gold_text"]:
++        text = re.sub(r"\*\d+$", "", text)
++    observed = [float(number) for number in re.findall(r"(?<![\w.])-?\d+(?:\.\d+)?", text)]
++    expected = target["value"] if isinstance(target["value"], list) else [target["value"]]
++    correct = sum(index < len(observed) and value == observed[index] for index, value in enumerate(expected))
++    unit_total = len(expected) if region["unit_in_crop"] else 0
++    units = re.findall(r"[A-Za-z]+|인용", text)
++    unit_correct = sum(unit == target["unit"] for unit in units) if unit_total else None
++    if unit_total:
++        unit_correct = min(unit_correct, unit_total)
++    return {"observed_values": observed, "numeric_correct": correct, "numeric_total": len(expected),
++            "numeric_field_correct": observed == expected, "observed_units": units,
++            "explicit_unit_correct": unit_correct, "unit_total": unit_total,
++            "manually_assigned_source_column": target.get("column"), "model_column_accuracy": None,
++            "column_note": "manual fixed crop; recognizer does not predict table/model column"}
++
++
++def checked_inputs():
++    manifest = read(PREP / "manifest.json")
++    for row in manifest["source_versions"] + manifest["output_versions"] + [manifest["generator"]]:
++        if digest(ROOT / row["path"]) != row["sha256"]:
++            raise ValueError(f"Frozen input mismatch: {row['path']}")
++    validation = read(PREP / "validation.json")
++    if validation["status"] != "pass" or validation["manifest_sha256"] != digest(PREP / "manifest.json"):
++        raise ValueError("Preparation validation is stale")
++    models = read(DOWNLOAD)
++    if models["status"] != "verified":
++        raise ValueError("Downloaded models have not been verified")
++    for model in models["models"]:
++        for file in model["files"]:
++            if digest(ROOT / model["snapshot"] / file["name"]) != file["sha256"]:
++                raise ValueError("Local model file changed")
++    return models
++
++
++def environment(distributions):
++    return {"python": platform.python_version(), "os": platform.platform(), "cpu": platform.processor(),
++            "logical_cpus": os.cpu_count(), "device": "CPU", "cpu_threads": 4,
++            "versions": {name: importlib.metadata.version(name) for name in distributions},
++            **machine_metrics(), "background_load": "shared PC external activity uncontrolled",
++            "gpu_used": False}
++
++
++def scoped(query, evidence):
++    if not query["model_id"] or not query["document_version"]:
++        return [], "request_document_version"
++    found = [item for item in evidence if item["model_id"] == query["model_id"]
++             and item["document_version"] == query["document_version"]]
++    return found, "retrieved" if found else "no_evidence_for_scope"
++
++
++def sorted_rows(rows, scores, k=3):
++    ordered = sorted(zip(rows, scores), key=lambda pair: (-pair[1], pair[0]["id"]))
++    return [{"id": item["id"], "score": float(score), "model_id": item["model_id"],
++             "document_version": item["document_version"]} for item, score in ordered[:k]]
++
++
++def run_retrieval(out, models):
++    import torch
++    from torch.nn import functional
++    from transformers import AutoModel, AutoModelForSequenceClassification, AutoTokenizer
++
++    torch.set_num_threads(4)
++    torch.set_num_interop_threads(1)
++    torch.manual_seed(20261005)
++    corpus, queries, protocol = [read(PREP / name) for name in ("corpus.json", "queries.json", "protocol.json")]
++    evidence = corpus["evidence"]
++    runtime_inputs = read(ROOT / "evals/data003-execution/20261005-cpu-baseline-v3/runtime-inputs.json")
++    runtime_map = {item["id"]: item for item in runtime_inputs}
++    model_map = {model["model_id"]: model for model in models["models"]}
++    embed_path = ROOT / model_map["BAAI/bge-m3"]["snapshot"]
++    rerank_path = ROOT / model_map["BAAI/bge-reranker-v2-m3"]["snapshot"]
++    started = time.perf_counter()
++    tokenizer = AutoTokenizer.from_pretrained(embed_path, local_files_only=True, trust_remote_code=False)
++    encoder = AutoModel.from_pretrained(embed_path, local_files_only=True, use_safetensors=False,
++                                       trust_remote_code=False).float().eval()
++    embed_load_ms = (time.perf_counter() - started) * 1000
++    started = time.perf_counter()
++    rerank_tokenizer = AutoTokenizer.from_pretrained(rerank_path, local_files_only=True, trust_remote_code=False)
++    reranker = AutoModelForSequenceClassification.from_pretrained(
++        rerank_path, local_files_only=True, use_safetensors=True, trust_remote_code=False).float().eval()
++    rerank_load_ms = (time.perf_counter() - started) * 1000
++    lengths = {"corpus": {item["id"]: len(tokenizer(item["text"])["input_ids"]) for item in evidence},
++               "queries": {item["id"]: len(tokenizer(item["query"])["input_ids"]) for item in runtime_inputs},
++               "reranker_pairs": {item["id"]: [len(rerank_tokenizer(item["query"], row["text"])["input_ids"])
++                                                  for row in scoped(item, evidence)[0]] for item in runtime_inputs}}
++    all_lengths = list(lengths["corpus"].values()) + list(lengths["queries"].values())
++    all_lengths += [value for values in lengths["reranker_pairs"].values() for value in values]
++    if max(all_lengths) > 256:
++        save(out / "truncation-failure.json", lengths)
++        raise ValueError("Protocol forbids unreported truncation; revise protocol and rerun all methods")
++
++    def encode(texts):
++        batches = []
++        with torch.inference_mode():
++            for offset in range(0, len(texts), 8):
++                inputs = tokenizer(texts[offset:offset + 8], padding=True, truncation=True,
++                                   max_length=256, return_tensors="pt")
++                hidden = encoder(**inputs).last_hidden_state[:, 0]
++                batches.append(functional.normalize(hidden, p=2, dim=1))
++        return torch.cat(batches)
++
++    started = time.perf_counter()
++    embeddings = encode([row["text"] for row in evidence])
++    index_ms = (time.perf_counter() - started) * 1000
++    embedding_map = {row["id"]: embeddings[index] for index, row in enumerate(evidence)}
++
++    def learned_rank(query_input, unused_evidence, rerank=False):
++        rows, disposition = scoped(query_input, evidence)
++        if not rows:
++            return [], disposition
++        query_embedding = encode([query_input["query"]])
++        scoped_vectors = torch.stack([embedding_map[row["id"]] for row in rows])
++        scores = (query_embedding @ scoped_vectors.T)[0].tolist()
++        if not rerank:
++            return sorted_rows(rows, scores), disposition
++        candidates = [row for row, _ in sorted(zip(rows, scores), key=lambda pair: (-pair[1], pair[0]["id"]))[:10]]
++        inputs = rerank_tokenizer([[query_input["query"], row["text"]] for row in candidates],
++                                 padding=True, truncation=True, max_length=256, return_tensors="pt")
++        with torch.inference_mode():
++            reranked_scores = reranker(**inputs).logits.view(-1).tolist()
++        return sorted_rows(candidates, reranked_scores), disposition
++
++    methods = [("bm25_filtered", rank), ("bge_m3_filtered", learned_rank),
++               ("bge_m3_filtered_reranker", lambda query, rows: learned_rank(query, rows, rerank=True))]
++    order = list(runtime_map)
++    random.Random(protocol["retrieval"]["latency"]["seed"]).shuffle(order)
++    results, summaries, warmups = [], {}, {}
++    for method, ranker in methods:
++        print(json.dumps({"stage": "measure", "method": method}), flush=True)
++        warmups[method] = [measure(runtime_map[qid], evidence, ranker) for qid in order[:2]]
++        attempts = []
++        for repeat in range(5):
++            for qid in order:
++                attempts.append({"query_id": qid, "repeat": repeat + 1,
++                                 **measure(runtime_map[qid], evidence, ranker)})
++        rows = []
++        for query in queries:
++            measured = [attempt for attempt in attempts if attempt["query_id"] == query["id"]]
++            successful = [attempt for attempt in measured if attempt["status"] == "success"]
++            observed = successful[0]["ranking"] if successful else []
++            scores = [evaluate(attempt["ranking"], query) for attempt in measured]
++            metrics = {key: statistics.mean(score[key] for score in scores) if query["relevant_evidence_ids"]
++                       else None for key in ("hit_at_1", "recall_at_3", "mrr_at_3")}
++            samples = [attempt["elapsed_ms"] for attempt in successful]
++            rows.append({"query_id": query["id"], "method": method, "ranking": observed, **metrics,
++                         "ranking_metric_applicable": bool(query["relevant_evidence_ids"]),
++                         "scope_disposition": successful[0]["scope_disposition"] if successful else "failed",
++                         "median_ms": statistics.median(samples) if samples else None, "p95_ms": percentile95(samples),
++                         "failure_count": len(measured) - len(successful), "latency_attempts": measured,
++                         "stable_ranking_across_repeats": all(attempt["ranking"] == observed for attempt in successful),
++                         "semantic_response_evaluated": False})
++        supported = [row for row in rows if row["ranking_metric_applicable"]]
++        supported_ids = {row["query_id"] for row in supported}
++        times = [attempt["elapsed_ms"] for attempt in attempts
++                 if attempt["query_id"] in supported_ids and attempt["status"] == "success"]
++        summaries[method] = {"macro_hit_at_1": statistics.mean(row["hit_at_1"] for row in supported),
++                             "macro_recall_at_3": statistics.mean(row["recall_at_3"] for row in supported),
++                             "macro_mrr_at_3": statistics.mean(row["mrr_at_3"] for row in supported),
++                             "supported_questions": len(supported), "excluded_no_gold_questions": 4,
++                             "measured_attempts": len(attempts), "failed_attempts": sum(a["status"] != "success" for a in attempts),
++                             "median_ms": statistics.median(times) if times else None, "p95_ms": percentile95(times),
++                             "foreign_model_ids": sum(item["model_id"] != runtime_map[row["query_id"]]["model_id"]
++                                                      for row in rows for attempt in row["latency_attempts"] for item in attempt["ranking"]),
++                             "wrong_version_ids": sum(item["document_version"] != runtime_map[row["query_id"]]["document_version"]
++                                                      for row in rows for attempt in row["latency_attempts"] for item in attempt["ranking"])}
++        results.extend(rows)
++        save(out / "progress.json", {"summary": summaries, "results": results})
++    return {"status": "executed", "execution_kind": "live_model", "split": "development",
++            "task_id": "P2-DATA-003", "summary": summaries, "results": results, "warmups": warmups,
++            "query_order": order, "runtime_inputs": runtime_inputs, "token_lengths": lengths,
++            "environment": environment(["torch", "transformers", "huggingface-hub", "numpy", "safetensors"]),
++            "precision": "BM25 Python double, BGE/reranker float32", "torch_interop_threads": 1,
++            "timing": {"embedding_load_ms": embed_load_ms, "reranker_load_ms": rerank_load_ms,
++                       "index_build_ms": index_ms, "boundary": "query embedding + exact scope/rank + optional reranker",
++                       "rss_scope": "whole combined benchmark process; not method-specific memory",
++                       "percentile": "nearest rank", "latency_denominator": "supported-query successful attempts only"},
++            "limitations": ["27 summaries/15 authored queries, not full manuals or independent final evaluation",
++                            "No semantic answers for four no-gold queries; FR-04 runtime revision null",
++                            "Tiny corpus; shared CPU background load uncontrolled; sequential method order",
++                            "Structural filtering is policy, not learned model quality",
++                            "#13 integration and PM semantic gold/output review not executed"]}
++
++
++def run_ocr(out, models):
++    from paddleocr import TextRecognition
++
++    manifest = read(OCR / "crop-manifest.json")
++    if read(OCR / "visual-review.json")["status"] != "pass":
++        raise ValueError("OCR input visual review missing")
++    model_info = next(model for model in models["models"] if model["model_id"].startswith("PaddlePaddle/"))
++    started = time.perf_counter()
++    # Paddle's Windows native file reader cannot open this Unicode absolute path.
++    # Same files and hashes are used through ASCII paths relative to the worktree.
++    model = TextRecognition(model_name="korean_PP-OCRv5_mobile_rec", model_dir=model_info["snapshot"],
++                            device="cpu", enable_mkldnn=False, cpu_threads=4)
++    load_ms = (time.perf_counter() - started) * 1000
++    regions = [(case, region) for case in manifest["cases"] for region in case["regions"]]
++    for _, region in regions:
++        if digest(ROOT / region["crop_path"]) != region["crop_sha256"]:
++            raise ValueError("Frozen OCR crop changed")
++    warmups = []
++    for _, region in regions[:2]:
++        started = time.perf_counter()
++        prediction = next(iter(model.predict(input=region["crop_path"], batch_size=1)))
++        warmups.append({"region_id": region["id"], "recognized": prediction["rec_text"],
++                        "elapsed_ms": (time.perf_counter() - started) * 1000})
++    results = []
++    for case, region in regions:
++        print(json.dumps({"stage": "recognize", "region_id": region["id"]}), flush=True)
++        attempts = []
++        for repeat in range(5):
++            started = time.perf_counter()
++            try:
++                prediction = next(iter(model.predict(input=region["crop_path"], batch_size=1)))
++                observed = prediction["rec_text"]
++                attempts.append({"repeat": repeat + 1, "status": "success", "recognized": observed,
++                                 "confidence": float(prediction["rec_score"]),
++                                 "elapsed_ms": (time.perf_counter() - started) * 1000, "error": None})
++            except (RuntimeError, ValueError, TypeError, LookupError, OSError, StopIteration) as error:
++                attempts.append({"repeat": repeat + 1, "status": "failed", "recognized": "",
++                                 "confidence": None, "elapsed_ms": (time.perf_counter() - started) * 1000,
++                                 "error": f"{type(error).__name__}: {error}"})
++        successful = [attempt for attempt in attempts if attempt["status"] == "success"]
++        observed = successful[0]["recognized"] if successful else ""
++        gold = normalization(region["gold_text"])
++        edits = distance(gold, normalization(observed))
++        samples = [attempt["elapsed_ms"] for attempt in successful]
++        results.append({"case_id": case["id"], "region_id": region["id"], "status": "executed" if successful else "failed",
++                        "source_model_id": case["model_id"], "document_version": case["document_version"], "page": case["page"],
++                        "crop_sha256": region["crop_sha256"], "gold_text": region["gold_text"], "recognized": observed,
++                        "normalized_gold_length": len(gold), "edit_distance": edits, "CER": edits / len(gold),
++                        "normalized_exact_match": gold == normalization(observed), **field_scores(region, observed),
++                        "median_ms": statistics.median(samples) if samples else None, "p95_ms": percentile95(samples),
++                        "failure_count": len(attempts) - len(successful), "attempts": attempts,
++                        "stable_text_across_repeats": all(a["recognized"] == observed for a in successful)})
++        save(out / "progress.json", {"results": results})
++    numeric_total = sum(row["numeric_total"] for row in results)
++    unit_total = sum(row["unit_total"] for row in results)
++    attempts = [attempt for row in results for attempt in row["attempts"]]
++    timings = [attempt["elapsed_ms"] for attempt in attempts if attempt["status"] == "success"]
++    summary = {"cases": len(manifest["cases"]), "regions": len(results), "measured_attempts": len(attempts),
++               "failed_attempts": sum(attempt["status"] != "success" for attempt in attempts),
++               "macro_CER": statistics.mean(row["CER"] for row in results),
++               "micro_CER": sum(row["edit_distance"] for row in results) / sum(row["normalized_gold_length"] for row in results),
++               "normalized_exact_matches": sum(row["normalized_exact_match"] for row in results),
++               "numeric_correct": sum(row["numeric_correct"] or 0 for row in results), "numeric_total": numeric_total,
++               "numeric_value_accuracy": sum(row["numeric_correct"] or 0 for row in results) / numeric_total,
++               "numeric_fields_correct": sum(row["numeric_field_correct"] is True for row in results),
++               "numeric_fields_total": sum(row["numeric_total"] > 0 for row in results),
++               "explicit_unit_correct": sum(row["explicit_unit_correct"] or 0 for row in results), "unit_total": unit_total,
++               "explicit_unit_accuracy": sum(row["explicit_unit_correct"] or 0 for row in results) / unit_total,
++               "model_column_accuracy": None, "median_ms": statistics.median(timings), "p95_ms": percentile95(timings)}
++    return {"status": "executed", "execution_kind": "live_model", "split": "development", "task_id": "P2-DATA-003",
++            "method": "paddle_manual_crop_recognition", "summary": summary, "results": results, "warmups": warmups,
++            "model_load_ms": load_ms, "environment": environment(["paddlepaddle", "paddleocr", "paddlex", "pillow", "numpy"]),
++            "settings": {"enable_mkldnn": False, "cpu_threads": 4, "dpi": 300, "batch_size": 1,
++                         "rotation": 0, "denoise": False, "normalization": "NFC and whitespace collapse only for CER"},
++            "crop_manifest_sha256": digest(OCR / "crop-manifest.json"), "visual_review_sha256": digest(OCR / "visual-review.json"),
++            "comparison": read(OCR / "text-extraction-comparison.json"),
++            "limitations": ["Manual crop segmentation/column assignment, not automatic page layout or column prediction",
++                            "Model column accuracy remains null; correct value from a manually assigned column is not layout accuracy",
++                            "MW dimensions unit outside crop: excluded from explicit unit score; original table context preserves mm",
++                            "PDF baseline checks phrase availability only; does not claim field/CER equivalence",
++                            "Real text PDFs rendered as images, not newly collected scans; no rotation/noise robustness tested",
++                            "Confidence is model output, not verified semantic accuracy; #13 integration/PM review pending"]}
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("kind", choices=["retrieval", "ocr"])
++    parser.add_argument("--output", type=Path, required=True)
++    args = parser.parse_args()
++    out = args.output.resolve()
++    if not out.is_relative_to(ROOT / "evals") or out.exists():
++        raise ValueError("Choose a fresh output directory under this worktree's evals")
++    os.chdir(ROOT)
++    task_cache = ROOT / "private/model-runtime"
++    os.environ.update(HF_HOME=str(task_cache / "huggingface"), HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1",
++                      HF_HUB_DISABLE_TELEMETRY="1", TOKENIZERS_PARALLELISM="false", OMP_NUM_THREADS="4",
++                      PADDLE_PDX_CACHE_HOME=str(task_cache / "paddlex"), PADDLE_HOME=str(task_cache / "paddle"),
++                      PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK="True", CUDA_VISIBLE_DEVICES="")
++    models = checked_inputs()
++    out.mkdir(parents=True)
++    if args.kind == "retrieval":
++        result = run_retrieval(out, models)
++    else:
++        # Paddle 3.0's legacy dataset import ignores PADDLE_HOME and calls
++        # expanduser('~/.cache/paddle'). Redirect tilde paths only for this call;
++        # do not alter system HOME/USERPROFILE, shared caches or installed code.
++        task_legacy_home = task_cache / "legacy-home"
++        task_legacy_home.mkdir(parents=True, exist_ok=True)
++        original_expanduser = os.path.expanduser
++
++        def task_expanduser(path):
++            value = os.fspath(path)
++            if isinstance(value, str) and (value == "~" or value.startswith(("~/", "~\\"))):
++                return str(task_legacy_home / value[2:]) if value != "~" else str(task_legacy_home)
++            return original_expanduser(path)
++
++        with patch("os.path.expanduser", task_expanduser):
++            result = run_ocr(out, models)
++        result["legacy_cache_isolation"] = "process-local tilde expansion redirected to private/model-runtime/legacy-home"
++    result.update(models=models["models"], script_sha256=digest(__file__),
++                  protocol_sha256=digest(PREP / "protocol.json"), corpus_sha256=digest(PREP / "corpus.json"),
++                  queries_sha256=digest(PREP / "queries.json"), downloaded_manifest_sha256=digest(DOWNLOAD),
++                  created_at_kst=datetime.now(timezone(timedelta(hours=9))).isoformat(), formal_state_changed=False)
++    save(out / "results.json", result)
++    (out / "runner-source.py").write_bytes(Path(__file__).read_bytes())
++    fields = list(result["results"][0])
++    fields = [field for field in fields if field not in ("ranking", "attempts", "latency_attempts")]
++    with (out / "results.csv").open("w", encoding="utf-8-sig", newline="") as stream:
++        writer = csv.DictWriter(stream, fieldnames=fields)
++        writer.writeheader()
++        writer.writerows({key: row.get(key) for key in fields} for row in result["results"])
++    print(json.dumps({"stage": "complete", "kind": args.kind, "summary": result["summary"]}, ensure_ascii=False), flush=True)
++
++
++if __name__ == "__main__":
++    main()
+--- /dev/null
++++ b/scripts/summarize_data003_live.py
+@@ -0,0 +1,190 @@
++"""Verify immutable live DATA003 outputs and write a local review report."""
++
++import argparse
++import csv
++import json
++import statistics
++from datetime import datetime, timedelta, timezone
++from pathlib import Path
++
++from run_data003_bm25 import ROOT, digest, evaluate, percentile95, read, save
++from run_data003_models import distance, normalization
++
++PREP = ROOT / "evals/data003-preparation/20261005"
++OUT = ROOT / "evals/data003-live/20261005"
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--retrieval", type=Path, required=True)
++    parser.add_argument("--ocr", type=Path, required=True)
++    parser.add_argument("--source-directory", type=Path, required=True)
++    args = parser.parse_args()
++    args.retrieval = args.retrieval.resolve()
++    args.ocr = args.ocr.resolve()
++    retrieval_path, ocr_path = args.retrieval / "results.json", args.ocr / "results.json"
++    retrieval, ocr = read(retrieval_path), read(ocr_path)
++    checks = []
++
++    def check(name, condition):
++        checks.append({"name": name, "passed": bool(condition)})
++
++    manifest = read(PREP / "manifest.json")
++    for file in manifest["source_versions"] + manifest["output_versions"] + [manifest["generator"]]:
++        check(f"frozen input {file['path']}", digest(ROOT / file["path"]) == file["sha256"])
++    for source in manifest["original_sources"]:
++        check(f"original PDF {source['model_id']}", digest(args.source_directory / source["pdf_file"]) == source["pdf_sha256"])
++        check(f"original page cache {source['model_id']}",
++              digest(args.source_directory / source["page_cache_file"]) == source["page_cache_sha256"])
++    queries = {q["id"]: q for q in read(PREP / "queries.json")}
++    runtime = {q["id"]: q for q in retrieval["runtime_inputs"]}
++    check("no gold fields in runtime query", all(set(q) == {"id", "query", "model_id", "document_version"} for q in runtime.values()))
++    check("unidentified older revision remains null", runtime["FR-04"]["document_version"] is None)
++    for result, path in ((retrieval, args.retrieval), (ocr, args.ocr)):
++        check(f"frozen runner {path.name}", digest(path / "runner-source.py") == result["script_sha256"])
++        check(f"protocol {path.name}", digest(PREP / "protocol.json") == result["protocol_sha256"])
++        check(f"corpus {path.name}", digest(PREP / "corpus.json") == result["corpus_sha256"])
++        check(f"queries {path.name}", digest(PREP / "queries.json") == result["queries_sha256"])
++        check(f"live CPU development {path.name}", result["execution_kind"] == "live_model" and result["split"] == "development"
++              and result["environment"]["device"] == "CPU" and not result["formal_state_changed"])
++        with (path / "results.csv").open(encoding="utf-8-sig", newline="") as stream:
++            check(f"CSV row count {path.name}", len(list(csv.DictReader(stream))) == len(result["results"]))
++    locked = {model["model_id"]: model for model in read(PREP / "protocol.json")["models"]}
++    for model in read(OUT / "downloaded-models.json")["models"]:
++        check(f"model pin/license {model['model_id']}", model["revision"] == locked[model["model_id"]]["revision"]
++              and model["license"].lower() == locked[model["model_id"]]["license"].lower())
++        for file in model["files"]:
++            check(f"verified weight/config {model['model_id']}/{file['name']}", file["official_hash_check"]
++                  and digest(ROOT / model["snapshot"] / file["name"]) == file["sha256"])
++    for method, summary in retrieval["summary"].items():
++        rows = [row for row in retrieval["results"] if row["method"] == method]
++        check(f"15 questions x5 {method}", len(rows) == 15 and all(len(row["latency_attempts"]) == 5 for row in rows))
++        check(f"11 supported /4 no-gold {method}", sum(row["ranking_metric_applicable"] for row in rows) == 11)
++        for row in rows:
++            q = queries[row["query_id"]]
++            calculated = [evaluate(attempt["ranking"], q) for attempt in row["latency_attempts"]]
++            check(f"metrics {method}/{row['query_id']}", all(
++                row[key] == (statistics.mean(score[key] for score in calculated) if q["relevant_evidence_ids"] else None)
++                for key in ("hit_at_1", "recall_at_3", "mrr_at_3")))
++            check(f"scope {method}/{row['query_id']}", all(
++                item["model_id"] == runtime[row["query_id"]]["model_id"]
++                and item["document_version"] == runtime[row["query_id"]]["document_version"]
++                for attempt in row["latency_attempts"] for item in attempt["ranking"]))
++        supported = [row for row in rows if row["ranking_metric_applicable"]]
++        times = [a["elapsed_ms"] for row in supported for a in row["latency_attempts"] if a["status"] == "success"]
++        check(f"latency {method}", summary["median_ms"] == statistics.median(times) and summary["p95_ms"] == percentile95(times))
++    max_length = max([*retrieval["token_lengths"]["corpus"].values(), *retrieval["token_lengths"]["queries"].values(),
++                      *[value for values in retrieval["token_lengths"]["reranker_pairs"].values() for value in values]])
++    check("no tokenizer truncation", max_length <= 256)
++    regions = {region["id"]: region for case in read(ROOT / "evals/data003-ocr-inputs/20261005-v2/crop-manifest.json")["cases"]
++               for region in case["regions"]}
++    check("14 OCR inputs x5", len(ocr["results"]) == 14 and all(len(row["attempts"]) == 5 for row in ocr["results"]))
++    for row in ocr["results"]:
++        region = regions[row["region_id"]]
++        check(f"crop preserved {row['region_id']}", digest(ROOT / region["crop_path"]) == row["crop_sha256"] == region["crop_sha256"])
++        check(f"CER {row['region_id']}", row["CER"] == distance(normalization(row["gold_text"]), normalization(row["recognized"]))
++              / len(normalization(row["gold_text"])))
++        check(f"column unknown {row['region_id']}", row["model_column_accuracy"] is None)
++        if not region["unit_in_crop"]:
++            check(f"no invented unit {row['region_id']}", row["unit_total"] == 0 and row["explicit_unit_correct"] is None)
++    check("old BM25 failure preserved", next(row for row in read(ROOT / "evals/data003-execution/20261005-cpu-baseline-v3/results.json")["results"]
++                                           if row["query_id"] == "MW-01")["hit_at_1"] == 0)
++    failed = [check for check in checks if not check["passed"]]
++    if failed:
++        save(OUT / "verification-failed.json", {"status": "failed", "checks": checks, "errors": failed})
++        raise ValueError("Live output verification failed")
++
++    lines = ["# #14 검색·재정렬·OCR 실제 비교와 검토", "", "사용자가 지정한 환경 확인→실제 비교→검토 자료 작성을 로컬에서 수행했다.",
++             "입력은 기존 질문15개·사실 요약27개와 원문6페이지의 수동 인식 영역14개다. 개발 평가이며 #13 통합·독립 최종 평가·PM 완료와 구분한다.",
++             "사용자 추가 지시에 따라 PR·이슈·push·상태 보고 등 원격 게시를 하지 않았다.", "", "## 환경·모델 확인", "",
++             "기존 PC Python3.11 환경에는 실모델 패키지가 없었고 연구실 live SSH 연결 정보도 없었다. 작업 공간의 private/model-runtime에 전용 CPU 가상환경2개와 가중치를 준비했다.",
++             "기존 환경/시스템 패키지·GPU·다른 작업 공간은 변경하지 않았다. 공식 HF API의 revision/라이선스와 모든 내려받은 파일의 공식 LFS/Git 해시를 대조했다.",
++              "Windows의 초기 HF 캐시 심볼릭 링크 권한 실패는 일반 파일을 쓰는 local_dir로 해결했다. 관리자 권한·개발자 모드를 바꾸지 않았다.",
++              "Paddle 첫 import의 공용 dataset 캐시 쓰기 제한과 Windows native reader의 한글 절대경로 실패는 각각 호출 범위의 tilde 캐시 격리와 같은 파일의 ASCII 상대경로로 해결했다. HOME/USERPROFILE·설치된 라이브러리 코드·가중치·crop은 바꾸지 않았다. 초기 실패 로그도 private에 보존한다.",
++             "", "| 모델 | revision | 라이선스 |", "|---|---|---|"]
++    for model in retrieval["models"]:
++        lines.append(f"| [{model['model_id']}](https://huggingface.co/{model['model_id']}/tree/{model['revision']}) | {model['revision']} | {model['license']} |")
++    env = retrieval["environment"]
++    lines += ["", f"CPU {env['cpu']}, RAM {env['ram_gb']:.2f}GiB, Python {env['python']}. torch {env['versions']['torch']}/Transformers {env['versions']['transformers']}, CPU4threads/FP32.",
++              "BM25는 Python float64/1thread다. 모델 로딩과 임베딩 인덱스 구축은 질의 지연에서 분리했고, 공유PC 외부 부하는 통제하지 못했다.",
++              "환경별 전체 의존성 freeze와 설치 로그는 연결된 근거에 보관한다. 연구실 서버 연결 성공을 주장하지 않는다.",
++              "", "## 검색 비교", "", "같은 모델·정확한 문서 개정으로 필터한 뒤 검색한다. 모든 방법15문항×5회, warmup2회 별도. 순위 평균은 gold11문항이며 무gold4문항의 최종 의미 답변은 평가하지 않았다.",
++              "", "| 방법 | Hit@1 | Recall@3 | MRR@3 | median ms | p95 ms | 실패/75 |", "|---|---:|---:|---:|---:|---:|---:|"]
++    names = {"bm25_filtered": "BM25", "bge_m3_filtered": "BGE-M3", "bge_m3_filtered_reranker": "BGE-M3 + 재정렬"}
++    for method, summary in retrieval["summary"].items():
++        lines.append(f"| {names[method]} | {summary['macro_hit_at_1']:.4f} | {summary['macro_recall_at_3']:.4f} | {summary['macro_mrr_at_3']:.4f} | {summary['median_ms']:.3f} | {summary['p95_ms']:.3f} | {summary['failed_attempts']} |")
++    bm25_rows = {row["query_id"]: row for row in retrieval["results"] if row["method"] == "bm25_filtered"}
++    for method in ("bge_m3_filtered", "bge_m3_filtered_reranker"):
++        method_rows = [row for row in retrieval["results"] if row["method"] == method and row["ranking_metric_applicable"]]
++        improved = [row["query_id"] for row in method_rows if row["hit_at_1"] > bm25_rows[row["query_id"]]["hit_at_1"]]
++        regressed = [row["query_id"] for row in method_rows if row["hit_at_1"] < bm25_rows[row["query_id"]]["hit_at_1"]]
++        lines += ["", f"{names[method]}의 BM25 대비 첫순위 개선 문항: {', '.join(improved) or '없음'}; 악화: {', '.join(regressed) or '없음'}."]
++    dense = retrieval["summary"]["bge_m3_filtered"]
++    rerank = retrieval["summary"]["bge_m3_filtered_reranker"]
++    if dense["macro_hit_at_1"] == rerank["macro_hit_at_1"]:
++        lines += ["재정렬을 더해도 이번 개발셋의 Hit@1이 늘지 않았다. 지연과 구현 복잡도를 추가하는 재정렬의 채택 근거는 아직 부족하다."]
++    else:
++        lines += ["재정렬의 첫순위 결과가 dense와 달랐다. 질문별 원문·조건 정확성과 추가 지연을 검토한 뒤 채택을 판단한다."]
++    lines += ["", f"실제 tokenizer 최대 길이 {max_length}/256, truncation 없음. 모델·버전 혼입은 각 방법 원시 반복에서 검사했다.",
++              f"모델 load: BGE {retrieval['timing']['embedding_load_ms']:.1f}ms, 재정렬 {retrieval['timing']['reranker_load_ms']:.1f}ms; index {retrieval['timing']['index_build_ms']:.1f}ms.",
++              f"프로세스 전체 peak working set {env['peak_rss_mb']:.1f}MiB: 두 모델을 함께 올린 benchmark 프로세스의 값이며 방법별 메모리로 해석하지 않는다.",
++              "작은 curated corpus·수동 개발 질문의 결과라 전체 매뉴얼/운영 처리량/독립 모델 우열로 확대하지 않는다.",
++              "", "### BM25 MW-01 실패 분석", "",
++              "질문: ‘수동조리에서 선택할 수 있는 출력은 몇 W야?’ / 정답 근거 M11: 선택 가능한200/400/600/800/1000W.",
++              "Unicode word tokenizer에서 질의는 수동조리에서·선택할·수·있는·출력은·몇·w야로 나뉜다. M11과 정확히 일치하는 token이0개다.",
++              "M06 ‘최대 고주파 출력1000W’의 조건 문구에 있는 ‘수’만 일치해 점수2.1444로1위가 됐다. 나머지0점의 ID 정렬까지 겹쳐 M11이 상위3개 밖으로 밀렸다.",
++              "따라서 단순 ‘출력’ 중복보다 한국어 조사·어형/단위 결합과 의미 없는 공통 token에 의존한 것이 직접 원인이다. 기존 gold/corpus/tokenizer를 정답에 맞춰 고치지 않았다.",
++              "", "| 방법 | MW-01 상위3 근거 | Hit@1 |", "|---|---|---:|"]
++    for row in retrieval["results"]:
++        if row["query_id"] == "MW-01":
++            lines.append(f"| {names[row['method']]} | {' / '.join(item['id'] for item in row['ranking'])} | {row['hit_at_1']} |")
++    lines += ["", "## OCR 실측과 PDF 추출 대조", ""]
++    summary = ocr["summary"]
++    lines += [f"Paddle은14영역×5회={summary['measured_attempts']}회, warmup2회 별도. 오류 {summary['failed_attempts']}회.",
++              f"NFC/공백 정규화 exact {summary['normalized_exact_matches']}/14, macro CER {summary['macro_CER']:.4f}, micro CER {summary['micro_CER']:.4f}.",
++              f"숫자값 {summary['numeric_correct']}/{summary['numeric_total']}, 숫자 필드 전체일치 {summary['numeric_fields_correct']}/{summary['numeric_fields_total']}, crop에 보이는 명시 단위 {summary['explicit_unit_correct']}/{summary['unit_total']}.",
++              f"warm 인식 median {summary['median_ms']:.3f}ms / p95 {summary['p95_ms']:.3f}ms, 모델 load {ocr['model_load_ms']:.1f}ms.",
++              "원문에 있는 ×/소수점/괄호/각주를 CER에서 삭제하지 않았다. 숫자 채점에서만 원문의 명시적 *1 각주를 값에서 구분했다.",
++              "오류를 결과에 맞춰 정규화하지 않았다. 실제1000 W∗1의 ∗는 원문 gold의 *와 달라 CER 오류이며, 고정 ASCII 각주 분리 규칙이 ∗1을 분리하지 못해 숫자 필드 전체일치도 실패했다. 본값1000이 맞다는 것과 각주/값 분리가 정확하다는 것을 구분한다.",
++              "MW 외형의 mm은 표 머리글에 있어 해당 crop의 단위 점수에서 제외했다. 모델/열 자동 연결 정확도는null이다. 수동 crop 좌표가 올바른 열을 지정했다는 것을 자동 layout 성능으로 바꾸지 않았다.",
++              "", "| 영역 | 원문 짧은 정답 | 실제 인식 | CER | 숫자 필드 일치 | 명시 단위 정답/전체 |", "|---|---|---|---:|---|---|"]
++    for row in ocr["results"]:
++        safe = lambda text: text.replace("|", "\\|").replace("\n", " ")
++        lines.append(f"| {row['region_id']} | {safe(row['gold_text'])} | {safe(row['recognized'])} | {row['CER']:.4f} | {row['numeric_field_correct']} | {row['explicit_unit_correct']}/{row['unit_total']} |")
++    mismatches = [row for row in ocr["results"] if not row["normalized_exact_match"]]
++    lines += ["", "문자 불일치 영역: " + ", ".join(row["region_id"] for row in mismatches) + ". 원시 인식과 실패는 위 표/JSON에 그대로 보존했다."]
++    lines += ["", "pypdf는 원문14구절 모두를 추출 전문에서 찾았다. 이는 구절 존재 검사이며 CER·필드/단위·열 연결 정확도가 아니다. Paddle crop CER와 같은 분모의100% parser 성능으로 비교하지 않는다.",
++              "텍스트가 있는 현3개 PDF는 parser 우선이 합리적이다. OCR은 텍스트가 없거나 추출이 실패하는 페이지의 대체 후보로 두되, 실제 스캔/기울임/잡음/전체 페이지 검출·표 열 연결은 추가 검증이 필요하다.",
++              "", "## 검토 의견과 남은 일", "",
++              "검색은 BM25 기준선을 유지하고 위 질문별 dense/reranker 순위 차이를 PM이 원문과 대조해 검토한다. 이번 개발 평균만으로 운영 모델을 확정하지 않는다.",
++              "이번 자료셋의 #13 개발 연결 후보는 BGE-M3 dense다. BM25가 놓친 MW-01을 회복했고 다른 gold 질문은 악화하지 않았다. 재정렬 포함 전체 질의 중앙값은 약6초이고 같은 첫순위 정확도여서 현 조건의 기본 연결 후보에서 보류한다. 별도 자료·하드웨어에서는 다시 검증해야 한다.",
++              "BM25 개선은 형태소/단위 처리와 일반적인 불용어 정책을 별도 protocol에서 설계하고, 현재15문항을 튜닝 전용으로 전환한 뒤 새 독립 질의로 검증해야 한다. 이번 비교 중 tokenizer를 변경하지 않았다.",
++              "남은 정식 #14 작업: #13 실제 처리 출력 연결→실제 근거/조건·무정답 의미 검토→PM 인수·검수·병합·통합 확인. 원격 게시는 사용자가 요청할 때 수행한다.",
++              "현재 사용자 직접 해야 할 일은 없다. 연구실 결과를 별도로 재현하려면 접속 환경이 추가로 필요하지만 이번 CPU 실측은 로컬에서 수행했다.",
++              "", "## 재현·증거", "",
++              f"- [검색 원시 결과]({args.retrieval.relative_to(OUT).as_posix()}/results.json)",
++              f"- [OCR 원시 결과]({args.ocr.relative_to(OUT).as_posix()}/results.json)",
++              "- [파일·공식 모델 hash](downloaded-models.json), [환경 확인](online-preflight.json), [BM25 원인 계산](bm25-mw01-analysis.json)",
++              "- [실행/검사 기록](execution-checks.json), [무결성 검증](verification.json)",
++              "", "전용 retrieval-venv의 Python으로 scripts/run_data003_models.py retrieval --output 새-evals폴더, ocr-venv의 Python으로 같은 script ocr --output 새-evals폴더를 실행한다.",
++              "실측 runner는 offline/local_files_only이며 자동 추가 모델 다운로드가 없다. 기존 결과를 덮어쓰지 않는다."]
++    lines += ["", "## 검사 결과", "",
++              f"입력·원문·모델 파일·실제 지표/CSV·실패 보존 무결성 {len(checks)}항목 PASS. 신규9시험·기존BM25 8시험·새 코드Ruff·계약·phase2 validate·동일 지침 검사가 통과했다.",
++              "전체 검사는 처음 공유 venv의 다른 checkout editable 코드를 읽어 실패했으며, 실제 module 경로를 확인하고 현재 worktree PYTHONPATH로 바로잡았다. 해당 초기 시도도 로그에 보존했다.",
++              "현재 worktree 전체492시험은491통과/Windows CI helper의 실패 경로 cleanup1실패였다. 코드 변경 없이 해당7시험만 단독 재검사해 모두 통과했다. 전체 첫 실행을 전부 통과했다고 표시하지 않는다.",
++              "웹 브라우저/build·MCP·독립 최종 평가·#13 실제 출력 통합은 이번 검사의 완료 범위가 아니다.",
++              "전용 환경의 전체 고정 패키지: [검색 requirements](retrieval-requirements-freeze.txt), [OCR requirements](ocr-requirements-freeze.txt). 설치 때 PyTorch CPU 공식 index를 사용한다."]
++    (OUT / "README.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
++    files = [retrieval_path, ocr_path, OUT / "README.md", OUT / "downloaded-models.json", OUT / "online-preflight.json",
++             OUT / "bm25-mw01-analysis.json", Path(__file__)]
++    files += [OUT / name for name in ("execution-checks.json", "retrieval-requirements-freeze.txt", "ocr-requirements-freeze.txt")]
++    files += [args.retrieval / name for name in ("runner-source.py", "results.csv")]
++    files += [args.ocr / name for name in ("runner-source.py", "results.csv")]
++    save(OUT / "verification.json", {"status": "pass", "checked_at_kst": datetime.now(timezone(timedelta(hours=9))).isoformat(),
++                                      "checks": checks, "check_count": len(checks), "errors": [],
++                                      "artifact_versions": [{"path": path.relative_to(ROOT).as_posix(), "sha256": digest(path)} for path in files]})
++    print(json.dumps({"status": "pass", "checks": len(checks), "report": str(OUT / "README.md")}, ensure_ascii=False))
++
++
++if __name__ == "__main__":
++    main()
+--- /dev/null
++++ b/scripts/verify_data003_followup.py
+@@ -0,0 +1,203 @@
++"""Check BM25 execution, source crops and DATA004 development preparation."""
++
++import argparse
++import csv
++import hashlib
++import json
++import statistics
++import struct
++from collections import Counter
++from datetime import datetime, timedelta, timezone
++from pathlib import Path
++
++from run_data003_bm25 import evaluate, percentile95, rank
++
++ROOT = Path(__file__).resolve().parents[1]
++PREP = ROOT / "evals/data003-preparation/20261005"
++BM25 = ROOT / "evals/data003-execution/20261005-cpu-baseline-v3"
++OCR = ROOT / "evals/data003-ocr-inputs/20261005-v2"
++DATA004 = ROOT / "evals/data004-preparation/20261005-v2"
++OUT = ROOT / "evals/data003-followup/20261005"
++
++
++def digest(path):
++    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
++
++
++def load(path):
++    return json.loads(Path(path).read_text(encoding="utf-8"))
++
++
++def png_size(path):
++    data = Path(path).read_bytes()
++    if data[:8] != b"\x89PNG\r\n\x1a\n":
++        raise ValueError(f"Not a PNG: {path}")
++    return list(struct.unpack(">II", data[16:24]))
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--source-directory", type=Path, required=True)
++    args = parser.parse_args()
++    source_dir = args.source_directory.resolve()
++    checks, errors = [], []
++
++    def check(name, condition):
++        checks.append({"name": name, "passed": bool(condition)})
++        if not condition:
++            errors.append(name)
++
++    original = load(PREP / "manifest.json")
++    for item in original["source_versions"] + original["output_versions"] + [original["generator"]]:
++        check(f"prior input/output unchanged: {item['path']}", digest(ROOT / item["path"]) == item["sha256"])
++    for source in original["original_sources"]:
++        check(f"original PDF/cache unchanged: {source['model_id']}",
++              digest(source_dir / source["pdf_file"]) == source["pdf_sha256"]
++              and digest(source_dir / source["page_cache_file"]) == source["page_cache_sha256"])
++    queries = {q["id"]: q for q in load(PREP / "queries.json")}
++    evidence = load(PREP / "corpus.json")["evidence"]
++    baseline = load(BM25 / "results.json")
++    runtime = {q["id"]: q for q in load(BM25 / "runtime-inputs.json")}
++    check("BM25 current source and fixed input hashes", baseline["script_sha256"] == digest(ROOT / "scripts/run_data003_bm25.py")
++          and baseline["legacy_bm25_sha256"] == digest(ROOT / "scripts/model_benchmark.py")
++          and baseline["queries_sha256"] == digest(PREP / "queries.json")
++          and baseline["corpus_sha256"] == digest(PREP / "corpus.json")
++          and baseline["protocol_sha256"] == digest(PREP / "protocol.json"))
++    check("frozen runner source and actual preflight metadata", digest(BM25 / "runner-source.py") == baseline["script_sha256"]
++          and digest(OUT / "baseline-preflight.json") == baseline["preflight"]["metadata_sha256"]
++          and baseline["preflight"]["metadata"]["gpu_used"] is False)
++    check("no gold or expected answer in ranking runtime inputs", set(runtime) == set(queries)
++          and all(set(q) == {"id", "query", "model_id", "document_version"} for q in runtime.values()))
++    check("prior revision request remains unresolved", runtime["FR-04"]["document_version"] is None)
++    check("15 results with five measured attempts each", len(baseline["results"]) == 15
++          and {r["query_id"] for r in baseline["results"]} == set(queries)
++          and all(len(r["latency_attempts"]) == 5 for r in baseline["results"]))
++    for result in baseline["results"]:
++        qid = result["query_id"]
++        ranking, disposition = rank(runtime[qid], evidence)
++        check(f"BM25 ranking and scope replay: {qid}", ranking == result["ranking"] and disposition == result["scope_disposition"])
++        metrics = evaluate(ranking, queries[qid])
++        check(f"recorded retrieval metrics: {qid}", all(result[key] == value for key, value in metrics.items()))
++        samples = [a["elapsed_ms"] for a in result["latency_attempts"] if a["status"] == "success"]
++        check(f"raw timing/failure denominator: {qid}", result["median_ms"] == statistics.median(samples)
++              and result["p95_ms"] == percentile95(samples)
++              and result["failure_count"] == 5 - len(samples)
++              and all(a["ranking"] == ranking and a["elapsed_ms"] >= 0 for a in result["latency_attempts"]))
++        check(f"no claimed semantic answer: {qid}", result["response_check_passed"] is None
++              and result["response_disposition"] == "not_evaluated_retrieval_only")
++    scored = [r for r in baseline["results"] if r["ranking_metric_applicable"]]
++    summary = baseline["summary"]
++    check("summary accuracy is ten of eleven, no empty-gold averaging", len(scored) == 11
++          and sum(r["hit_at_1"] for r in scored) == 10
++          and summary["macro_hit_at_1"] == statistics.mean(r["hit_at_1"] for r in scored)
++          and summary["macro_recall_at_3"] == statistics.mean(r["recall_at_3"] for r in scored)
++          and summary["macro_mrr_at_3"] == statistics.mean(r["mrr_at_3"] for r in scored))
++    check("real attempt count and no contamination", summary["measured_attempts"] == 75
++          and summary["warmup_attempts"] == len(baseline["warmups"]) == 2
++          and summary["failed_attempts"] == summary["foreign_model_ids_returned"] == summary["wrong_version_ids_returned"] == 0)
++    check("baseline truth and actual single-thread environment", baseline["learned_model_calls"] == baseline["ocr_calls"] == 0
++          and not baseline["formal_state_changed"] and baseline["environment"]["bm25_execution_threads"] == 1)
++
++    crop_manifest = load(OCR / "crop-manifest.json")
++    visual = load(OCR / "visual-review.json")
++    compared = load(OCR / "text-extraction-comparison.json")["observations"]
++    check("OCR source, script and six cases locked", crop_manifest["script_sha256"] == digest(ROOT / "scripts/prepare_data003_ocr_inputs.py")
++          and crop_manifest["input_cases_sha256"] == digest(PREP / "ocr-cases.json")
++          and crop_manifest["protocol_sha256"] == digest(PREP / "protocol.json") and len(crop_manifest["cases"]) == 6)
++    check("14 source crops reviewed without recognition claim", crop_manifest["counts"]["recognition_regions"] == 14
++          and len(visual["regions"]) == 14 and visual["status"] == "pass" and visual["ocr_calls"] == 0
++          and crop_manifest["ocr_calls"] == 0 and not crop_manifest["whole_page_layout_evaluated"]
++          and visual["crop_manifest_sha256"] == digest(OCR / "crop-manifest.json"))
++    regions = []
++    for case in crop_manifest["cases"]:
++        image = ROOT / case["raster_path"]
++        check(f"OCR private raster/hash/dimensions: {case['id']}", image.is_relative_to(ROOT / "private")
++              and digest(image) == case["raster_sha256"] and png_size(image) == case["raster_size_px"]
++              and case["dpi"] == 300 and case["color"] == "RGB" and case["recognition_status"] == "not_executed")
++        for region in case["regions"]:
++            regions.append(region)
++            crop = ROOT / region["crop_path"]
++            x0, y0, x1, y1 = region["crop_bbox_px"]
++            check(f"crop bounds/hash/gold: {region['id']}", crop.is_relative_to(ROOT / "private")
++                  and digest(crop) == region["crop_sha256"] and png_size(crop) == region["crop_size_px"] == [x1 - x0, y1 - y0]
++                  and 0 <= x0 < x1 <= case["raster_size_px"][0] and 0 <= y0 < y1 <= case["raster_size_px"][1]
++                  and hashlib.sha256(region["gold_text"].encode("utf-8")).hexdigest() == region["gold_text_sha256"]
++                  and any(v["region_id"] == region["id"] and v["crop_sha256"] == region["crop_sha256"] and v["passed"]
++                          for v in visual["regions"]))
++        if "context" in case:
++            check(f"model column/unit context hash: {case['id']}", digest(ROOT / case["context"]["path"]) == case["context"]["sha256"])
++    check("14 extracted phrase observations, no invented CER or field scores", len(compared) == 14
++          and all(c["pypdf_phrase_present"] and digest(ROOT / c["page_text_path"]) == c["page_text_sha256"]
++                  and all(c[k] is None for k in ("CER", "numeric_field_accuracy", "unit_accuracy", "model_column_accuracy")) for c in compared))
++
++    pack = load(ROOT / "data/research/P2-DATA-001-real-reference-20261004/reference-pack.json")
++    source_facts = {f["id"]: f for f in pack["facts"]}
++    index = load(DATA004 / "development-case-index.json")
++    review_manifest = load(DATA004 / "manifest.json")
++    review_protocol = load(DATA004 / "protocol.json")
++    check("DATA004 current generator/source locks", review_manifest["generator_sha256"] == digest(ROOT / "scripts/prepare_data004_review.py")
++          and review_manifest["source_reference_sha256"] == digest(ROOT / "data/research/P2-DATA-001-real-reference-20261004/reference-pack.json"))
++    check("12 development cases, two in each of six types", len({c["case_id"] for c in index}) == len(index) == 12
++          and Counter(c["category"] for c in index) == Counter({category: 2 for category in (
++              "normal", "duplicate_feature", "model_version_confusion", "conflicting_reviews", "missing_evidence", "specification_change")})
++          and all(c["split"] == "development" and c["actual_run_id"] is None and c["actual_result"] is None for c in index))
++    check("10 criteria and real conflicts remain unresolved", len(review_protocol["criteria"]) == 10
++          and load(DATA004 / "real-conflicts.json") == pack["conflicts"])
++    for case in index:
++        material, expected = load(ROOT / case["input_path"]), load(ROOT / case["expected_path"])
++        check(f"private development input/expected hashes: {case['case_id']}",
++              case["input_path"].startswith("private/data004-development/")
++              and case["expected_path"].startswith("private/data004-development/")
++              and digest(ROOT / case["input_path"]) == case["input_sha256"]
++              and digest(ROOT / case["expected_path"]) == case["expected_sha256"])
++        check(f"original facts and expected draft status: {case['case_id']}",
++              material["facts"] == [source_facts[fid] for fid in case["source_fact_ids"]]
++              and expected["actual_agent_output"] is None and expected["semantic_review_status"] == "draft_pending_PM"
++              and material["actual_customer_review_count"] == 0)
++        for review in material["synthetic_reviews"]:
++            check(f"review never presented as actual customer: {review['id']}",
++                  review["source_kind"] == "synthetic" and not review["actual_customer"]
++                  and review["document_version"].startswith("DEV-"))
++        if "before_after" in material:
++            for lock in material["before_after"]:
++                check(f"change snapshot hash: {lock['path']}", digest(ROOT / lock["path"]) == lock["sha256"])
++            before, after = [load(ROOT / lock["path"]) for lock in material["before_after"]]
++            new = after["mock_new_spec"]
++            check(f"synthetic change does not forge revision: {case['case_id']}", new["source_kind"] == "synthetic"
++                  and new["manufacturer_revision"] is None and new["source_url"] is None and not new["real_manufacturer_change"]
++                  and new["document_version"].startswith("DEV-")
++                  and before["facts"] == material["facts"] and after["unchanged_fact"] == source_facts[expected["unchanged_fact_ids"][0]])
++            affected = [row for row in material["dependency_map"] if set(row["fact_ids"]) & set(expected["changed_fact_ids"])]
++            check(f"expected change impact and unrelated preservation: {case['case_id']}",
++                  [r["judgement_id"] for r in affected] == expected["affected_judgement_ids"]
++                  and [r["candidate_id"] for r in affected] == expected["affected_candidate_ids"])
++    rows = load(DATA004 / "review-results-template.json")
++    check("57 unique empty review criteria cells", len(rows) == len({(r["case_id"], r["criterion_id"]) for r in rows}) == 57
++          and all(r["status"] == "not_executed" and all(v is None for k, v in r.items()
++                  if k not in {"case_id", "criterion_id", "status"}) for r in rows))
++    with (DATA004 / "review-results-template.csv").open(encoding="utf-8-sig", newline="") as stream:
++        csv_rows = list(csv.DictReader(stream))
++    check("review JSON/CSV roundtrip", csv_rows == [{k: "" if v is None else str(v) for k, v in row.items()} for row in rows])
++    check("no independent final or formal/live completion claimed", not review_manifest["formal_state_changed"]
++          and review_manifest["live_service_calls"] == 0
++          and all(value is False for value in review_manifest["independent_final_evaluation"].values()))
++    locked_outputs = [p for folder in (BM25, OCR, DATA004) for p in sorted(folder.iterdir()) if p.is_file()]
++    report = {"status": "pass" if not errors else "fail", "scope": "local_followup_integrity_not_full_agent_evaluation",
++              "checked_at_kst": datetime.now(timezone(timedelta(hours=9))).isoformat(),
++              "check_count": len(checks), "checks": checks, "errors": errors, "verifier_sha256": digest(__file__),
++              "counts": {"bm25_queries": 15, "supported_queries": 11, "measured_attempts": 75, "ocr_cases": 6,
++                         "ocr_regions": 14, "data004_development_cases": 12, "review_criteria": 10},
++              "output_versions": [{"path": p.relative_to(ROOT).as_posix(), "sha256": digest(p)} for p in locked_outputs],
++              "limits": ["OCR crop review and phrase availability are not recognition or model column accuracy",
++                         "DATA004 checks prepare expectations and snapshots; actual core service not called",
++                         "Private final evaluation paths are not inputs; these cases are development-only",
++                         "BM25 development baseline does not prove learned model superiority or customer demand"]}
++    OUT.mkdir(parents=True, exist_ok=True)
++    (OUT / "verification.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
++    print(json.dumps({k: report[k] for k in ("status", "check_count", "errors", "counts")}, ensure_ascii=False))
++    if errors:
++        raise SystemExit(1)
++
++
++if __name__ == "__main__":
++    main()
+--- /dev/null
++++ b/scripts/verify_data003_preparation.py
+@@ -0,0 +1,231 @@
++"""Verify DATA003 preparation against locked sources, without model execution."""
++
++import argparse
++import csv
++import hashlib
++import json
++import platform
++from collections import Counter
++from datetime import datetime, timedelta, timezone
++from pathlib import Path
++
++ROOT = Path(__file__).resolve().parents[1]
++OUT = ROOT / "evals/data003-preparation/20261005"
++REFERENCE = "data/research/P2-DATA-001-real-reference-20261004/reference-pack.json"
++MAPPING = "data/research/P2-DATA-001-stage123-20261005/mapping.json"
++ORIGINS = "data/research/P2-DATA-001-stage123-20261005/original-locations.json"
++MODELS = {"T876MEE1H1", "DUE6BGL2E", "MW23FDI"}
++EXPECTED_FACTS = {
++    "F10", "F11", "F12", "F13",
++    "D02", "D03", "D04", "D05", "D06", "D09", "D12", "D13", "D14", "D16",
++    "M02", "M03", "M04", "M06", "M07", "M08", "M11", "M12", "M13", "M14", "M15", "M17", "M18",
++}
++MODEL_LOCKS = {
++    "BAAI/bge-m3": ("5617a9f61b028005a4858fdac845db406aefb181", "mit"),
++    "BAAI/bge-reranker-v2-m3": ("953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e", "apache-2.0"),
++    "PaddlePaddle/korean_PP-OCRv5_mobile_rec": ("c02ecaf1f22bfd1c618cce154fd19185b47e663a", "apache-2.0"),
++}
++
++
++def digest(path):
++    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
++
++
++def load(path):
++    return json.loads(Path(path).read_text(encoding="utf-8"))
++
++
++def checked_path(relative):
++    path = (ROOT / relative).resolve()
++    if not path.is_relative_to(ROOT) or not path.is_file():
++        raise ValueError(f"Invalid repository file: {relative}")
++    return path
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--source-directory", required=True, type=Path)
++    args = parser.parse_args()
++    source_dir = args.source_directory.resolve()
++    checks, errors = [], []
++
++    def check(name, condition):
++        checks.append({"check": name, "passed": bool(condition)})
++        if not condition:
++            errors.append(name)
++
++    manifest = load(OUT / "manifest.json")
++    check("preparation status, unchanged formal state and zero model/OCR calls",
++          manifest["status"] == "prepared_not_executed" and manifest["scope"] == "steps_3_4"
++          and not manifest["formal_state_changed"] and manifest["model_calls"] == manifest["ocr_calls"] == 0)
++    check("independent evaluation boundaries declared",
++          manifest["independent_final_evaluation"]["answer_content_read"] is False
++          and manifest["independent_final_evaluation"]["modified"] is False)
++    for group in ("source_versions", "output_versions"):
++        for row in manifest[group]:
++            check(f"{group} SHA256: {row['path']}", digest(checked_path(row["path"])) == row["sha256"])
++    generator = manifest["generator"]
++    check("generator SHA256", digest(checked_path(generator["path"])) == generator["sha256"])
++    check("source lock excludes private final evaluation inputs",
++          all(not any(part in {"private", "independent"} for part in Path(r["path"]).parts)
++              for r in manifest["source_versions"]))
++    pack = load(ROOT / REFERENCE)
++    facts = {f["id"]: f for f in pack["facts"]}
++    products = {p["model_id"]: p for p in pack["products"]}
++    sources = {s["id"]: s for s in pack["sources"]}
++    mapping = {r["research_fact_id"]: r for r in load(ROOT / MAPPING)["mapped_use_case_facts"]}
++    origins = {o["evidence_id"]: o for doc in load(ROOT / ORIGINS)["documents"] for o in doc["origins"]}
++    pages = {}
++    check("three original manual locks", {s["model_id"] for s in manifest["original_sources"]} == MODELS)
++    for source in manifest["original_sources"]:
++        model = source["model_id"]
++        check(f"original PDF/cache basenames: {model}", source["pdf_file"] == f"{model}.pdf"
++              and source["page_cache_file"] == f"{model}.pages.json")
++        pdf, cache = source_dir / f"{model}.pdf", source_dir / f"{model}.pages.json"
++        check(f"original PDF SHA256: {model}", digest(pdf) == source["pdf_sha256"])
++        check(f"original page cache SHA256: {model}", digest(cache) == source["page_cache_sha256"])
++        pages[model] = load(cache)
++        manual = next(s for s in sources.values() if s["model_id"] == model and s["source_type"] == "manual")
++        check(f"manual version/hash/page count/URL: {model}",
++              source["document_version"] == products[model]["document_version"] == manual["document_version"]
++              and source["pdf_sha256"] == manual["sha256"]
++              and len(pages[model]) == source["page_count"] == manual["page_count"]
++              and source["source_url"] == manual["url"])
++
++    corpus = load(OUT / "corpus.json")
++    evidence = {e["id"]: e for e in corpus["evidence"]}
++    check("27 unique manual fact summaries", len(evidence) == len(corpus["evidence"]) == 27
++          and {e["research_fact_id"] for e in evidence.values()} == EXPECTED_FACTS)
++    check("development pack retains products and zero customer reviews",
++          corpus["split"] == "development" and corpus["products"] == pack["products"] and corpus["reviews"] == [])
++    for row in evidence.values():
++        fid, model = row["research_fact_id"], row["model_id"]
++        fact = facts[fid]
++        manual_ref = next(r for r in fact["source_refs"] if sources[r["source_id"]]["source_type"] == "manual")
++        check(f"original fact value/unit/condition/status retained: {fid}",
++              all(row[k] == fact[k] for k in ("model_id", "product_group", "value", "unit", "conditions", "status")))
++        check(f"exact manual reference and source type: {fid}",
++              row["source_type"] == "manual" and row["source_kind"] == "public"
++              and row["text_kind"] == "existing_fact_summary_not_verbatim"
++              and row["locator"] == manual_ref["locator"] and row["source_url"] == manual_ref["url"]
++              and row["document_version"] == manual_ref["document_version"] == products[model]["document_version"]
++              and row["original_pdf_sha256"] == sources[row["source_id"]]["sha256"]
++              and 1 <= row["locator"]["page"] <= len(pages[model]))
++        if fid in mapping:
++            check(f"existing canonical evidence/document IDs retained: {fid}",
++                  row["id"] == row["canonical_evidence_id"] == mapping[fid]["canonical_evidence_id"]
++                  and row["document_id"] == mapping[fid]["document_id"])
++
++    queries = load(OUT / "queries.json")
++    query_map = {q["id"]: q for q in queries}
++    check("15 unique questions, five per model", len(query_map) == len(queries) == 15
++          and Counter(q["model_id"] for q in queries) == Counter({m: 5 for m in MODELS}))
++    check("11 supported and four non-ranking questions", sum(q["ranking_metric_applicable"] for q in queries) == 11
++          and {q["id"] for q in queries if not q["relevant_evidence_ids"]} == {"FR-04", "FR-05", "DW-05", "MW-05"})
++    for query in queries:
++        gold = query["relevant_evidence_ids"]
++        check(f"question scope and gold references: {query['id']}", query["split"] == "development"
++              and query["document_version"] == products[query["model_id"]]["document_version"]
++              and len(gold) == len(set(gold)) and all(eid in evidence for eid in gold)
++              and bool(gold) == query["ranking_metric_applicable"])
++        for row in query["gold_sources"]:
++            expected = evidence[row["id"]]
++            check(f"gold source provenance: {query['id']}/{row['id']}",
++                  all(row[k] == expected[k] for k in row)
++                  and row["model_id"] == query["model_id"] and row["document_version"] == query["document_version"])
++        check(f"gold fact order and source count: {query['id']}",
++              query["research_fact_ids"] == [evidence[eid]["research_fact_id"] for eid in gold]
++              and [r["id"] for r in query["gold_sources"]] == gold)
++    check("unresolved prior version is not fabricated", query_map["FR-04"]["requested_version"] is None
++          and query_map["FR-04"]["requires_version_resolution"]
++          and query_map["FR-04"]["expected_response"] == "request_document_version")
++    check("foreign evidence is real and forbidden for refrigerator", all(
++        eid in evidence and evidence[eid]["model_id"] != query_map["FR-05"]["model_id"]
++        for eid in query_map["FR-05"]["forbidden_evidence_ids"]))
++    check("missing input and conditional/unknown responses preserved",
++          len(query_map["DW-05"]["missing_inputs"]) == 4
++          and query_map["MW-04"]["unknown_fact_ids"] == ["U02"]
++          and query_map["MW-04"]["expected_response"] == "answer_conditionally_and_mark_unknown"
++          and query_map["MW-05"]["unknown_fact_ids"] == ["U01"]
++          and query_map["MW-05"]["expected_response"] == "not_confirmed")
++
++    protocol = load(OUT / "protocol.json")
++    retrieval_methods = protocol["retrieval"]["methods"]
++    ocr_methods = protocol["ocr"]["methods"]
++    check("fixed three retrieval methods and two OCR tracks", set(retrieval_methods) == {
++        "bm25_filtered", "bge_m3_filtered", "bge_m3_filtered_reranker"}
++        and ocr_methods == ["pypdf_text_extraction", "paddle_manual_crop_recognition"])
++    check("all model revisions and license records locked", len(protocol["models"]) == 3 and all(
++        (m["revision"], m["license"].lower()) == MODEL_LOCKS[m["model_id"]] for m in protocol["models"]))
++    check("same model/version filter, fixed repetitions, no claimed execution",
++          protocol["status"] == "prepared_not_executed" and "before ranking" in protocol["retrieval"]["filter"]
++          and "model_id" in protocol["retrieval"]["filter"] and "document_version" in protocol["retrieval"]["filter"]
++          and protocol["retrieval"]["latency"]["measured_repeats_per_query"] == 5
++          and protocol["retrieval"]["runtime"]["cpu_threads"] == 4)
++
++    cases = load(OUT / "ocr-cases.json")
++    check("six unique OCR cases, three per track", len({c["id"] for c in cases}) == len(cases) == 6
++          and Counter(c["kind"] for c in cases) == Counter({"source_line": 3, "numeric_rows": 3}))
++    for case in cases:
++        model = case["model_id"]
++        check(f"OCR page/version and unmeasured crop: {case['id']}",
++              case["document_version"] == products[model]["document_version"]
++              and 1 <= case["page"] <= len(pages[model]) and case["crop_bbox"] is None
++              and case["crop_status"] == "locate_and_lock_before_step5" and case["measured"] is False
++              and all(fid in EXPECTED_FACTS and facts[fid]["model_id"] == model for fid in case["source_fact_ids"]))
++        if case["kind"] == "source_line":
++            excerpt = pages[model][case["page"] - 1][case["start_char"]:case["end_char"]]
++            original = origins[next(e["id"] for e in evidence.values()
++                                    if e["research_fact_id"] == case["source_fact_ids"][0])]
++            check(f"exact OCR excerpt range/hash: {case['id']}", excerpt == case["gold_text"]
++                  and hashlib.sha256(excerpt.encode("utf-8")).hexdigest() == case["gold_text_sha256"]
++                  and all(case[k] == original[k] for k in ("page", "start_char", "end_char")))
++        for target in case["field_targets"]:
++            fact = facts[target["fact_id"]]
++            path = target["value_path"]
++            value = fact["value"] if not path else (
++                fact["value"][path[0]] if len(path) == 1 else [fact["value"][key] for key in path])
++            check(f"numeric field target grounded: {case['id']}/{target['label']}",
++                  value == target["value"] and fact["unit"] == target["unit"]
++                  and target["fact_id"] in case["source_fact_ids"])
++
++    for prefix, identifier, ids, methods, count in (
++        ("retrieval", "query_id", list(query_map), retrieval_methods, 45),
++        ("ocr", "case_id", [c["id"] for c in cases], ocr_methods, 12),
++    ):
++        rows = load(OUT / f"{prefix}-results-template.json")
++        check(f"{prefix} complete unique measurement combinations", len(rows) == count
++              and {(r[identifier], r["method"]) for r in rows} == {(i, m) for i in ids for m in methods})
++        check(f"{prefix} all measurements genuinely empty", all(r["status"] == "not_executed"
++              and all(v is None for k, v in r.items() if k not in {identifier, "method", "status"}) for r in rows))
++        with (OUT / f"{prefix}-results-template.csv").open(encoding="utf-8-sig", newline="") as stream:
++            csv_rows = list(csv.DictReader(stream))
++        check(f"{prefix} CSV/JSON exact roundtrip", csv_rows == [
++            {k: "" if v is None else str(v) for k, v in r.items()} for r in rows])
++    metadata = load(OUT / "run-metadata-template.json")
++    check("runtime template contains no invented measurements", metadata["status"] == "not_executed"
++          and all(v is None for k, v in metadata.items() if k != "status"))
++    counts = {"corpus": len(evidence), "queries": len(queries), "per_model": dict(Counter(q["model_id"] for q in queries)),
++              "supported_queries": sum(bool(q["relevant_evidence_ids"]) for q in queries),
++              "unsupported_queries": sum(not q["relevant_evidence_ids"] for q in queries),
++              "ocr_cases": len(cases), "retrieval_template_rows": 45, "ocr_template_rows": 12}
++    check("manifest counts match actual data", counts == manifest["counts"])
++    report = {"status": "pass" if not errors else "fail", "task_id": "P2-DATA-003",
++              "scope": "preparation_integrity_not_model_performance", "counts": counts,
++              "checked_at_kst": datetime.now(timezone(timedelta(hours=9))).isoformat(),
++              "runtime": {"python": platform.python_version(), "platform": platform.platform()},
++              "command": "python -B -X utf8 scripts/verify_data003_preparation.py --source-directory <existing-originals>",
++              "manifest_sha256": digest(OUT / "manifest.json"), "verifier_sha256": digest(__file__),
++              "check_count": len(checks), "checks": checks, "errors": errors,
++              "model_calls": 0, "ocr_calls": 0,
++              "limits": ["Source facts reused with manual locations; semantic gold review remains PM work",
++                         "Hash and provenance checks do not prove model accuracy or independent evaluation quality",
++                         "Private evaluation answers are not verifier inputs; no system-wide access audit claimed"]}
++    (OUT / "validation.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
++    print(json.dumps({k: report[k] for k in ("status", "counts", "check_count", "errors")}, ensure_ascii=False))
++    if errors:
++        raise SystemExit(1)
++
++
++if __name__ == "__main__":
++    main()
+--- /dev/null
++++ b/tests/test_data003_bm25.py
+@@ -0,0 +1,67 @@
++"""Check scope isolation, no-gold metrics and failed attempts for the new runner."""
++
++import importlib.util
++import sys
++import unittest
++from pathlib import Path
++
++ROOT = Path(__file__).resolve().parents[1]
++sys.path.insert(0, str(ROOT / "scripts"))
++SPEC = importlib.util.spec_from_file_location("data003_bm25", ROOT / "scripts/run_data003_bm25.py")
++RUNNER = importlib.util.module_from_spec(SPEC)
++SPEC.loader.exec_module(RUNNER)
++
++
++class BM25ScopeTests(unittest.TestCase):
++    def setUp(self):
++        self.query = {"model_id": "A", "document_version": "v1", "query": "높이"}
++        self.rows = [
++            {"id": "A1", "model_id": "A", "document_version": "v1", "text": "높이 조절"},
++            {"id": "A2", "model_id": "A", "document_version": "v2", "text": "높이 높이 높이"},
++            {"id": "B1", "model_id": "B", "document_version": "v1", "text": "높이 높이 높이"},
++        ]
++
++    def test_filter_precedes_idf_and_ranking(self):
++        observed, status = RUNNER.rank(self.query, self.rows)
++        expected, _ = RUNNER.rank(self.query, self.rows[:1])
++        self.assertEqual(observed, expected)
++        self.assertEqual(status, "retrieved")
++        self.assertEqual([r["id"] for r in observed], ["A1"])
++
++    def test_missing_revision_never_substitutes_current(self):
++        result = RUNNER.rank({**self.query, "document_version": None}, self.rows)
++        self.assertEqual(result, ([], "request_document_version"))
++
++    def test_unknown_revision_has_no_evidence(self):
++        self.assertEqual(RUNNER.rank({**self.query, "document_version": "missing"}, self.rows),
++                         ([], "no_evidence_for_scope"))
++
++    def test_ties_sort_by_evidence_id(self):
++        same = [dict(self.rows[0], id="Z"), dict(self.rows[0], id="A")]
++        observed, _ = RUNNER.rank(self.query, same)
++        self.assertEqual([r["id"] for r in observed], ["A", "Z"])
++
++    def test_partial_multi_gold_recall_and_reciprocal_rank(self):
++        ranking = [{"id": key, "model_id": "A", "document_version": "v1"} for key in ("miss", "A1", "miss2")]
++        result = RUNNER.evaluate(ranking, {**self.query, "relevant_evidence_ids": ["A1", "A3"]})
++        self.assertEqual((result["hit_at_1"], result["recall_at_3"], result["mrr_at_3"]), (0, 0.5, 0.5))
++
++    def test_no_gold_is_na_not_zero_or_division_error(self):
++        result = RUNNER.evaluate([], {**self.query, "relevant_evidence_ids": []})
++        self.assertTrue(all(value is None for value in result.values()))
++
++    def test_empty_supported_failure_scores_zero(self):
++        result = RUNNER.evaluate([], {**self.query, "relevant_evidence_ids": ["A1"]})
++        self.assertEqual((result["hit_at_1"], result["recall_at_3"], result["mrr_at_3"]), (0, 0, 0))
++
++    def test_failed_attempt_keeps_error_and_elapsed_time(self):
++        def broken(*_args):
++            raise RuntimeError("intentional failure")
++        attempt = RUNNER.measure(self.query, self.rows, ranker=broken)
++        self.assertEqual(attempt["status"], "failed")
++        self.assertIn("intentional failure", attempt["error"])
++        self.assertGreaterEqual(attempt["elapsed_ms"], 0)
++
++
++if __name__ == "__main__":
++    unittest.main()
+--- /dev/null
++++ b/tests/test_data003_models.py
+@@ -0,0 +1,67 @@
++"""Guard DATA003 scope and OCR scoring against misleading performance claims."""
++
++import sys
++import unittest
++from pathlib import Path
++
++sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
++from run_data003_models import distance, field_scores, normalization, scoped, sorted_rows
++
++
++def region(value, unit="W", gold="1000 W", visible=True):
++    return {"field_target": {"value": value, "unit": unit, "column": "target model"},
++            "gold_text": gold, "unit_in_crop": visible}
++
++
++class ModelEvaluationTests(unittest.TestCase):
++    def test_scope_never_substitutes_current_revision(self):
++        data = [{"id": "a", "model_id": "A", "document_version": "current"}]
++        self.assertEqual(scoped({"model_id": "A", "document_version": None}, data),
++                         ([], "request_document_version"))
++        self.assertEqual(scoped({"model_id": "A", "document_version": "old"}, data),
++                         ([], "no_evidence_for_scope"))
++
++    def test_scope_excludes_foreign_model_before_candidates(self):
++        data = [{"id": str(i), "model_id": model, "document_version": version}
++                for i, (model, version) in enumerate([("A", "v1"), ("B", "v1"), ("A", "v2")])]
++        self.assertEqual([r["id"] for r in scoped({"model_id": "A", "document_version": "v1"}, data)[0]], ["0"])
++
++    def test_tied_scores_sort_by_id(self):
++        data = [{"id": i, "model_id": "A", "document_version": "v1"} for i in ("z", "b", "a")]
++        self.assertEqual([r["id"] for r in sorted_rows(data, [1, 1, 1])], ["a", "b", "z"])
++
++    def test_cer_keeps_digit_unit_and_footnote_errors(self):
++        self.assertEqual(distance(normalization("1000 W*1"), normalization("1000 W")), 2)
++        self.assertEqual(distance(normalization("2.5 cm"), normalization("25 cm")), 1)
++        self.assertEqual(normalization("한  \n글"), "한 글")
++
++    def test_footnote_does_not_become_extra_numeric_value(self):
++        score = field_scores(region(1000, gold="1000 W*1"), "1000 W*1")
++        self.assertTrue(score["numeric_field_correct"])
++        self.assertIsNone(score["model_column_accuracy"])
++
++    def test_extra_numeric_value_fails_whole_field(self):
++        score = field_scores(region(1000), "1000 900 W")
++        self.assertFalse(score["numeric_field_correct"])
++        self.assertEqual(score["observed_values"], [1000, 900])
++
++    def test_dimension_order_and_decimal_preserved(self):
++        score = field_scores(region([476, 272, 369], "mm", "476 × 272 × 369", False), "476 × 272 × 370")
++        self.assertEqual(score["numeric_correct"], 2)
++        self.assertFalse(score["numeric_field_correct"])
++        self.assertTrue(field_scores(region(2.5, "cm", "2.5 cm"), "2.5cm")["numeric_field_correct"])
++
++    def test_absent_header_unit_not_fabricated(self):
++        score = field_scores(region([476, 272, 369], "mm", "476 × 272 × 369", False), "476 × 272 × 369")
++        self.assertEqual(score["unit_total"], 0)
++        self.assertIsNone(score["explicit_unit_correct"])
++        self.assertIsNone(score["model_column_accuracy"])
++
++    def test_units_case_sensitive_and_sentence_unscored(self):
++        self.assertEqual(field_scores(region(1000), "1000 w")["explicit_unit_correct"], 0)
++        self.assertEqual(field_scores(region(1000), "1000 kW")["explicit_unit_correct"], 0)
++        self.assertEqual(field_scores({"field_target": None}, "문장")["numeric_total"], 0)
++
++
++if __name__ == "__main__":
++    unittest.main()

@@ -1,0 +1,136 @@
+{
+  "case_id": "dev-MICROWAVE-A",
+  "kind": "synthetic",
+  "process_exit_code": 0,
+  "stopped_reason": null,
+  "relay_failures": [],
+  "reserved_generations": 3,
+  "actual_generations_with_usage": 3,
+  "tokens": 7232,
+  "raw_result_sha256": "1107984405b070220ec0ed5f009e31a63785c1de8bd9b86bf22055d3a3ced7c5",
+  "settings": {
+    "temperature": 0,
+    "seed": 42,
+    "num_ctx": 16384,
+    "num_predict": 4096
+  },
+  "model": "qwen3:8b",
+  "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+  "raw_result_kept_private": true,
+  "independent_quality_review_complete": false,
+  "backend_truncation_independently_verified": false,
+  "base_commit": "df0310ea31bbadda68b299dc96a85475cf7ecec9",
+  "document_store_sha256": "cbf5fc44dc7339e12f40fb0813833561d5984df40c0fe29ba16b9b66ce3c6bc5",
+  "supervisor_sha256": "0ec472392a480a647ed66932fd7c4683a52704a2988f3ecd669d97fb345f1a53",
+  "runner_sha256": "c90b3134f81fb6035fb75bddfb0b8c95cacbd402bb7d7afc42d76439689b2b1e",
+  "file_rpc_sha256": "57faf292178b5cdefb2f3ec56c5d16cd66b8ad50a31b5c0681118100f8579678",
+  "control_status_cache_seconds": 1,
+  "status": "failed",
+  "errors": [
+    {
+      "code": "VALIDATION_FAILED",
+      "message": "각 니즈에 대응하는 희망 결과가 필요합니다.",
+      "details": {}
+    },
+    {
+      "code": "VALIDATION_FAILED",
+      "message": "각 니즈에 대응하는 희망 결과가 필요합니다.",
+      "details": {}
+    },
+    {
+      "code": "VALIDATION_FAILED",
+      "message": "각 니즈에 대응하는 희망 결과가 필요합니다.",
+      "details": {}
+    }
+  ],
+  "decision": {
+    "valid": false,
+    "action": "unresolved",
+    "revision_count": 2,
+    "next_revision_count": 2,
+    "rerun_from": null,
+    "violations": [
+      {
+        "code": "VALIDATION_FAILED",
+        "stage": "needs"
+      }
+    ]
+  },
+  "review_count": 3,
+  "source_identity_checks": [
+    {
+      "evidence_id": "MANUAL-005",
+      "model_id": "MICROWAVE-A",
+      "source_id": "MICROWAVE-A-MANUAL-v1.0",
+      "locator": {
+        "page": 5,
+        "section": "설정 저장과 호출"
+      },
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "original_exact_match": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-034",
+      "model_id": "MICROWAVE-A",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 35
+      },
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "original_exact_match": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-035",
+      "model_id": "MICROWAVE-A",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 36
+      },
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "original_exact_match": true
+    },
+    {
+      "evidence_id": "REVIEW-EVIDENCE-036",
+      "model_id": "MICROWAVE-A",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 37
+      },
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "original_exact_match": true
+    }
+  ],
+  "output_reference_checks": [],
+  "recorded_model_calls": 3,
+  "actual_model_trace_checks": [
+    {
+      "same_prompt": true,
+      "same_response": true,
+      "revision": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "error": null,
+      "done_reason": "stop"
+    },
+    {
+      "same_prompt": true,
+      "same_response": true,
+      "revision": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "error": null,
+      "done_reason": "stop"
+    },
+    {
+      "same_prompt": true,
+      "same_response": true,
+      "revision": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "error": null,
+      "done_reason": "stop"
+    }
+  ],
+  "boundary_verified": true,
+  "boundary_sha256": "4b2dcb503c62e9a2ce417070a51541ef63c74fb076716a2ae9e22cba108de31d",
+  "final_agent_output_present": false,
+  "full_model_prompts_responses_and_reviews_included": false
+}

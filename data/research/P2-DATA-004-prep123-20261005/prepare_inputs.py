@@ -1,0 +1,365 @@
+"""Prepare private inputs from frozen sources; never evaluate, run services, or read answers."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import importlib.util
+import json
+import subprocess
+from collections import Counter
+from copy import deepcopy
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+from jsonschema import Draft202012Validator
+
+REPO = Path(__file__).resolve().parents[3]
+REPORT = Path(__file__).resolve().parent
+OLD = REPO / "private/evaluation/DATA001-20261005-contract-review"
+PRIVATE = REPO / "private/evaluation/DATA004-20261005-prep123-01"
+SNAPSHOT = REPO / "tmp/data002-step5-source-verified"
+REQUIRED = {
+    "normal", "duplicate_feature", "model_version_confusion", "conflicting_reviews",
+    "missing_evidence", "specification_change",
+}
+FORBIDDEN = {
+    "candidate_output_under_review", "expected", "expected_response", "expected_decision",
+    "answer_key", "gold", "raw_output", "actual_output", "score", "winner",
+}
+
+
+def read(path: Path):
+    if "answer-key" in path.parts or path.name.endswith("fixture-output.json"):
+        raise ValueError("Answer/candidate files are outside this preparation scope")
+    return json.loads(path.read_text(encoding="utf-8-sig"))
+
+
+def sha(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def canonical(value) -> str:
+    raw = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def rel(path: Path) -> str:
+    return path.relative_to(REPO).as_posix()
+
+
+def write(path: Path, value):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x", encoding="utf-8", newline="\n") as handle:
+        handle.write(json.dumps(value, ensure_ascii=False, indent=2, allow_nan=False) + "\n")
+
+
+def keys(value):
+    if isinstance(value, dict):
+        for key, nested in value.items():
+            yield key
+            yield from keys(nested)
+    elif isinstance(value, list):
+        for nested in value:
+            yield from keys(nested)
+
+
+def source_ids(value):
+    found = set()
+    if isinstance(value, dict):
+        for key, nested in value.items():
+            if key in {"id", "model_id", "source_id"} and isinstance(nested, str):
+                found.add(nested)
+            found.update(source_ids(nested))
+    elif isinstance(value, list):
+        for nested in value:
+            found.update(source_ids(nested))
+    return found
+
+
+def source_texts(value):
+    found = set()
+    if isinstance(value, dict):
+        for key, nested in value.items():
+            if key in {"text", "description", "improvement_task"} and isinstance(nested, str):
+                found.add(nested)
+            found.update(source_texts(nested))
+    elif isinstance(value, list):
+        for nested in value:
+            found.update(source_texts(nested))
+    return found
+
+
+def edited(original, operations):
+    value = deepcopy(original)
+    for operation in operations:
+        route = operation["path"]
+        parent = value
+        for key in route[:-1]:
+            parent = parent[key]
+        if operation.get("value_from_source_review_only"):
+            replacement = [deepcopy(s) for s in original["sources"] if s["source_type"] == "review"]
+        elif operation.get("value_from_manual_text"):
+            replacement = next(s["text"] for s in value["sources"] if s["source_type"] == "manual")
+        else:
+            replacement = deepcopy(operation["value"])
+        parent[route[-1]] = replacement
+    return value
+
+
+def prepare(run_id: str):
+    run = REPORT / "runs" / run_id
+    run.mkdir(parents=True, exist_ok=False)
+    if (PRIVATE / "cases.json").exists():
+        raise FileExistsError("Private prepared pack exists; preserve it and use a new destination")
+    recipe = read(PRIVATE / "recipe.json")
+    old_manifest = read(OLD / "cases.json")
+    old_provenance = read(OLD / "provenance.json")
+    reference = read(REPO / "data/research/P2-DATA-001-real-reference-20261004/reference-pack.json")
+    dev_paths = [REPO / "data/demo/dataset.json", REPO / "data/demo/planning_requests.json"]
+    dev_paths.extend(sorted((SNAPSHOT / "evals/core-contract/development").glob("*.input.json")))
+    if len(dev_paths) != 8:
+        raise ValueError("Expected the demo pair and six pinned core development inputs")
+    preserve = [OLD / "cases.json", OLD / "provenance.json", OLD / "README.md", PRIVATE / "recipe.json"]
+    preserve.extend(OLD / c["data_path"] for c in old_manifest["cases"])
+    preserve.extend(OLD / "schemas" / n for n in ("input.json", "output.json"))
+    preserve.extend(dev_paths)
+    preserve.extend(REPO / p for p in (
+        "data/demo/manifest.json", "packages/contracts/schemas/lgax.schema.json",
+        "data/research/P2-DATA-001-real-reference-20261004/reference-pack.json",
+        "data/research/P2-DATA-002-step1-20261005/input-selection.json",
+        "data/research/P2-DATA-002-step5-20261005/runs/verified/completion-review.json",
+        "harness/phase2/tasks/P2-DATA-004.json", "AGENTS.md", "CLAUDE.md",
+    ))
+    before_hashes = {rel(p): sha(p) for p in preserve}
+    answer_stats = {rel(p): [p.stat().st_size, p.stat().st_mtime_ns]
+                    for p in (OLD / "answer-key").iterdir() if p.is_file()}
+    write(run / "source-baseline.json", {
+        "source_versions": before_hashes, "answer_metadata_only": answer_stats,
+        "answer_file_bytes_read": False,
+    })
+    input_schema = read(OLD / "schemas/input.json")
+    validator = Draft202012Validator(input_schema)
+    Draft202012Validator.check_schema(input_schema)
+    for name in ("input.json", "output.json"):
+        path = PRIVATE / "schemas" / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("xb") as handle:
+            handle.write((OLD / "schemas" / name).read_bytes())
+        if sha(path) != sha(SNAPSHOT / "evals/core-contract/schemas" / name):
+            raise ValueError("Frozen heldout contract differs from the pinned DATA002 snapshot")
+    manifest = {"schema_version": 1, "independent_from_development": True, "cases": []}
+    inputs = {}
+    originals = {}
+    provenance = []
+    for item in old_manifest["cases"]:
+        source_path = OLD / item["data_path"]
+        # Select only the input. The container's pre-existing candidate is never used or copied.
+        source = read(source_path)["original_request_and_sources"]
+        originals[item["case_id"]] = source
+        derived = edited(source, recipe["edits"].get(item["case_id"], []))
+        prepared_id = "DATA15-" + item["category"]
+        original_path = PRIVATE / "original-inputs" / (item["case_id"] + ".json")
+        target = PRIVATE / "materials" / (prepared_id + ".json")
+        write(original_path, source)
+        write(target, derived)
+        inputs[prepared_id] = (target, derived)
+        manifest["cases"].append({
+            "case_id": prepared_id, "category": item["category"],
+            "request": derived["request"], "data_path": target.relative_to(PRIVATE).as_posix(),
+            "output_contract_path": "schemas/output.json",
+        })
+        provenance.append({
+            "case_id": prepared_id, "source_material": rel(source_path),
+            "source_container_sha256": before_hashes[rel(source_path)],
+            "selected_json_pointer": "/original_request_and_sources",
+            "original_input_canonical_sha256": canonical(source),
+            "saved_original_input": rel(original_path),
+            "derived_input": rel(target), "derived_input_sha256": sha(target),
+            "operations": recipe["edits"].get(item["case_id"], []),
+        })
+    spec = recipe["before_version"]
+    prior = deepcopy(originals[spec["case_id"]])
+    prior["request"]["dataset_version"] = spec["dataset_version"]
+    prior["product"]["document_version"] = spec["document_version"]
+    for source in prior["sources"]:
+        source["document_version"] = spec["document_version"]
+        if source["source_type"] == "manual":
+            source["source_id"] = spec["source_id"]
+            source["text"] = spec["manual_text"]
+    for feature in prior["features"]:
+        feature["document_version"] = spec["document_version"]
+        feature["description"] = spec["manual_text"]
+        feature["conditions"] = spec["conditions"]
+    prior["changed_evidence_ids"] = []
+    path = PRIVATE / "supplements/specification_change-before.json"
+    write(path, prior)
+    inputs["DATA15-specification_change-before"] = (path, prior)
+    vm = recipe["version_confusion_supplement"]
+    version_input = deepcopy(originals[vm["case_id"]])
+    for source in version_input["sources"]:
+        source["model_id"] = version_input["product"]["model_id"]
+        if source["source_type"] == "manual":
+            source["document_version"] = vm["manual_document_version"]
+            source["source_id"] = vm["manual_source_id"]
+    for feature in version_input["features"]:
+        feature["document_version"] = vm["manual_document_version"]
+    path = PRIVATE / "supplements/version_confusion.json"
+    write(path, version_input)
+    inputs["DATA15-version_confusion-supplement"] = (path, version_input)
+    write(PRIVATE / "cases.json", manifest)
+    write(PRIVATE / "adaptation-provenance.json", {
+        "artifact_kind": "synthetic_evaluation_input_derivation", "source_kind": "synthetic",
+        "original_source_commit": old_provenance["source_commit"],
+        "input_contract_matches_snapshot_commit": "bbf4e1c1da0106e140c6c7e87f7159e6f0fe3532",
+        "case_derivations": provenance,
+        "supplement_derivations": [spec, vm],
+        "locators": "Inherited logical synthetic page/row labels; actual text is at the JSON pointer, not a real PDF page",
+        "expected_responses_authored": False, "answer_key_bytes_read": False,
+        "candidate_outputs_used_or_copied": False, "pm_independence_approved": False,
+    })
+    pointers = []
+    for case_id, (path, value) in inputs.items():
+        for index, source in enumerate(value["sources"]):
+            pointers.append({
+                "case_id": case_id, "material_path": rel(path),
+                "json_pointer": f"/sources/{index}/text", "material_sha256": sha(path),
+                "id": source["id"], "source_id": source["source_id"],
+                "model_id": source["model_id"], "document_version": source["document_version"],
+                "source_kind": source["source_kind"], "source_type": source["source_type"],
+                "logical_locator": source["locator"],
+                "text_sha256": hashlib.sha256(source["text"].encode("utf-8")).hexdigest(),
+            })
+    write(PRIVATE / "source-catalog.json", {"records": pointers, "real_pdf_pages_claimed": False})
+    write(PRIVATE / "change-conflict-pairs.json", {
+        "model_mismatch": {"input_path": rel(inputs["DATA15-model_version_confusion"][0]),
+                           "scope": "Target product vs a review declaring another model"},
+        "version_mismatch": {"input_path": rel(inputs["DATA15-version_confusion-supplement"][0]),
+                             "scope": "Target document v1.0 vs supplied manual/feature v2.0"},
+        "conflicting_reviews": {"input_path": rel(inputs["DATA15-conflicting_reviews"][0]),
+                                "scope": "Two synthetic reviews about the same dishwasher placement condition"},
+        "specification_change": {
+            "before_input_path": rel(inputs["DATA15-specification_change-before"][0]),
+            "after_input_path": rel(inputs["DATA15-specification_change"][0]),
+            "before_sha256": sha(inputs["DATA15-specification_change-before"][0]),
+            "after_sha256": sha(inputs["DATA15-specification_change"][0]),
+            "comparison_key": ["model_id", "evidence_id", "document_version"],
+            "origin": "Authored synthetic pair, not actual LG product history",
+        },
+        "expected_decisions": None, "executed_results": None,
+    })
+    checks = []
+
+    def check(name, passed, detail=None):
+        checks.append({"name": name, "passed": bool(passed), "detail": detail})
+
+    check("six_required_categories", {c["category"] for c in manifest["cases"]} == REQUIRED)
+    check("three_product_groups", {x["product"]["product_group"] for _, x in inputs.values()} == {"fridge", "dishwasher", "microwave"})
+    for case_id, (path, value) in inputs.items():
+        errors = list(validator.iter_errors(value))
+        check(case_id + ":input_schema", not errors,
+              ["/".join(map(str, error.path)) + ": " + error.message for error in errors])
+        check(case_id + ":no_answers_or_outputs", not FORBIDDEN.intersection(keys(value)))
+        check(case_id + ":synthetic_sources", all(s["source_kind"] == "synthetic" for s in value["sources"]))
+        ids = {s["id"] for s in value["sources"]}
+        check(case_id + ":unique_source_ids", len(ids) == len(value["sources"]))
+        check(case_id + ":feature_evidence_links", all(set(f["evidence_ids"]).issubset(ids) for f in value["features"]))
+    dev_ids, dev_texts = set(), set()
+    for path in dev_paths:
+        data = read(path)
+        dev_ids.update(source_ids(data))
+        dev_texts.update(source_texts(data))
+    eval_ids, eval_texts = set(), set()
+    for _, value in inputs.values():
+        eval_ids.update(source_ids(value))
+        eval_texts.update(source_texts(value))
+    id_overlap, text_overlap = eval_ids & dev_ids, eval_texts & dev_texts
+    check("no_exact_development_id_overlap", not id_overlap, len(id_overlap))
+    check("no_exact_development_source_or_request_text_overlap", not text_overlap, len(text_overlap))
+    check("old_materials_and_pinned_sources_preserved", all(sha(REPO / p) == h for p, h in before_hashes.items()))
+    check("old_answer_metadata_preserved_without_opening_bytes", all(
+        [(REPO / p).stat().st_size, (REPO / p).stat().st_mtime_ns] == stat
+        for p, stat in answer_stats.items()))
+    check("private_pack_git_ignored", subprocess.run(
+        ["git", "check-ignore", "--quiet", str(PRIVATE / "cases.json")], cwd=REPO, check=False).returncode == 0)
+    module_spec = importlib.util.spec_from_file_location("data15_pm_manifest", REPO / "scripts/prepare_evaluation.py")
+    module = importlib.util.module_from_spec(module_spec)
+    module_spec.loader.exec_module(module)
+    parsed = module._manifest(PRIVATE / "cases.json")
+    check("existing_pm_manifest_loader", len(parsed) == 6)
+    declaration = {
+        "independent_from_development": "Declared construction separation, not PM approval",
+        "exact_id_overlap": len(id_overlap), "exact_text_overlap": len(text_overlap),
+        "comparison_scope": [rel(p) for p in dev_paths],
+        "semantic_independence_and_gold_validity": "Pending stage4/5 and PM review",
+        "no_tuning_or_development_code_changed": True,
+    }
+    write(PRIVATE / "development-separation.json", declaration)
+    result = {
+        "checked_at_kst": datetime.now(timezone(timedelta(hours=9))).isoformat(timespec="seconds"),
+        "task_id": "P2-DATA-004", "authorized_stages": [1, 2, 3],
+        "preparation_passed": all(c["passed"] for c in checks),
+        "check_count": len(checks), "checks": checks,
+        "primary_cases": 6, "supplemental_inputs": 2, "private_input_count": len(inputs),
+        "product_groups": dict(Counter(x["request"]["product_group"] for x in manifest["cases"])),
+        "source_kind": "synthetic", "answer_key_content_read": False,
+        "candidate_outputs_used": False, "gold_answers_authored": False,
+        "model_calls": 0, "service_calls": 0, "published": False,
+        "formal_dependency_released": False, "formal_task_completion": False,
+        "stage4_executed": False, "stage5_full_review_executed": False,
+        "stage6_executed": False, "stage7_executed": False,
+        "development_separation": declaration,
+    }
+    write(run / "preparation-checks.json", result)
+    inventory = {
+        "task_id": "P2-DATA-004", "checked_at_kst": result["checked_at_kst"],
+        "reuse": [
+            {"source": "data/demo", "use": "Development exclusion pool only; 5 models/36 reviews/42 evidence"},
+            {"source": rel(OLD), "use": "Frozen six-type inputs and exact schema reuse; answers/candidate outputs excluded"},
+            {"source": "data/research/P2-DATA-001-real-reference-20261004/reference-pack.json",
+             "use": "Historical reference catalog: 3 models/60 facts/2 unresolved differences/7 gaps; no live refresh or actual product version pair"},
+            {"source": "data/research/P2-DATA-002-step5-20261005/runs/verified/completion-review.json",
+             "use": "Fixed-input retrieval handoff only; 220 checks/122 HTTP requests are prior work, not this run; formal dependency not released"},
+        ],
+        "historical_reference_conflicts": [
+            {"id": c["id"], "model_id": c["model_id"], "field": c["field"],
+             "status": c["status"], "resolution": c["resolution"],
+             "source_ids": [o["source_id"] for o in c["observations"]],
+             "observed_at": [o["checked_at"] for o in c["observations"]]}
+            for c in reference["conflicts"]],
+        "missing": ["Stage4 expected responses/gold source approval", "Stage5 semantic quality/independence review",
+                    "Stage6 actual retrieval/Agent and specification-change rerun", "PM adoption of frozen contract and private input pack",
+                    "Formal DATA002 dependency release, PM merge/integration"],
+        "official_state": "P2-DATA-004 pending, unchanged", "new_real_customer_reviews": 0,
+        "real_product_version_history_available": False,
+    }
+    write(REPORT / "inventory.json", inventory)
+    write(REPORT / "case-index.json", {
+        "private_manifest": rel(PRIVATE / "cases.json"),
+        "cases": [{"case_id": c["case_id"], "category": c["category"],
+                   "product_group": c["request"]["product_group"],
+                   "input_path": rel(PRIVATE / c["data_path"]),
+                   "input_sha256": sha(PRIVATE / c["data_path"]),
+                   "adapted": bool(recipe["edits"].get(next(
+                       x["case_id"] for x in old_manifest["cases"] if x["category"] == c["category"]), []))}
+                  for c in manifest["cases"]],
+        "supplements": [rel(p) for k, (p, _) in inputs.items() if k.endswith(("-before", "-supplement"))],
+        "pm_approved": False, "answer_keys_included": False,
+    })
+    artifacts = {rel(p): sha(p) for p in PRIVATE.rglob("*") if p.is_file()}
+    artifacts.update({rel(REPORT / n): sha(REPORT / n) for n in ("inventory.json", "case-index.json", "prepare_inputs.py", "start.json")})
+    write(run / "artifact-hashes.json", artifacts)
+    print(json.dumps({k: result[k] for k in (
+        "preparation_passed", "check_count", "primary_cases", "supplemental_inputs", "product_groups",
+        "answer_key_content_read", "model_calls", "formal_task_completion")}, ensure_ascii=False))
+    if not result["preparation_passed"]:
+        raise SystemExit(1)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--run-id", default="initial")
+    args = parser.parse_args()
+    if not args.run_id or any(c not in "abcdefghijklmnopqrstuvwxyz0123456789-_" for c in args.run_id):
+        parser.error("Use a lowercase alphanumeric run ID")
+    prepare(args.run_id)
