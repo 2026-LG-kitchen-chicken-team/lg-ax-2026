@@ -131,7 +131,7 @@ def create_workspace_app(db_path: Path, registry: TokenRegistry, *,
                                     headers={"Cache-Control": "no-store"})
         try:
             response = await call_next(request)
-        except Exception:  # Storage/adapter exceptions may contain paths or credentials.
+        except Exception:  # noqa: BLE001 -- HTTP boundary must hide private storage/adapter diagnostics.
             return JSONResponse(status_code=500, content=public_error("CONNECTION_FAILED"),
                                 headers={"Cache-Control": "no-store"})
         response.headers["Cache-Control"] = "no-store"

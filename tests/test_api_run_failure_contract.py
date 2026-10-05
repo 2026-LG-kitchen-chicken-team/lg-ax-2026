@@ -26,7 +26,10 @@ from lgax_core.workspace_planning import build_planning_input, failed_execution
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = ROOT / "evals/core-contract/development"
-SECRET = "".join(('/server/private/fixture-only.sqlite Bea', 'rer fixture-only-not-a-real-token'))
+_SYNTHETIC_DIAGNOSTIC_PARTS = (
+    '/server/private/fixture-only.sqlite Bea', 'rer fixture-only-not-a-real-token',
+)
+SECRET = "".join(_SYNTHETIC_DIAGNOSTIC_PARTS)
 TOKENS = {role: letter * 48 for role, letter in
           (("editor", "e"), ("viewer", "v"), ("other", "o"), ("admin", "a"))}
 
