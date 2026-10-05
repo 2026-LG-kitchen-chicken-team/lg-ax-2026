@@ -44,3 +44,5 @@
 추가 검사 첫 argv는 Vitest `--root`만 바꾸고 process.cwd를 저장소 루트에 둬서, round2Live의 상대경로 자료 로더가 `/evals/...`를 찾는 ENOENT로 중단됐다. 나머지5파일43개(새 중간 상태 방어 포함)는 통과했고 원본 변경은 없었다. `cwd-failure-validation.json`과 `cwd-failure-test.log`에 보존하고, source 변경 없이 Docker 내부에서 apps/web로 명시적으로 이동한 고정 argv로 다시 검사했다. 검사 실패를 소스 수리나 모델 재실행 성공으로 표현하지 않는다.
 
 최종 d268 추가 실행은 관련6파일61개·타입·빌드·설치 모두 통과했으며 원본 변경 없음, 모델 호출0, GitHub/AI 인증 미마운트, 네트워크 차단을 확인했다. `final-isolation-proof.json`은 supervisor 원본이고 `validation.json`은 앞선 전체 검사와 후속 검사·파일 해시를 구분해 연결한다. 독립 검수는 중간 상태 방어 외 추가 차단 결함이 없음을 보고했다. code는 이 별도 로컬 브랜치에만 commit했고 push·PR·병합·중앙 상태 갱신·실제 브라우저는 PM 인계 후 작업이다.
+
+근거 텍스트는 Git 저장과 재실행 archive에서 해시가 유지되도록 UTF-8/BOM없음/LF로 정규화했다. supervisor JSON 내용과 로그는 그대로 보존하며 `validation.json`의 근거 파일 해시는 정규화한 저장 파일 기준이다.
