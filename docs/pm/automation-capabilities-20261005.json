@@ -1,0 +1,227 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "pm_capability_release_recipe",
+  "repo": "2026-LG-kitchen-chicken-team/lg-ax-2026",
+  "proposed_at": "2026-10-05T08:01:56+09:00",
+  "status": "proposed_not_registered",
+  "activation_effect": "none",
+  "purpose": "팀원별 실제 준비 증빙을 받은 뒤 PM이 새로 배정할 작은 인수 단위 3개다. 이 파일 작성은 자동화 ON, 배정, 기존 중단 해제, 정식 완료 승인이나 운영 정책 배포가 아니다.",
+  "source_inspection": {
+    "worktree_head": "d46e44815b63b9c52e4a344ca6500d7059ba7b85",
+    "observed_origin_main": "f2cbf017835a22dc58eba866664df42ea3836307",
+    "worktree_is_not_a_live_approval_snapshot": true,
+    "assignment_document": "docs/pm/현재배정.md",
+    "members": {
+      "unknownamed": {
+        "name": "황대겸",
+        "record": "docs/작업기록/황대겸.md",
+        "record_id": "황대겸-20261005-015",
+        "evidence": "docs/작업근거/황대겸.md",
+        "evidence_id": "황대겸-E015",
+        "current_issue": 8,
+        "remaining_boundary": "CORE002 실제 모델 의미 품질과 CORE003 공유 수정 예산의 실제 연결은 남아 있다. 기존 코어 작업 중단을 유지한다."
+      },
+      "ginaginaring": {
+        "name": "신진하",
+        "record": "docs/작업기록/신진하.md",
+        "record_id": "신진하-20261005-007-ci-recovery",
+        "evidence": "docs/작업근거/신진하.md",
+        "evidence_id": "신진하-E013-ci-recovery",
+        "current_issue": 12,
+        "remaining_boundary": "공개 원문 자료팩과 합성 리뷰를 구분한다. 독립 평가 원문·정답과 실제 모델 평가는 이번 자동 작업에 전달하지 않는다."
+      },
+      "choigilung": {
+        "name": "최길웅",
+        "record": "docs/작업기록/최길웅.md",
+        "record_id": "최길웅-20261005-017",
+        "latest_operational_record_id": "최길웅-20261005-018",
+        "evidence": "docs/작업근거/최길웅.md",
+        "evidence_id": "최길웅-E013",
+        "current_issue": 25,
+        "remaining_boundary": "실제 후보 선택·조건 변경 뒤 모델 재실행 전체 시연은 미완료다. 기록 재생·API 실패 경로 검증을 실제 모델 성공으로 바꾸지 않는다."
+      }
+    },
+    "observations": [
+      {
+        "id": "document-store-input-alias",
+        "files": ["packages/core/src/lgax_core/document_store.py", "packages/core/src/lgax_core/store.py"],
+        "verification_kind": "local_fixture_reproduction",
+        "finding": "DocumentStore가 _dataset은 복사하지만 제품·근거·기능 인덱스는 생성자 입력 객체를 참조한다. 정상 fixture 등록 후 호출자가 입력 evidence.text를 바꾸자 get_evidence의 문장은 바뀌고 bootstrap의 문장은 원래대로 남았다.",
+        "result": {"evidence_lookup_changed": true, "bootstrap_unchanged": true},
+        "limit": "임시 fixture와 Mock parser로 확인했다. 공개 PDF·고객 리뷰·실제 모델 실행 결과가 아니다."
+      },
+      {
+        "id": "web-concept-text-history",
+        "files": ["apps/web/src/planning.ts", "apps/web/src/PlanningViews.tsx"],
+        "verification_kind": "static_source_inspection",
+        "finding": "conceptDetailChanges는 상태·요구사항·가정·근거 ID만 비교한다. 동일 후보 ID에서 제목 또는 differentiation만 바뀌면 후보 변화 목록에서 빠지고 화면에는 후보 변화가 없다고 표시된다.",
+        "limit": "현재 소스의 조건식을 대조한 발견이며 이번 레시피 작성 중 브라우저 실행은 하지 않았다."
+      },
+      {
+        "id": "core-terminal-to-next-request",
+        "files": ["packages/core/src/lgax_core/planning_agent.py", "tests/test_planning_agent.py", "tests/test_semantic_review.py"],
+        "verification_kind": "regression_coverage_review",
+        "finding": "동일 정상 입력 두 번의 재사용 검사는 이미 있다. 수정 한도 소진으로 실패한 뒤 변경 요청을 같은 Agent로 실행하고 다시 근거 부족으로 보류하는 연속 사용자 흐름을 별도 검증한다.",
+        "limit": "새 결함이 있다고 단정하지 않는다. 실제 업무의 재사용 경계를 확인하는 블랙박스 회귀이며 기존 단위 검사와 정상 재사용 검사를 복제하지 않는다."
+      }
+    ]
+  },
+  "common_registration_conditions": [
+    "PM이 이 파일의 고정 commit과 최신 운영 main·공식 승인 스냅샷·Issue #28·현재 배정을 대조한다. 이 문서의 관측 commit을 미래 실행 base로 그대로 사용하지 않는다.",
+    "각 담당자의 현재 PC에서 고정 Docker image ID, 실행 자격증명과 게시 자격증명의 실제 분리, canary 접근 거부, 전용 본인 AI 로그인 및 선택 CLI 검증이 완료돼야 한다. true 선언이나 PM PC의 증빙을 팀원 PC의 준비 완료로 대신 사용하지 않는다.",
+    "본인 Worker readiness는 운영 정책의 TTL 및 현재 image·config·owner·backend와 일치해야 한다. 준비하지 못한 팀원의 capability는 미등록·미해제로 유지하고 다른 팀원의 ON 여부와 분리한다.",
+    "PM이 기존 원래 작업의 중단을 유지한 채 해당 작은 단위만 별도 승인·배정한다. 기존 Issue #8/#12/#25의 전체 재개·완료·후속 의존 해제로 해석하지 않는다.",
+    "공식 스냅샷에서 원래 선행 작업 완료를 확인한다. 의존 노드와 완료 증빙이 누락되면 task registry에 원래 노드를 포함하고 확인할 때까지 release하지 않는다.",
+    "실행 직전 기존 열린 PR·동일 capability 작업·동일 파일의 다른 세션을 조회해 충돌이 없음을 확인한다. 기존 중단 브랜치의 코드를 덮어쓰거나 이미 완료한 단위를 중복 배정하지 않는다.",
+    "개인 worktree와 고정 base를 사용한다. 아래의 정확한 제품 코드·검사 경로와 게시기가 허용하는 본인 의도·근거 append 기록만 변경한다. 공통 계약·운영 정책·다른 팀원의 기록·독립 평가 정답은 수정하지 않는다.",
+    "모든 검증 argv는 고정 image의 별도 validator에서 실행한다. validator에는 AI profile·GitHub/controller/PM 인증 파일·Docker socket·호스트 경로를 mount하지 않고 network=none을 적용한다. localhost나 host.docker.internal 모델 gateway 호출도 허용되지 않는다.",
+    "잠금 uv/npm 의존성과 image의 offline cache를 사용한다. cache가 부족하면 네트워크를 열거나 호스트 fallback하지 말고 준비 미완료로 보고한다. package·lock·Docker image 변경은 별도 PM 작업이다.",
+    "고정 runtime·외부 해시 검증 policy에 이 fragment를 검토 후 반영하고 증빙·등록 nonce·capability ID를 남긴다. 저장소의 이 JSON을 읽는 것만으로 broker가 동적 정책을 채택하지 않는다."
+  ],
+  "dependency_only_task_ids": ["P2-CORE-001", "P2-WEB-001", "P2-WEB-002"],
+  "tasks": {
+    "P2-CORE-001": {
+      "owner": "unknownamed", "issue_number": 7, "scope": "required",
+      "requirement_ids": ["R09", "R10", "R11", "R15", "R16", "R19", "R20", "E01"],
+      "depends_on": []
+    },
+    "P2-CORE-002": {
+      "owner": "unknownamed", "issue_number": 8, "scope": "required",
+      "requirement_ids": ["R01", "R09", "R10", "R11", "R12", "R15", "R16", "R26"],
+      "depends_on": ["P2-CORE-001"]
+    },
+    "P2-DATA-001": {
+      "owner": "ginaginaring", "issue_number": 12, "scope": "required",
+      "requirement_ids": ["R03", "R04", "R05", "R06", "R07", "R08", "R13"],
+      "depends_on": []
+    },
+    "P2-WEB-001": {
+      "owner": "choigilung", "issue_number": 23, "scope": "required",
+      "requirement_ids": ["R02", "R14", "R21", "R25", "R27"],
+      "depends_on": []
+    },
+    "P2-WEB-002": {
+      "owner": "choigilung", "issue_number": 24, "scope": "required",
+      "requirement_ids": ["R02", "R14", "R21", "R25"],
+      "depends_on": ["P2-WEB-001"]
+    },
+    "P2-WEB-003": {
+      "owner": "choigilung", "issue_number": 25, "scope": "required",
+      "requirement_ids": ["R14", "R21", "R25"],
+      "depends_on": ["P2-WEB-002"]
+    }
+  },
+  "capabilities": {
+    "core-request-reuse-terminal-regression": {
+      "task_id": "P2-CORE-002",
+      "requirement_ids": ["R01", "R09", "R15", "R16"],
+      "title": "실패→조건 변경→보류 요청의 Agent 재사용 경계 검증",
+      "purpose": "기획자가 같은 Agent에 반복 요청할 때 앞 실행의 수정 회차·후보·오류·검토 결과가 다음 요청에 섞이지 않는지 전체 PlanningAgent 공개 동작으로 검증한다. 기존 정상 요청 두 번 검사와 단순 함수 구현 복제는 제외한다.",
+      "allowed_paths": [
+        "packages/core/src/lgax_core/planning_agent.py",
+        "tests/test_planning_reuse.py"
+      ],
+      "validation_commands": [
+        ["uv", "run", "--offline", "--no-sync", "python", "-m", "unittest", "discover", "-s", "tests", "-p", "test_planning_reuse.py", "-v"],
+        ["uv", "run", "--offline", "--no-sync", "python", "-m", "unittest", "discover", "-s", "tests", "-p", "test_planning_agent.py", "-v"],
+        ["uv", "run", "--offline", "--no-sync", "python", "-m", "unittest", "discover", "-s", "tests", "-p", "test_semantic_review.py", "-v"]
+      ],
+      "required_checks": ["core-request-reuse", "core-planning-regression", "core-semantic-regression"],
+      "shared_resources": ["core-planning-agent"],
+      "acceptance": [
+        "동일 Agent/client를 재사용해 첫 요청이 형식 오류와 최대 두 내부 수정 뒤 종료되고, 내용·제외 조건이 바뀐 둘째 요청은 새 회차 0과 새 입력 hash로 처리되며, 셋째 요청의 근거 부족·uncertain은 후보를 남기지 않고 질문과 보류 이유를 반환하는 사용자 흐름을 검증한다.",
+        "각 결과의 원 입력·trace·model_calls·semantic_reviews가 서로 공유되지 않음을 확인한다. 뒤 결과나 호출자가 입력을 바꿔도 이전 실행의 원 입력·결과가 변하지 않아야 한다.",
+        "MockTransport 또는 고정 fixture adapter를 명시하고 execution_kind=fixture로만 검사한다. 잘못된 JSON·보류 선언을 실제로 기존 Skill·계약·종료 경로에 통과시키며 review_judgement/PlanningAgent를 mock해 결과를 직접 반환하지 않는다.",
+        "기존 고정 JSON 스키마·모델 pin·출처 범위·최대 두 수정·단계별 호출 정책을 완화하지 않는다. planning_agent.py는 새 회귀가 보여주는 실제 결함의 최소 수정에만 사용하고 결함이 없으면 의미 있는 사용자 흐름 회귀만 추가한다.",
+        "개발용 합성 입력을 사용하고 private 또는 독립 평가 원문·정답을 가져오지 않는다. fixture 검사 통과를 실제 모델의 제외 조건 이해·고객 효용·CORE002 전체 개별 검증으로 보고하지 않는다."
+      ],
+      "completes_task": false,
+      "timeout_seconds": 3600,
+      "priority": 90
+    },
+    "data-document-store-frozen-snapshot": {
+      "task_id": "P2-DATA-001",
+      "requirement_ids": ["R03", "R05", "R06", "R13"],
+      "title": "DocumentStore의 원 입력 변경에 대한 근거 snapshot 보호",
+      "purpose": "등록 뒤 외부 호출자가 입력 dict를 바꿨을 때 근거 조회와 bootstrap이 다른 원문·제품 버전을 보여주는 실제 재현 문제를 해결한다. 제품·기능·근거 인덱스와 검증을 같은 복사된 snapshot에서 구성한다.",
+      "allowed_paths": [
+        "packages/core/src/lgax_core/document_store.py",
+        "tests/test_document_store_snapshot.py"
+      ],
+      "validation_commands": [
+        ["uv", "run", "--offline", "--no-sync", "python", "-m", "unittest", "discover", "-s", "tests", "-p", "test_document_store_snapshot.py", "-v"],
+        ["uv", "run", "--offline", "--no-sync", "python", "-m", "unittest", "discover", "-s", "tests", "-p", "test_document_registration.py", "-v"],
+        ["uv", "run", "--offline", "--no-sync", "python", "scripts/check_contracts.py"]
+      ],
+      "required_checks": ["document-store-snapshot", "document-registration-regression", "canonical-contracts"],
+      "shared_resources": ["document-store"],
+      "acceptance": [
+        "현재 source의 alias 문제를 먼저 회귀로 재현한다. 생성자 입력의 제품·evidence 본문/문서 버전/feature_ids·feature 본문/evidence_ids·배열을 바꿔도 이미 등록한 store의 목록·근거 조회·검색·bootstrap은 같은 원 snapshot을 반환한다.",
+        "조회/검색/bootstrap 반환값의 중첩 값을 외부에서 바꿔도 다음 조회에 영향을 주지 않아야 한다. 모델·문서 버전·자료 성격·원문 위치를 세 조회 경로에서 일치시킨다.",
+        "기존 잘못된 모델·버전·source_kind·비상호 feature/evidence 연결 거부를 유지한다. 복사 전략 변경 때문에 검증을 생략하거나 입력 오류를 정상으로 바꾸지 않는다.",
+        "public_document와 synthetic를 별도 테스트 입력으로 유지하고 공개 자료를 합성 리뷰로 재표기하지 않는다. 기존 원문 PDF·자료팩·doc plan·과거 실패 입력·모델 적용 범위 판정을 변경하지 않는다.",
+        "fixture PDF/임시 저장소 또는 작은 canonical 자체 작성 입력을 사용한다. 인터넷 PDF 다운로드·OCR 모델·실제 고객 리뷰·독립 평가 정답·실제 모델 endpoint는 사용하지 않는다."
+      ],
+      "completes_task": false,
+      "timeout_seconds": 2700,
+      "priority": 85
+    },
+    "web-concept-text-change-history": {
+      "task_id": "P2-WEB-003",
+      "requirement_ids": ["R14", "R25"],
+      "title": "후보 제목·차별점 변경도 변경 전후 이력에 표시",
+      "purpose": "Agent가 동일 ID의 콘셉트를 수정했을 때 상태/근거 ID가 같더라도 제목·차별점 변경을 숨기지 않고 기획자에게 이전 원문과 이후 원문을 함께 보여준다.",
+      "allowed_paths": [
+        "apps/web/src/planning.ts",
+        "apps/web/src/PlanningViews.tsx",
+        "apps/web/src/conceptTextChanges.test.ts"
+      ],
+      "validation_commands": [
+        ["npm", "--prefix", "apps/web", "ci", "--offline", "--ignore-scripts", "--no-audit", "--no-fund"],
+        ["npm", "--prefix", "apps/web", "run", "test"],
+        ["npm", "--prefix", "apps/web", "run", "typecheck"],
+        ["npm", "--prefix", "apps/web", "run", "build"]
+      ],
+      "required_checks": ["web-offline-dependencies", "web-regressions", "web-typecheck", "web-build"],
+      "shared_resources": ["web-planning-history"],
+      "acceptance": [
+        "같은 ID·상태·요구사항·가정·근거 ID를 가진 후보에서 title만 바뀐 경우, differentiation만 바뀐 경우, 둘 다 바뀐 경우를 이력에 표시한다. 기존 제목과 새 제목, 기존 차별점과 새 차별점의 원문을 비교할 수 있어야 한다.",
+        "요구사항·가정·근거 추가/삭제와 상태 변화의 기존 표시는 유지한다. 후보 추가/삭제·변화 없는 후보·이전 실행 없는 기록·not_implemented 결과의 기존 의미를 깨뜨리지 않는다.",
+        "새 회귀는 conceptDetailChanges뿐 아니라 HistoryView를 fixture snapshot으로 실제 DOM 렌더링해 제목 또는 차별점만 바뀐 상황에서 '후보 변화가 없습니다'가 잘못 표시되지 않는지 확인한다. 표시용 구조를 만들되 서버 계약·원본 snapshot·내보낸 원 실행 기록을 변경하지 않는다.",
+        "새 텍스트는 일반 React 텍스트로 렌더링하고 HTML/마크다운 실행을 추가하지 않는다. 길거나 한국어인 차별점과 빈 이전 값도 원문을 손상하지 않고 확인할 수 있어야 한다.",
+        "외부 API·브라우저 모델 서버·실제 실행 credential 없이 fixture/DOM 검증한다. 실제 후보 선택→추가 조건→모델 재실행 및 WEB003 전체 live_service 완료는 이 인수에 포함하지 않는다."
+      ],
+      "completes_task": false,
+      "timeout_seconds": 3600,
+      "priority": 80
+    }
+  },
+  "registration_conditions_by_capability": {
+    "core-request-reuse-terminal-regression": [
+      "공식 CORE001 Done 증빙과 #8 담당 unknownamed를 재확인한다. 기존 CORE002 live_model 작업의 중단은 유지하고 이번 fixture 회귀 범위만 PM이 명시적으로 release한다.",
+      "planning_agent.py를 수정하는 다른 PR/Worker가 실행 중이면 해당 파일 자원 잠금을 확인해 대기한다. CORE003 공유 예산·revision_guard·API·Skill 계약 연결을 이 단위에 섞지 않는다."
+    ],
+    "data-document-store-frozen-snapshot": [
+      "최신 #12 자료 PR과 main의 DocumentStore를 재확인한다. 다른 PR이 alias 결함을 이미 고쳤다면 재배정하지 말고 PM이 회귀 필요 또는 다른 작은 단위를 다시 선정한다.",
+      "문서 저장·등록 원본의 변경/삭제 거부 검사를 유지한다. 자료팩 버전 승격·원문 재다운로드·새 모델/리뷰 확보는 별도 인수 단위다."
+    ],
+    "web-concept-text-change-history": [
+      "공식 WEB001/002 Done 증빙과 #25 담당 choigilung을 재확인한다. 실제 코어 인수 의존이 남은 후보 선택 재실행의 완료를 대신하지 않는다.",
+      "최신 웹 PR에 동일 이력 수정이 없는지 확인하고 planning.ts/PlanningViews.tsx의 다른 편집과 병렬로 쓰지 않는다. offline npm cache로 잠금 의존성 설치가 가능해야 한다."
+    ]
+  },
+  "pm_live_followup": {
+    "core-request-reuse-terminal-regression": "병합 후 PM은 별도 승인된 실제 모델 환경에서 정상·제외 조건 변경·불확실 요청을 반복하고 원 입력/hash·전송 prompt·모델 revision/설정·출력·후보 제외·보류·실제 수정 회차를 대조한다. fixture 시퀀스는 실제 의미 품질을 입증하지 않는다. CORE003 공유 예산 연결은 원래 의존과 별도 후속 배정으로 처리한다.",
+    "data-document-store-frozen-snapshot": "병합 후 PM은 고정 원문 자료팩과 기존 등록 서비스의 조회 경로에서 제품·문서 버전·원문 hash/locator 일치를 통합 대조한다. 실제 모델의 지원 범위·F08 적용성·F11/M11 근거 해석과 독립 평가를 따로 확인한다.",
+    "web-concept-text-change-history": "병합 후 PM은 실제 모델이 생성한 두 실행의 같은 후보에서 제목/차별점 변경을 웹 이력과 API/MCP snapshot으로 대조한다. 실제 후보 선택·조건 변경·재실행과 원 실행 불변 확인은 계속 남는다."
+  },
+  "completion_boundary": {
+    "completes_any_parent_task": false,
+    "verifies_all_31_requirements": false,
+    "unblocks_original_core_work": false,
+    "registers_or_enables_automation": false,
+    "sends_assignment_or_email": false,
+    "merge_conditions": "각 단위라도 고정 PR head/base/main·실제 CI SUCCESS·구현 세션과 독립된 검토·같은 head의 통합 증빙·정확한 경로/등록 policy·멱등 action journal을 통과해야 한다. 이 레시피 작성은 그 증빙을 대신하지 않는다.",
+    "after_partial_merge": "capability 인수 증빙과 원래 parent의 미완료 범위를 기록한다. 정식 하네스의 individual_verified/PM 승인/Done이나 후속 의존은 자동 승격하지 않는다."
+  }
+}

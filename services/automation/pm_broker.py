@@ -27,13 +27,20 @@ from services.automation.pm import (
     PMError,
     canonical,
     fingerprint,
+    identifiers,
     load_policy,
     protected_path,
     stable_observation,
     text,
 )
 from services.automation.state import MEMBER_NAMES, PM, REPO
-from services.automation.worker import ControllerClient, exclusive_lock, private_ai_values, write_json
+from services.automation.worker import (
+    ControllerClient,
+    exclusive_lock,
+    private_ai_values,
+    session_records,
+    write_json,
+)
 
 SHA = re.compile(r"[0-9a-f]{40}")
 ACTION_ID = re.compile(r"pm-[0-9a-f]{40}")
@@ -218,6 +225,7 @@ class TrustedPMBroker:
     def __init__(self, config: dict, *, github=None, controller=None, executor=None, driver=None):
         self.config = config
         self.policy = load_policy(config["policy_file"], config["policy_sha256"])
+        self._released_capabilities()  # Reject invalid trusted releases before side effects.
         self.state_dir = protected_path(Path(config["state_dir"]) / "broker-state.json").parent
         self.state_dir.mkdir(parents=True, exist_ok=True)
         self.state_path = self.state_dir / "broker-state.json"
@@ -239,6 +247,19 @@ class TrustedPMBroker:
             "schema_version": 1, "policy_sha256": config["policy_sha256"], "actions": {}, "units": {}, "proofs": {}, "budgets": {}}
         if self.state.get("policy_sha256") != config["policy_sha256"]:
             raise PMError("broker state belongs to another policy; explicit migration required")
+
+    def _released_capabilities(self):
+        """Only the deployed host config releases new assignments.
+
+        Missing is legacy compatibility for the already approved pilot. An
+        explicit empty list denies every new assignment; it is never a request
+        to use all registered capabilities. PR text and model decisions cannot
+        add IDs here. execute's fresh observe repeats this same validation.
+        """
+        if "released_capabilities" not in self.config:
+            return set(self.policy["capabilities"])
+        return set(identifiers(self.config["released_capabilities"], "released capabilities",
+                               allowed=self.policy["capabilities"], nonempty=False))
 
     def save(self):
         write_json(self.state_path, self.state)
@@ -264,7 +285,8 @@ class TrustedPMBroker:
         try:
             result = subprocess.run(["git", "-c", "core.hooksPath=" + str(self.state_dir / "empty-hooks"),
                 "-c", "core.fsmonitor=false", "-c", "commit.gpgsign=false", "-c", "protocol.ext.allow=never",
-                "-c", "protocol.file.allow=never", *args], cwd=self.repository, env=env,
+                "-c", "protocol.file.allow=never", "-c", "credential.helper=",
+                "-c", "credential.helper=!gh auth git-credential", *args], cwd=self.repository, env=env,
                 capture_output=True, timeout=120, check=False,
                 creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0)
         except (OSError, subprocess.TimeoutExpired):
@@ -345,6 +367,12 @@ class TrustedPMBroker:
         for account, item in self.config.get("readiness_files", {}).items():
             if account not in {task["owner"] for task in self.policy["tasks"].values()}:
                 continue
+            # Only this PM-owned deployed config can approve a worker's image.
+            # Independent per-PC builds need not match the PM review image, but
+            # a worker proof must never choose/expand its own accepted image.
+            approved_image = item.get("approved_executor_image", self.executor.config.image)
+            if not isinstance(approved_image, str) or not re.fullmatch(r"sha256:[0-9a-f]{64}", approved_image):
+                raise PMError("worker image approval requires an exact trusted sha256 image pin")
             raw = regular_file(protected_path(item["path"]))
             if hashlib.sha256(raw).hexdigest() != item.get("sha256"):
                 raise PMError("pinned actual worker readiness proof changed")
@@ -352,6 +380,7 @@ class TrustedPMBroker:
             boundary = proof.get("boundary", {})
             containers = boundary.get("containers", {})
             verified = (proof.get("collector") == "trusted_pm" and proof.get("account") == account and
+                        proof.get("image_id") == approved_image and
                         boundary.get("proof_kind") == "actual_harmless_container_not_mounted_boundary" and
                         boundary.get("publisher_readable") is True and
                         all(containers.get(role, {}).get("publisher_canary_readable") is False for role in ("model", "validator")) and
@@ -361,7 +390,7 @@ class TrustedPMBroker:
                 containers.get(role, {}).get("workspace_readable") is True and
                 containers.get(role, {}).get("docker_socket_readable") is False and
                 containers.get(role, {}).get("observed_boundary", {}).get("backend") == "docker" and
-                containers.get(role, {}).get("observed_boundary", {}).get("image_id") == self.executor.config.image and
+                containers.get(role, {}).get("observed_boundary", {}).get("image_id") == approved_image and
                 containers.get(role, {}).get("observed_boundary", {}).get("publisher_credentials_mounted") is False
                 for role in ("model", "validator"))
             verified = verified and containers.get("validator", {}).get("external_network_reachable") is False
@@ -482,6 +511,7 @@ class TrustedPMBroker:
 
     def observe(self, *, collect=True):
         self.authenticate()
+        released = self._released_capabilities()
         status = self.controller.request("/v1/status")
         main = self.github.request("GET", f"repos/{REPO}/commits/main")["sha"]
         if not SHA.fullmatch(main):
@@ -509,13 +539,16 @@ class TrustedPMBroker:
             files = self.github.pages(f"repos/{REPO}/pulls/{number}/files", maximum_pages=10)
             if current.get("changed_files", len(files)) != len(files):
                 raise PMError("complete changed-file evidence could not be collected")
-            pr = {"number": number, "task_id": unit["task_id"], "author": current.get("user", {}).get("login"),
+            pr = {"number": number, "task_id": unit["task_id"], "job_id": unit["job_id"],
+                  "author": current.get("user", {}).get("login"),
                   "draft": current.get("draft"), "head": current["head"]["sha"],
                   "base": unit["base_commit"], "base_ref": current["base"]["ref"],
                   "base_repo": current["base"]["repo"]["full_name"], "head_repo": current["head"]["repo"]["full_name"],
                   "state": "merged" if current.get("merged") else current["state"],
                   "mergeable": current.get("mergeable"), "changed_paths": sorted({path for row in files
                       for path in (row.get("filename"), row.get("previous_filename")) if path}),
+                  "added_paths": sorted({row["filename"] for row in files if row.get("status") == "added"
+                      and row.get("filename") and not row.get("previous_filename")}),
                   "merged_commit": current.get("merge_commit_sha") if current.get("merged") else None,
                   "ci": self._checks(current["head"]["sha"])}
             if pr["author"] != fixed_task["owner"] or pr["head"] != unit.get("head"):
@@ -545,7 +578,7 @@ class TrustedPMBroker:
                     elif proof.get("commit") == pr["head"]:
                         pr.setdefault("integration", proof)
             prs.append(pr)
-        ready = [key for key, value in self.policy["capabilities"].items() if not any(
+        ready = [key for key in self.policy["capabilities"] if key in released and not any(
             unit["capability_id"] == key and unit.get("reconciled") for unit in self.state["units"].values())]
         budget = self.state["budgets"].get(time.strftime("%Y-%m-%d", time.gmtime()), {})
         lifetime_tasks = {}
@@ -777,6 +810,9 @@ class TrustedPMBroker:
                 prompt="Fixed required capability " + action["capability_id"] + "\n" + canonical(assignment),
                 base_commit=action["base_commit"], approved=True, approved_snapshot_commit=action["approved_snapshot_commit"],
                 approval_reference=comment["html_url"])
+            # Detailed records are mandatory implementation artifacts, with a
+            # fresh exact job ID. Never broaden policy paths or mutate action.
+            packet["allowed_paths"] = list(action["allowed_paths"]) + session_records(packet, action["owner"])
             previous = next((row for row in reversed(list(self.state["units"].values())) if
                 row["capability_id"] == action["capability_id"] and row.get("revision_requested") and not row.get("superseded_by")), None)
             if previous:

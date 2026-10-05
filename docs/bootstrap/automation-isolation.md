@@ -15,6 +15,24 @@ GitHub/controller/PM/Gmail 인증·호스트 홈·원래 clone·`.git`·Docker �
 
 자기 AI 구독 로그인은 모델 역할에 필요하므로 모델에 제공한다. 검사는 그 로그인에도 접근하지 못한다. 인증 없는 검사 환경은 외부 공유 모델에 직접 접속하지 못하므로 live-model 검사는 승인된 별도 실행/근거로 관리하고 네트워크를 임의 열지 않는다.
 
+### Docker 내부 Codex sandbox 선택
+
+10/5 실제 pilot에서 nonprivileged Docker 내부의 `bwrap` namespace 생성이 거부돼 Codex의 파일 조회/명령 실행이 실패했다. 실패 세션·출력·원인은 보존하고, **검사한 고정 Docker executor 안의 Codex에만** `--sandbox danger-full-access`를 사용한다. Docker의 image ID·non-root·read-only root·제한 mount·권한/자원/네트워크 검사와 daemon 측 시간제한이 외부 실행 경계다. 내부 sandbox를 지원하려고 privileged·추가 capability·host network·Docker socket을 허용하지 않는다. 기존 native argv의 read-only/workspace-write 선택은 유지하며 운영 Worker의 native fallback은 계속 거부한다.
+
+[OpenAI 공식 Agent approvals & security](https://learn.chatgpt.com/docs/agent-approvals-security)의 Docker 안내를 2026-10-05 직접 확인했다. namespace/bwrap/seccomp 제한으로 내부 sandbox를 만들 수 없는 경우 컨테이너를 의도한 경계로 구성하고 그 내부에서 danger-full-access를 사용하는 방법을 안내한다. 동시에 컨테이너에 제공한 인증·자료는 그 안의 코드가 접근할 수 있음을 설명한다. 따라서 이 선택은 GitHub/controller/PM/Gmail 비밀을 모델에 주는 근거가 아니며, 모델에 제공하는 인증은 **본인의 선택한 AI 로그인 한 개**로 제한한다.
+
+독립 PM 검수와 Worker review의 `/workspace`는 실제 Docker bind mount를 read-only로 만들고 inspect로 확인한다. CLI flag가 danger-full-access여도 이 mount를 쓸 수는 없다. 결과용 `/artifacts`만 별도로 쓰고, 고정 검사는 모델 종료 뒤 **인증 없는 validator**에서 수행한다. Docker 내부 argv 변경·명령 재실행·모델 출력·고정 검사·게시까지 후속 pilot으로 확인하기 전에는 기존 실패를 성공이나 참가작 완료로 바꾸지 않는다.
+
+### 실행별 cache와 잠긴 Python 환경
+
+이미지 빌드의 `uv sync --locked`로 `/opt/lgax-venv`에 준비한 의존성과 lock을 사용한다. 실행 시 `UV_PROJECT_ENVIRONMENT=/opt/lgax-venv`, offline·no-sync 조건을 유지해 모델이나 검사 명령이 의존성을 임의 설치/변경하지 못하게 한다. root filesystem이 read-only이므로 이 가상환경도 고정된다.
+
+`uv --no-sync`도 cache metadata를 쓰므로 read-only 이미지의 seed cache에 실행 cache를 두지 않는다. `UV_CACHE_DIR=/home/executor/uv-cache`를 각 컨테이너의 비공개 tmpfs에 두며, `/tmp`와 `/home/executor`는 크기가 제한된 실행별 tmpfs다. npm도 고정 이미지의 seed에서 자기 실행 cache로 복사해 offline으로 사용한다. 이 cache는 AI 로그인·publisher 인증·다른 실행의 cache와 공유하지 않으며 컨테이너 종료와 함께 사라진다. 초기 cache 쓰기 실패는 보존하고 변경 후 실제 고정 검사 결과를 따로 인수한다.
+
+### 고정 Git 게시 경로
+
+호스트의 검토한 Worker/PM broker만 GitHub 인증을 사용한다. 고정 Git 호출에서 기존 credential helper를 비우고 **`gh auth git-credential`만** 명시하며, hooks·fsmonitor·자동 서명·확장/file protocol을 차단한다. 모델·브랜치 코드가 임의 helper나 게시 명령을 선택하지 않는다. 컨테이너에는 `.git`·GitHub 인증·이 helper의 호스트 인증 경로가 없고, 실제 검사한 bytes를 별도 게시 worktree에 반영해 자기 브랜치/PR을 만든다. 설정 존재와 실제 fetch/push/PR 성공은 별도 근거로 기록한다.
+
 ## 개인 경로 조건
 
 아래는 황대겸 예시이며 경로와 계정은 자기 PC의 실제 값으로 바꾼다.
@@ -28,7 +46,9 @@ GitHub/controller/PM/Gmail 인증·호스트 홈·원래 clone·`.git`·Docker �
 | 고정 Worker/report bundle | `C:/LGAX-tools/worker-reviewed`와 별도 report 폴더 |
 | 최소 이미지 build context | `C:/LGAX-build/executor-reviewed-새버전` |
 
-execution_root는 clone·state·controller token·AI 프로필과 서로 포함 관계가 없어야 한다. 링크/junction/reparse/hardlink 경로는 사용하지 않는다. `.codex`·`.claude` 전체 개인 홈이나 다른 팀원의 프로필을 mount하지 않는다. 같은 개인 프로필과 state lock은 한 Worker만 사용한다. 기존 Worker를 중단한 후 교체한다.
+execution_root는 clone·state·controller token·AI 프로필과 서로 포함 관계가 없어야 한다. 링크/junction/reparse/hardlink 경로는 사용하지 않는다. `.codex`·`.claude` 전체 개인 홈이나 다른 팀원의 프로필을 mount하지 않는다. 같은 state lock은 한 Worker만 사용한다. 기존 Worker를 중단한 후 교체한다.
+
+Worker와 PM이 같은 **본인** AI 프로필을 사용하면 `lgax-worker.lock`의 실제 OS 잠금으로 인증 검사·모델 실행을 직렬화한다. Worker 자체의 `worker.lock`은 서비스 실행 동안 유지한다. 개인 프로필 잠금은 초기 컨테이너 인증 검사 후 해제하며, 매 claim 직전에 다시 확보해 가져온 작업의 실행이 끝날 때까지 유지한다. **작업 없는 idle/poll 동안에는 프로필을 점유하지 않는다.** 잠금이 바쁘면 claim/모델 호출/개인 OFF 변경 없이 대기하고, `--once`/preflight는 profile_busy를 보고한다. PM도 같은 프로필을 동시에 사용하지 않는다. 실제 Windows OS 잠금 검사에서 idle 프로필 접근 허용·Worker 중복 실행 거부·busy 때 claim 없음이 확인됐으며, 배포한 고정 runtime의 실제 PM/Worker 연속 운용은 후속 pilot에서 따로 확인한다.
 
 ## 검토한 이미지 만들기
 

@@ -124,6 +124,8 @@
 
 ## 2026-10-05 승인 작업 자동화와 OFF 기본 운영
 
+- 10/5 사용자가 세 팀원의 준비 완료를 보고하고 동시 가동·각 팀원 메일 발송을 직접 승인했다. 중앙 팀/네 계정 ON과 새 배정3메일 실제 SENT를 확인했다. 최신 가동 상태는 `docs/pm/team-start-20261005.md`·정이량008/E021·실제 controller를 따른다. 아래 초기/시험 OFF는 당시 기록이다. 유효 초기 설정·본인 로그인·등록·원 state를 반복하지 않는다. ON 자체가 PC별 준비 검수나 capability release·실제 개발/게시·참가작 완성을 대신하지 않는다. 각 PC 원본 readiness/전체 SHA·image pin·원 의존·열린 PR 충돌을 PM이 인수한 작은 작업만 release하며, 고정 PM 설정 변경 뒤 검토한 재등록/재시작으로 실제 채택을 확인한다. 팀원 원본을 PM 자신의 증빙·true 선언으로 대체하지 않는다.
+
 - OFF는 실행 중 자기 Worker·새 코드 게시·자동 PM 변경을 중단한다. 기존 읽기 bridge의 완료된 검토 일반 댓글만 OFF에서 게시할 수 있고 STOP에서는 보류한다. 10/5 이전 model/test와 publisher의 같은 OS 사용자 문제는 최신 Docker 경계로 수정한다. 고정 host만 게시/controller 인증을 보유하고 모델·저장소 검사/빌드/설치는 Docker에서 실행한다. 모델에는 본인의 전용 AI 프로필만, validator에는 그 프로필도 제공하지 않는다. 실제 image/user/mount/network·무해한 canary 접근 거부·본인 로그인·개발/게시 증거로 각 PC를 확인한다. 전용 계정/VM 이름·폴더·환경변수·isolation_acknowledged=true·Docker 설치만으로 준비 완료를 만들지 않는다. Docker 불가 때 native 실행으로 대체하지 않는다.
 
 - 최신 운영은 `docs/pm/automation.md`와 `services/automation/README.md`를 따른다. 사용자 승인으로 ON/OFF 제어·분리 Worker·독립 읽기 검토·세션 기록·공유 모델 검증 경로를 구축한다. 초기 팀·개인 모드는 OFF이며 코드 작성·서비스 배포·읽기 pilot을 네 PC의 무인 개발 완주로 표현하지 않는다. 실제 설치/인증·격리 환경·원격 접속의 남은 조건을 확인한다.
@@ -140,6 +142,9 @@
 - 작업 종료 보고는 반드시 현재 어디까지 진행됐는지·실제 검증 결과·남은 작업·사용자가 해야 하는 행동을 포함한다. 기존 상세 기록·근거·Project ACCEPTED 보고를 유지한다. 자동화 운영 현황은 정식 참가작 완료/31요구 검증과 별도로 보고하며 중요 변경은 LG Notion 페이지·대시보드에 요약한다.
 
 ## 2026-10-05 자동 PM·Docker 인수 규칙
+
+- 10/5 정이량 전용 Docker Codex 로그인·실제 canary와 작은 개발→인증 없는 검사→PR82→독립 PM 검수→필수 CI→조건부 병합→postmerge 검사→Project 승인 ACK·unit accepted를 실제 확인했다. 공개 근거는 `evals/team-automation/20261005/pipeline-proof.json`이다. 시험 종료 후 팀/개인 OFF를 확인했다. 정이량 PC의 성공은 다른 세 PC의 준비·Claude 실모델 완주·참가작 31요구 완료를 대신하지 않는다.
+- 새 운영 PM config는 `released_capabilities: []`를 명시해 시작한다. policy에 등록된 capability라도 PC별 고정 준비 증거·원래 의존·같은 파일의 열린 PR/실행 충돌을 PM이 확인하기 전에는 release하지 않는다. PM만 외부 allowlist·hash 고정 배포/예약 작업을 명시 갱신한다. 모델·팀원 보고가 자동으로 release하거나 정책을 수정하지 않는다. ON/OFF는 controller 스위치이며 개별 작업 release와 별개다. 팀원 첫 인수 레시피는 `docs/pm/automation-capabilities-20261005.json`이다.
 
 - `docs/bootstrap/automation-isolation.md`·`docs/pm/autonomous-pm.md`가 최신 경계/운영이다. 현재 코드의 능력·실제 배포·본인 로그인·canary·모델 생성·GitHub 게시·자동 검수/병합 완주를 구분한다. 최신 고정 commit·실행 근거를 인수하기 전 개인/팀 OFF를 유지한다. 황대겸의 기존 코어 중단은 인계·자기 PC 검증 전까지 유지하고 다른 팀원의 상태를 대신 추정하지 않는다.
 - 자동 PM policy·journal·broker state·auth는 모든 checkout 밖에 고정 배포한다. model은 등록 task/capability와 의도 문구만 선택하며 경로·검사·owner·HTTP 목적지·비용·보호 설정을 확대하지 않는다. 정이량 GitHub 계정과 controller 운영자 인증을 별도로 확인한다. 팀 ON·PM 개인 ON·policy.enabled, 배정 대상의 개인 ON과 실제 readiness 증거를 모두 확인한다.

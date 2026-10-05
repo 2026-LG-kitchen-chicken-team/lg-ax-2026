@@ -529,8 +529,13 @@ def codex_argv(config: WorkerConfig, job, run_dir: Path):
     executable = "codex" if config.executor_image else shutil.which(config.codex_executable)
     if not executable:
         raise ValueError("installed Codex CLI executable is unavailable")
-    return [executable, "exec", "--ignore-user-config", "--skip-git-repo-check", "--json", "--sandbox",
-            "read-only" if job["kind"] == "review" else "workspace-write",
+    # The verified nonprivileged Docker executor enforces the outer boundary,
+    # including read-only review mounts. Nested bwrap requires unavailable user
+    # namespaces; never grant Docker extra privileges or weaken host/native mode.
+    sandbox = "danger-full-access" if config.executor_image else (
+        "read-only" if job["kind"] == "review" else "workspace-write")
+    return [executable, "exec", "--ignore-user-config", "--skip-git-repo-check", "--json", "--sandbox", sandbox,
+            "-c", 'approval_policy="never"',
             "--output-schema", str(schema), "--output-last-message", str(run_dir / "result.json"), "-"]
 
 
@@ -837,27 +842,48 @@ def main():
         config.state_dir.chmod(0o700)
         config.agent_home.chmod(0o700)
     client = ControllerClient(config.controller_url, config.token_file)
-    with exclusive_lock(config.state_dir / "worker.lock"), exclusive_lock(config.agent_home / "lgax-worker.lock"):
+    @contextlib.contextmanager
+    def available_profile():
+        # Only lock acquisition failures mean busy. An OSError from auth, the
+        # controller, or an active job must retain its original error handling.
+        with contextlib.ExitStack() as locks:
+            try:
+                locks.enter_context(exclusive_lock(config.agent_home / "lgax-worker.lock"))
+            except OSError:
+                yield False
+                return
+            yield True
+
+    with exclusive_lock(config.state_dir / "worker.lock"):
         github_identity(config)
         authentication, boundary = None, None
-        if config.executor_image and config.execution_root:
-            # Authentication must belong to the CLI in the selected image. A
-            # Windows Claude keychain/login is never a proxy for Linux readiness.
-            config.execution_root.mkdir(parents=True, exist_ok=True)
-            name = "preflight-" + str(time.time_ns())
-            guest = config.execution_root / name / "source"
-            stage = guest.parent / "artifacts"
-            probe = config.state_dir / name
-            guest.mkdir(parents=True, exist_ok=False)
-            stage.mkdir()
-            probe.mkdir()
-            executor = DockerExecutor(DockerConfig(image=config.executor_image,
-                workspace_root=config.execution_root, auth_root=config.agent_home,
-                engine=config.engine, model_network=config.executor_network))
-            boundary = executor.preflight()
-            authentication = validate_container_auth(config, executor, guest, stage, probe, lambda: True)
-            if not isinstance(authentication, dict) or authentication.get("verified") is not True:
-                raise ValueError("actual selected container subscription authentication is unverified")
+        while config.executor_image and config.execution_root and authentication is None:
+            with available_profile() as acquired:
+                if acquired:
+                    # Authentication belongs to the CLI in the selected image;
+                    # Windows Claude login is never a proxy for Linux readiness.
+                    config.execution_root.mkdir(parents=True, exist_ok=True)
+                    name = "preflight-" + str(time.time_ns())
+                    guest = config.execution_root / name / "source"
+                    stage = guest.parent / "artifacts"
+                    probe = config.state_dir / name
+                    guest.mkdir(parents=True, exist_ok=False)
+                    stage.mkdir()
+                    probe.mkdir()
+                    executor = DockerExecutor(DockerConfig(image=config.executor_image,
+                        workspace_root=config.execution_root, auth_root=config.agent_home,
+                        engine=config.engine, model_network=config.executor_network))
+                    boundary = executor.preflight()
+                    authentication = validate_container_auth(config, executor, guest, stage, probe, lambda: True)
+                    if not isinstance(authentication, dict) or authentication.get("verified") is not True:
+                        raise ValueError("actual selected container subscription authentication is unverified")
+            if authentication is None:
+                if args.once or args.preflight:
+                    print(json.dumps({"account": config.account, "engine": config.engine,
+                                      "state": "profile_busy", "model_executed": False,
+                                      "automation_ready": False, "execution_started": False}), flush=True)
+                    return
+                time.sleep(config.poll_seconds)
         if args.preflight:
             client.request("/v1/status")
             print(json.dumps({"account": config.account, "engine": config.engine,
@@ -873,16 +899,23 @@ def main():
             raise ValueError("selected container authentication required; host/native fallback is forbidden")
         while True:
             try:
-                claimed = client.request("/v1/claim", {}).get("job")
-                if claimed:
-                    checkpoint = execute_job(config, client, claimed)
-                    if checkpoint.get("halt_worker"):
-                        # Auth/quota/process failures must not drain the rest of
-                        # the queue. Only this member is paused; PM can resume.
-                        client.request("/v1/mode", {"mode": "off", "member": config.account})
-                    # Print metadata only. Model output/logs remain private.
-                    print(json.dumps({"job_id": checkpoint["job_id"], "state": checkpoint["state"],
-                                      "controller_receipt": checkpoint.get("controller_receipt")}), flush=True)
+                # A PM decision/review may use this same owner's AI login. Claim
+                # only after acquiring the profile and release it while idle.
+                with available_profile() as acquired:
+                    if acquired:
+                        claimed = client.request("/v1/claim", {}).get("job")
+                        if claimed:
+                            checkpoint = execute_job(config, client, claimed)
+                            if checkpoint.get("halt_worker"):
+                                # Only this member pauses after auth/quota/process
+                                # failures; do not drain the rest of the queue.
+                                client.request("/v1/mode", {"mode": "off", "member": config.account})
+                            print(json.dumps({"job_id": checkpoint["job_id"], "state": checkpoint["state"],
+                                              "controller_receipt": checkpoint.get("controller_receipt")}), flush=True)
+                    elif args.once:
+                        print(json.dumps({"account": config.account, "engine": config.engine,
+                                          "state": "profile_busy", "model_executed": False,
+                                          "automation_ready": False, "execution_started": False}), flush=True)
             except Exception as exc:  # noqa: BLE001 - bounded background service must retain its error.
                 write_json(config.state_dir / "last-worker-error.json", {"at": now(), "error": str(exc)[:500]})
             if args.once:
