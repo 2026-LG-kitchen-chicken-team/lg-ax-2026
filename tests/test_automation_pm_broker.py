@@ -16,7 +16,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from services.automation.pm import AutonomousPM, PMError, fingerprint, stable_observation
+from services.automation.pm import AutonomousPM, PMDriverBusy, PMError, fingerprint, stable_observation
 from services.automation.pm_broker import DockerPMDriver, LiveGitHub, TrustedPMBroker
 from services.automation.state import ACCOUNTS, PM, REPO
 from services.automation.worker import exclusive_lock, session_records
@@ -222,6 +222,63 @@ class BrokerTests(unittest.TestCase):
         self.broker.state["proofs"][key] = {"verified": True, "collector": "trusted_pm", "head": HEAD, "base": BASE,
             "commit": HEAD, "result": "passed", "checks": ["client-unit"], "evidence_sha256": "e" * 64,
             "capability_fingerprint": fingerprint(capability)}
+
+    def test_busy_review_does_not_reserve_budget_or_cache_unknown_then_resumes(self):
+        self.add_unit()
+        pr = self.broker.observe(collect=False)["prs"][0]
+        capability = self.broker.policy["capabilities"][CAP]
+        driver = DockerPMDriver(self.executor, state_dir=self.root / "real-driver", heartbeat=lambda: True)
+        self.broker.driver = driver
+        before = deepcopy(self.broker.state)
+        record = {"session_id": "fresh-independent-review", "usage": {"input_tokens": 20, "output_tokens": 4},
+                  "result": {"outcome": "approve", "reason": "Fixed-head review", "findings": []}}
+        with patch.object(driver, "_call", return_value=record) as model:
+            with exclusive_lock(self.executor.config.auth_root / "lgax-worker.lock"):
+                for _ in range(2):
+                    with self.assertRaises(PMDriverBusy):
+                        self.broker._review(pr, capability, "implementation-session")
+                self.assertEqual(self.broker.state, before)
+                self.assertEqual(model.call_count, 0)
+            proof = self.broker._review(pr, capability, "implementation-session")
+            self.assertTrue(proof["verified"])
+            self.assertEqual(model.call_count, 1)
+            self.assertEqual(self.broker._review(pr, capability, "implementation-session"), proof)
+            self.assertEqual(model.call_count, 1)
+        day = time.strftime("%Y-%m-%d", time.gmtime())
+        self.assertEqual(self.broker.state["budgets"][day]["calls"], 1)
+        self.assertEqual(self.broker.state["budgets"][day]["tokens"], 24)
+
+    def test_review_failure_after_reservation_still_exhausts_unknown_usage(self):
+        self.add_unit()
+        pr = self.broker.observe(collect=False)["prs"][0]
+        capability = self.broker.policy["capabilities"][CAP]
+        driver = DockerPMDriver(self.executor, state_dir=self.root / "real-driver", heartbeat=lambda: True)
+        self.broker.driver = driver
+        with (patch.object(driver, "_call", side_effect=OSError("fixture after model entry")) as model,
+              self.assertRaises(OSError)):
+            self.broker._review(pr, capability, "implementation-session")
+        self.assertEqual(model.call_count, 1)
+        day = time.strftime("%Y-%m-%d", time.gmtime())
+        self.assertEqual(self.broker.state["budgets"][day]["calls"], 1)
+        self.assertEqual(self.broker.state["budgets"][day]["tokens"], self.broker.policy["limits"]["max_model_tokens_per_day"])
+        self.assertEqual(self.broker.state["budgets"][day]["tasks"][TASK], self.broker.policy["limits"]["max_model_tokens_per_task"])
+        self.assertEqual(next(iter(self.broker.state["proofs"].values()))["outcome"], "unknown")
+
+    def test_late_review_busy_is_not_a_cost_free_wait(self):
+        self.add_unit()
+        pr = self.broker.observe(collect=False)["prs"][0]
+        capability = self.broker.policy["capabilities"][CAP]
+        driver = DockerPMDriver(self.executor, state_dir=self.root / "real-driver", heartbeat=lambda: True)
+        self.broker.driver = driver
+        with (patch.object(driver, "_call", side_effect=PMDriverBusy("fixture after model entry")) as model,
+              self.assertRaises(PMError) as failure):
+            self.broker._review(pr, capability, "implementation-session")
+        self.assertNotIsInstance(failure.exception, PMDriverBusy)
+        self.assertEqual(model.call_count, 1)
+        day = time.strftime("%Y-%m-%d", time.gmtime())
+        self.assertEqual(self.broker.state["budgets"][day]["calls"], 1)
+        self.assertEqual(self.broker.state["budgets"][day]["tokens"], self.broker.policy["limits"]["max_model_tokens_per_day"])
+        self.assertEqual(next(iter(self.broker.state["proofs"].values()))["outcome"], "unknown")
 
     def test_worker_token_is_not_operator(self):
         self.controller.operator = False
@@ -501,7 +558,11 @@ class BrokerTests(unittest.TestCase):
         self.assertEqual(self.controller.status["jobs"][0]["status"], "blocked")
         self.assertEqual(self.broker.observe(collect=False)["prs"], [])
         new_action, new_expected = self.action("assign")
-        self.broker.execute("pm-" + "e" * 40, new_action, new_expected)
+        # This routing test covers release and new-job linkage. Actual immutable
+        # Git metadata and scope checks have separate local-Git regressions.
+        context = {"previous_head": HEAD, "patch_as_inert_reference": "fixed inert product diff"}
+        with patch.object(self.broker, "_revision_context", return_value=context):
+            self.broker.execute("pm-" + "e" * 40, new_action, new_expected)
         packet = next(body for route, body in reversed(self.controller.calls) if route == "/v1/jobs")
         self.assertIn("previous_head", packet["prompt"])
         self.assertIn(HEAD, packet["prompt"])
@@ -573,6 +634,19 @@ class BrokerTests(unittest.TestCase):
 
 
 class DriverTests(unittest.TestCase):
+    def test_execution_io_error_is_not_reclassified_as_profile_contention(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            executor = FakeExecutor(root)
+            driver = DockerPMDriver(executor, state_dir=root / "state", heartbeat=lambda: True)
+            with (patch.object(executor, "run", side_effect=OSError("fixture after executor launch")) as run,
+                  self.assertRaises(OSError)):
+                driver({}, {}, 30)
+            self.assertEqual(run.call_count, 1)
+            self.assertEqual(len(list((root / "state").glob("pm-decision-*"))), 1)
+            with exclusive_lock(executor.config.auth_root / "lgax-worker.lock"):
+                pass
+
     def test_worker_profile_lock_blocks_pm_without_model_or_retry(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
