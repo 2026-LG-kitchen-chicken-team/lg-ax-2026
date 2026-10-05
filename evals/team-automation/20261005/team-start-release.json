@@ -1,0 +1,184 @@
+{
+  "record_id": "TEAM-START-RELEASE-20261005",
+  "observed_at": "2026-10-05T00:12:06.780751+00:00",
+  "source_main": "d95b225029171fec71fe50fcbcd66a65d849914d",
+  "global_mode": "on",
+  "members": {
+    "jeongiryang": true,
+    "unknownamed": true,
+    "ginaginaring": true,
+    "choigilung": true
+  },
+  "approved_snapshot_commit": "d95b225029171fec71fe50fcbcd66a65d849914d",
+  "released_capabilities": [
+    "web-concept-text-change-history"
+  ],
+  "readiness_accounts": [
+    "choigilung",
+    "jeongiryang"
+  ],
+  "config_sha256": "bc9433d11d7cef1114851aed114f381735080c5c3c9a187f26060e4cf5be0944",
+  "readiness": {
+    "account": "choigilung",
+    "sha256": "47ed55516d2ab332fd3ee137637d99820b8aabf5c4cbc736e404a1d13a60c6cd",
+    "approved_executor_image": "sha256:98b8695564be6287745790bc88ccfcb769faee7d8572c31de12f857f8c797b02",
+    "actual_first_generation_and_publication_complete": false
+  },
+  "prior_web_pr_intake": {
+    "pr": 85,
+    "original_review_head": "520bf2275aad3271c618a3dbddf912c690d9048f",
+    "updated_head": "f8dd2616801ab0345feaceb89c3824fcd105f9b7",
+    "merge_commit": "d95b225029171fec71fe50fcbcd66a65d849914d",
+    "included_prs": [
+      80,
+      83
+    ],
+    "actual_ci_success_count": 4,
+    "independent_checks": [
+      {
+        "argv": [
+          "npm",
+          "--prefix",
+          "apps/web",
+          "ci",
+          "--offline",
+          "--ignore-scripts",
+          "--no-audit",
+          "--no-fund"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 15.077999999979511,
+        "log_sha256": "53931c382484e1f0266217773802af7a690739856195b03ac9cf085120a49893",
+        "boundary": {
+          "backend": "docker",
+          "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+          "role": "validator",
+          "uid": 1000,
+          "readonly_root": true,
+          "caps_dropped": true,
+          "no_new_privileges": true,
+          "network": "none",
+          "mount_targets": [
+            "/artifacts",
+            "/workspace"
+          ],
+          "publisher_credentials_mounted": false,
+          "ai_profile_mounted": false
+        }
+      },
+      {
+        "argv": [
+          "npm",
+          "--prefix",
+          "apps/web",
+          "run",
+          "test"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 279.0,
+        "log_sha256": "d02d28dea2500b509ed670d557a3a37129a29fe0803055ff184df342fffc78fb",
+        "boundary": {
+          "backend": "docker",
+          "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+          "role": "validator",
+          "uid": 1000,
+          "readonly_root": true,
+          "caps_dropped": true,
+          "no_new_privileges": true,
+          "network": "none",
+          "mount_targets": [
+            "/artifacts",
+            "/workspace"
+          ],
+          "publisher_credentials_mounted": false,
+          "ai_profile_mounted": false
+        }
+      },
+      {
+        "argv": [
+          "npm",
+          "--prefix",
+          "apps/web",
+          "run",
+          "typecheck"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 7.125,
+        "log_sha256": "c028f37ff786c1cd330dfd4a41ef0492f01c33aeeec7ec353ad7d20ac783869c",
+        "boundary": {
+          "backend": "docker",
+          "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+          "role": "validator",
+          "uid": 1000,
+          "readonly_root": true,
+          "caps_dropped": true,
+          "no_new_privileges": true,
+          "network": "none",
+          "mount_targets": [
+            "/artifacts",
+            "/workspace"
+          ],
+          "publisher_credentials_mounted": false,
+          "ai_profile_mounted": false
+        }
+      },
+      {
+        "argv": [
+          "npm",
+          "--prefix",
+          "apps/web",
+          "run",
+          "build"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 11.625,
+        "log_sha256": "1820991527972b77cfa6fc82d0630655993d3c26b5fbc4dd9eb41204b82d1b34",
+        "boundary": {
+          "backend": "docker",
+          "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+          "role": "validator",
+          "uid": 1000,
+          "readonly_root": true,
+          "caps_dropped": true,
+          "no_new_privileges": true,
+          "network": "none",
+          "mount_targets": [
+            "/artifacts",
+            "/workspace"
+          ],
+          "publisher_credentials_mounted": false,
+          "ai_profile_mounted": false
+        }
+      }
+    ],
+    "checks_proof_sha256": "79599a317f265b0d67d20a27b71a7b8073e12fa544eec08e3600f3bc8cebe84a",
+    "semantic_completion_asserted": false,
+    "nonblocking_followup": "reasonText inherited-key raw text preservation"
+  },
+  "first_job": {
+    "job_id": "auto-cbcaed018a0634bacaef459fe7b7fa223a6fa812",
+    "member": null,
+    "status": "running",
+    "attempt": 1,
+    "lease_generation": 1,
+    "lease_expires_at": 1791159231.624116,
+    "stop_reason": null
+  },
+  "assign_action_id": "pm-cbcaed018a0634bacaef459fe7b7fa223a6fa812",
+  "heartbeat_independent_observation": {
+    "at_kst": "2026-10-05 09:08:59",
+    "lease_extension_seconds": 66
+  },
+  "pm_next_action": "wait for actual worker implementation, validation and publication evidence",
+  "pending_accounts": [
+    "unknownamed",
+    "ginaginaring"
+  ],
+  "pending_reason": "original already-generated readiness evidence has not been received by PM",
+  "prior_authentication_and_registration_preserved": true,
+  "product_status": {
+    "done": 5,
+    "requirements_verified": 0
+  },
+  "docs_merge_gate": "Do not advance main while the current job requires its fixed base."
+}
