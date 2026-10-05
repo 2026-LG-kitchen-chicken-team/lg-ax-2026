@@ -17,6 +17,8 @@
 
 `parent_collector.py`는 고정 host 코드로 GitHub·중앙 상태·보호된 실행 증거를 직접 수집한다. 부족한 요구·다음 검증을 명시한다. `completion_publish.py`는 완전한 후보만 불변 자산으로 내보내 검증 PR을 만들고 정확한 CI·병합·Project 및 중앙의 실제 수신을 확인한다. 결과 불명인 게시·병합은 관측으로 복구하며 재실행하지 않는다.
 
+현재 일반 개발 단위의 fixture 검사만으로 실제 Agent 실행 증거를 생성하지 않는다. 앱 실행 산출물과 요구사항별 독립 판정은 보호된 `register_requirement_bundle`로 인수해야 한다. 이 입력이 없는 부모는 부족한 요구와 다음 검증을 남기며 Done을 보류한다. 실제 앱 실행 collector의 자동 생성은 후속 제품 검증 작업이다.
+
 여러 PR에 걸친 완료는 `trusted_auto_parent_v1`로 기록한다. 기존 담당자의 `individual_evidence`·과거 기록을 대신 작성하지 않는다. `phase2.py validate`는 내보낸 증거의 무결성을 검사하며 실제 인증·실행의 진실성을 증명하는 도구가 아니다. 단위 성공과 31개 요구사항 전체 검증 및 참가작 완성은 구분한다.
 
 ## CLI 메일

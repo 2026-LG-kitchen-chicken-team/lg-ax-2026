@@ -15,7 +15,7 @@
 | wait | 자료·실행 환경·의존·검수 근거 대기. 변하지 않은 상태에는 모델을 재호출하지 않음 |
 | escalate | 추가 비용·범위/계약/권한/정책 변경·공식 제출·불명 결과 등 사용자 판단이 필요한 내용을 기록 |
 
-현재 live broker의 reconcile은 작은 업무 인수와 runtime snapshot 갱신이며 부모 Done을 만들지 않는다. 정책 모듈의 full-task 판정 기능과 달리 **전체 phase2 완료를 처리하는 전용 근거 collector는 별도 후속 통합 대상**이다. 부모 과제·31개 요구 전체 완료를 자동 pilot 성공으로 바꾸지 않는다.
+현재 live broker의 reconcile은 작은 업무 인수와 runtime snapshot 갱신이며 부모 Done을 만들지 않는다. 보호된 요구 근거 collector·완료 PR·Project/중앙 승인과 의존 해제는 [연쇄 운영](orchestration.md)의 별도 경로다. 실제 앱 실행과 요구사항별 독립 판정 증거가 없는 과제는 완료 보류한다. 부모 과제·31개 요구 전체 완료를 자동 pilot 성공으로 바꾸지 않는다.
 
 ## 고정 배포와 설정
 
