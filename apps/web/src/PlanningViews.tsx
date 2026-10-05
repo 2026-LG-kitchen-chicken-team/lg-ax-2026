@@ -4,7 +4,7 @@ import { ApiError } from './api';
 import { evidenceLocation } from './domain';
 import type { Evidence } from './domain';
 import { ExecutionPanel } from './JudgementViews';
-import { rerunBaseNotice, selectableConcepts } from './judgement';
+import { reasonText, rerunBaseNotice, selectableConcepts } from './judgement';
 import { runStatusView } from './liveWorkspace';
 import { editSummary, END_RULE, START_RULE } from './measurement';
 import type { EditSummary, ModificationMeasurement } from './measurement';
@@ -286,7 +286,7 @@ export function ConceptsView({ mode, runs, selected, onSelect, features, evidenc
         </dl>
         <button type="button" className={`review-button ${reviewed?.id === concept.id ? 'active' : ''}`} aria-pressed={reviewed?.id === concept.id} onClick={() => setReviewId(concept.id)}>원문·판단 함께 보기</button>
       </article>)}</div> : <p className="muted pad">{selected.run.status === 'not_implemented' ? '이 실행은 요청만 기록된 초안입니다. Agent가 연결되지 않아 후보를 만들지 않았습니다.' : '생성된 후보가 없습니다.'}</p>}
-      {selected.run.unresolved.length ? <div className="unresolved"><strong>보류·미해결</strong><ul>{selected.run.unresolved.map(item => <li key={item}>{item}</li>)}</ul></div> : null}
+      {selected.run.unresolved.length ? <div className="unresolved"><strong>보류·미해결</strong><ul>{selected.run.unresolved.map(item => <li key={item}>{reasonText(item)}</li>)}</ul></div> : null}
     </section>
     {selected.run.concepts.length > 1 ? <section className="panel planning-panel"><div className="planning-head"><div><p className="eyebrow">SIDE BY SIDE</p><h3>후보 비교표</h3></div></div><CandidateMatrix snapshot={selected} /></section> : null}
     {reviewed ? <section className="panel planning-panel" aria-label="후보 상세 검토"><div className="planning-head"><div><p className="eyebrow">REVIEW</p><h3>{reviewed.title} <span className="count">원문·판단·가정·보류</span></h3></div><span className={`status-pill ${reviewed.status}`}>{statusLabel(reviewed.status)}</span></div><CandidateReview snapshot={selected} concept={reviewed} features={features} evidence={evidenceById} /></section> : null}
