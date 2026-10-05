@@ -706,6 +706,8 @@ class AutonomousPM:
                 "formal_snapshot": deepcopy(observation["formal_snapshot"]), "tasks": tasks,
                 "capabilities": capabilities, "capabilities_ready": observation["capabilities_ready"],
                 "members": observation.get("members", {}), "readiness": observation.get("readiness", {}),
+                "worker_presence": stable_observation(observation).get("worker_presence", {}),
+                "worker_presence_limit": "Authenticated fixed-worker alive metadata only; never readiness, test success, lease renewal or completion proof.",
                 "mail_reports": [{key: deepcopy(report[key]) for key in
                                   ("event_id", "owner", "task_id", "assignment_id", "report", "authority")
                                   if key in report} for report in observation.get("mail_reports", [])
