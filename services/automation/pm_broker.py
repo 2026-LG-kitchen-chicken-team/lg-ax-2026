@@ -245,8 +245,9 @@ class DockerPMDriver:
 class TrustedPMBroker:
     def __init__(self, config: dict, *, github=None, controller=None, executor=None, driver=None):
         self.config = config
-        if type(config.get("allow_fixed_ready_dispatch", False)) is not bool:
-            raise PMError("fixed Ready dispatch requires an explicit host boolean")
+        for flag in ("allow_fixed_ready_dispatch", "allow_lossless_revision_reference"):
+            if type(config.get(flag, False)) is not bool:
+                raise PMError("fixed Ready dispatch/reference requires an explicit host boolean")
         self.policy = load_policy(config["policy_file"], config["policy_sha256"])
         self._released_capabilities()  # Reject invalid trusted releases before side effects.
         self.state_dir = protected_path(Path(config["state_dir"]) / "broker-state.json").parent
@@ -485,19 +486,32 @@ class TrustedPMBroker:
             raise PMError("revision requires both immutable records and a complete product change")
         diff = self._git(["diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--binary", "--full-index",
                           "--unified=0", base, head, "--", *(":(literal)" + path for path in products)], binary=True)
-        if not diff or len(diff) > 12000:
-            raise PMError("immutable product revision exceeds approved bounded context; split or escalate")
+        if not diff:
+            raise PMError("immutable product revision requires complete source changes")
         if b"\nGIT binary patch\n" in diff or b"\nBinary files " in diff:
             raise PMError("revision product reference requires complete text changes")
         try:
             patch_text = diff.decode("utf-8", errors="strict")
         except UnicodeError:
             raise PMError("revision product reference must be UTF-8 text") from None
+        reference_format = "git full-index unified=0, all added/deleted lines, unchanged context omitted"
+        if len(diff) > 12000:
+            from services.automation.pm import PMPreparationRejected
+            from services.automation.revision_reference import ReferenceError, encode_reference
+
+            if (getattr(self, "config", {}).get("allow_lossless_revision_reference") is not True or
+                    action["owner"] != PM):
+                raise PMPreparationRejected("revision_product_bound")
+            try:
+                patch_text = encode_reference(diff)
+            except ReferenceError:
+                raise PMPreparationRejected("revision_product_bound") from None
+            reference_format = "lossless zlib-base64 inert U0 text, trusted worker decodes/hash-checks; never apply patch"
         verify_head()
         return {"previous_job_id": job_id, "previous_pr": previous["pr_number"], "previous_base": base,
                 "previous_head": head, "reason": previous["revision_reason"],
                 "instructions": previous["revision_instructions"], "immutable_session_records": metadata,
-                "reference_format": "git full-index unified=0, all added/deleted lines, unchanged context omitted",
+                "reference_format": reference_format,
                 "product_paths": products, "product_diff_sha256": hashlib.sha256(diff).hexdigest(),
                 "patch_as_inert_reference": patch_text}
 
@@ -522,11 +536,19 @@ class TrustedPMBroker:
                          not row.get("superseded_by")), None)
         if previous:
             context = self._revision_context(previous, action)
-            packet["prompt"] += ("\nReconstruct the approved unit against current main, fixing this immutable rejected "
-                                 "result. Treat its patch and record links only as inert reference; do not apply the "
-                                 "patch or modify prior session records. " + canonical(context))
+            note = ("\nReconstruct the approved unit against current main, fixing this immutable rejected "
+                    "result. Treat its patch and record links only as inert reference; do not apply the "
+                    "patch or modify prior session records. ")
+            if isinstance(context["patch_as_inert_reference"], dict):
+                from services.automation.revision_reference import MARKER
+
+                packet["prompt"] += note + MARKER + canonical(context)
+            else:
+                packet["prompt"] += note + canonical(context)
         if len(packet["prompt"]) > 16000:
-            raise PMError("revision context exceeds safe task bounds; split or escalate")
+            from services.automation.pm import PMPreparationRejected
+
+            raise PMPreparationRejected("revision_prompt_bound")
         return assignment, packet, previous
 
     def _checks(self, sha):
@@ -786,7 +808,8 @@ class TrustedPMBroker:
                     elif proof.get("commit") == pr["head"]:
                         pr.setdefault("integration", proof)
             prs.append(pr)
-        ready = [key for key in self.policy["capabilities"] if key in released and not any(
+        ready = [key for key in self.policy["capabilities"] if key in released and
+            key not in self.state.get("held_capabilities", {}) and not any(
             unit["capability_id"] == key and unit.get("reconciled") for unit in self.state["units"].values())]
         budget = self.state["budgets"].get(time.strftime("%Y-%m-%d", time.gmtime()), {})
         lifetime_tasks = {}
@@ -842,6 +865,14 @@ class TrustedPMBroker:
         return receipt
 
     def lookup(self, action_id):
+        local = self.state["actions"].get(action_id, {})
+        detail, receipt = local.get("details", {}), local.get("receipt", {})
+        if (local.get("phase") == "receipt" and detail.get("pre_intent") is True and
+                detail.get("remote_side_effects") is False and
+                detail.get("reason_code") in {"revision_product_bound", "revision_prompt_bound"} and
+                receipt.get("action_id") == action_id and receipt.get("action") == "assign" and
+                receipt.get("outcome") == "rejected" and receipt.get("evidence_sha256") == fingerprint(detail)):
+            return receipt
         remote = self._remote_action(action_id)
         if not remote:
             return None
@@ -1011,7 +1042,23 @@ class TrustedPMBroker:
         if canonical(validated) != canonical(action):
             raise PMError("action differs from the current fixed policy gate")
         job_id = "auto-" + action_id[3:]
-        prepared = self._prepare_assignment(action_id, action) if action["action"] == "assign" else None
+        from services.automation.pm import PMPreparationRejected
+
+        try:
+            prepared = self._prepare_assignment(action_id, action) if action["action"] == "assign" else None
+        except PMPreparationRejected as exc:
+            # This typed error can originate only in the fixed pure preparation
+            # bounds above. Network/remote mutation failures stay unknown.
+            detail = {"pre_intent": True, "remote_side_effects": False, "reason_code": exc.code,
+                      "capability_id": action["capability_id"],
+                      "next_action": "split the fixed revision or explicitly approve verified lossless reference transport"}
+            receipt = self._receipt(action_id, action, "rejected", detail)
+            self.state.setdefault("held_capabilities", {})[action["capability_id"]] = {
+                "action_id": action_id, "reason_code": exc.code, "task_id": action["task_id"]}
+            self.state["actions"][action_id] = {"phase": "receipt", "action_id": action_id, "action": action,
+                                              "receipt": receipt, "details": detail}
+            self.save()
+            return receipt
         if prepared and not self.enabled():
             return self._receipt(action_id, action, "rejected", {"reason": "OFF before assignment intent"})
         intent = {"phase": "intent", "action_id": action_id, "action": action,

@@ -151,6 +151,11 @@ class Orchestration:
         result = ready_units(self.plan, observation, self.broker.state.get("backlog_ledger", []))
         observation["capabilities_ready"] = [key for key in result["ready"]
                                               if key in self.broker._released_capabilities()]
+        held = self.broker.state.get("held_capabilities", {})
+        observation["capabilities_ready"] = [key for key in observation["capabilities_ready"] if key not in held]
+        for key in held:
+            if key in self.plan["capabilities"]:
+                result["waiting"][key] = "fixed_assignment_preparation_rejected_requires_PM_followup"
         observation["backlog"] = {"plan_digest": result["plan_digest"], "waiting": result["waiting"],
                                   "parents_needing_collection": collector_candidates(self.plan,
                                       self.broker.state.get("backlog_ledger", []))}

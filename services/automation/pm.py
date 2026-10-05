@@ -57,6 +57,16 @@ class PMDriverBusy(PMError):
     """Trusted driver could not acquire its profile mutex before any call began."""
 
 
+class PMPreparationRejected(PMError):
+    """Fixed assignment preparation refused before any remote mutation."""
+
+    def __init__(self, code):
+        if code not in {"revision_product_bound", "revision_prompt_bound"}:
+            raise ValueError("unknown fixed preparation rejection")
+        self.code = code
+        super().__init__("fixed revision exceeds bounded context or safe task bounds; split or approve verified lossless transport")
+
+
 class PMBroker(Protocol):
     """Authenticated, fixed-deployment adapter, not code imported from a PR.
 

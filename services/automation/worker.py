@@ -28,11 +28,12 @@ from datetime import UTC, datetime
 from pathlib import Path, PurePosixPath
 
 if __package__:
-    from . import artifacts, claude
+    from . import artifacts, claude, revision_reference
     from .isolation import IMAGE_ID, DockerConfig, DockerExecutor, regular_file
 else:
     import artifacts
     import claude
+    import revision_reference
     from isolation import IMAGE_ID, DockerConfig, DockerExecutor, regular_file
 
 REPO = "2026-LG-kitchen-chicken-team/lg-ax-2026"
@@ -718,7 +719,9 @@ def execute_job(config, client, job):
             argv = claude.argv(config, job, stage, RESULT_SCHEMA, executable_name="claude")
         else:
             argv = codex_argv(config, job, stage)
-        prompt = prompt_for(job, config.account)
+        prompt_job = {**job, "prompt": revision_reference.stage_reference(
+            job["prompt"], stage, job["allowed_paths"], owner=config.account)}
+        prompt = prompt_for(prompt_job, config.account)
         if config.engine == "claude":
             prompt += ("\nThis worker supplies file tools only. The trusted worker has checked the "
                        "approved controller lease and fixed checkout. It runs approved validation commands "
@@ -736,6 +739,9 @@ def execute_job(config, client, job):
         if result.returncode or result.stopped_reason:
             checkpoint["halt_worker"] = True
             raise ValueError("Agent stopped or failed; inspect retained private checkpoint")
+        reference = revision_reference.verify_staged_reference(job["prompt"], stage)
+        if reference:
+            checkpoint["revision_reference"] = reference
         if (run_dir / "agent.jsonl").stat().st_size > MAX_LOG_BYTES:
             raise ValueError("Agent log exceeded bounded storage limit")
         if config.engine == "claude":
