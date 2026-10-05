@@ -1,0 +1,22 @@
+{
+  "assignment_id": "PM-20261005-WEB-WORKER-RECOVERY",
+  "task_id": "P2-WEB-003",
+  "purpose": "최길웅 실행기의 이전 검사 실패와 최신 연결 상태를 확인해 자동 웹 작업을 재개한다.",
+  "instructions": [
+    "현재 main089ab16의 AGENTS.md/CLAUDE.md와 docs/bootstrap/automation-workers.md, docs/pm/automation.md를 읽는다.",
+    "기존 auto-39a1421ab3244b50221d323a5f770ced1b1bec98 및 auto-1fced38284effaf66ea7b20782a310b0145d5d34의 checkpoint에서 검사 번호·종료 코드·일반 테스트 실패와 실행 경계 오류를 구분해 비밀 없이 Issue25에 남긴다. 원 결과·비용·미게시 상태는 보존한다.",
+    "현재 고정 Worker의 출처·해시를 확인하고 최신 수정 source를 규정된 외부 실행 경로에 적용한다. 기존 전용 로그인과 인증정보는 복사하거나 초기화하지 않는다. 단순 isolation_acknowledged true를 준비 완료로 쓰지 않는다.",
+    "고정 실행기로 모델/validator의 publisher canary 접근 거부, publisher 정상 Git read/fetch, 실제 preflight, Windows 자동 실행과 중앙 최신 heartbeat를 확인한다. 일반 검증 실패가 개인 opt-in을 잘못 끄지 않는 수정이 포함돼야 한다.",
+    "이미 정상 실행 중이면 설치를 반복하지 말고 현재 실행 경로·출처·실제 검사 증거와 최근 중앙 신호만 보고한다. 수동 미게시 작업은 원 지시/검증을 보존해 별도 PR로 올리고 자동 작업과 겹치는 범위를 알려준다."
+  ],
+  "acceptance": [
+    "원 두 실패 기록·비용 보존과 실제 실패 분류",
+    "격리 경계/publisher/preflight의 실제 증거 및 고정 source",
+    "최신 중앙 온라인 신호 확인; 다음 자동 패킷 준비·실제 claim 구분"
+  ],
+  "next_action": "본인 PC의 AI가 기존 설정을 점검·복구하고 Issue25에 검사 결과와 최신 Worker 신호를 보고한다.",
+  "source": "2026-10-05 사용자: 팀원 자동 배정 확인 및 미배정 즉시 배정; 중앙 최신 WEB 신호 미확인",
+  "pm_account": "jeongiryang",
+  "recipient_account": "choigilung",
+  "assignment_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25#issuecomment-5994897309"
+}

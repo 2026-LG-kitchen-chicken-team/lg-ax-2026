@@ -191,12 +191,12 @@ def record(api, policy, aid, action, receipt_data=None):
         row.update(status="sent", message_id=receipt_data["message_id"], sent_at=row.get("sent_at") or now())
         write(path, row)  # Gmail send is durable even if later Issue/Project updates fail.
         receipt = {"assignment_id": aid, "task_id": row["task_id"], "recipient_account": row["recipient_account"],
-                   "status": "sent", "sent_at": row["sent_at"], "message_id": row["message_id"],
+                   "status": "sent", "sent_at": row["sent_at"],
                    "source": receipt_data["source"], "recipient_read_confirmed": False}
         write(PUBLIC / (aid + ".notification.json"), receipt)
         if not any(" SENT\n" in c["body"] for c in remote_markers(api, policy, registered, aid)):
             api.api(f"repos/{policy['repo']}/issues/{registered['issue_number']}/comments",
-                    {"body": f"LGAX-MAIL {aid} SENT\n정이량 PM 명의 Gmail 발송 결과 확인 · message ID `{row['message_id']}`.\n"
+                    {"body": f"LGAX-MAIL {aid} SENT\n정이량 PM 명의 Gmail 발송 결과를 확인했습니다. 상세 수신증은 비공개로 보관합니다.\n"
                              "주소는 비공개로 관리하며 수신자의 열람·작업 착수는 아직 확인하지 않았습니다."}, "POST")
     else:
         raise ValueError("unsupported notification action")
