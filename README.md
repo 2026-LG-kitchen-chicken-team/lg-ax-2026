@@ -6,7 +6,7 @@
 
 ## 현재 상태
 
-10/5 15:32 기준 사용자 승인한 **연쇄 배정·제품 실행 근거·PM CLI 메일**을 통합했다. PR99·100은 실제 병합·병합 후 검사·Project/중앙 인수를 마쳤다. 새 운영 버전은 배포·사전검사 완료이며, 이 PR의 병합/상태 동기화 후 상시 PM을 시작한다. 최신 실제 가동 여부는 [운영 Issue #28](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28)과 [상시 운영 안내](docs/pm/orchestration-live-20261005.md)를 따른다. 팀·PM·황대겸·최길웅 ON, 신진하만 원 Git128 진단 대기로 개인 OFF다. 참가작 전체 완료와 구분한다.
+10/5 15:44 **연쇄 배정·제품 실행 근거·PM CLI 메일** 통합 후 상시 PM/Worker의 실제 Running을 확인했다. PR95·99·100의 병합·병합 후 검사·Project/중앙 인수를 마쳤고 다음 PM003 웹/API/MCP 연결 작업이 자동 배정·실행 중이다. 최신 가동 여부는 [운영 Issue #28](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28)과 [상시 운영 안내](docs/pm/orchestration-live-20261005.md)를 따른다. 팀·PM·황대겸·최길웅 ON, 신진하만 원 Git128 진단 대기로 개인 OFF다. 참가작 전체 완료와 구분한다.
 
 | 항목 | 상태 |
 |---|---|

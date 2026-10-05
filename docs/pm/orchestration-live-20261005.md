@@ -12,6 +12,8 @@ PM은 배정 → 개발 결과 수집 → 독립 검수 → 수정 요청 또는
 
 ## 이번 배포와 검사
 
+10/5 15:44 실제 재개를 확인했다. PR95 병합 main77b1cff의 CI와 공식 Project·중앙 승인 뒤 숨김 PM/원 Worker 둘 다 Running이며, 다음 PM003 작업이 자동 배정·claim/running/attempt1이다. [불변 관측](../../evals/team-automation/20261005/orchestration-r5-running.json)에 실제 entry·설정·수신증을 연결했다. 위 가동 보고의 이후 상태는 운영 Issue28을 다시 조회한다.
+
 운영 source `0c9d95d263630c88df9ed1c24f580b8cbdf4a0dd`의 GitHub 필수 검사4개가 성공했다. 전체 native 검사1,058개도 통과(선택 실행6개 제외)했다. 새 외부 PM runtime의 entry SHA256은 `78e7b6521c9e7a83c8675b1b1b43813f7fec5c2e40a043e307cc57c4831768fe`다. 실행/게시 인증 분리·Worker와 같은 프로필 잠금·불변 요청/응답40회·변조/41번째 호출 거부를 검사했다. 새 코드 배포·사전검사와 실제 PM Running은 각각 증거를 남긴다.
 
 원 계획/원 단위 대장·이전 실패·모든 누적 사용량을 보존했다. 수정 registry는 `core-product-correction-1/2`만 추가하며 부모별 최대2배정, job당1시도다. 누적 제품 사례 상한10→14는 기존8예약을 유지하면서 수정 통신·결과 검증 여유만 추가한 것이다. 같은 실패를 문서 변경/재시작으로 반복 배정하지 않는다.
