@@ -20,6 +20,7 @@ from services.automation.revision_reference import (
     MARKER,
     MAX_COMPRESSED,
     MAX_RAW,
+    OWNER_NAMES,
     ReferenceError,
     decode_reference,
     encode_reference,
@@ -40,13 +41,13 @@ def product_diff():
             b"".join(f"-old_case_{i:04}: value\n+new_case_{i:04}: verified\n".encode() for i in range(700)))
 
 
-def context(raw=None):
+def context(raw=None, *, owner="jeongiryang"):
     raw = raw or product_diff()
     return {"previous_job_id": "auto-prior-job", "previous_pr": 96,
             "previous_base": "a" * 40, "previous_head": "b" * 40,
             "reason": "Independent correction", "instructions": ["Reconstruct on current approved main"],
-            "immutable_session_records": [{"path": "docs/record-one.md", "sha256": "c" * 64},
-                                          {"path": "docs/record-two.md", "sha256": "d" * 64}],
+            "immutable_session_records": [{"path": f"docs/{directory}/세션/{OWNER_NAMES[owner]}/auto-prior-job.md",
+                                           "sha256": "c" * 64} for directory in ("작업기록", "작업근거")],
             "reference_format": "lossless zlib-base64 inert text", "product_paths": ["tests/product.py"],
             "product_diff_sha256": hashlib.sha256(raw).hexdigest(),
             "patch_as_inert_reference": encode_reference(raw)}
@@ -95,10 +96,29 @@ class RevisionReferenceTests(unittest.TestCase):
                                          owner="unknownamed"), "normal approved request")
         self.assertEqual(list(self.root.iterdir()), [])
 
-    def test_remote_owner_is_not_allowed_compressed_packets_before_runtime_upgrade(self):
+    def test_registered_members_decode_only_their_own_fixed_reference(self):
+        from services.automation.state import MEMBER_NAMES
+
+        self.assertEqual(OWNER_NAMES, MEMBER_NAMES)
         for owner in ("unknownamed", "ginaginaring", "choigilung"):
+            with self.subTest(owner=owner), tempfile.TemporaryDirectory(dir=self.root) as directory:
+                original = packet(context(owner=owner))
+                rendered = stage_reference(original, Path(directory), ["tests/product.py"], owner=owner)
+                self.assertEqual((Path(directory) / ARTIFACT).read_bytes(), product_diff())
+                self.assertIn("Do not apply", rendered)
+                self.assertTrue(verify_staged_reference(original, Path(directory))["verified_after_model"])
+        self.assertEqual(list(self.root.iterdir()), [])
+
+    def test_forged_cross_owner_or_previous_job_records_are_rejected_before_write(self):
+        value = context(owner="unknownamed")
+        for owner in ("jeongiryang", "ginaginaring", "choigilung", "unregistered"):
             with self.subTest(owner=owner), self.assertRaises(ReferenceError):
-                self.stage(context(), owner=owner)
+                self.stage(value, owner=owner)
+        changed = deepcopy(value)
+        changed["immutable_session_records"][0]["path"] = changed["immutable_session_records"][0]["path"].replace(
+            "auto-prior-job.md", "another-job.md")
+        with self.assertRaisesRegex(ReferenceError, "exact prior job"):
+            self.stage(changed, owner="unknownamed")
         self.assertEqual(list(self.root.iterdir()), [])
 
     def test_hash_size_utf8_binary_and_extra_fields_refuse_without_writing(self):
@@ -147,6 +167,30 @@ class RevisionReferenceTests(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             self.stage(context())
         self.assertEqual(target.read_bytes(), b"preserved")
+
+    def test_member_scope_bounds_and_artifact_links_remain_rejected(self):
+        value = context(owner="unknownamed")
+        for update in ({"product_paths": ["tests/outside.py"]},
+                       {"patch_as_inert_reference": {**value["patch_as_inert_reference"], "bytes": MAX_RAW + 1}}):
+            with self.subTest(update=list(update)), self.assertRaises(ReferenceError):
+                self.stage({**value, **update}, owner="unknownamed")
+        self.assertEqual(list(self.root.iterdir()), [])
+        original = packet(value)
+        self.stage(value, owner="unknownamed")
+        target = self.root / ARTIFACT
+        target.unlink()
+        with tempfile.TemporaryDirectory() as directory:
+            external = Path(directory) / "unrelated.txt"
+            external.write_bytes(b"preserved external input")
+            try:
+                target.symlink_to(external)
+            except OSError:
+                self.skipTest("symlink privilege is unavailable after member scope/bound checks")
+            with self.assertRaisesRegex(ReferenceError, "ordinary input"):
+                verify_staged_reference(original, self.root)
+            with self.assertRaises(FileExistsError):
+                self.stage(value, owner="unknownamed")
+            self.assertEqual(external.read_bytes(), b"preserved external input")
 
     def test_worker_runtime_manifest_contains_helper_and_flat_cli_imports(self):
         output = self.root / "fixed-worker"
@@ -265,15 +309,8 @@ class RevisionCompressionGitTests(unittest.TestCase):
         self.assertEqual((stage / ARTIFACT).read_bytes(), expected)
         self.assertEqual(self.broker.state["budgets"], {"unchanged": 12})
 
-    def test_lossless_flag_does_not_allow_other_owner_or_outside_scope(self):
-        original = self.fixed_git
+    def member_result(self):
         self.broker.config = {"allow_lossless_revision_reference": True}
-        controlled = lambda args, **kwargs: product_diff() if "--unified=0" in args else original(args, **kwargs)
-        with patch.object(self.broker, "_git", side_effect=controlled):
-            self.assertEqual(decode_reference(self.context()["patch_as_inert_reference"]), product_diff())
-        # Generate another authorized member's own immutable records in a
-        # separate real Git result; a valid normal owner remains disallowed for
-        # compressed transport until that worker runtime is explicitly updated.
         for record in self.records:
             (self.repo / record).unlink()
         from services.automation.worker import session_records
@@ -282,7 +319,8 @@ class RevisionCompressionGitTests(unittest.TestCase):
         for record in self.records:
             file = self.repo / record
             file.parent.mkdir(parents=True, exist_ok=True)
-            file.write_text("actual other owner session fixture", encoding="utf-8")
+            file.write_text("actual CORE owner's immutable session fixture", encoding="utf-8")
+        (self.repo / self.product).write_bytes(b"".join(f"verified_case_{i:04} = {i}\n".encode() for i in range(1600)))
         self.commit_result()
         self.previous["head"] = self.head
         self.broker.policy["tasks"]["TASK"]["owner"] = "unknownamed"
@@ -293,9 +331,64 @@ class RevisionCompressionGitTests(unittest.TestCase):
             result["user"]["login"] = "unknownamed"
             return result
         self.broker.github.request = owner
-        with (patch.object(self.broker, "_git", side_effect=controlled),
-              self.assertRaises(PMPreparationRejected)):
+
+    def test_core_own_real_git_revision_is_complete_and_keeps_old_records_read_only(self):
+        self.member_result()
+        before = deepcopy(self.broker.state)
+        expected = self.local(["diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--binary", "--full-index",
+                               "--unified=0", self.base, self.head, "--", ":(literal)" + self.product])
+        self.assertGreater(len(expected), 12000)
+        value = self.context()
+        self.assertEqual(decode_reference(value["patch_as_inert_reference"]), expected)
+        self.assertEqual(value["previous_head"], self.head)
+        self.assertEqual({row["path"] for row in value["immutable_session_records"]}, set(self.records))
+        _, job, _ = self.broker._prepare_assignment("pm-" + "d" * 40, self.action)
+        self.assertTrue(set(self.records).isdisjoint(job["allowed_paths"]))
+        stage = self.repo / "outside-product-stage"
+        stage.mkdir()
+        rendered = stage_reference(job["prompt"], stage, job["allowed_paths"], owner="unknownamed")
+        self.assertIn("Do not apply", rendered)
+        self.assertEqual((stage / ARTIFACT).read_bytes(), expected)
+        self.assertIn(b"+verified_case_1599 = 1599", expected)
+        self.assertTrue(verify_staged_reference(job["prompt"], stage)["verified_after_model"])
+        self.assertEqual(self.broker.state, before)
+
+    def test_core_revision_cannot_forge_another_owner_or_their_prior_records(self):
+        self.member_result()
+        before = deepcopy(self.broker.state)
+        self.broker.policy["tasks"]["TASK"]["owner"] = "ginaginaring"
+        self.action["owner"] = "ginaginaring"
+        with self.assertRaisesRegex(PMError, "head/ownership"):
             self.context()
+        getter = self.github_request
+        def forged_author(method, route):
+            result = getter(method, route)
+            result["user"]["login"] = "ginaginaring"
+            return result
+        self.broker.github.request = forged_author
+        with self.assertRaisesRegex(PMError, "own exact prior session"):
+            self.context()
+        self.assertEqual(self.broker.state, before)
+
+    def test_core_revision_opt_in_does_not_expand_product_scope_or_raw_bound(self):
+        self.member_result()
+        before = deepcopy(self.broker.state)
+        extra = self.repo / "tests/not-approved.py"
+        extra.write_text("unapproved = True\n", encoding="utf-8")
+        self.commit_result()
+        self.previous["head"] = self.head
+        with self.assertRaisesRegex(PMError, "outside the fixed product"):
+            self.context()
+        extra.unlink()
+        (self.repo / self.product).write_bytes(b"".join(f"verified_case_{i:04} = {i}\n".encode() for i in range(7000)))
+        self.commit_result()
+        self.previous["head"] = self.head
+        expected = self.local(["diff", "--unified=0", self.base, self.head, "--", ":(literal)" + self.product])
+        self.assertGreater(len(expected), MAX_RAW)
+        with self.assertRaises(PMPreparationRejected) as rejected:
+            self.context()
+        self.assertEqual(rejected.exception.code, "revision_product_bound")
+        self.assertEqual(self.broker.state["budgets"], before["budgets"])
 
 
 class HeldCapabilityTests(unittest.TestCase):

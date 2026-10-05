@@ -13,6 +13,8 @@ MARKER = "\nLGAX-INERT-REVISION-V1\n"
 ARTIFACT = "revision-reference.patch"
 MAX_RAW = 128 * 1024
 MAX_COMPRESSED = 12000
+OWNER_NAMES = {"jeongiryang": "정이량", "unknownamed": "황대겸", "ginaginaring": "신진하",
+               "choigilung": "최길웅"}
 CONTEXT_KEYS = {"previous_job_id", "previous_pr", "previous_base", "previous_head", "reason", "instructions",
                 "immutable_session_records", "reference_format", "product_paths", "product_diff_sha256",
                 "patch_as_inert_reference"}
@@ -86,8 +88,8 @@ def stage_reference(prompt, artifacts, allowed_paths, *, owner):
         raise ReferenceError("bounded approved packet required")
     if MARKER not in prompt:
         return prompt
-    if owner != "jeongiryang":
-        raise ReferenceError("lossless references require the explicitly upgraded PM worker")
+    if owner not in OWNER_NAMES:
+        raise ReferenceError("lossless references require the authenticated registered owner")
     if prompt.count(MARKER) != 1:
         raise ReferenceError("one fixed revision reference required")
     before, encoded = prompt.split(MARKER)
@@ -117,6 +119,12 @@ def stage_reference(prompt, artifacts, allowed_paths, *, owner):
             not isinstance(context["immutable_session_records"], list) or
             len(context["immutable_session_records"]) != 2):
         raise ReferenceError("fixed immutable source identity is malformed")
+    expected_records = {f"docs/{directory}/세션/{OWNER_NAMES[owner]}/{context['previous_job_id']}.md"
+                        for directory in ("작업기록", "작업근거")}
+    records = context["immutable_session_records"]
+    if (any(not isinstance(record, dict) or not isinstance(record.get("path"), str) for record in records) or
+            {record["path"] for record in records} != expected_records):
+        raise ReferenceError("lossless reference must use its owner's exact prior job records")
     approved = [_path(path) for path in allowed_paths]
     for path in context["product_paths"]:
         path = _path(path)

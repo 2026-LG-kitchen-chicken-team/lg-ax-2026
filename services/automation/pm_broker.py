@@ -524,8 +524,7 @@ class TrustedPMBroker:
             from services.automation.pm import PMPreparationRejected
             from services.automation.revision_reference import ReferenceError, encode_reference
 
-            if (getattr(self, "config", {}).get("allow_lossless_revision_reference") is not True or
-                    action["owner"] != PM):
+            if getattr(self, "config", {}).get("allow_lossless_revision_reference") is not True:
                 raise PMPreparationRejected("revision_product_bound")
             try:
                 patch_text = encode_reference(diff)
