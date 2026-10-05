@@ -1,5 +1,11 @@
 # 팀 자동화 가동 — 2026-10-05
 
+**최신 09:21:23 KST: 황대겸·최길웅의 첫 자동 작업이 모두 실제 running이다.** 황대겸 PR87 고정f49258f의 원본 SHA b8ef5186…/정확 image36ad082…를 독립 검수·실제 broker3gate 뒤 승인했다. 기존 web release·state·부모 예산을 보존하고 core release를 추가해 고정 PM을 config1997d3b6…으로 재등록·시작했다. core auto-34edc…·web auto-cbcaed…는 같은 main d95b225에서 실제 claim/attempt1/generation1로 실행 중이다. 생성·검사·PR·PM 인수 성공은 후속 결과로 판단한다. [새 관측 원본](../../evals/team-automation/20261005/core-web-start.json)·정이량009/E022를 따른다.
+
+신진하의 준비 완료 보고는 유지하되 원 readiness가 아직 PM에게 도착하지 않았다. 로그인/등록/검사 반복 없이 이미 생성한 JSON만 고정 PR 또는 비공개 메일로 전달하도록 실제 후속 안내를 보냈다. 인수 후 data-document-store-frozen-snapshot을 연다. 최길웅의 향후 메일 주소는 사용자 새 지시로 private contacts에 변경했고 과거 발송 이력은 보존했다.
+
+비중첩 단위는 병렬 개발할 수 있다. 첫 병합으로 main이 이동하면 남은 과거base PR은 최신 승인 snapshot과 새 수정 job으로 다시 검증한다. 원 PR/head/diff·세션·부모 예산을 보존하며 자동 rebase는 아직 없다. 실제 한 단위의 병합→postmerge→snapshot ACK→accepted 전에는 readiness PR87·후속 기록 PR88을 수동 병합하지 않는다. 아래는 각 시각의 역사 checkpoint다.
+
 **최신 09:08:59 KST: 최길웅의 첫 자동 웹 작업이 실제 running이다.** 기존 웹 PR85(80/83 포함)를 검수·CI4 후 main d95b225에 인수했고, 본인 원 readiness/image pin을 승인해 web-concept-text-change-history만 release했다. 고정 PM을 새 config hash로 재등록·시작하고 공식21작업/의존/snapshot을 대조했다. 실제 assign09:07:20·Worker lease66초 갱신을 확인했다. 작업은 auto-cbcaed018a0634bacaef459fe7b7fa223a6fa812이며 구현·검사·PR 성공은 후속이다. 황대겸·신진하는 기존 검사 원본 인수를 기다리며 설정/로그인을 반복하지 않는다. 아래 jobs0/release[]는 08:50 당시 기록이다.
 
 사용자가 세 팀원의 준비 완료를 보고하고 **동시 가동과 각 팀원 메일 발송을 직접 승인했다.** 중앙 팀·네 계정의 스위치는 ON으로 전환했다. 이전 OFF 시험과 원예산·실패·기록을 보존한다. ON 표시, 실제 배정, 개발, 검사, 게시, PM 인수는 각각 별도 관측이다.
