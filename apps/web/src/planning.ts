@@ -5,7 +5,7 @@ import { ApiError } from './api';
 import { evidenceLocation } from './domain';
 import type { Evidence, ProductGroup } from './domain';
 // judgement.ts also imports from this module; neither uses the other at module load, so the cycle is safe.
-import { executionKindText, exportJudgement } from './judgement';
+import { executionKindText, exportJudgement, reasonText } from './judgement';
 import type { ExportJudgement } from './judgement';
 
 export type DataMode = 'live' | 'fixture';
@@ -469,8 +469,8 @@ function judgementMarkdown(judgement: ExportJudgement | null): string[] {
     ...list('검사에서 발견한 문제', judgement.violations),
     ...(judgement.record_problems.length ? list('저장 기록 불일치', judgement.record_problems) : []),
     ...(judgement.errors.length ? list('실행 오류', judgement.errors.map(item => `${item.code}: ${item.message}`)) : []),
-    ...list('확인할 질문', judgement.questions), ...list('보류 사유', judgement.hold_reasons),
-    ...list('미해결', judgement.unresolved), ...list('후보 없음 사유', judgement.no_candidate_reasons),
+    ...list('확인할 질문', judgement.questions), ...list('보류 사유', judgement.hold_reasons.map(reasonText)),
+    ...list('미해결', judgement.unresolved.map(reasonText)), ...list('후보 없음 사유', judgement.no_candidate_reasons.map(reasonText)),
     ...(judgement.rejected_candidates.length ? list('검사에서 거절된 후보(선택 대상 아님)', judgement.rejected_candidates.map(item => `${item.id} ${item.title}`)) : []),
     ...(judgement.semantic_reviews.length ? [
       `의미 검토 ${judgement.semantic_reviews.length}회 (판단과 같은 모델의 검토 선언, 독립 검증 아님):`, '',
@@ -496,13 +496,13 @@ export function exportMarkdown(doc: ExportDocument): string {
     '', '## 콘셉트 후보', '',
   ];
   if (!doc.concepts.length) lines.push('생성된 콘셉트가 없습니다.', '');
-  if (doc.no_candidate_reasons?.length) lines.push('후보 없음 사유:', ...doc.no_candidate_reasons.map(item => `- ${item}`), '');
+  if (doc.no_candidate_reasons?.length) lines.push('후보 없음 사유:', ...doc.no_candidate_reasons.map(item => `- ${reasonText(item)}`), '');
   for (const concept of doc.concepts) {
     lines.push(`### ${concept.id} — ${concept.title} (${statusLabel(concept.status)})`, '', `- 유형: ${concept.kind} · 대응 간극: ${concept.gap_ids.join(', ')}`, `- 차별점: ${concept.differentiation}`, `- 근거: ${concept.evidence_ids.join(', ')}`, '', '요구사항:', ...concept.requirements.map(item => `- ${item}`), '', '확인할 가정:', ...(concept.assumptions.length ? concept.assumptions.map(item => `- ${item}`) : ['- 없음']), '');
   }
   const runAssumptions = doc.assumptions.filter(item => item.source_id === doc.meta.run_id);
   lines.push('## 실행 단위 미확인 사항', '', ...(runAssumptions.length ? runAssumptions.map(item => `- ${item.assumption}`) : ['- 없음']), '');
-  lines.push('## 미해결·보류', '', ...(doc.unresolved.length ? doc.unresolved.map(item => `- ${item}`) : ['- 없음']), '');
+  lines.push('## 미해결·보류', '', ...(doc.unresolved.length ? doc.unresolved.map(item => `- ${reasonText(item)}`) : ['- 없음']), '');
   lines.push('## 근거 부족으로 보류한 불편', '', ...(doc.held.length ? doc.held.map(item => `- ${item.id}: ${item.text}${item.questions.length ? ` — 확인할 질문: ${item.questions.join(' / ')}` : ''}`) : ['- 없음']), '');
   lines.push('## 검토 범위 밖 문서 버전', '', ...(doc.scope_warnings.length ? doc.scope_warnings.map(item => `- ${scopeWarningText(item)}`) : ['- 없음']), '');
   lines.push(...judgementMarkdown(doc.judgement ?? null));

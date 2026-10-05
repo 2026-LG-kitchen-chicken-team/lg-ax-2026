@@ -120,7 +120,48 @@ const VIOLATION_LABELS: Record<string, string> = {
   QUALITY_UNCERTAIN: '의미 검토: 기획 품질 기준 충족이 불확실합니다',
   SEMANTIC_QUESTION: '의미 검토가 확인 질문을 남겼습니다',
   INVALID_SEMANTIC_REVIEW: '의미 검토 응답이 규격에 맞지 않습니다',
+  // Remaining review_judgement codes (packages/core judgement_contract.py), first seen raw in a live run (record 020).
+  DUPLICATE_ID: '같은 ID가 중복됩니다',
+  SOURCE_FEATURE_MISSING: '근거가 없는 기능을 가리킵니다',
+  SOURCE_FEATURE_LINK_MISMATCH: '설명서 근거와 기능의 연결이 서로 맞지 않습니다',
+  FEATURE_MANUAL_MISSING: '기능에 설명서 근거가 없습니다',
+  FEATURE_SOURCE_LINK_MISMATCH: '기능과 설명서 근거의 연결이 서로 맞지 않습니다',
+  CHANGED_EVIDENCE_MISSING: '변경된 근거로 지정한 자료가 입력에 없습니다',
+  REVISION_COUNT_MISMATCH: '출력의 수정 회차가 입력과 다릅니다',
+  DESIRED_OUTCOME_COVERAGE: '불편마다 바라는 결과가 정리되지 않았습니다',
+  ASSESSMENT_COVERAGE: '평가가 빠진 리뷰·대조·후보가 있습니다',
+  NEED_MODEL_MISMATCH: '불편이 요청과 다른 모델로 기록되었습니다',
+  NEED_REVIEW_REQUIRED: '불편의 근거가 리뷰가 아닙니다',
+  COMPLAINT_NOT_EXTRACTED: '불편으로 정리되지 않은 불편 리뷰가 있습니다',
+  NEED_COMPARISON_MISSING: '기존 기능과 대조하지 않은 불편이 있습니다',
+  GAP_NEED_MISMATCH: '대조 항목이 없는 불편이나 다른 모델을 가리킵니다',
+  GAP_REVIEW_MISSING: '대조 항목에 불편의 리뷰 근거가 빠졌습니다',
+  GAP_FEATURE_MISSING: '대조 항목이 없는 기능을 가리킵니다',
+  GAP_MANUAL_MISSING: '대조 항목에 연결 기능의 설명서 근거가 빠졌습니다',
+  SUPPORT_BASIS_MISMATCH: '설명서 근거 유형과 지원 판단이 맞지 않습니다',
+  SUPPORTED_WITHOUT_FEATURE: '지원한다고 판단했지만 연결된 기능이 없습니다',
+  RESOLUTION_PAIN_MISMATCH: '해결 여부와 남은 불편 내용이 맞지 않습니다',
+  CONCEPT_GAP_MISSING: '후보가 없는 대조 항목을 근거로 듭니다',
+  CONCEPT_WITHOUT_CONFIRMED_GAP: '불편이 남았다고 확인되지 않은 항목으로 후보를 만들었습니다',
+  CONCEPT_GROUNDING_MISSING: '후보가 대조 항목의 근거를 인용하지 않았습니다',
+  DUPLICATION_COMPARISON_INCOMPLETE: '후보를 모든 기존 기능과 비교하지 않았습니다',
+  ZERO_CANDIDATES_WITHOUT_REASON: '후보가 없는데 사유가 없습니다',
+  COMPLETED_WITH_UNRESOLVED: '보류·미해결 사유가 남았는데 완료로 끝냈습니다',
+  INVALID_REVISION_TERMINATION: '수정 횟수를 다 쓰지 않았거나 사유 없이 실패로 끝냈습니다',
 };
+
+const BARE_CODE = /^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+$/;
+
+/**
+ * The core copies violation codes into hold_reasons / unresolved / no_candidate_reasons when it stops (planning_agent
+ * terminal output). Shown as-is, "REVIEW_CONFLICT" means nothing to a planner, so a reason that is exactly a code gets
+ * its label with the code kept; free-text reasons pass through unchanged. Display only — stored data is not rewritten.
+ */
+export function reasonText(item: string): string {
+  const label = VIOLATION_LABELS[item];
+  if (label) return `${label} (${item})`;
+  return BARE_CODE.test(item) ? `${item} (설명이 등록되지 않은 검사 코드)` : item;
+}
 
 const QUALITY_LABELS: Record<string, string> = {
   mechanism: '작동 방식', difference_from_current_features: '현재 기능과 차이', unverified_assumptions: '미검증 가정', unsupported_claims: '근거 없는 단정', unsupported_factual_claims: '근거 없는 단정',
