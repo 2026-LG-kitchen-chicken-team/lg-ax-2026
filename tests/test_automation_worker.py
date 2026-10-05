@@ -5,6 +5,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
 from dataclasses import replace
 from pathlib import Path
@@ -109,7 +110,7 @@ class WorkerTests(unittest.TestCase):
                 return f"https://github.com/{REPO}.git"
             if argv == ["rev-parse", "origin/main"]:
                 return "b" * 40  # Main advanced while this task was waiting.
-            if argv == ["rev-parse", "FETCH_HEAD"]:
+            if argv[:2] == ["rev-parse", "--verify"]:
                 return review["review_head"]
             if argv[:2] == ["worktree", "add"]:
                 Path(argv[-2]).mkdir()
@@ -128,6 +129,132 @@ class WorkerTests(unittest.TestCase):
         self.assertTrue(branch.endswith("-a1-g1"))
         self.assertNotIn(["rev-parse", "origin/main"], calls)
         verify.assert_called_once_with(self.config, review)
+
+    def review_git_fixture(self):
+        self.init_git()
+        self.git("branch", "-M", "main")
+        (self.repository / "packages/core/a.py").write_text("review\n", encoding="utf-8")
+        self.git("commit", "-qam", "approved review fixture")
+        review_head = self.git("rev-parse", "HEAD").stdout.decode().strip()
+        (self.repository / "packages/core/a.py").write_text("main\n", encoding="utf-8")
+        self.git("commit", "-qam", "unrelated main fixture")
+        main_head = self.git("rev-parse", "HEAD").stdout.decode().strip()
+        remote = self.root / "remote.git"
+        self.git("clone", "--bare", str(self.repository), str(remote))
+        self.git("--git-dir", str(remote), "update-ref", "refs/pull/999/head", review_head)
+        self.git("remote", "add", "origin", f"https://github.com/{REPO}.git")
+        review = {**self.job, "kind": "review", "review_head": review_head,
+                  "review_pr_url": f"https://github.com/{REPO}/pull/999",
+                  "attempt": 2, "lease_generation": 3}
+        return review, remote, main_head
+
+    def test_review_fetch_is_pinned_while_concurrent_fetch_changes_fetch_head(self):
+        review, remote, main_head = self.review_git_fixture()
+        run = self.root / "concurrent-fetch"
+        run.mkdir()
+        calls, concurrent_errors = [], []
+        before_other_fetch, allow_other_fetch, other_fetch_finished = (
+            threading.Event(), threading.Event(), threading.Event())
+
+        def metadata_fetch():
+            try:
+                if not allow_other_fetch.wait(10):
+                    raise TimeoutError("review fetch did not complete")
+                self.git("fetch", "--no-tags", str(remote), "main")
+            except (OSError, subprocess.SubprocessError) as exc:
+                concurrent_errors.append(exc)
+            finally:
+                other_fetch_finished.set()
+
+        metadata = threading.Thread(target=metadata_fetch)
+        metadata.start()
+        self.addCleanup(metadata.join, 10)
+
+        def fixture_git(config, argv, cwd=None):
+            calls.append(argv)
+            actual = list(argv)
+            if actual[0] == "fetch":
+                actual[actual.index("origin")] = str(remote)
+            result = subprocess.run(["git", *actual], cwd=cwd or self.repository,
+                                    env=self.git_env, capture_output=True, check=True, timeout=10)
+            if argv[0] == "fetch" and argv[-1].startswith("refs/pull/999/head"):
+                # The review fetch must preserve a different caller's FETCH_HEAD.
+                before_other_fetch.set()
+                if "--no-write-fetch-head" in argv:
+                    self.assertEqual(self.git("rev-parse", "FETCH_HEAD").stdout.decode().strip(), main_head)
+                self.git("update-ref", "FETCH_HEAD", review["review_head"])
+                allow_other_fetch.set()
+                self.assertTrue(other_fetch_finished.wait(10))
+                self.assertFalse(concurrent_errors)
+            return result.stdout.decode().strip()
+
+        metadata_response = json.dumps({"headRefOid": review["review_head"],
+                                        "baseRefName": "main", "state": "OPEN"})
+        try:
+            with patch("services.automation.worker.git", side_effect=fixture_git), \
+                    patch("services.automation.worker.command", return_value=metadata_response) as remote_guard:
+                workspace, branch, head, _paths, _digests = prepare_worktree(self.config, review, run)
+        finally:
+            allow_other_fetch.set()
+            metadata.join(10)
+        self.assertFalse(metadata.is_alive())
+        self.assertFalse(concurrent_errors)
+        self.assertTrue(before_other_fetch.is_set())
+        self.assertEqual(self.git("rev-parse", "FETCH_HEAD").stdout.decode().strip(), main_head)
+        review_ref = "refs/lgax/reviews/unknownamed/CORE-1/a2-g3"
+        self.assertEqual(self.git("rev-parse", "--verify", review_ref).stdout.decode().strip(), head)
+        self.assertEqual(self.git("cat-file", "-t", head).stdout.decode().strip(), "commit")
+        checked_out = subprocess.run(["git", "rev-parse", "HEAD"], cwd=workspace,
+                                     env=self.git_env, capture_output=True, check=True, timeout=10)
+        self.assertEqual(checked_out.stdout.decode().strip(), review["review_head"])
+        self.assertEqual(head, review["review_head"])
+        self.assertTrue(branch.endswith("-a2-g3"))
+        self.assertIn(["fetch", "--no-tags", "--no-write-fetch-head", "origin",
+                       f"refs/pull/999/head:{review_ref}"], calls)
+        self.assertNotIn(["rev-parse", "FETCH_HEAD"], calls)
+        remote_guard.assert_called_once()
+
+    def test_stale_remote_review_head_is_rejected_before_review_fetch(self):
+        review, _remote, main_head = self.review_git_fixture()
+        run = self.root / "stale-remote"
+        run.mkdir()
+        calls = []
+
+        def fixture_git(config, argv, cwd=None):
+            calls.append(argv)
+            if argv == ["remote", "get-url", "origin"]:
+                return f"https://github.com/{REPO}.git"
+            return ""
+
+        metadata_response = json.dumps({"headRefOid": main_head, "baseRefName": "main", "state": "OPEN"})
+        with patch("services.automation.worker.git", side_effect=fixture_git), \
+                patch("services.automation.worker.command", return_value=metadata_response), \
+                self.assertRaisesRegex(ValueError, "review head changed"):
+            prepare_worktree(self.config, review, run)
+        self.assertFalse(any(argv[0] == "worktree" or "--no-write-fetch-head" in argv for argv in calls))
+        self.assertFalse((run / "worktree").exists())
+
+    def test_fetched_review_head_must_match_approved_head(self):
+        review, remote, main_head = self.review_git_fixture()
+        self.git("--git-dir", str(remote), "update-ref", "refs/pull/999/head", main_head)
+        run = self.root / "changed-during-fetch"
+        run.mkdir()
+
+        def fixture_git(config, argv, cwd=None):
+            actual = list(argv)
+            if actual[0] == "fetch":
+                actual[actual.index("origin")] = str(remote)
+            result = subprocess.run(["git", *actual], cwd=cwd or self.repository,
+                                    env=self.git_env, capture_output=True, check=True, timeout=10)
+            return result.stdout.decode().strip()
+
+        metadata_response = json.dumps({"headRefOid": review["review_head"],
+                                        "baseRefName": "main", "state": "OPEN"})
+        with patch("services.automation.worker.git", side_effect=fixture_git), \
+                patch("services.automation.worker.command", return_value=metadata_response), \
+                self.assertRaisesRegex(ValueError, "fetch no longer matches approved"):
+            prepare_worktree(self.config, review, run)
+        self.assertFalse((run / "worktree").exists())
 
     def test_public_worker_example_has_supported_fields_and_safe_offline_default(self):
         source = Path(__file__).resolve().parents[1] / "services/automation/worker.example.json"

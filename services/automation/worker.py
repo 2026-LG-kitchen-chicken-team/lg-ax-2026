@@ -465,8 +465,13 @@ def prepare_worktree(config: WorkerConfig, job, run_dir: Path):
     if job["kind"] == "review":
         check_review_head(config, job)
         number = job["review_pr_url"].rsplit("/", 1)[1]
-        git(config, ["fetch", "--no-tags", "origin", f"refs/pull/{number}/head"])
-        checkout_sha = git(config, ["rev-parse", "FETCH_HEAD"])
+        review_ref = (f"refs/lgax/reviews/{config.account}/{job['job_id']}/"
+                      f"a{job.get('attempt', 1)}-g{job.get('lease_generation', 1)}")
+        # Other publisher fetches share FETCH_HEAD; only this lease's ref pins
+        # the reviewed commit, and this fetch must not overwrite their state.
+        git(config, ["fetch", "--no-tags", "--no-write-fetch-head", "origin",
+                     f"refs/pull/{number}/head:{review_ref}"])
+        checkout_sha = git(config, ["rev-parse", "--verify", review_ref])
         if checkout_sha != job["review_head"]:
             raise ValueError("review fetch no longer matches approved PR head")
     workspace = run_dir / "worktree"
