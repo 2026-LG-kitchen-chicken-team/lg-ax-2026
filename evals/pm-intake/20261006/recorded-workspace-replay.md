@@ -24,7 +24,9 @@ PM이 이미 실행한 냉장고·식기세척기·전자레인지의 기본/조
 python evals/pm-intake/20261006/replay_workspace.py
 ```
 
-기본 기록 경로는 `evals/pm-intake/20261006/live-quality/original-six`, 자료는 `data/demo/dataset.json`, 산출물은 `/artifacts/recorded-workspace-replay`다. `--records`, `--dataset`, `--artifacts`로 검토한 입력 경로만 지정할 수 있다. 산출물 하위 폴더가 이미 있으면 덮어쓰지 않고 실패한다.
+기본 기록 경로는 `evals/pm-intake/20261006/live-quality/original-six`, 원 입력은 `evals/pm-intake/20261006/core/cases`, 자료는 `data/demo/dataset.json`, 산출물은 `/artifacts/recorded-workspace-replay`다. `--records`, `--inputs`, `--dataset`, `--artifacts`로 검토한 입력 경로만 지정할 수 있다. 산출물 하위 폴더가 이미 있으면 덮어쓰지 않고 실패한다.
+
+생산자 요약의 입력·dataset SHA는 원 파일 bytes를 해시한다. Agent의 `input_digest` 및 WorkspaceStore의 dataset SHA는 canonical JSON 내용을 해시하므로 서로 다른 값이다. 도구는 원 파일 SHA를 먼저 확인하고, 별도 canonical SHA와 실제 자료 조회 입력을 함께 보존한다. 두 규약을 같은 SHA라고 가정하지 않는다.
 
 `summary.json`, `http-readback.json`, `mcp-readback.json`은 실제 실행이 끝난 뒤에만 생성한다. 이 문서를 작성한 것만으로 검사 통과를 뜻하지 않는다. source commit·검사 조건·실제 결과는 후속 근거에 연결한다.
 

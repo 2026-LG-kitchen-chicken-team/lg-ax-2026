@@ -62,7 +62,6 @@ class RecordedRunner:
         for case_id, execution in records.items():
             original = execution["original_input"]
             digest = input_digest(original)
-            require(digest == pins[case_id]["input_sha256"], f"Recorded input hash mismatch: {case_id}")
             require(digest not in self.by_input, "Duplicate recorded input")
             require(execution["execution_kind"] == "live_model", f"Not an original live execution: {case_id}")
             require(execution["status"] == pins[case_id]["status"], f"Recorded status mismatch: {case_id}")
@@ -162,11 +161,15 @@ def replay(args) -> dict:
     summary, summary_hash = read_record(args.records / "summary.json", maximum=262_144)
     pins = {item["case_id"]: item for item in summary["cases"]}
     require(set(pins) == set(CASE_IDS) and len(summary["cases"]) == len(CASE_IDS), "Expected exactly the original six cases")
-    records, file_hashes = {}, {}
+    records, file_hashes, input_file_hashes = {}, {}, {}
     for case_id in CASE_IDS:
         record, digest = read_record(args.records / f"{case_id}.output.json")
         require(digest == pins[case_id]["output_sha256"], f"Recorded output bytes changed: {case_id}")
+        original_input, input_file_hash = read_record(args.inputs / f"{case_id}.input.json")
+        require(input_file_hash == pins[case_id]["input_sha256"], f"Recorded input file bytes changed: {case_id}")
+        require(original_input == record["original_input"], f"Recorded output original input differs from its source input: {case_id}")
         records[case_id], file_hashes[case_id] = record, digest
+        input_file_hashes[case_id] = input_file_hash
     dataset, dataset_file_hash = read_record(args.dataset, maximum=16_777_216)
     require(all(dataset_file_hash == item["dataset_sha256"] for item in pins.values()),
             "Dataset file bytes differ from the actually recorded six-case source")
@@ -236,7 +239,8 @@ def replay(args) -> dict:
                                      "historical_model_id": pins[case_id]["model_id"],
                                      "historical_model_digest": pins[case_id]["model_digest"],
                                      "recorded_source_commit": pins[case_id]["source_commit"],
-                                     "recorded_output_sha256": file_hashes[case_id], "original_input_sha256": input_digest(execution["original_input"]),
+                                     "recorded_output_sha256": file_hashes[case_id], "original_input_canonical_sha256": input_digest(execution["original_input"]),
+                                     "recorded_input_file_sha256": input_file_hashes[case_id],
                                      "dataset_sha256": workspace.dataset_sha256, "stored_execution_unchanged": True,
                                      "recorded_dataset_file_sha256": dataset_file_hash,
                                      "actual_http_readback_equal": True})
@@ -265,6 +269,7 @@ def replay(args) -> dict:
                     require(fetched == saved, f"MCP reads changed a stored run: {case_id}")
             for case_id in CASE_IDS:
                 require(read_record(args.records / f"{case_id}.output.json")[1] == file_hashes[case_id], "Recorded input artifact was mutated")
+                require(read_record(args.inputs / f"{case_id}.input.json")[1] == input_file_hashes[case_id], "Original model input file changed")
             require(read_record(args.records / "summary.json", maximum=262_144)[1] == summary_hash, "Original quality summary changed")
             require(read_record(args.dataset, maximum=16_777_216)[1] == dataset_file_hash, "Original dataset changed")
     result = {"status": "pass", "verification_kind": "recorded_live_execution_http_mcp_readback",
@@ -289,6 +294,7 @@ def replay(args) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--records", type=Path, default=ROOT / "evals/pm-intake/20261006/live-quality/original-six")
+    parser.add_argument("--inputs", type=Path, default=ROOT / "evals/pm-intake/20261006/core/cases")
     parser.add_argument("--dataset", type=Path, default=ROOT / "data/demo/dataset.json")
     parser.add_argument("--artifacts", type=Path, default=Path("/artifacts/recorded-workspace-replay"))
     args = parser.parse_args()
