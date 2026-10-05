@@ -44,6 +44,7 @@ from services.automation.completion import (
     dependency_release_allowed,
     digest,
     load_contract,
+    validate_completion_bundle,
 )
 from services.automation.pm import PMError, canonical, fingerprint, protected_path
 from services.automation.worker import regular_file, write_json
@@ -395,6 +396,63 @@ class ParentCollector:
         self.store.save()
         return ref
 
+    def _published_dependency(self, task_id: str, main: str, status: dict) -> DependencyEvidence:
+        """Reuse real published acceptance; refresh only its current status ACK.
+
+        The original candidate and tested commit remain unchanged. A newer
+        snapshot is not another application execution or product-quality test.
+        """
+        registered = self.broker.policy["tasks"].get(task_id, {})
+        snapshot = status.get("formal_snapshot", {})
+        _check(snapshot.get("approved_commit") == main and snapshot.get("tasks", {}).get(task_id) ==
+               {"owner": registered.get("owner"), "status": "done"}, "current authenticated published Done required")
+        saved = self.store.index.get("published_completions", {}).get(task_id, {})
+        completion = ArtifactRef.parse(saved.get("completion"))
+        old_ack = ArtifactRef.parse(saved.get("snapshot_ack"))
+        candidate = CompletionReceipt(self.store.read(completion), completion.sha256)
+        _check(dependency_release_allowed(candidate, completion.commit, old_ack, self.store.registry, self.store.read) and
+               candidate.payload.get("task_id") == task_id and candidate.payload.get("owner") == registered.get("owner"),
+               "original published completion/ACK not admitted")
+        self.broker._git(["fetch", "--no-tags", "origin", completion.commit])
+        self.broker._git(["merge-base", "--is-ancestor", completion.commit, main])
+        task_ref = self._source(f"harness/phase2/tasks/{task_id}.json", main)
+        task = json.loads(self.store.read(task_ref))
+        _check(task.get("id") == task_id and task.get("scope") == "required" and task.get("status") == "done" and
+               MEMBERS.get(task.get("owner")) == registered.get("owner") and
+               task.get("completion_protocol") == "trusted_auto_parent_v1", "current published task identity changed")
+        original = task["completion"]
+        bundle_ref = self._source(original["path"], main)
+        _check(bundle_ref.sha256 == original.get("sha256"), "current published bundle bytes changed")
+        bundle = json.loads(self.store.read(bundle_ref))
+        _check(isinstance(bundle.get("admissions"), dict) and all(
+                   self.store.index["admissions"].get(key) == admission
+                   for key, admission in bundle["admissions"].items()), "export differs from protected admissions")
+        _check(validate_completion_bundle(bundle, self.store.read, expected_task_id=task_id,
+                    expected_receipt_sha256=completion.sha256).raw == candidate.raw,
+               "current source bundle differs from original admitted candidate")
+        approval = snapshot.get("approval_reference", "")
+        match = re.fullmatch(r"https://github\.com/" + re.escape(REPO) +
+                             r"/issues/28#issuecomment-([1-9][0-9]*)", approval)
+        _check(match is not None, "current published Project receipt missing")
+        ack = self.broker.github.request("GET", f"repos/{REPO}/issues/comments/{match[1]}")
+        source = re.match(r"LGAX-RECEIPT ([1-9][0-9]*) ACCEPTED\n", ack.get("body", ""))
+        _check(source is not None, "current published Project ACK missing")
+        project = {"approval_url": f"https://github.com/{REPO}/issues/28#issuecomment-{source[1]}",
+                   "receipt_url": approval, "commit": main}
+        self._project_ack(project, main)
+        _check(self.broker.github.request("GET", f"repos/{REPO}/commits/main")["sha"] == main and
+               self.broker.controller.request("/v1/status").get("formal_snapshot") == snapshot,
+               "main/controller moved before published dependency admission")
+        if main == completion.commit:
+            return DependencyEvidence(task_id, completion, old_ack)
+        current_ack = self.store.admit("snapshot_ack", main, {"schema_version": 1, "kind": "snapshot_ack", "repo": REPO,
+            "approved_commit": main, "outcome": "accepted", "project_receipt": project["receipt_url"],
+            "controller_receipt": fingerprint(snapshot), "task_states": {task_id: "done"},
+            "completion_digests": {task_id: completion.sha256}, "published_commit": completion.commit,
+            "source_task": task_ref.as_dict(), "source_bundle": bundle_ref.as_dict(),
+            "limitations": "current acceptance status only; original tested commit/coverage retained; no new product execution"})
+        return DependencyEvidence(task_id, completion, current_ack)
+
     def _legacy_dependency(self, task_id: str, main: str, status: dict) -> DependencyEvidence:
         """Bounded historical import; original actors/limits stay original facts."""
         snapshot = status.get("formal_snapshot", {})
@@ -583,7 +641,10 @@ class ParentCollector:
                 for dependency in contract.depends_on:
                     if dependency not in imported:
                         try:
-                            dependency_rows.append(self._legacy_dependency(dependency, main, status))
+                            if dependency in self.store.index.get("published_completions", {}):
+                                dependency_rows.append(self._published_dependency(dependency, main, status))
+                            else:
+                                dependency_rows.append(self._legacy_dependency(dependency, main, status))
                         except (CompletionError, PMError, OSError, KeyError, TypeError, ValueError):
                             pass  # original incomplete history remains an explicit missing dependency
                 bundle = EvidenceBundle(bundle.coverage, bundle.parent_acceptance, tuple(dependency_rows))

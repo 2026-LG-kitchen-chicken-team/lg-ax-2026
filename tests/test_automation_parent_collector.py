@@ -217,6 +217,76 @@ class ParentCollectorTests(unittest.TestCase):
         self.assertEqual(result["tasks"][TASK]["state"], "completed")
         self.assertEqual(calls, [True])
 
+    def _published_fixture(self):
+        f, collector, broker = Fixture(), self.collector, self.broker
+        for (path, commit), raw in f.store.items():
+            collector.store.blob(path, commit, raw)
+        collector.store.index["admissions"] = {key: {"kind": value.kind, "commit": value.commit,
+            "collected_by": value.collected_by} for key, value in f.admissions.items()}
+        candidate = f.assessment().receipt
+        bundle = collector.completion_bundle(f.contract, (f.unit,), EvidenceBundle(tuple(f.coverage), f.parent), candidate, MAIN)
+        published = broker.main
+        completion = collector.store.admit("parent_completion", published, candidate.raw)
+        ack = collector.store.admit("snapshot_ack", published, {"schema_version": 1, "kind": "snapshot_ack", "repo": REPO,
+            "approved_commit": published, "outcome": "accepted", "project_receipt": "original-project-ack",
+            "controller_receipt": "original-controller-ack", "task_states": {TASK: "done"},
+            "completion_digests": {TASK: candidate.sha256}})
+        collector.store.index["published_completions"] = {TASK: {"completion": completion.as_dict(), "snapshot_ack": ack.as_dict()}}
+        collector.store.save()
+        path = "evals/automation-completion/fixture/bundle.json"
+        raw = json.dumps(bundle).encode()
+        target = broker.repo / path
+        target.parent.mkdir(parents=True)
+        target.write_bytes(raw)
+        task = {**f.task, "status": "done", "completion_protocol": "trusted_auto_parent_v1",
+                "completion": {"path": path, "sha256": digest(raw)}}
+        (broker.repo / f"harness/phase2/tasks/{TASK}.json").write_text(json.dumps(task), encoding="utf-8")
+        broker._command(["add", "."])
+        broker._command(["commit", "-qm", "accepted metadata fixture"])
+        broker.main = broker._command(["rev-parse", "HEAD"]).decode().strip()
+        url = f"https://github.com/{REPO}/issues/28#issuecomment-52"
+        broker.status = {"formal_snapshot": {"approved_commit": broker.main, "approval_reference": url,
+                        "tasks": {TASK: {"owner": "unknownamed", "status": "done"}}}}
+        self.comments = {"51": {"id": 51, "user": {"login": PM}, "body":
+            '/lgax-sync\n```json\n' + json.dumps({"commit": broker.main}) + '\n```'},
+            "52": {"id": 52, "user": {"login": PM}, "body": f"LGAX-RECEIPT 51 ACCEPTED\n`{broker.main}`"}}
+        broker.github.request = lambda method, route: ({"sha": broker.main} if route.endswith("commits/main")
+                                                      else self.comments[route.rsplit("/", 1)[1]])
+        return candidate, completion, published
+
+    def test_published_dependency_refreshes_only_snapshot_retains_actual_candidate_and_tested_commit(self):
+        candidate, original, published = self._published_fixture()
+        dependency = self.collector._published_dependency(TASK, self.broker.main, self.broker.status)
+        self.assertEqual(dependency.completion, original)
+        self.assertEqual(json.loads(self.collector.store.read(dependency.completion))["tested_commit"], MAIN)
+        self.assertEqual(dependency.snapshot_ack.commit, self.broker.main)
+        ack = json.loads(self.collector.store.read(dependency.snapshot_ack))
+        self.assertEqual(ack["completion_digests"][TASK], candidate.sha256)
+        self.assertEqual(ack["published_commit"], published)
+        self.assertIn("no new product execution", ack["limitations"])
+        self.assertIn(["merge-base", "--is-ancestor", published, self.broker.main], self.broker.calls)
+
+    def test_published_dependency_unapproved_current_done_and_wrong_project_ack_hold(self):
+        self._published_fixture()
+        self.comments["52"]["body"] = "LGAX-RECEIPT 51 ACCEPTED\n`" + "f" * 40 + "`"
+        with self.assertRaises(CompletionError):
+            self.collector._published_dependency(TASK, self.broker.main, self.broker.status)
+        self.broker.status["formal_snapshot"]["tasks"][TASK]["status"] = "pending"
+        with self.assertRaises(CompletionError):
+            self.collector._published_dependency(TASK, self.broker.main, self.broker.status)
+
+    def test_published_dependency_missing_actual_admission_and_main_race_hold(self):
+        _, original, _ = self._published_fixture()
+        admission = self.collector.store.index["admissions"].pop(original.sha256)
+        with self.assertRaises(CompletionError):
+            self.collector._published_dependency(TASK, self.broker.main, self.broker.status)
+        self.collector.store.index["admissions"][original.sha256] = admission
+        request = self.broker.github.request
+        self.broker.github.request = lambda method, route: ({"sha": "f" * 40} if route.endswith("commits/main")
+                                                           else request(method, route))
+        with self.assertRaises(CompletionError):
+            self.collector._published_dependency(TASK, self.broker.main, self.broker.status)
+
 
 if __name__ == "__main__":
     unittest.main()
