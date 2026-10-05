@@ -30,7 +30,8 @@ else:
 IMAGE_ID = re.compile(r"sha256:[0-9a-f]{64}")
 CONTAINER_ID = re.compile(r"[0-9a-f]{64}")
 NETWORK_NAME = re.compile(r"[a-zA-Z0-9][a-zA-Z0-9_.-]{0,63}")
-ARTIFACT_NAMES = {"result-schema.json", "result.json", "empty-mcp.json", "empty-settings.json"}
+ARTIFACT_NAMES = {"result-schema.json", "result.json", "empty-mcp.json", "empty-settings.json",
+                  "product-request.json", "product-response.json"}
 COMMANDS = {"python", "python3", "uv", "npm", "node", "git", "codex", "claude"}
 SAFE_ENV = {
     "LGAX_MODEL_ADAPTER", "LGAX_MODEL_ENDPOINT", "LGAX_MODEL_ID", "LGAX_MODEL_DIGEST",
