@@ -124,10 +124,10 @@ class EvidenceStore:
 class ParentCollector:
     def __init__(self, broker, *, requirement_collector: Callable[
             [TaskContract, str, tuple[AcceptedUnit, ...], EvidenceStore], EvidenceBundle] | None = None,
-            publisher: Callable[[TaskContract, CompletionReceipt, EvidenceStore], Publication] | None = None):
+            publisher: Callable[[TaskContract, CompletionReceipt, EvidenceStore], Publication | None] | None = None):
         self.broker = broker
         self.store = EvidenceStore(broker.state_dir / "parent-evidence")
-        self.requirement_collector = requirement_collector
+        self.requirement_collector = requirement_collector or self._registered_evidence
         self.publisher = publisher
         self.assessment_path = self.store.root / "assessments.json"
 
@@ -266,12 +266,210 @@ class ParentCollector:
             return row
         approval = comment(project["approval_url"])
         ack = comment(project["receipt_url"])
-        expected = '/lgax-sync\n```json\n' + canonical({"commit": commit}) + '\n```'
-        _check(approval.get("body") == expected and
+        command = re.fullmatch(r"/lgax-sync\s*\n```json\s*\n(.*?)\n```\s*", approval.get("body", ""), re.DOTALL)
+        _check(command is not None and json.loads(command[1]) == {"commit": commit} and
                ack.get("body", "").startswith(f"LGAX-RECEIPT {approval['id']} ACCEPTED\n") and
                f"`{commit}`" in ack["body"] and project.get("commit") == commit,
                "actual exact-commit Project ACK missing")
         return project["receipt_url"]
+
+    def completion_bundle(self, contract: TaskContract, units: tuple[AcceptedUnit, ...], evidence: EvidenceBundle,
+                          candidate: CompletionReceipt, main: str) -> dict:
+        """Persist only recursively referenced artifacts/admissions for export."""
+        receipt = self.store.blob("control/completion-" + candidate.sha256 + ".json", main, candidate.raw)
+        bundle = {"schema_version": 1, "protocol": "trusted_auto_parent_v1", "task_id": contract.task_id,
+                  "source_commit": contract.source_commit, "tested_commit": main,
+                  "sources": {"requirements": contract.requirements_source.as_dict(),
+                              "task": contract.task_source.as_dict(), "policy": contract.policy_source.as_dict()},
+                  "accepted_units": [{k: getattr(u, k).as_dict() for k in ("acceptance", "review", "merge", "postmerge")}
+                                     for u in units],
+                  "requirements": [{"requirement_id": e.requirement_id, "job_id": e.job_id,
+                                    "execution": e.execution.as_dict(), "acceptance": e.acceptance.as_dict()}
+                                   for e in evidence.coverage],
+                  "dependencies": [{"task_id": d.task_id, "completion": d.completion.as_dict(),
+                                    "snapshot_ack": d.snapshot_ack.as_dict()} for d in evidence.dependencies],
+                  "parent_acceptance": evidence.parent_acceptance.as_dict(), "parent_receipt": receipt.as_dict()}
+        refs = {}
+
+        def visit(value):
+            if isinstance(value, dict):
+                if set(value) == {"path", "sha256", "commit"}:
+                    ref = ArtifactRef.parse(value)
+                    key = self.store._key(ref)
+                    if key in refs:
+                        _check(refs[key] == ref, "conflicting bundle artifact")
+                        return
+                    refs[key] = ref
+                    raw = self.store.read(ref)
+                    try:
+                        visit(json.loads(raw))
+                    except (UnicodeError, json.JSONDecodeError):
+                        pass
+                else:
+                    for child in value.values():
+                        visit(child)
+            elif isinstance(value, list):
+                for child in value:
+                    visit(child)
+
+        visit(bundle)
+        _check(len(refs) <= 1000, "completion artifact closure exceeds bounds")
+        bundle["artifacts"] = [refs[k].as_dict() for k in sorted(refs)]
+        bundle["admissions"] = {ref.sha256: self.store.index["admissions"][ref.sha256]
+                                for ref in refs.values() if ref.sha256 in self.store.index["admissions"]}
+        directory = self.store.root / "bundles"
+        directory.mkdir(exist_ok=True)
+        write_json(directory / (candidate.sha256 + ".json"), bundle)
+        return bundle
+
+    def register_requirement_bundle(self, contract: TaskContract, main: str, bundle: EvidenceBundle) -> None:
+        """Operator intake of receipts already admitted by direct collectors.
+
+        A fixed operator CLI performs actual isolated execution/semantic review
+        first. This method never admits a worker/model's file or verified flags.
+        """
+        self.broker.authenticate()
+        _check(self.broker.github.request("GET", f"repos/{REPO}/commits/main")["sha"] == main and
+               isinstance(bundle, EvidenceBundle), "intake needs actual fixed main/operator")
+        rows = []
+        for item in bundle.coverage:
+            for ref, kind in ((item.execution, "requirement_execution"), (item.acceptance, "requirement_acceptance")):
+                _check(self.store.registry.permits(ref, kind) and ref.commit == main, "unadmitted/stale requirement receipt")
+                value = json.loads(self.store.read(ref))
+                _check(value.get("contract_fingerprint") == contract.fingerprint and
+                       value.get("task_id") == contract.task_id and value.get("requirement_id") == item.requirement_id,
+                       "intake differs from source contract")
+            rows.append({"requirement_id": item.requirement_id, "job_id": item.job_id,
+                         "execution": item.execution.as_dict(), "acceptance": item.acceptance.as_dict()})
+        parent = bundle.parent_acceptance
+        if parent is not None:
+            _check(self.store.registry.permits(parent, "parent_acceptance") and parent.commit == main,
+                   "unadmitted parent acceptance")
+        key = fingerprint({"task": contract.task_id, "contract": contract.fingerprint, "main": main})
+        self.store.index.setdefault("requirement_bundles", {})[key] = {"coverage": rows,
+            "parent_acceptance": None if parent is None else parent.as_dict(),
+            "dependencies": [{"task_id": d.task_id, "completion": d.completion.as_dict(),
+                              "snapshot_ack": d.snapshot_ack.as_dict()} for d in bundle.dependencies]}
+        self.store.save()
+
+    def _registered_evidence(self, contract: TaskContract, main: str, units: tuple[AcceptedUnit, ...],
+                             store: EvidenceStore) -> EvidenceBundle:
+        key = fingerprint({"task": contract.task_id, "contract": contract.fingerprint, "main": main})
+        saved = store.index.get("requirement_bundles", {}).get(key, {})
+        coverage = tuple(RequirementEvidence(r["requirement_id"], r["job_id"], ArtifactRef.parse(r["execution"]),
+                                             ArtifactRef.parse(r["acceptance"])) for r in saved.get("coverage", []))
+        parent = saved.get("parent_acceptance")
+        dependencies = tuple(DependencyEvidence(r["task_id"], ArtifactRef.parse(r["completion"]),
+                                               ArtifactRef.parse(r["snapshot_ack"])) for r in saved.get("dependencies", []))
+        return EvidenceBundle(coverage, None if parent is None else ArtifactRef.parse(parent), dependencies)
+
+    def _legacy_validation(self, main: str) -> ArtifactRef:
+        cached = self.store.index.get("legacy_validation", {}).get(main)
+        if cached:
+            ref = ArtifactRef.parse(cached)
+            _check(self.store.registry.permits(ref, "legacy_validation"), "unadmitted legacy integrity check")
+            proof = json.loads(self.store.read(ref))
+            self._boundary(proof["boundary"], "validator")
+            return ref
+        _check(self.broker.enabled(), "legacy isolated validation requires enabled collection")
+        work, artifacts = self.broker._source(main, "parent-legacy-integrity")
+        output = self.store.root / f"legacy-validate-{main}.log"
+        argv = ["uv", "run", "--no-sync", "python", "-X", "utf8", "scripts/phase2.py", "validate"]
+        result = self.broker.executor.run(argv, cwd=work, env={}, output=output, artifacts=artifacts,
+            timeout_seconds=120, heartbeat=self.broker.enabled, role="validator", readonly_workspace=True)
+        self._boundary(self.broker.executor.last_boundary, "validator")
+        _check(result.returncode == 0 and not result.stopped_reason, "legacy phase2 integrity validation failed")
+        log = self.store.blob(f"control/legacy-validate-{main}.log", main,
+                              regular_file(output, maximum=2 * 1024 * 1024))
+        ref = self.store.admit("legacy_validation", main, {"schema_version": 1, "kind": "legacy_validation",
+            "commit": main, "argv": argv, "returncode": result.returncode,
+            "boundary": self.broker.executor.last_boundary, "output": log.as_dict(),
+            "limits": "offline integrity only; not new application/model or requirement coverage"})
+        self.store.index.setdefault("legacy_validation", {})[main] = ref.as_dict()
+        self.store.save()
+        return ref
+
+    def _legacy_dependency(self, task_id: str, main: str, status: dict) -> DependencyEvidence:
+        """Bounded historical import; original actors/limits stay original facts."""
+        snapshot = status.get("formal_snapshot", {})
+        registered = self.broker.policy["tasks"].get(task_id, {})
+        _check(snapshot.get("approved_commit") == main and snapshot.get("tasks", {}).get(task_id) ==
+               {"owner": registered.get("owner"), "status": "done"}, "current authenticated legacy Done snapshot required")
+        task_ref = self._source(f"harness/phase2/tasks/{task_id}.json", main)
+        task = json.loads(self.store.read(task_ref))
+        _check(task.get("id") == task_id and task.get("status") == "done" and
+               MEMBERS.get(task.get("owner")) == registered.get("owner") and task.get("scope") == "required",
+               "legacy source task differs from current approved snapshot")
+        sources, records = {}, {}
+        for key in ("individual_evidence", "pm_review", "merge", "integration", "completion"):
+            original = task.get(key, {})
+            ref = self._source(original["path"], main)
+            _check(ref.sha256 == original.get("sha256"), "legacy full-chain bytes mismatch")
+            sources[key] = ref.as_dict()
+            records[key] = json.loads(self.store.read(ref))
+        individual, review, merge, integration, completion = (records[k] for k in
+            ("individual_evidence", "pm_review", "merge", "integration", "completion"))
+        _check(all(r.get("task_id") == task_id for r in records.values()) and
+               individual.get("owner") == task["owner"] and individual.get("result") == "pass" and
+               individual.get("execution_kind") in task["allowed_execution_kinds"] and
+               all(r.get("pm") == "정이량" and r.get("individual_evidence_sha256") == sources["individual_evidence"]["sha256"]
+                   for r in (review, merge, integration, completion)) and
+               review.get("decision") == "approved" and integration.get("result") == "pass" and
+               integration.get("execution_kind") in task["allowed_execution_kinds"] and
+               completion.get("decision") == "complete" and
+               completion.get("integration_evidence_sha256") == sources["integration"]["sha256"],
+               "legacy actual lifecycle chain incomplete")
+        commit = merge.get("merge_commit")
+        _check(isinstance(commit, str) and SHA.fullmatch(commit) and integration.get("tested_commit") == commit,
+               "legacy postmerge tested source mismatch")
+        url = merge.get("pull_request_url", "")
+        match = re.fullmatch(r"https://github\.com/" + re.escape(REPO) + r"/pull/([1-9][0-9]*)", url)
+        _check(match is not None, "legacy actual canonical PR required")
+        pr = self.broker.github.request("GET", f"repos/{REPO}/pulls/{match[1]}")
+        _check(pr.get("merged") is True and pr.get("merge_commit_sha") == commit and
+               pr.get("user", {}).get("login") == registered["owner"] and pr.get("base", {}).get("ref") == "main" and
+               pr["base"]["repo"]["full_name"] == pr["head"]["repo"]["full_name"] == REPO and
+               (not merge.get("head_commit") or merge["head_commit"] == pr["head"]["sha"]),
+               "legacy original actual GitHub merge mismatch")
+        self.broker._git(["fetch", "--no-tags", "origin", commit])
+        self.broker._git(["merge-base", "--is-ancestor", commit, main])
+        # Both original owner and independent PM artifacts retain checks. Hash
+        # every linked output and PM postmerge source version as fixed data.
+        for record in (individual, integration):
+            checks = record.get("checks", [])
+            _check(bool(checks) and all(c.get("passed") is True for c in checks), "legacy execution checks incomplete")
+            for check in checks:
+                raw_ref = check.get("evidence", {})
+                ref = self._source(raw_ref["path"], main)
+                _check(ref.sha256 == raw_ref.get("sha256"), "legacy check output changed")
+            _check(record.get("observations") and record.get("limitations"), "legacy execution limits missing")
+        for field in ("code_versions", "source_versions"):
+            _check(bool(integration.get(field)), "legacy postmerge versions missing")
+            for original in integration[field]:
+                _check(original.get("git_commit", commit) == commit, "legacy version differs from tested merge")
+                ref = self._source(original["path"], commit)
+                _check(ref.sha256 == original.get("sha256"), "legacy tested source changed")
+        validation = self._legacy_validation(main)
+        approval_ref = snapshot.get("approval_reference", "")
+        ack_url = re.match(r"https://github\.com/" + re.escape(REPO) + r"/issues/28#issuecomment-([1-9][0-9]*)", approval_ref)
+        _check(ack_url is not None, "legacy actual Project approval reference missing")
+        ack = self.broker.github.request("GET", f"repos/{REPO}/issues/comments/{ack_url[1]}")
+        source_id = re.match(r"LGAX-RECEIPT ([1-9][0-9]*) ACCEPTED\n", ack.get("body", ""))
+        _check(source_id is not None, "legacy accepted Project receipt missing")
+        project = {"approval_url": f"https://github.com/{REPO}/issues/28#issuecomment-{source_id[1]}",
+                   "receipt_url": ack_url[0], "commit": main}
+        self._project_ack(project, main)
+        normalized = self.store.admit("parent_completion", main, {"schema_version": 1, "kind": "parent_completion",
+            "task_id": task_id, "owner": registered["owner"], "actor": PM, "decision": "complete", "tested_commit": commit,
+            "origin_protocol": "legacy_phase2_full_chain", "source_task": task_ref.as_dict(), "sources": sources,
+            "isolated_integrity": validation.as_dict(), "coverage": [],
+            "limitations": "historical task acceptance only; no invented review session or new requirement/model coverage"})
+        snapshot_ack = self.store.admit("snapshot_ack", main, {"schema_version": 1, "kind": "snapshot_ack", "repo": REPO,
+            "approved_commit": main, "outcome": "accepted", "project_receipt": project["receipt_url"],
+            "controller_receipt": fingerprint(snapshot), "task_states": {task_id: "done"},
+            "completion_digests": {task_id: normalized.sha256},
+            "digest_origin": "derived normalized chain for exact approved main original completion bytes"})
+        return DependencyEvidence(task_id, normalized, snapshot_ack)
 
     def _unit(self, unit: dict, jobs: list[dict]) -> AcceptedUnit:
         cap = self.broker.policy["capabilities"][unit["capability_id"]]
@@ -353,6 +551,15 @@ class ParentCollector:
                 bundle = (self.requirement_collector(contract, main, tuple(units), self.store)
                           if self.requirement_collector is not None else EvidenceBundle())
                 _check(isinstance(bundle, EvidenceBundle), "fixed collector must return typed evidence bundle")
+                dependency_rows = list(bundle.dependencies)
+                imported = {d.task_id for d in dependency_rows}
+                for dependency in contract.depends_on:
+                    if dependency not in imported:
+                        try:
+                            dependency_rows.append(self._legacy_dependency(dependency, main, status))
+                        except (CompletionError, PMError, OSError, KeyError, TypeError, ValueError):
+                            pass  # original incomplete history remains an explicit missing dependency
+                bundle = EvidenceBundle(bundle.coverage, bundle.parent_acceptance, tuple(dependency_rows))
                 assessed = assess_parent(contract, units, bundle.coverage, bundle.parent_acceptance,
                                          bundle.dependencies, self.store.registry, self.store.read, main)
                 summary = {"state": "candidate" if assessed.complete else "waiting_evidence",
@@ -366,17 +573,20 @@ class ParentCollector:
                                "reason": assessed.next_unit_needed.reason}}
                 if assessed.complete:
                     candidate = assessed.receipt
-                    self.store.blob("control/completion-" + candidate.sha256 + ".json", main, candidate.raw)
+                    self.completion_bundle(contract, tuple(units), bundle, candidate, main)
                     summary["completion_sha256"] = candidate.sha256
                     if self.publisher is not None and self.broker.enabled():
                         _check(self.broker.github.request("GET", f"repos/{REPO}/commits/main")["sha"] == main,
                                "main moved before formal publication")
                         publication = self.publisher(contract, candidate, self.store)
-                        _check(isinstance(publication, Publication) and
-                               dependency_release_allowed(candidate, publication.commit, publication.snapshot_ack,
-                                                          self.store.registry, self.store.read),
-                               "formal publication dual ACK not confirmed")
-                        summary.update(state="completed", published_commit=publication.commit)
+                        if publication is None:
+                            summary["publication_pending"] = True
+                        else:
+                            _check(isinstance(publication, Publication) and
+                                   dependency_release_allowed(candidate, publication.commit, publication.snapshot_ack,
+                                                              self.store.registry, self.store.read),
+                                   "formal publication dual ACK not confirmed")
+                            summary.update(state="completed", published_commit=publication.commit)
                     else:
                         summary["publication_pending"] = True
                 result["tasks"][task_id] = summary

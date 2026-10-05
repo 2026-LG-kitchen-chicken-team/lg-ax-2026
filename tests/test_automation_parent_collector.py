@@ -7,7 +7,14 @@ import unittest
 from pathlib import Path
 from types import SimpleNamespace
 
-from services.automation.completion import PM, REPO, ArtifactRef, CompletionError, digest
+from services.automation.completion import (
+    PM,
+    REPO,
+    ArtifactRef,
+    CompletionError,
+    digest,
+    validate_completion_bundle,
+)
 from services.automation.parent_collector import EvidenceBundle, EvidenceStore, ParentCollector
 from tests.test_automation_completion import MAIN, TASK, Fixture
 
@@ -145,10 +152,41 @@ class ParentCollectorTests(unittest.TestCase):
         self.assertEqual(result["tasks"][TASK]["state"], "candidate")
         self.assertTrue(result["tasks"][TASK]["publication_pending"])
         self.assertEqual(publisher_calls, [])
+        path = collector.store.root / "bundles" / (result["tasks"][TASK]["completion_sha256"] + ".json")
+        exported = json.loads(path.read_bytes())
+        self.assertEqual(validate_completion_bundle(exported, collector.store.read).sha256,
+                         result["tasks"][TASK]["completion_sha256"])
+        unrelated = collector.store.blob("control/unrelated-private.txt", MAIN, b"Unrelated private fixture")
+        exported = collector.completion_bundle(f.contract, (f.unit,), EvidenceBundle(tuple(f.coverage), f.parent),
+                                                f.assessment().receipt, MAIN)
+        self.assertNotIn(unrelated.as_dict(), exported["artifacts"])
         broker.enabled = lambda: True
         result = collector.tick({"main_commit": MAIN})
         self.assertEqual(len(publisher_calls), 1)
-        self.assertEqual(result["tasks"][TASK]["state"], "blocked_evidence")
+        self.assertEqual(result["tasks"][TASK]["state"], "candidate")
+        self.assertTrue(result["tasks"][TASK]["publication_pending"])
+
+    def test_operator_intake_only_reuses_admitted_matching_source_receipts(self):
+        f = Fixture()
+        self.broker.main = MAIN
+        for (path, commit), raw in f.store.items():
+            self.collector.store.blob(path, commit, raw)
+        self.collector.store.index["admissions"] = {key: {"kind": value.kind, "commit": value.commit,
+                                                        "collected_by": value.collected_by}
+                                                     for key, value in f.admissions.items()}
+        bundle = EvidenceBundle(tuple(f.coverage), f.parent)
+        self.collector.register_requirement_bundle(f.contract, MAIN, bundle)
+        restored = self.collector._registered_evidence(f.contract, MAIN, (f.unit,), self.collector.store)
+        self.assertEqual(restored, bundle)
+        self.collector.store.index["admissions"].pop(f.coverage[0].execution.sha256)
+        with self.assertRaises(CompletionError):
+            self.collector.register_requirement_bundle(f.contract, MAIN, bundle)
+
+    def test_legacy_done_without_exact_snapshot_full_chain_and_execution_not_imported(self):
+        status = {"formal_snapshot": {"approved_commit": self.broker.main,
+                  "tasks": {TASK: {"owner": "unknownamed", "status": "done"}}}}
+        with self.assertRaises(CompletionError):
+            self.collector._legacy_dependency(TASK, self.broker.main, status)
 
 
 if __name__ == "__main__":
