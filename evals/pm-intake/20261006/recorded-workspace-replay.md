@@ -33,3 +33,13 @@ python evals/pm-intake/20261006/replay_workspace.py
 ## 주장하지 않는 범위
 
 이 검사는 **이미 실행한 모델 결과의 저장/조회 재현**이다. 새 모델 실행·실제 브라우저 조작·ChatGPT/Claude 외부 연결·운영 배포·상품기획 품질 통과의 증거가 아니다. 원 합성 입력의 품질 실패·비용·수정 예산은 유지하며, 통합 조회 성공으로 기존 품질 실패나 전체 신청서 요구사항을 완료로 바꾸지 않는다.
+
+## 실제 결과와 재개 위치
+
+고정 source `c9378241cb6e37437b8bc5edd5dbcb57a8c3ed3a`의 실제 검사에서 위 HTTP·SQLite·MCP·권한·원본 보존 조건이 모두 통과했다. 게스트에서 생성한 3개 프로젝트와 6개 실행의 ID 및 원문 snapshot은 `recorded-workspace/http-readback.json`과 `mcp-readback.json`에서 대조할 수 있다. Supervisor의 정확한 archive·무인증 경계·exit0·원본 변경 없음은 `recorded-workspace/validation.json`에 있다. 재실행에서 새 ID가 생기는 것은 임시 DB의 새 저장이며, 같은 실행 안에서 HTTP와 MCP가 같은 ID를 사용해야 한다.
+
+생산자 원 dataset 파일 SHA는 `97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0`, 실제 Workspace canonical SHA는 `8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03`이다. 6개 원 입력·출력 파일 SHA를 모두 대조했으며 새 모델 호출은 0이다. 원 호출 23회·보류 1·실패 5·최종 화면 후보 0·품질 미완료는 유지한다.
+
+초기 `70137fb`와 `249832d` 검사에서는 입력의 raw 파일 SHA를 canonical `input_digest`와 같다고 잘못 가정한 평가 코드가 실패했다. 두 실제 실패 로그와 원본 변경 없음은 `initial-hash-failure.*` 및 `continued-hash-failure.*`로 보존했다. 이는 상품기획 Agent의 품질 실패를 고친 기록이 아니다. 원 `.output.json`은 CRLF였으므로 처음 Git의 LF 정규화 중간 commit을 보존한 뒤 `original-six/.gitattributes`의 좁은 `*.json -text` 규칙으로 producer의 원 byte hash를 보존했다.
+
+저장 근거 텍스트는 UTF-8/BOM없음/LF/최종 줄바꿈1개로만 정규화하고 JSON 값·로그 내용을 보존했다. `recorded-workspace/provenance.json`은 runtime 원본과 저장 근거의 각각 SHA를 연결한다. 모델 녹화 원본은 이 정규화를 적용하지 않았다. 이 도구·근거만 별도 브랜치에 commit했으며 운영 상태 갱신·PR·병합·최신 합본 source 재검증은 PM 인계 후 단계다.
