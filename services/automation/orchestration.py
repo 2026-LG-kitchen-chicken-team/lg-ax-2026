@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from copy import deepcopy
 from pathlib import Path
 
 from services.automation.backlog import (
@@ -149,8 +150,21 @@ class Orchestration:
                 self._parent_result = self.parent.tick(observation, task_ids=selected)
                 self._parent_key = fingerprint({"main": observation["main_commit"], "units": latest,
                                                "store": self.parent.store.index})
-            if self._parent_result:
-                observation["parent_completion"] = self._parent_result
+        # execute(collect=False) must see the same fixed evidence as decision
+        # observations without invoking collectors again. Never attach a result
+        # from another main; a collecting tick's explicit publication change is
+        # retained only to force the no-model reobserve gate.
+        cached = self._parent_result
+        if cached and (cached.get("main_commit") == observation["main_commit"] or
+                       (collect and cached.get("must_reobserve") is True)):
+            observation["parent_completion"] = deepcopy(cached)
+            if collect and any(row.get("state") == "completed" and row.get("published_commit") != observation["main_commit"]
+                               for row in cached.get("tasks", {}).values()):
+                observation["parent_completion"]["must_reobserve"] = True
+
+    def mail_snapshot(self):
+        """Read immutable local inbox events without profile/auth/network calls."""
+        return self.mail.observation_events(limit=20) if self.mail is not None else []
 
     def mail_tick(self, *, poll=True):
         import time

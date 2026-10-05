@@ -776,13 +776,20 @@ class TrustedPMBroker:
                 "operator_resume_nonce": self.config.get("operator_resume_nonce", "initial"),
                 "external_usage": external_usage}
         self.orchestration.synchronize(observation, collect=collect)
+        # Read the same immutable inbox in execution revalidation. Omitting the
+        # key (even for no replies) changes stable_observation's fingerprint.
+        # This local snapshot never polls/authenticates or sends through Gmail.
+        try:
+            observation["mail_reports"] = self.orchestration.mail_snapshot()
+        except (ValueError, RuntimeError, OSError):
+            observation["mail_reports"] = []
+            observation["mail_connection"] = "unavailable"
         if collect and on:
             try:
                 observation["mail_reports"] = self.orchestration.mail_tick()
             except (ValueError, RuntimeError, OSError):
                 # A failed mail read cannot authorize work or invent a reply.
                 # Keep previous immutable events; no automatic repeated send.
-                observation["mail_reports"] = []
                 observation["mail_connection"] = "unavailable"
         return observation
 

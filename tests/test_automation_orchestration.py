@@ -12,8 +12,7 @@ from unittest.mock import Mock, patch
 
 from services.automation.backlog import verify_progress
 from services.automation.orchestration import Orchestration
-
-from services.automation.pm import PMError, fingerprint
+from services.automation.pm import PMError, fingerprint, stable_observation
 from tests import test_automation_backlog as backlog_fixture
 from tests import test_automation_pm_broker as broker_fixture
 
@@ -135,6 +134,43 @@ class OrchestrationLifecycleTests(unittest.TestCase):
         self.assertEqual(self.broker.state["backlog_ledger"], ledger)
         self.github.request.assert_not_called()
 
+    def parent_cache(self, result=None):
+        self.result(FIRST)
+        self.broker.enabled = Mock(return_value=True)
+        value = result or {"main_commit": BASE, "tasks": {"P2-CORE-002": {"state": "held", "reason": "missing coverage"}}}
+        self.live.parent = SimpleNamespace(store=SimpleNamespace(index={}), tick=Mock(return_value=value))
+        self.live.synchronize(self.observation, collect=True)
+        return self.live.parent.tick
+
+    def test_collect_false_reuses_same_main_parent_evidence_without_collection_or_mutation(self):
+        collector = self.parent_cache()
+        before = deepcopy(self.broker.state)
+        fresh = deepcopy(self.observation)
+        fresh.pop("parent_completion")
+        self.live.synchronize(fresh, collect=False)
+        self.assertEqual(fingerprint(stable_observation(fresh)), fingerprint(stable_observation(self.observation)))
+        self.assertEqual(collector.call_count, 1)
+        self.assertEqual(self.broker.state, before)
+        fresh["parent_completion"]["tasks"]["P2-CORE-002"]["reason"] = "caller mutation"
+        self.assertEqual(self.live._parent_result["tasks"]["P2-CORE-002"]["reason"], "missing coverage")
+
+    def test_changed_main_does_not_attach_old_parent_evidence_during_revalidation(self):
+        collector = self.parent_cache()
+        fresh = deepcopy(self.observation)
+        fresh.pop("parent_completion")
+        fresh["main_commit"] = MERGE
+        fresh["formal_snapshot"]["approved_commit"] = MERGE
+        self.live.synchronize(fresh, collect=False)
+        self.assertNotIn("parent_completion", fresh)
+        self.assertEqual(collector.call_count, 1)
+        self.assertNotEqual(fingerprint(stable_observation(fresh)), fingerprint(stable_observation(self.observation)))
+
+    def test_first_successful_publication_requires_reobserve_before_model_decision(self):
+        self.parent_cache({"main_commit": BASE, "tasks": {"P2-CORE-002": {"state": "completed", "published_commit": MERGE}}})
+        self.assertTrue(self.observation["parent_completion"]["must_reobserve"])
+        self.assertNotIn("must_reobserve", self.live._parent_result)
+        self.assertEqual(self.observation["main_commit"], BASE)
+
 
 class OrchestrationBrokerBoundaryTests(unittest.TestCase):
     def setUp(self):
@@ -168,3 +204,62 @@ class OrchestrationBrokerBoundaryTests(unittest.TestCase):
         self.assertEqual(observed["formal_snapshot"]["tasks"][broker_fixture.TASK]["status"], "blocked")
         self.assertEqual(self.fixture.github.comments, [])
         self.assertFalse(self.fixture.github.merged)
+
+    def test_empty_mail_snapshot_is_identical_without_authentication_or_poll_on_false(self):
+        mail = SimpleNamespace(preflight=Mock(), poll_replies=Mock(), observation_events=Mock(return_value=[]))
+        self.broker.orchestration.mail = mail
+        collected = self.broker.observe(collect=True)
+        preflight_calls, poll_calls = mail.preflight.call_count, mail.poll_replies.call_count
+        revalidated = self.broker.observe(collect=False)
+        self.assertEqual(collected["mail_reports"], [])
+        self.assertEqual(revalidated["mail_reports"], [])
+        self.assertEqual(fingerprint(stable_observation(collected)), fingerprint(stable_observation(revalidated)))
+        self.assertEqual(mail.preflight.call_count, preflight_calls)
+        self.assertEqual(mail.poll_replies.call_count, poll_calls)
+        self.assertEqual(preflight_calls, 1)
+        self.assertEqual(poll_calls, 1)
+
+    def test_cached_report_survives_poll_failure_without_network_revalidation(self):
+        event = {"event_id": "gmail:fixed-local-reply", "authority": "report_only", "task_id": broker_fixture.TASK}
+        mail = SimpleNamespace(preflight=Mock(), poll_replies=Mock(side_effect=OSError("transport unavailable")),
+                               observation_events=Mock(return_value=[event]))
+        self.broker.orchestration.mail = mail
+        collected = self.broker.observe(collect=True)
+        revalidated = self.broker.observe(collect=False)
+        self.assertEqual(collected["mail_reports"], [event])
+        self.assertEqual(fingerprint(stable_observation(collected)), fingerprint(stable_observation(revalidated)))
+        self.assertEqual(mail.poll_replies.call_count, 1)
+        self.assertEqual(mail.preflight.call_count, 1)
+
+    def test_collected_mail_evidence_allows_exact_head_merge_and_still_rechecks_live_authority(self):
+        self.fixture.add_unit()
+        self.fixture.evidence()
+        event = {"event_id": "gmail:fixed-local-reply", "authority": "report_only", "task_id": broker_fixture.TASK}
+        mail = SimpleNamespace(preflight=Mock(), poll_replies=Mock(), observation_events=Mock(return_value=[event]))
+        self.broker.orchestration.mail = mail
+        observed = self.broker.observe(collect=True)
+        action, _ = self.fixture.action("merge")
+        expected = fingerprint(stable_observation(observed))
+        receipt = self.broker.execute(broker_fixture.ACTION, action, expected)
+        self.assertEqual(receipt["outcome"], "applied")
+        self.assertEqual(receipt["merge_commit"], broker_fixture.MERGED)
+        self.assertEqual(mail.poll_replies.call_count, 1)
+        self.assertEqual(mail.preflight.call_count, 1)
+
+    def test_cached_mail_does_not_hide_changed_ci_main_or_actor(self):
+        self.fixture.add_unit()
+        self.fixture.evidence()
+        action, expected = self.fixture.action("merge")
+        with patch.object(self.broker, "_checks", return_value=[{"context": "python", "head": broker_fixture.HEAD, "status": "FAILURE"}]):
+            receipt = self.broker.execute(broker_fixture.ACTION, action, expected)
+        self.assertEqual(receipt["outcome"], "rejected")
+        self.assertFalse(self.fixture.github.merged)
+        self.assertEqual(self.fixture.github.comments, [])
+        self.fixture.github.main = MERGE
+        receipt = self.broker.execute("pm-" + "f" * 40, action, expected)
+        self.assertEqual(receipt["outcome"], "rejected")
+        self.assertEqual(self.fixture.github.comments, [])
+        self.fixture.github.login = "unknownamed"
+        with self.assertRaises(PMError):
+            self.broker.execute("pm-" + "e" * 40, action, expected)
+        self.assertEqual(self.fixture.github.comments, [])
