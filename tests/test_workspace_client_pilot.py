@@ -62,6 +62,11 @@ class WorkspaceProjectParentTests(unittest.TestCase):
         history_a = self.history(project_a)
         self.assertEqual(len(history_a), 1)
         self.assertEqual(self.history(project_b), [])
+        project_snapshots = {}
+        for project_id in (project_a, project_b):
+            response = self.client.get(f"/api/workspace/projects/{project_id}")
+            self.assertEqual(response.status_code, 200, response.text)
+            project_snapshots[project_id] = response.json()
 
         changed = deepcopy(self.request)
         changed["exclusions"] = ["전체 선반 교체 제외"]
@@ -71,6 +76,10 @@ class WorkspaceProjectParentTests(unittest.TestCase):
         self.assertEqual(rejected.json()["error"]["code"], "INVALID_ARGUMENT")
         self.assertEqual(self.history(project_b), [])
         self.assertEqual(self.history(project_a), history_a)
+        for project_id, snapshot in project_snapshots.items():
+            response = self.client.get(f"/api/workspace/projects/{project_id}")
+            self.assertEqual(response.status_code, 200, response.text)
+            self.assertEqual(response.json(), snapshot)
         unchanged = self.client.get(f"/api/workspace/runs/{parent_id}")
         self.assertEqual(unchanged.status_code, 200, unchanged.text)
         self.assertEqual(unchanged.json(), original)
@@ -80,6 +89,7 @@ class WorkspaceProjectParentTests(unittest.TestCase):
         child = accepted.json()["data"]
         self.assertNotEqual(child["run"]["id"], parent_id)
         self.assertEqual(child["previous_run_id"], parent_id)
+        self.assertEqual(child["request"], changed)
         self.assertEqual(child["request_revision"], parent["request_revision"] + 1)
         self.assertEqual(len(self.history(project_a)), 2)
         self.assertEqual(self.history(project_b), [])
