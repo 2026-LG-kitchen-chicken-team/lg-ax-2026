@@ -1,0 +1,38 @@
+{
+  "preserved_initial_before_log": {
+    "initial_before_validator_log_sha256": "a6bdb300266f210479e33e60ede0173fdf1474dfd16fe0a191b0a07b13be006a",
+    "source_failure_observed": "registered snapshot changed after caller input mutation",
+    "fixture_errors_preserved": true,
+    "original_validator_exit_code_not_recorded": true,
+    "wrapper_failure": "ProcessResult.reason attribute does not exist; changed to reviewed stopped_reason field",
+    "fixed_fixture_reason": "Demo CSV revision differs from product manual revision; synthetic document tests now select unchanged manual entities, review-link check uses separate matching review version scope",
+    "source_code_changed_during_initial_probe": false
+  },
+  "first_negative_link_test_fix": "Use a nonempty wrong reference ID to exercise reciprocity; empty list is rejected earlier by JSON Schema.",
+  "first_public_runner_error": "KeyError manifest: raw DocumentStore was chosen instead of the existing WorkspaceDocumentStore adapter.",
+  "first_public_run_counts": {
+    "cases": 3,
+    "generation_count": 0,
+    "status": "failed"
+  },
+  "adapter_diagnostic_runs": 2,
+  "diagnostic_generation_count": 0,
+  "corrected_public_results": [
+    {
+      "case": "public-replay-T876MEE1H1",
+      "status": "held"
+    },
+    {
+      "case": "public-replay-DUE6BGL2E",
+      "status": "held"
+    },
+    {
+      "case": "public-replay-MW23FDI",
+      "status": "held"
+    }
+  ],
+  "initial_eval_gate_error": "Missing required output key/seed CLI arguments; exit2 preserved separately.",
+  "corrected_eval_gate_error": "Entire dataset without truncation not verified; actual gate rejects exit2.",
+  "no_original_failure_rewritten_as_success": true,
+  "initial_public_aggregate_reconstructed_from_unchanged_individual_records": true
+}

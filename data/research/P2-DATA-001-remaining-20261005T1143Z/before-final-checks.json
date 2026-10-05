@@ -1,0 +1,36 @@
+{
+  "base_commit": "df0310ea31bbadda68b299dc96a85475cf7ecec9",
+  "rows": [
+    {
+      "name": "snapshot-regression",
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "--no-sync",
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_document_store_snapshot.py",
+        "-v"
+      ],
+      "exit_code": 1,
+      "reason": null,
+      "test_count": 7,
+      "log_sha256": "18d130613f91ee1cc437e940296f71865874170f1333a727c8556c38d584106b",
+      "source_sha256": "d101613f981ce92bab376692b04831ab3b3f25416e94c495c4042e40a68a4b45",
+      "test_sha256": "212f23f258759b1f9d295a2be405f44063ccab58a1a7b1841cc458ffd56a9b5d",
+      "network": "none",
+      "ai_auth_provided": false,
+      "publisher_auth_provided": false,
+      "observed_at": "2026-10-05T12:00:36.279746+00:00",
+      "expected_alias_regression_reproduced": true,
+      "boundary_verified": true,
+      "boundary_sha256": "4b2dcb503c62e9a2ce417070a51541ef63c74fb076716a2ae9e22cba108de31d"
+    }
+  ]
+}
