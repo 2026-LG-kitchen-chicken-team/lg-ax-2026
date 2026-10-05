@@ -361,8 +361,16 @@ class Journal:
 def stable_observation(observation):
     """Strip transport/heartbeat time churn, preserve all authority/evidence facts."""
     allowed = ("repo", "main_commit", "global_mode", "pm_mode", "members", "formal_snapshot", "jobs",
-               "prs", "capabilities_ready", "readiness", "operator_resume_nonce", "mail_reports", "parent_completion")
+               "prs", "capabilities_ready", "readiness", "operator_resume_nonce", "mail_reports", "parent_completion", "worker_presence")
     stable = {key: deepcopy(observation[key]) for key in allowed if key in observation}
+    # Routine alive signals are metadata, not a fresh billable planning event.
+    # Retain actual online/stale transitions, runtime changes and work phases.
+    if "worker_presence" in stable:
+        stable["worker_presence"] = {
+            account: {key: row[key] for key in ("presence", "registered", "phase", "job_id", "engine",
+                       "runtime_version", "runtime_sha256") if key in row}
+            for account, row in stable["worker_presence"].items()
+        }
     for job in stable.get("jobs", []):
         for key in ("observed_at", "lease_expires_at", "heartbeat_at", "updated_at"):
             job.pop(key, None)

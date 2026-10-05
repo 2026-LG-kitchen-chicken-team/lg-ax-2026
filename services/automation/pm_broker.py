@@ -946,6 +946,7 @@ class TrustedPMBroker:
         observation = {"repo": REPO, "main_commit": main, "global_mode": status["global_mode"],
                 "pm_mode": "on" if status.get("members", {}).get(PM) else "off", "members": status["members"],
                 "formal_snapshot": status["formal_snapshot"], "jobs": jobs, "prs": prs,
+                "worker_presence": status.get("workers", {}),
                 "capabilities_ready": ready, "readiness": self._readiness(),
                 "operator_resume_nonce": self.config.get("operator_resume_nonce", "initial"),
                 "external_usage": external_usage}
