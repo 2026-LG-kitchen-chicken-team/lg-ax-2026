@@ -166,6 +166,31 @@ class ProductRPCTests(unittest.TestCase):
         self.assertEqual(relay.state["requests"][0]["state"], "completed")
         self.assertFalse((self.artifacts / RESPONSE).exists())
 
+    def test_off_during_durable_reservation_cancels_before_any_upstream_call(self):
+        relay = self.relay()
+        save = relay._save
+
+        def save_and_turn_off():
+            save()
+            if relay.state["requests"]:
+                self.on = False
+        relay._save = save_and_turn_off
+        write_file(self.artifacts / REQUEST, request())
+        with self.assertRaises(RPCError):
+            relay.step()
+        self.assertFalse(self.calls)
+        self.assertEqual(relay.state["tokens"], 0)
+        row = decode(read_file(self.private / "relay.json", 100000))["requests"][0]
+        self.assertEqual(row["state"], "cancelled_before_dispatch")
+        self.assertFalse(row["dispatch_started"])
+        self.assertFalse(row["usage_unknown"])
+        self.assertFalse((self.artifacts / RESPONSE).exists())
+        restarted = self.relay()
+        self.assertEqual(restarted.state["tokens"], 0)
+        with self.assertRaises(RPCError):
+            restarted.step()
+        self.assertFalse(self.calls)
+
     def test_generation_limit_survives_restart_and_actual_token_overage_holds(self):
         relay = self.relay(max_generations=1)
         write_file(self.artifacts / REQUEST, request())

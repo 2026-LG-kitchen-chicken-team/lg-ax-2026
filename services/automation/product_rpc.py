@@ -209,7 +209,9 @@ class FileRelay:
                 self.state.get("approved_origin") != self.origin or self.state.get("allow_generation") != self.allow_generation):
             raise RPCError("relay journal identity/limits changed")
         self.failure = self.state.get("failure")
-        if any(row.get("state") != "completed" for row in self.state["requests"]):
+        if any(row.get("state") != "completed" and not (
+                row.get("state") == "cancelled_before_dispatch" and row.get("dispatch_started") is False and
+                row.get("usage_unknown") is False) for row in self.state["requests"]):
             self.failure = self.state["failure"] = "ambiguous_reserved_request"
             self.state["tokens"] = self.max_tokens
         self._save()
@@ -241,16 +243,29 @@ class FileRelay:
                                               self.state["tokens"] >= self.max_tokens)):
             raise RPCError("product request/generation/token bound exhausted")
         row = {"sequence": sequence, "request_sha256": value["request_sha256"], "request": value,
-               "state": "reserved", "generation": generation}
+               "state": "reserved", "generation": generation, "dispatch_started": False}
         rows.append(row)
         if generation:
             self.state["generations"] += 1
         self._save()  # A crash after here never causes a second upstream call.
         started = time.monotonic()
         try:
+            if not self.enabled():
+                row.update(state="cancelled_before_dispatch", usage_unknown=False)
+                self._save()
+                raise RPCError("OFF cancelled reservation before any upstream call")
+            row["dispatch_started"] = True
+            self._save()
+            # Saving the dispatch intent itself may span a mode change.
+            if not self.enabled():
+                row.update(state="cancelled_before_dispatch", dispatch_started=False, usage_unknown=False)
+                self._save()
+                raise RPCError("OFF cancelled dispatch before any upstream call")
             raw = self.upstream(value["method"], value["path"], value["body"])
             if not isinstance(raw, bytes) or len(raw) > MAX_RESPONSE:
                 raise RPCError("actual upstream bytes missing/bounded")
+            row.update(response_sha256=sha(raw), response_base64=base64.b64encode(raw).decode())
+            self._save()  # Invalid completions are actual failure evidence too.
             result = decode(raw)
             if generation:
                 if (result.get("model") != MODEL or result.get("done") is not True or not isinstance(result.get("response"), str)
@@ -273,7 +288,7 @@ class FileRelay:
         except Exception as exc:  # noqa: BLE001 - retain an ambiguous cost, disclose no endpoint/private response.
             self.failure = type(exc).__name__
             self.state["failure"] = self.failure
-            if generation and "usage" not in row:
+            if generation and "usage" not in row and row["dispatch_started"]:
                 self.state["tokens"] = self.max_tokens
                 row["usage_unknown"] = True
             self._save()

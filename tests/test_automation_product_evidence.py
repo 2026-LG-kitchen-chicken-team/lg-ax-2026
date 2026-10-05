@@ -13,7 +13,7 @@ from unittest.mock import patch
 
 from services.automation.completion import PM, ArtifactRef, CompletionError, assess_parent, digest
 from services.automation.parent_collector import EvidenceStore
-from services.automation.pm import PMDriverBusy, PMError, canonical
+from services.automation.pm import PMDriverBusy, PMError, canonical, fingerprint
 from services.automation.product_evidence import (
     CASES,
     DATASET,
@@ -169,6 +169,15 @@ class ProductEvidenceTests(unittest.TestCase):
         self.assertFalse(self.producer.state["runs"])
         self.assertFalse(self.broker.state["budgets"])
 
+    def test_protected_external_progress_changes_fingerprint_without_running_a_model(self):
+        original = self.producer.state_fingerprint
+        state = {"schema_version": 1, "runs": {"fixed-operator-recovery": {"state": "executed"}}}
+        self.producer.state_path.write_bytes(encode(state))
+        self.assertNotEqual(self.producer.state_fingerprint, original)
+        self.assertEqual(self.producer.state_fingerprint, fingerprint(state))
+        self.assertFalse(self.driver.calls)
+        self.assertFalse(self.producer.state["runs"])
+
     def test_unaccepted_forged_or_incomplete_unit_chain_never_executes(self):
         self.assertFalse(self.producer(self.fixture.contract, MAIN, (), self.store).coverage)
         self.store.index["admissions"].pop(self.fixture.unit.review.sha256)
@@ -208,10 +217,81 @@ class ProductEvidenceTests(unittest.TestCase):
         self.assertFalse(self.run_fixture().coverage)
         self.assertFalse(self.broker.state["budgets"])
         self.assertEqual(len(self.case_calls), 2)
+        self.assertTrue(self.producer.pending_review)
         self.driver.busy = False
         bundle = self.run_fixture()
         self.assertEqual(len(bundle.coverage), 5)
         self.assertEqual(len(self.case_calls), 2)
+        self.assertFalse(self.producer.pending_review)
+
+    def test_crashed_pending_review_holds_original_day_task_and_blocks_new_main_without_retry(self):
+        day = "2026-10-04"
+        pending = {"state": "review_started", "main": MAIN, "task_id": TASK, "job_id": "fixture-job",
+            "review_reservation": {"day": day, "task_id": TASK, "day_token_ceiling": 10000, "task_token_ceiling": 1000}}
+        self.producer.state["runs"]["crashed-paid-call"] = pending
+        self.producer._save()  # Crash checkpoint after durable stamp, before CLI finally.
+        self.broker.state["budgets"][day] = {"calls": 1, "tokens": 11, "tasks": {TASK: 11}, "task_calls": {TASK: 1}}
+        restarted = ProductEvidenceProducer(self.broker)
+        budget = self.broker.state["budgets"][day]
+        self.assertEqual(budget["tokens"], 10000)
+        self.assertEqual(budget["tasks"][TASK], 1000)
+        self.assertEqual(budget["calls"], 1)
+        self.assertTrue(restarted.state["review_halt"])
+        self.assertFalse(restarted.pending_review)
+        self.main = "f" * 40
+        with patch.object(restarted, "_case") as case:
+            result = restarted(self.fixture.contract, self.main, (self.fixture.unit,), self.store)
+            self.assertFalse(result.coverage)
+            case.assert_not_called()
+        again = ProductEvidenceProducer(self.broker)
+        self.assertTrue(again.state["review_halt"])
+        self.assertEqual(budget["tokens"], 10000)
+        self.assertEqual(list(self.broker.state["budgets"]), [day])
+        self.assertFalse(self.driver.calls)
+
+    def test_crash_between_debit_and_handled_marker_is_idempotent(self):
+        day = "2026-10-03"
+        self.producer.state["runs"]["pending"] = {"state": "review_started", "review_reservation": {
+            "day": day, "task_id": TASK, "day_token_ceiling": 9000, "task_token_ceiling": 900}}
+        self.producer._save()
+        with patch.object(self.producer, "_save", side_effect=SystemExit("fixture hard interruption")), self.assertRaises(SystemExit):
+            self.producer._recover_unknown_reviews()
+        self.assertEqual(self.broker.state["budgets"][day]["tokens"], 9000)
+        restarted = ProductEvidenceProducer(self.broker)
+        self.assertTrue(restarted.state["review_halt"])
+        self.assertEqual(self.broker.state["budgets"][day]["tokens"], 9000)
+        self.assertEqual(self.broker.state["budgets"][day]["tasks"][TASK], 900)
+
+    def test_unbound_old_pending_review_halts_without_inventing_current_day_charge(self):
+        self.producer.state["runs"]["old"] = {"state": "review_started"}
+        self.producer._save()
+        restarted = ProductEvidenceProducer(self.broker)
+        self.assertTrue(restarted.state["review_halt"])
+        self.assertFalse(self.broker.state["budgets"])
+        with patch.object(restarted, "_case") as case:
+            restarted(self.fixture.contract, MAIN, (self.fixture.unit,), self.store)
+            case.assert_not_called()
+
+    def test_review_reservation_is_durable_before_driver_and_known_completion_settles(self):
+        original = self.driver.call
+
+        def verify_before_call(*args, **kwargs):
+            saved = json.loads(self.producer.state_path.read_bytes())
+            entry = next(iter(saved["runs"].values()))
+            self.assertEqual(entry["state"], "review_started")
+            reservation = entry["review_reservation"]
+            self.assertEqual(reservation["task_id"], TASK)
+            self.assertEqual(reservation["day_token_ceiling"], 10000)
+            self.assertEqual(reservation["task_token_ceiling"], 1000)
+            self.assertEqual(self.broker.state["budgets"][reservation["day"]]["calls"], 1)
+            return original(*args, **kwargs)
+        self.driver.call = verify_before_call
+        self.assertEqual(len(self.run_fixture().coverage), 5)
+        entry = next(iter(self.producer.state["runs"].values()))
+        self.assertEqual(entry["state"], "partial")
+        self.assertEqual(entry["review_verified_usage"], {"input_tokens": 7, "output_tokens": 3})
+        restarted = ProductEvidenceProducer(self.broker)
+        self.assertNotIn("review_halt", restarted.state)
 
     def test_unknown_review_usage_spends_remaining_quota_and_cannot_retry(self):
         self.driver.bad_usage = True
@@ -227,6 +307,14 @@ class ProductEvidenceTests(unittest.TestCase):
         self.driver.bad_proof = True
         self.assertFalse(self.run_fixture().coverage)
         self.assertEqual(self.store.index["admissions"], original)
+        budget = next(iter(self.broker.state["budgets"].values()))
+        self.assertEqual(budget["tokens"], 10000)
+        self.assertEqual(budget["tasks"][TASK], 1000)
+        self.assertIn("review_halt", self.producer.state)
+        self.main = "b" * 40
+        self.assertFalse(self.run_fixture().coverage)
+        self.assertEqual(len(self.driver.calls), 1)
+        self.assertEqual(len(self.case_calls), 2)
         with self.assertRaises(CompletionError):
             self.producer._boundary({**boundary("validator"), "publisher_credentials_mounted": True}, "validator")
         with self.assertRaises(CompletionError):

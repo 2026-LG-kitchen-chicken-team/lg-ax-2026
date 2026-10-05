@@ -14,6 +14,7 @@ import threading
 import time
 from contextlib import closing
 from dataclasses import asdict, dataclass
+from datetime import date
 from pathlib import Path
 
 from services.automation.artifacts import secret_check
@@ -117,6 +118,10 @@ class ProductEvidenceProducer:
         self.state_path = self.root / "state.json"
         self.state = json.loads(regular_file(self.state_path)) if self.state_path.exists() else {"schema_version": 1, "runs": {}}
         require(self.state.get("schema_version") == 1, "invalid protected product state")
+        if any(entry.get("state") == "review_started" for entry in self.state["runs"].values()):
+            with exclusive_lock(self.root / "producer.lock"):
+                self.state = self._current_state()
+                self._recover_unknown_reviews()
 
     def _save(self):
         write_json(self.state_path, self.state)
@@ -124,7 +129,48 @@ class ProductEvidenceProducer:
     @property
     def state_fingerprint(self):
         """Root cache key may include this; no model-selected state wakes calls."""
-        return fingerprint(self.state)
+        return fingerprint(self._current_state())
+
+    def _current_state(self):
+        current = json.loads(regular_file(self.state_path)) if self.state_path.exists() else self.state
+        require(current.get("schema_version") == 1 and isinstance(current.get("runs"), dict),
+                "invalid current protected product state fingerprint")
+        return current
+
+    @property
+    def pending_review(self):
+        current = self._current_state()
+        return not current.get("review_halt") and any(entry.get("state") == "executed" for entry in current["runs"].values())
+
+    def _recover_unknown_reviews(self):
+        """Crash-safe hold. An unfinished paid review cannot escape on new main.
+
+        Charge the original reserved day/task ceilings by max, then persist the
+        halt. A crash between these writes repeats the same max, never refunds
+        or double-adds. Only an explicit protected operator recovery may clear
+        this state after original CLI proof/token reconciliation.
+        """
+        unknown = [entry for entry in self.state["runs"].values() if entry.get("state") == "review_started"]
+        if not unknown:
+            return
+        for entry in unknown:
+            reservation = entry.get("review_reservation")
+            if isinstance(reservation, dict) and reservation.get("task_id") == TASK:
+                day = reservation.get("day")
+                require(isinstance(day, str) and date.fromisoformat(day).isoformat() == day,
+                        "original paid-review day missing")
+                daily = positive(reservation.get("day_token_ceiling"), 1000000000)
+                task = positive(reservation.get("task_token_ceiling"), 1000000000)
+                budget = self.broker.state["budgets"].setdefault(day, {"calls": 0, "tokens": 0, "tasks": {}, "task_calls": {}})
+                budget["tokens"] = max(budget["tokens"], daily)
+                budget["tasks"][TASK] = max(budget["tasks"].get(TASK, 0), task)
+            # Legacy unbound pending entries also halt everything; their day is
+            # not invented or billed to the current day instead.
+        self.broker.save()  # Debit BEFORE marking handled: interruption is safe.
+        for entry in unknown:
+            entry.update(state="review_unmeasured", review_recovery_required=True)
+        self.state["review_halt"] = "unmeasured paid review; reconcile original proof before operator recovery"
+        self._save()
 
     @staticmethod
     def _registered(contract, main, store):
@@ -208,7 +254,10 @@ class ProductEvidenceProducer:
             self.state.setdefault("case_runs", {})[run_id] = {
                 "approved_origin": origin, "case_id": case_id, "tested_commit": main, "refs": retained,
                 "execution_mode": binding.execution_mode,
-                "actual_product_tokens": relay.state["tokens"], "actual_product_calls": relay.state["generations"],
+                "actual_product_tokens": None if any(row.get("usage_unknown") for row in relay.state["requests"])
+                    else relay.state["tokens"], "product_token_budget_used": relay.state["tokens"],
+                "actual_product_calls": sum(row.get("generation") is True and "usage" in row for row in relay.state["requests"]),
+                "reserved_product_generations": relay.state["generations"],
                 "usage_unknown": any(row.get("usage_unknown") for row in relay.state["requests"]),
                 "status": "unverified", "relay_failed": bool(failures or relay.failure)}
             self._save()
@@ -287,7 +336,7 @@ class ProductEvidenceProducer:
         budget["calls"] += 1
         budget["task_calls"][task_id] = budget["task_calls"].get(task_id, 0) + 1
         self.broker.save()
-        return budget, (decision_tokens, task_tokens + old_tokens)
+        return budget, (decision_tokens, task_tokens + old_tokens, day)
 
     def _review(self, contract, main, unit, cases, store, entry):
         criteria = dict(contract.requirements)
@@ -337,6 +386,9 @@ class ProductEvidenceProducer:
         with reserve():
             budget, prior = self._review_budget(TASK)
             entry["state"] = "review_started"
+            entry["review_reservation"] = {"day": prior[2], "task_id": TASK,
+                "day_token_ceiling": self.broker.policy["limits"]["max_model_tokens_per_day"],
+                "task_token_ceiling": self.broker.policy["limits"]["max_model_tokens_per_task"]}
             self._save()
             used = None
             try:
@@ -366,6 +418,9 @@ class ProductEvidenceProducer:
                 digest(regular_file(self.broker.state_dir / "driver" / session / "events.jsonl", maximum=64 * 1024 * 1024)) ==
                 record.get("events_sha256"), "original independent review/event bytes changed")
         self._boundary(record.get("boundary"), "model")
+        entry.update(state="review_observed", review_verified_usage=record["usage"],
+                     reviewer_session_id=session, events_sha256=record["events_sha256"])
+        self._save()
         verdicts = record.get("result")
         action_verdicts = verdicts.get("task_actions") if isinstance(verdicts, dict) else None
         expected_keys = set(selected) | ({"task_actions"} if full_scope else set())
@@ -449,9 +504,10 @@ class ProductEvidenceProducer:
             # Two pre-created PM callbacks must not replay a paid case after
             # waiting for the same protected lock with stale in-memory state.
             if self.state_path.exists():
-                self.state = json.loads(regular_file(self.state_path))
-                require(self.state.get("schema_version") == 1 and isinstance(self.state.get("runs"), dict),
-                        "invalid current protected product state")
+                self.state = self._current_state()
+            self._recover_unknown_reviews()
+            if self.state.get("review_halt"):
+                return registered  # Global producer hold, including new main.
             entry = self.state["runs"].get(key)
             if entry and entry.get("state") == "partial":
                 return EvidenceBundle(tuple(RequirementEvidence(row["requirement_id"], row["job_id"],
@@ -487,6 +543,12 @@ class ProductEvidenceProducer:
             except PMDriverBusy:
                 return registered  # Profile reservation precedes billable review.
             except (CompletionError, RPCError, PMError, OSError, ValueError, TypeError, KeyError):
+                if entry.get("state") == "review_started":
+                    # Returned usage is not settled until its original CLI
+                    # proof and boundary are verified. Catchable failures are
+                    # held just like an interrupted paid call.
+                    self._recover_unknown_reviews()
+                    return registered
                 entry.update(state="failed", reason="actual independent product acceptance unavailable; no invented coverage")
                 self._save()
                 return registered

@@ -60,13 +60,30 @@ class Orchestration:
         self._mail_checked = False
         self._mail_poll_at = None
         self.parent = None
+        self.product_producer = None
         self._parent_key = None
         self._parent_result = None
         if self.plan and broker.config.get("parent_completion_enabled") is True:
             from services.automation.completion_publish import CompletionPublisher
             from services.automation.parent_collector import ParentCollector
 
-            self.parent = ParentCollector(broker, publisher=CompletionPublisher(broker))
+            product = broker.config.get("product_evidence")
+            if product is not None and not isinstance(product, dict):
+                raise PMError("fixed protected product evidence settings must be an object")
+            if product and product.get("enabled") is True:
+                from services.automation.product_evidence import ProductEvidenceProducer
+
+                # This callable is selected by reviewed host code. Models,
+                # backlog files and issue text cannot choose an evaluator.
+                self.product_producer = ProductEvidenceProducer(broker)
+            self.parent = ParentCollector(broker, requirement_collector=self.product_producer,
+                                          publisher=CompletionPublisher(broker))
+
+    def _collection_key(self, observation, latest):
+        value = {"main": observation["main_commit"], "units": latest, "store": self.parent.store.index}
+        if self.product_producer is not None:
+            value["product_evidence"] = self.product_producer.state_fingerprint
+        return fingerprint(value)
 
     def _event(self, cap_id, suffix, event, receipt):
         broker = self.broker
@@ -140,16 +157,16 @@ class Orchestration:
         write_json(self.broker.state_dir / "backlog-observation.json", observation["backlog"])
         if self.parent and collect and self.broker.enabled():
             selected = tuple(sorted({unit["task_id"] for unit in latest.values() if unit.get("reconciled")}))
-            key = fingerprint({"main": observation["main_commit"], "units": latest,
-                               "store": self.parent.store.index})
+            key = self._collection_key(observation, latest)
             # Current-head and protected evidence changes wake collection;
             # unchanged polling does not rerun product tests or model reviews.
             pending = self._parent_result and any(row.get("publication_pending") for row in
                                                   self._parent_result["tasks"].values())
+            pending = pending or (self.product_producer is not None and
+                                  getattr(self.product_producer, "pending_review", False) is True)
             if selected and (key != self._parent_key or pending):
                 self._parent_result = self.parent.tick(observation, task_ids=selected)
-                self._parent_key = fingerprint({"main": observation["main_commit"], "units": latest,
-                                               "store": self.parent.store.index})
+                self._parent_key = self._collection_key(observation, latest)
         # execute(collect=False) must see the same fixed evidence as decision
         # observations without invoking collectors again. Never attach a result
         # from another main; a collecting tick's explicit publication change is

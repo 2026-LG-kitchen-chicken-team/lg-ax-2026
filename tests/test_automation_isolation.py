@@ -346,7 +346,7 @@ class IsolationTests(unittest.TestCase):
             verify_canary_boundary(executor, cwd=self.work, artifacts=self.artifacts,
                 protected_canary=bad_canary, output_dir=self.root / "probe-output")
         self.assertEqual(ARTIFACT_NAMES, {"result-schema.json", "result.json", "empty-mcp.json", "empty-settings.json",
-                                         "product-request.json", "product-response.json"})
+                                         "product-request.json", "product-response.json", "revision-reference.patch"})
 
 
 class MockExecutionTests(unittest.TestCase):
