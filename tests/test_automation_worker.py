@@ -63,6 +63,10 @@ class WorkerTests(unittest.TestCase):
                         "GIT_CONFIG_NOSYSTEM": "1"}
         (self.root / "empty-config").touch()
         self.git("init", "-q")
+        # Direct Worker fetch callbacks also use this repository configuration.
+        # Keep background maintenance from racing temporary-directory cleanup.
+        self.git("config", "gc.auto", "0")
+        self.git("config", "maintenance.auto", "false")
         self.git("config", "user.name", "Fixture")
         self.git("config", "user.email", "fixture@example.invalid")
         for name in ("packages/core/a.py", "packages/core/removed.py", "AGENTS.md"):
