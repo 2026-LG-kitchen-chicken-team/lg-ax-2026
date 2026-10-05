@@ -45,6 +45,10 @@ describe('buildEvidenceTrace', () => {
     expect(status(result, 'M-1')).toBe('other_version');
     expect(status(result, 'R-9')).toBe('deleted');
     expect(status(result, 'R-404')).toBe('not_found');
+    expect(result.rows.find(row => row.id === 'R-1')?.source?.model_id).toBe(REVIEW.model_id);
+    expect(result.rows.find(row => row.id === 'R-1')?.current?.model_id).toBe('DISH-B');
+    expect(result.rows.find(row => row.id === 'M-1')?.source?.document_version).toBe(MANUAL.document_version);
+    expect(result.rows.find(row => row.id === 'M-1')?.current?.document_version).toBe('v1');
     expect(result.rows.find(row => row.id === 'R-9')?.source?.text).toBe('원문 R-9');
     expect(result.rows.find(row => row.id === 'R-404')?.source).toBeNull();
     expect(result.sufficient).toBe(false);

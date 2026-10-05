@@ -25,7 +25,7 @@ export interface TraceSubject { label: string; evidenceIds: string[]; featureIds
 
 export interface TraceRow {
   id: string; status: TraceStatus; role: TraceRole;
-  /** The source that is shown: the current one, or the copy the judgement saw when the current one is gone. */
+  /** The source the judgement saw, when saved; otherwise the currently registered source. */
   source: Evidence | null;
   /** Current source when it exists and differs from what the judgement saw (changed text or version). */
   current: Evidence | null;
@@ -87,10 +87,11 @@ export function buildEvidenceTrace(options: { subject: TraceSubject; scope: Trac
     const now = current.get(id);
     const then = judged.get(id);
     const { status, note } = classify(scope, now, then);
-    // Preserve the exact quoted input when the current source changed; show the new copy separately.
-    const shown = status === 'changed' ? then ?? now ?? null : now ?? then ?? null;
+    // A replacement model/version also must not silently overwrite the exact quoted input.
+    const changed = !!then && !!now && !sameSource(now, then);
+    const shown = then ?? now ?? null;
     const role: TraceRole = shown ? shown.source_type === 'manual' ? 'manual' : shown.source_type === 'review' ? 'review' : 'unknown' : manualExpected.has(id) ? 'manual' : 'unknown';
-    return { id, status, role, source: shown, current: status === 'changed' ? now ?? null : null, note };
+    return { id, status, role, source: shown, current: changed ? now ?? null : null, note };
   });
 
   const counts: Record<TraceStatus, number> = { usable: 0, other_model: 0, other_version: 0, changed: 0, deleted: 0, not_found: 0 };
