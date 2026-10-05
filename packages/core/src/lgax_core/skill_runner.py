@@ -7,13 +7,16 @@ explicit test plumbing, not proof that a planning/model backend is implemented.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from collections.abc import Callable
 from copy import deepcopy
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 from jsonschema import Draft202012Validator
 from lgax_contracts import CONTRACT_VERSION, load_schema
@@ -131,6 +134,13 @@ class SkillRuntime:
         self.store = store if store is not None else DemoStore()
         self._handlers = {"evidence_lookup": Handler(self._lookup, "demo-store:literal-token-count", "deterministic")}
 
+        self._records: list[dict[str, Any]] = []
+
+    @property
+    def records(self) -> list[dict[str, Any]]:
+        """Return detached observations; these are not trusted collector evidence."""
+        return deepcopy(self._records)
+
     def register_handler(self, skill_id: str, handler: Callable, *, backend_id: str,
                          execution_kind: str, replace: bool = False) -> None:
         """Explicit developer integration; inputs never select/import arbitrary code.
@@ -243,21 +253,84 @@ class SkillRuntime:
                                             payload["document_version"], payload.get("limit", 10))["data"]
         return {key: result[key] for key in ("query", "items", "total", "search_method")}
 
-    def execute(self, skill_id: str, payload: Any) -> dict[str, Any]:
+    def execute(self, skill_id: str, payload: Any, *, retry_of: str | None = None) -> dict[str, Any]:
+        """Record one call without changing the public response schema.
+
+        Only schema-valid, UTF-8 JSON inputs are retained. Retries are explicit,
+        local to this runtime, and separate from the business revision budget.
+        """
+        record = {
+            "record_version": 1, "run_id": f"skill-{uuid4().hex}", "skill_id": skill_id,
+            "contract_version": CONTRACT_VERSION, "started_at": datetime.now(UTC).isoformat(),
+            "input": None, "input_sha256": None, "stage": "input_validation",
+            "tool": {"backend_id": None, "execution_kind": None, "called": False},
+            "retry_of": retry_of, "retry_count": 0, "automatic_retries": 0,
+            "trusted_collector_verified": False,
+        }
+        try:
+            if skill_id not in SKILL_IDS:
+                raise DomainError("INVALID_ARGUMENT", "등록된 Skill ID가 아닙니다.", {"skill_id": skill_id})
+            self._validate(skill_id, "input", payload)
+            # Compute bytes before retaining input: lone surrogates pass JSON
+            # Schema but are not UTF-8, and must not escape the error envelope.
+            try:
+                encoded = json.dumps(payload, ensure_ascii=False, sort_keys=True, allow_nan=False).encode("utf-8")
+            except (TypeError, ValueError, UnicodeError, RecursionError) as error:
+                raise DomainError("INVALID_ARGUMENT", "Skill 입력을 UTF-8 JSON으로 직렬화할 수 없습니다.",
+                                  {"skill_id": skill_id, "direction": "input",
+                                   "error_type": type(error).__name__}) from None
+            record["input"] = json.loads(encoded)
+            record["input_sha256"] = hashlib.sha256(encoded).hexdigest()
+            record["stage"] = "retry_validation"
+            if retry_of is not None:
+                previous = next((r for r in self._records if r["run_id"] == retry_of), None)
+                if (previous is None or previous["skill_id"] != skill_id
+                        or previous["input_sha256"] != record["input_sha256"]
+                        or previous["stage"] in ("input_validation", "retry_validation")
+                        or previous["decision"]["status"] not in ("failed", "held")
+                        or previous["retry_count"] >= 2
+                        or any(r["retry_of"] == retry_of and r["retry_count"] > 0 for r in self._records)):
+                    raise DomainError("INVALID_ARGUMENT", "동일 입력의 실패/보류에 최대 두 번 순차 재시도할 수 있습니다.")
+                record["retry_count"] = previous["retry_count"] + 1
+            response = self._execute_once(skill_id, record["input"], record)
+        except DomainError as error:
+            response = error.response()
+        result = response.get("data", {}).get("result", {})
+        reasons = list(result.get("unresolved", [])) + list(result.get("hold_reasons", []))
+        reasons.extend(f"insufficient_evidence:{gap['id']}" for gap in result.get("gaps", [])
+                       if gap["support_status"] == "insufficient_evidence")
+        error = response.get("error")
+        if error and error["code"] == "INSUFFICIENT_EVIDENCE":
+            reasons.append(error["message"])
+        record.update(
+            decision={"status": "held" if reasons else "succeeded" if response["ok"] else "failed",
+                      "hold_reasons": reasons},
+            output=deepcopy(response), error=deepcopy(error), finished_at=datetime.now(UTC).isoformat())
+        self._records.append(record)
+        return response
+
+    def _execute_once(self, skill_id: str, payload: Any, record: dict) -> dict[str, Any]:
         if skill_id not in SKILL_IDS:
             return DomainError("INVALID_ARGUMENT", "등록된 Skill ID가 아닙니다.", {"skill_id": skill_id}).response()
         try:
             self._validate(skill_id, "input", payload)
+            record["stage"] = "context_validation"
             context = self._context(skill_id, payload)
+            record["stage"] = "handler_selection"
             handler = self._handlers.get(skill_id)
             if handler is None:
                 raise DomainError("NOT_IMPLEMENTED", "이 업무의 실제 판단 handler는 아직 구현되지 않았습니다.",
                                   {"skill_id": skill_id, "handler_registered": False,
                                    "implemented": [item["skill_id"] for item in self.catalog() if item["handler_registered"]]})
+            record["tool"].update(backend_id=handler.backend_id, execution_kind=handler.execution_kind)
+            record["stage"] = "revision_budget"
             if skill_id == "review_revision" and payload["revision_count"] >= 2:
                 raise DomainError("INSUFFICIENT_EVIDENCE", "최대 두 번 수정한 뒤에는 미해결 판단을 보류합니다.",
                                   {"skill_id": skill_id, "revision_count": payload["revision_count"]})
+            record["stage"] = "handler_call"
+            record["tool"]["called"] = True
             result = handler.callback(deepcopy(payload), self.store)
+            record["stage"] = "output_validation"
             response = {"ok": True, "data": {"skill_id": skill_id, "contract_version": CONTRACT_VERSION,
                         "execution_kind": handler.execution_kind, "backend_id": handler.backend_id,
                         "model_id": payload["model_id"], "document_version": payload["document_version"],
@@ -302,6 +375,7 @@ class SkillRuntime:
                             used.add(evidence_id)
             response["data"]["sources"] = [self._evidence(evidence_id, payload) for evidence_id in sorted(used)]
             self._validate(skill_id, "output", response)
+            record["stage"] = "completed"
             return response
         except DomainError as error:
             return error.response()
@@ -312,20 +386,42 @@ class SkillRuntime:
 
 
 def cli_main(skill_id: str) -> int:
-    """Repeatable JSON file interface, with no API keys or implicit backend import."""
+    """Offline-capable file interface with a separate, non-overwriting trace."""
     parser = argparse.ArgumentParser(description=f"Execute the {skill_id} Skill")
     parser.add_argument("--input", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--trace-output", type=Path)
     args = parser.parse_args()
-    if args.input.resolve() == args.output.resolve():
-        result = DomainError("INVALID_ARGUMENT", "입력 원본과 출력은 다른 파일이어야 합니다.", {}).response()
-        print(json.dumps(result, ensure_ascii=True), file=sys.stderr)
+    trace_path = args.trace_output or Path(str(args.output) + ".trace.json")
+    paths = [args.input, args.output, trace_path]
+    if len({p.resolve() for p in paths}) != 3 or args.output.exists() or trace_path.exists():
+        print(json.dumps(DomainError("INVALID_ARGUMENT", "서로 다른 입력/새 출력/새 기록 경로가 필요합니다.").response()),
+              file=sys.stderr)
         return 2
+    runtime = SkillRuntime()
+    cli_error = None
     try:
         payload = json.loads(args.input.read_text(encoding="utf-8-sig"))
-        result = SkillRuntime().execute(skill_id, payload)
     except (OSError, ValueError):
-        result = DomainError("INVALID_ARGUMENT", "UTF-8 JSON 입력 파일을 읽을 수 없습니다.", {}).response()
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+        result = DomainError("INVALID_ARGUMENT", "UTF-8 JSON 입력 파일을 읽을 수 없습니다.").response()
+        cli_error = result["error"]
+    else:
+        # Execution errors belong to the runtime and retain their run record;
+        # they must never be reclassified as input-file reading errors.
+        result = runtime.execute(skill_id, payload)
+    trace = {"records": runtime.records, "cli_error": cli_error}
+    try:
+        # ASCII escaping keeps even error details safely writable as UTF-8 JSON.
+        trace_text = json.dumps(trace, ensure_ascii=True, indent=2) + "\n"
+        result_text = json.dumps(result, ensure_ascii=True, indent=2) + "\n"
+        trace_path.parent.mkdir(parents=True, exist_ok=True)
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        with trace_path.open("x", encoding="utf-8", newline="\n") as stream:
+            stream.write(trace_text)
+        with args.output.open("x", encoding="utf-8", newline="\n") as stream:
+            stream.write(result_text)
+    except (OSError, ValueError, TypeError):
+        print(json.dumps(DomainError("INVALID_ARGUMENT", "출력 또는 실행 기록을 저장하지 못했습니다.").response()),
+              file=sys.stderr)
+        return 2
     return 0 if result["ok"] else 2
