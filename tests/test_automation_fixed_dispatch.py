@@ -11,10 +11,15 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
+from services.automation.orchestration import Orchestration
 from services.automation.pm import AutonomousPM, PMDriverBusy, PMError
 from services.automation.pm_broker import DockerPMDriver, TrustedPMBroker
 from services.automation.worker import exclusive_lock
 from tests import test_automation_pm as fixture
+
+
+class FixedOrchestration(SimpleNamespace):
+    capabilities = Orchestration.capabilities
 
 
 class FixedBroker(fixture.Broker):
@@ -26,7 +31,8 @@ class FixedBroker(fixture.Broker):
         super().__init__()
         self.policy = fixture.policy()
         self.config = {"allow_fixed_ready_dispatch": True, "released_capabilities": [fixture.CAP]}
-        self.orchestration = SimpleNamespace(plan={"capabilities": deepcopy(self.policy["capabilities"])})
+        self.orchestration = FixedOrchestration(
+            plan={"capabilities": deepcopy(self.policy["capabilities"])}, correction_plan=None)
         self.collect_calls = []
         self.collection_busy = False
 
