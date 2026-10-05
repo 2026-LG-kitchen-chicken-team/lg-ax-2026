@@ -73,8 +73,14 @@ class WorkerTests(unittest.TestCase):
         self.git("commit", "-qm", "isolated fixture")
 
     def git(self, *args):
-        return subprocess.run(["git", *args], cwd=self.repository, env=self.git_env,
-                              capture_output=True, check=True, timeout=10)
+        try:
+            return subprocess.run(["git", "-c", "gc.auto=0", "-c", "maintenance.auto=false", *args],
+                                  cwd=self.repository, env=self.git_env,
+                                  capture_output=True, check=True, timeout=10)
+        except subprocess.CalledProcessError as exc:
+            exc.add_note("Isolated Git fixture stdout/stderr: " +
+                         (exc.stdout + exc.stderr).decode("utf-8", errors="replace")[:4096])
+            raise
 
     def test_unowned_or_unbounded_jobs_refused(self):
         validate_job(self.job, "unknownamed")
@@ -100,6 +106,24 @@ class WorkerTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_job({**self.job, "kind": "review"}, "unknownamed")
         validate_job({**self.job, "kind": "review", "review_head": "b" * 40}, "unknownamed")
+
+    def test_all_worker_prompts_require_narrow_bounded_source_reads(self):
+        for kind in ("implementation", "review"):
+            with self.subTest(kind=kind):
+                job = {**self.job, "kind": kind}
+                prompt = prompt_for(job, self.config.account)
+                for required in ("targeted filenames", "line ranges", "below 64 KiB",
+                                 "unbounded repository-wide searches"):
+                    self.assertIn(required, prompt)
+
+    def test_git_fixture_failure_preserves_bounded_stderr_diagnostics(self):
+        self.init_git()
+        with self.assertRaises(subprocess.CalledProcessError) as caught:
+            self.git("definitely-invalid-fixture-command")
+        notes = caught.exception.__notes__
+        self.assertEqual(len(notes), 1)
+        self.assertIn("definitely-invalid-fixture-command", notes[0])
+        self.assertLessEqual(len(notes[0]), 4096 + len("Isolated Git fixture stdout/stderr: "))
 
     def test_moved_main_blocks_implementation_but_not_fixed_head_readonly_review(self):
         self.init_git()
@@ -145,7 +169,8 @@ class WorkerTests(unittest.TestCase):
         self.git("commit", "-qam", "unrelated main fixture")
         main_head = self.git("rev-parse", "HEAD").stdout.decode().strip()
         remote = self.root / "remote.git"
-        self.git("clone", "--bare", str(self.repository), str(remote))
+        # Use the normal Git transport, avoiding local hardlink-copy races.
+        self.git("clone", "--no-local", "--bare", str(self.repository), str(remote))
         self.git("--git-dir", str(remote), "update-ref", "refs/pull/999/head", review_head)
         self.git("remote", "add", "origin", f"https://github.com/{REPO}.git")
         review = {**self.job, "kind": "review", "review_head": review_head,
