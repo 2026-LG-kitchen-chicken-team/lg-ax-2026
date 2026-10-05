@@ -12,11 +12,11 @@ class CompareCitationRecoveryTests(unittest.TestCase):
     setUp = fixtures.PlanningAgentTests.setUp
     agent = fixtures.PlanningAgentTests.agent
 
-    @staticmethod
-    def omit_manual(value):
+    def omit_manual(self, value):
         value = deepcopy(value)
+        manual_ids = {source["id"] for source in self.payload["sources"] if source["source_type"] == "manual"}
         for gap in value["result"]["gaps"]:
-            gap["evidence_ids"] = [eid for eid in gap["evidence_ids"] if not eid.startswith("MANUAL-")]
+            gap["evidence_ids"] = [eid for eid in gap["evidence_ids"] if eid not in manual_ids]
             gap["support_status"] = "unsupported"
             gap["questions"] = ["해당 설명서가 있나요?"]
         for assessment in value["gap_assessments"]:
@@ -38,10 +38,11 @@ class CompareCitationRecoveryTests(unittest.TestCase):
         self.assertEqual([post["skill"] for post in transport.posts],
                          ["need_extract", "product_compare", "product_compare", "concept_draft", "semantic_review"])
         comparisons = [call for call in result["model_calls"] if call["skill_id"] == "product_compare"]
-        self.assertNotIn("MANUAL-001", comparisons[0]["generated"]["data"]["result"]["gaps"][0]["evidence_ids"])
-        self.assertIn("MANUAL-001", comparisons[1]["generated"]["data"]["result"]["gaps"][0]["evidence_ids"])
+        manual_id = self.payload["features"][0]["evidence_ids"][0]
+        self.assertNotIn(manual_id, comparisons[0]["generated"]["data"]["result"]["gaps"][0]["evidence_ids"])
+        self.assertIn(manual_id, comparisons[1]["generated"]["data"]["result"]["gaps"][0]["evidence_ids"])
         feedback = comparisons[1]["request_context"]["feedback"][0]
-        self.assertEqual(feedback["linked_manual_evidence_ids"], ["MANUAL-001"])
+        self.assertEqual(feedback["linked_manual_evidence_ids"], [manual_id])
         self.assertEqual(feedback["required_review_evidence_ids"], self.output["needs"][0]["evidence_ids"])
         self.assertEqual(result["correction_budget"]["attempts"], [{"operation": "stage_retry", "revision_count": 1}])
         self.assertEqual(self.payload, original)
