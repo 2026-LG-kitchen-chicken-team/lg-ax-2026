@@ -161,7 +161,7 @@ def load_policy(path, expected_sha256):
     for key, default, low, high in (("max_model_calls_per_day", 24, 1, 200),
                                   ("max_actions_per_day", 24, 1, 100),
                                   ("max_model_tokens_per_day", 300000, 1, 2000000),
-                                  ("max_actions_per_task", 8, 1, 20),
+                                  ("max_actions_per_task", 8, 1, 64),
                                   ("max_model_calls_per_task", 8, 1, 40),
                                   ("max_revisions_per_task", 3, 1, 5),
                                   ("max_model_tokens_per_task", 100000, 1, 1000000),
@@ -216,6 +216,17 @@ def load_policy(path, expected_sha256):
             raise PMError("task-completion capability must be an explicit boolean")
         if capability.get("completes_task") and set(capability["requirement_ids"]) != set(task["requirement_ids"]):
             raise PMError("full task capability must cover every registered task requirement")
+        if "development_only" in capability:
+            prerequisites = capability.get("development_prerequisites")
+            if (capability["development_only"] is not True or capability.get("execution_kind") != "fixture" or
+                    capability.get("completes_task") is not False or capability.get("max_attempts") != 1 or
+                    capability.get("allow_partial_blocked_parent") is not True or
+                    capability.get("required_environments") != [] or capability.get("expose_independent_answers") is not False or
+                    not isinstance(prerequisites, list) or any(not isinstance(dep, str) for dep in prerequisites) or
+                    len(set(prerequisites)) != len(prerequisites) or
+                    prerequisites != capability.get("depends_on_capabilities") or
+                    any(dep not in capabilities or dep == capability_id for dep in prerequisites)):
+                raise PMError("development capability must be a fixed offline non-completing implementation contract")
         number(capability.get("timeout_seconds", 1800), "job timeout", 60, 7200)
         number(capability.get("priority", 50), "job priority", 0, 100)
     context_names(policy.get("required_ci_contexts"))
@@ -459,7 +470,9 @@ class AutonomousPM:
         approved = observation["formal_snapshot"]["tasks"].get(task_id)
         if not approved or approved.get("owner") != task["owner"] or approved.get("status") == "done":
             raise PMError("task has no current incomplete formal authority")
-        if require_dependencies and any(observation["formal_snapshot"]["tasks"].get(dep, {}).get("status") != "done"
+        capability = self.policy["capabilities"].get(decision.get("capability_id"), {})
+        implementation_only = capability.get("task_id") == task_id and capability.get("development_only") is True
+        if require_dependencies and not implementation_only and any(observation["formal_snapshot"]["tasks"].get(dep, {}).get("status") != "done"
                                         for dep in task["depends_on"]):
             raise PMError("formal dependencies are not completed")
         return task
@@ -553,8 +566,9 @@ class AutonomousPM:
                           acceptance=deepcopy(capability["acceptance"]), title=capability["title"],
                           purpose=capability["purpose"], shared_resources=capability.get("shared_resources", []),
                           timeout_seconds=capability.get("timeout_seconds", 1800),
-                          priority=capability.get("priority", 50), max_attempts=2,
-                          formal_task_dependencies=task["depends_on"])
+                          priority=capability.get("priority", 50),
+                          max_attempts=1 if capability.get("development_only") is True else 2,
+                          formal_task_dependencies=[] if capability.get("development_only") is True else task["depends_on"])
         elif kind == "request_changes":
             pr = self._pr(decision, observation)
             self._paths(pr, capability)

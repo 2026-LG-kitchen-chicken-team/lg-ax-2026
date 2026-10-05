@@ -19,8 +19,10 @@ from services.automation.backlog import (
     append_progress,
     collector_candidates,
     load_backlog,
+    ready_development_units,
     ready_product_corrections,
     ready_units,
+    validate_development_registry,
     validate_product_correction_registry,
     verify_progress,
 )
@@ -36,6 +38,7 @@ class Orchestration:
         options = broker.config.get("backlog")
         self.plan = None
         self.correction_registry = self.correction_plan = None
+        self.development_registry = self.development_plan = None
         if options:
             self.plan = load_backlog(protected_path(options["path"]), options["sha256"],
                                      registered_tasks=broker.policy["tasks"])
@@ -62,6 +65,22 @@ class Orchestration:
             if any(row.get("capability_id") not in CORE_CORRECTIONS for row in broker.state.get("correction_ledger", [])):
                 raise PMError("correction history cannot contain original unit events")
             verify_progress(self.correction_plan, broker.state.get("correction_ledger", []))
+        registry = broker.config.get("development_queue_registry")
+        if registry:
+            if not self.plan or not isinstance(registry, dict) or set(registry) != {"path", "sha256"}:
+                raise PMError("a pinned original backlog and protected development registry are required")
+            raw = regular_file(protected_path(registry["path"]))
+            if hashlib.sha256(raw).hexdigest() != registry["sha256"]:
+                raise PMError("protected development queue registry changed")
+            self.development_registry = json.loads(raw)
+            self.development_plan = validate_development_registry(self.plan, self.development_registry)
+            for key, cap in self.development_registry["capabilities"].items():
+                if broker.policy["capabilities"].get(key) != cap:
+                    raise PMError("development registry and deployed policy differ")
+            if any(row.get("capability_id") not in self.development_registry["capabilities"]
+                   for row in broker.state.get("development_ledger", [])):
+                raise PMError("development history cannot contain original or correction unit events")
+            verify_progress(self.development_plan, broker.state.get("development_ledger", []))
         self.mail = None
         mail = broker.config.get("mail")
         if mail:
@@ -111,8 +130,12 @@ class Orchestration:
     def _event(self, cap_id, suffix, event, receipt):
         broker = self.broker
         event_id = event + "-" + fingerprint({"cap": cap_id, "id": suffix})[:48]
-        key = "correction_ledger" if cap_id in CORE_CORRECTIONS else "backlog_ledger"
-        plan = self.correction_plan if key == "correction_ledger" else self.plan
+        if self.development_registry and cap_id in self.development_registry["capabilities"]:
+            key, plan = "development_ledger", self.development_plan
+        elif cap_id in CORE_CORRECTIONS:
+            key, plan = "correction_ledger", self.correction_plan
+        else:
+            key, plan = "backlog_ledger", self.plan
         broker.state[key] = append_progress(plan,
             broker.state.get(key, []), event_id=event_id,
             capability_id=cap_id, event=event, receipt=receipt)
@@ -120,13 +143,38 @@ class Orchestration:
 
     @property
     def capabilities(self):
-        return (self.correction_plan or self.plan)["capabilities"] if self.plan else {}
+        result = deepcopy(self.plan["capabilities"]) if self.plan else {}
+        if self.correction_registry:
+            result.update(self.correction_registry["capabilities"])
+        if self.development_registry:
+            result.update(self.development_registry["capabilities"])
+        return result
 
     def _progress(self):
         value = verify_progress(self.plan, self.broker.state.get("backlog_ledger", []))
         if self.correction_plan:
             value |= verify_progress(self.correction_plan, self.broker.state.get("correction_ledger", []))
+        if self.development_plan:
+            value |= verify_progress(self.development_plan, self.broker.state.get("development_ledger", []))
         return value
+
+    def development_dependency_jobs(self, capability_id, observation):
+        """Derive immutable accepted queue dependencies from protected receipts."""
+        if not self.development_registry or capability_id not in self.development_registry["capabilities"]:
+            raise PMError("only an externally pinned offline development unit may use implementation prerequisites")
+        cap = self.development_registry["capabilities"][capability_id]
+        progress, jobs = self._progress(), {row["job_id"]: row for row in observation["jobs"]}
+        result = []
+        for prerequisite in cap["development_prerequisites"]:
+            if progress.get(prerequisite) not in {"accepted", "parent_verified"}:
+                raise PMError("development prerequisite has no independently accepted receipt")
+            candidates = [unit for unit in self.broker.state["units"].values()
+                if unit.get("capability_id") == prerequisite and unit.get("reconciled") and
+                not unit.get("superseded_by") and jobs.get(unit["job_id"], {}).get("status") == "accepted"]
+            if len(candidates) != 1:
+                raise PMError("development prerequisite needs one actual accepted queue job")
+            result.append(candidates[0]["job_id"])
+        return result
 
     def _correction_dispatches(self):
         """Intents count conservatively: unknown delivery never buys a retry."""
@@ -449,6 +497,29 @@ class Orchestration:
             if feedback:
                 parent["product_feedback"] = deepcopy(next(iter(feedback.values())))
             parent["product_escalations"] = deepcopy(observation.get("product_escalations", []))
+            write_json(self.broker.state_dir / "backlog-observation.json", observation["backlog"])
+        if self.development_registry:
+            # Prior offers hold owner/path/resource authority in this same tick;
+            # a second registry cannot invent parallel jobs for the same owner.
+            offers = observation["capabilities_ready"]
+            selection = deepcopy(observation)
+            held_paths, held_resources = [], []
+            for key in offers:
+                cap = self.capabilities[key]
+                selection["jobs"].append({"owner": cap["owner"], "status": "pending"})
+                held_paths.extend(cap["allowed_paths"])
+                held_resources.extend(cap.get("shared_resources", []))
+            result = ready_development_units(self.plan, self.development_registry, selection,
+                self.broker.state.get("backlog_ledger", []), self.broker.state.get("development_ledger", []),
+                held_paths=held_paths, held_resources=held_resources)
+            observation["capabilities_ready"] += [key for key in result["ready"]
+                if key in self.broker._released_capabilities() and key not in held]
+            observation["backlog"]["waiting"].update(result["waiting"])
+            for key in held:
+                if key in self.development_registry["capabilities"]:
+                    observation["backlog"]["waiting"][key] = "fixed_assignment_preparation_rejected_requires_PM_followup"
+            observation["backlog"]["development_registry_digest"] = result["registry_digest"]
+            observation["backlog"]["development_units"] = len(self.development_registry["capabilities"])
             write_json(self.broker.state_dir / "backlog-observation.json", observation["backlog"])
 
     def mail_snapshot(self):

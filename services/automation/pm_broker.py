@@ -557,6 +557,13 @@ class TrustedPMBroker:
                 "Reproduce these exact public fixture inputs and semantic codes. Original output/relay hashes link the protected PM proof; you do not need PM-private files. Preserve the two internal Agent repairs and all evidence/contract checks. A transport escalation is not a core defect."]
         packet = {key: action[key] for key in ("owner", "task_id", "allowed_paths", "validation_commands",
                   "shared_resources", "timeout_seconds", "priority", "max_attempts", "formal_task_dependencies")}
+        cap = self.policy["capabilities"][action["capability_id"]]
+        if cap.get("development_only") is True:
+            if observation is None or packet["formal_task_dependencies"] or packet["max_attempts"] != 1:
+                raise PMError("offline development packet needs fresh protected prerequisite verification")
+            packet["dependency_job_ids"] = self.orchestration.development_dependency_jobs(action["capability_id"], observation)
+            assignment["development_only"] = True
+            assignment["parent_completion"] = "This offline implementation unit never grants parent Done or releases final evaluation/submission dependencies."
         packet.update(job_id=job_id, assignment_id=assignment_id, kind="implementation", title=action["title"],
                       prompt="Fixed required capability " + action["capability_id"] + "\n" + canonical(assignment),
                       base_commit=action["base_commit"], approved=True,
