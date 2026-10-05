@@ -25,7 +25,7 @@ Windows 앱의 짧은 AppData 경로는 실제 Limited 예약 작업에서 읽�
 
 - 원본 readiness SHA256 `3331968c11930ba0567a9a9148ffe55a2603b47927e44124c2305796b8796a1b`. JSON bytes를 그대로 보존했고 인증/토큰/메일 주소가 없다. collector 문자열 자체를 PM 인수 증거로 사용하지 않는다.
 - 본 PC 실제 image `sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3`. 모델/검사 uid1000·root read-only·cap drop·no-new-privileges, 게시 canary 접근 거부. validator network none·AI profile도 미제공.
-- [원본 readiness](../../../../evals/team-automation/20261005/ginaginaring-readiness.json), [실제 시작 manifest](../../../../evals/team-automation/20261005/ginaginaring-start-r1.json), [상세 근거](../../../../docs/작업근거/세션/신진하/worker-start-r1-20261005.md).
+- [원본 readiness](../../../../evals/pm-preparation/20261005/ginaginaring-readiness.json), [실제 시작 manifest](../../../../evals/team-automation/20261005/ginaginaring-start-r1.json), [상세 근거](../../../../docs/작업근거/세션/신진하/worker-start-r1-20261005.md).
 - 설치/로그인/canary/가동을 실제 제품 모델 수정·검사·PR/Project ACCEPTED나 독립 PM 인수로 확대하지 않는다.
 
 ## 남은 일·인계
@@ -33,3 +33,9 @@ Windows 앱의 짧은 AppData 경로는 실제 Limited 예약 작업에서 읽�
 PM이 원본 JSON을 checkout 밖 protected readiness 위치로 직접 인수하고 계정별 exact image pin `sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3`을 검토해야 한다. 기존 의존/열린 PR 충돌 확인 뒤 첫 data capability를 release하고 고정 패킷을 배정한다. 본 Worker는 그 패킷 안에서 모델 개발→인증 없는 검사→자기 PR→Project 보고를 수행한다. 지금 자기 job count는 0. 부모 Done·팀 참가작 완성은 미검증이다.
 
 이 기록/근거/원본을 같은 commit으로 공유한 뒤 고정 report hook으로 doing 자기보고와 실제 ACCEPTED를 확인한다. 이 문서 작성 시점에는 아직 그 보고를 전송하지 않았다. 이후 실제 수신증은 로컬 고정 receipt와 사용자 결과 보고에 연결한다.
+
+## 새 PM 안내 대조
+
+[운영 Issue28의 후속 안내](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28#issuecomment-5986026645)를 메일로 읽었다. 신진하는 기존 원 readiness를 PR 또는 비공개 메일로 넘겨 PM이 data 인수를 열도록 요청받았다. 새 로그인/canary 재실행 요청은 아니다. 해당 요청에 따라 원 bytes와 시작 근거를 자기 인계 PR로 공개하고 부모 Done으로 표시하지 않는다.
+
+Git의 JSON 기본 LF 정규화 때문에 첫 로컬 commit의 원파일 hash 대조가 실패해 push를 중단했다. 기존 `evals/pm-preparation/** -text` 규칙이 적용되는 불변 근거 경로에 원본 bytes를 그대로 보존했으며, 별도의 공통 Git 속성/정책을 변경하지 않았다. 이전 unpublished commit은 이력으로 남겼다. 최신 조회 main `d95b225029171fec71fe50fcbcd66a65d849914d`와 runtime 파일이 동일함을 대조했다.
