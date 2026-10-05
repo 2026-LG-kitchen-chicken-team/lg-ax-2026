@@ -79,6 +79,7 @@ class PMBroker(Protocol):
     """
 
     def authenticate(self) -> dict: ...
+    def enabled(self) -> bool: ...
     def observe(self) -> dict: ...
     def execute(self, action_id: str, action: dict, expected_fingerprint: str) -> dict: ...
     def lookup(self, action_id: str) -> dict | None: ...
@@ -809,6 +810,12 @@ class AutonomousPM:
         if not self._is_on(observation):
             return {"state": "off", "global_mode": observation["global_mode"], "pm_mode": observation["pm_mode"],
                     "model_called": False, "mutated": False}
+        # Evidence collection can outlive an operator OFF. Recheck only live
+        # mode before reserving a fingerprint, call or unknown token budget;
+        # do not recollect products/models or alter earlier failure receipts.
+        if self.broker.enabled() is not True:
+            return {"state": "off", "reason": "Live autonomous PM mode is OFF or unavailable after evidence collection.",
+                    "mode_revalidated": True, "model_called": False, "mutated": False}
         event = fingerprint(stable_observation(observation))
         day = "day:" + time.strftime("%Y-%m-%d", time.gmtime(self.clock()))
         limits = self.policy["limits"]

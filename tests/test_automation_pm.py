@@ -102,6 +102,9 @@ class Broker:
     def authenticate(self):
         return deepcopy(self.identity)
 
+    def enabled(self):
+        return self.state["global_mode"] == "on" and self.state["pm_mode"] == "on"
+
     def observe(self):
         return deepcopy(self.state)
 
@@ -293,6 +296,37 @@ class AutonomousPMTests(unittest.TestCase):
                 self.assertEqual(self.pm.tick()["state"], "off")
         self.assertEqual(self.calls, [])
         self.assertEqual(self.broker.actions, [])
+
+    def test_off_during_long_collection_reserves_nothing_and_preserves_prior_unknown_usage(self):
+        with self.pm.journal.connect() as db:
+            db.execute("INSERT INTO budgets(scope,model_calls,tokens) VALUES('prior-day',2,2000000)")
+            db.execute("INSERT INTO seen VALUES(?,'unknown_usage')", ("f" * 64,))
+            before_budget = db.execute("SELECT * FROM budgets").fetchall()
+            before_seen = db.execute("SELECT * FROM seen").fetchall()
+            before_journal = db.execute("SELECT * FROM journal").fetchall()
+        def long_observe():
+            cached_on = deepcopy(self.broker.state)
+            self.broker.state["pm_mode"] = "off"
+            return cached_on
+        with patch.object(self.broker, "observe", side_effect=long_observe):
+            result = self.pm.tick()
+        self.assertEqual(result["state"], "off")
+        self.assertTrue(result["mode_revalidated"])
+        self.assertFalse(result["model_called"])
+        self.assertEqual(self.calls, [])
+        self.assertEqual(self.broker.actions, [])
+        with self.pm.journal.connect() as db:
+            self.assertEqual(db.execute("SELECT * FROM budgets").fetchall(), before_budget)
+            self.assertEqual(db.execute("SELECT * FROM seen").fetchall(), before_seen)
+            self.assertEqual(db.execute("SELECT * FROM journal").fetchall(), before_journal)
+
+    def test_unavailable_live_mode_fails_closed_before_decision_reservation(self):
+        with patch.object(self.broker, "enabled", return_value=False):
+            self.assertEqual(self.pm.tick()["state"], "off")
+        self.assertEqual(self.calls, [])
+        with self.pm.journal.connect() as db:
+            self.assertEqual(db.execute("SELECT COUNT(*) FROM seen").fetchone()[0], 0)
+            self.assertEqual(db.execute("SELECT COUNT(*) FROM budgets").fetchone()[0], 0)
 
     def test_assignment_uses_only_fixed_paths_tests_acceptance(self):
         result = self.pm.tick()
