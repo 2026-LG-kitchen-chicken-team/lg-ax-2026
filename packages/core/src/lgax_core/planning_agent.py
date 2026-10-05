@@ -243,6 +243,8 @@ class PlanningAgent:
                         "Gap은 원 Need의 리뷰 근거와 feature_ids에 연결된 설명서 근거 전체를 인용해야 합니다. "
                         "설명서의 명시적 지원은 explicit_supported/supported입니다. "
                         "기능이 있어도 해당 사용 조건에서 희망 결과가 충족되지 않으면 resolution=remaining과 구체 remaining_pain을 남기세요. "
+                        "선반 분리 세척 지원과 분리 전에 식품 전체를 옮겨야 하는 부담을 구분하세요. "
+                        "분리 가능을 기능 부재로 바꾸거나 식품 이동 부담까지 해결한 것으로 판단하지 마세요. "
                         "희망 결과가 이미 충족되면 resolution=resolved이며 remaining_pain은 빈 문자열입니다. "
                         "문서 미언급은 unmentioned/insufficient_evidence이고 unsupported가 아닙니다. "
                         "explicit_unsupported는 명시적 미지원 설명서 근거가 있을 때만 사용하세요. "
@@ -262,6 +264,8 @@ class PlanningAgent:
                         "4. 후보의 gap_ids와 evidence_ids는 해당 Gap과 그 근거 전체에 연결하고, "
                         "입력의 constraints를 반영하여 모든 features와 중복 비교한 concept_assessments를 "
                         "후보마다 한 번씩 작성하며 compared_feature_ids에는 전체 기능 ID를 넣으세요.\n"
+                        "request.exclusions는 이름뿐 아니라 작동 수단에도 적용하세요. 제외된 자동 세척 장치를 "
+                        "자동 세척 모드로 바꾸어 제안하지 말고, 기존 기능으로 가능한지 근거가 없으면 보류하세요.\n"
                         "5. 고객 문제·기존 기능의 사실은 sources의 ID·모델·문서 버전을 보존하여 인용하고, "
                         "새 가설의 미검증 제조 가능성·용량·안전성·효과는 assumptions/requirements에 후속 검증으로 "
                         "남기며 status는 proposed 또는 needs_review로 작성하고, result와 바깥의 hold_reasons 및 "
@@ -402,6 +406,8 @@ class PlanningAgent:
                 if decision["valid"] and decision["action"] == "accept" and current["concepts"]:
                     context = {"request": payload["request"], "product": payload["product"],
                                "sources": payload["sources"], "features": payload["features"],
+                               **{key: deepcopy(current[key]) for key in (
+                                   "needs", "desired_outcomes", "gaps", "gap_assessments")},
                                "concepts": current["concepts"], "revision_count": payload["revision_count"],
                                "input_sha256": input_digest(payload), "output_sha256": input_digest(current),
                                "skill_input": {"constraints": payload["request"]["exclusions"]}, "feedback": feedback}
