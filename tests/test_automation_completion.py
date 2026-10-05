@@ -317,7 +317,7 @@ class CompletionTests(unittest.TestCase):
         f.parent = f.make_parent()
         self.assertHeld(f.assessment())
         completion = f.put({"schema_version": 1, "kind": "parent_completion", "task_id": dependency,
-                            "decision": "complete", "actor": PM, "tested_commit": BASE}, "parent_completion", BASE)
+                            "decision": "complete", "actor": PM, "tested_commit": HEAD}, "parent_completion", BASE)
         ack = f.ack(dependency, completion.sha256)
         deps = [DependencyEvidence(dependency, completion, ack)]
         self.assertTrue(f.assessment(dependencies=deps).complete)

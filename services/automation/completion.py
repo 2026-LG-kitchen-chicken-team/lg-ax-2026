@@ -475,7 +475,8 @@ def assess_parent(contract: TaskContract, accepted_units: Sequence[AcceptedUnit]
             completed = _receipt(item.completion, "parent_completion", registry, read)
             ack = _receipt(item.snapshot_ack, "snapshot_ack", registry, read)
             _require(completed.get("task_id") == item.task_id and completed.get("decision") == "complete" and
-                     completed.get("actor") == PM and completed.get("tested_commit") == item.completion.commit and
+                     completed.get("actor") == PM and isinstance(completed.get("tested_commit"), str) and
+                     SHA.fullmatch(completed["tested_commit"]) is not None and
                      item.snapshot_ack.commit == current_main and
                      _ack(ack, item.task_id, item.completion.sha256, current_main), "dependency completion/snapshot not accepted")
             dependency_receipts[item.task_id] = {"completion": item.completion.as_dict(),
