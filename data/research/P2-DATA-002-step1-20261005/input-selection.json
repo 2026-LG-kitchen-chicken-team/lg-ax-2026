@@ -1,0 +1,62 @@
+{
+  "task_id": "P2-DATA-002",
+  "stage": 1,
+  "purpose": "development ingestion input preparation",
+  "contract_version": "0.1.0",
+  "inputs": [
+    {
+      "case_id": "CSV-SYNTHETIC",
+      "format": "csv",
+      "path": "data/research/P2-DATA-002-step1-20261005/reviews-v1.0.csv",
+      "sha256": "3c7560aec2d3fa855590baf097b3514aa348ee40a77037c69ef358b413f488b9",
+      "origin": {
+        "path": "data/demo/dataset.json",
+        "sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0"
+      },
+      "origin_kind": "lossless export from existing JSON, not a newly invented review set",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "source_kind": "synthetic",
+      "document_version": "1.0",
+      "rows": 36,
+      "models": [
+        "FRIDGE-A",
+        "FRIDGE-B",
+        "FRIDGE-C",
+        "DISHWASHER-A",
+        "MICROWAVE-A"
+      ],
+      "physical_record_rows": "2..37 including header at row 1; no review has an embedded newline"
+    },
+    {
+      "case_id": "PDF-REAL-FRIDGE",
+      "format": "pdf",
+      "local_path": "C:\\Users\\user\\Downloads\\REF_KOR_MFL71401557_00_260325_00_OM_WEB.pdf",
+      "sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815",
+      "source_id": "F-M",
+      "source_kind": "public",
+      "source_url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=OKSVlmUDzoQqSyeRo6kwiw",
+      "model_id": "T876MEE1H1",
+      "document_version": "MFL71401557 Rev.00_032526",
+      "page_count": 40,
+      "inspected_pages": [
+        18,
+        19
+      ],
+      "selected_evidence_page": 19,
+      "copied_to_repository": false,
+      "source_reference": {
+        "path": "data/research/P2-DATA-001-real-reference-20261004/reference-pack.json",
+        "sha256": "cdbc8e8dbcacf6f95d219856ff48f827d9b23a06d0f72d9e7f94d7a0854c8f17"
+      },
+      "applicability": "정확한 모델 F-P 고객지원에 연결된 공용 설명서. 선택 기능은 F-P와 대조.",
+      "license_reuse_confirmed": false
+    }
+  ],
+  "scope_rules": [
+    "The CSV synthetic models and real PDF model are separate cases.",
+    "Public does not mean redistribution licensed.",
+    "No independent evaluation answers are read or used.",
+    "No feature support is inferred from non-mention.",
+    "No common schema/API or task status is changed."
+  ]
+}
