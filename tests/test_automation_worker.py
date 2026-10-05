@@ -182,7 +182,9 @@ class WorkerTests(unittest.TestCase):
                 before_other_fetch.set()
                 if "--no-write-fetch-head" in argv:
                     self.assertEqual(self.git("rev-parse", "FETCH_HEAD").stdout.decode().strip(), main_head)
-                self.git("update-ref", "FETCH_HEAD", review["review_head"])
+                # FETCH_HEAD is a fetch record, not an update-ref target on newer Git.
+                self.git("fetch", "--no-tags", str(remote), "refs/pull/999/head")
+                self.assertEqual(self.git("rev-parse", "FETCH_HEAD").stdout.decode().strip(), review["review_head"])
                 allow_other_fetch.set()
                 self.assertTrue(other_fetch_finished.wait(10))
                 self.assertFalse(concurrent_errors)
