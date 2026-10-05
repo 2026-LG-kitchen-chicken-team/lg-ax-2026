@@ -1,0 +1,309 @@
+[
+  {
+    "case_id": "DATA004-DEV-N01",
+    "category": "normal",
+    "split": "development",
+    "model_id": "T876MEE1H1",
+    "description": "선반 분리·청소 안내의 근거를 조회한다.",
+    "source_fact_ids": [
+      "F10",
+      "F11"
+    ],
+    "expected_disposition": "answer_with_source_conditions",
+    "criteria_ids": [
+      "K01",
+      "K02",
+      "K09",
+      "K10"
+    ],
+    "has_synthetic_material": false,
+    "input_path": "private/data004-development/20261005/DATA004-DEV-N01-input.json",
+    "input_sha256": "1ded9395e7c735fcd7b2ecb7f2d4a1d71a701413784b148ee11473d662a5d848",
+    "expected_path": "private/data004-development/20261005/DATA004-DEV-N01-expected.json",
+    "expected_sha256": "a0904a5882ea69e6395fab2b1fc0ef4714c6b4523242a043444dcceaed202530",
+    "actual_run_id": null,
+    "actual_result": null
+  },
+  {
+    "case_id": "DATA004-DEV-N02",
+    "category": "normal",
+    "split": "development",
+    "model_id": "DUE6BGL2E",
+    "description": "바구니 조절 전 조건과 노즐 확인을 함께 조회한다.",
+    "source_fact_ids": [
+      "D09",
+      "D13",
+      "D14"
+    ],
+    "expected_disposition": "answer_with_source_conditions",
+    "criteria_ids": [
+      "K01",
+      "K02",
+      "K09",
+      "K10"
+    ],
+    "has_synthetic_material": false,
+    "input_path": "private/data004-development/20261005/DATA004-DEV-N02-input.json",
+    "input_sha256": "df550e64785332fc012086105e51ee38d181bd66b0d572f6bb3b2dcee452f573",
+    "expected_path": "private/data004-development/20261005/DATA004-DEV-N02-expected.json",
+    "expected_sha256": "87dfb6c691dbd4f593a2eb0ce2fbab444cfe96aacc49ac90f0be301a493067f8",
+    "actual_run_id": null,
+    "actual_result": null
+  },
+  {
+    "case_id": "DATA004-DEV-DU01",
+    "category": "duplicate_feature",
+    "split": "development",
+    "model_id": "MW23FDI",
+    "description": "수동 출력 선택을 신규 기능으로 제안한다.",
+    "source_fact_ids": [
+      "M11"
+    ],
+    "expected_disposition": "identify_existing_function_without_claiming_problem_resolved",
+    "criteria_ids": [
+      "K01",
+      "K06",
+      "K09",
+      "K10"
+    ],
+    "has_synthetic_material": false,
+    "input_path": "private/data004-development/20261005/DATA004-DEV-DU01-input.json",
+    "input_sha256": "32d8f2b3f1589423b99227980968636595e5edee5666719aabb73eb3009ac59a",
+    "expected_path": "private/data004-development/20261005/DATA004-DEV-DU01-expected.json",
+    "expected_sha256": "ef1a818abeb766c721693d97cae8e25889815931e149e5770a534f3d0353b83f",
+    "actual_run_id": null,
+    "actual_result": null
+  },
+  {
+    "case_id": "DATA004-DEV-DU02",
+    "category": "duplicate_feature",
+    "split": "development",
+    "model_id": "MW23FDI",
+    "description": "시작 버튼의 30초 추가를 신규 기능으로 제안한다.",
+    "source_fact_ids": [
+      "M14"
+    ],
+    "expected_disposition": "identify_existing_function_without_claiming_problem_resolved",
+    "criteria_ids": [
+      "K01",
+      "K02",
+      "K06",
+      "K09",
+      "K10"
+    ],
+    "has_synthetic_material": false,
+    "input_path": "private/data004-development/20261005/DATA004-DEV-DU02-input.json",
+    "input_sha256": "2fedf8e20b3aca3c86b30d142b16088531a90f5c73812c388146ec5dc7310d1f",
+    "expected_path": "private/data004-development/20261005/DATA004-DEV-DU02-expected.json",
+    "expected_sha256": "cb26f2a8afb5fdd5339edb1fc6dcb0abcce9c8f4bc0fc43077a353fd3cae95d3",
+    "actual_run_id": null,
+    "actual_result": null
+  },
+  {
+    "case_id": "DATA004-DEV-MV01",
+    "category": "model_version_confusion",
+    "split": "development",
+    "model_id": "T876MEE1H1",
+    "description": "냉장고 입력에 실제 다른 모델의 바구니 근거가 섞인다.",
+    "source_fact_ids": [
+      "F10",
+      "D09",
+      "D13"
+    ],
+    "expected_disposition": "reject_foreign_model_evidence",
+    "criteria_ids": [
+      "K01",
+      "K04",
+      "K09",
+      "K10"
+    ],
+    "has_synthetic_material": false,
+    "input_path": "private/data004-development/20261005/DATA004-DEV-MV01-input.json",
+    "input_sha256": "cfa4e2779000579f60fdf8483ee982c052693a7f483fe5867dee1fb94d324e77",
+    "expected_path": "private/data004-development/20261005/DATA004-DEV-MV01-expected.json",
+    "expected_sha256": "e982bcf93d96e74198e6d14f7a6ca3cd586b31ae49ec5832141a44d86f3a679b",
+    "actual_run_id": null,
+    "actual_result": null
+  },
+  {
+    "case_id": "DATA004-DEV-MV02",
+    "category": "model_version_confusion",
+    "split": "development",
+    "model_id": "T876MEE1H1",
+    "description": "개정번호가 없는 이전 설명서의 설치 간격을 요청한다.",
+    "source_fact_ids": [
+      "F12"
+    ],
+    "expected_disposition": "request_original_revision_without_substitution",
+    "criteria_ids": [
+      "K01",
+      "K04",
+      "K05",
+      "K09",
+      "K10"
+    ],
+    "has_synthetic_material": false,
+    "input_path": "private/data004-development/20261005/DATA004-DEV-MV02-input.json",
+    "input_sha256": "53caf632b2d42dc0300b8a576660e3625d2a0b5f52f5d5369f8a2b16e4112d44",
+    "expected_path": "private/data004-development/20261005/DATA004-DEV-MV02-expected.json",
+    "expected_sha256": "3997da7da4ce7c816bdfd971e30d2b0547e2c6daf833cb7e7806ed6c1a62fde5",
+    "actual_run_id": null,
+    "actual_result": null
+  },
+  {
+    "case_id": "DATA004-DEV-CR01",
+    "category": "conflicting_reviews",
+    "split": "development",
+    "model_id": "DUE6BGL2E",
+    "description": "합성 후기의 반대 의견을 빈도로 일반화하지 않는 개발 점검이다.",
+    "source_fact_ids": [
+      "D09",
+      "D13"
+    ],
+    "expected_disposition": "preserve_both_synthetic_observations_and_conditions",
+    "criteria_ids": [
+      "K01",
+      "K02",
+      "K03",
+      "K09",
+      "K10"
+    ],
+    "has_synthetic_material": true,
+    "input_path": "private/data004-development/20261005/DATA004-DEV-CR01-input.json",
+    "input_sha256": "c40859df0769f54df90bd1467a3198521570c4fe512de3533eda55f4483b77ef",
+    "expected_path": "private/data004-development/20261005/DATA004-DEV-CR01-expected.json",
+    "expected_sha256": "88fac84e42cd5aa7abfa2f6606b76cd39a09372ab830d63ad43e07250174ecc3",
+    "actual_run_id": null,
+    "actual_result": null
+  },
+  {
+    "case_id": "DATA004-DEV-CR02",
+    "category": "conflicting_reviews",
+    "split": "development",
+    "model_id": "DUE6BGL2E",
+    "description": "합성 후기의 다른 식기 조건을 동일 조건의 모순으로 합치지 않는다.",
+    "source_fact_ids": [
+      "D14"
+    ],
+    "expected_disposition": "separate_usage_conditions_before_conflict_judgement",
+    "criteria_ids": [
+      "K01",
+      "K02",
+      "K03",
+      "K09",
+      "K10"
+    ],
+    "has_synthetic_material": true,
+    "input_path": "private/data004-development/20261005/DATA004-DEV-CR02-input.json",
+    "input_sha256": "be9d58ae74c4522077e527b80a0f9632909a68ad3197b3493237eb7079b2163a",
+    "expected_path": "private/data004-development/20261005/DATA004-DEV-CR02-expected.json",
+    "expected_sha256": "101acde8acfa810507826684c9ab43be3facf1c0beaabdbb3a4124177eae3858",
+    "actual_run_id": null,
+    "actual_result": null
+  },
+  {
+    "case_id": "DATA004-DEV-ME01",
+    "category": "missing_evidence",
+    "split": "development",
+    "model_id": "MW23FDI",
+    "description": "사용자 조합 저장·호출을 자동 메뉴로 대신 확정하지 않는다.",
+    "source_fact_ids": [
+      "M16",
+      "M15"
+    ],
+    "expected_disposition": "retain_unknown_not_unsupported",
+    "criteria_ids": [
+      "K01",
+      "K05",
+      "K06",
+      "K09",
+      "K10"
+    ],
+    "has_synthetic_material": false,
+    "input_path": "private/data004-development/20261005/DATA004-DEV-ME01-input.json",
+    "input_sha256": "90fd2e3ff9fa179e57a2463932873ef943d4d4ed764f687418efad59c1d507ec",
+    "expected_path": "private/data004-development/20261005/DATA004-DEV-ME01-expected.json",
+    "expected_sha256": "228ed8f29f563cd0f93faf7720bf476918a3371210cb67637ebc94607bfcc3a2",
+    "actual_run_id": null,
+    "actual_result": null
+  },
+  {
+    "case_id": "DATA004-DEV-ME02",
+    "category": "missing_evidence",
+    "split": "development",
+    "model_id": "DUE6BGL2E",
+    "description": "개인 식기의 치수·수량·배열 정보가 없는 적재 판단이다.",
+    "source_fact_ids": [
+      "D02",
+      "D14"
+    ],
+    "expected_disposition": "request_dimensions_count_layout",
+    "criteria_ids": [
+      "K01",
+      "K02",
+      "K05",
+      "K09",
+      "K10"
+    ],
+    "has_synthetic_material": false,
+    "input_path": "private/data004-development/20261005/DATA004-DEV-ME02-input.json",
+    "input_sha256": "1106b7b6d3bfce2ebab9ab8e31e118c7e757500e1c7b5e4c6ceda093a4d2e3d8",
+    "expected_path": "private/data004-development/20261005/DATA004-DEV-ME02-expected.json",
+    "expected_sha256": "f1f343619908e0098e59687bb3b338998c05210af553920753a705b73b153b19",
+    "actual_run_id": null,
+    "actual_result": null
+  },
+  {
+    "case_id": "DATA004-DEV-SC01",
+    "category": "specification_change",
+    "split": "development",
+    "model_id": "DUE6BGL2E",
+    "description": "바구니 단계 수를 변경한 합성 명세의 영향 추적 준비다.",
+    "source_fact_ids": [
+      "D09",
+      "D03"
+    ],
+    "expected_disposition": "recheck_height_dependencies_keep_dimensions",
+    "criteria_ids": [
+      "K01",
+      "K07",
+      "K08",
+      "K09",
+      "K10"
+    ],
+    "has_synthetic_material": true,
+    "input_path": "private/data004-development/20261005/DATA004-DEV-SC01-input.json",
+    "input_sha256": "11a832157d5d4eeebf322c373bdc5ce0851c2b1464726fa0462909219f837431",
+    "expected_path": "private/data004-development/20261005/DATA004-DEV-SC01-expected.json",
+    "expected_sha256": "f9270f0b55984a198c1aa69c86186ffa2e96e69a953f2f23a5686e4c76b6083c",
+    "actual_run_id": null,
+    "actual_result": null
+  },
+  {
+    "case_id": "DATA004-DEV-SC02",
+    "category": "specification_change",
+    "split": "development",
+    "model_id": "MW23FDI",
+    "description": "고주파 출력만 변경한 합성 명세에서 소비전력을 보존한다.",
+    "source_fact_ids": [
+      "M06",
+      "M07"
+    ],
+    "expected_disposition": "recheck_output_dependencies_keep_consumption",
+    "criteria_ids": [
+      "K01",
+      "K02",
+      "K07",
+      "K08",
+      "K09",
+      "K10"
+    ],
+    "has_synthetic_material": true,
+    "input_path": "private/data004-development/20261005/DATA004-DEV-SC02-input.json",
+    "input_sha256": "9a4d64ab8b865f687dc773861bf403f46595d4d59bd5961c02b055691977436d",
+    "expected_path": "private/data004-development/20261005/DATA004-DEV-SC02-expected.json",
+    "expected_sha256": "ebe9e9ee1c4ca07758709b19a5ea19711f0a5b88ca958da6db73f754487ef8e3",
+    "actual_run_id": null,
+    "actual_result": null
+  }
+]

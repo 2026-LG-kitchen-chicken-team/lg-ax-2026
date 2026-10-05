@@ -1,0 +1,62 @@
+{
+  "scope": "new_local_followup_checks",
+  "checks": [
+    {
+      "name": "ruff",
+      "chunk_id": "f177b8",
+      "wall_time_seconds": 0.000032,
+      "exit_code": 0,
+      "original_token_count": 5,
+      "output": "All checks passed!\n"
+    },
+    {
+      "name": "unit",
+      "chunk_id": "dc2215",
+      "wall_time_seconds": 0.0000328,
+      "exit_code": 0,
+      "original_token_count": 282,
+      "output": "test_empty_supported_failure_scores_zero (test_data003_bm25.BM25ScopeTests.test_empty_supported_failure_scores_zero) ... ok\r\ntest_failed_attempt_keeps_error_and_elapsed_time (test_data003_bm25.BM25ScopeTests.test_failed_attempt_keeps_error_and_elapsed_time) ... ok\r\ntest_filter_precedes_idf_and_ranking (test_data003_bm25.BM25ScopeTests.test_filter_precedes_idf_and_ranking) ... ok\r\ntest_missing_revision_never_substitutes_current (test_data003_bm25.BM25ScopeTests.test_missing_revision_never_substitutes_current) ... ok\r\ntest_no_gold_is_na_not_zero_or_division_error (test_data003_bm25.BM25ScopeTests.test_no_gold_is_na_not_zero_or_division_error) ... ok\r\ntest_partial_multi_gold_recall_and_reciprocal_rank (test_data003_bm25.BM25ScopeTests.test_partial_multi_gold_recall_and_reciprocal_rank) ... ok\r\ntest_ties_sort_by_evidence_id (test_data003_bm25.BM25ScopeTests.test_ties_sort_by_evidence_id) ... ok\r\ntest_unknown_revision_has_no_evidence (test_data003_bm25.BM25ScopeTests.test_unknown_revision_has_no_evidence) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 8 tests in 0.002s\r\n\r\nOK\r\n"
+    },
+    {
+      "name": "integrity",
+      "chunk_id": "f64313",
+      "wall_time_seconds": 0.0000171,
+      "exit_code": 0,
+      "original_token_count": 57,
+      "output": "{\"status\": \"pass\", \"check_count\": 164, \"errors\": [], \"counts\": {\"bm25_queries\": 15, \"supported_queries\": 11, \"measured_attempts\": 75, \"ocr_cases\": 6, \"ocr_regions\": 14, \"data004_development_cases\": 12, \"review_criteria\": 10}}\r\n"
+    },
+    {
+      "name": "contract",
+      "chunk_id": "6513e9",
+      "wall_time_seconds": 1.3990539,
+      "exit_code": 0,
+      "original_token_count": 31,
+      "output": "{\"status\": \"pass\", \"definitions\": 30, \"models\": 5, \"reviews\": 36, \"planning_requests\": 3, \"analysis_implemented\": false}\r\n"
+    },
+    {
+      "name": "phase2",
+      "chunk_id": "a3bbc9",
+      "wall_time_seconds": 10.0100001,
+      "original_token_count": 0,
+      "output": "{\"valid\":true,\"errors\":[],\"meaning\":\"record structure/evidence integrity only\",\"legacy\":\"stale\"}",
+      "exit_code": 0,
+      "final_output_source": "write_stdin session62501 completed"
+    },
+    {
+      "name": "agent_rules",
+      "chunk_id": "66e142",
+      "wall_time_seconds": 1.0135229,
+      "exit_code": 0,
+      "original_token_count": 13,
+      "output": "PASS: AGENTS.md and CLAUDE.md are byte-identical\r\n"
+    }
+  ],
+  "not_run": [
+    "full existing system regression",
+    "web tests/build",
+    "MCP live endpoint smoke",
+    "BGE/reranker/Paddle learned models",
+    "independent final evaluation"
+  ],
+  "reason": "Only new benchmark/preparation scripts and personal evidence changed; existing API/web/core/contracts/locks untouched"
+}

@@ -1,0 +1,2789 @@
+{
+  "status": "executed",
+  "execution_kind": "deterministic",
+  "method": "bm25_filtered",
+  "split": "development",
+  "task_id": "P2-DATA-003",
+  "summary": {
+    "supported_questions": 11,
+    "excluded_no_gold_questions": 4,
+    "macro_hit_at_1": 0.9090909090909091,
+    "macro_recall_at_3": 0.9090909090909091,
+    "macro_mrr_at_3": 0.9090909090909091,
+    "foreign_model_ids_returned": 0,
+    "wrong_version_ids_returned": 0,
+    "measured_attempts": 75,
+    "failed_attempts": 0,
+    "warmup_attempts": 2,
+    "median_ms_supported_attempts": 0.4851,
+    "p95_ms_supported_attempts": 0.9574
+  },
+  "protocol_sha256": "cb33a7f3666430470b9ad50bbf7b2f72e09fceeaff73b7a0bd31c2593280ed28",
+  "queries_sha256": "4c1fde0a47fba7b5a0639364d3bb114a937e23beb9d5db5b4d254e11a5aa83e4",
+  "corpus_sha256": "aa67c8c134f04507bb68bcc8ab8f6686b505cd8757de318a4e2c0a01bb219853",
+  "script_sha256": "19214247df2b89d7265f01df700a8efee7451b7ca8356df7f77ebd04d35f0731",
+  "legacy_bm25_sha256": "6eff19cdede306f64519da1facfabbf4961e7c84031fce1f314a3479b3707a20",
+  "query_order": [
+    "DW-01",
+    "DW-05",
+    "FR-04",
+    "MW-03",
+    "MW-01",
+    "MW-02",
+    "DW-03",
+    "FR-01",
+    "MW-04",
+    "FR-02",
+    "FR-03",
+    "DW-02",
+    "MW-05",
+    "DW-04",
+    "FR-05"
+  ],
+  "warmups": [
+    {
+      "status": "success",
+      "ranking": [
+        {
+          "id": "DUE6BGL2E-MANUAL-D09",
+          "score": 3.8357119968828215,
+          "model_id": "DUE6BGL2E",
+          "document_version": "MFL71959117 Rev.07_030626"
+        },
+        {
+          "id": "DUE6BGL2E-MANUAL-D13",
+          "score": 2.809903653203312,
+          "model_id": "DUE6BGL2E",
+          "document_version": "MFL71959117 Rev.07_030626"
+        },
+        {
+          "id": "DUE6BGL2E-MANUAL-D12",
+          "score": 2.1368821106260105,
+          "model_id": "DUE6BGL2E",
+          "document_version": "MFL71959117 Rev.07_030626"
+        }
+      ],
+      "scope_disposition": "retrieved",
+      "error": null,
+      "elapsed_ms": 0.97
+    },
+    {
+      "status": "success",
+      "ranking": [
+        {
+          "id": "DATA003-DUE6BGL2E-D02",
+          "score": 0.0,
+          "model_id": "DUE6BGL2E",
+          "document_version": "MFL71959117 Rev.07_030626"
+        },
+        {
+          "id": "DATA003-DUE6BGL2E-D03",
+          "score": 0.0,
+          "model_id": "DUE6BGL2E",
+          "document_version": "MFL71959117 Rev.07_030626"
+        },
+        {
+          "id": "DATA003-DUE6BGL2E-D04",
+          "score": 0.0,
+          "model_id": "DUE6BGL2E",
+          "document_version": "MFL71959117 Rev.07_030626"
+        }
+      ],
+      "scope_disposition": "retrieved",
+      "error": null,
+      "elapsed_ms": 0.6873
+    }
+  ],
+  "results": [
+    {
+      "query_id": "FR-01",
+      "method": "bm25_filtered",
+      "status": "executed",
+      "hit_at_1": 1,
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "model_mix_rate_at_3": 0.0,
+      "version_mix_rate_at_3": 0.0,
+      "returned_evidence_ids": [
+        "T876MEE1H1-MANUAL-F10",
+        "DATA003-T876MEE1H1-F12",
+        "DATA003-T876MEE1H1-F13"
+      ],
+      "ranking": [
+        {
+          "id": "T876MEE1H1-MANUAL-F10",
+          "score": 2.2882135065642095,
+          "model_id": "T876MEE1H1",
+          "document_version": "MFL71401557 Rev.00_032526"
+        },
+        {
+          "id": "DATA003-T876MEE1H1-F12",
+          "score": 0.0,
+          "model_id": "T876MEE1H1",
+          "document_version": "MFL71401557 Rev.00_032526"
+        },
+        {
+          "id": "DATA003-T876MEE1H1-F13",
+          "score": 0.0,
+          "model_id": "T876MEE1H1",
+          "document_version": "MFL71401557 Rev.00_032526"
+        }
+      ],
+      "ranking_metric_applicable": true,
+      "scope_disposition": "retrieved",
+      "response_disposition": "not_evaluated_retrieval_only",
+      "response_check_passed": null,
+      "median_ms": 0.1841,
+      "p95_ms": 0.4538,
+      "failure_count": 0,
+      "stable_ranking_across_repeats": true,
+      "latency_attempts": [
+        {
+          "query_id": "FR-01",
+          "repeat": 1,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "T876MEE1H1-MANUAL-F10",
+              "score": 2.2882135065642095,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F12",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F13",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.2496
+        },
+        {
+          "query_id": "FR-01",
+          "repeat": 2,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "T876MEE1H1-MANUAL-F10",
+              "score": 2.2882135065642095,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F12",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F13",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.4538
+        },
+        {
+          "query_id": "FR-01",
+          "repeat": 3,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "T876MEE1H1-MANUAL-F10",
+              "score": 2.2882135065642095,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F12",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F13",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.1841
+        },
+        {
+          "query_id": "FR-01",
+          "repeat": 4,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "T876MEE1H1-MANUAL-F10",
+              "score": 2.2882135065642095,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F12",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F13",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.1474
+        },
+        {
+          "query_id": "FR-01",
+          "repeat": 5,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "T876MEE1H1-MANUAL-F10",
+              "score": 2.2882135065642095,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F12",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F13",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.1639
+        }
+      ]
+    },
+    {
+      "query_id": "FR-02",
+      "method": "bm25_filtered",
+      "status": "executed",
+      "hit_at_1": 1,
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "model_mix_rate_at_3": 0.0,
+      "version_mix_rate_at_3": 0.0,
+      "returned_evidence_ids": [
+        "T876MEE1H1-MANUAL-F11",
+        "DATA003-T876MEE1H1-F13",
+        "DATA003-T876MEE1H1-F12"
+      ],
+      "ranking": [
+        {
+          "id": "T876MEE1H1-MANUAL-F11",
+          "score": 3.6977142870511646,
+          "model_id": "T876MEE1H1",
+          "document_version": "MFL71401557 Rev.00_032526"
+        },
+        {
+          "id": "DATA003-T876MEE1H1-F13",
+          "score": 0.4030754951213008,
+          "model_id": "T876MEE1H1",
+          "document_version": "MFL71401557 Rev.00_032526"
+        },
+        {
+          "id": "DATA003-T876MEE1H1-F12",
+          "score": 0.36044706437991764,
+          "model_id": "T876MEE1H1",
+          "document_version": "MFL71401557 Rev.00_032526"
+        }
+      ],
+      "ranking_metric_applicable": true,
+      "scope_disposition": "retrieved",
+      "response_disposition": "not_evaluated_retrieval_only",
+      "response_check_passed": null,
+      "median_ms": 0.1668,
+      "p95_ms": 0.2622,
+      "failure_count": 0,
+      "stable_ranking_across_repeats": true,
+      "latency_attempts": [
+        {
+          "query_id": "FR-02",
+          "repeat": 1,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "T876MEE1H1-MANUAL-F11",
+              "score": 3.6977142870511646,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F13",
+              "score": 0.4030754951213008,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F12",
+              "score": 0.36044706437991764,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.2622
+        },
+        {
+          "query_id": "FR-02",
+          "repeat": 2,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "T876MEE1H1-MANUAL-F11",
+              "score": 3.6977142870511646,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F13",
+              "score": 0.4030754951213008,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F12",
+              "score": 0.36044706437991764,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.1668
+        },
+        {
+          "query_id": "FR-02",
+          "repeat": 3,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "T876MEE1H1-MANUAL-F11",
+              "score": 3.6977142870511646,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F13",
+              "score": 0.4030754951213008,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F12",
+              "score": 0.36044706437991764,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.157
+        },
+        {
+          "query_id": "FR-02",
+          "repeat": 4,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "T876MEE1H1-MANUAL-F11",
+              "score": 3.6977142870511646,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F13",
+              "score": 0.4030754951213008,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F12",
+              "score": 0.36044706437991764,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.149
+        },
+        {
+          "query_id": "FR-02",
+          "repeat": 5,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "T876MEE1H1-MANUAL-F11",
+              "score": 3.6977142870511646,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F13",
+              "score": 0.4030754951213008,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F12",
+              "score": 0.36044706437991764,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.1821
+        }
+      ]
+    },
+    {
+      "query_id": "FR-03",
+      "method": "bm25_filtered",
+      "status": "executed",
+      "hit_at_1": 1,
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "model_mix_rate_at_3": 0.0,
+      "version_mix_rate_at_3": 0.0,
+      "returned_evidence_ids": [
+        "DATA003-T876MEE1H1-F13",
+        "DATA003-T876MEE1H1-F12",
+        "T876MEE1H1-MANUAL-F10"
+      ],
+      "ranking": [
+        {
+          "id": "DATA003-T876MEE1H1-F13",
+          "score": 1.874057215783358,
+          "model_id": "T876MEE1H1",
+          "document_version": "MFL71401557 Rev.00_032526"
+        },
+        {
+          "id": "DATA003-T876MEE1H1-F12",
+          "score": 1.2167057717042364,
+          "model_id": "T876MEE1H1",
+          "document_version": "MFL71401557 Rev.00_032526"
+        },
+        {
+          "id": "T876MEE1H1-MANUAL-F10",
+          "score": 0.0,
+          "model_id": "T876MEE1H1",
+          "document_version": "MFL71401557 Rev.00_032526"
+        }
+      ],
+      "ranking_metric_applicable": true,
+      "scope_disposition": "retrieved",
+      "response_disposition": "not_evaluated_retrieval_only",
+      "response_check_passed": null,
+      "median_ms": 0.1684,
+      "p95_ms": 0.4219,
+      "failure_count": 0,
+      "stable_ranking_across_repeats": true,
+      "latency_attempts": [
+        {
+          "query_id": "FR-03",
+          "repeat": 1,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-T876MEE1H1-F13",
+              "score": 1.874057215783358,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F12",
+              "score": 1.2167057717042364,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "T876MEE1H1-MANUAL-F10",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.2908
+        },
+        {
+          "query_id": "FR-03",
+          "repeat": 2,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-T876MEE1H1-F13",
+              "score": 1.874057215783358,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F12",
+              "score": 1.2167057717042364,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "T876MEE1H1-MANUAL-F10",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.1681
+        },
+        {
+          "query_id": "FR-03",
+          "repeat": 3,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-T876MEE1H1-F13",
+              "score": 1.874057215783358,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F12",
+              "score": 1.2167057717042364,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "T876MEE1H1-MANUAL-F10",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.164
+        },
+        {
+          "query_id": "FR-03",
+          "repeat": 4,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-T876MEE1H1-F13",
+              "score": 1.874057215783358,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F12",
+              "score": 1.2167057717042364,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "T876MEE1H1-MANUAL-F10",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.1684
+        },
+        {
+          "query_id": "FR-03",
+          "repeat": 5,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-T876MEE1H1-F13",
+              "score": 1.874057215783358,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F12",
+              "score": 1.2167057717042364,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "T876MEE1H1-MANUAL-F10",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.4219
+        }
+      ]
+    },
+    {
+      "query_id": "FR-04",
+      "method": "bm25_filtered",
+      "status": "executed",
+      "hit_at_1": null,
+      "recall_at_3": null,
+      "mrr_at_3": null,
+      "model_mix_rate_at_3": null,
+      "version_mix_rate_at_3": null,
+      "returned_evidence_ids": [],
+      "ranking": [],
+      "ranking_metric_applicable": false,
+      "scope_disposition": "request_document_version",
+      "response_disposition": "not_evaluated_retrieval_only",
+      "response_check_passed": null,
+      "median_ms": 0.0018,
+      "p95_ms": 0.0217,
+      "failure_count": 0,
+      "stable_ranking_across_repeats": true,
+      "latency_attempts": [
+        {
+          "query_id": "FR-04",
+          "repeat": 1,
+          "status": "success",
+          "ranking": [],
+          "scope_disposition": "request_document_version",
+          "error": null,
+          "elapsed_ms": 0.0217
+        },
+        {
+          "query_id": "FR-04",
+          "repeat": 2,
+          "status": "success",
+          "ranking": [],
+          "scope_disposition": "request_document_version",
+          "error": null,
+          "elapsed_ms": 0.0018
+        },
+        {
+          "query_id": "FR-04",
+          "repeat": 3,
+          "status": "success",
+          "ranking": [],
+          "scope_disposition": "request_document_version",
+          "error": null,
+          "elapsed_ms": 0.0022
+        },
+        {
+          "query_id": "FR-04",
+          "repeat": 4,
+          "status": "success",
+          "ranking": [],
+          "scope_disposition": "request_document_version",
+          "error": null,
+          "elapsed_ms": 0.0011
+        },
+        {
+          "query_id": "FR-04",
+          "repeat": 5,
+          "status": "success",
+          "ranking": [],
+          "scope_disposition": "request_document_version",
+          "error": null,
+          "elapsed_ms": 0.001
+        }
+      ]
+    },
+    {
+      "query_id": "FR-05",
+      "method": "bm25_filtered",
+      "status": "executed",
+      "hit_at_1": null,
+      "recall_at_3": null,
+      "mrr_at_3": null,
+      "model_mix_rate_at_3": 0.0,
+      "version_mix_rate_at_3": 0.0,
+      "returned_evidence_ids": [
+        "DATA003-T876MEE1H1-F12",
+        "DATA003-T876MEE1H1-F13",
+        "T876MEE1H1-MANUAL-F10"
+      ],
+      "ranking": [
+        {
+          "id": "DATA003-T876MEE1H1-F12",
+          "score": 0.0,
+          "model_id": "T876MEE1H1",
+          "document_version": "MFL71401557 Rev.00_032526"
+        },
+        {
+          "id": "DATA003-T876MEE1H1-F13",
+          "score": 0.0,
+          "model_id": "T876MEE1H1",
+          "document_version": "MFL71401557 Rev.00_032526"
+        },
+        {
+          "id": "T876MEE1H1-MANUAL-F10",
+          "score": 0.0,
+          "model_id": "T876MEE1H1",
+          "document_version": "MFL71401557 Rev.00_032526"
+        }
+      ],
+      "ranking_metric_applicable": false,
+      "scope_disposition": "retrieved",
+      "response_disposition": "not_evaluated_retrieval_only",
+      "response_check_passed": null,
+      "median_ms": 0.3203,
+      "p95_ms": 0.3701,
+      "failure_count": 0,
+      "stable_ranking_across_repeats": true,
+      "latency_attempts": [
+        {
+          "query_id": "FR-05",
+          "repeat": 1,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-T876MEE1H1-F12",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F13",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "T876MEE1H1-MANUAL-F10",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.3203
+        },
+        {
+          "query_id": "FR-05",
+          "repeat": 2,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-T876MEE1H1-F12",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F13",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "T876MEE1H1-MANUAL-F10",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.3701
+        },
+        {
+          "query_id": "FR-05",
+          "repeat": 3,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-T876MEE1H1-F12",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F13",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "T876MEE1H1-MANUAL-F10",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.1814
+        },
+        {
+          "query_id": "FR-05",
+          "repeat": 4,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-T876MEE1H1-F12",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F13",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "T876MEE1H1-MANUAL-F10",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.1923
+        },
+        {
+          "query_id": "FR-05",
+          "repeat": 5,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-T876MEE1H1-F12",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "DATA003-T876MEE1H1-F13",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            },
+            {
+              "id": "T876MEE1H1-MANUAL-F10",
+              "score": 0.0,
+              "model_id": "T876MEE1H1",
+              "document_version": "MFL71401557 Rev.00_032526"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.3297
+        }
+      ]
+    },
+    {
+      "query_id": "DW-01",
+      "method": "bm25_filtered",
+      "status": "executed",
+      "hit_at_1": 1,
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "model_mix_rate_at_3": 0.0,
+      "version_mix_rate_at_3": 0.0,
+      "returned_evidence_ids": [
+        "DUE6BGL2E-MANUAL-D09",
+        "DUE6BGL2E-MANUAL-D13",
+        "DUE6BGL2E-MANUAL-D12"
+      ],
+      "ranking": [
+        {
+          "id": "DUE6BGL2E-MANUAL-D09",
+          "score": 3.8357119968828215,
+          "model_id": "DUE6BGL2E",
+          "document_version": "MFL71959117 Rev.07_030626"
+        },
+        {
+          "id": "DUE6BGL2E-MANUAL-D13",
+          "score": 2.809903653203312,
+          "model_id": "DUE6BGL2E",
+          "document_version": "MFL71959117 Rev.07_030626"
+        },
+        {
+          "id": "DUE6BGL2E-MANUAL-D12",
+          "score": 2.1368821106260105,
+          "model_id": "DUE6BGL2E",
+          "document_version": "MFL71959117 Rev.07_030626"
+        }
+      ],
+      "ranking_metric_applicable": true,
+      "scope_disposition": "retrieved",
+      "response_disposition": "not_evaluated_retrieval_only",
+      "response_check_passed": null,
+      "median_ms": 0.707,
+      "p95_ms": 1.0622,
+      "failure_count": 0,
+      "stable_ranking_across_repeats": true,
+      "latency_attempts": [
+        {
+          "query_id": "DW-01",
+          "repeat": 1,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DUE6BGL2E-MANUAL-D09",
+              "score": 3.8357119968828215,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D13",
+              "score": 2.809903653203312,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D12",
+              "score": 2.1368821106260105,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 1.0622
+        },
+        {
+          "query_id": "DW-01",
+          "repeat": 2,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DUE6BGL2E-MANUAL-D09",
+              "score": 3.8357119968828215,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D13",
+              "score": 2.809903653203312,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D12",
+              "score": 2.1368821106260105,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.707
+        },
+        {
+          "query_id": "DW-01",
+          "repeat": 3,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DUE6BGL2E-MANUAL-D09",
+              "score": 3.8357119968828215,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D13",
+              "score": 2.809903653203312,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D12",
+              "score": 2.1368821106260105,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.7752
+        },
+        {
+          "query_id": "DW-01",
+          "repeat": 4,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DUE6BGL2E-MANUAL-D09",
+              "score": 3.8357119968828215,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D13",
+              "score": 2.809903653203312,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D12",
+              "score": 2.1368821106260105,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.3725
+        },
+        {
+          "query_id": "DW-01",
+          "repeat": 5,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DUE6BGL2E-MANUAL-D09",
+              "score": 3.8357119968828215,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D13",
+              "score": 2.809903653203312,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D12",
+              "score": 2.1368821106260105,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.3787
+        }
+      ]
+    },
+    {
+      "query_id": "DW-02",
+      "method": "bm25_filtered",
+      "status": "executed",
+      "hit_at_1": 1,
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "model_mix_rate_at_3": 0.0,
+      "version_mix_rate_at_3": 0.0,
+      "returned_evidence_ids": [
+        "DUE6BGL2E-MANUAL-D12",
+        "DUE6BGL2E-MANUAL-D14",
+        "DUE6BGL2E-MANUAL-D13"
+      ],
+      "ranking": [
+        {
+          "id": "DUE6BGL2E-MANUAL-D12",
+          "score": 4.216432301657601,
+          "model_id": "DUE6BGL2E",
+          "document_version": "MFL71959117 Rev.07_030626"
+        },
+        {
+          "id": "DUE6BGL2E-MANUAL-D14",
+          "score": 0.9631953961427124,
+          "model_id": "DUE6BGL2E",
+          "document_version": "MFL71959117 Rev.07_030626"
+        },
+        {
+          "id": "DUE6BGL2E-MANUAL-D13",
+          "score": 0.9412046336737008,
+          "model_id": "DUE6BGL2E",
+          "document_version": "MFL71959117 Rev.07_030626"
+        }
+      ],
+      "ranking_metric_applicable": true,
+      "scope_disposition": "retrieved",
+      "response_disposition": "not_evaluated_retrieval_only",
+      "response_check_passed": null,
+      "median_ms": 0.3953,
+      "p95_ms": 0.683,
+      "failure_count": 0,
+      "stable_ranking_across_repeats": true,
+      "latency_attempts": [
+        {
+          "query_id": "DW-02",
+          "repeat": 1,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DUE6BGL2E-MANUAL-D12",
+              "score": 4.216432301657601,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D14",
+              "score": 0.9631953961427124,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D13",
+              "score": 0.9412046336737008,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.683
+        },
+        {
+          "query_id": "DW-02",
+          "repeat": 2,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DUE6BGL2E-MANUAL-D12",
+              "score": 4.216432301657601,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D14",
+              "score": 0.9631953961427124,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D13",
+              "score": 0.9412046336737008,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.3935
+        },
+        {
+          "query_id": "DW-02",
+          "repeat": 3,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DUE6BGL2E-MANUAL-D12",
+              "score": 4.216432301657601,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D14",
+              "score": 0.9631953961427124,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D13",
+              "score": 0.9412046336737008,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.3953
+        },
+        {
+          "query_id": "DW-02",
+          "repeat": 4,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DUE6BGL2E-MANUAL-D12",
+              "score": 4.216432301657601,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D14",
+              "score": 0.9631953961427124,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D13",
+              "score": 0.9412046336737008,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.3574
+        },
+        {
+          "query_id": "DW-02",
+          "repeat": 5,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DUE6BGL2E-MANUAL-D12",
+              "score": 4.216432301657601,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D14",
+              "score": 0.9631953961427124,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D13",
+              "score": 0.9412046336737008,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.6614
+        }
+      ]
+    },
+    {
+      "query_id": "DW-03",
+      "method": "bm25_filtered",
+      "status": "executed",
+      "hit_at_1": 1,
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "model_mix_rate_at_3": 0.0,
+      "version_mix_rate_at_3": 0.0,
+      "returned_evidence_ids": [
+        "DATA003-DUE6BGL2E-D03",
+        "DATA003-DUE6BGL2E-D04",
+        "DUE6BGL2E-MANUAL-D09"
+      ],
+      "ranking": [
+        {
+          "id": "DATA003-DUE6BGL2E-D03",
+          "score": 4.561450054398331,
+          "model_id": "DUE6BGL2E",
+          "document_version": "MFL71959117 Rev.07_030626"
+        },
+        {
+          "id": "DATA003-DUE6BGL2E-D04",
+          "score": 1.5978590292600037,
+          "model_id": "DUE6BGL2E",
+          "document_version": "MFL71959117 Rev.07_030626"
+        },
+        {
+          "id": "DUE6BGL2E-MANUAL-D09",
+          "score": 1.4314153803787533,
+          "model_id": "DUE6BGL2E",
+          "document_version": "MFL71959117 Rev.07_030626"
+        }
+      ],
+      "ranking_metric_applicable": true,
+      "scope_disposition": "retrieved",
+      "response_disposition": "not_evaluated_retrieval_only",
+      "response_check_passed": null,
+      "median_ms": 0.3335,
+      "p95_ms": 0.6209,
+      "failure_count": 0,
+      "stable_ranking_across_repeats": true,
+      "latency_attempts": [
+        {
+          "query_id": "DW-03",
+          "repeat": 1,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-DUE6BGL2E-D03",
+              "score": 4.561450054398331,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DATA003-DUE6BGL2E-D04",
+              "score": 1.5978590292600037,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D09",
+              "score": 1.4314153803787533,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.5754
+        },
+        {
+          "query_id": "DW-03",
+          "repeat": 2,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-DUE6BGL2E-D03",
+              "score": 4.561450054398331,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DATA003-DUE6BGL2E-D04",
+              "score": 1.5978590292600037,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D09",
+              "score": 1.4314153803787533,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.6209
+        },
+        {
+          "query_id": "DW-03",
+          "repeat": 3,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-DUE6BGL2E-D03",
+              "score": 4.561450054398331,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DATA003-DUE6BGL2E-D04",
+              "score": 1.5978590292600037,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D09",
+              "score": 1.4314153803787533,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.3335
+        },
+        {
+          "query_id": "DW-03",
+          "repeat": 4,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-DUE6BGL2E-D03",
+              "score": 4.561450054398331,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DATA003-DUE6BGL2E-D04",
+              "score": 1.5978590292600037,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D09",
+              "score": 1.4314153803787533,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.3198
+        },
+        {
+          "query_id": "DW-03",
+          "repeat": 5,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-DUE6BGL2E-D03",
+              "score": 4.561450054398331,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DATA003-DUE6BGL2E-D04",
+              "score": 1.5978590292600037,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D09",
+              "score": 1.4314153803787533,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.321
+        }
+      ]
+    },
+    {
+      "query_id": "DW-04",
+      "method": "bm25_filtered",
+      "status": "executed",
+      "hit_at_1": 1,
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "model_mix_rate_at_3": 0.0,
+      "version_mix_rate_at_3": 0.0,
+      "returned_evidence_ids": [
+        "DUE6BGL2E-MANUAL-D14",
+        "DUE6BGL2E-MANUAL-D12",
+        "DUE6BGL2E-MANUAL-D13"
+      ],
+      "ranking": [
+        {
+          "id": "DUE6BGL2E-MANUAL-D14",
+          "score": 0.9631953961427124,
+          "model_id": "DUE6BGL2E",
+          "document_version": "MFL71959117 Rev.07_030626"
+        },
+        {
+          "id": "DUE6BGL2E-MANUAL-D12",
+          "score": 0.9412046336737008,
+          "model_id": "DUE6BGL2E",
+          "document_version": "MFL71959117 Rev.07_030626"
+        },
+        {
+          "id": "DUE6BGL2E-MANUAL-D13",
+          "score": 0.9412046336737008,
+          "model_id": "DUE6BGL2E",
+          "document_version": "MFL71959117 Rev.07_030626"
+        }
+      ],
+      "ranking_metric_applicable": true,
+      "scope_disposition": "retrieved",
+      "response_disposition": "not_evaluated_retrieval_only",
+      "response_check_passed": null,
+      "median_ms": 0.7435,
+      "p95_ms": 0.8384,
+      "failure_count": 0,
+      "stable_ranking_across_repeats": true,
+      "latency_attempts": [
+        {
+          "query_id": "DW-04",
+          "repeat": 1,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DUE6BGL2E-MANUAL-D14",
+              "score": 0.9631953961427124,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D12",
+              "score": 0.9412046336737008,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D13",
+              "score": 0.9412046336737008,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.7435
+        },
+        {
+          "query_id": "DW-04",
+          "repeat": 2,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DUE6BGL2E-MANUAL-D14",
+              "score": 0.9631953961427124,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D12",
+              "score": 0.9412046336737008,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D13",
+              "score": 0.9412046336737008,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.8384
+        },
+        {
+          "query_id": "DW-04",
+          "repeat": 3,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DUE6BGL2E-MANUAL-D14",
+              "score": 0.9631953961427124,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D12",
+              "score": 0.9412046336737008,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D13",
+              "score": 0.9412046336737008,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.4341
+        },
+        {
+          "query_id": "DW-04",
+          "repeat": 4,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DUE6BGL2E-MANUAL-D14",
+              "score": 0.9631953961427124,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D12",
+              "score": 0.9412046336737008,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D13",
+              "score": 0.9412046336737008,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.614
+        },
+        {
+          "query_id": "DW-04",
+          "repeat": 5,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DUE6BGL2E-MANUAL-D14",
+              "score": 0.9631953961427124,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D12",
+              "score": 0.9412046336737008,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DUE6BGL2E-MANUAL-D13",
+              "score": 0.9412046336737008,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.7662
+        }
+      ]
+    },
+    {
+      "query_id": "DW-05",
+      "method": "bm25_filtered",
+      "status": "executed",
+      "hit_at_1": null,
+      "recall_at_3": null,
+      "mrr_at_3": null,
+      "model_mix_rate_at_3": 0.0,
+      "version_mix_rate_at_3": 0.0,
+      "returned_evidence_ids": [
+        "DATA003-DUE6BGL2E-D02",
+        "DATA003-DUE6BGL2E-D03",
+        "DATA003-DUE6BGL2E-D04"
+      ],
+      "ranking": [
+        {
+          "id": "DATA003-DUE6BGL2E-D02",
+          "score": 0.0,
+          "model_id": "DUE6BGL2E",
+          "document_version": "MFL71959117 Rev.07_030626"
+        },
+        {
+          "id": "DATA003-DUE6BGL2E-D03",
+          "score": 0.0,
+          "model_id": "DUE6BGL2E",
+          "document_version": "MFL71959117 Rev.07_030626"
+        },
+        {
+          "id": "DATA003-DUE6BGL2E-D04",
+          "score": 0.0,
+          "model_id": "DUE6BGL2E",
+          "document_version": "MFL71959117 Rev.07_030626"
+        }
+      ],
+      "ranking_metric_applicable": false,
+      "scope_disposition": "retrieved",
+      "response_disposition": "not_evaluated_retrieval_only",
+      "response_check_passed": null,
+      "median_ms": 0.7033,
+      "p95_ms": 0.7379,
+      "failure_count": 0,
+      "stable_ranking_across_repeats": true,
+      "latency_attempts": [
+        {
+          "query_id": "DW-05",
+          "repeat": 1,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-DUE6BGL2E-D02",
+              "score": 0.0,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DATA003-DUE6BGL2E-D03",
+              "score": 0.0,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DATA003-DUE6BGL2E-D04",
+              "score": 0.0,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.7379
+        },
+        {
+          "query_id": "DW-05",
+          "repeat": 2,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-DUE6BGL2E-D02",
+              "score": 0.0,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DATA003-DUE6BGL2E-D03",
+              "score": 0.0,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DATA003-DUE6BGL2E-D04",
+              "score": 0.0,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.7033
+        },
+        {
+          "query_id": "DW-05",
+          "repeat": 3,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-DUE6BGL2E-D02",
+              "score": 0.0,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DATA003-DUE6BGL2E-D03",
+              "score": 0.0,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DATA003-DUE6BGL2E-D04",
+              "score": 0.0,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.7078
+        },
+        {
+          "query_id": "DW-05",
+          "repeat": 4,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-DUE6BGL2E-D02",
+              "score": 0.0,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DATA003-DUE6BGL2E-D03",
+              "score": 0.0,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DATA003-DUE6BGL2E-D04",
+              "score": 0.0,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.3729
+        },
+        {
+          "query_id": "DW-05",
+          "repeat": 5,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-DUE6BGL2E-D02",
+              "score": 0.0,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DATA003-DUE6BGL2E-D03",
+              "score": 0.0,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            },
+            {
+              "id": "DATA003-DUE6BGL2E-D04",
+              "score": 0.0,
+              "model_id": "DUE6BGL2E",
+              "document_version": "MFL71959117 Rev.07_030626"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.376
+        }
+      ]
+    },
+    {
+      "query_id": "MW-01",
+      "method": "bm25_filtered",
+      "status": "executed",
+      "hit_at_1": 0,
+      "recall_at_3": 0.0,
+      "mrr_at_3": 0,
+      "model_mix_rate_at_3": 0.0,
+      "version_mix_rate_at_3": 0.0,
+      "returned_evidence_ids": [
+        "DATA003-MW23FDI-M06",
+        "DATA003-MW23FDI-M02",
+        "DATA003-MW23FDI-M03"
+      ],
+      "ranking": [
+        {
+          "id": "DATA003-MW23FDI-M06",
+          "score": 2.144392693500155,
+          "model_id": "MW23FDI",
+          "document_version": "MFL68822538 Rev.00_120925"
+        },
+        {
+          "id": "DATA003-MW23FDI-M02",
+          "score": 0.0,
+          "model_id": "MW23FDI",
+          "document_version": "MFL68822538 Rev.00_120925"
+        },
+        {
+          "id": "DATA003-MW23FDI-M03",
+          "score": 0.0,
+          "model_id": "MW23FDI",
+          "document_version": "MFL68822538 Rev.00_120925"
+        }
+      ],
+      "ranking_metric_applicable": true,
+      "scope_disposition": "retrieved",
+      "response_disposition": "not_evaluated_retrieval_only",
+      "response_check_passed": null,
+      "median_ms": 0.5604,
+      "p95_ms": 0.8521,
+      "failure_count": 0,
+      "stable_ranking_across_repeats": true,
+      "latency_attempts": [
+        {
+          "query_id": "MW-01",
+          "repeat": 1,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-MW23FDI-M06",
+              "score": 2.144392693500155,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M02",
+              "score": 0.0,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M03",
+              "score": 0.0,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.8521
+        },
+        {
+          "query_id": "MW-01",
+          "repeat": 2,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-MW23FDI-M06",
+              "score": 2.144392693500155,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M02",
+              "score": 0.0,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M03",
+              "score": 0.0,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.8182
+        },
+        {
+          "query_id": "MW-01",
+          "repeat": 3,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-MW23FDI-M06",
+              "score": 2.144392693500155,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M02",
+              "score": 0.0,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M03",
+              "score": 0.0,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.5604
+        },
+        {
+          "query_id": "MW-01",
+          "repeat": 4,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-MW23FDI-M06",
+              "score": 2.144392693500155,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M02",
+              "score": 0.0,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M03",
+              "score": 0.0,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.423
+        },
+        {
+          "query_id": "MW-01",
+          "repeat": 5,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-MW23FDI-M06",
+              "score": 2.144392693500155,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M02",
+              "score": 0.0,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M03",
+              "score": 0.0,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.4723
+        }
+      ]
+    },
+    {
+      "query_id": "MW-02",
+      "method": "bm25_filtered",
+      "status": "executed",
+      "hit_at_1": 1,
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "model_mix_rate_at_3": 0.0,
+      "version_mix_rate_at_3": 0.0,
+      "returned_evidence_ids": [
+        "MW23FDI-MANUAL-M14",
+        "DATA003-MW23FDI-M13",
+        "DATA003-MW23FDI-M02"
+      ],
+      "ranking": [
+        {
+          "id": "MW23FDI-MANUAL-M14",
+          "score": 2.3500126107601815,
+          "model_id": "MW23FDI",
+          "document_version": "MFL68822538 Rev.00_120925"
+        },
+        {
+          "id": "DATA003-MW23FDI-M13",
+          "score": 1.338180320699682,
+          "model_id": "MW23FDI",
+          "document_version": "MFL68822538 Rev.00_120925"
+        },
+        {
+          "id": "DATA003-MW23FDI-M02",
+          "score": 0.0,
+          "model_id": "MW23FDI",
+          "document_version": "MFL68822538 Rev.00_120925"
+        }
+      ],
+      "ranking_metric_applicable": true,
+      "scope_disposition": "retrieved",
+      "response_disposition": "not_evaluated_retrieval_only",
+      "response_check_passed": null,
+      "median_ms": 0.5739,
+      "p95_ms": 1.3605,
+      "failure_count": 0,
+      "stable_ranking_across_repeats": true,
+      "latency_attempts": [
+        {
+          "query_id": "MW-02",
+          "repeat": 1,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "MW23FDI-MANUAL-M14",
+              "score": 2.3500126107601815,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M13",
+              "score": 1.338180320699682,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M02",
+              "score": 0.0,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 1.3605
+        },
+        {
+          "query_id": "MW-02",
+          "repeat": 2,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "MW23FDI-MANUAL-M14",
+              "score": 2.3500126107601815,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M13",
+              "score": 1.338180320699682,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M02",
+              "score": 0.0,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.9035
+        },
+        {
+          "query_id": "MW-02",
+          "repeat": 3,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "MW23FDI-MANUAL-M14",
+              "score": 2.3500126107601815,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M13",
+              "score": 1.338180320699682,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M02",
+              "score": 0.0,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.5093
+        },
+        {
+          "query_id": "MW-02",
+          "repeat": 4,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "MW23FDI-MANUAL-M14",
+              "score": 2.3500126107601815,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M13",
+              "score": 1.338180320699682,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M02",
+              "score": 0.0,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.5281
+        },
+        {
+          "query_id": "MW-02",
+          "repeat": 5,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "MW23FDI-MANUAL-M14",
+              "score": 2.3500126107601815,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M13",
+              "score": 1.338180320699682,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M02",
+              "score": 0.0,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.5739
+        }
+      ]
+    },
+    {
+      "query_id": "MW-03",
+      "method": "bm25_filtered",
+      "status": "executed",
+      "hit_at_1": 1,
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "model_mix_rate_at_3": 0.0,
+      "version_mix_rate_at_3": 0.0,
+      "returned_evidence_ids": [
+        "DATA003-MW23FDI-M06",
+        "DATA003-MW23FDI-M12",
+        "DATA003-MW23FDI-M07"
+      ],
+      "ranking": [
+        {
+          "id": "DATA003-MW23FDI-M06",
+          "score": 3.721013380029027,
+          "model_id": "MW23FDI",
+          "document_version": "MFL68822538 Rev.00_120925"
+        },
+        {
+          "id": "DATA003-MW23FDI-M12",
+          "score": 3.6795450433063976,
+          "model_id": "MW23FDI",
+          "document_version": "MFL68822538 Rev.00_120925"
+        },
+        {
+          "id": "DATA003-MW23FDI-M07",
+          "score": 1.5504607986209302,
+          "model_id": "MW23FDI",
+          "document_version": "MFL68822538 Rev.00_120925"
+        }
+      ],
+      "ranking_metric_applicable": true,
+      "scope_disposition": "retrieved",
+      "response_disposition": "not_evaluated_retrieval_only",
+      "response_check_passed": null,
+      "median_ms": 0.8656,
+      "p95_ms": 0.9146,
+      "failure_count": 0,
+      "stable_ranking_across_repeats": true,
+      "latency_attempts": [
+        {
+          "query_id": "MW-03",
+          "repeat": 1,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-MW23FDI-M06",
+              "score": 3.721013380029027,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M12",
+              "score": 3.6795450433063976,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M07",
+              "score": 1.5504607986209302,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.9146
+        },
+        {
+          "query_id": "MW-03",
+          "repeat": 2,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-MW23FDI-M06",
+              "score": 3.721013380029027,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M12",
+              "score": 3.6795450433063976,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M07",
+              "score": 1.5504607986209302,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.8656
+        },
+        {
+          "query_id": "MW-03",
+          "repeat": 3,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-MW23FDI-M06",
+              "score": 3.721013380029027,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M12",
+              "score": 3.6795450433063976,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M07",
+              "score": 1.5504607986209302,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.868
+        },
+        {
+          "query_id": "MW-03",
+          "repeat": 4,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-MW23FDI-M06",
+              "score": 3.721013380029027,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M12",
+              "score": 3.6795450433063976,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M07",
+              "score": 1.5504607986209302,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.4851
+        },
+        {
+          "query_id": "MW-03",
+          "repeat": 5,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-MW23FDI-M06",
+              "score": 3.721013380029027,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M12",
+              "score": 3.6795450433063976,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M07",
+              "score": 1.5504607986209302,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.4685
+        }
+      ]
+    },
+    {
+      "query_id": "MW-04",
+      "method": "bm25_filtered",
+      "status": "executed",
+      "hit_at_1": 1,
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "model_mix_rate_at_3": 0.0,
+      "version_mix_rate_at_3": 0.0,
+      "returned_evidence_ids": [
+        "DATA003-MW23FDI-M13",
+        "MW23FDI-MANUAL-M11",
+        "DATA003-MW23FDI-M06"
+      ],
+      "ranking": [
+        {
+          "id": "DATA003-MW23FDI-M13",
+          "score": 6.545462416271274,
+          "model_id": "MW23FDI",
+          "document_version": "MFL68822538 Rev.00_120925"
+        },
+        {
+          "id": "MW23FDI-MANUAL-M11",
+          "score": 3.3679087059607835,
+          "model_id": "MW23FDI",
+          "document_version": "MFL68822538 Rev.00_120925"
+        },
+        {
+          "id": "DATA003-MW23FDI-M06",
+          "score": 2.816001145631495,
+          "model_id": "MW23FDI",
+          "document_version": "MFL68822538 Rev.00_120925"
+        }
+      ],
+      "ranking_metric_applicable": true,
+      "scope_disposition": "retrieved",
+      "response_disposition": "not_evaluated_retrieval_only",
+      "response_check_passed": null,
+      "median_ms": 0.5426,
+      "p95_ms": 0.9574,
+      "failure_count": 0,
+      "stable_ranking_across_repeats": true,
+      "latency_attempts": [
+        {
+          "query_id": "MW-04",
+          "repeat": 1,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-MW23FDI-M13",
+              "score": 6.545462416271274,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "MW23FDI-MANUAL-M11",
+              "score": 3.3679087059607835,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M06",
+              "score": 2.816001145631495,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.9574
+        },
+        {
+          "query_id": "MW-04",
+          "repeat": 2,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-MW23FDI-M13",
+              "score": 6.545462416271274,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "MW23FDI-MANUAL-M11",
+              "score": 3.3679087059607835,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M06",
+              "score": 2.816001145631495,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.7662
+        },
+        {
+          "query_id": "MW-04",
+          "repeat": 3,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-MW23FDI-M13",
+              "score": 6.545462416271274,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "MW23FDI-MANUAL-M11",
+              "score": 3.3679087059607835,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M06",
+              "score": 2.816001145631495,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.5315
+        },
+        {
+          "query_id": "MW-04",
+          "repeat": 4,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-MW23FDI-M13",
+              "score": 6.545462416271274,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "MW23FDI-MANUAL-M11",
+              "score": 3.3679087059607835,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M06",
+              "score": 2.816001145631495,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.5141
+        },
+        {
+          "query_id": "MW-04",
+          "repeat": 5,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "DATA003-MW23FDI-M13",
+              "score": 6.545462416271274,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "MW23FDI-MANUAL-M11",
+              "score": 3.3679087059607835,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M06",
+              "score": 2.816001145631495,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.5426
+        }
+      ]
+    },
+    {
+      "query_id": "MW-05",
+      "method": "bm25_filtered",
+      "status": "executed",
+      "hit_at_1": null,
+      "recall_at_3": null,
+      "mrr_at_3": null,
+      "model_mix_rate_at_3": 0.0,
+      "version_mix_rate_at_3": 0.0,
+      "returned_evidence_ids": [
+        "MW23FDI-MANUAL-M11",
+        "DATA003-MW23FDI-M06",
+        "MW23FDI-MANUAL-M15"
+      ],
+      "ranking": [
+        {
+          "id": "MW23FDI-MANUAL-M11",
+          "score": 4.319522611042759,
+          "model_id": "MW23FDI",
+          "document_version": "MFL68822538 Rev.00_120925"
+        },
+        {
+          "id": "DATA003-MW23FDI-M06",
+          "score": 2.3858684955249334,
+          "model_id": "MW23FDI",
+          "document_version": "MFL68822538 Rev.00_120925"
+        },
+        {
+          "id": "MW23FDI-MANUAL-M15",
+          "score": 1.143629229532931,
+          "model_id": "MW23FDI",
+          "document_version": "MFL68822538 Rev.00_120925"
+        }
+      ],
+      "ranking_metric_applicable": false,
+      "scope_disposition": "retrieved",
+      "response_disposition": "not_evaluated_retrieval_only",
+      "response_check_passed": null,
+      "median_ms": 0.8011,
+      "p95_ms": 1.0099,
+      "failure_count": 0,
+      "stable_ranking_across_repeats": true,
+      "latency_attempts": [
+        {
+          "query_id": "MW-05",
+          "repeat": 1,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "MW23FDI-MANUAL-M11",
+              "score": 4.319522611042759,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M06",
+              "score": 2.3858684955249334,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "MW23FDI-MANUAL-M15",
+              "score": 1.143629229532931,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.93
+        },
+        {
+          "query_id": "MW-05",
+          "repeat": 2,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "MW23FDI-MANUAL-M11",
+              "score": 4.319522611042759,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M06",
+              "score": 2.3858684955249334,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "MW23FDI-MANUAL-M15",
+              "score": 1.143629229532931,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.8011
+        },
+        {
+          "query_id": "MW-05",
+          "repeat": 3,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "MW23FDI-MANUAL-M11",
+              "score": 4.319522611042759,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M06",
+              "score": 2.3858684955249334,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "MW23FDI-MANUAL-M15",
+              "score": 1.143629229532931,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.5279
+        },
+        {
+          "query_id": "MW-05",
+          "repeat": 4,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "MW23FDI-MANUAL-M11",
+              "score": 4.319522611042759,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M06",
+              "score": 2.3858684955249334,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "MW23FDI-MANUAL-M15",
+              "score": 1.143629229532931,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 0.5016
+        },
+        {
+          "query_id": "MW-05",
+          "repeat": 5,
+          "status": "success",
+          "ranking": [
+            {
+              "id": "MW23FDI-MANUAL-M11",
+              "score": 4.319522611042759,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "DATA003-MW23FDI-M06",
+              "score": 2.3858684955249334,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            },
+            {
+              "id": "MW23FDI-MANUAL-M15",
+              "score": 1.143629229532931,
+              "model_id": "MW23FDI",
+              "document_version": "MFL68822538 Rev.00_120925"
+            }
+          ],
+          "scope_disposition": "retrieved",
+          "error": null,
+          "elapsed_ms": 1.0099
+        }
+      ]
+    }
+  ],
+  "environment": {
+    "python": "3.11.17",
+    "os": "Windows-10-10.0.26200-SP0",
+    "cpu": "Intel64 Family 6 Model 140 Stepping 1, GenuineIntel",
+    "logical_cpus": 8,
+    "device": "CPU",
+    "bm25_execution_threads": 1,
+    "configured_model_threads_for_future": 4,
+    "numeric_precision": "Python float (double), BM25 has no FP32 tensor",
+    "peak_rss_mb": 25.68359375,
+    "ram_gb": 15.684394836425781,
+    "memory_probe": "Windows process PeakWorkingSetSize and GlobalMemoryStatusEx"
+  },
+  "timing": {
+    "input_load_ms": 1.9343,
+    "index_build_ms": null,
+    "cold_model_load_ms": null,
+    "note": "Legacy BM25 recomputes tokens/IDF on scoped corpus per query; included in timed query, no persistent index",
+    "percentile": "nearest rank",
+    "latency_denominator": "55 supported-query successful attempts"
+  },
+  "created_at_kst": "2026-10-05T04:33:40.143358+09:00",
+  "learned_model_calls": 0,
+  "ocr_calls": 0,
+  "formal_state_changed": false,
+  "limitations": [
+    "27 curated fact summaries and 15 authored queries; no independent final evaluation",
+    "11 gold queries score retrieval only; four scope/unknown cases do not score semantic answers",
+    "FR-04 explicitly has missing runtime version; current version is not silently substituted",
+    "Single-thread Python BM25; future tensor methods must record actual device/threads/precision separately",
+    "Tiny corpus latency is noisy and is not full-system performance",
+    "No BGE/reranker/Paddle, generation, #13 integration or PM semantic gold review executed"
+  ]
+}
