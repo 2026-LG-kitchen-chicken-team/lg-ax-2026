@@ -245,6 +245,8 @@ class DockerPMDriver:
 class TrustedPMBroker:
     def __init__(self, config: dict, *, github=None, controller=None, executor=None, driver=None):
         self.config = config
+        if type(config.get("allow_fixed_ready_dispatch", False)) is not bool:
+            raise PMError("fixed Ready dispatch requires an explicit host boolean")
         self.policy = load_policy(config["policy_file"], config["policy_sha256"])
         self._released_capabilities()  # Reject invalid trusted releases before side effects.
         self.state_dir = protected_path(Path(config["state_dir"]) / "broker-state.json").parent
@@ -284,6 +286,32 @@ class TrustedPMBroker:
             return set(self.policy["capabilities"])
         return set(identifiers(self.config["released_capabilities"], "released capabilities",
                                allowed=self.policy["capabilities"], nonempty=False))
+
+    @property
+    def allow_fixed_ready_dispatch(self):
+        return self.config.get("allow_fixed_ready_dispatch") is True
+
+    def fixed_ready_assignment(self, observation):
+        """Only an explicitly released, pinned backlog unit may skip planning.
+
+        This supplies no new scope and performs no mutation. Independent PR
+        review/merge, parent completion and arbitrary model decisions retain
+        their original paths. execute still revalidates authenticated facts.
+        """
+        if (not self.allow_fixed_ready_dispatch or not self.orchestration.plan or
+                "released_capabilities" not in self.config):
+            return None
+        ready = set(observation["capabilities_ready"]) & self._released_capabilities()
+        plan = self.orchestration.plan["capabilities"]
+        for cap_id in sorted(ready & plan.keys(), key=lambda key: (-plan[key]["priority"], key)):
+            cap = self.policy["capabilities"].get(cap_id)
+            if not cap or cap.get("completes_task") is True:
+                continue
+            return {"action": "assign", "task_id": cap["task_id"], "capability_id": cap_id,
+                    "pr_number": None, "head_commit": None,
+                    "reason": "Execute this already released fixed backlog unit: " + cap_id,
+                    "instructions": [cap["purpose"]]}
+        return None
 
     def save(self):
         write_json(self.state_path, self.state)
