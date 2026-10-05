@@ -161,7 +161,7 @@ def load_policy(path, expected_sha256):
     limits = policy.get("limits", {})
     for key, default, low, high in (("max_model_calls_per_day", 24, 1, 200),
                                   ("max_actions_per_day", 24, 1, 100),
-                                  ("max_model_tokens_per_day", 300000, 1, 2000000),
+                                  ("max_model_tokens_per_day", 300000, 1, 4000000),
                                   ("max_actions_per_task", 8, 1, 64),
                                   ("max_model_calls_per_task", 8, 1, 40),
                                   ("max_revisions_per_task", 3, 1, 5),

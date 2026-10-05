@@ -328,6 +328,22 @@ class AutonomousPMTests(unittest.TestCase):
             self.assertEqual(db.execute("SELECT COUNT(*) FROM seen").fetchone()[0], 0)
             self.assertEqual(db.execute("SELECT COUNT(*) FROM budgets").fetchone()[0], 0)
 
+    def test_expanded_daily_token_bound_is_explicit_and_preserves_all_other_defaults(self):
+        path = self.root / "daily-limit-policy.json"
+        def read_with_limits(limits):
+            fixed = policy()
+            fixed["limits"] = limits
+            path.write_text(json.dumps(fixed), encoding="utf-8")
+            return load_policy(path, hashlib.sha256(path.read_bytes()).hexdigest())["limits"]
+        defaults = read_with_limits({})
+        self.assertEqual(defaults["max_model_tokens_per_day"], 300000)
+        expanded = read_with_limits({"max_model_tokens_per_day": 4000000})
+        self.assertEqual(expanded["max_model_tokens_per_day"], 4000000)
+        self.assertEqual({key: value for key, value in expanded.items() if key != "max_model_tokens_per_day"},
+                         {key: value for key, value in defaults.items() if key != "max_model_tokens_per_day"})
+        with self.assertRaisesRegex(PMError, "max_model_tokens_per_day"):
+            read_with_limits({"max_model_tokens_per_day": 4000001})
+
     def test_assignment_uses_only_fixed_paths_tests_acceptance(self):
         result = self.pm.tick()
         self.assertEqual(result["state"], "applied")
