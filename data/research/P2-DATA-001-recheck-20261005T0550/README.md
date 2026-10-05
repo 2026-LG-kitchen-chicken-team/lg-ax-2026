@@ -6,6 +6,8 @@
 
 공식 PDF 3개와 인용 15개의 해시·원문·문서 개정판 검사는 54개 모두 통과했다. 문서의 적용 범위는 별도로 분류했다. 지정 모델의 실제 1회 생성은 JSON 검사와 digest 고정에 성공했지만, 공용 설명서의 선택 기능을 정확 SKU의 확정 기능으로 잘못 판단해 의미 검증에 실패했다. 성공으로 고쳐 기록하거나 프롬프트를 바꿔 재시도하지 않았다.
 
+후속 사용자 승인으로 [PR127](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/127)을 게시했고, [새 #12 보고](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/12#issuecomment-5992616922)의 [ACCEPTED](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/12#issuecomment-5992627516)를 확인했다. 보고 head `37404acf8ca7b794e2b61059e677a2a30d75bc72`의 Python/web push·PR 4검사 SUCCESS. 새 publication 폴더의 원 수신증·CI 관찰·예약/해제와 009/E015 기록을 따른다. 06시 실험을 다시 실행하거나 최신 자동 Worker Git128 문제를 고친 것으로 표시하지 않는다. 부모 과제는 미완료다.
+
 ## 코드·자료 연결
 
 - 기준 main: `c6c1382faab29ffe06ee5d24c5ff0a196d5c1531`. PR74 고정 head: `5af64e93b1ca413317a91893e530901fc7f5874e`. main의 plan/dataset 바이트가 이 PR head와 같음을 확인했다.

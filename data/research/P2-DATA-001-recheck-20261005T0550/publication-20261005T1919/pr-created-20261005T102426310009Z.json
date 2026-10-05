@@ -1,0 +1,13 @@
+{
+  "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/127",
+  "number": 127,
+  "state": "open",
+  "draft": false,
+  "author": "ginaginaring",
+  "head": "37404acf8ca7b794e2b61059e677a2a30d75bc72",
+  "expected_head": "37404acf8ca7b794e2b61059e677a2a30d75bc72",
+  "base": "main",
+  "created_at": "2026-10-05T10:24:25Z",
+  "body": "공용 설명서의 선택 기능을 특정 SKU의 확정 사양으로 해석하면 잘못된 제품 대조가 발생합니다. 공식 PDF 3개·인용 15개의 원문/개정판을 재검증하고, 9개 기능의 모델 적용 범위와 조건을 분리한 자료 및 실제 Qwen 실패 사례를 부분 검수 대상으로 제출합니다.\n\nRefs #12. 기존 PR74의 부분 main 인수 뒤 수행한 수동 재검증 증거이며 DATA001 전체 완료를 요청하지 않습니다.\n\n## 포함 범위\n\n- 공식 PDF URL·SHA256·문서 버전·PDF 쪽·원문 문자 위치·인용 ID와 모델/기능 연결. 공용 냉장고·DUE6 계열 설명서와 정확 모델 MW23FDI가 명시된 설명서를 구분합니다.\n- 접이식 선반의 정확 SKU 적용/수량 미확인, 청소 전 플러그/내부 청소 절차, 바구니 조절 조건, 전자레인지 출력/30초/제조사 데우기 메뉴의 근거 범위를 기록합니다.\n- 개인 설정→loopback proxy→StructuredModelClient의 qwen3:8b 실제 호출1회. digest·생성 옵션·입력/schema·원출력·사용량·실패·실행 source를 함께 보존합니다.\n- 새 실행 폴더의 실패/복구 이력, 경로·자원 예약/해제, 개인 기록·근거·기존 Issue 보고 수신증. 실패 당시 source3개는 원 바이트 그대로 `.py.txt`로 보관합니다.\n- #13/#14의 별도 비교 계획과 개발용 질의만 포함합니다. 검색 측정/모델 다운로드/채택은 없습니다.\n\n## 실제 검증\n\n- 실행 source: main c6c1382faab29ffe06ee5d24c5ff0a196d5c1531. PR74 자료 head5af64e93b1ca413317a91893e530901fc7f5874e의 plan/dataset과 일치 확인.\n- PDF3·인용15·기능9의 원문/파일 해시/개정판54검사 PASS. 표지/인용 관련13페이지 렌더 검토.\n- 실제 모델1회: JSON/schema와 digest before/after PASS. 기대 `shared_manual_only/정확 SKU false/수요 false`에 대해 `exact_sku/정확 SKU true/수요 false`를 반환해 의미 FAIL. 원출력을 수정하거나 모델을 재호출하지 않았습니다.\n- 과거 Ruff·규칙·계약·phase2 검사 PASS를 당시 source에 연결합니다. 이번 게시 무결성 검사/전체 증거 폴더 Ruff PASS, 원 실행 source와 입력 및 실패 보존 확인. 원격 CI는 PR의 현재 head에서 별도 확인합니다.\n\n## 남은 범위와 PM 요청\n\n정확 SKU 접이식 선반 적용/수량, 고객 수요·효과, 독립 평가, Agent 전체 구현과 DATA001 Done은 미완료입니다. 문서 미언급을 기능 미지원으로 확정하지 않습니다. PM/CORE에 적용 범위 오류의 보류/검사 후속 조치를 요청합니다.\n\n최신 PM-20261005-DATA-GIT128-R1의 원 자동 Worker checkpoint 진단/수리/제한 재시도는 이 PR에서 수행하지 않았습니다. 이번 manual worktree의 읽기/fetch 성공을 해당 Worker의 수리 성공으로 바꾸지 않습니다. 개인 자동화 OFF를 유지하며 스위치·Worker·원 state·인증 파일을 변경하지 않았습니다. 06시의 환경/OFF 기록은 당시 관찰이고 현재 팀 운영 상태와 구분합니다.\n",
+  "credentials_shared": false
+}
