@@ -187,6 +187,9 @@ class ClaudeWorkerTests(unittest.TestCase):
         def run(argv, **kwargs):
             self.assertIn("--restricted", argv)
             self.assertEqual(argv[argv.index("--tools") + 1], "Read,Glob,Grep")
+            self.assertTrue(kwargs["readonly_workspace"])
+            self.assertIn("/artifacts/revision-reference.patch", kwargs["input_text"])
+            self.assertEqual((kwargs["artifacts"] / "revision-reference.patch").read_bytes(), b"fixture diff\n")
             kwargs["output"].write_text(json.dumps(self.event) + "\n")
             return SimpleNamespace(returncode=0, elapsed_seconds=0.1, stopped_reason=None)
 
@@ -199,7 +202,8 @@ class ClaudeWorkerTests(unittest.TestCase):
                       target.mkdir() or {}), \
                 patch("services.automation.worker.DockerExecutor") as docker, \
                 patch("services.automation.claude.executable", return_value="claude.exe"), \
-                patch("services.automation.worker.git", return_value="b" * 40), \
+                patch("services.automation.worker.git", side_effect=lambda _config, _argv, **kwargs:
+                      b"fixture diff\n" if kwargs.get("binary") else "b" * 40), \
                 patch("services.automation.worker.check_scope", return_value=[]), \
                 patch("services.automation.worker.check_review_head"), \
                 patch("services.automation.worker.publish") as publish:
