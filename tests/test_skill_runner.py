@@ -248,6 +248,191 @@ class SkillRuntimeTests(unittest.TestCase):
             self.assertEqual(source.read_bytes(), original)
             self.assertEqual(json.loads(process.stderr)["error"]["code"], "INVALID_ARGUMENT")
 
+    def test_all_skills_trace_detached_inputs_outputs_and_calls(self):
+        for skill in SKILL_IDS:
+            payload = self.example(skill)
+            response = self.runtime.execute(skill, payload)
+            record = self.runtime.records[-1]
+            self.assertEqual(record["input"], payload)
+            self.assertEqual(record["output"], response)
+            self.assertEqual(record["tool"]["called"], skill == "evidence_lookup")
+            self.assertEqual(record["decision"]["status"], "succeeded" if response["ok"] else "failed")
+            self.assertEqual(len(record["input_sha256"]), 64)
+            self.assertEqual(record["automatic_retries"], 0)
+            self.assertFalse(record["trusted_collector_verified"])
+            payload.clear()
+            response.clear()
+            record.clear()
+            self.assertIn("model_id", self.runtime.records[-1]["input"])
+            self.assertIn("ok", self.runtime.records[-1]["output"])
+        self.assertEqual(len({r["run_id"] for r in self.runtime.records}), 5)
+
+    def test_surrogate_input_is_explicit_error_with_run_record(self):
+        for surrogate in ("\ud800", "\udfff"):
+            payload = {**self.example("evidence_lookup"), "query": surrogate}
+            response = self.runtime.execute("evidence_lookup", payload)
+            self.assertEqual(response["error"]["code"], "INVALID_ARGUMENT")
+            self.assertEqual(response["error"]["details"]["error_type"], "UnicodeEncodeError")
+            record = self.runtime.records[-1]
+            self.assertTrue(record["run_id"].startswith("skill-"))
+            self.assertEqual(record["output"], response)
+            self.assertEqual(record["error"], response["error"])
+            self.assertEqual(record["stage"], "input_validation")
+            self.assertEqual(record["decision"]["status"], "failed")
+            self.assertFalse(record["tool"]["called"])
+            self.assertIsNone(record["input"])
+            self.assertIsNone(record["input_sha256"])
+            json.dumps(record, ensure_ascii=False).encode("utf-8")
+        self.assertNotEqual(self.runtime.records[0]["run_id"], self.runtime.records[1]["run_id"])
+        self.assertTrue(self.runtime.execute("evidence_lookup", self.example("evidence_lookup"))["ok"])
+
+    def test_serialization_failure_keeps_failed_record(self):
+        from unittest.mock import patch
+        for error in (TypeError("private"), ValueError("private")):
+            with patch("lgax_core.skill_runner.json.dumps", side_effect=error):
+                response = self.runtime.execute("evidence_lookup", self.example("evidence_lookup"))
+            self.assertEqual(response["error"]["code"], "INVALID_ARGUMENT")
+            record = self.runtime.records[-1]
+            self.assertEqual(record["output"], response)
+            self.assertIsNone(record["input"])
+            self.assertNotIn("private", json.dumps(record))
+
+    def test_invalid_schema_input_is_not_retained(self):
+        self.runtime.execute("need_extract", {**self.example("need_extract"), "secret": "do-not-retain"})
+        record = self.runtime.records[-1]
+        self.assertIsNone(record["input"])
+        self.assertFalse(record["tool"]["called"])
+        self.assertNotIn("do-not-retain", json.dumps(record))
+
+    def test_successful_unresolved_and_gap_results_are_held(self):
+        self.fixture("need_extract", {"needs": [], "desired_outcomes": [], "unresolved": ["자료 부족"]})
+        self.assertTrue(self.runtime.execute("need_extract", self.example("need_extract"))["ok"])
+        self.assertEqual(self.runtime.records[-1]["decision"], {"status": "held", "hold_reasons": ["자료 부족"]})
+        gap = self.example("concept_draft")["gaps"][0]
+        gap["support_status"] = "insufficient_evidence"
+        self.fixture("product_compare", {"gaps": [gap], "unresolved": []})
+        self.assertTrue(self.runtime.execute("product_compare", self.example("product_compare"))["ok"])
+        self.assertEqual(self.runtime.records[-1]["decision"]["status"], "held")
+
+    def test_retry_limits_and_rejected_parent_do_not_reset_budget(self):
+        payload = self.example("need_extract")
+        parent = None
+        for count in range(3):
+            self.runtime.execute("need_extract", payload, retry_of=parent)
+            record = self.runtime.records[-1]
+            self.assertEqual(record["retry_count"], count)
+            self.assertEqual(record["retry_of"], parent)
+            parent = record["run_id"]
+        for _ in range(2):
+            response = self.runtime.execute("need_extract", payload, retry_of=parent)
+            self.assertEqual(response["error"]["code"], "INVALID_ARGUMENT")
+            self.assertFalse(self.runtime.records[-1]["tool"]["called"])
+            parent = self.runtime.records[-1]["run_id"]
+
+    def test_retry_rejects_changed_input_unknown_success_and_fork(self):
+        payload = self.example("need_extract")
+        self.runtime.execute("need_extract", payload)
+        parent = self.runtime.records[-1]["run_id"]
+        for prior, value in [("unknown", payload), (parent, {**payload, "document_version": "9.0"})]:
+            self.assertEqual(self.runtime.execute("need_extract", value, retry_of=prior)["error"]["code"],
+                             "INVALID_ARGUMENT")
+        self.runtime.execute("need_extract", payload, retry_of=parent)
+        self.assertEqual(self.runtime.execute("need_extract", payload, retry_of=parent)["error"]["code"],
+                         "INVALID_ARGUMENT")
+        lookup = self.example("evidence_lookup")
+        self.runtime.execute("evidence_lookup", lookup)
+        parent = self.runtime.records[-1]["run_id"]
+        self.assertEqual(self.runtime.execute("evidence_lookup", lookup, retry_of=parent)["error"]["code"],
+                         "INVALID_ARGUMENT")
+
+    def test_failed_handler_recovery_preserves_original_record(self):
+        calls = []
+        def handler(payload, store):
+            calls.append(payload)
+            if len(calls) == 1:
+                raise RuntimeError("private-provider-error")
+            need = self.example("product_compare")["needs"][0]
+            return {"needs": [need], "desired_outcomes": [{"need_id": need["id"], "desired_outcome": "개발 예시"}],
+                    "unresolved": []}
+        self.runtime.register_handler("need_extract", handler, backend_id="test:recovery", execution_kind="fixture")
+        payload = self.example("need_extract")
+        self.runtime.execute("need_extract", payload)
+        original = self.runtime.records[-1]
+        self.assertEqual(original["stage"], "handler_call")
+        self.assertTrue(original["tool"]["called"])
+        self.assertNotIn("private-provider-error", json.dumps(original))
+        self.assertTrue(self.runtime.execute("need_extract", payload, retry_of=original["run_id"])["ok"])
+        self.assertEqual(self.runtime.records[0], original)
+        self.assertEqual(self.runtime.records[-1]["retry_count"], 1)
+        self.assertEqual(len(calls), 2)
+
+    def test_revision_budget_and_output_failure_stages(self):
+        self.fixture("review_revision", {})
+        payload = {**self.example("review_revision"), "revision_count": 2}
+        self.runtime.execute("review_revision", payload)
+        record = self.runtime.records[-1]
+        self.assertEqual(record["decision"]["status"], "held")
+        self.assertFalse(record["tool"]["called"])
+        self.fixture("need_extract", {"needs": "bad output"})
+        self.runtime.execute("need_extract", self.example("need_extract"))
+        record = self.runtime.records[-1]
+        self.assertEqual(record["stage"], "output_validation")
+        self.assertTrue(record["tool"]["called"])
+        self.assertEqual(record["decision"]["status"], "failed")
+        self.assertNotIn("bad output", json.dumps(record))
+
+    def test_cli_surrogate_retains_execution_record_not_read_error(self):
+        with tempfile.TemporaryDirectory() as dirname:
+            source, output = Path(dirname) / "in.json", Path(dirname) / "out.json"
+            source.write_text(json.dumps({**self.example("evidence_lookup"), "query": "\ud800"}), encoding="utf-8")
+            process = subprocess.run([sys.executable, str(ROOT / "skills/evidence_lookup/scripts/run.py"),
+                                      "--input", str(source), "--output", str(output)],
+                                     cwd=ROOT, capture_output=True, text=True, check=False)
+            self.assertEqual(process.returncode, 2, process.stderr)
+            self.assertEqual(process.stderr, "")
+            response = json.loads(output.read_text(encoding="utf-8"))
+            trace = json.loads(Path(str(output) + ".trace.json").read_text(encoding="utf-8"))
+            self.assertIsNone(trace["cli_error"])
+            self.assertEqual(len(trace["records"]), 1)
+            record = trace["records"][0]
+            self.assertEqual(response["error"]["code"], "INVALID_ARGUMENT")
+            self.assertEqual(response["error"]["details"]["error_type"], "UnicodeEncodeError")
+            self.assertEqual(record["output"], response)
+            self.assertEqual(record["error"], response["error"])
+            self.assertEqual(record["decision"]["status"], "failed")
+            self.assertTrue(record["run_id"].startswith("skill-"))
+            self.assertFalse(record["tool"]["called"])
+            self.assertIsNone(record["input"])
+
+    def test_cli_all_skills_trace_and_existing_file_preservation(self):
+        with tempfile.TemporaryDirectory() as dirname:
+            for skill in SKILL_IDS:
+                output = Path(dirname) / f"{skill}.json"
+                command = [sys.executable, str(ROOT / "skills" / skill / "scripts/run.py"),
+                           "--input", str(ROOT / "skills" / skill / "examples/input.json"), "--output", str(output)]
+                result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
+                self.assertEqual(result.returncode, 0 if skill == "evidence_lookup" else 2, result.stderr)
+                trace = Path(str(output) + ".trace.json")
+                original = trace.read_bytes()
+                record = json.loads(original)["records"][0]
+                self.assertEqual(record["output"], json.loads(output.read_text(encoding="utf-8")))
+                self.assertEqual(record["skill_id"], skill)
+                rerun = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
+                self.assertEqual(rerun.returncode, 2)
+                self.assertEqual(trace.read_bytes(), original)
+
+    def test_cli_parse_failure_has_no_invented_execution(self):
+        with tempfile.TemporaryDirectory() as dirname:
+            source, output = Path(dirname) / "in.json", Path(dirname) / "out.json"
+            source.write_text("not json", encoding="utf-8")
+            result = subprocess.run([sys.executable, str(ROOT / "skills/evidence_lookup/scripts/run.py"),
+                                     "--input", str(source), "--output", str(output)],
+                                    cwd=ROOT, capture_output=True, text=True, check=False)
+            self.assertEqual(result.returncode, 2)
+            trace = json.loads(Path(str(output) + ".trace.json").read_text(encoding="utf-8"))
+            self.assertEqual(trace["records"], [])
+            self.assertEqual(trace["cli_error"]["code"], "INVALID_ARGUMENT")
+
 
 if __name__ == "__main__":
     unittest.main()
