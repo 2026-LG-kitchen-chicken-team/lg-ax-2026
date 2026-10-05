@@ -1,0 +1,243 @@
+{
+  "results": [
+    {
+      "status": "returned",
+      "latency_ms": 16641.0,
+      "orchestration_attempts": 0,
+      "transport_generation_attempts": 1,
+      "verified_completions": 1,
+      "input_tokens": 4236,
+      "output_tokens": 1394,
+      "errors": [],
+      "decision": {
+        "valid": false,
+        "action": "revise",
+        "revision_count": 0,
+        "next_revision_count": 1,
+        "rerun_from": "needs",
+        "violations": [
+          {
+            "code": "NON_COMPLAINT_AS_NEED",
+            "stage": "needs"
+          },
+          {
+            "code": "GAP_REVIEW_MISSING",
+            "stage": "compare"
+          },
+          {
+            "code": "SUPPORT_BASIS_MISMATCH",
+            "stage": "compare"
+          },
+          {
+            "code": "CONCEPT_WITHOUT_CONFIRMED_GAP",
+            "stage": "concepts"
+          },
+          {
+            "code": "DUPLICATION_COMPARISON_INCOMPLETE",
+            "stage": "concepts"
+          },
+          {
+            "code": "COMPLETED_WITH_UNRESOLVED",
+            "stage": "review"
+          }
+        ]
+      },
+      "semantic_reviews": 0,
+      "backend_input_truncation_independently_verified": false,
+      "semantic_quality_independently_graded": false,
+      "case_id": "SEM-04",
+      "raw_result_sha256": "4d1e43387d836da97730af12fc136bde36aacdf414cd67fd99d711064e7ec628",
+      "raw_result_kept_private": true
+    },
+    {
+      "status": "returned",
+      "latency_ms": 15375.0,
+      "orchestration_attempts": 0,
+      "transport_generation_attempts": 1,
+      "verified_completions": 1,
+      "input_tokens": 3199,
+      "output_tokens": 1355,
+      "errors": [],
+      "decision": {
+        "valid": false,
+        "action": "hold",
+        "revision_count": 0,
+        "next_revision_count": 0,
+        "rerun_from": null,
+        "violations": [
+          {
+            "code": "SUPPORT_UNKNOWN",
+            "stage": "compare"
+          },
+          {
+            "code": "CONCEPT_WITHOUT_CONFIRMED_GAP",
+            "stage": "concepts"
+          },
+          {
+            "code": "COMPLETED_WITH_UNRESOLVED",
+            "stage": "review"
+          }
+        ]
+      },
+      "semantic_reviews": 0,
+      "backend_input_truncation_independently_verified": false,
+      "semantic_quality_independently_graded": false,
+      "case_id": "SEM-05",
+      "raw_result_sha256": "2c2d56275d5fbaf88ed1e95db76d29169c54abf6ff9ba1887f79cca4b27e5bbc",
+      "raw_result_kept_private": true
+    },
+    {
+      "status": "returned",
+      "latency_ms": 18531.0,
+      "orchestration_attempts": 0,
+      "transport_generation_attempts": 1,
+      "verified_completions": 1,
+      "input_tokens": 3998,
+      "output_tokens": 1537,
+      "errors": [],
+      "decision": {
+        "valid": false,
+        "action": "revise",
+        "revision_count": 0,
+        "next_revision_count": 1,
+        "rerun_from": "needs",
+        "violations": [
+          {
+            "code": "ASSESSMENT_COVERAGE",
+            "stage": "needs"
+          },
+          {
+            "code": "GAP_REVIEW_MISSING",
+            "stage": "compare"
+          },
+          {
+            "code": "COMPLETED_WITH_UNRESOLVED",
+            "stage": "review"
+          }
+        ]
+      },
+      "semantic_reviews": 0,
+      "backend_input_truncation_independently_verified": false,
+      "semantic_quality_independently_graded": false,
+      "case_id": "SEM-06",
+      "raw_result_sha256": "e2a02d022de174ece1a54fc1ec567fd887a2d86ecf0f8aea2f3deac484f42ae1",
+      "raw_result_kept_private": true
+    },
+    {
+      "status": "held",
+      "latency_ms": 88422.0,
+      "orchestration_attempts": 3,
+      "transport_generation_attempts": 3,
+      "verified_completions": 3,
+      "input_tokens": 11353,
+      "output_tokens": 7932,
+      "errors": [
+        {
+          "code": "VALIDATION_FAILED",
+          "message": "모델 출력이 JSON 형식 또는 요청한 스키마를 충족하지 않습니다.",
+          "details": {
+            "reason": "schema_mismatch"
+          }
+        }
+      ],
+      "decision": {
+        "valid": true,
+        "action": "hold",
+        "revision_count": 1,
+        "next_revision_count": 1,
+        "rerun_from": null,
+        "violations": []
+      },
+      "semantic_reviews": 0,
+      "backend_input_truncation_independently_verified": false,
+      "semantic_quality_independently_graded": false,
+      "case_id": "DEV-FRIDGE-A",
+      "raw_result_sha256": "caa620d1b24ef6e9f31de0ce647149c38bfbaab3ec6a7b8c964bff1926f58ebf",
+      "raw_result_kept_private": true,
+      "source_identity_checks": {
+        "count": 11,
+        "unchanged": true
+      },
+      "review_count": 10
+    },
+    {
+      "status": "failed",
+      "latency_ms": 61281.0,
+      "orchestration_attempts": 6,
+      "transport_generation_attempts": 6,
+      "verified_completions": 6,
+      "input_tokens": 13606,
+      "output_tokens": 4739,
+      "errors": [],
+      "decision": {
+        "valid": false,
+        "action": "unresolved",
+        "revision_count": 2,
+        "next_revision_count": 2,
+        "rerun_from": null,
+        "violations": [
+          {
+            "code": "NON_COMPLAINT_AS_NEED",
+            "stage": "needs"
+          },
+          {
+            "code": "SUPPORT_BASIS_MISMATCH",
+            "stage": "compare"
+          }
+        ]
+      },
+      "semantic_reviews": 0,
+      "backend_input_truncation_independently_verified": false,
+      "semantic_quality_independently_graded": false,
+      "case_id": "DEV-DISHWASHER-A",
+      "raw_result_sha256": "b40032859bd2ab6dcbf2762a0302a20865968006f7df269a221523e5e5271797",
+      "raw_result_kept_private": true,
+      "source_identity_checks": {
+        "count": 4,
+        "unchanged": true
+      },
+      "review_count": 3
+    },
+    {
+      "status": "failed",
+      "latency_ms": 74032.0,
+      "orchestration_attempts": 4,
+      "transport_generation_attempts": 4,
+      "verified_completions": 3,
+      "input_tokens": null,
+      "output_tokens": null,
+      "errors": [
+        {
+          "code": "MODEL_UNAVAILABLE",
+          "message": "고정한 모델의 안전한 호출·revision 확인을 완료하지 못했습니다.",
+          "details": {
+            "reason": "output_truncated"
+          }
+        }
+      ],
+      "decision": null,
+      "semantic_reviews": 0,
+      "backend_input_truncation_independently_verified": false,
+      "semantic_quality_independently_graded": false,
+      "case_id": "DEV-MICROWAVE-A",
+      "raw_result_sha256": "fa40fb65fb2e0cd8186b5ffd9a68f38b5023d5a6231c4eed21632a47bfc293ad",
+      "raw_result_kept_private": true,
+      "source_identity_checks": {
+        "count": 4,
+        "unchanged": true
+      },
+      "review_count": 3
+    }
+  ],
+  "independent_evaluation_complete": false,
+  "independent_reviewer": null,
+  "backend_truncation_verified": false,
+  "real_lg_and_synthetic_development_materials_mixed": false,
+  "original_demo_counts": {
+    "models": 5,
+    "reviews": 36,
+    "evidence": 42
+  },
+  "new_review_examples_created": false,
+  "issue12_done": false
+}

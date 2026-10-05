@@ -1,0 +1,57 @@
+{
+  "record_type": "partial_historical_evidence_review",
+  "reviewed_at": "2026-10-05T10:44:00Z",
+  "pm": "jeongiryang",
+  "author": "ginaginaring",
+  "source": "Actual GitHub PR metadata, fixed source blobs and independent read-only artifact audit",
+  "reviews": [
+    {
+      "pr_number": 127,
+      "head": "98ced3c40e052bb4a81b85035f6054ca71031815",
+      "actual_merge_base_prefix": "c6c1382",
+      "actual_ci_checks_success": 4,
+      "scope": "P2-DATA-001 PDF applicability recheck and one actual Qwen semantic failure",
+      "execution_source_hashes_verified": 4,
+      "blocking_findings_for_historical_evidence": 0,
+      "latest_main_reexecution_verified": false
+    },
+    {
+      "pr_number": 128,
+      "head": "6d72718fa92e00cd0ad7eefea62b50670bbd4dd7",
+      "actual_merge_base": "7652048327d8bf20410af14e6f78979b8f721d63",
+      "actual_ci_checks_success": 4,
+      "scope": "P2-DATA-001 historical three-product, model, hold and failure evidence",
+      "published_manifest_files_verified": 44,
+      "original_source_blobs_verified": 20,
+      "original_source_is_submitted_head_ancestor": false,
+      "original_source_modules_changed_since_execution": ["skill_runner", "workspace_planning"],
+      "blocking_findings_for_historical_evidence": 0,
+      "complete_independent_execution_reproduction_verified": false
+    },
+    {
+      "pr_number": 130,
+      "head": "b7d0c784e2cd0f7f1e3c3cd2d9ec4f8e51fb3d02",
+      "actual_merge_base": "7652048327d8bf20410af14e6f78979b8f721d63",
+      "actual_ci_checks_success": 4,
+      "scope": "P2-DATA-002 historical registration, extraction, search stages1-5 and stage6 preparation",
+      "published_manifest_files_verified": 68,
+      "blocking_findings_for_historical_evidence": 0,
+      "latest_product_model_or_ocr_execution_verified": false
+    }
+  ],
+  "new_product_core_api_contract_or_operations_code_changes": 0,
+  "overlap_with_new_data_implementation_capability_paths": 0,
+  "private_execution_artifacts_not_republished": true,
+  "instruction_interpretation": "Preserve prior work and failed results; receive actual submitted evidence without claiming new implementation or current product success.",
+  "personal_record_merge_requirement": "Preserve the independent appended records from PR91, PR127 and PR128; they do not supersede one another.",
+  "entire_parent_task_intake_completed": false,
+  "formal_dependencies_released": false,
+  "worker_git128_repair_verified": false,
+  "limitations": [
+    "Artifact hash consistency does not independently prove historic execution or current model quality.",
+    "PR127 retains an exact_sku versus shared_manual_only semantic failure.",
+    "PR128 retains held/failed model outcomes and incomplete independent scoring/input-truncation verification.",
+    "PR130 retains historic failures/timeouts and incomplete stage6 actual-product integration.",
+    "Partial historic evidence review is separate from main merge, current requirements execution and formal parent Done."
+  ]
+}

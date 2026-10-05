@@ -1,0 +1,18 @@
+{
+  "task_id": "P2-DATA-002",
+  "preserves_original_failed_run": true,
+  "initial_run": "search-checks.json",
+  "initial_result": "fail",
+  "initial_checks": 208,
+  "initial_http_requests": 116,
+  "failure": "Own port closure could not be proved by a 0.5-second socket connect_ex check: Windows code10035; this code is not evidence of a listener.",
+  "separate_observations": [
+    {"tool": "Get-NetTCPConnection", "result": "Access denied; no escalation attempted"},
+    {"tool": "netstat -ano -p TCP, filtered to owned ports50644/50652", "exit_code": 0, "listener_found": false, "states_found": ["TIME_WAIT"], "time_wait_pid": 0},
+    {"tool": "socket.connect timeout2seconds", "ports": [50644, 50652], "result": "TimeoutError; closure unknown from socket alone"}
+  ],
+  "confirmed_orphan_server": false,
+  "code_change": "Only own runner: add native netstat verification with observed live listener then post-stop absence; preserve socket timeout as unknown and fix two lint dictionary iteration findings.",
+  "pm_shared_code_changed": false,
+  "next_run_id": "verified"
+}

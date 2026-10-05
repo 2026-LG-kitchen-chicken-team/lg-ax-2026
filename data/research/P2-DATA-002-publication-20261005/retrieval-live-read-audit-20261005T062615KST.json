@@ -1,0 +1,98 @@
+{
+  "recorded_at_kst": "2026-10-05T06:26:15+09:00",
+  "owner": "신진하",
+  "publication_authorized": false,
+  "formal_state_changed": false,
+  "reservation_obtained": false,
+  "record_kind": "local_recovery_journal_of_read_only_inspection",
+  "kind": "read_only_recalculation_of_existing_live_run",
+  "new_model_calls": 0,
+  "methods": {
+    "bm25_filtered": {
+      "macro_hit_at_1": 0.9090909090909091,
+      "macro_recall_at_3": 0.9090909090909091,
+      "macro_mrr_at_3": 0.9090909090909091,
+      "supported_questions": 11,
+      "excluded_no_gold_questions": 4,
+      "measured_attempts": 75,
+      "failed_attempts": 0,
+      "median_ms": 0.6337,
+      "p95_ms": 0.9264,
+      "foreign_model_ids": 0,
+      "wrong_version_ids": 0,
+      "supported_latency_samples": 55,
+      "unknown_ranked_ids": 0
+    },
+    "bge_m3_filtered": {
+      "macro_hit_at_1": 1,
+      "macro_recall_at_3": 1,
+      "macro_mrr_at_3": 1,
+      "supported_questions": 11,
+      "excluded_no_gold_questions": 4,
+      "measured_attempts": 75,
+      "failed_attempts": 0,
+      "median_ms": 316.2207,
+      "p95_ms": 365.0488,
+      "foreign_model_ids": 0,
+      "wrong_version_ids": 0,
+      "supported_latency_samples": 55,
+      "unknown_ranked_ids": 0
+    },
+    "bge_m3_filtered_reranker": {
+      "macro_hit_at_1": 1,
+      "macro_recall_at_3": 1,
+      "macro_mrr_at_3": 1,
+      "supported_questions": 11,
+      "excluded_no_gold_questions": 4,
+      "measured_attempts": 75,
+      "failed_attempts": 0,
+      "median_ms": 6006.4974,
+      "p95_ms": 9531.8831,
+      "foreign_model_ids": 0,
+      "wrong_version_ids": 0,
+      "supported_latency_samples": 55,
+      "unknown_ranked_ids": 0
+    }
+  },
+  "query_count": 15,
+  "corpus_count": 27,
+  "sha256": {
+    "corpus": "aa67c8c134f04507bb68bcc8ab8f6686b505cd8757de318a4e2c0a01bb219853",
+    "queries": "4c1fde0a47fba7b5a0639364d3bb114a937e23beb9d5db5b4d254e11a5aa83e4",
+    "results": "aa9d09b0e1637cf2ee39af6231cbb3b88952f9a358190ed42dc86d81f7226cde"
+  },
+  "errors": [],
+  "matches_published_local_summary": true,
+  "no_gold_semantic_evaluation": false,
+  "source_result_created_at_kst": "2026-10-05T05:41:13.127299+09:00",
+  "models": [
+    {
+      "model_id": "BAAI/bge-m3",
+      "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+      "license": "mit"
+    },
+    {
+      "model_id": "BAAI/bge-reranker-v2-m3",
+      "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+      "license": "apache-2.0"
+    }
+  ],
+  "timing": {
+    "embedding_load_ms": 3444.695300073363,
+    "reranker_load_ms": 1985.382299986668,
+    "index_build_ms": 14486.332100001164,
+    "boundary": "query embedding + exact scope/rank + optional reranker",
+    "rss_scope": "whole combined benchmark process; not method-specific memory",
+    "percentile": "nearest rank",
+    "latency_denominator": "supported-query successful attempts only"
+  },
+  "source_result_path": "C:/Users/user/Documents/ChatGPT/LG공모전/.worktrees/data003-preparation/evals/data003-live/20261005/retrieval-v1/results.json",
+  "verification_scope": "기존 실측 원시 225회 기록·순위·입력 해시를 읽고 독립 재계산; 새 모델 실행0",
+  "limitations": [
+    "27개 사실 요약·15개 수동 작성 개발 질문; 전체 원문 코퍼스 및 독립 최종 평가가 아님",
+    "정답 근거가 있는 11개 질문을 점수와 지연시간 분모로 사용; 무정답4개 질문의 의미적 실패·보류 판단 미평가",
+    "CPU 질의 처리 지연이며 모델 로딩/인덱스 구축 제외; 외부 CPU 부하 미통제",
+    "#13 문서 API 통합과 판단 Agent 성능 미평가",
+    "BM25가 놓친 MW-01은 BGE가 복구; 이 표본에서 재정렬 추가 정확도 이득0; 정식 채택은 PM 평가 후 판정"
+  ]
+}

@@ -1,0 +1,226 @@
+{
+  "task_id": "P2-DATA-002",
+  "stage": 5,
+  "requested_scope_result": "pass",
+  "code_commit": "bbf4e1c1da0106e140c6c7e87f7159e6f0fe3532",
+  "checks": {
+    "relevant_evidence_document_regression": {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_core.py",
+        "-v"
+      ],
+      "cwd": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step5-source-verified",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Lib\\site-packages\\fastapi\\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\ntest_api_is_same_core (test_core.ApiTests.test_api_is_same_core) ... ok\ntest_cors_only_local_web (test_core.ApiTests.test_cors_only_local_web) ... ok\ntest_future_analysis_is_explicitly_not_implemented (test_core.ApiTests.test_future_analysis_is_explicitly_not_implemented) ... ok\ntest_invalid_id_and_empty_result_http_semantics (test_core.ApiTests.test_invalid_id_and_empty_result_http_semantics) ... ok\ntest_bad_limits_and_blank_input (test_core.CoreTests.test_bad_limits_and_blank_input) ... ok\ntest_empty_query_results_differ_from_invalid_identifier (test_core.CoreTests.test_empty_query_results_differ_from_invalid_identifier) ... ok\ntest_missing_evidence_and_cross_model_link_rejected (test_core.CoreTests.test_missing_evidence_and_cross_model_link_rejected) ... ok\ntest_model_filter_does_not_mix_products (test_core.CoreTests.test_model_filter_does_not_mix_products) ... ok\ntest_new_manual_cannot_reference_a_feature_from_another_version (test_core.CoreTests.test_new_manual_cannot_reference_a_feature_from_another_version) ... ok\ntest_public_bootstrap_rejects_private_data (test_core.CoreTests.test_public_bootstrap_rejects_private_data) ... ok\ntest_returns_copies_not_mutable_state (test_core.CoreTests.test_returns_copies_not_mutable_state) ... ok\ntest_review_original_link_and_counts_are_checked (test_core.CoreTests.test_review_original_link_and_counts_are_checked) ... ok\ntest_version_filter_and_missing_version (test_core.CoreTests.test_version_filter_and_missing_version) ... ok\n\n----------------------------------------------------------------------\nRan 13 tests in 0.437s\n\nOK\n",
+      "pinned_source": true
+    },
+    "document_registration_regression": {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_document_registration.py",
+        "-v"
+      ],
+      "cwd": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step5-source-verified",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Lib\\site-packages\\fastapi\\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\ntest_auth_and_browser_origin_are_checked_before_upload (test_document_registration.DocumentRegistrationTests.test_auth_and_browser_origin_are_checked_before_upload) ... ok\ntest_build_scope_includes_all_originals_and_rejects_wrong_version (test_document_registration.DocumentRegistrationTests.test_build_scope_includes_all_originals_and_rejects_wrong_version) ... ok\ntest_cross_model_version_and_nonreciprocal_link_rejected (test_document_registration.DocumentRegistrationTests.test_cross_model_version_and_nonreciprocal_link_rejected) ... ok\ntest_missing_and_ambiguous_excerpt_roll_back_registration (test_document_registration.DocumentRegistrationTests.test_missing_and_ambiguous_excerpt_roll_back_registration) ... ok\ntest_missing_original_blocks_store_and_reopened_queries (test_document_registration.DocumentRegistrationTests.test_missing_original_blocks_store_and_reopened_queries) ... ok\ntest_original_registration_persists_and_repeat_is_idempotent (test_document_registration.DocumentRegistrationTests.test_original_registration_persists_and_repeat_is_idempotent) ... ok\ntest_public_source_is_preserved_and_demo_policy_is_unchanged (test_document_registration.DocumentRegistrationTests.test_public_source_is_preserved_and_demo_policy_is_unchanged) ... ok\ntest_scope_change_and_missing_extractor_are_explicit_failures (test_document_registration.DocumentRegistrationTests.test_scope_change_and_missing_extractor_are_explicit_failures) ... ok\ntest_tampered_original_blocks_store_and_reopened_queries (test_document_registration.DocumentRegistrationTests.test_tampered_original_blocks_store_and_reopened_queries) ... ok\ntest_wrong_document_bytes_cannot_be_registered (test_document_registration.DocumentRegistrationTests.test_wrong_document_bytes_cannot_be_registered) ... ok\n\n----------------------------------------------------------------------\nRan 10 tests in 0.381s\n\nOK\n",
+      "pinned_source": true
+    },
+    "pinned_contracts": {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "scripts/check_contracts.py"
+      ],
+      "cwd": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step5-source-verified",
+      "exit_code": 0,
+      "stdout": "{\"status\": \"pass\", \"definitions\": 30, \"models\": 5, \"reviews\": 36, \"planning_requests\": 3, \"analysis_implemented\": false}\n",
+      "stderr": "",
+      "pinned_source": true
+    },
+    "pinned_agent_rules": {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "cwd": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step5-source-verified",
+      "exit_code": 0,
+      "stdout": "PASS: AGENTS.md and CLAUDE.md are byte-identical\n",
+      "stderr": "",
+      "pinned_source": true
+    },
+    "pinned_phase2": {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "scripts/phase2.py",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step5-source-verified",
+      "exit_code": 0,
+      "stdout": "{\n  \"valid\": true,\n  \"errors\": [],\n  \"meaning\": \"record structure/evidence integrity only\",\n  \"legacy\": \"stale\"\n}\n",
+      "stderr": "",
+      "pinned_source": true
+    },
+    "own_lint": {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "ruff",
+        "check",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\data\\research\\P2-DATA-002-step5-20261005\\run_search.py",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\data\\research\\P2-DATA-002-step5-20261005\\finish_checks.py"
+      ],
+      "cwd": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026",
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "pinned_source": false
+    },
+    "current_contracts": {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "scripts/check_contracts.py"
+      ],
+      "cwd": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026",
+      "exit_code": 0,
+      "stdout": "{\"status\": \"pass\", \"definitions\": 30, \"models\": 5, \"reviews\": 36, \"planning_requests\": 3, \"analysis_implemented\": false}\n",
+      "stderr": "",
+      "pinned_source": false
+    },
+    "current_agent_rules": {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "cwd": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026",
+      "exit_code": 0,
+      "stdout": "PASS: AGENTS.md and CLAUDE.md are byte-identical\n",
+      "stderr": "",
+      "pinned_source": false
+    },
+    "current_phase2": {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "scripts/phase2.py",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026",
+      "exit_code": 0,
+      "stdout": "{\n  \"valid\": true,\n  \"errors\": [],\n  \"meaning\": \"record structure/evidence integrity only\",\n  \"legacy\": \"stale\"\n}\n",
+      "stderr": "",
+      "pinned_source": false
+    },
+    "diff_whitespace": {
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "warning: in the working copy of 'docs/작업근거/신진하.md', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'docs/작업기록/신진하.md', CRLF will be replaced by LF the next time Git touches it\n"
+    }
+  },
+  "baseline_full_regression": {
+    "argv": [
+      ".venv/Scripts/python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-v"
+    ],
+    "cwd": "tmp/data002-step5-source-verified",
+    "code_commit": "bbf4e1c1da0106e140c6c7e87f7159e6f0fe3532",
+    "exit_code": 124,
+    "timed_out": true,
+    "timeout_seconds": 240,
+    "stdout": "",
+    "stderr": "subprocess.TimeoutExpired: unittest discover timed out after 240 seconds. The first finisher did not preserve the captured partial test output; individual test completion and failures cannot be inferred.",
+    "pinned_source": true,
+    "whole_suite_passed": false,
+    "full_test_count_verified": false,
+    "observation_source": "Actual unified exec72840 completion output from first finish_checks.py execution",
+    "previous_finisher_snapshot": "executed-finisher.py.txt",
+    "previous_STEP34_485_failures_preserved_elsewhere": true,
+    "repeat_full_suite": false,
+    "reason": "No common implementation changed; stage5 actual HTTP/trace run passed. Preserve shared baseline timeout and rerun only relevant verification/report generation.",
+    "reused_actual_evidence": "data\\research\\P2-DATA-002-step5-20261005\\runs\\verified\\baseline-first-timeout.json",
+    "reused_evidence_sha256": "dce7da34550143fa02b7a7279f63c3386d1c4418fdb16e77a83391c98075d24f"
+  },
+  "whole_suite_passed": false,
+  "project_status_cli_read": {
+    "argv": [
+      "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "scripts/project_report.py",
+      "status",
+      "--member",
+      "신진하"
+    ],
+    "cwd": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step5-source-verified",
+    "exit_code": 1,
+    "stdout": "{\"ok\": false, \"error\": \"[WinError 2] 지정된 파일을 찾을 수 없습니다\"}\n",
+    "stderr": "",
+    "pinned_source": true
+  },
+  "browser_fallback": {
+    "issue13": "Open; owner ginaginaring; Project Todo; DATA001 dependency; completion unchecked",
+    "pm_instruction": "PM-20261005-DATA-001-CITATION-FIX",
+    "pr74": "Open; PM review pending; observed head5af64e93b1ca413317a91893e530901fc7f5874e",
+    "mutated": false
+  },
+  "execution_report_sha256": "82168d5d69443691587469fc1f026978fec41933dacfdcfa2c988642a0d0b181",
+  "actual_check_count": 220,
+  "actual_HTTP_requests": 122,
+  "runner_sha256": "1fb6156c6da56c7d2a82f25406f6aa36d78ea5526c0a603f6ac7cf8c81fc836e",
+  "finisher_sha256": "e0c53c5695a205ce56b64b72a328d3a3f08b147805f9d2ff04cd6e7822e43395",
+  "formal_task_completion": false,
+  "published": false,
+  "model_calls": 0,
+  "private_evaluation_read": false,
+  "checked_at_kst": "2026-10-05T05:33:07+09:00"
+}

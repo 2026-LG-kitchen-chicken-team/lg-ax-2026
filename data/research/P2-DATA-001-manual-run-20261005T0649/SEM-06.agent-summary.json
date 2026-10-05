@@ -1,0 +1,52 @@
+{
+  "status": "failed",
+  "latency_ms": 68391.0,
+  "orchestration_attempts": 5,
+  "transport_generation_attempts": 5,
+  "verified_completions": 5,
+  "input_tokens": 10297,
+  "output_tokens": 4930,
+  "errors": [
+    {
+      "code": "INVALID_EVIDENCE_ID",
+      "message": "해당 근거 ID가 없습니다.",
+      "details": {
+        "evidence_id": "SEM-001-REVIEW"
+      }
+    },
+    {
+      "code": "VALIDATION_FAILED",
+      "message": "후보 보류 사유의 두 표현이 다릅니다.",
+      "details": {}
+    },
+    {
+      "code": "VALIDATION_FAILED",
+      "message": "후보 보류 사유의 두 표현이 다릅니다.",
+      "details": {}
+    }
+  ],
+  "decision": {
+    "valid": false,
+    "action": "unresolved",
+    "revision_count": 2,
+    "next_revision_count": 2,
+    "rerun_from": null,
+    "violations": [
+      {
+        "code": "VALIDATION_FAILED",
+        "stage": "concepts"
+      }
+    ]
+  },
+  "semantic_reviews": 0,
+  "backend_input_truncation_independently_verified": false,
+  "semantic_quality_independently_graded": false,
+  "case_id": "SEM-06",
+  "raw_result_sha256": "63a751183dd666c1a340b729d01c7b75b0e51387eb3f91a6e239074a25b3dc87",
+  "raw_result_kept_private": true,
+  "source_identity_checks": {
+    "count": 2,
+    "unchanged": true
+  },
+  "review_count": 1
+}

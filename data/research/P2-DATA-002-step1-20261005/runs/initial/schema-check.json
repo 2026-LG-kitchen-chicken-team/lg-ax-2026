@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import json,pathlib\nfrom lgax_contracts import validate\np=pathlib.Path(\"data/research/P2-DATA-002-step1-20261005/expected-records.json\")\nd=json.loads(p.read_text(encoding=\"utf-8\"))\ncounts={}\nfor kind,records in [(\"Product\",d[\"csv\"][\"products\"]+[d[\"pdf\"][\"product\"]]),(\"Review\",d[\"csv\"][\"reviews\"]),(\"Evidence\",d[\"csv\"][\"evidence\"]+[d[\"pdf\"][\"expected_excerpt\"]])]:\n    for record in records: validate(kind,record)\n    counts[kind]=len(records)\nprint(json.dumps({\"passed\":True,\"validated_expected_records\":counts,\"service_executed\":False}))\n"
+  ],
+  "exit_code": 0,
+  "stdout": "{\"passed\": true, \"validated_expected_records\": {\"Product\": 6, \"Review\": 36, \"Evidence\": 37}, \"service_executed\": false}\n",
+  "stderr": ""
+}

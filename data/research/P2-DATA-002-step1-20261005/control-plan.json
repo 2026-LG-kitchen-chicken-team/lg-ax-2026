@@ -1,0 +1,55 @@
+{
+  "task_id": "P2-DATA-002",
+  "stage": 1,
+  "status": "expected_only_not_executed_against_service",
+  "cases": [
+    {
+      "id": "CSV-SAME-MODEL",
+      "input": {
+        "query": "식품을 모두 옮겨",
+        "model_id": "FRIDGE-A",
+        "document_version": "1.0"
+      },
+      "note": "Use the exact Korean review text in expected-records.json for the positive retrieval test.",
+      "expected": "Return registered review evidence with the same original model/version/row/text."
+    },
+    {
+      "id": "PDF-PAGE-TRACE",
+      "model_id": "T876MEE1H1",
+      "page": 19,
+      "expected": "Return the selected shelf warning and the original PDF source/version/page."
+    },
+    {
+      "id": "CROSS-MODEL",
+      "query_model": "FRIDGE-A",
+      "source_model": "T876MEE1H1",
+      "expected": "Do not accept or return the real-model PDF as FRIDGE-A evidence."
+    },
+    {
+      "id": "CROSS-VERSION",
+      "query_model": "FRIDGE-A",
+      "query_version": "2.0",
+      "source_version": "1.0",
+      "expected": "Do not substitute v1.0 records for the selected v2.0 scope."
+    },
+    {
+      "id": "MISSING-SCOPE",
+      "missing_fields": [
+        "model_id",
+        "document_version",
+        "source_id",
+        "source_kind"
+      ],
+      "expected": "Request missing scope or reject validation; never infer it silently."
+    },
+    {
+      "id": "NOT-MENTIONED",
+      "feature": "자동 세척",
+      "reviewed_pages": [
+        18,
+        19
+      ],
+      "expected": "Not mentioned in the selected pages; no unsupported-product judgement or whole-document absence claim."
+    }
+  ]
+}

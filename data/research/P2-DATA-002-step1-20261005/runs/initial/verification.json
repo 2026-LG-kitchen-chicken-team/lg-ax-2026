@@ -1,0 +1,57 @@
+{
+  "task_id": "P2-DATA-002",
+  "stage": 1,
+  "result": "pass",
+  "execution_kind": "deterministic_preparation",
+  "is_task_completion_evidence": false,
+  "csv_rows": 36,
+  "csv_lossless_roundtrip": true,
+  "original_review_evidence_matches": true,
+  "source_hashes_preserved": {
+    "data/demo/dataset.json": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+    "data/research/P2-DATA-001-real-reference-20261004/reference-pack.json": "cdbc8e8dbcacf6f95d219856ff48f827d9b23a06d0f72d9e7f94d7a0854c8f17",
+    "data/research/R03-fridge-20261004/case-input.json": "d545b21fb0131616bd76f263cff0dffd325c8f1f3613f86adaedf573bf42cc0f",
+    "harness/phase2/tasks/P2-DATA-002.json": "8d7677206bc1ea9f59f92d501d48c4c998082a3de387eda261088edae1a555fb",
+    "packages/contracts/schemas/lgax.schema.json": "d7cf46d9a980b00ad786ec46feaf3d31e4094f56ff0899d8bab59bdf95a9bad5",
+    "packages/core/src/lgax_core/store.py": "211f2dcd55ad28d8273175e5d9410df99aecf64b69338e76ac1b67e5d757ee38"
+  },
+  "pdf_original_hash_matches": true,
+  "model_scopes_separated": true,
+  "private_evaluation_read": false,
+  "harness_task_status": "pending",
+  "schema_check": {
+    "path": "data/research/P2-DATA-002-step1-20261005/runs/initial/schema-check.json",
+    "sha256": "46bed90aa5d69774e2c2d0c8b824b39f89b4b0129f45e6118130f1bc48e56594"
+  },
+  "outputs": [
+    {
+      "path": "data/research/P2-DATA-002-step1-20261005/reviews-v1.0.csv",
+      "sha256": "3c7560aec2d3fa855590baf097b3514aa348ee40a77037c69ef358b413f488b9"
+    },
+    {
+      "path": "data/research/P2-DATA-002-step1-20261005/expected-records.json",
+      "sha256": "dfa281d5ca00c38885666fb978da7fe04fc6ccea492e690fb1f88ecb7656ba00"
+    },
+    {
+      "path": "data/research/P2-DATA-002-step1-20261005/control-plan.json",
+      "sha256": "11f36e725ad9156e99d85d4f0dba4de8c29d947355a65c2258a8b3be981f18c4"
+    },
+    {
+      "path": "data/research/P2-DATA-002-step1-20261005/input-selection.json",
+      "sha256": "c606bbf5d134ed13ff6054226e115cac32a22fd047c8bf4494ce426fb570cd64"
+    }
+  ],
+  "code_commit": "7cc25fba66e4d0f4a19ef9eebbaa9268937ce1c4",
+  "builder": {
+    "path": "data/research/P2-DATA-002-step1-20261005/prepare_inputs.py",
+    "sha256": "795264beecbbdab2d90e2fc46420f2b76939bb7c1f91e18bac2bb0ca1f77b481"
+  },
+  "checked_at_kst": "2026-10-05T03:47:50+09:00",
+  "limitations": [
+    "Preparation only: no ingestion service/parser/API/MCP run or model invocation.",
+    "DATA001 remains an unfinished dependency; DATA002 official status is unchanged.",
+    "Controls are future service expectations, not passed functional tests.",
+    "Real PDF original is local-only; reuse permission and canonical ID assignment require later handling.",
+    "Local pinned code is not claimed to be the current remote main."
+  ]
+}

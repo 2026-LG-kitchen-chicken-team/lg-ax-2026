@@ -96,6 +96,16 @@ def planning_run_fields(execution: Any, payload: dict) -> tuple[dict, dict]:
                 or declared["input_sha256"] != input_digest(terminal)):
             raise DomainError("CONTRACT_MISMATCH", "판단 결과와 실행 상태가 다릅니다.", {})
     if status == "completed":
+        # The deterministic output check cannot replace the Agent's final
+        # (possibly semantic) decision. Both clients must see the same truthful
+        # terminal state, rather than a completed run with a rejected decision.
+        decision = execution.get("decision")
+        if (not isinstance(decision, dict) or decision.get("valid") is not True
+                or decision.get("action") != "accept"
+                or type(decision.get("revision_count")) is not int
+                or decision["revision_count"] != revisions
+                or decision.get("violations") != []):
+            raise DomainError("CONTRACT_MISMATCH", "최종 승인 판단 없이 완료로 저장할 수 없습니다.", {})
         checked = review_judgement(terminal, declared)
         if not checked["valid"] or checked["action"] != "accept":
             raise DomainError("CONTRACT_MISMATCH", "검사를 통과하지 않은 판단을 완료로 저장할 수 없습니다.", {})

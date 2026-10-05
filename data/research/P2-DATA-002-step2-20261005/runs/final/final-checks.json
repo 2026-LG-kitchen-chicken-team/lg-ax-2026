@@ -1,0 +1,161 @@
+{
+  "task_id": "P2-DATA-002",
+  "stage": 2,
+  "result": "pass",
+  "checked_at_kst": "2026-10-05T04:15:35+09:00",
+  "checks": {
+    "registration_fixture_tests": {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_document_registration.py",
+        "-v"
+      ],
+      "cwd": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step2-source-verified",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Lib\\site-packages\\fastapi\\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\ntest_auth_and_browser_origin_are_checked_before_upload (test_document_registration.DocumentRegistrationTests.test_auth_and_browser_origin_are_checked_before_upload) ... ok\ntest_build_scope_includes_all_originals_and_rejects_wrong_version (test_document_registration.DocumentRegistrationTests.test_build_scope_includes_all_originals_and_rejects_wrong_version) ... ok\ntest_cross_model_version_and_nonreciprocal_link_rejected (test_document_registration.DocumentRegistrationTests.test_cross_model_version_and_nonreciprocal_link_rejected) ... ok\ntest_missing_and_ambiguous_excerpt_roll_back_registration (test_document_registration.DocumentRegistrationTests.test_missing_and_ambiguous_excerpt_roll_back_registration) ... ok\ntest_original_registration_persists_and_repeat_is_idempotent (test_document_registration.DocumentRegistrationTests.test_original_registration_persists_and_repeat_is_idempotent) ... ok\ntest_public_source_is_preserved_and_demo_policy_is_unchanged (test_document_registration.DocumentRegistrationTests.test_public_source_is_preserved_and_demo_policy_is_unchanged) ... ok\ntest_scope_change_and_missing_extractor_are_explicit_failures (test_document_registration.DocumentRegistrationTests.test_scope_change_and_missing_extractor_are_explicit_failures) ... ok\ntest_wrong_document_bytes_cannot_be_registered (test_document_registration.DocumentRegistrationTests.test_wrong_document_bytes_cannot_be_registered) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 0.546s\n\nOK\n",
+      "pinned_code": true
+    },
+    "CSV_boundary_fixture_tests": {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_data001_connections.py",
+        "-v"
+      ],
+      "cwd": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step2-source-verified",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "test_changed_preserved_original_blocks_reads (test_data001_connections.ConnectionBoundaryTests.test_changed_preserved_original_blocks_reads) ... ok\ntest_document_adapter_keeps_scope_and_detects_later_dataset_changes (test_data001_connections.ConnectionBoundaryTests.test_document_adapter_keeps_scope_and_detects_later_dataset_changes) ... ok\ntest_duplicate_review_and_missing_review_fail_closed (test_data001_connections.ConnectionBoundaryTests.test_duplicate_review_and_missing_review_fail_closed) ... ok\ntest_original_is_parsed_and_retained_across_repository_reopen (test_data001_connections.ConnectionBoundaryTests.test_original_is_parsed_and_retained_across_repository_reopen) ... ok\ntest_other_model_version_kind_and_row_are_rejected_before_persistence (test_data001_connections.ConnectionBoundaryTests.test_other_model_version_kind_and_row_are_rejected_before_persistence) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.546s\n\nOK\n",
+      "pinned_code": true
+    },
+    "runner_lint": {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "ruff",
+        "check",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\data\\research\\P2-DATA-002-step2-20261005\\run_registration.py",
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\data\\research\\P2-DATA-002-step2-20261005\\finish_checks.py"
+      ],
+      "cwd": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026",
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "pinned_code": false
+    },
+    "agent_rules": {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "cwd": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026",
+      "exit_code": 0,
+      "stdout": "PASS: AGENTS.md and CLAUDE.md are byte-identical\n",
+      "stderr": "",
+      "pinned_code": false
+    },
+    "contracts": {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "scripts/check_contracts.py"
+      ],
+      "cwd": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026",
+      "exit_code": 0,
+      "stdout": "{\"status\": \"pass\", \"definitions\": 30, \"models\": 5, \"reviews\": 36, \"planning_requests\": 3, \"analysis_implemented\": false}\n",
+      "stderr": "",
+      "pinned_code": false
+    },
+    "phase2": {
+      "argv": [
+        "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "scripts/phase2.py",
+        "validate"
+      ],
+      "cwd": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026",
+      "exit_code": 0,
+      "stdout": "{\n  \"valid\": true,\n  \"errors\": [],\n  \"meaning\": \"record structure/evidence integrity only\",\n  \"legacy\": \"stale\"\n}\n",
+      "stderr": "",
+      "pinned_code": false
+    },
+    "diff_whitespace": {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "pinned_code": false
+    }
+  },
+  "project_status_cli_read": {
+    "argv": [
+      "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026\\tmp\\data002-step2-source-verified\\scripts\\project_report.py",
+      "status",
+      "--member",
+      "신진하"
+    ],
+    "cwd": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026",
+    "exit_code": 1,
+    "stdout": "{\"ok\": false, \"error\": \"[WinError 2] 지정된 파일을 찾을 수 없습니다\"}\n",
+    "stderr": "",
+    "pinned_code": false
+  },
+  "status_read_fallback": "Authenticated browser read of Issue12/13, PM MINIMUM-HANDOFF, PR69/ACCEPTED receipt; no board mutation",
+  "formal_task_status": "pending",
+  "registration_report_sha256": "82fca74bef54f8fb5a391d6f448a279aa73ad611001023420cbc79ea07668595",
+  "original_dirty_files_preserved": {
+    "argv": [
+      "git",
+      "-c",
+      "core.quotepath=false",
+      "status",
+      "--short"
+    ],
+    "cwd": "C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\team-lg-ax-2026",
+    "exit_code": 0,
+    "stdout": " M docs/작업근거/신진하.md\n M docs/작업기록/신진하.md\n M harness/phase2/tasks/P2-DATA-001.json\n?? data/research/P2-DATA-002-step1-20261005/\n?? data/research/P2-DATA-002-step2-20261005/\n?? data/research/사례선정_2026-10-04.md\n?? data/research/자료확보현황_2026-10-04.json\n?? data/research/자료확보현황_2026-10-04.md\n",
+    "stderr": "",
+    "pinned_code": false
+  },
+  "limited_to_registration": true,
+  "model_calls": 0,
+  "private_evaluation_read": false
+}
