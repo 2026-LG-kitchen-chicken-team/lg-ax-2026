@@ -47,7 +47,7 @@ function EvidenceDetail({ selected, features }: { selected: Evidence | undefined
       <div><dt>출처 자료</dt><dd className="mono">{selected.source_id}</dd></div>
     </dl>
     <div className="linked-section"><h4>연결된 기능</h4>{selected.feature_ids.length ? <div className="feature-tags">{selected.feature_ids.map(id => <span key={id} title={id}>{features.find(feature => feature.id === id)?.name ?? id}</span>)}</div> : <p>등록된 기능 연결이 없습니다.</p>}</div>
-    <div className="detail-note"><span aria-hidden="true">↳</span><p>이 화면은 등록된 원문을 조회합니다. 불편과 기능의 자동 대조·판단은 아직 연결되지 않았습니다.</p></div>
+    <div className="detail-note"><span aria-hidden="true">↳</span><p>현재 등록된 원문입니다. 저장된 실행이 사용한 원문과 판단은 콘셉트 검토에서 함께 확인하세요.</p></div>
   </aside>;
 }
 
@@ -124,11 +124,11 @@ function RequestView({ data, group, modelId, mode, live }: { data: BootstrapData
   }
 
   const footer = live
-    ? unchanged ? `이전 실행과 같은 요청입니다. 저장하면 같은 요청 회차(${revision})로 다시 기록됩니다.` : continueProject ? `“${live.project!.project.name}” 프로젝트에 변경 요청(요청 회차 ${revision})으로 저장합니다. Agent 분석은 아직 실행되지 않습니다.` : '새 프로젝트와 첫 실행으로 저장합니다. 제품군이나 검토 모델이 바뀌면 새 프로젝트가 됩니다.'
+    ? unchanged ? `이전 실행과 같은 요청입니다. 저장하면 같은 요청 회차(${revision})로 다시 기록됩니다.` : continueProject ? `“${live.project!.project.name}” 프로젝트에 변경 요청(요청 회차 ${revision})으로 저장합니다. 서버의 실행 결과는 저장 후 확인하세요.` : '새 프로젝트와 첫 실행으로 저장합니다. 제품군이나 검토 모델이 바뀌면 새 프로젝트가 됩니다.'
     : mode === 'live' ? '작업실에 연결하면 요청을 저장할 수 있습니다. 지금은 연결 확인만 합니다.' : '현재 요청은 Agent 분석 결과를 생성하지 않습니다.';
 
   return <div className="request-layout"><form className="request-form panel" onSubmit={submit}>
-    <div className="panel-header"><div><p className="eyebrow">PLANNING BRIEF</p><h2>어떤 불편을 개선할까요?</h2></div><span className="state-badge future">Agent 연결 예정</span></div>
+    <div className="panel-header"><div><p className="eyebrow">PLANNING BRIEF</p><h2>어떤 불편을 개선할까요?</h2></div><span className="state-badge">{mode === 'fixture' ? '화면 확인용 예시' : live ? '작업실 연결됨' : '작업실 연결 필요'}</span></div>
     <p className="section-description">고객과 사용 상황을 구체적으로 입력해 기획의 출발점을 정하세요.</p>
     <label className="field-label" htmlFor="planning-prompt">기획 요청</label><textarea id="planning-prompt" rows={4} value={prompt} onChange={event => setPrompt(event.target.value)} />
     <label className="field-label" htmlFor="planning-customer">대상 고객</label><input id="planning-customer" value={customer} onChange={event => setCustomer(event.target.value)} />
@@ -140,7 +140,7 @@ function RequestView({ data, group, modelId, mode, live }: { data: BootstrapData
     <div className="form-footer"><p>{footer}</p><button className="primary-button" type="submit" disabled={!data || busy}>{busy ? '서버 확인 중…' : mode === 'fixture' ? '요청 규격 검사' : live ? unchanged ? '같은 요청 다시 기록' : continueProject ? '변경 요청 저장' : '새 프로젝트로 저장' : '요청 연결 확인'}<ArrowIcon /></button></div>
     {result ? <div className={`inline-message ${['NOT_IMPLEMENTED', 'FIXTURE_ONLY', 'SAVED', 'SAVED_NOT_IMPLEMENTED', 'SAVED_COMPLETED', 'SAVED_HELD', 'NEEDS_INFO'].includes(result.code) ? 'notice' : 'error'}`} role="status"><strong>{result.code === 'NOT_IMPLEMENTED' ? '기획 실행 연결이 준비 중입니다' : result.code === 'FIXTURE_ONLY' ? '요청 규격 확인 완료(전송 안 함)' : result.code.startsWith('SAVED') ? SAVED_TITLE[result.code] ?? '요청 저장 완료' : result.code === 'NEEDS_INFO' ? '확인이 필요한 정보가 있습니다 · 저장하지 않음' : '요청을 처리하지 못했습니다'}</strong><p>{result.message}</p><code>{result.code}</code></div> : null}
     <RequestInsights questions={questions} changes={changes} revision={revision} mode={mode} />
-  </form><aside className="request-guide panel"><p className="eyebrow">WORKFLOW</p><h3>요청에서 기획안까지</h3><ol>{['자료 조회', '니즈 구조화', '기능 대조', '콘셉트 작성', '검토·수정'].map((title, index) => <li key={title}><span>{String(index + 1).padStart(2, '0')}</span><div><strong>{title}</strong><small>{index === 0 ? '원문 조회 구현' : '실행 연결 예정'}</small></div></li>)}</ol><p className="guide-note">최대 3개 후보와 확인할 가정을 제시하고, 근거가 부족하면 보류하는 흐름으로 개발합니다.</p></aside></div>;
+  </form><aside className="request-guide panel"><p className="eyebrow">WORKFLOW</p><h3>요청에서 기획안까지</h3><ol>{['자료 조회', '니즈 구조화', '기능 대조', '콘셉트 작성', '검토·수정'].map((title, index) => <li key={title}><span>{String(index + 1).padStart(2, '0')}</span><div><strong>{title}</strong><small>{index === 0 ? '원문과 자료 범위 확인' : '저장된 실행 기록에서 확인'}</small></div></li>)}</ol><p className="guide-note">분석이 연결된 서버는 최대 3개 후보를 생성하고 근거가 부족하면 보류합니다. 요청만 저장된 경우에는 분석 결과로 표시하지 않습니다.</p></aside></div>;
 }
 
 // The save heading says what the server actually did: stored a request only, or ran the judgement to a terminal state.
@@ -194,7 +194,7 @@ export default function App() {
   const selectedRun = runs.find(item => item.run.id === runChoice) ?? runs[runs.length - 1];
   // A stored planning run quotes the sources and features its judgement actually received, ahead of the bootstrap data.
   const runScope = runSources(selectedRun, (data?.features ?? []) as unknown as Feature[], data?.evidence ?? []);
-  const planningProps = { mode, runs, selected: selectedRun, onSelect: selectRun, features: runScope.features, evidence: runScope.evidence };
+  const planningProps = { mode, runs, selected: selectedRun, onSelect: selectRun, features: runScope.features, evidence: runScope.evidence, currentEvidence: data?.evidence };
   const originalRequest = mode === 'fixture' ? FIXTURE_ORIGINAL_REQUEST : workspace.project?.project.request as PlanningRequest | undefined;
   // Expiry/reconnect must discard private form state. Connected project creation also changes scopeVersion,
   // but must keep its in-flight form mounted so the successful save result and entered request remain visible.
@@ -349,11 +349,11 @@ export default function App() {
           <div className="evidence-columns"><div className="evidence-list"><div className="list-caption"><span>원문과 제품 기능</span><span>{visibleEvidence.length}개 근거</span></div>
             {active.status === 'loading' ? <div className="loading-state" role="status"><div className="skeleton" /><div className="skeleton" /><div className="skeleton" /><p>공통 API에서 근거를 불러오는 중입니다…</p></div> : !data ? <EmptyState title="API 연결이 필요합니다" text="서버가 연결되면 실제 자료와 근거를 확인할 수 있습니다." /> : !visibleEvidence.length ? <EmptyState title={allModelEvidence.length ? '검색 결과가 없습니다' : '등록된 근거가 없습니다'} text={allModelEvidence.length ? '검색어 또는 자료 유형을 바꿔 보세요.' : '이 모델에 리뷰와 제품 문서를 등록하면 여기에 표시됩니다.'} /> : <ul>{visibleEvidence.map(item => <li key={item.id}><button className={`evidence-card ${selected?.id === item.id ? 'selected' : ''}`} aria-pressed={selected?.id === item.id} onClick={() => setSelectedId(item.id)}><div className="evidence-card-top"><SourceBadge type={item.source_type} /><span>{evidenceLocation(item)}</span></div><p>{item.text}</p><div className="evidence-card-bottom"><span>{item.model_id} · {item.document_version}</span><ArrowIcon /></div></button></li>)}</ul>}
           </div><EvidenceDetail selected={selected} features={data?.features ?? []} /></div>
-          <footer className="evidence-footer"><span className={`status-dot ${active.status}`} /><p>{data ? '원문 조회와 모델별 필터가 연결되어 있습니다. 자동 대조·판단은 구현 예정입니다.' : '공통 API가 연결되면 원문을 조회할 수 있습니다. 자동 대조·판단은 구현 예정입니다.'}</p></footer>
+          <footer className="evidence-footer"><span className={`status-dot ${active.status}`} /><p>{data ? '원문과 모델별 필터를 조회합니다. 판단에 사용된 근거는 각 저장된 실행에서 확인하세요.' : '자료 API가 연결되면 원문을 조회할 수 있습니다.'}</p></footer>
         </section> : view === 'request' ? <RequestView key={`${group}-${mode}-${formSeed}-${requestConnectionKey}`} data={data} group={group} modelId={modelId} mode={mode} live={mode === 'live' && workspace.connection === 'connected' ? { project: workspace.project, latest: workspace.runs[workspace.runs.length - 1] ?? null, save: (request, continueProject) => {
           invalidateMeasurements(); setRunChoice('');
           return continueProject ? workspace.addRun(request, workspace.runs[workspace.runs.length - 1]?.run.id ?? null) : workspace.saveRequest(request, data?.products ?? []);
-        } } : undefined} /> : selectedRun && originalRequest && view === 'concepts' ? <ConceptsView {...planningProps} selected={selectedRun} /> : selectedRun && originalRequest ? <HistoryView {...planningProps} selected={selectedRun} original={originalRequest} onRerun={rerun} busy={workspace.busy} measure={measure} /> : view === 'concepts' ? <section className="panel future-panel"><EmptyState type="future" title="근거를 갖춘 콘셉트를 이곳에서 검토합니다" text="콘셉트 생성과 중복·인용 검사는 아직 연결되지 않았습니다. 생성된 결과가 있을 때 후보별 차별점, 요구사항, 확인할 가정을 함께 표시할 예정입니다." /><div className="future-columns"><div><strong>콘셉트 비교</strong><span>최대 3개 타당한 후보 · 근거 부족 시 보류</span></div><div><strong>요구사항 확인</strong><span>연결된 원문 · 남은 불편 · 검토할 조건</span></div><div><strong>기획자 검토</strong><span>선택 · 수정 요청 · 추가 조건</span></div></div></section> : <section className="panel future-panel"><EmptyState type="future" title="아직 실행·수정 이력이 없습니다" text="Agent 실행과 기록 저장이 연결되면 동일 기획의 변경 전후, 사용한 자료 버전, 재검토 이유를 확인할 수 있습니다." /><div className="history-plan"><span>기획 요청</span><ArrowIcon /><span>근거·판단 기록</span><ArrowIcon /><span>새 자료로 재검토</span><ArrowIcon /><span>변경 전후 비교</span></div></section>}
+        } } : undefined} /> : selectedRun && originalRequest && view === 'concepts' ? <ConceptsView {...planningProps} selected={selectedRun} /> : selectedRun && originalRequest ? <HistoryView {...planningProps} selected={selectedRun} original={originalRequest} onRerun={rerun} busy={workspace.busy} measure={measure} /> : view === 'concepts' ? <section className="panel future-panel"><EmptyState type="future" title="근거를 갖춘 콘셉트를 이곳에서 검토합니다" text="작업실에 연결하고 기획 요청을 저장하면 실행 결과를 확인할 수 있습니다. 요청만 저장됐거나 분석이 보류된 경우에는 후보를 표시하지 않습니다." /><div className="future-columns"><div><strong>콘셉트 비교</strong><span>최대 3개 타당한 후보 · 근거 부족 시 보류</span></div><div><strong>요구사항 확인</strong><span>연결된 원문 · 남은 불편 · 검토할 조건</span></div><div><strong>기획자 검토</strong><span>선택 · 수정 요청 · 추가 조건</span></div></div></section> : <section className="panel future-panel"><EmptyState type="future" title="아직 실행·수정 이력이 없습니다" text="작업실에 연결하면 동일 기획의 저장된 실행과 변경 전후, 사용한 자료 버전을 확인할 수 있습니다." /><div className="history-plan"><span>기획 요청</span><ArrowIcon /><span>근거·판단 기록</span><ArrowIcon /><span>새 자료로 재검토</span><ArrowIcon /><span>변경 전후 비교</span></div></section>}
         {mode === 'live' && view === 'evidence' && workspace.connection === 'connected' ? <ServerEvidenceSearch workspace={workspace} modelId={modelId} /> : null}
         {mode === 'live' && (view === 'concepts' || view === 'history') && !selectedRun ? <p className="hint">{workspace.connection === 'connected' ? '저장된 실행 기록이 없습니다. 기획 요청에서 작업실에 저장하면 여기에 표시됩니다.' : '작업실 서버에 연결하면 저장된 실제 실행 기록을 불러옵니다. 화면 예시는 상단의 계약 fixture에서 볼 수 있습니다.'}</p> : null}
         <footer className="page-footer"><span>키친에서치킨먹기 · LG AX 2026</span><span>반복 가능한 상품기획을 위한 첫 작업 공간</span></footer>
