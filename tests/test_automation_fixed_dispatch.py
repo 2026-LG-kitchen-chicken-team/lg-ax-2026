@@ -32,7 +32,8 @@ class FixedBroker(fixture.Broker):
         self.policy = fixture.policy()
         self.config = {"allow_fixed_ready_dispatch": True, "released_capabilities": [fixture.CAP]}
         self.orchestration = FixedOrchestration(
-            plan={"capabilities": deepcopy(self.policy["capabilities"])}, correction_plan=None)
+            plan={"capabilities": deepcopy(self.policy["capabilities"])}, correction_plan=None,
+            correction_registry=None, development_registry=None)
         self.collect_calls = []
         self.collection_busy = False
 
