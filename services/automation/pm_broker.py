@@ -58,9 +58,13 @@ SHA = re.compile(r"[0-9a-f]{40}")
 ACTION_ID = re.compile(r"pm-[0-9a-f]{40}")
 MAX_SOURCE = 256 * 1024 * 1024
 REVIEW_SCHEMA = {"type": "object", "additionalProperties": False,
-    "properties": {"outcome": {"type": "string", "enum": ["approve", "request_changes"]},
-                   "reason": {"type": "string"},
-                   "findings": {"type": "array", "items": {"type": "string"}}},
+    "properties": {"outcome": {"type": "string", "enum": ["approve", "request_changes"],
+                               "description": "Approve the bounded implementation unit only when no blocking defect exists."},
+                   "reason": {"type": "string", "minLength": 1, "maxLength": 2000,
+                              "description": "Review rationale, including observations and separate remaining parent acceptance."},
+                   "findings": {"type": "array", "maxItems": 30,
+                                "description": "Blocking code or acceptance defects only. MUST be [] when outcome is approve. Put informational notes and parent-completion limits in reason.",
+                                "items": {"type": "string", "minLength": 1, "maxLength": 2000}}},
     "required": ["outcome", "reason", "findings"]}
 
 
@@ -692,15 +696,61 @@ class TrustedPMBroker:
         return proof
 
     def _review(self, pr, capability, implementation_session_id):
-        key = fingerprint({"review_head": pr["head"], "base": pr["base"], "capability": capability})
+        key, supersedes = self._review_key(pr, capability, implementation_session_id)
         if key in self.state["proofs"]:
             return self.state["proofs"][key]
         reserve = getattr(self.driver, "reserve_profile", None)
         with reserve() if reserve else nullcontext():
-            return self._review_reserved(pr, capability, implementation_session_id)
+            return self._review_reserved(pr, capability, implementation_session_id, key=key, supersedes=supersedes)
 
-    def _review_reserved(self, pr, capability, implementation_session_id):
-        key = fingerprint({"review_head": pr["head"], "base": pr["base"], "capability": capability})
+    def _review_key(self, pr, capability, implementation_session_id):
+        """An operator-pinned one-session repair never overwrites a prior review.
+
+        A known contradictory legacy approve/findings receipt is the only
+        eligible source. Unknown cost, rejection, a changed head/base, and
+        normal approval remain outside this explicit migration capability.
+        """
+        original = fingerprint({"review_head": pr["head"], "base": pr["base"], "capability": capability})
+        revision = self.config.get("review_contract_revision")
+        if revision is None:
+            return original, None
+        if (not isinstance(revision, dict) or set(revision) != {"version", "targets"} or
+                type(revision["version"]) is not int or revision["version"] != 2 or not isinstance(revision["targets"], list) or
+                not 1 <= len(revision["targets"]) <= 10):
+            raise PMError("review contract revision requires an explicit bounded operator pin")
+        identities = set()
+        selected = None
+        for target in revision["targets"]:
+            if (not isinstance(target, dict) or set(target) != {"pr_number", "head", "base", "prior_evidence_sha256"} or
+                    type(target["pr_number"]) is not int or target["pr_number"] < 1 or
+                    any(not isinstance(target[name], str) or not SHA.fullmatch(target[name]) for name in ("head", "base")) or
+                    not isinstance(target["prior_evidence_sha256"], str) or
+                    not DIGEST.fullmatch(target["prior_evidence_sha256"])):
+                raise PMError("review contract target must pin its exact original receipt")
+            identity = (target["pr_number"], target["head"], target["base"])
+            if identity in identities:
+                raise PMError("duplicate review contract revision target")
+            identities.add(identity)
+            if identity == (pr["number"], pr["head"], pr["base"]):
+                selected = target
+        if selected is None:
+            return original, None
+        prior = self.state["proofs"].get(original, {})
+        if (prior.get("verified") is not True or prior.get("collector") != "trusted_pm" or
+                prior.get("head") != pr["head"] or prior.get("base") != pr["base"] or
+                prior.get("outcome") != "approve" or not isinstance(prior.get("findings"), list) or not prior["findings"] or
+                prior.get("independent") is not True or prior.get("reviewer") not in self.policy["independent_reviewers"] or
+                prior.get("implementation_session_id") != implementation_session_id or
+                not IDENTIFIER.fullmatch(prior.get("reviewer_session_id", "")) or
+                prior["reviewer_session_id"] == implementation_session_id or
+                prior.get("capability_fingerprint") != fingerprint(capability) or
+                prior.get("evidence_sha256") != selected["prior_evidence_sha256"]):
+            raise PMError("review contract revision cannot retry unknown usage or unpinned evidence")
+        return fingerprint({"review_head": pr["head"], "base": pr["base"], "capability": capability,
+                            "review_contract_version": 2, "supersedes": selected["prior_evidence_sha256"]}), selected["prior_evidence_sha256"]
+
+    def _review_reserved(self, pr, capability, implementation_session_id, *, key=None, supersedes=None):
+        key = key or fingerprint({"review_head": pr["head"], "base": pr["base"], "capability": capability})
         if key in self.state["proofs"]:
             return self.state["proofs"][key]
         day = time.strftime("%Y-%m-%d", time.gmtime())
@@ -733,6 +783,10 @@ class TrustedPMBroker:
         self.save()
         raw = self._fixed_diff(pr["base"], pr["head"])
         context = {"purpose": "Independent fixed-commit code review; do not trust developer claims.",
+                   "review_contract": {"version": 2, "findings": "blocking_defects_only; approve MUST have []",
+                       "informational_notes": "Use reason for passing observations and validation limitations.",
+                       "acceptance_scope": "Review this fixed implementation unit. Parent Done and independent full-product acceptance remain separate gates; do not invent a defect solely because they are pending."},
+                   "completes_task": capability.get("completes_task", False),
                    "head": pr["head"], "base": pr["base"], "acceptance": capability["acceptance"],
                    "scope": capability["allowed_paths"], "diff": raw.decode("utf-8", errors="strict")}
         used = None
@@ -772,6 +826,13 @@ class TrustedPMBroker:
                  "implementation_session_id": implementation_session_id, "outcome": value["outcome"],
                  "findings": value["findings"], "evidence_sha256": fingerprint(record),
                  "capability_fingerprint": fingerprint(capability)}
+        proof["review_contract_version"] = 2
+        if supersedes:
+            proof["supersedes_review_evidence_sha256"] = supersedes
+        if value["outcome"] == "approve" and value["findings"]:
+            # A new contradictory output is a known measured failed review,
+            # never an approval or a reason to retry this immutable key.
+            proof.update(verified=False, outcome="invalid", reason_code="approve_has_blocking_findings")
         self.state["proofs"][key] = proof
         self.save()
         return proof
@@ -846,16 +907,19 @@ class TrustedPMBroker:
                             IDENTIFIER.fullmatch(review.get("implementation_session_id", "")) is not None and
                             review.get("implementation_session_id") == unit["implementation_session_id"] and
                             review.get("reviewer_session_id") != unit["implementation_session_id"])
-                        if not rejected:
+                        if (not rejected and review.get("verified") is True and
+                                review.get("outcome") == "approve" and review.get("findings") == []):
                             pr["integration"] = self._integration(pr, capability)
                 elif pr["state"] == "merged" and pr["merged_commit"] == main:
                     pr["postmerge"] = self._integration(pr, capability, postmerge=True)
             # Already collected exact evidence is available during mutation's no-call reread.
-            for proof in self.state["proofs"].values():
+            review_key, _ = self._review_key(pr, capability, unit["implementation_session_id"])
+            for proof_key, proof in self.state["proofs"].items():
                 if (proof.get("head") == pr["head"] and proof.get("base") == pr["base"] and
                         proof.get("capability_fingerprint") == fingerprint(capability)):
                     if "reviewer_session_id" in proof:
-                        pr.setdefault("independent_review", proof)
+                        if proof_key == review_key:
+                            pr.setdefault("independent_review", proof)
                     elif proof.get("commit") == pr.get("merged_commit"):
                         pr.setdefault("postmerge", proof)
                     elif proof.get("commit") == pr["head"]:

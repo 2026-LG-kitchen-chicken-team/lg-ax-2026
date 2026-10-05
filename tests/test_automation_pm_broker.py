@@ -277,6 +277,77 @@ class BrokerTests(unittest.TestCase):
         self.assertEqual(self.broker.state["budgets"][day]["calls"], 1)
         self.assertEqual(self.broker.state["budgets"][day]["tokens"], 24)
 
+    def test_operator_pinned_review_contract_repair_preserves_original_and_runs_once(self):
+        self.add_unit()
+        pr = self.broker.observe(collect=False)["prs"][0]
+        capability = self.broker.policy["capabilities"][CAP]
+        implementation = self.broker._unit(pr["number"])["implementation_session_id"]
+        original_key = fingerprint({"review_head": HEAD, "base": BASE, "capability": capability})
+        prior = self.broker._review(pr, capability, implementation)
+        prior.update(findings=["Informational note from the original inconsistent contract"],
+                     evidence_sha256="f" * 64)
+        original = deepcopy(prior)
+        before_budget = deepcopy(self.broker.state["budgets"])
+        # No explicit deployment pin means no repair or generic re-review.
+        self.assertEqual(self.broker._review(pr, capability, implementation), original)
+        self.broker.config["review_contract_revision"] = {"version": 2, "targets": [{
+            "pr_number": pr["number"], "head": HEAD, "base": BASE, "prior_evidence_sha256": "f" * 64}]}
+        contexts = []
+        def fixed_review(context, *_args, **_kwargs):
+            contexts.append(deepcopy(context))
+            return {"session_id": "operator-repair-fresh-independent", "usage": {"input_tokens": 22, "output_tokens": 5},
+                    "result": {"outcome": "approve", "reason": "Code unit accepted; parent product acceptance remains separate", "findings": []}}
+        self.broker.driver.call = fixed_review
+        repaired = self.broker._review(pr, capability, implementation)
+        self.assertTrue(repaired["verified"])
+        self.assertEqual(repaired["supersedes_review_evidence_sha256"], "f" * 64)
+        self.assertEqual(self.broker.state["proofs"][original_key], original)
+        self.assertEqual(self.broker._review(pr, capability, implementation), repaired)
+        observed = self.broker.observe(collect=False)["prs"][0]["independent_review"]
+        self.assertEqual(observed, repaired)
+        self.assertEqual(len(contexts), 1)
+        self.assertFalse(contexts[0]["completes_task"])
+        self.assertIn("Parent Done", contexts[0]["review_contract"]["acceptance_scope"])
+        day = time.strftime("%Y-%m-%d", time.gmtime())
+        self.assertEqual(self.broker.state["budgets"][day]["calls"], before_budget[day]["calls"] + 1)
+        self.assertEqual(self.broker.state["budgets"][day]["tokens"], before_budget[day]["tokens"] + 27)
+
+    def test_review_contract_repair_cannot_retry_unknown_or_change_pinned_receipt(self):
+        self.add_unit()
+        pr = self.broker.observe(collect=False)["prs"][0]
+        cap = self.broker.policy["capabilities"][CAP]
+        impl = self.broker._unit(pr["number"])["implementation_session_id"]
+        key = fingerprint({"review_head": HEAD, "base": BASE, "capability": cap})
+        original = deepcopy(self.broker._review(pr, cap, impl))
+        for update in ({"verified": False, "outcome": "unknown"},
+                       {"outcome": "request_changes"}, {"findings": []},
+                       {"evidence_sha256": "e" * 64}, {"implementation_session_id": "other-worker"}):
+            prior = {**deepcopy(original), "findings": ["Original informational note"],
+                     "evidence_sha256": "f" * 64, **update}
+            self.broker.state["proofs"][key] = prior
+            self.broker.config["review_contract_revision"] = {"version": 2, "targets": [{
+                "pr_number": pr["number"], "head": HEAD, "base": BASE, "prior_evidence_sha256": "f" * 64}]}
+            before = deepcopy(self.broker.state)
+            with self.subTest(update=update), self.assertRaises(PMError):
+                self.broker._review(pr, cap, impl)
+            self.assertEqual(self.broker.state, before)
+
+    def test_new_contradictory_approval_retains_measured_failure_without_repeat(self):
+        self.add_unit()
+        pr = self.broker.observe(collect=False)["prs"][0]
+        cap = self.broker.policy["capabilities"][CAP]
+        self.broker.driver.call = lambda *_args, **_kwargs: {
+            "session_id": "contradictory-review-measured", "usage": {"input_tokens": 30, "output_tokens": 7},
+            "result": {"outcome": "approve", "reason": "Contradictory fixture", "findings": ["A blocking defect"]}}
+        proof = self.broker._review(pr, cap, "implementation-session")
+        self.assertFalse(proof["verified"])
+        self.assertEqual(proof["outcome"], "invalid")
+        self.assertEqual(proof["reason_code"], "approve_has_blocking_findings")
+        self.broker.driver.call = lambda *_args, **_kwargs: self.fail("immutable failed review retried")
+        self.assertEqual(self.broker._review(pr, cap, "implementation-session"), proof)
+        day = time.strftime("%Y-%m-%d", time.gmtime())
+        self.assertEqual(self.broker.state["budgets"][day]["tokens"], 37)
+
     def test_review_failure_after_reservation_still_exhausts_unknown_usage(self):
         self.add_unit()
         pr = self.broker.observe(collect=False)["prs"][0]

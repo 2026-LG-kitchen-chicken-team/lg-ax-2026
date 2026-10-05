@@ -566,6 +566,30 @@ class AutonomousPMTests(unittest.TestCase):
         self.assertFalse(any(item["action"] in {"assign", "merge"} for item in eligible))
         self.assertTrue(any(item["action"] == "request_changes" for item in eligible))
 
+    def test_context_explains_stale_base_and_review_contract_without_parent_done_claim(self):
+        state = self.broker.state
+        state["capabilities_ready"] = []
+        state["prs"][0]["independent_review"].update(findings=["Informational old review note"])
+        state["parent_completion"] = {"main_commit": BASE, "tasks": {TASK: {"state": "waiting_evidence"}}}
+        context = self.pm._context(state)
+        blocked = [row for row in context["blocked_actions"] if row["action"] == "merge"]
+        self.assertEqual(blocked[0]["reason"], "independent exact-head review is missing or has findings")
+        self.assertFalse(context["capabilities"][CAP]["completes_task"])
+        self.assertIn("does not require parent", context["instructions"])
+        state["prs"][0]["base"] = MERGED
+        context = self.pm._context(state)
+        blocked = [row for row in context["blocked_actions"] if row["action"] == "merge"]
+        self.assertEqual(blocked[0]["reason"], "merge requires reviewed approved exact current main/base")
+        self.assertTrue(any(row["action"] == "request_changes" for row in context["eligible_actions"]))
+
+    def test_partial_merge_does_not_require_parent_evidence_but_preserves_done_gate(self):
+        self.broker.state["parent_completion"] = {"tasks": {TASK: {"state": "waiting_evidence"}}}
+        self.response = decision("merge")
+        self.assertEqual(self.pm.tick()["state"], "applied")
+        self.assertEqual(self.broker.actions[0][1]["action"], "merge")
+        self.assertNotIn("formal_done", self.broker.actions[0][1])
+        self.assertEqual(self.broker.state["formal_snapshot"]["tasks"][TASK]["status"], "blocked")
+
     def test_accepted_logical_unit_is_not_redispatched(self):
         self.broker.state["jobs"] = [{"task_id": TASK, "capability_id": CAP, "status": "accepted"}]
         with self.assertRaises(PMError):
