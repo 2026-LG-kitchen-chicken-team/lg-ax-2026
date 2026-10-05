@@ -108,6 +108,12 @@ describe('wrong or inconsistent links are held, not guessed', () => {
     const draft: RunSnapshot = { ...second, run: { ...second.run, status: 'not_implemented', concepts: [] } };
     expect(buildRevisionTimeline([first, draft], draft.run.id, original).entries[1].concept_changes).toBeNull();
   });
+  it.each(['pending', 'running'] as const)('does not turn an empty %s run into removed candidates', status => {
+    const waiting: RunSnapshot = { ...second, output: null, run: { ...second.run, status, concepts: [] } };
+    expect(buildRevisionTimeline([first, waiting], waiting.run.id, original).entries[1].concept_changes).toBeNull();
+    const waitingParent: RunSnapshot = { ...first, output: null, run: { ...first.run, status, concepts: [] } };
+    expect(buildRevisionTimeline([waitingParent, second], second.run.id, original).entries[1].concept_changes).toBeNull();
+  });
 });
 
 describe('RevisionTimeline renders in the DOM', () => {

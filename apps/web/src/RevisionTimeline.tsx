@@ -31,6 +31,11 @@ export interface RevisionEntry {
 
 export interface RevisionTimelineResult { entries: RevisionEntry[]; problems: string[] }
 
+/** An empty in-progress snapshot is not a decision that removed the previous candidates. */
+export function isIntermediateRun(snapshot: RunSnapshot): boolean {
+  return snapshot.run.status === 'pending' || snapshot.run.status === 'running';
+}
+
 function dataChanges(before: RunSnapshot, after: RunSnapshot): DataVersionChange {
   const models = [...new Set([...Object.keys(before.document_versions), ...Object.keys(after.document_versions)])].sort();
   const own = (snapshot: RunSnapshot, model: string) => (Object.hasOwn(snapshot.document_versions, model) ? snapshot.document_versions[model] : null);
@@ -109,8 +114,8 @@ export function buildRevisionTimeline(runs: RunSnapshot[], selectedId: string, o
     if (hasDataChange(data) || firstDataVersion) causes.push('data_version_change');
     if (!causes.length) causes.push('unchanged_rerun');
     const currentProblems = recordProblems(snapshot);
-    const comparable = !linkProblems.length && !currentProblems.length && snapshot.run.status !== 'not_implemented'
-      && (parent === null || parent.run.status !== 'not_implemented' && !recordProblems(parent).length);
+    const comparable = !linkProblems.length && !currentProblems.length && !isIntermediateRun(snapshot) && snapshot.run.status !== 'not_implemented'
+      && (parent === null || !isIntermediateRun(parent) && parent.run.status !== 'not_implemented' && !recordProblems(parent).length);
     return {
       run_id: snapshot.run.id, previous_run_id: snapshot.previous_run_id, request_revision: snapshot.request_revision, causes,
       request_changes: requestDiff, data_changes: data,

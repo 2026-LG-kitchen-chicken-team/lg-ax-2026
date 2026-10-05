@@ -63,4 +63,16 @@ describe('PM integrated planner screens', () => {
     expect(markup).toContain('비교를 보류합니다');
     expect(markup).not.toContain('이전 실행과 결과 비교');
   });
+  it.each(['pending', 'running'] as const)('does not describe a %s result as removing candidates or resolving questions', status => {
+    const waiting = { ...FIXTURE_RUNS[1], output: null, unconfirmed: [], run: { ...FIXTURE_RUNS[1].run, status, concepts: [], unresolved: [] } };
+    const markup = renderToStaticMarkup(createElement(HistoryView, {
+      mode: 'fixture', runs: [FIXTURE_RUNS[0], waiting], selected: waiting, onSelect: () => {}, original: FIXTURE_ORIGINAL_REQUEST,
+      features: FIXTURE_BOOTSTRAP.features as unknown as Feature[], evidence: FIXTURE_BOOTSTRAP.evidence,
+      onRerun: async () => {}, measure: { records: [], start: () => {}, cancel: () => {}, exportRecords: () => {}, error: '' },
+    }));
+    expect(markup).toContain('후보 변화를 비교하지 않습니다');
+    expect(markup).toContain('보류·실패·질문을 비교하지 않습니다');
+    expect(markup).not.toContain('class="detail-change"');
+    expect(markup).not.toContain('이전 실행과 결과 비교');
+  });
 });
