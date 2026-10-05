@@ -149,6 +149,7 @@
 - `docs/bootstrap/automation-isolation.md`·`docs/pm/autonomous-pm.md`가 최신 경계/운영이다. 현재 코드의 능력·실제 배포·본인 로그인·canary·모델 생성·GitHub 게시·자동 검수/병합 완주를 구분한다. 최신 고정 commit·실행 근거를 인수하기 전 개인/팀 OFF를 유지한다. 황대겸의 기존 코어 중단은 인계·자기 PC 검증 전까지 유지하고 다른 팀원의 상태를 대신 추정하지 않는다.
 - 자동 PM policy·journal·broker state·auth는 모든 checkout 밖에 고정 배포한다. model은 등록 task/capability와 의도 문구만 선택하며 경로·검사·owner·HTTP 목적지·비용·보호 설정을 확대하지 않는다. 정이량 GitHub 계정과 controller 운영자 인증을 별도로 확인한다. 팀 ON·PM 개인 ON·policy.enabled, 배정 대상의 개인 ON과 실제 readiness 증거를 모두 확인한다.
 - 일/부모 업무별 토큰·호출·행동·수정/재시도·시간 제한을 영구 기록한다. 새 PR/head/재시작으로 예산을 초기화하지 않는다. 상태가 같으면 PM 모델을 다시 호출하지 않고 독립 검수도 exact head/base로 보존한다. 변경 전에 유일 intent/action ID를 기록하고 실제 receipt를 연결한다. 결과 불명은 실제 GitHub/controller/운영 marker를 대조하고 임의 재전송하지 않는다.
+- 10/5 사용자 상시 작업 위임·실제 구독 사용 가능 확인 후 PM이 내부 일일 토큰 상한을1M→2M으로 유한 확장했다. 기존 누적 토큰/호출·불명 비용 예약·원 이벤트는 보존하고 일일 호출80/행동100·부모별 한도는 유지한다. 실제 구독 사용량 초기화나 크레딧/API 구매가 아니다. 고정 배포 정책과 변경 사유·전후값·실제 수신증을 확인하며 추가 한도 변경을 임의 반복하지 않는다.
 - 저장소 코드를 호스트 게시 인증 사용자로 실행하지 않는다. 검사는 별도 소스 복사본과 network=none/zero-auth 환경에서 수행하고, 종료 뒤 bytes/hash·scope·링크·유출·공유 Git 설정을 확인한 일반 파일만 깨끗한 별도 worktree로 옮긴다. 실제 host canary 읽기 성공은 GitHub 게시 성공이 아니며 model-role Python canary는 유료 모델 생성 증거가 아니다.
 - 자동 배정 메일은 검증한 보호 CLI Gmail transport 또는 기존 외부 고정 발송 hook와 실제 SENT receipt가 필요하다. CLI transport는 별도 인증 프로필과 발신 계정을 직접 확인하며 이 채팅의 도구를 자동 상속했다고 가정하지 않는다. prepared/unconfigured/unknown을 sent로 바꾸지 않는다. 새 자동 session 로그는 불변 파일로 남기고 의도·해석·행동·검사·실패·미완료·다음 행동·현재 사용자 직접 할 일을 반드시 보고한다.
 
