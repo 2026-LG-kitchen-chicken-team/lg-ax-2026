@@ -328,7 +328,7 @@ export default function App() {
   return <div className="workspace">
     <a href="#main-content" className="skip-link">본문으로 이동</a>
     <aside className="sidebar">
-      <div className="brand"><div className="brand-mark" aria-hidden="true"><span /><span /><span /></div><div><strong>KITCHEN</strong><span>PLANNING WORKSPACE</span></div></div>
+      <div className="brand"><img className="brand-icon" src="/kitchen-evidence-icon.png" alt="" width="44" height="44" decoding="async" aria-hidden="true" /><div><strong>KITCHEN</strong><span>PLANNING WORKSPACE</span></div></div>
       <div className="sidebar-project"><span className="eyebrow">LG AX HACKATHON</span><strong>키친 상품기획 Agent</strong><span>키친에서치킨먹기</span></div>
       <nav aria-label="기획 작업 영역">{NAV.map(item => <button key={item.id} className={`nav-item ${view === item.id ? 'active' : ''}`} aria-current={view === item.id ? 'page' : undefined} onClick={() => setView(item.id)}><span className="nav-number">{item.number}</span>{item.label}{view === item.id ? <ArrowIcon /> : null}</button>)}</nav>
       <div className="sidebar-lower"><p>고객의 말에서<br /><strong>새로운 기회의 근거로.</strong></p><div className="sidebar-stage"><span className="status-dot" />개발 프레임워크 · v0.1</div></div>
