@@ -126,6 +126,8 @@ def run_comparison(suite, frozen, output_dir, config, *, gpu_identity,
         Path("packages/core/src/lgax_core/correction_budget.py"),
         Path("packages/core/src/lgax_core/judgement_contract.py"),
         Path("packages/core/src/lgax_core/model_client.py"),
+        Path("packages/core/src/lgax_core/skill_runner.py"),
+        Path("packages/core/src/lgax_core/store.py"),
         Path("evals/core-semantic/run_comparison.py"))}
     output_dir.mkdir(parents=True)
     bundles = {name: {"schema_version": 1, "method": name, "records": []}

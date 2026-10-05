@@ -1,0 +1,579 @@
+{
+  "input": {
+    "request": {
+      "product_group": "dishwasher",
+      "target_customer": "해당 주방 가전의 가정 사용자",
+      "use_situation": "자료에 서술된 같은 사용 경험을 검토한다.",
+      "improvement_task": "다른 방에서 남은 세척 시간을 화면으로 확인할 수 있는지 알고 싶지만 설명서를 찾을 수 없다.",
+      "exclusions": [
+        "다른 모델 기능 혼용",
+        "근거 없는 효과 단정"
+      ],
+      "model_ids": [
+        "HOLD-20261005-05-MODEL"
+      ],
+      "dataset_version": "HOLD-20261005-05-frozen-v1.0"
+    },
+    "product": {
+      "model_id": "HOLD-20261005-05-MODEL",
+      "name": "별도 고정 합성 dishwasher",
+      "product_group": "dishwasher",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "HOLD-20261005-05-REVIEW",
+        "model_id": "HOLD-20261005-05-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "HOLD-20261005-05-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "다른 방에서 남은 세척 시간을 화면으로 확인할 수 있는지 알고 싶지만 설명서를 찾을 수 없다.",
+        "feature_ids": []
+      }
+    ],
+    "features": [],
+    "revision_count": 0,
+    "max_concepts": 2,
+    "changed_evidence_ids": []
+  },
+  "materials": {
+    "input": {
+      "request": {
+        "product_group": "dishwasher",
+        "target_customer": "해당 주방 가전의 가정 사용자",
+        "use_situation": "자료에 서술된 같은 사용 경험을 검토한다.",
+        "improvement_task": "다른 방에서 남은 세척 시간을 화면으로 확인할 수 있는지 알고 싶지만 설명서를 찾을 수 없다.",
+        "exclusions": [
+          "다른 모델 기능 혼용",
+          "근거 없는 효과 단정"
+        ],
+        "model_ids": [
+          "HOLD-20261005-05-MODEL"
+        ],
+        "dataset_version": "HOLD-20261005-05-frozen-v1.0"
+      },
+      "product": {
+        "model_id": "HOLD-20261005-05-MODEL",
+        "name": "별도 고정 합성 dishwasher",
+        "product_group": "dishwasher",
+        "document_version": "1.0",
+        "source_kind": "synthetic"
+      },
+      "sources": [
+        {
+          "id": "HOLD-20261005-05-REVIEW",
+          "model_id": "HOLD-20261005-05-MODEL",
+          "document_version": "1.0",
+          "source_kind": "synthetic",
+          "source_type": "review",
+          "source_id": "HOLD-20261005-05-CSV",
+          "locator": {
+            "row": 2
+          },
+          "text": "다른 방에서 남은 세척 시간을 화면으로 확인할 수 있는지 알고 싶지만 설명서를 찾을 수 없다.",
+          "feature_ids": []
+        }
+      ],
+      "features": [],
+      "revision_count": 0,
+      "max_concepts": 2,
+      "changed_evidence_ids": []
+    },
+    "dataset": {
+      "manifest": {
+        "dataset_id": "HOLD-20261005-05",
+        "version": "HOLD-20261005-05-frozen-v1.0",
+        "description": "새 고정 합성 자료; 독립 검수 전",
+        "source_kind": "synthetic",
+        "model_count": 1,
+        "review_count": 1,
+        "analysis_implemented": false
+      },
+      "products": [
+        {
+          "model_id": "HOLD-20261005-05-MODEL",
+          "name": "별도 고정 합성 dishwasher",
+          "product_group": "dishwasher",
+          "document_version": "1.0",
+          "source_kind": "synthetic"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "ROW-HOLD-20261005-05-REVIEW",
+          "evidence_id": "HOLD-20261005-05-REVIEW",
+          "model_id": "HOLD-20261005-05-MODEL",
+          "text": "다른 방에서 남은 세척 시간을 화면으로 확인할 수 있는지 알고 싶지만 설명서를 찾을 수 없다.",
+          "source_kind": "synthetic",
+          "document_version": "1.0",
+          "source_id": "HOLD-20261005-05-CSV",
+          "locator": {
+            "row": 2
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "id": "HOLD-20261005-05-REVIEW",
+          "model_id": "HOLD-20261005-05-MODEL",
+          "document_version": "1.0",
+          "source_kind": "synthetic",
+          "source_type": "review",
+          "source_id": "HOLD-20261005-05-CSV",
+          "locator": {
+            "row": 2
+          },
+          "text": "다른 방에서 남은 세척 시간을 화면으로 확인할 수 있는지 알고 싶지만 설명서를 찾을 수 없다.",
+          "feature_ids": []
+        }
+      ],
+      "features": []
+    }
+  },
+  "input_sha256": "6913d024b764e93610980a806c4e1ae829039a21a83568212f73cd9ab03026c4",
+  "output_contract": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "urn:lgax:core:judgement:output:1",
+    "type": "object",
+    "properties": {
+      "input_sha256": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      },
+      "model_id": {
+        "$ref": "#/$defs/ID"
+      },
+      "document_version": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      },
+      "revision_count": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 2
+      },
+      "status": {
+        "enum": [
+          "completed",
+          "held",
+          "failed"
+        ]
+      },
+      "needs": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/Need"
+        }
+      },
+      "gaps": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/Gap"
+        }
+      },
+      "desired_outcomes": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "need_id": {
+              "$ref": "#/$defs/ID"
+            },
+            "desired_outcome": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "need_id",
+            "desired_outcome"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "concepts": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/Concept"
+        },
+        "maxItems": 3
+      },
+      "review_assessments": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "evidence_id": {
+              "$ref": "#/$defs/ID"
+            },
+            "polarity": {
+              "enum": [
+                "complaint",
+                "positive",
+                "conflicting",
+                "irrelevant",
+                "uncertain"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "evidence_id",
+            "polarity",
+            "reason"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "gap_assessments": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "gap_id": {
+              "$ref": "#/$defs/ID"
+            },
+            "support_basis": {
+              "enum": [
+                "explicit_supported",
+                "explicit_unsupported",
+                "unmentioned",
+                "conflicting"
+              ]
+            },
+            "resolution": {
+              "enum": [
+                "resolved",
+                "remaining",
+                "unknown"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "gap_id",
+            "support_basis",
+            "resolution",
+            "reason"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "concept_assessments": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "concept_id": {
+              "$ref": "#/$defs/ID"
+            },
+            "duplication": {
+              "enum": [
+                "distinct",
+                "duplicate",
+                "uncertain"
+              ]
+            },
+            "compared_feature_ids": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ID"
+              },
+              "uniqueItems": true
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "concept_id",
+            "duplication",
+            "compared_feature_ids",
+            "reason"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "questions": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "uniqueItems": true
+      },
+      "hold_reasons": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "uniqueItems": true
+      },
+      "unresolved": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "uniqueItems": true
+      },
+      "no_candidate_reasons": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "uniqueItems": true
+      }
+    },
+    "required": [
+      "input_sha256",
+      "model_id",
+      "document_version",
+      "revision_count",
+      "status",
+      "needs",
+      "gaps",
+      "desired_outcomes",
+      "concepts",
+      "review_assessments",
+      "gap_assessments",
+      "concept_assessments",
+      "questions",
+      "hold_reasons",
+      "unresolved",
+      "no_candidate_reasons"
+    ],
+    "additionalProperties": false,
+    "$defs": {
+      "ID": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+      },
+      "Need": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+          },
+          "model_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+          },
+          "situation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "pain": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "uncertainties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "id",
+          "model_id",
+          "situation",
+          "pain",
+          "evidence_ids",
+          "uncertainties"
+        ],
+        "additionalProperties": false
+      },
+      "Gap": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+          },
+          "need_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+          },
+          "model_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+          },
+          "feature_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "support_status": {
+            "enum": [
+              "supported",
+              "unsupported",
+              "insufficient_evidence"
+            ]
+          },
+          "remaining_pain": {
+            "type": "string"
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "id",
+          "need_id",
+          "model_id",
+          "feature_ids",
+          "support_status",
+          "remaining_pain",
+          "evidence_ids",
+          "questions"
+        ],
+        "additionalProperties": false
+      },
+      "Concept": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "product",
+              "feature",
+              "service"
+            ]
+          },
+          "gap_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "differentiation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "requirements": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1
+          },
+          "assumptions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "status": {
+            "enum": [
+              "proposed",
+              "needs_review",
+              "accepted",
+              "rejected"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "kind",
+          "gap_ids",
+          "evidence_ids",
+          "differentiation",
+          "requirements",
+          "assumptions",
+          "status"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+}

@@ -1,5 +1,10 @@
 # CORE003 공유 수정 예산 연결
 
+2026-10-05 수동 마무리에서는 사용자의 후속 승인으로 실제 연구실 모델 호출·설정 비교·일반 PR 제출까지
+범위를 확대했다. 아래 작업016 당시의 LLM 제외/제출 제한과 최초 Draft 이관은 역사 기록이다.
+현재 근거는 [수동 검증 기록](../../evals/core-live-completion/20261005/model-comparison.md)과
+황대겸 개인 기록/근거의 MANUAL 항목을 따른다. 실제 실행과 독립 PM 검수·Done은 구분한다.
+
 ## 현재 로컬 구현 (2026-10-05, 작업016/E016)
 
 PM 인수 main e5de02e 기반에서 PlanningAgent와 RevisionSession이 같은 CorrectionBudget을 사용하도록 연결했다. 한 run에 Session을 한 번 설치하며 초기 생성/계약 오류는 stage_retry, 유효한 계약 분석 이후 의미 오류는 review_revision을 사용한다. 실패한 수정 응답도 회차를 소비하고 유효한 수정 뒤에는 별도 semantic_review를 실행한다. 두 번째 claim 뒤 예산이 닫혀도 이미 허용된 수정과 마지막 검토는 실행한다.

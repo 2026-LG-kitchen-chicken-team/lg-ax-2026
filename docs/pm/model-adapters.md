@@ -111,6 +111,14 @@ uv run python -m lgax_core.model_client --adapter ollama --endpoint http://127.0
 
 ## 검증 근거와 남은 통합
 
+2026-10-05 수동 코어 검증에서 직접 Ollama의 선택적 `LGAX_MODEL_API_MODE=chat`과
+`LGAX_MODEL_TEMPERATURE/TOP_P/TOP_K/MIN_P`를 추가했다. 기본 generate/temperature0은 그대로다.
+chat은 `message.content`만 최종 JSON으로 검사하고 `message.thinking`을 빈 답의 대체물로 쓰지 않는다.
+실제 요청·metadata·수정 Session 설정 해시에 같은 불변 설정을 사용한다. Lab API는 고정 설정을 유지하고
+이 선택적 설정을 거절한다. CLI는 `--api-mode`를 지원하며 환경변수의 샘플링을 암묵적으로 읽지 않는다.
+실제 개발 진단·새 합성 사례·한계는 [수동 모델 비교](../../evals/core-live-completion/20261005/model-comparison.md)에 기록한다.
+이 실험으로 공통 운영 모델을 자동 교체하거나 독립 품질/PM 검수 완료를 선언하지 않는다.
+
 2026-10-04 단위검사 28개가 통과했다. Korean JSON, 두 API payload 차이, 단일 펜스, 손상/추가 텍스트·중복 키·비정상 숫자, 스키마/외부 참조, 호출 전후 모델 버전 변화, HTTP/timeout 정보 보호, redirect, 응답 크기·누적 시간, 필수 환경 pin을 검사한다. 추가 검사는 출력·문맥 예산의 범위, SDK/환경변수 전달, Lab의 비고정 예산 거절, CLI 인자→요청→검증된 결과 파일의 일치와 CLI/환경변수의 분리를 확인한다. 이 28개는 모의 transport를 사용하는 검사이며 실제 GPU 실행은 아래 근거로 구분한다.
 
 실제 연구실 모델에서는 같은 합성 `MANUAL-001`의 `FRIDGE-A`/문서 버전 `1.0` 입력을 두 어댑터에 전달했다. 두 경로 모두 해당 값이 고정된 schema와 한국어 요약을 반환했고, 모델 digest·사전/사후 확인·로컬 스키마 검증이 통과했다. [원본 입력·schema·출력·metadata](../../evals/pm-workspace/20261004/live-model-adapters.json)에 기록했다. Lab 4,797ms와 직접 Ollama 516ms는 순차 실행·같은 모델·캐시 영향을 포함한 관측값이며 성능 우열 근거로 사용하지 않는다.

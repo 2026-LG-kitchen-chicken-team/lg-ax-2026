@@ -1,0 +1,457 @@
+{
+  "schema_version": 1,
+  "independent_from_development": true,
+  "cases": [
+    {
+      "case_id": "HOLD-01",
+      "category": "normal",
+      "request": {
+        "request": {
+          "product_group": "fridge",
+          "target_customer": "해당 주방 가전의 가정 사용자",
+          "use_situation": "자료에 서술된 같은 사용 경험을 검토한다.",
+          "improvement_task": "매주 문 고무 패킹을 닦지만 접힌 안쪽 모서리에 빵가루가 남아 손가락을 밀어 넣어야 한다.",
+          "exclusions": [
+            "다른 모델 기능 혼용",
+            "근거 없는 효과 단정"
+          ],
+          "model_ids": [
+            "HOLD-20261005-01-MODEL"
+          ],
+          "dataset_version": "HOLD-20261005-01-frozen-v1.0"
+        },
+        "product": {
+          "model_id": "HOLD-20261005-01-MODEL",
+          "name": "별도 고정 합성 fridge",
+          "product_group": "fridge",
+          "document_version": "1.0",
+          "source_kind": "synthetic"
+        },
+        "sources": [
+          {
+            "id": "HOLD-20261005-01-REVIEW",
+            "model_id": "HOLD-20261005-01-MODEL",
+            "document_version": "1.0",
+            "source_kind": "synthetic",
+            "source_type": "review",
+            "source_id": "HOLD-20261005-01-CSV",
+            "locator": {
+              "row": 2
+            },
+            "text": "매주 문 고무 패킹을 닦지만 접힌 안쪽 모서리에 빵가루가 남아 손가락을 밀어 넣어야 한다.",
+            "feature_ids": []
+          },
+          {
+            "id": "HOLD-20261005-01-MANUAL",
+            "model_id": "HOLD-20261005-01-MODEL",
+            "document_version": "1.0",
+            "source_kind": "synthetic",
+            "source_type": "manual",
+            "source_id": "HOLD-20261005-01-DOC",
+            "locator": {
+              "page": 4,
+              "section": "기능과 사용 조건"
+            },
+            "text": "문 고무 패킹은 문을 연 상태에서 젖은 천으로 닦을 수 있다. 패킹은 사용자 분리 부품이 아니다.",
+            "feature_ids": [
+              "HOLD-20261005-01-FEATURE"
+            ]
+          }
+        ],
+        "features": [
+          {
+            "id": "HOLD-20261005-01-FEATURE",
+            "model_id": "HOLD-20261005-01-MODEL",
+            "document_version": "1.0",
+            "name": "자료에 명시된 현재 기능",
+            "description": "문 고무 패킹은 문을 연 상태에서 젖은 천으로 닦을 수 있다. 패킹은 사용자 분리 부품이 아니다.",
+            "conditions": [
+              "문서에 기재된 사용 조건에 따른다."
+            ],
+            "evidence_ids": [
+              "HOLD-20261005-01-MANUAL"
+            ]
+          }
+        ],
+        "revision_count": 0,
+        "max_concepts": 2,
+        "changed_evidence_ids": []
+      },
+      "data_path": "materials/HOLD-01.json",
+      "output_contract_path": "output.schema.json"
+    },
+    {
+      "case_id": "HOLD-02",
+      "category": "duplicate_feature",
+      "request": {
+        "request": {
+          "product_group": "microwave",
+          "target_customer": "해당 주방 가전의 가정 사용자",
+          "use_situation": "자료에 서술된 같은 사용 경험을 검토한다.",
+          "improvement_task": "조리 종료 소리를 못 듣는 경우가 있어 종료 후 화면에 15초 동안 끝났다는 표시가 깜박였으면 좋겠다.",
+          "exclusions": [
+            "다른 모델 기능 혼용",
+            "근거 없는 효과 단정"
+          ],
+          "model_ids": [
+            "HOLD-20261005-02-MODEL"
+          ],
+          "dataset_version": "HOLD-20261005-02-frozen-v1.0"
+        },
+        "product": {
+          "model_id": "HOLD-20261005-02-MODEL",
+          "name": "별도 고정 합성 microwave",
+          "product_group": "microwave",
+          "document_version": "1.0",
+          "source_kind": "synthetic"
+        },
+        "sources": [
+          {
+            "id": "HOLD-20261005-02-REVIEW",
+            "model_id": "HOLD-20261005-02-MODEL",
+            "document_version": "1.0",
+            "source_kind": "synthetic",
+            "source_type": "review",
+            "source_id": "HOLD-20261005-02-CSV",
+            "locator": {
+              "row": 2
+            },
+            "text": "조리 종료 소리를 못 듣는 경우가 있어 종료 후 화면에 15초 동안 끝났다는 표시가 깜박였으면 좋겠다.",
+            "feature_ids": []
+          },
+          {
+            "id": "HOLD-20261005-02-MANUAL",
+            "model_id": "HOLD-20261005-02-MODEL",
+            "document_version": "1.0",
+            "source_kind": "synthetic",
+            "source_type": "manual",
+            "source_id": "HOLD-20261005-02-DOC",
+            "locator": {
+              "page": 4,
+              "section": "기능과 사용 조건"
+            },
+            "text": "모든 조리 코스가 끝나면 화면의 END 문자가 15초 동안 깜박인다. 소리 설정과 무관하게 작동한다.",
+            "feature_ids": [
+              "HOLD-20261005-02-FEATURE"
+            ]
+          }
+        ],
+        "features": [
+          {
+            "id": "HOLD-20261005-02-FEATURE",
+            "model_id": "HOLD-20261005-02-MODEL",
+            "document_version": "1.0",
+            "name": "자료에 명시된 현재 기능",
+            "description": "모든 조리 코스가 끝나면 화면의 END 문자가 15초 동안 깜박인다. 소리 설정과 무관하게 작동한다.",
+            "conditions": [
+              "문서에 기재된 사용 조건에 따른다."
+            ],
+            "evidence_ids": [
+              "HOLD-20261005-02-MANUAL"
+            ]
+          }
+        ],
+        "revision_count": 0,
+        "max_concepts": 2,
+        "changed_evidence_ids": []
+      },
+      "data_path": "materials/HOLD-02.json",
+      "output_contract_path": "output.schema.json"
+    },
+    {
+      "case_id": "HOLD-03",
+      "category": "model_version_confusion",
+      "request": {
+        "request": {
+          "product_group": "dishwasher",
+          "target_customer": "해당 주방 가전의 가정 사용자",
+          "use_situation": "자료에 서술된 같은 사용 경험을 검토한다.",
+          "improvement_task": "사용 중인 이 모델에 상단 분사 강도를 세 단계로 바꾸는 기능이 있는지 확인하고 싶다.",
+          "exclusions": [
+            "다른 모델 기능 혼용",
+            "근거 없는 효과 단정"
+          ],
+          "model_ids": [
+            "HOLD-20261005-03-MODEL"
+          ],
+          "dataset_version": "HOLD-20261005-03-frozen-v1.0"
+        },
+        "product": {
+          "model_id": "HOLD-20261005-03-MODEL",
+          "name": "별도 고정 합성 dishwasher",
+          "product_group": "dishwasher",
+          "document_version": "1.0",
+          "source_kind": "synthetic"
+        },
+        "sources": [
+          {
+            "id": "HOLD-20261005-03-REVIEW",
+            "model_id": "HOLD-20261005-03-MODEL",
+            "document_version": "1.0",
+            "source_kind": "synthetic",
+            "source_type": "review",
+            "source_id": "HOLD-20261005-03-CSV",
+            "locator": {
+              "row": 2
+            },
+            "text": "사용 중인 이 모델에 상단 분사 강도를 세 단계로 바꾸는 기능이 있는지 확인하고 싶다.",
+            "feature_ids": []
+          },
+          {
+            "id": "HOLD-20261005-03-MANUAL",
+            "model_id": "HOLD-20261005-03-MODEL-OTHER",
+            "document_version": "9.0",
+            "source_kind": "synthetic",
+            "source_type": "manual",
+            "source_id": "HOLD-20261005-03-DOC",
+            "locator": {
+              "page": 4,
+              "section": "기능과 사용 조건"
+            },
+            "text": "다른 모델의 설명서9.0: 상단 분사 강도는 약·중·강 세 단계로 선택할 수 있다.",
+            "feature_ids": [
+              "HOLD-20261005-03-FEATURE"
+            ]
+          }
+        ],
+        "features": [
+          {
+            "id": "HOLD-20261005-03-FEATURE",
+            "model_id": "HOLD-20261005-03-MODEL-OTHER",
+            "document_version": "9.0",
+            "name": "자료에 명시된 현재 기능",
+            "description": "다른 모델의 설명서9.0: 상단 분사 강도는 약·중·강 세 단계로 선택할 수 있다.",
+            "conditions": [
+              "문서에 기재된 사용 조건에 따른다."
+            ],
+            "evidence_ids": [
+              "HOLD-20261005-03-MANUAL"
+            ]
+          }
+        ],
+        "revision_count": 0,
+        "max_concepts": 2,
+        "changed_evidence_ids": []
+      },
+      "data_path": "materials/HOLD-03.json",
+      "output_contract_path": "output.schema.json"
+    },
+    {
+      "case_id": "HOLD-04",
+      "category": "conflicting_reviews",
+      "request": {
+        "request": {
+          "product_group": "fridge",
+          "target_customer": "해당 주방 가전의 가정 사용자",
+          "use_situation": "자료에 서술된 같은 사용 경험을 검토한다.",
+          "improvement_task": "표준 각얼음 설정에서 같은 수량의 얼음을 받았는데 출구에 매번 걸려 손으로 빼야 했다.",
+          "exclusions": [
+            "다른 모델 기능 혼용",
+            "근거 없는 효과 단정"
+          ],
+          "model_ids": [
+            "HOLD-20261005-04-MODEL"
+          ],
+          "dataset_version": "HOLD-20261005-04-frozen-v1.0"
+        },
+        "product": {
+          "model_id": "HOLD-20261005-04-MODEL",
+          "name": "별도 고정 합성 fridge",
+          "product_group": "fridge",
+          "document_version": "1.0",
+          "source_kind": "synthetic"
+        },
+        "sources": [
+          {
+            "id": "HOLD-20261005-04-REVIEW",
+            "model_id": "HOLD-20261005-04-MODEL",
+            "document_version": "1.0",
+            "source_kind": "synthetic",
+            "source_type": "review",
+            "source_id": "HOLD-20261005-04-CSV",
+            "locator": {
+              "row": 2
+            },
+            "text": "표준 각얼음 설정에서 같은 수량의 얼음을 받았는데 출구에 매번 걸려 손으로 빼야 했다.",
+            "feature_ids": []
+          },
+          {
+            "id": "HOLD-20261005-04-REVIEW-2",
+            "model_id": "HOLD-20261005-04-MODEL",
+            "document_version": "1.0",
+            "source_kind": "synthetic",
+            "source_type": "review",
+            "source_id": "HOLD-20261005-04-CSV",
+            "locator": {
+              "row": 3
+            },
+            "text": "표준 각얼음 설정에서 같은 수량의 얼음을 받았는데 출구에 한번도 걸리지 않고 모두 나왔다.",
+            "feature_ids": []
+          },
+          {
+            "id": "HOLD-20261005-04-MANUAL",
+            "model_id": "HOLD-20261005-04-MODEL",
+            "document_version": "1.0",
+            "source_kind": "synthetic",
+            "source_type": "manual",
+            "source_id": "HOLD-20261005-04-DOC",
+            "locator": {
+              "page": 4,
+              "section": "기능과 사용 조건"
+            },
+            "text": "표준 각얼음 설정을 선택하면 각얼음이 배출구로 나온다.",
+            "feature_ids": [
+              "HOLD-20261005-04-FEATURE"
+            ]
+          }
+        ],
+        "features": [
+          {
+            "id": "HOLD-20261005-04-FEATURE",
+            "model_id": "HOLD-20261005-04-MODEL",
+            "document_version": "1.0",
+            "name": "자료에 명시된 현재 기능",
+            "description": "표준 각얼음 설정을 선택하면 각얼음이 배출구로 나온다.",
+            "conditions": [
+              "문서에 기재된 사용 조건에 따른다."
+            ],
+            "evidence_ids": [
+              "HOLD-20261005-04-MANUAL"
+            ]
+          }
+        ],
+        "revision_count": 0,
+        "max_concepts": 2,
+        "changed_evidence_ids": []
+      },
+      "data_path": "materials/HOLD-04.json",
+      "output_contract_path": "output.schema.json"
+    },
+    {
+      "case_id": "HOLD-05",
+      "category": "missing_evidence",
+      "request": {
+        "request": {
+          "product_group": "dishwasher",
+          "target_customer": "해당 주방 가전의 가정 사용자",
+          "use_situation": "자료에 서술된 같은 사용 경험을 검토한다.",
+          "improvement_task": "다른 방에서 남은 세척 시간을 화면으로 확인할 수 있는지 알고 싶지만 설명서를 찾을 수 없다.",
+          "exclusions": [
+            "다른 모델 기능 혼용",
+            "근거 없는 효과 단정"
+          ],
+          "model_ids": [
+            "HOLD-20261005-05-MODEL"
+          ],
+          "dataset_version": "HOLD-20261005-05-frozen-v1.0"
+        },
+        "product": {
+          "model_id": "HOLD-20261005-05-MODEL",
+          "name": "별도 고정 합성 dishwasher",
+          "product_group": "dishwasher",
+          "document_version": "1.0",
+          "source_kind": "synthetic"
+        },
+        "sources": [
+          {
+            "id": "HOLD-20261005-05-REVIEW",
+            "model_id": "HOLD-20261005-05-MODEL",
+            "document_version": "1.0",
+            "source_kind": "synthetic",
+            "source_type": "review",
+            "source_id": "HOLD-20261005-05-CSV",
+            "locator": {
+              "row": 2
+            },
+            "text": "다른 방에서 남은 세척 시간을 화면으로 확인할 수 있는지 알고 싶지만 설명서를 찾을 수 없다.",
+            "feature_ids": []
+          }
+        ],
+        "features": [],
+        "revision_count": 0,
+        "max_concepts": 2,
+        "changed_evidence_ids": []
+      },
+      "data_path": "materials/HOLD-05.json",
+      "output_contract_path": "output.schema.json"
+    },
+    {
+      "case_id": "HOLD-06",
+      "category": "specification_change",
+      "request": {
+        "request": {
+          "product_group": "microwave",
+          "target_customer": "해당 주방 가전의 가정 사용자",
+          "use_situation": "자료에 서술된 같은 사용 경험을 검토한다.",
+          "improvement_task": "음식이 충분히 데워졌는지 확인하려고 문을 열어 꺼내야 해 조리가 끊긴다.",
+          "exclusions": [
+            "다른 모델 기능 혼용",
+            "근거 없는 효과 단정"
+          ],
+          "model_ids": [
+            "HOLD-20261005-06-MODEL"
+          ],
+          "dataset_version": "HOLD-20261005-06-frozen-v1.0"
+        },
+        "product": {
+          "model_id": "HOLD-20261005-06-MODEL",
+          "name": "별도 고정 합성 microwave",
+          "product_group": "microwave",
+          "document_version": "1.0",
+          "source_kind": "synthetic"
+        },
+        "sources": [
+          {
+            "id": "HOLD-20261005-06-REVIEW",
+            "model_id": "HOLD-20261005-06-MODEL",
+            "document_version": "1.0",
+            "source_kind": "synthetic",
+            "source_type": "review",
+            "source_id": "HOLD-20261005-06-CSV",
+            "locator": {
+              "row": 2
+            },
+            "text": "음식이 충분히 데워졌는지 확인하려고 문을 열어 꺼내야 해 조리가 끊긴다.",
+            "feature_ids": []
+          },
+          {
+            "id": "HOLD-20261005-06-MANUAL",
+            "model_id": "HOLD-20261005-06-MODEL",
+            "document_version": "1.0",
+            "source_kind": "synthetic",
+            "source_type": "manual",
+            "source_id": "HOLD-20261005-06-DOC",
+            "locator": {
+              "page": 4,
+              "section": "기능과 사용 조건"
+            },
+            "text": "문서1.0: 사용자가 가열 시간과 출력을 직접 설정한다. 음식의 가열 상태는 문을 열어 확인한다.",
+            "feature_ids": [
+              "HOLD-20261005-06-FEATURE"
+            ]
+          }
+        ],
+        "features": [
+          {
+            "id": "HOLD-20261005-06-FEATURE",
+            "model_id": "HOLD-20261005-06-MODEL",
+            "document_version": "1.0",
+            "name": "자료에 명시된 현재 기능",
+            "description": "문서1.0: 사용자가 가열 시간과 출력을 직접 설정한다. 음식의 가열 상태는 문을 열어 확인한다.",
+            "conditions": [
+              "문서에 기재된 사용 조건에 따른다."
+            ],
+            "evidence_ids": [
+              "HOLD-20261005-06-MANUAL"
+            ]
+          }
+        ],
+        "revision_count": 0,
+        "max_concepts": 2,
+        "changed_evidence_ids": []
+      },
+      "data_path": "materials/HOLD-06.json",
+      "output_contract_path": "output.schema.json"
+    }
+  ]
+}
