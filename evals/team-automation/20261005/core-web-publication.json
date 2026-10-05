@@ -1,0 +1,118 @@
+{
+  "record_id": "TEAM-CORE-WEB-PUBLICATION-20261005",
+  "observed_at": "2026-10-05T00:29:58.667514+00:00",
+  "source_main": "d95b225029171fec71fe50fcbcd66a65d849914d",
+  "global_mode": "on",
+  "members": {
+    "jeongiryang": true,
+    "unknownamed": true,
+    "ginaginaring": true,
+    "choigilung": true
+  },
+  "implementation_results": [
+    {
+      "job_id": "auto-cbcaed018a0634bacaef459fe7b7fa223a6fa812",
+      "owner": "choigilung",
+      "task_id": "P2-WEB-003",
+      "base_commit": "d95b225029171fec71fe50fcbcd66a65d849914d",
+      "status": "review_requested",
+      "result": {
+        "outcome": "review_requested",
+        "summary": "후보의 제목이나 차별점만 바뀐 경우도 변경 전후 원문과 함께 이력에 표시하도록 코드를 고치고, 회귀 테스트와 두 세션 기록을 작성했다. 이 세션에는 셸이 없어 테스트·typecheck·build를 실행하지 못했고, 작성한 테스트는 통과 여부를 확인하지 않았다.",
+        "reported_at": 1791159845.5173407,
+        "pr_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/89",
+        "head_commit": "0114d3cab5173bcf34f87f42d7083742a50b972c"
+      },
+      "observed_fixed_validator_exit_0_count": 4,
+      "actual_ci": [
+        {
+          "name": "python-and-harness",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS"
+        },
+        {
+          "name": "python-and-harness",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS"
+        },
+        {
+          "name": "web",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS"
+        },
+        {
+          "name": "web",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS"
+        }
+      ]
+    },
+    {
+      "job_id": "auto-34edc61151834e4731a695cc2baabb0a2864765a",
+      "owner": "unknownamed",
+      "task_id": "P2-CORE-002",
+      "base_commit": "d95b225029171fec71fe50fcbcd66a65d849914d",
+      "status": "review_requested",
+      "result": {
+        "outcome": "review_requested",
+        "summary": "재사용 회귀와 두 불변 세션 기록을 작성했습니다. 지정 검사 47개가 통과했습니다.",
+        "reported_at": 1791159881.356463,
+        "pr_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/90",
+        "head_commit": "92d2f90e8978d1d6d8e8977360c20b9ccd9bac13"
+      },
+      "observed_fixed_validator_exit_0_count": 3,
+      "actual_ci": [
+        {
+          "name": "python-and-harness",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS"
+        },
+        {
+          "name": "python-and-harness",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS"
+        },
+        {
+          "name": "web",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS"
+        },
+        {
+          "name": "web",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS"
+        }
+      ]
+    }
+  ],
+  "review_jobs": [
+    {
+      "job_id": "review-pr89-0114d3cab517",
+      "owner": "jeongiryang",
+      "status": "completed_review"
+    },
+    {
+      "job_id": "review-pr90-92d2f90e8978",
+      "owner": "jeongiryang",
+      "status": "completed_review"
+    }
+  ],
+  "pm_decision_halt": {
+    "reason": "pre-call shared AI profile contention treated as unknown usage",
+    "journal_sequences": [
+      38,
+      39
+    ],
+    "known_same_UTC_day_decision_calls": 5,
+    "known_same_UTC_day_tokens": 85470,
+    "conservative_ledger_tokens": 300000,
+    "plan_sha256": "1826e264987a350c9275c538dbc2e9a5b216997076ff869e940cacb7b1412dd6",
+    "limits_reset": false,
+    "actual_running_CLI_unknown_usage_credited": false,
+    "fix_and_audited_reconciliation_pending": true
+  },
+  "data_original_received": false,
+  "product_done": 5,
+  "requirements_verified": 0,
+  "merge_complete": false
+}

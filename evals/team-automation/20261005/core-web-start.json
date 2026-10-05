@@ -1,0 +1,142 @@
+{
+  "record_id": "TEAM-CORE-WEB-START-20261005",
+  "observed_at": "2026-10-05T00:21:23.870048+00:00",
+  "source_main": "d95b225029171fec71fe50fcbcd66a65d849914d",
+  "global_mode": "on",
+  "members": {
+    "jeongiryang": true,
+    "unknownamed": true,
+    "ginaginaring": true,
+    "choigilung": true
+  },
+  "released_capabilities": [
+    "web-concept-text-change-history",
+    "core-request-reuse-terminal-regression"
+  ],
+  "readiness_accounts": [
+    "choigilung",
+    "jeongiryang",
+    "unknownamed"
+  ],
+  "config_sha256": "1997d3b63750723624541ea854f05cfa70dd99d2ecded1256b2f308ce0690710",
+  "core_readiness_import": {
+    "observed_at": "2026-10-05T00:18:56.780564+00:00",
+    "account": "unknownamed",
+    "source_pr": 87,
+    "source_commit": "f49258f23683f338f6fe41f4447c75480c4f217c",
+    "source_sha256": "b8ef51863b70a2a60c3821932430bf565eb933caaa7add45654e30adad18729f",
+    "approved_executor_image": "sha256:36ad082dbccf05bc9cff7c4dc5766e9ab7ed8c42198b0b731cf3831c546aaaf0",
+    "readiness_gates": {
+      "execution_isolation_verified": true,
+      "publisher_separation_verified": true,
+      "login_verified": true
+    },
+    "released_capabilities": [
+      "web-concept-text-change-history",
+      "core-request-reuse-terminal-regression"
+    ],
+    "broker_state_unchanged": true,
+    "journal_and_usage_unchanged": true,
+    "config_sha256": "1997d3b63750723624541ea854f05cfa70dd99d2ecded1256b2f308ce0690710",
+    "model_generation_and_publication_not_yet_verified": true,
+    "model_network_probe_false_is_recorded": true
+  },
+  "original_sources": {
+    "unknownamed": {
+      "pr": 87,
+      "commit": "f49258f23683f338f6fe41f4447c75480c4f217c",
+      "path": "evals/core-automation/20261005-start-r1/readiness.json"
+    },
+    "choigilung": {
+      "pr": 85,
+      "sha256": "47ed55516d2ab332fd3ee137637d99820b8aabf5c4cbc736e404a1d13a60c6cd"
+    }
+  },
+  "jobs": [
+    {
+      "job_id": "auto-cbcaed018a0634bacaef459fe7b7fa223a6fa812",
+      "owner": "choigilung",
+      "task_id": "P2-WEB-003",
+      "base_commit": "d95b225029171fec71fe50fcbcd66a65d849914d",
+      "status": "running",
+      "attempt": 1,
+      "lease_generation": 1,
+      "lease_expires_at": 1791159794.3701184,
+      "stop_reason": null
+    },
+    {
+      "job_id": "auto-34edc61151834e4731a695cc2baabb0a2864765a",
+      "owner": "unknownamed",
+      "task_id": "P2-CORE-002",
+      "base_commit": "d95b225029171fec71fe50fcbcd66a65d849914d",
+      "status": "running",
+      "attempt": 1,
+      "lease_generation": 1,
+      "lease_expires_at": 1791159796.8911417,
+      "stop_reason": null
+    }
+  ],
+  "source_receipts": {
+    "controller_status_sha256": "79bacb6a2a24b235cd5a3b24ebe691510e4492bdfffa8cc6f3f1aaf8a8fb4412",
+    "core_config_receipt_sha256": "c06f41523a906d6e8c584567b96399260bcadc5cc2f8c29fbaa8732bdb2ef4de",
+    "broker_state_sha256": "53aaf1f78025ca13019d1ab6896040578bfa4d2b323f215d7494103dfbc0e5d1",
+    "recent_journal": [
+      [
+        35,
+        "decision",
+        "1275d27646e99e5e8f5fc449a07c2c6a80fbb405c537fe4b4f2433a1dd94058d"
+      ],
+      [
+        34,
+        "decision_started",
+        "6c3bf84c77fd29ea3640a266cc6c9a4cb7bb3de246cfd143fddf49e04c877329"
+      ],
+      [
+        33,
+        "receipt",
+        "94e36e2cef09411ef0af486c66baaaa643fe459f026042b00ab512cd87b44647"
+      ],
+      [
+        32,
+        "action_intent",
+        "6b04c5cb6fa785331529e4796da43a730056fdb52a56ba130fab267b8f5c6e97"
+      ],
+      [
+        31,
+        "decision",
+        "30af7b2b596073f71c362ebc9ca77be12a490561b23b67f4ae05788fad960a6e"
+      ]
+    ]
+  },
+  "data_readiness": {
+    "original_received": false,
+    "reported_setup_complete": true,
+    "followup_email_sent": true,
+    "followup_message_id": "1a1096f4922b9490",
+    "recipient_read_verified": false
+  },
+  "future_contact": {
+    "account": "choigilung",
+    "source": "direct user instruction 2026-10-05",
+    "updated_in_private_contacts": true,
+    "prior_sent_records_preserved": true,
+    "resend_requested": false
+  },
+  "parallel_execution": {
+    "disjoint_development_supported": true,
+    "main_movement_requires_fresh_revision_and_review": true,
+    "automatic_rebase_not_implemented": true,
+    "budgets_preserved": true
+  },
+  "completion_scope": {
+    "actual_generation_validation_publication_not_yet_confirmed": true,
+    "product_done": 5,
+    "requirements_verified": 0
+  },
+  "metadata_correction": {
+    "reason": "Hash the preserved controller file bytes, including Windows newline encoding, rather than its decoded stdout string. Public observation JSON is canonical LF for Git.",
+    "original_decoded_stdout_sha256": "1f8effe47f29cb05cffbed9b48d1a898f8e95816ef11ff7f3f4e09ae78f5a592",
+    "preserved_controller_filename": "core-web-controller-status-20261005T002123.json",
+    "observation_unchanged": true
+  }
+}

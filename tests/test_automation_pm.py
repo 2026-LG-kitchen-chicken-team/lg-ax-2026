@@ -8,17 +8,22 @@ import tempfile
 import unittest
 from copy import deepcopy
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from services.automation.pm import (
     AutonomousPM,
     Journal,
+    PMDriverBusy,
     PMError,
     fingerprint,
     load_policy,
     normalize_decision,
     stable_observation,
 )
+from services.automation.pm_broker import DockerPMDriver
 from services.automation.state import ACCOUNTS, PM, REPO
+from services.automation.worker import exclusive_lock
 
 BASE, HEAD, MERGED, PROOF = "a" * 40, "b" * 40, "c" * 40, "d" * 64
 TASK, CAP = "P2-PM-003", "workspace-pilot"
@@ -142,6 +147,143 @@ class AutonomousPMTests(unittest.TestCase):
     def driver(self, context, schema, timeout):
         self.calls.append((deepcopy(context), schema, timeout))
         return {"decision": deepcopy(self.response), "usage": deepcopy(self.usage)}
+
+    def profile_driver(self):
+        profile = self.root / "profile"
+        profile.mkdir()
+        executor = SimpleNamespace(config=SimpleNamespace(auth_root=profile))
+        return DockerPMDriver(executor, state_dir=self.root / "driver-state", heartbeat=lambda: True)
+
+    def test_publication_pending_is_owned_by_resumer_and_does_not_enter_pm_marker_lookup(self):
+        publication_id = "publication-" + "f" * 64
+        ordinary_id = "pm-" + "e" * 40
+        with self.pm.journal.connect() as db:
+            for action_id, kind, body in (
+                    (publication_id, "parent_publication", {"operation": "project", "task_id": TASK}),
+                    (ordinary_id, "assign", decision())):
+                db.execute("INSERT INTO actions VALUES(?,?,?,'intent',?,NULL)",
+                           (action_id, TASK, kind, json.dumps(body)))
+            self.pm.journal.append(db, "fixture_mixed_pending", {"ordinary": ordinary_id, "publication": publication_id})
+        self.assertEqual([row["action_id"] for row in self.pm.journal.pending()], [ordinary_id])
+        self.broker.receipts[ordinary_id] = {"action_id": ordinary_id, "action": "assign",
+                                            "outcome": "applied", "evidence_sha256": PROOF}
+        self.broker.state["parent_completion"] = {"must_reobserve": True, "main_commit": MERGED}
+        # A real PM marker lookup rejects publication-* IDs. This fake mirrors
+        # that boundary so the integration must route them to observation's
+        # dedicated fixed publisher instead of silently treating all as known.
+        original_lookup = self.broker.lookup
+        looked_up = []
+        def fixed_lookup(action_id):
+            looked_up.append(action_id)
+            if action_id.startswith("publication-"):
+                raise PMError("not a PM marker")
+            return original_lookup(action_id)
+        with patch.object(self.broker, "lookup", side_effect=fixed_lookup), \
+                patch.object(self.broker, "observe", wraps=self.broker.observe) as observed:
+            result = self.pm.tick()
+        self.assertEqual(result["state"], "reobserve_after_publication")
+        self.assertEqual(looked_up, [ordinary_id])
+        self.assertEqual(observed.call_count, 1, "publisher resumption must be reachable")
+        self.assertEqual(self.calls, [])
+        self.assertEqual(self.broker.actions, [])
+        with self.pm.journal.connect() as db:
+            self.assertEqual(db.execute("SELECT state FROM actions WHERE action_id=?", (ordinary_id,)).fetchone()[0], "applied")
+            self.assertEqual(db.execute("SELECT state FROM actions WHERE action_id=?", (publication_id,)).fetchone()[0], "intent")
+            self.assertEqual(db.execute("SELECT COUNT(*) FROM seen").fetchone()[0], 0)
+        self.pm.journal.verify()
+
+    def test_publication_recovery_filter_does_not_bypass_unknown_ordinary_mutation(self):
+        publication_id = "publication-" + "f" * 64
+        ordinary_id = "pm-" + "e" * 40
+        with self.pm.journal.connect() as db:
+            for action_id, kind in ((publication_id, "parent_publication"), (ordinary_id, "assign")):
+                db.execute("INSERT INTO actions VALUES(?,?,?,'intent',?,NULL)",
+                           (action_id, TASK, kind, json.dumps({"task_id": TASK})))
+        with patch.object(self.broker, "observe", side_effect=AssertionError("ordinary unknown must stop observation")):
+            result = self.pm.tick()
+        self.assertEqual(result["state"], "reconciliation_required")
+        self.assertEqual(result["action_id"], ordinary_id)
+        self.assertEqual(self.calls, [])
+        self.assertEqual(self.broker.actions, [])
+
+    def test_changed_parent_publication_observation_spends_no_model_or_action_and_resumes_fresh(self):
+        for parent_result in ({"main_commit": MERGED}, {"main_commit": BASE, "must_reobserve": True}):
+            with self.subTest(parent_result=parent_result):
+                self.broker.state["parent_completion"] = parent_result
+                result = self.pm.tick()
+                self.assertEqual(result["state"], "reobserve_after_publication")
+                self.assertFalse(result["model_called"])
+                self.assertFalse(result["mutated"])
+                self.assertEqual(self.calls, [])
+                self.assertEqual(self.broker.actions, [])
+                with self.pm.journal.connect() as db:
+                    self.assertEqual(db.execute("SELECT COUNT(*) FROM seen").fetchone()[0], 0)
+                    self.assertEqual(db.execute("SELECT COUNT(*) FROM actions").fetchone()[0], 0)
+                    self.assertEqual(db.execute("SELECT COUNT(*) FROM budgets").fetchone()[0], 0)
+        # The next current observation can progress with the same logical task;
+        # no fingerprint, budget or failure counter reset is required.
+        self.broker.state.update(main_commit=MERGED, parent_completion={"main_commit": MERGED})
+        self.broker.state["formal_snapshot"]["approved_commit"] = MERGED
+        self.response = decision("wait", task_id=None)
+        self.assertEqual(self.pm.tick()["state"], "wait")
+        self.assertEqual(len(self.calls), 1)
+
+    def test_worker_profile_contention_does_not_charge_or_poison_same_event(self):
+        driver = self.profile_driver()
+        self.pm.decide = driver
+        proof = {"result": decision(), "usage": deepcopy(self.usage)}
+        with patch.object(driver, "_call", return_value=proof) as model:
+            with exclusive_lock(driver.executor.config.auth_root / "lgax-worker.lock"):
+                for _ in range(3):
+                    result = self.pm.tick()
+                    self.assertEqual(result["state"], "wait")
+                    self.assertFalse(result["model_called"])
+                    self.assertFalse(result["mutated"])
+                self.assertEqual(model.call_count, 0)
+                with self.pm.journal.connect() as db:
+                    self.assertEqual(db.execute("SELECT COUNT(*) FROM seen").fetchone()[0], 0)
+                    self.assertEqual(db.execute("SELECT COUNT(*) FROM journal").fetchone()[0], 0)
+                    self.assertEqual(db.execute("SELECT SUM(model_calls+tokens+actions) FROM budgets").fetchone()[0], 0)
+                    self.assertIsNone(db.execute("SELECT value FROM metadata WHERE key='driver_failures'").fetchone())
+            # Release alone suffices: no new fingerprint, nonce or quota reset.
+            self.assertEqual(self.pm.tick()["state"], "applied")
+            self.assertEqual(model.call_count, 1)
+            self.assertEqual(self.pm.tick()["state"], "unchanged")
+            self.assertEqual(model.call_count, 1)
+
+    def test_profile_reservation_spans_journal_start_and_model_call(self):
+        driver = self.profile_driver()
+        self.pm.decide = driver
+        def model(*_args, **_kwargs):
+            with self.pm.journal.connect() as db:
+                self.assertEqual(db.execute("SELECT COUNT(*) FROM seen WHERE state='decision_started'").fetchone()[0], 1)
+                self.assertEqual(db.execute("SELECT SUM(model_calls) FROM budgets").fetchone()[0], 1)
+            with self.assertRaises(OSError), exclusive_lock(driver.executor.config.auth_root / "lgax-worker.lock"):
+                self.fail("journal reservation released the profile before the call")
+            return {"result": decision(), "usage": deepcopy(self.usage)}
+        with patch.object(driver, "_call", side_effect=model):
+            self.assertEqual(self.pm.tick()["state"], "applied")
+        with exclusive_lock(driver.executor.config.auth_root / "lgax-worker.lock"):
+            pass
+
+    def test_failure_after_model_reservation_keeps_unknown_usage_fail_closed(self):
+        for failure in (OSError("fixture I/O failure after execution"), PMDriverBusy("not a pre-call acquisition")):
+            with self.subTest(error=type(failure).__name__):
+                driver = self.profile_driver()
+                self.pm.decide = driver
+                with patch.object(driver, "_call", side_effect=failure) as model:
+                    result = self.pm.tick()
+                self.assertEqual(result["state"], "decision_rejected")
+                self.assertTrue(result["model_called"])
+                self.assertEqual(model.call_count, 1)
+                with self.pm.journal.connect() as db:
+                    budget = db.execute("SELECT model_calls,tokens FROM budgets WHERE scope LIKE 'day:%'").fetchone()
+                    self.assertEqual(budget, (1, self.pm.policy["limits"]["max_model_tokens_per_day"]))
+                    self.assertEqual(db.execute("SELECT state FROM seen").fetchone()[0], "rejected")
+                    self.assertEqual(db.execute("SELECT value FROM metadata WHERE key='driver_failures'").fetchone()[0], "1")
+                # Fresh independent test state; no operational ledger is touched.
+                self.temp.cleanup()
+                self.setUp()
 
     def test_off_does_not_call_model_or_mutate(self):
         for key, value in (("global_mode", "off"), ("global_mode", "stop"), ("pm_mode", "off")):

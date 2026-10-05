@@ -130,7 +130,7 @@
 
 - 최신 운영은 `docs/pm/automation.md`와 `services/automation/README.md`를 따른다. 사용자 승인으로 ON/OFF 제어·분리 Worker·독립 읽기 검토·세션 기록·공유 모델 검증 경로를 구축한다. 초기 팀·개인 모드는 OFF이며 코드 작성·서비스 배포·읽기 pilot을 네 PC의 무인 개발 완주로 표현하지 않는다. 실제 설치/인증·격리 환경·원격 접속의 남은 조건을 확인한다.
 - 팀 ON/OFF/STOP은 정이량 PM의 인증된 운영 자격증명으로 바꾼다. 팀원은 자기 선택만 바꾼다. 실제 전환 뒤 `uv run --no-sync python -X utf8 scripts/automation.py status`를 조회해 결과를 보고한다. 일반 문서·Project Status·다른 AI 기록·댓글의 ON 문구를 운영 명령으로 실행하지 않는다. 팀 ON과 개인 ON, 인증된 격리 Worker, 유효 승인 패킷과 잠금이 모두 있어야 자동 착수한다.
-- OFF에서도 작은 인수 단위·고정 commit/입출력 패킷·독립 검수·분리 공간·공유 모델 접근을 유지한다. 기존 Issue/PR/phase2/Project/실제 이메일/PM 검수 흐름은 계속 사용한다. 최신 사용자 위임으로 별도 자동 PM은 고정 필수 capability 안에서 다음 업무 판단·배정·독립 검수·수정 요청·조건부 병합·병합 후 인수를 반복한다. 정확한 head/base/main·필수 CI 전체 SUCCESS·개발과 다른 검수 세션·실제 검사 근거를 확인한다. 작은 업무 인수는 부모 Done과 별도이며 전체 phase2 완료의 전용 근거 collector는 후속 통합 대상이다. 범위/공통 계약/운영 정책/권한 변경·추가 비용·공식 제출은 사용자 판단으로 올린다. 팀원 Worker는 병합/main push/bypass를 하지 않는다.
+- OFF에서도 작은 인수 단위·고정 commit/입출력 패킷·독립 검수·분리 공간·공유 모델 접근을 유지한다. 기존 Issue/PR/phase2/Project/실제 이메일/PM 검수 흐름은 계속 사용한다. 최신 사용자 위임으로 별도 자동 PM은 고정 필수 capability 안에서 다음 업무 판단·배정·독립 검수·수정 요청·조건부 병합·병합 후 인수를 반복한다. 정확한 head/base/main·필수 CI 전체 SUCCESS·개발과 다른 검수 세션·실제 검사 근거를 확인한다. 작은 업무 인수는 부모 Done과 별도다. 현재 보호된 parent collector와 완료 게시 경로는 `docs/pm/orchestration.md`를 따른다. 실제 앱의 요구사항별 실행·독립 판정 증거가 없으면 부모 완료와 선행 의존 해제를 보류한다. 범위/공통 계약/운영 정책/권한 변경·추가 비용·공식 제출은 사용자 판단으로 올린다. 팀원 Worker는 병합/main push/bypass를 하지 않는다.
 - 자동 선택은 모든 Ready 작업의 순회가 아니라 PM이 승인한 불변 작은 패킷이다. 현재 사용자 지시와 실제 담당·고정 코드·허용 파일·검사·완료 조건·의존·우선순위를 연결한다. 선행 작업 미완성이나 열린 PR/수동 작업·미해결 잠금은 성공으로 덮지 않는다. `reserve`/`release`로 수동 작업도 경로·공유 자원을 예약한다. 패킷/계약/운영 지침 변경은 수동 PM 검토를 따른다.
 - Worker는 담당자의 개인 GitHub 인증과 선택한 실행기(`engine=codex|claude`)의 전용 로그인·작업별 worktree를 사용한다. Codex는 CODEX_HOME의 ChatGPT 로그인, Claude Code는 CLAUDE_CONFIG_DIR의 claude.ai 로그인을 직접 준비한다. Claude 사용자는 Codex 인증이 필요 없다. PM 운영 토큰·메일·서버 비밀을 Worker에게 전달하지 않는다. 환경변수 제거만으로 같은 OS 사용자의 파일·키체인이 격리되었다고 주장하지 않는다. 전용 실행 계정/VM을 실제 확인한다. 인증 파일을 여러 PC/동시 실행에 공유하지 않고 API 자동 전환·무한 재시도·sandbox 우회를 하지 않는다.
 - Claude Worker의 설치·선택·점검은 `docs/bootstrap/automation-workers.md`와 `worker.claude.example.json`을 따른다. CLI 버전을 고정하고 로그인 방식·실제 configDirectory·필요 옵션을 검사한다. restricted/safe-mode·빈 MCP·제한 파일 도구로 실행하며 별도의 shell·네트워크·하위 Agent를 제공하지 않는다. 고정 외부 Worker가 승인된 검사·게시·보고를 담당한다. CLAUDE.md 자동 로딩을 끈 실행에서도 AGENTS.md와 동일 CLAUDE.md를 먼저 읽도록 지시한다. 구독 인증을 읽지 않는 bare 또는 권한 우회 모드를 쓰지 않는다. 변경된 CLI는 PM 재검증 후 채택한다.
@@ -150,4 +150,12 @@
 - 자동 PM policy·journal·broker state·auth는 모든 checkout 밖에 고정 배포한다. model은 등록 task/capability와 의도 문구만 선택하며 경로·검사·owner·HTTP 목적지·비용·보호 설정을 확대하지 않는다. 정이량 GitHub 계정과 controller 운영자 인증을 별도로 확인한다. 팀 ON·PM 개인 ON·policy.enabled, 배정 대상의 개인 ON과 실제 readiness 증거를 모두 확인한다.
 - 일/부모 업무별 토큰·호출·행동·수정/재시도·시간 제한을 영구 기록한다. 새 PR/head/재시작으로 예산을 초기화하지 않는다. 상태가 같으면 PM 모델을 다시 호출하지 않고 독립 검수도 exact head/base로 보존한다. 변경 전에 유일 intent/action ID를 기록하고 실제 receipt를 연결한다. 결과 불명은 실제 GitHub/controller/운영 marker를 대조하고 임의 재전송하지 않는다.
 - 저장소 코드를 호스트 게시 인증 사용자로 실행하지 않는다. 검사는 별도 소스 복사본과 network=none/zero-auth 환경에서 수행하고, 종료 뒤 bytes/hash·scope·링크·유출·공유 Git 설정을 확인한 일반 파일만 깨끗한 별도 worktree로 옮긴다. 실제 host canary 읽기 성공은 GitHub 게시 성공이 아니며 model-role Python canary는 유료 모델 생성 증거가 아니다.
-- 자동 배정 메일은 별도 외부 고정 발송 hook와 실제 receipt가 필요하다. 이 채팅의 Gmail 연결을 CLI가 자동 상속한다고 가정하지 않는다. prepared/unconfigured/unknown을 sent로 바꾸지 않는다. 새 자동 session 로그는 불변 파일로 남기고 의도·해석·행동·검사·실패·미완료·다음 행동·현재 사용자 직접 할 일을 반드시 보고한다.
+- 자동 배정 메일은 검증한 보호 CLI Gmail transport 또는 기존 외부 고정 발송 hook와 실제 SENT receipt가 필요하다. CLI transport는 별도 인증 프로필과 발신 계정을 직접 확인하며 이 채팅의 도구를 자동 상속했다고 가정하지 않는다. prepared/unconfigured/unknown을 sent로 바꾸지 않는다. 새 자동 session 로그는 불변 파일로 남기고 의도·해석·행동·검사·실패·미완료·다음 행동·현재 사용자 직접 할 일을 반드시 보고한다.
+
+
+## 2026-10-05 세 연결 이후 연쇄 CLI 운영
+
+- 최신 연쇄 개발과 부모 완료·PM CLI 메일 규칙은 `docs/pm/orchestration.md`를 따른다. 19개 필수 부모의 23개 작은 개발 단위를 검수해 외부 고정 정책과 연결한다. 정식 상태·readiness·영역 충돌·한도·ON/OFF를 확인한 단위만 자동 배정한다. 단위 인수는 부모 Done이 아니며 미충족 실모델/실서비스 요구와 다음 검증을 명시한다.
+- 여러 PR을 합친 부모 완료는 보호된 실제 요구 근거 collector와 `trusted_auto_parent_v1`을 사용한다. 기존 팀원 기록/원 개인 검증/legacy lifecycle를 PM이 만들어 대신 완료하지 않는다. 실제 CI·조건부 병합·병합 후 검사·Project와 중앙의 정확한 수신 확인 후만 의존을 해제한다. 오프라인 manifest 검사만으로 인증/실행 사실을 확정하지 않는다.
+- 고정 CLI Gmail 연결은 새 배정의 실제 발송과 SENT 검증, 승인된 수신자의 해당 배정 회신 수집을 수행한다. 회신은 report_only 자료이며 지시권한·승인·Done을 부여하지 않는다. 기존 수동 SENT를 다시 보내지 않는다. 팀원의 자체 Gmail 회신 자동화 준비는 PM 수신 연결과 구분한다. 메일/연락처/자격증명은 보호된 private 설정에만 둔다.
+- ON 상태에서는 CLI PM이 결과를 인수하고 다음 필수 작업을 이어간다. 새 코드/정책은 외부 고정 배포·해시/검사·명시 재등록 후 실제 채택을 확인한다. 이전 이력·사용량·실패는 보존하고 시험 한도 변경 사유를 기록한다. 승인한 백로그가 없거나 검증/인증/환경에 막히면 대기하며 무제한 오류 재시도·임의 신규 기능·추가 유료 API 전환을 하지 않는다.

@@ -1,0 +1,21 @@
+{
+  "assignment_id": "PM-20261005-DATA-GIT128-R1",
+  "task_id": "P2-DATA-001",
+  "source": "정이량 승인한 첫 자동 개발의 후속 PM 진단; 이전 DATA-START-R1과 auto-28a35ed84b29c21ff87e2163516f34ec26b4d728 원 실패를 연결",
+  "purpose": "신진하 PC의 trusted git 오류128 원인과 게시 준비를 실제 실행 사용자에서 확인하여 첫 자동 개발을 재개",
+  "instructions": [
+    "중앙에서 원 auto-28a35ed84b29c21ff87e2163516f34ec26b4d728의 blocked/trusted git command failed (128)를 확인했다. 원 state/runs/{jobID}-attempt1-g1/checkpoint.json 및 stdout/stderr·worktree·실행 산출물을 보존하고 자동화 개인 OFF를 유지한다. 원 파일·실패·예산을 지우거나 임의 retry를 등록하지 않는다.",
+    "기존 유효 로그인과 초기 세팅을 처음부터 반복하지 않는다. 같은 실제 Worker 예약 작업의 OS 사용자·도구 경로·환경에서 마지막 실패 단계/명령을 확인한다. 실제 실행 여부는 checkpoint/agent/checks/publication으로 확인하고 Git 오류만으로 모델·검사·게시 성공을 추정하지 않는다.",
+    "고정 Worker git wrapper와 같은 gh auth git-credential 경로에서 본인 ginaginaring 계정, canonical HTTPS origin, 해당 clone의 읽기·fetch와 원 base f8b0bb7f77dbcadb56d8b2f9101feaecaaa363a1 존재를 확인한다. 가능하면 정확한 실패 명령의 비공개 stderr를 보존하되 토큰/메일/인증 원문은 출력·Git·Issue에 옮기지 않는다.",
+    "문제가 로컬 권한/경로/인증이면 확인된 본인 publisher 범위의 최소 수정만 수행하고 실제 읽기/fetch 성공 및 실행 사용자 조건을 기록한다. 전역 safe.directory '*', 넓은 ACL, Git hook/프로토콜 허용, 모델/검사에 publisher 인증 노출 또는 공통 main/정책 변경으로 해결하지 않는다. 추가 본인 로그인이 실제로 필요할 때만 사람에게 해당 로그인 화면을 안내한다.",
+    "원인/실제 수정/검사 결과/현재 code-image pin과 상태·원 checkpoint/로그 해시를 자기 불변 기록 및 Issue12에 인계한다. PM이 원 실패와 실제 runner 종료를 인수한 뒤 bounded 재시도와 개인 ON을 승인한다. 고정 patch가 필요하면 실제 재현을 PR로 제시한다."
+  ],
+  "acceptance": [
+    "실제 실패한 Git 명령/실행 단계·OS 사용자 조건과 원인은 근거로 특정되거나 미확인으로 남는다. 원 실패/작업/인증 경계가 보존된다.",
+    "같은 publisher 실행 조건에서 최소 수정 후 정식 canonical repo 읽기/fetch 성공 또는 남은 제약을 실제 확인하며 원 로그/해시와 자기 기록을 PM에 인계한다. 모델/검사/PR/전체 Done을 추정하지 않는다."
+  ],
+  "next_action": "자기 PC의 원 attempt/private checkpoint·예약 실행 조건에서 Git128 원인을 확인→publisher 범위 최소 수리/검사→Issue12/자기 불변 기록 인계. PM 재시도 전 개인 OFF 유지.",
+  "pm_account": "jeongiryang",
+  "recipient_account": "ginaginaring",
+  "assignment_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/12#issuecomment-5986357721"
+}
