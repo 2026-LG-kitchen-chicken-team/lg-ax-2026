@@ -1033,6 +1033,14 @@ class ManualSubmissionMetadataTests(unittest.TestCase):
         self.assertFalse(row["file_metadata_complete"])
         self.assertEqual(self.broker.state["units"], {})
 
+    def test_explicit_metadata_refresh_collects_no_product_or_model(self):
+        self.source([self.manual()])
+        metadata = self.broker.refresh_manual_submissions()
+        self.assertEqual(metadata["manual_submissions"][0]["number"], 82)
+        self.assertEqual(metadata["manual_submission_scan"], "collected_metadata_only")
+        self.assertEqual(self.executor.calls, [])
+        self.assertEqual(self.broker.state["units"], {})
+
     def test_fixed_ready_dispatch_holds_only_exact_manual_product_overlap(self):
         other = "other-development"
         self.broker.config.update(allow_fixed_ready_dispatch=True, released_capabilities=[CAP, other])

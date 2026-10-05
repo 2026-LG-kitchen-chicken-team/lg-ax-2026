@@ -622,6 +622,12 @@ class TrustedPMBroker:
                            "PENDING" if row["state"] == "pending" else "FAILURE", "id": row.get("id")})
         return result
 
+    def refresh_manual_submissions(self):
+        """Fixed-dispatch polling reads metadata without product/model collection."""
+        rows = self._manual_submissions(collect=True)
+        return {"manual_submissions": rows,
+                "manual_submission_scan": self.state.get("manual_submission_scan", "not_collected")}
+
     def _manual_submissions(self, *, collect):
         """Observe unregistered PR metadata only; never adopt or execute its code.
 

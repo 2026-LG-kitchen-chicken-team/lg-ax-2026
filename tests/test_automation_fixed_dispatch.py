@@ -36,6 +36,14 @@ class FixedBroker(fixture.Broker):
             correction_registry=None, development_registry=None)
         self.collect_calls = []
         self.collection_busy = False
+        self.manual_refresh_calls = 0
+        self.pending_manual_submissions = []
+
+    def refresh_manual_submissions(self):
+        self.manual_refresh_calls += 1
+        self.state["manual_submissions"] = deepcopy(self.pending_manual_submissions)
+        self.state["manual_submission_scan"] = "collected_metadata_only"
+        return {key: deepcopy(self.state[key]) for key in ("manual_submissions", "manual_submission_scan")}
 
     def observe(self, *, collect=True):
         self.collect_calls.append(collect)
@@ -100,6 +108,34 @@ class FixedDispatchTests(unittest.TestCase):
         self.assertEqual(len(self.broker.actions), 1)
         self.assertEqual(self.calls, [])
         self.assertEqual(self.budgets()[0]["actions"], 1)
+
+    def test_new_manual_product_is_refreshed_before_ready_selection_not_blindly_dispatched(self):
+        self.assertNotIn("manual_submissions", self.broker.state)
+        self.broker.pending_manual_submissions = [{"number": 82, "author": fixture.PM, "head": fixture.HEAD,
+            "base_repo": fixture.REPO, "state": "open", "draft": False, "authority": "manual_pm_review_pending",
+            "product_paths_present": True, "formal_intake_completed": False,
+            "overlapping_development_capabilities": [fixture.CAP]}]
+        value = self.pm.tick()
+        self.assertEqual(value["state"], "wait")
+        self.assertEqual(self.broker.manual_refresh_calls, 1)
+        self.assertEqual(self.broker.actions, [])
+        self.assertEqual(self.broker.state["manual_submissions"], self.broker.pending_manual_submissions)
+        self.assertEqual(self.budgets()[0]["actions"], 0)
+
+    def test_fixed_metadata_refresh_does_not_collect_model_or_refresh_mutation_cache(self):
+        self.broker.collection_busy = True
+        value = self.pm.tick()
+        self.assertEqual(value["state"], "applied")
+        self.assertEqual(self.broker.manual_refresh_calls, 1)
+        self.assertEqual(self.broker.collect_calls, [False, False])
+        self.assertFalse(value["model_called"])
+        self.assertEqual(self.calls, [])
+        self.assertEqual(self.budgets()[0]["model_calls"], 0)
+
+    def test_off_tick_does_not_poll_manual_inbox_before_fixed_dispatch(self):
+        self.broker.state["global_mode"] = "off"
+        self.assertEqual(self.pm.tick()["state"], "off")
+        self.assertEqual(self.broker.manual_refresh_calls, 0)
 
     def test_flag_missing_or_false_preserves_model_planning(self):
         for value in (None, False):

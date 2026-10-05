@@ -789,6 +789,17 @@ class AutonomousPM:
             return recovery
         fixed_enabled = self._fixed_ready_enabled()
         observation = self._observe(collect=not fixed_enabled)
+        if fixed_enabled and self._is_on(observation):
+            refresh = getattr(self.broker, "refresh_manual_submissions", None)
+            if callable(refresh):
+                # A continuous Ready queue otherwise never collects new manual
+                # PRs. Refresh this read-only inbox once before selection; keep
+                # its cache unchanged during fresh mutation revalidation.
+                metadata = refresh()
+                if (not isinstance(metadata, dict) or set(metadata) != {"manual_submissions", "manual_submission_scan"} or
+                        not isinstance(metadata["manual_submissions"], list) or len(metadata["manual_submissions"]) > 40):
+                    raise PMError("bounded manual metadata refresh required")
+                observation.update(deepcopy(metadata))
         fixed_raw = self.broker.fixed_ready_assignment(observation) if fixed_enabled else None
         if fixed_enabled and fixed_raw is None:
             observation = self._observe()
