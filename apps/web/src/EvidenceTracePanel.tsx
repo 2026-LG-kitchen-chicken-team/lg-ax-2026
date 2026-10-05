@@ -5,8 +5,16 @@
  * sources actually available. Nothing here is fetched, so it says nothing about live data being connected.
  */
 import { evidenceLocation } from './domain';
-import type { Evidence } from './domain';
-import type { Feature, Gap } from './planning';
+import type { BootstrapData, Evidence } from './domain';
+import type { Feature, Gap, RunSnapshot } from './planning';
+
+/** Public bootstrap and a private workspace can hold different datasets, even with equal model/version labels.
+ * Only a matching full dataset identity makes bootstrap a valid current-source comparison for this run.
+ */
+export function currentEvidenceForSnapshot(data: BootstrapData | undefined, snapshot: RunSnapshot | undefined): Evidence[] | undefined {
+  if (!data || !snapshot || data.manifest.dataset_sha256 !== snapshot.dataset_sha256) return undefined;
+  return data.evidence;
+}
 
 /** `usable` is the only status that may count as support; every other status is shown with its reason. */
 export type TraceStatus = 'usable' | 'other_model' | 'other_version' | 'changed' | 'deleted' | 'not_found';

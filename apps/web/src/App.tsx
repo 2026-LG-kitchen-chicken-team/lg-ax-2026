@@ -11,6 +11,7 @@ import { runSources } from './judgement';
 import { contractErrors, draftRunFromRequest, missingRequestQuestions, nextRequestRevision, requestChanges } from './planning';
 import type { DataMode, Feature, PlanningRequest, RunSnapshot } from './planning';
 import { ConceptsView, download, FixtureBanner, HistoryView, ModeSwitch, RequestInsights, ServerEvidenceSearch, WorkspaceBar } from './PlanningViews';
+import { currentEvidenceForSnapshot } from './EvidenceTracePanel';
 import type { MeasureControls } from './PlanningViews';
 import { cancelMeasurement, exportMeasurements, finishMeasurement, startMeasurement } from './measurement';
 import type { EditSummary, MeasurementScope, ModificationMeasurement } from './measurement';
@@ -194,7 +195,8 @@ export default function App() {
   const selectedRun = runs.find(item => item.run.id === runChoice) ?? runs[runs.length - 1];
   // A stored planning run quotes the sources and features its judgement actually received, ahead of the bootstrap data.
   const runScope = runSources(selectedRun, (data?.features ?? []) as unknown as Feature[], data?.evidence ?? []);
-  const planningProps = { mode, runs, selected: selectedRun, onSelect: selectRun, features: runScope.features, evidence: runScope.evidence, currentEvidence: data?.evidence };
+  const planningProps = { mode, runs, selected: selectedRun, onSelect: selectRun, features: runScope.features, evidence: runScope.evidence,
+    currentEvidence: mode === 'fixture' ? data?.evidence : currentEvidenceForSnapshot(data, selectedRun) };
   const originalRequest = mode === 'fixture' ? FIXTURE_ORIGINAL_REQUEST : workspace.project?.project.request as PlanningRequest | undefined;
   // Expiry/reconnect must discard private form state. Connected project creation also changes scopeVersion,
   // but must keep its in-flight form mounted so the successful save result and entered request remain visible.

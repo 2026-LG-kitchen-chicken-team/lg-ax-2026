@@ -3,8 +3,9 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import type { Evidence } from './domain';
-import { EvidenceTracePanel, buildEvidenceTrace, subjectFromGap } from './EvidenceTracePanel';
+import { EvidenceTracePanel, buildEvidenceTrace, currentEvidenceForSnapshot, subjectFromGap } from './EvidenceTracePanel';
 import type { Feature, Gap } from './planning';
+import { FIXTURE_BOOTSTRAP, FIXTURE_RUNS } from './fixtures/planning.fixture';
 
 const SCOPE = { model_id: 'FRIDGE-A', document_version: 'v2' };
 const source = (id: string, patch: Partial<Evidence> = {}): Evidence => ({
@@ -20,6 +21,13 @@ const trace = (evidence: Evidence[], judged?: Evidence[], gap: Gap = GAP, featur
 const status = (result: ReturnType<typeof trace>, id: string) => result.rows.find(row => row.id === id)?.status;
 
 describe('buildEvidenceTrace', () => {
+  it('does not treat a public bootstrap as current private-workspace data without matching dataset identity', () => {
+    expect(currentEvidenceForSnapshot(FIXTURE_BOOTSTRAP, FIXTURE_RUNS[0])).toBeUndefined();
+    const unrelated = { ...FIXTURE_BOOTSTRAP, manifest: { ...FIXTURE_BOOTSTRAP.manifest, dataset_sha256: 'f'.repeat(64) } };
+    expect(currentEvidenceForSnapshot(unrelated, FIXTURE_RUNS[0])).toBeUndefined();
+    const matched = { ...FIXTURE_BOOTSTRAP, manifest: { ...FIXTURE_BOOTSTRAP.manifest, dataset_sha256: FIXTURE_RUNS[0].dataset_sha256 } };
+    expect(currentEvidenceForSnapshot(matched, FIXTURE_RUNS[0])).toBe(matched.evidence);
+  });
   it('accepts review and manual sources inside the model and document version', () => {
     const result = trace([REVIEW, MANUAL]);
     expect(result.rows.map(row => [row.id, row.status, row.role])).toEqual([['R-1', 'usable', 'review'], ['M-1', 'usable', 'manual']]);
