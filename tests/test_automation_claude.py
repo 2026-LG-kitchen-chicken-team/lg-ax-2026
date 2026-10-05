@@ -242,18 +242,24 @@ class ClaudeWorkerTests(unittest.TestCase):
     def test_external_runtime_includes_both_engines_and_refuses_module_tamper(self):
         bundle = build(self.root / "fixed-runtime")
         self.assertEqual(set(bundle["dependency_manifest"]),
-                         {"worker.py", "process.py", "claude.py", "isolation.py", "artifacts.py"})
+                         {"worker.py", "process.py", "claude.py", "isolation.py", "artifacts.py", "revision_reference.py"})
         self.assertIs(bundle["automation_enabled"], False)
         help_result = subprocess.run([sys.executable, bundle["worker_path"], "--help"],
                                      capture_output=True, text=True, timeout=30, check=False)
         self.assertEqual(help_result.returncode, 0, help_result.stderr)
-        path = Path(bundle["worker_path"]).parent / "claude.py"
-        path.write_text("raise Exception('untrusted changed module')\n")
-        refused = subprocess.run([sys.executable, bundle["worker_path"], "--help"],
-                                capture_output=True, text=True, timeout=30, check=False)
-        self.assertNotEqual(refused.returncode, 0)
-        self.assertIn("fixed worker runtime changed", refused.stderr)
-        self.assertNotIn("untrusted changed module", refused.stderr)
+        for name in ("claude.py", "revision_reference.py"):
+            with self.subTest(module=name):
+                path = Path(bundle["worker_path"]).parent / name
+                original = path.read_bytes()
+                try:
+                    path.write_text("raise Exception('untrusted changed module')\n")
+                    refused = subprocess.run([sys.executable, bundle["worker_path"], "--help"],
+                                            capture_output=True, text=True, timeout=30, check=False)
+                    self.assertNotEqual(refused.returncode, 0)
+                    self.assertIn("fixed worker runtime changed", refused.stderr)
+                    self.assertNotIn("untrusted changed module", refused.stderr)
+                finally:
+                    path.write_bytes(original)
 
     def test_runtime_does_not_overwrite_deployed_bundle_or_copy_inside_repo(self):
         target = self.root / "existing-bundle"
