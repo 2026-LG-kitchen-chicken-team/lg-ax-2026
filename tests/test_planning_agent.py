@@ -54,7 +54,10 @@ def semantic_for(context):
             "exclusion_assessments": [{**row(c), "verdict": "compliant", "condition_index": i, "condition": condition}
                                       for c in context["concepts"]
                                       for i, condition in enumerate(context["request"]["exclusions"])],
-            "quality_assessments": [{**row(c), "criterion": criterion}
+            "quality_assessments": [{**row(c), "criterion": criterion,
+                                     "source_quotes": [{"evidence_id": s["id"], "quote": s["text"]}
+                                                       for s in context.get("sources", [])]
+                                     if criterion == "difference_from_current_features" else []}
                                     for c in context["concepts"] for criterion in QUALITY], "questions": []}
 
 

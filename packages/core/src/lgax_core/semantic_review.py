@@ -23,6 +23,14 @@ INSTRUCTIONS = (
     "quality_assessments는 후보별 mechanism(작동 방식), difference_from_current_features(현재 기능과 차이), "
     "unverified_assumptions(미검증 제조·안전·효과 가정), unsupported_factual_claims(근거 없는 수치/실현성을 사실로 단정하지 않음) "
     "네 기준을 각각 한 번 검사하세요. 새 가설 자체는 허용하며 후속 검증 가정과 원문 사실을 구분하세요. "
+    "difference_from_current_features는 needs/desired_outcomes/gaps/gap_assessments를 원문과 대조하세요. "
+    "선반 분리 가능이라는 기존 기능과 분리 전 식품 전체 이동이라는 잔여 불편은 별개입니다. "
+    "기능이 있는데 없다고 서술하거나 미언급을 미지원으로 단정하면 violation입니다. "
+    "같은 모델/문서 버전의 근거가 부족하면 uncertain과 확인 질문을 남기세요. "
+    "이 기준을 satisfied로 판정하려면 후보에 연결된 각 Gap의 리뷰와 연결 기능의 설명서 원문을 "
+    "source_quotes에 인용하여 기존 기능·사용 조건·잔여 불편·후보 차이를 reason에서 분리하세요. "
+    "자동 세척 장치를 제외한 요청에서 자동 세척 모드로 이름만 바꾼 제안도 작동 수단을 검토하세요. "
+    "장치가 필요하면 violation, 기존 기능으로 가능한지 근거가 없으면 uncertain입니다. "
     "exclusion의 verdict는 compliant/violation/uncertain이고 quality는 satisfied/violation/uncertain입니다. "
     "candidate_quote는 해당 후보의 원문 일부를 그대로 인용하세요. "
     "기준 설명이 없는 quality violation만 candidate_quote=''를 허용합니다. source_quotes는 현재 sources의 ID/원문 일부만 쓰세요. "
@@ -115,6 +123,31 @@ def review_semantics(payload: dict, output: dict, report: Any) -> dict:
             for citation in row["source_quotes"]:
                 if citation["quote"] not in sources[citation["evidence_id"]]:
                     invalid("source_quote_not_literal")
+            if (category == "quality" and row["criterion"] == "difference_from_current_features"
+                    and row["verdict"] == "satisfied"):
+                # Literal grounding is necessary, not proof of semantic truth.
+                # Require both sides of every linked gap instead of accepting a
+                # bare assertion that a candidate differs from current features.
+                scoped = {s["id"]: s for s in payload["sources"] if (
+                    s["model_id"], s["document_version"]) == (
+                        payload["product"]["model_id"], payload["product"]["document_version"])}
+                cited = {c["evidence_id"] for c in row["source_quotes"]} & scoped.keys()
+                gaps = {g["id"]: g for g in output["gaps"]}
+                features = {f["id"]: f for f in payload["features"]}
+                for gap_id in concepts[candidate]["gap_ids"]:
+                    gap = gaps.get(gap_id)
+                    if gap is None:
+                        invalid("difference_gap_missing")
+                    reviews = {e for e in gap["evidence_ids"] if e in scoped
+                               and scoped[e]["source_type"] == "review"}
+                    manuals = {e for e in gap["evidence_ids"] if e in scoped
+                               and scoped[e]["source_type"] == "manual"}
+                    if not cited & reviews or not cited & manuals:
+                        invalid("difference_requires_review_and_manual")
+                    for feature_id in gap["feature_ids"]:
+                        feature = features.get(feature_id)
+                        if feature is None or not cited & manuals & set(feature["evidence_ids"]):
+                            invalid("difference_requires_linked_feature_manual")
     if seen_exclusions != {(c, n) for c in concepts for n in range(len(conditions))} or (
         seen_quality != {(c, q) for c in concepts for q in QUALITY}
     ):

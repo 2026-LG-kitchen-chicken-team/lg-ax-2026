@@ -243,6 +243,8 @@ class PlanningAgent:
                         "Gap은 원 Need의 리뷰 근거와 feature_ids에 연결된 설명서 근거 전체를 인용해야 합니다. "
                         "설명서의 명시적 지원은 explicit_supported/supported입니다. "
                         "기능이 있어도 해당 사용 조건에서 희망 결과가 충족되지 않으면 resolution=remaining과 구체 remaining_pain을 남기세요. "
+                        "예: 선반을 분리 세척할 수 있다는 지원 사실과 분리 전에 식품 전체를 옮겨야 하는 부담은 별개입니다. "
+                        "분리 가능을 기능 부재로 바꾸거나 식품 이동 부담까지 해결됐다고 단정하지 마세요. "
                         "희망 결과가 이미 충족되면 resolution=resolved이며 remaining_pain은 빈 문자열입니다. "
                         "문서 미언급은 unmentioned/insufficient_evidence이고 unsupported가 아닙니다. "
                         "explicit_unsupported는 명시적 미지원 설명서 근거가 있을 때만 사용하세요. "
@@ -260,6 +262,8 @@ class PlanningAgent:
                         "3. 각 후보의 title과 kind를 정하고 differentiation에는 잔여 불편을 줄이는 작동 방식과 "
                         "현재 기능·사용 조건과 다른 점을, requirements에는 필요한 동작 조건을 구체적으로 적으세요.\n"
                         "4. 후보의 gap_ids와 evidence_ids는 해당 Gap과 그 근거 전체에 연결하고, "
+                        "request.exclusions의 모든 제외 조건을 작동 수단까지 적용하세요. 이름을 장치에서 모드로 "
+                        "바꾸어 제외를 우회하지 말고, 준수 여부를 확인할 근거가 없으면 보류하세요. "
                         "입력의 constraints를 반영하여 모든 features와 중복 비교한 concept_assessments를 "
                         "후보마다 한 번씩 작성하며 compared_feature_ids에는 전체 기능 ID를 넣으세요.\n"
                         "5. 고객 문제·기존 기능의 사실은 sources의 ID·모델·문서 버전을 보존하여 인용하고, "
@@ -403,6 +407,8 @@ class PlanningAgent:
                     context = {"request": payload["request"], "product": payload["product"],
                                "sources": payload["sources"], "features": payload["features"],
                                "concepts": current["concepts"], "revision_count": payload["revision_count"],
+                               **{key: deepcopy(current[key]) for key in (
+                                   "needs", "desired_outcomes", "gaps", "gap_assessments")},
                                "input_sha256": input_digest(payload), "output_sha256": input_digest(current),
                                "skill_input": {"constraints": payload["request"]["exclusions"]}, "feedback": feedback}
                     try:
