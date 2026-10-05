@@ -174,7 +174,8 @@ class ProductEvidenceTests(unittest.TestCase):
         state = {"schema_version": 1, "runs": {"fixed-operator-recovery": {"state": "executed"}}}
         self.producer.state_path.write_bytes(encode(state))
         self.assertNotEqual(self.producer.state_fingerprint, original)
-        self.assertEqual(self.producer.state_fingerprint, fingerprint(state))
+        self.assertEqual(self.producer.state_fingerprint, fingerprint({
+            "state": state, "evaluator_versions": self.producer.evaluator_versions}))
         self.assertFalse(self.driver.calls)
         self.assertFalse(self.producer.state["runs"])
 
@@ -203,6 +204,37 @@ class ProductEvidenceTests(unittest.TestCase):
         self.assertEqual(entry["state"], "failed")
         self.assertEqual(len(entry["case_ids_reserved"]), 2)
         self.assertFalse(entry["full_task_complete"])
+
+    def test_reviewed_evaluator_change_appends_attempt_and_preserves_original_failure_and_quota(self):
+        from services.automation import product_rpc
+
+        with patch.object(self.producer, "_case", side_effect=PMError("fixture pre-generation failure")):
+            self.assertFalse(self.producer(self.fixture.contract, MAIN, (self.fixture.unit,), self.store).coverage)
+        original = copy.deepcopy(self.producer.state["runs"])
+        unchanged = ProductEvidenceProducer(self.broker)
+        with patch.object(unchanged, "_case") as case:
+            unchanged(self.fixture.contract, MAIN, (self.fixture.unit,), self.store)
+            case.assert_not_called()
+        rpc_source = self.root / "reviewed-product-rpc.py"
+        rpc_source.write_bytes(Path(product_rpc.__file__).read_bytes() + b"\n# reviewed host fixture revision\n")
+        with patch.object(product_rpc, "__file__", str(rpc_source)):
+            changed = ProductEvidenceProducer(self.broker)
+            self.assertNotEqual(changed.evaluator_versions, unchanged.evaluator_versions)
+            self.producer = changed
+            self.assertEqual(len(self.run_fixture().coverage), 5)
+            self.assertEqual(len(self.run_fixture().coverage), 5)
+            self.assertEqual(len(self.case_calls), 2)
+            self.assertEqual(len(self.driver.calls), 1)
+            self.assertEqual(len(changed.state["runs"]), 2)
+            for key, value in original.items():
+                self.assertEqual(changed.state["runs"][key], value)
+            self.assertEqual(sum(len(value["case_ids_reserved"]) for value in changed.state["runs"].values()), 4)
+            # Another reviewed version cannot bypass the cumulative case cap.
+            rpc_source.write_bytes(rpc_source.read_bytes() + b"# next reviewed revision\n")
+            exhausted = ProductEvidenceProducer(self.broker)
+            with patch.object(exhausted, "_case") as case, self.assertRaises(CompletionError):
+                exhausted(self.fixture.contract, MAIN, (self.fixture.unit,), self.store)
+            case.assert_not_called()
 
     def test_reviewer_missing_criteria_produces_explicit_missing_not_artificial_pass(self):
         self.driver.verdict = "missing"

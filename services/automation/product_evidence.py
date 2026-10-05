@@ -102,7 +102,15 @@ def require(value, reason):
 
 class ProductEvidenceProducer:
     def __init__(self, broker, *, options=None, upstream=None, case_bindings=None):
+        from services.automation import product_rpc
+
         self.broker = broker
+        # Only bytes of reviewed, deployed host modules select a new attempt.
+        # A model/config nonce cannot reset failed attempts or their quota.
+        self.evaluator_versions = {
+            "product_evidence.py": digest(regular_file(Path(__file__), maximum=2 * 1024 * 1024)),
+            "product_rpc.py": digest(regular_file(Path(product_rpc.__file__), maximum=2 * 1024 * 1024)),
+            "product_runner.py": digest(RUNNER.encode("utf-8"))}
         supplied = options if options is not None else broker.config.get("product_evidence", {})
         self.options = json.loads(canonical(supplied))
         require(isinstance(self.options, dict), "fixed product evidence configuration required")
@@ -129,7 +137,7 @@ class ProductEvidenceProducer:
     @property
     def state_fingerprint(self):
         """Root cache key may include this; no model-selected state wakes calls."""
-        return fingerprint(self._current_state())
+        return fingerprint({"state": self._current_state(), "evaluator_versions": self.evaluator_versions})
 
     def _current_state(self):
         current = json.loads(regular_file(self.state_path)) if self.state_path.exists() else self.state
@@ -209,7 +217,12 @@ class ProductEvidenceProducer:
                 "pinned source model/license provenance missing")
         for name in ("_trusted_product_rpc.py", "_trusted_product_runner.py"):
             require(not (work / name).exists(), "source shadows fixed product evaluator")
-        (work / "_trusted_product_rpc.py").write_bytes(regular_file(Path(product_rpc.__file__), maximum=2 * 1024 * 1024))
+        rpc_source = regular_file(Path(product_rpc.__file__), maximum=2 * 1024 * 1024)
+        require(digest(rpc_source) == self.evaluator_versions["product_rpc.py"] and
+            digest(regular_file(Path(__file__), maximum=2 * 1024 * 1024)) == self.evaluator_versions["product_evidence.py"] and
+            digest(RUNNER.encode("utf-8")) == self.evaluator_versions["product_runner.py"],
+            "reviewed evaluator source changed after attempt selection")
+        (work / "_trusted_product_rpc.py").write_bytes(rpc_source)
         (work / "_trusted_product_runner.py").write_text(RUNNER, encoding="utf-8", newline="\n")
         frozen = snapshot_files(work)
         write_json(artifacts / "result-schema.json", {"run_id": run_id, "input": binding.input_path,
@@ -254,6 +267,7 @@ class ProductEvidenceProducer:
             self.state.setdefault("case_runs", {})[run_id] = {
                 "approved_origin": origin, "case_id": case_id, "tested_commit": main, "refs": retained,
                 "execution_mode": binding.execution_mode,
+                "evaluator_versions": self.evaluator_versions,
                 "actual_product_tokens": None if any(row.get("usage_unknown") for row in relay.state["requests"])
                     else relay.state["tokens"], "product_token_budget_used": relay.state["tokens"],
                 "actual_product_calls": sum(row.get("generation") is True and "usage" in row for row in relay.state["requests"]),
@@ -499,7 +513,7 @@ class ProductEvidenceProducer:
                 isinstance(unit.get("implementation_session_id"), str) and ID.fullmatch(unit["implementation_session_id"]),
                 "fixed accepted unit origin missing")
         key = fingerprint({"main": main, "contract": contract.fingerprint, "job": unit["job_id"], "options": self.options,
-            "bindings": [asdict(case) for case in self.bindings.values()]})
+            "bindings": [asdict(case) for case in self.bindings.values()], "evaluator_versions": self.evaluator_versions})
         with exclusive_lock(self.root / "producer.lock"):
             # Two pre-created PM callbacks must not replay a paid case after
             # waiting for the same protected lock with stale in-memory state.
@@ -519,6 +533,7 @@ class ProductEvidenceProducer:
                 actual_cases = sum(len(value.get("case_ids_reserved", [])) for value in self.state["runs"].values())
                 require(actual_cases + len(self.bindings) <= self.options["max_product_cases_per_task"], "logical product-case budget exhausted")
                 entry = {"state": "started", "main": main, "task_id": TASK, "job_id": unit["job_id"],
+                         "evaluator_versions": self.evaluator_versions,
                          "case_ids_reserved": list(self.bindings), "full_task_complete": False}
                 self.state["runs"][key] = entry
                 self._save()  # Started/failed units retain quota across restarts and fresh main.
