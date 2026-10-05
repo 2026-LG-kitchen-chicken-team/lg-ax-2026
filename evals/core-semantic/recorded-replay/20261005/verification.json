@@ -1,0 +1,139 @@
+{
+  "execution_kind": "recorded_response_replay",
+  "new_model_calls": 0,
+  "new_ssh_or_gpu_calls": 0,
+  "remote_submission": false,
+  "base_commit": "e5de02ea5d058aa9a62990f741cac6c4da578988",
+  "observed_remote_main": "671ec2bf019806f9ab9103b4a41dc4a4ab709a3a",
+  "remote_core_diff_from_base": false,
+  "executions": 9,
+  "original_model_calls": 39,
+  "review_calls": 7,
+  "binding_verified": 7,
+  "rejected_original_reports": 5,
+  "validated_original_reports": 2,
+  "recorded_tokens": {
+    "prompt_eval_count": 82403,
+    "eval_count": 50361
+  },
+  "new_regressions_passed": 8,
+  "independent_input_tests_passed": 7,
+  "prior_runtime_full_suite_passed": 477,
+  "full_suite_repeated_in_this_step": false,
+  "checks": [
+    {
+      "name": "recorded-reviews",
+      "command": [
+        "C:\\Users\\admin\\Documents\\ChatGPT\\LG 해커톤\\lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_semantic_recorded_reviews.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.516,
+      "log_sha256": "c3e08887b24bfbd6ae39490fbe07c875c5c4d957491eee78bff6e80df1f78d68"
+    },
+    {
+      "name": "independent-inputs",
+      "command": [
+        "C:\\Users\\admin\\Documents\\ChatGPT\\LG 해커톤\\lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_semantic_inputs.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.563,
+      "log_sha256": "6e021466751a72e9ad00299007a4025a9c2775075e5cbb1c521f4f259d0a08fc"
+    },
+    {
+      "name": "lint",
+      "command": [
+        "C:\\Users\\admin\\Documents\\ChatGPT\\LG 해커톤\\lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "check",
+        "evals/core-semantic/replay_reviews.py",
+        "tests/test_semantic_recorded_reviews.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.109,
+      "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "name": "diff",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.047,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "rules",
+      "command": [
+        "C:\\Users\\admin\\Documents\\ChatGPT\\LG 해커톤\\lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.094,
+      "log_sha256": "7e0a7002be1c8a6a929966a18bc7207035beabeef3065614f21a9b6265ca789d"
+    },
+    {
+      "name": "contracts",
+      "command": [
+        "C:\\Users\\admin\\Documents\\ChatGPT\\LG 해커톤\\lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "scripts/check_contracts.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.265,
+      "log_sha256": "1e1b81f4c2607b74aca9deb8fd8bf0f1b048508d317d21f36ed1b59fca45661b"
+    },
+    {
+      "name": "phase2",
+      "command": [
+        "C:\\Users\\admin\\Documents\\ChatGPT\\LG 해커톤\\lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "scripts/phase2.py",
+        "validate"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 9.563,
+      "log_sha256": "6e84f7ccf1d99593ee0bf819047eb956d33efeb0f2863bbecbebdca299bd1e42"
+    }
+  ],
+  "report_sha256": "31a1e4d156be85f43ee1587b975b5936f47d40a972df9cd96e45872543d77c31",
+  "source_files": [
+    {
+      "path": "evals/core-semantic/replay_reviews.py",
+      "sha256": "dfa7c3aa0027570200289a6514ca2d8547030fa37358639dd5e811e812dbad26"
+    },
+    {
+      "path": "tests/test_semantic_recorded_reviews.py",
+      "sha256": "6e636e589c040733bf85d13244fba53eda743b42bca462cb2b16719818743fde"
+    },
+    {
+      "path": "evals/core-semantic/README.md",
+      "sha256": "655208a6f35dedce33aa77d0b6d19538ad79fa32e098f3a251777d435fdb4e90"
+    }
+  ],
+  "meaning_quality_scored": false,
+  "baseline_comparison_complete": false,
+  "independent_SEM_01_to_06_outputs_available": false,
+  "limitation": "Original excluded-condition/API records are not CORE005 independent outputs. Current guards were replayed; new live callback success and semantic quality were not measured."
+}

@@ -6,8 +6,12 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import httpx
+from lgax_core.model_client import ModelConfig, OllamaAdapter, StructuredModelClient
+
 ROOT = Path(__file__).resolve().parents[1]
 prepare_inputs = runpy.run_path(str(ROOT / "evals/core-semantic/prepare_inputs.py"))["prepare_inputs"]
+validate_frozen = runpy.run_path(str(ROOT / "evals/core-semantic/run_comparison.py"))["validate_frozen"]
 
 
 class SemanticInputTests(unittest.TestCase):
@@ -54,6 +58,38 @@ class SemanticInputTests(unittest.TestCase):
             prepare_inputs(self.suite, self.output)
         self.assertFalse(self.output.exists())
 
+    def test_full_six_case_baseline_reaches_model_without_truncating_materials(self):
+        prepare_inputs(self.suite, self.output, baseline_contract_mode="client_schema")
+        model = "qwen3:8b"
+        digest = "a" * 64
+        response = json.loads((ROOT / "evals/core-contract/development/normal.fixture-output.json").read_text("utf-8"))
+        for path in sorted(self.output.glob("*.model-input.json")):
+            payload = json.loads(path.read_text("utf-8"))
+            prompt = path.with_name(path.name.replace(".model-input.json", ".baseline.txt")).read_text("utf-8")
+            sent = []
+
+            def transport(request, sent=sent):
+                if request.url.path == "/api/tags":
+                    value = {"models": [{"name": model, "digest": digest}]}
+                else:
+                    sent.append(json.loads(request.content))
+                    value = {"model": model, "response": json.dumps(response),
+                             "done": True, "done_reason": "stop"}
+                return httpx.Response(200, stream=httpx.ByteStream(json.dumps(value).encode()),
+                                      headers={"Content-Type": "application/json"})
+
+            config = ModelConfig("http://127.0.0.1:18864", model, digest,
+                                 max_output_tokens=8192, context_tokens=16384)
+            with StructuredModelClient(OllamaAdapter(config, transport=httpx.MockTransport(transport))) as client:
+                client.generate(prompt, payload["output_contract"], model)
+            self.assertEqual(len(sent), 1)
+            self.assertEqual(sent[0]["format"], payload["output_contract"])
+            current = {"input": payload["materials"]["input"], "dataset": payload["materials"]["dataset"]}
+            self.assertIn(json.dumps(current, ensure_ascii=False, separators=(",", ":")), sent[0]["prompt"])
+            for source in current["input"]["sources"]:
+                self.assertIn(source["text"], sent[0]["prompt"])
+            self.assertNotIn('"review_checks"', sent[0]["prompt"])
+
     def test_existing_output_directory_and_record_are_preserved(self):
         self.output.mkdir()
         original = self.output / "actual-run.json"
@@ -61,6 +97,19 @@ class SemanticInputTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             prepare_inputs(self.suite, self.output)
         self.assertEqual(original.read_text("utf-8"), "record to preserve")
+
+    def test_comparison_refuses_modified_frozen_prompt_and_original_material(self):
+        prepare_inputs(self.suite, self.output, baseline_contract_mode="client_schema")
+        self.assertEqual(len(validate_frozen(self.suite, self.output)), 6)
+        prompt = self.output / "SEM-01.baseline.txt"
+        original = prompt.read_bytes()
+        prompt.write_bytes(original + b"changed")
+        with self.assertRaises(ValueError):
+            validate_frozen(self.suite, self.output)
+        prompt.write_bytes(original)
+        self.edit("materials/SEM-01.json", lambda value: value["dataset"]["evidence"][0].update(text="changed"))
+        with self.assertRaises(ValueError):
+            validate_frozen(self.suite, self.output)
 
     def test_manifest_request_and_material_scope_mismatch_are_rejected(self):
         self.edit("materials/SEM-01.json", lambda v: v["input"]["request"].update(improvement_task="changed"))
@@ -85,7 +134,7 @@ class SemanticInputTests(unittest.TestCase):
             with self.subTest(field=field):
                 source = self.suite / "materials/SEM-06.json"
                 original = source.read_text("utf-8")
-                def mutate(value):
+                def mutate(value, field=field):
                     if field == "version":
                         value["previous_dataset"]["manifest"]["version"] = "wrong-version"
                     else:

@@ -1,0 +1,111 @@
+{
+  "scope": "local-only LLM-free correction integration",
+  "execution_kind": "fixture",
+  "new_live_model_calls": 0,
+  "remote_submission": false,
+  "base_commit": "e5de02ea5d058aa9a62990f741cac6c4da578988",
+  "observed_at": "2026-10-04T19:03:09.678974+00:00",
+  "source_sha256": {
+    "packages/core/src/lgax_core/planning_agent.py": "8555ac1b370d60f039ada2dd969b42d1f8e8fe57af65e2a655497d40708a9c48",
+    "packages/core/src/lgax_core/revision_guard.py": "9369ba0e8f804e56ea0a458a266cca52bfdcb1be6f2fb28f790dd5e4e84d499b",
+    "packages/core/src/lgax_core/correction_budget.py": "07201cd20b0144b3401a8601c64447d3aaec0f35c9325c378707ebcb922ea5e9",
+    "tests/test_planning_agent.py": "3fc77f1ccbb4c3cae24161e40f6a0d566af71f673e212bcd89e51639f7a52ab7",
+    "tests/test_revision_guard.py": "b2c6db6b6a243927f54c9090eae5256db9f67582d9ae5e347e295cb6f03c508e",
+    "tests/test_semantic_review.py": "fedcac22b680aa9833a5149a536d7dd04bab34eaac921f9579bd59de6dd952dc"
+  },
+  "artifacts": {
+    "fixture-flows.json": "4a645381ef5351567a68fc16e26a77a283d704e516711f831fe49444075c2468",
+    "web-consumer.json": "31e485955d734c0cf6ef8b556195f5169899feb05ceca2df82617cf7f449929d"
+  },
+  "static_checks": [
+    {
+      "name": "lint",
+      "command": [
+        "C:\\Users\\admin\\Documents\\ChatGPT\\LG 해커톤\\lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "check",
+        "packages/core/src/lgax_core/planning_agent.py",
+        "packages/core/src/lgax_core/revision_guard.py",
+        "packages/core/src/lgax_core/correction_budget.py",
+        "tests/test_planning_agent.py",
+        "tests/test_revision_guard.py",
+        "tests/test_semantic_review.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.16,
+      "log": "tmp/heartbeat-lg-ax-2/core003-local-integration/lint.txt",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "tail": "All checks passed!\n"
+    },
+    {
+      "name": "rules",
+      "command": [
+        "C:\\Users\\admin\\Documents\\ChatGPT\\LG 해커톤\\lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.12,
+      "log": "tmp/heartbeat-lg-ax-2/core003-local-integration/rules.txt",
+      "sha256": "56b21f915cb5a695479359f4ca6063582b0b9bcbdaee1869782a2a805a2a82cd",
+      "tail": "PASS: AGENTS.md and CLAUDE.md are byte-identical\n"
+    },
+    {
+      "name": "contracts",
+      "command": [
+        "C:\\Users\\admin\\Documents\\ChatGPT\\LG 해커톤\\lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "scripts/check_contracts.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.31,
+      "log": "tmp/heartbeat-lg-ax-2/core003-local-integration/contracts.txt",
+      "sha256": "6eeefba1598ed16cffaa688f144376cf5a072af5ec2d72e621cc6d504a38502e",
+      "tail": "{\"status\": \"pass\", \"definitions\": 30, \"models\": 5, \"reviews\": 36, \"planning_requests\": 3, \"analysis_implemented\": false}\n"
+    },
+    {
+      "name": "phase2",
+      "command": [
+        "C:\\Users\\admin\\Documents\\ChatGPT\\LG 해커톤\\lg-ax-2026\\.venv\\Scripts\\python.exe",
+        "scripts/phase2.py",
+        "validate"
+      ],
+      "exit_code": 0,
+      "seconds": 9.83,
+      "log": "tmp/heartbeat-lg-ax-2/core003-local-integration/phase2.txt",
+      "sha256": "513ceac05d2694c95767b5e14a41edc7664eeb902b0bf91c1265be72d440ac6a",
+      "tail": "{\n  \"valid\": true,\n  \"errors\": [],\n  \"meaning\": \"record structure/evidence integrity only\",\n  \"legacy\": \"stale\"\n}\n"
+    }
+  ],
+  "final_python_tests": {
+    "command": [
+      "C:\\Users\\admin\\Documents\\ChatGPT\\LG 해커톤\\lg-ax-2026\\.venv\\Scripts\\python.exe",
+      "-X",
+      "utf8",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-v"
+    ],
+    "exit_code": 0,
+    "seconds": 72.55,
+    "log": "tmp/heartbeat-lg-ax-2/core003-local-integration/python-tests-final.txt",
+    "sha256": "bb3c0eb9332e7ebed9b19d5472fa5e89fdf7d2c876beee138b514cd31ad398ed",
+    "tail": "rkspace_store.WorkspaceTests.test_same_version_label_with_changed_content_rejects_new_runs_but_keeps_old_records) ... ok\ntest_saved_snapshot_is_not_mutated_by_inputs_or_returned_values (test_workspace_store.WorkspaceTests.test_saved_snapshot_is_not_mutated_by_inputs_or_returned_values) ... ok\ntest_wrong_models_group_versions_or_dataset_are_rejected_without_partial_writes (test_workspace_store.WorkspaceTests.test_wrong_models_group_versions_or_dataset_are_rejected_without_partial_writes) ... ok\n\n----------------------------------------------------------------------\nRan 477 tests in 71.694s\n\nOK\n"
+  },
+  "limits": [
+    "MockTransport completions, temporary SQLite and static HTML; no SSH/GPU/live model/browser execution.",
+    "User forbids new PR/push for current work; future ordinary PR after handoff.",
+    "Does not establish semantic quality or CORE002/003 Done."
+  ],
+  "python_test_count": 477,
+  "new_regressions": 7,
+  "reproduction": [
+    "python -m unittest discover -s tests -p test_semantic_review.py -v",
+    "python -m unittest discover -s tests -p test_revision_guard.py -v",
+    "python -m unittest discover -s tests -v"
+  ],
+  "final_lint": "All checks passed at final source hashes; git diff --check clean"
+}

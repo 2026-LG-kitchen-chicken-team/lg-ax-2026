@@ -1,0 +1,285 @@
+{
+  "execution_kind": "live_model",
+  "original_input": {
+    "request": {
+      "product_group": "fridge",
+      "target_customer": "주방 가전을 사용하는 가구",
+      "use_situation": "자료에 적힌 같은 모델과 사용 조건을 검토한다.",
+      "improvement_task": "문 안쪽 칸의 높이를 바꿀 수 있는지 이 모델 기준으로 확인하고 싶다.",
+      "exclusions": [
+        "다른 모델 기능 혼용",
+        "근거 없는 효과 단정"
+      ],
+      "model_ids": [
+        "SEM-03-MODEL"
+      ],
+      "dataset_version": "SEM-03-independent-v1"
+    },
+    "product": {
+      "model_id": "SEM-03-MODEL",
+      "name": "독립 평가용 가상 fridge",
+      "product_group": "fridge",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "SEM-03-REVIEW",
+        "model_id": "SEM-03-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "SEM-03-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "문 안쪽 칸의 높이를 바꿀 수 있는지 이 모델 기준으로 확인하고 싶다.",
+        "feature_ids": []
+      },
+      {
+        "id": "SEM-03-MANUAL",
+        "model_id": "SEM-03-OTHER-MODEL",
+        "document_version": "9.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "SEM-03-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능 및 사용 조건"
+        },
+        "text": "다른 모델의 도어 수납칸은 세 단계 높이로 조절할 수 있다.",
+        "feature_ids": [
+          "SEM-03-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "SEM-03-FEATURE",
+        "model_id": "SEM-03-OTHER-MODEL",
+        "document_version": "9.0",
+        "name": "설명서의 제공 기능",
+        "description": "다른 모델의 도어 수납칸은 세 단계 높이로 조절할 수 있다.",
+        "conditions": [
+          "명시한 사용 조건을 충족해야 한다."
+        ],
+        "evidence_ids": [
+          "SEM-03-MANUAL"
+        ]
+      }
+    ],
+    "revision_count": 0,
+    "max_concepts": 3,
+    "changed_evidence_ids": []
+  },
+  "input": {
+    "request": {
+      "product_group": "fridge",
+      "target_customer": "주방 가전을 사용하는 가구",
+      "use_situation": "자료에 적힌 같은 모델과 사용 조건을 검토한다.",
+      "improvement_task": "문 안쪽 칸의 높이를 바꿀 수 있는지 이 모델 기준으로 확인하고 싶다.",
+      "exclusions": [
+        "다른 모델 기능 혼용",
+        "근거 없는 효과 단정"
+      ],
+      "model_ids": [
+        "SEM-03-MODEL"
+      ],
+      "dataset_version": "SEM-03-independent-v1"
+    },
+    "product": {
+      "model_id": "SEM-03-MODEL",
+      "name": "독립 평가용 가상 fridge",
+      "product_group": "fridge",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "SEM-03-REVIEW",
+        "model_id": "SEM-03-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "SEM-03-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "문 안쪽 칸의 높이를 바꿀 수 있는지 이 모델 기준으로 확인하고 싶다.",
+        "feature_ids": []
+      },
+      {
+        "id": "SEM-03-MANUAL",
+        "model_id": "SEM-03-OTHER-MODEL",
+        "document_version": "9.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "SEM-03-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능 및 사용 조건"
+        },
+        "text": "다른 모델의 도어 수납칸은 세 단계 높이로 조절할 수 있다.",
+        "feature_ids": [
+          "SEM-03-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "SEM-03-FEATURE",
+        "model_id": "SEM-03-OTHER-MODEL",
+        "document_version": "9.0",
+        "name": "설명서의 제공 기능",
+        "description": "다른 모델의 도어 수납칸은 세 단계 높이로 조절할 수 있다.",
+        "conditions": [
+          "명시한 사용 조건을 충족해야 한다."
+        ],
+        "evidence_ids": [
+          "SEM-03-MANUAL"
+        ]
+      }
+    ],
+    "revision_count": 0,
+    "max_concepts": 3,
+    "changed_evidence_ids": []
+  },
+  "output": null,
+  "decision": null,
+  "status": "held",
+  "trace": [
+    {
+      "stage": "plan",
+      "operation": "plan",
+      "inputs": {
+        "product_group": "fridge",
+        "target_customer": "주방 가전을 사용하는 가구",
+        "use_situation": "자료에 적힌 같은 모델과 사용 조건을 검토한다.",
+        "improvement_task": "문 안쪽 칸의 높이를 바꿀 수 있는지 이 모델 기준으로 확인하고 싶다.",
+        "exclusions": [
+          "다른 모델 기능 혼용",
+          "근거 없는 효과 단정"
+        ],
+        "model_ids": [
+          "SEM-03-MODEL"
+        ],
+        "dataset_version": "SEM-03-independent-v1"
+      },
+      "outputs": {
+        "model_id": "SEM-03-MODEL",
+        "document_version": "1.0",
+        "stages": [
+          "retrieve",
+          "needs",
+          "compare",
+          "concepts",
+          "review"
+        ],
+        "source_ids": [
+          "SEM-03-REVIEW",
+          "SEM-03-MANUAL"
+        ],
+        "max_concepts": 3,
+        "max_revisions": 2
+      },
+      "elapsed_ms": 0.0
+    },
+    {
+      "stage": "review",
+      "operation": "stop",
+      "inputs": {},
+      "outputs": {
+        "ok": false,
+        "error": {
+          "code": "VALIDATION_FAILED",
+          "message": "입력의 범위·근거 관계가 맞지 않습니다.",
+          "details": {
+            "violations": [
+              {
+                "code": "FEATURE_SCOPE_MISMATCH",
+                "stage": "retrieve"
+              },
+              {
+                "code": "SOURCE_SCOPE_MISMATCH",
+                "stage": "retrieve"
+              }
+            ]
+          }
+        }
+      },
+      "elapsed_ms": 0.0
+    }
+  ],
+  "model_calls": [],
+  "semantic_reviews": [],
+  "errors": [
+    {
+      "code": "VALIDATION_FAILED",
+      "message": "입력의 범위·근거 관계가 맞지 않습니다.",
+      "details": {
+        "violations": [
+          {
+            "code": "FEATURE_SCOPE_MISMATCH",
+            "stage": "retrieve"
+          },
+          {
+            "code": "SOURCE_SCOPE_MISMATCH",
+            "stage": "retrieve"
+          }
+        ]
+      }
+    }
+  ],
+  "correction_budget": {
+    "revision_count": 0,
+    "max_revisions": 2,
+    "closed": true,
+    "terminal_reason": "hold",
+    "attempts": []
+  },
+  "actual_generation_requests": [],
+  "source_sha256": {
+    "packages/core/src/lgax_core/planning_agent.py": "b9aeb2e33de824549fef5d08e9a49f24fa9ab55110f1b9a04b8580bd3b81f0f5",
+    "packages/core/src/lgax_core/semantic_review.py": "e7fca7081f512af353f6cd8abf7e419f1550f9e5967cb94f9997ec356e76af2f",
+    "packages/core/src/lgax_core/revision_guard.py": "56734c5dd363016a40e7cd01bd288f30c0fd907f6f888149f0b8e10e1fb01849",
+    "packages/core/src/lgax_core/correction_budget.py": "07201cd20b0144b3401a8601c64447d3aaec0f35c9325c378707ebcb922ea5e9",
+    "packages/core/src/lgax_core/judgement_contract.py": "db7560e7d61e81e8d228b439969d3a28293b0cd219b7560eddea12923a2b2c24",
+    "packages/core/src/lgax_core/model_client.py": "c46e0cfbf3ea902bbaf14545c0f2719ca16672ba866dc1423d27b5beb76b9e8f",
+    "evals/core-semantic/run_comparison.py": "90ee818cae947bcc0417e52a07bfa6be7ced0573391e70673a5eb44c3b69462e"
+  },
+  "conditions": {
+    "request_sha256": "906bbf4ee57039c113cf203e7c2a295c60b3e65994fa3880906920bf4946cb4a",
+    "data_sha256": "710cb50d1d713b102f405c319af805b42c914e2e038a2cfbda15be753863b6e5",
+    "output_contract_sha256": "f5ebb8b0c466e0c38ff6df19dfee1446db84350d9c4a36478438d0b5aa92b7d5",
+    "model": {
+      "id": "qwen3:8b",
+      "revision": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41"
+    },
+    "sampling": {
+      "temperature": 0,
+      "seed": 42,
+      "thinking": false
+    },
+    "output_budget": {
+      "max_output_tokens_per_call": 8192,
+      "total_output_tokens_limit": null
+    },
+    "environment": {
+      "provider": "ollama",
+      "host": "existing-lg-lab-ollama",
+      "runtime": "0.34.0",
+      "context_tokens": 16384,
+      "adapter": "ollama",
+      "constraint_mode": "native_schema_and_local_validation",
+      "model_quantization": "Q4_K_M",
+      "gpu": "RTX A6000 GPU0 (existing LG service; separately verified)"
+    },
+    "data_access": {
+      "pool": "entire_case_dataset",
+      "availability": "all_materials_available",
+      "truncation": "none"
+    },
+    "measurement_scope": "whole_request_including_all_model_calls_and_retries"
+  }
+}

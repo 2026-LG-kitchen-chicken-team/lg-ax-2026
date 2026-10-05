@@ -25,8 +25,9 @@ def require(condition: bool, message: str) -> None:
         raise ValueError(message)
 
 
-def prepare_inputs(directory: Path, output_dir: Path) -> dict:
+def prepare_inputs(directory: Path, output_dir: Path, *, baseline_contract_mode: str = "inline") -> dict:
     root = Path(__file__).resolve().parents[2]
+    require(baseline_contract_mode in ("inline", "client_schema"), "Unknown baseline contract delivery")
     manifest = read(directory / "manifest.json")
     require(manifest["schema_version"] == 1 and manifest["independent_from_development"] is True,
             "Manifest must declare schema version1 and independent inputs")
@@ -89,7 +90,15 @@ def prepare_inputs(directory: Path, output_dir: Path) -> dict:
                         "EVIDENCE_POOL_JSON": {"input": value, "dataset": data}, "RESULT_SCHEMA_JSON": read(output_contract)}
         prompt = template
         for name, content in replacements.items():
-            prompt = prompt.replace("{{" + name + "}}", json.dumps(content, ensure_ascii=False, indent=2))
+            rendered = json.dumps(content, ensure_ascii=False, indent=2)
+            if baseline_contract_mode == "client_schema":
+                # The verified model client includes the complete identical schema
+                # in its formatted prompt and the native format parameter. Keep
+                # every current material while avoiding a second schema copy.
+                rendered = ("형식 지침에 제공된 동일한 전체 JSON Schema를 따릅니다."
+                            if name == "RESULT_SCHEMA_JSON" else
+                            json.dumps(content, ensure_ascii=False, separators=(",", ":")))
+            prompt = prompt.replace("{{" + name + "}}", rendered)
         # The Agent injects these calculated fields; give the baseline the same
         # values instead of requiring a language model to compute SHA256.
         prompt += "\n\n기계 계산 메타데이터(원문 판단과 구분하며 그대로 복사):\n" + json.dumps({
@@ -111,6 +120,7 @@ def prepare_inputs(directory: Path, output_dir: Path) -> dict:
         input_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", "utf-8", newline="\n")
         baseline_path.write_text(prompt + "\n", "utf-8", newline="\n")
         inventory.append({"case_id": name, "category": case["category"],
+                          "baseline_contract_mode": baseline_contract_mode,
                           "data_sha256": file_hash(directory / case["data_path"]),
                           "output_contract_sha256": file_hash(directory / case["output_contract_path"]),
                           "input_sha256": input_digest(material["input"]),
@@ -128,8 +138,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--suite", type=Path, default=Path(__file__).resolve().parent)
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--baseline-contract-mode", choices=("inline", "client_schema"), default="inline")
     args = parser.parse_args()
-    print(json.dumps(prepare_inputs(args.suite, args.output_dir), ensure_ascii=False))
+    print(json.dumps(prepare_inputs(args.suite, args.output_dir,
+                                   baseline_contract_mode=args.baseline_contract_mode), ensure_ascii=False))
 
 
 if __name__ == "__main__":

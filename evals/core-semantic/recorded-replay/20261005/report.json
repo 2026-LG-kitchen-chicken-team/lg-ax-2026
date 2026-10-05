@@ -1,0 +1,1226 @@
+{
+  "schema_version": 1,
+  "execution_kind": "recorded_response_replay",
+  "new_model_calls": 0,
+  "sources": [
+    {
+      "path": "evals/pm-review/20261005-round2/live-lg-final/ambiguous_mode.json",
+      "sha256": "bb896e0762ff1c51e6c9005bad4cc6a7fed40adc6bc59812edda5c59648d2f19"
+    },
+    {
+      "path": "evals/pm-review/20261005-round2/live-lg-final/changed_exclusion.json",
+      "sha256": "2fc9730ec4ad8cfee9df45c2b02acd4a4dcb5a7701c3476c4e091232a7a2e02e"
+    },
+    {
+      "path": "evals/pm-review/20261005-round2/live-lg-final/conflicting_conditions.json",
+      "sha256": "3c908faed3240c54b8e5d6b4e60a642e34db267dfde846a40aca77d3d75d6186"
+    },
+    {
+      "path": "evals/pm-review/20261005-round2/live-lg-final/development-normal.json",
+      "sha256": "41b7be0d7e9a650f9ea25b4e91d834006dd1e0e58a47ae8a00c1bddd7f12d912"
+    },
+    {
+      "path": "evals/pm-review/20261005-round2/live-lg-final/negation.json",
+      "sha256": "7a49d1e4d03245a73b282395122c46342fd26b3120d34283ef8ed5f63461df9a"
+    },
+    {
+      "path": "evals/pm-review/20261005-round2/live-lg-final/normal.json",
+      "sha256": "cbbfe63ff0a49647ae98a25c31b8aa31c7e1eefa7c1f750c3e134a99cd86d6ba"
+    },
+    {
+      "path": "evals/pm-review/20261005-round2/live-lg-final/synonym.json",
+      "sha256": "77c069906ebd17aecc4fa42fcf1001215d90ea7a6b292236c29c962e282dedea"
+    },
+    {
+      "path": "evals/pm-review/20261005-round2/api-live/workspace-live.json",
+      "sha256": "7eaaa5f1bfc7199879f18fa8eec6c8291b3978c13114ac877183da93f60509fc"
+    }
+  ],
+  "executions": [
+    {
+      "source_index": 0,
+      "record": "execution",
+      "run_id": null,
+      "original_execution_kind": "live_model",
+      "original_status": "held",
+      "recorded_model_calls": 2,
+      "original_errors": [],
+      "models": [
+        {
+          "id": "qwen3:8b",
+          "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41"
+        }
+      ],
+      "recorded_token_totals_including_failed_calls": {
+        "prompt_eval_count": 3840,
+        "eval_count": 805
+      },
+      "review_calls": 0,
+      "reviews": [],
+      "meaning_quality_scored": false
+    },
+    {
+      "source_index": 1,
+      "record": "execution",
+      "run_id": null,
+      "original_execution_kind": "live_model",
+      "original_status": "held",
+      "recorded_model_calls": 5,
+      "original_errors": [
+        {
+          "code": "VALIDATION_FAILED",
+          "message": "의미 검토의 원문·범위·완전성을 확인해야 합니다.",
+          "details": {
+            "reason": "exclusion_pair_or_literal_condition"
+          }
+        }
+      ],
+      "models": [
+        {
+          "id": "qwen3:8b",
+          "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41"
+        }
+      ],
+      "recorded_token_totals_including_failed_calls": {
+        "prompt_eval_count": 11016,
+        "eval_count": 7182
+      },
+      "review_calls": 1,
+      "reviews": [
+        {
+          "call_index": 3,
+          "revision_count": 0,
+          "input_sha256": "7d4fa9dfb31acf63f1a8dd45a9de26d66f9e22df2ee9fe39757a4a5e4c82faa7",
+          "output_sha256": "f019a420532e3e528df23d171f6d34332d027a3a4281fafd4e6ba8514697d409",
+          "report_sha256": "e423e82713d8330db01ab430e76bd551e6f8163030e511fb9f97fc5b314c3154",
+          "snapshot_binding": "hash_verified_successful_stage_reconstruction",
+          "binding_verified": true,
+          "recorded_validation": {
+            "ok": false,
+            "error": {
+              "code": "VALIDATION_FAILED",
+              "message": "의미 검토의 원문·범위·완전성을 확인해야 합니다.",
+              "details": {
+                "reason": "exclusion_pair_or_literal_condition"
+              }
+            }
+          },
+          "recorded_decision": null,
+          "current_validation": {
+            "status": "rejected",
+            "error": {
+              "code": "VALIDATION_FAILED",
+              "message": "의미 검토의 원문·범위·완전성을 확인해야 합니다.",
+              "details": {
+                "reason": "semantic_review_schema"
+              }
+            }
+          }
+        }
+      ],
+      "meaning_quality_scored": false
+    },
+    {
+      "source_index": 2,
+      "record": "execution",
+      "run_id": null,
+      "original_execution_kind": "live_model",
+      "original_status": "held",
+      "recorded_model_calls": 2,
+      "original_errors": [],
+      "models": [
+        {
+          "id": "qwen3:8b",
+          "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41"
+        }
+      ],
+      "recorded_token_totals_including_failed_calls": {
+        "prompt_eval_count": 3873,
+        "eval_count": 761
+      },
+      "review_calls": 0,
+      "reviews": [],
+      "meaning_quality_scored": false
+    },
+    {
+      "source_index": 3,
+      "record": "execution",
+      "run_id": null,
+      "original_execution_kind": "live_model",
+      "original_status": "held",
+      "recorded_model_calls": 5,
+      "original_errors": [
+        {
+          "code": "VALIDATION_FAILED",
+          "message": "의미 검토의 원문·범위·완전성을 확인해야 합니다.",
+          "details": {
+            "reason": "exclusion_pair_or_literal_condition"
+          }
+        }
+      ],
+      "models": [
+        {
+          "id": "qwen3:8b",
+          "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41"
+        }
+      ],
+      "recorded_token_totals_including_failed_calls": {
+        "prompt_eval_count": 10163,
+        "eval_count": 6211
+      },
+      "review_calls": 1,
+      "reviews": [
+        {
+          "call_index": 3,
+          "revision_count": 0,
+          "input_sha256": "5aeab3b1fee3a282465668f26bd70a12e1612df7c7cade121a06a6c1550148c7",
+          "output_sha256": "3fe11762ea275af9cb8d0ee9eefb7e133fe8a8116effba16fa0e8323d06d031d",
+          "report_sha256": "61272a1237904de7ce71fe5238f7b2066112e22feef8d053e8474b10fc699bf0",
+          "snapshot_binding": "hash_verified_successful_stage_reconstruction",
+          "binding_verified": true,
+          "recorded_validation": {
+            "ok": false,
+            "error": {
+              "code": "VALIDATION_FAILED",
+              "message": "의미 검토의 원문·범위·완전성을 확인해야 합니다.",
+              "details": {
+                "reason": "exclusion_pair_or_literal_condition"
+              }
+            }
+          },
+          "recorded_decision": null,
+          "current_validation": {
+            "status": "rejected",
+            "error": {
+              "code": "VALIDATION_FAILED",
+              "message": "의미 검토의 원문·범위·완전성을 확인해야 합니다.",
+              "details": {
+                "reason": "semantic_review_schema"
+              }
+            }
+          }
+        }
+      ],
+      "meaning_quality_scored": false
+    },
+    {
+      "source_index": 4,
+      "record": "execution",
+      "run_id": null,
+      "original_execution_kind": "live_model",
+      "original_status": "held",
+      "recorded_model_calls": 2,
+      "original_errors": [],
+      "models": [
+        {
+          "id": "qwen3:8b",
+          "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41"
+        }
+      ],
+      "recorded_token_totals_including_failed_calls": {
+        "prompt_eval_count": 3870,
+        "eval_count": 833
+      },
+      "review_calls": 0,
+      "reviews": [],
+      "meaning_quality_scored": false
+    },
+    {
+      "source_index": 5,
+      "record": "execution",
+      "run_id": null,
+      "original_execution_kind": "live_model",
+      "original_status": "failed",
+      "recorded_model_calls": 6,
+      "original_errors": [
+        {
+          "code": "VALIDATION_FAILED",
+          "message": "의미 검토의 원문·범위·완전성을 확인해야 합니다.",
+          "details": {
+            "reason": "candidate_quote_not_literal"
+          }
+        },
+        {
+          "code": "VALIDATION_FAILED",
+          "message": "후보 보류 사유의 두 표현이 다릅니다.",
+          "details": {}
+        },
+        {
+          "code": "VALIDATION_FAILED",
+          "message": "후보 보류 사유의 두 표현이 다릅니다.",
+          "details": {}
+        }
+      ],
+      "models": [
+        {
+          "id": "qwen3:8b",
+          "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41"
+        }
+      ],
+      "recorded_token_totals_including_failed_calls": {
+        "prompt_eval_count": 13479,
+        "eval_count": 9008
+      },
+      "review_calls": 1,
+      "reviews": [
+        {
+          "call_index": 3,
+          "revision_count": 0,
+          "input_sha256": "81f9a56ae1a25cb17c301ed874b390e0b3cd747aefdd4312433521186bdf5fd2",
+          "output_sha256": "df837273d14e77fbe6993e31de1016b7d0077ba87a5aa3289941e3729f59c9c2",
+          "report_sha256": "e8c41118c16bd0bf055e9d11d547254a7cf9898f779d08bbcf14f880849ae694",
+          "snapshot_binding": "hash_verified_successful_stage_reconstruction",
+          "binding_verified": true,
+          "recorded_validation": {
+            "ok": false,
+            "error": {
+              "code": "VALIDATION_FAILED",
+              "message": "의미 검토의 원문·범위·완전성을 확인해야 합니다.",
+              "details": {
+                "reason": "candidate_quote_not_literal"
+              }
+            }
+          },
+          "recorded_decision": null,
+          "current_validation": {
+            "status": "rejected",
+            "error": {
+              "code": "VALIDATION_FAILED",
+              "message": "의미 검토의 원문·범위·완전성을 확인해야 합니다.",
+              "details": {
+                "reason": "candidate_quote_not_literal"
+              }
+            }
+          }
+        }
+      ],
+      "meaning_quality_scored": false
+    },
+    {
+      "source_index": 6,
+      "record": "execution",
+      "run_id": null,
+      "original_execution_kind": "live_model",
+      "original_status": "failed",
+      "recorded_model_calls": 7,
+      "original_errors": [
+        {
+          "code": "VALIDATION_FAILED",
+          "message": "의미 검토의 원문·범위·완전성을 확인해야 합니다.",
+          "details": {
+            "reason": "candidate_quote_not_literal"
+          }
+        },
+        {
+          "code": "VALIDATION_FAILED",
+          "message": "후보 보류 사유의 두 표현이 다릅니다.",
+          "details": {}
+        },
+        {
+          "code": "VALIDATION_FAILED",
+          "message": "의미 검토의 원문·범위·완전성을 확인해야 합니다.",
+          "details": {
+            "reason": "candidate_quote_not_literal"
+          }
+        }
+      ],
+      "models": [
+        {
+          "id": "qwen3:8b",
+          "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41"
+        }
+      ],
+      "recorded_token_totals_including_failed_calls": {
+        "prompt_eval_count": 15936,
+        "eval_count": 12716
+      },
+      "review_calls": 2,
+      "reviews": [
+        {
+          "call_index": 3,
+          "revision_count": 0,
+          "input_sha256": "193a6976703425eb597f05a90168eadb85f174a63f88066f880c1fe6cdf171b6",
+          "output_sha256": "b08dd6cfe5f0ec6714b27b2641fe8d8b73c3583b1def7153316358e696c0bb98",
+          "report_sha256": "47a03f2a8114df18dedcc532b1d5a958c8df93c1ff2c5a84fe6c212316b48866",
+          "snapshot_binding": "hash_verified_successful_stage_reconstruction",
+          "binding_verified": true,
+          "recorded_validation": {
+            "ok": false,
+            "error": {
+              "code": "VALIDATION_FAILED",
+              "message": "의미 검토의 원문·범위·완전성을 확인해야 합니다.",
+              "details": {
+                "reason": "candidate_quote_not_literal"
+              }
+            }
+          },
+          "recorded_decision": null,
+          "current_validation": {
+            "status": "rejected",
+            "error": {
+              "code": "VALIDATION_FAILED",
+              "message": "의미 검토의 원문·범위·완전성을 확인해야 합니다.",
+              "details": {
+                "reason": "candidate_quote_not_literal"
+              }
+            }
+          }
+        },
+        {
+          "call_index": 6,
+          "revision_count": 2,
+          "input_sha256": "750d8450901bf999ea21ca3775fb8c3974f1e348c23afba25a4811a378fa9a3b",
+          "output_sha256": "f4ca4d4da0e6bfc76afc216e1f6b537bd2ce91be4233796c40f2b97692d0dc2e",
+          "report_sha256": "a51179dc63fba449895a313a651e8f1110517ac81b7071d18039a054029595b9",
+          "snapshot_binding": "hash_verified_successful_stage_reconstruction",
+          "binding_verified": true,
+          "recorded_validation": {
+            "ok": false,
+            "error": {
+              "code": "VALIDATION_FAILED",
+              "message": "의미 검토의 원문·범위·완전성을 확인해야 합니다.",
+              "details": {
+                "reason": "candidate_quote_not_literal"
+              }
+            }
+          },
+          "recorded_decision": null,
+          "current_validation": {
+            "status": "rejected",
+            "error": {
+              "code": "VALIDATION_FAILED",
+              "message": "의미 검토의 원문·범위·완전성을 확인해야 합니다.",
+              "details": {
+                "reason": "candidate_quote_not_literal"
+              }
+            }
+          }
+        }
+      ],
+      "meaning_quality_scored": false
+    },
+    {
+      "source_index": 7,
+      "record": "first",
+      "run_id": "run-437a29df764943968e2d50668c79adc1",
+      "original_execution_kind": "live_model",
+      "original_status": "held",
+      "recorded_model_calls": 4,
+      "original_errors": [],
+      "models": [
+        {
+          "id": "qwen3:8b",
+          "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41"
+        }
+      ],
+      "recorded_token_totals_including_failed_calls": {
+        "prompt_eval_count": 8126,
+        "eval_count": 4881
+      },
+      "review_calls": 1,
+      "reviews": [
+        {
+          "call_index": 3,
+          "revision_count": 0,
+          "input_sha256": "5aeab3b1fee3a282465668f26bd70a12e1612df7c7cade121a06a6c1550148c7",
+          "output_sha256": "3fe11762ea275af9cb8d0ee9eefb7e133fe8a8116effba16fa0e8323d06d031d",
+          "report_sha256": "e48ecbc649ef1d6bccb96f99724cfe8cd37a5936dfee067f20328ea78ab95319",
+          "snapshot_binding": "original_reviewed_snapshots",
+          "binding_verified": true,
+          "recorded_validation": {
+            "report": {
+              "input_sha256": "5aeab3b1fee3a282465668f26bd70a12e1612df7c7cade121a06a6c1550148c7",
+              "output_sha256": "3fe11762ea275af9cb8d0ee9eefb7e133fe8a8116effba16fa0e8323d06d031d",
+              "exclusion_assessments": [
+                {
+                  "concept_id": "CON-001",
+                  "verdict": "violation",
+                  "reason": "기존 기능과 충돌 가능성 있음",
+                  "candidate_quote": "선반 분리 시 식품이 자동으로 분리되어 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    }
+                  ],
+                  "condition_index": 0,
+                  "condition": "다른 모델 기능 혼용"
+                },
+                {
+                  "concept_id": "CON-002",
+                  "verdict": "uncertain",
+                  "reason": "기존 기능과 충돌 가능성 있음",
+                  "candidate_quote": "스마트 청소 모드가 사용자 설정에 따라 작동",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    }
+                  ],
+                  "condition_index": 0,
+                  "condition": "다른 모델 기능 혼용"
+                },
+                {
+                  "concept_id": "CON-003",
+                  "verdict": "violation",
+                  "reason": "기존 기능과 충돌 가능성 있음",
+                  "candidate_quote": "선반 분리 시 식품이 손상되지 않도록 보호",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    }
+                  ],
+                  "condition_index": 0,
+                  "condition": "다른 모델 기능 혼용"
+                }
+              ],
+              "quality_assessments": [
+                {
+                  "concept_id": "CON-001",
+                  "verdict": "violation",
+                  "reason": "기존 기능과 충돌 가능성 있음",
+                  "candidate_quote": "선반 분리 시 식품이 자동으로 분리되어 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    }
+                  ],
+                  "criterion": "mechanism"
+                },
+                {
+                  "concept_id": "CON-001",
+                  "verdict": "violation",
+                  "reason": "기존 기능과 차이가 있음",
+                  "candidate_quote": "선반 분리 시 식품이 자동으로 분리되어 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    }
+                  ],
+                  "criterion": "difference_from_current_features"
+                },
+                {
+                  "concept_id": "CON-001",
+                  "verdict": "uncertain",
+                  "reason": "기존 기능과 충돌 가능성 있음",
+                  "candidate_quote": "선반 분리 시 식품이 자동으로 분리되어 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    }
+                  ],
+                  "criterion": "unverified_assumptions"
+                },
+                {
+                  "concept_id": "CON-001",
+                  "verdict": "satisfied",
+                  "reason": "기존 기능과 충돌 가능성 없음",
+                  "candidate_quote": "선반 분리 시 식품이 자동으로 분리되어 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    }
+                  ],
+                  "criterion": "unsupported_factual_claims"
+                },
+                {
+                  "concept_id": "CON-002",
+                  "verdict": "violation",
+                  "reason": "기존 기능과 충돌 가능성 있음",
+                  "candidate_quote": "스마트 청소 모드가 사용자 설정에 따라 작동",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    }
+                  ],
+                  "criterion": "mechanism"
+                },
+                {
+                  "concept_id": "CON-002",
+                  "verdict": "violation",
+                  "reason": "기존 기능과 차이가 있음",
+                  "candidate_quote": "스마트 청소 모드가 사용자 설정에 따라 작동",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    }
+                  ],
+                  "criterion": "difference_from_current_features"
+                },
+                {
+                  "concept_id": "CON-002",
+                  "verdict": "uncertain",
+                  "reason": "기존 기능과 충돌 가능성 있음",
+                  "candidate_quote": "스마트 청소 모드가 사용자 설정에 따라 작동",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    }
+                  ],
+                  "criterion": "unverified_assumptions"
+                },
+                {
+                  "concept_id": "CON-002",
+                  "verdict": "satisfied",
+                  "reason": "기존 기능과 충돌 가능성 없음",
+                  "candidate_quote": "스마트 청소 모드가 사용자 설정에 따라 작동",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    }
+                  ],
+                  "criterion": "unsupported_factual_claims"
+                },
+                {
+                  "concept_id": "CON-003",
+                  "verdict": "violation",
+                  "reason": "기존 기능과 충돌 가능성 있음",
+                  "candidate_quote": "선반 분리 시 식품이 손상되지 않도록 보호",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    }
+                  ],
+                  "criterion": "mechanism"
+                },
+                {
+                  "concept_id": "CON-003",
+                  "verdict": "violation",
+                  "reason": "기존 기능과 차이가 있음",
+                  "candidate_quote": "선반 분리 시 식품이 손상되지 않도록 보호",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    }
+                  ],
+                  "criterion": "difference_from_current_features"
+                },
+                {
+                  "concept_id": "CON-003",
+                  "verdict": "uncertain",
+                  "reason": "기존 기능과 충돌 가능성 있음",
+                  "candidate_quote": "선반 분리 시 식품이 손상되지 않도록 보호",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    }
+                  ],
+                  "criterion": "unverified_assumptions"
+                },
+                {
+                  "concept_id": "CON-003",
+                  "verdict": "satisfied",
+                  "reason": "기존 기능과 충돌 가능성 없음",
+                  "candidate_quote": "선반 분리 시 식품이 손상되지 않도록 보호",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    }
+                  ],
+                  "criterion": "unsupported_factual_claims"
+                }
+              ],
+              "questions": [
+                "제외 조건 간 상충 범위를 명확히 할 수 있는 자료가 있나요?",
+                "기존 기능과 새로운 기능 간 충돌 가능성에 대한 근거가 명확한가요?",
+                "기능 추가 시 에너지 소비 증가가 최대 10% 이하라는 가정이 기존 자료에 근거가 있나요?"
+              ]
+            },
+            "decision": {
+              "valid": false,
+              "action": "hold",
+              "revision_count": 0,
+              "next_revision_count": 0,
+              "rerun_from": null,
+              "violations": [
+                {
+                  "code": "EXCLUSION_VIOLATION",
+                  "stage": "concepts"
+                },
+                {
+                  "code": "EXCLUSION_UNCERTAIN",
+                  "stage": "concepts"
+                },
+                {
+                  "code": "QUALITY_VIOLATION",
+                  "stage": "concepts"
+                },
+                {
+                  "code": "QUALITY_UNCERTAIN",
+                  "stage": "concepts"
+                }
+              ]
+            }
+          },
+          "recorded_decision": {
+            "valid": false,
+            "action": "hold",
+            "revision_count": 0,
+            "next_revision_count": 0,
+            "rerun_from": null,
+            "violations": [
+              {
+                "code": "EXCLUSION_VIOLATION",
+                "stage": "concepts"
+              },
+              {
+                "code": "EXCLUSION_UNCERTAIN",
+                "stage": "concepts"
+              },
+              {
+                "code": "QUALITY_VIOLATION",
+                "stage": "concepts"
+              },
+              {
+                "code": "QUALITY_UNCERTAIN",
+                "stage": "concepts"
+              }
+            ]
+          },
+          "current_validation": {
+            "status": "validated",
+            "decision": {
+              "valid": false,
+              "action": "hold",
+              "revision_count": 0,
+              "next_revision_count": 0,
+              "rerun_from": null,
+              "violations": [
+                {
+                  "code": "EXCLUSION_VIOLATION",
+                  "stage": "concepts"
+                },
+                {
+                  "code": "EXCLUSION_UNCERTAIN",
+                  "stage": "concepts"
+                },
+                {
+                  "code": "QUALITY_VIOLATION",
+                  "stage": "concepts"
+                },
+                {
+                  "code": "QUALITY_UNCERTAIN",
+                  "stage": "concepts"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "meaning_quality_scored": false
+    },
+    {
+      "source_index": 7,
+      "record": "second",
+      "run_id": "run-a39edd25c4d047c4aad08dbde528d28b",
+      "original_execution_kind": "live_model",
+      "original_status": "held",
+      "recorded_model_calls": 6,
+      "original_errors": [
+        {
+          "code": "VALIDATION_FAILED",
+          "message": "후보 보류 사유의 두 표현이 다릅니다.",
+          "details": {}
+        },
+        {
+          "code": "VALIDATION_FAILED",
+          "message": "후보 보류 사유의 두 표현이 다릅니다.",
+          "details": {}
+        }
+      ],
+      "models": [
+        {
+          "id": "qwen3:8b",
+          "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41"
+        }
+      ],
+      "recorded_token_totals_including_failed_calls": {
+        "prompt_eval_count": 12100,
+        "eval_count": 7964
+      },
+      "review_calls": 1,
+      "reviews": [
+        {
+          "call_index": 5,
+          "revision_count": 2,
+          "input_sha256": "5a1527298c7e440d33cf68b83b20ecf31994f4d531374444010864608d26cf5c",
+          "output_sha256": "23ae2d000547fc6f4081d08d357c01d83124f4b7647faa5258c6386075a66745",
+          "report_sha256": "1344ccfd105f1ba5f7ba373b32b984788c62f5522f67ba21948238926777b54b",
+          "snapshot_binding": "original_reviewed_snapshots",
+          "binding_verified": true,
+          "recorded_validation": {
+            "report": {
+              "input_sha256": "5a1527298c7e440d33cf68b83b20ecf31994f4d531374444010864608d26cf5c",
+              "output_sha256": "23ae2d000547fc6f4081d08d357c01d83124f4b7647faa5258c6386075a66745",
+              "exclusion_assessments": [
+                {
+                  "concept_id": "CON-001",
+                  "verdict": "violation",
+                  "reason": "기존 기능과 충돌 없음이지만, 자동 세척 장치 제안이 제외 조건에 해당합니다.",
+                  "candidate_quote": "선반 일부만 분리하여 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    }
+                  ],
+                  "condition_index": 0,
+                  "condition": "다른 모델 기능 혼용"
+                },
+                {
+                  "concept_id": "CON-001",
+                  "verdict": "violation",
+                  "reason": "기존 기능과 충돌 없음이지만, 자동 세척 장치 제안이 제외 조건에 해당합니다.",
+                  "candidate_quote": "선반 일부만 분리하여 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    }
+                  ],
+                  "condition_index": 1,
+                  "condition": "자동 세척 장치 제안"
+                },
+                {
+                  "concept_id": "CON-002",
+                  "verdict": "violation",
+                  "reason": "기존 기능과 충돌 없음이지만, 자동 세척 장치 제안이 제외 조건에 해당합니다.",
+                  "candidate_quote": "선반 일부만 자동 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    }
+                  ],
+                  "condition_index": 0,
+                  "condition": "다른 모델 기능 혼용"
+                },
+                {
+                  "concept_id": "CON-002",
+                  "verdict": "violation",
+                  "reason": "기존 기능과 충돌 없음이지만, 자동 세척 장치 제안이 제외 조건에 해당합니다.",
+                  "candidate_quote": "선반 일부만 자동 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    }
+                  ],
+                  "condition_index": 1,
+                  "condition": "자동 세척 장치 제안"
+                },
+                {
+                  "concept_id": "CON-003",
+                  "verdict": "violation",
+                  "reason": "기존 기능과 충돌 없음이지만, 자동 세척 장치 제안이 제외 조건에 해당합니다.",
+                  "candidate_quote": "선반 일부만 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    }
+                  ],
+                  "condition_index": 0,
+                  "condition": "다른 모델 기능 혼용"
+                },
+                {
+                  "concept_id": "CON-003",
+                  "verdict": "violation",
+                  "reason": "기존 기능과 충돌 없음이지만, 자동 세척 장치 제안이 제외 조건에 해당합니다.",
+                  "candidate_quote": "선반 일부만 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    }
+                  ],
+                  "condition_index": 1,
+                  "condition": "자동 세척 장치 제안"
+                }
+              ],
+              "quality_assessments": [
+                {
+                  "concept_id": "CON-001",
+                  "verdict": "uncertain",
+                  "reason": "기존 기능과 충돌 없음이지만, 자동 세척 장치 제안이 제외 조건에 해당합니다.",
+                  "candidate_quote": "선반 일부만 분리하여 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    }
+                  ],
+                  "criterion": "mechanism"
+                },
+                {
+                  "concept_id": "CON-001",
+                  "verdict": "satisfied",
+                  "reason": "기존 기능과 충돌 없음이지만, 자동 세척 장치 제안이 제외 조건에 해당합니다.",
+                  "candidate_quote": "선반 일부만 분리하여 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    }
+                  ],
+                  "criterion": "difference_from_current_features"
+                },
+                {
+                  "concept_id": "CON-001",
+                  "verdict": "uncertain",
+                  "reason": "기존 기능과 충돌 없음이지만, 자동 세척 장치 제안이 제외 조건에 해당합니다.",
+                  "candidate_quote": "선반 일부만 분리하여 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    }
+                  ],
+                  "criterion": "unverified_assumptions"
+                },
+                {
+                  "concept_id": "CON-001",
+                  "verdict": "satisfied",
+                  "reason": "기존 기능과 충돌 없음이지만, 자동 세척 장치 제안이 제외 조건에 해당합니다.",
+                  "candidate_quote": "선반 일부만 분리하여 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    }
+                  ],
+                  "criterion": "unsupported_factual_claims"
+                },
+                {
+                  "concept_id": "CON-002",
+                  "verdict": "uncertain",
+                  "reason": "기존 기능과 충돌 없음이지만, 자동 세척 장치 제안이 제외 조건에 해당합니다.",
+                  "candidate_quote": "선반 일부만 자동 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    }
+                  ],
+                  "criterion": "mechanism"
+                },
+                {
+                  "concept_id": "CON-002",
+                  "verdict": "satisfied",
+                  "reason": "기존 기능과 충돌 없음이지만, 자동 세척 장치 제안이 제외 조건에 해당합니다.",
+                  "candidate_quote": "선반 일부만 자동 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    }
+                  ],
+                  "criterion": "difference_from_current_features"
+                },
+                {
+                  "concept_id": "CON-002",
+                  "verdict": "uncertain",
+                  "reason": "기존 기능과 충돌 없음이지만, 자동 세척 장치 제안이 제외 조건에 해당합니다.",
+                  "candidate_quote": "선반 일부만 자동 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    }
+                  ],
+                  "criterion": "unverified_assumptions"
+                },
+                {
+                  "concept_id": "CON-002",
+                  "verdict": "satisfied",
+                  "reason": "기존 기능과 충돌 없음이지만, 자동 세척 장치 제안이 제외 조건에 해당합니다.",
+                  "candidate_quote": "선반 일부만 자동 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    }
+                  ],
+                  "criterion": "unsupported_factual_claims"
+                },
+                {
+                  "concept_id": "CON-003",
+                  "verdict": "uncertain",
+                  "reason": "기존 기능과 충돌 없음이지만, 자동 세척 장치 제안이 제외 조건에 해당합니다.",
+                  "candidate_quote": "선반 일부만 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    }
+                  ],
+                  "criterion": "mechanism"
+                },
+                {
+                  "concept_id": "CON-003",
+                  "verdict": "satisfied",
+                  "reason": "기존 기능과 충돌 없음이지만, 자동 세척 장치 제안이 제외 조건에 해당합니다.",
+                  "candidate_quote": "선반 일부만 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    }
+                  ],
+                  "criterion": "difference_from_current_features"
+                },
+                {
+                  "concept_id": "CON-003",
+                  "verdict": "uncertain",
+                  "reason": "기존 기능과 충돌 없음이지만, 자동 세척 장치 제안이 제외 조건에 해당합니다.",
+                  "candidate_quote": "선반 일부만 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    }
+                  ],
+                  "criterion": "unverified_assumptions"
+                },
+                {
+                  "concept_id": "CON-003",
+                  "verdict": "satisfied",
+                  "reason": "기존 기능과 충돌 없음이지만, 자동 세척 장치 제안이 제외 조건에 해당합니다.",
+                  "candidate_quote": "선반 일부만 세척 가능",
+                  "source_quotes": [
+                    {
+                      "evidence_id": "DEV-01-REVIEW",
+                      "quote": "전체 선반 분리 전에 식품을 비워야 해 작은 오염도 청소가 번거롭다."
+                    },
+                    {
+                      "evidence_id": "DEV-01-MANUAL",
+                      "quote": "선반 전체를 분리 세척할 수 있으며 식품을 모두 비워야 한다."
+                    }
+                  ],
+                  "criterion": "unsupported_factual_claims"
+                }
+              ],
+              "questions": [
+                "제외 조건 간 상충 범위를 확인해야 합니다.",
+                "기존 기능과의 충돌 여부를 명확히 판단할 수 있는 자료가 부족합니다."
+              ]
+            },
+            "decision": {
+              "valid": false,
+              "action": "hold",
+              "revision_count": 2,
+              "next_revision_count": 2,
+              "rerun_from": null,
+              "violations": [
+                {
+                  "code": "EXCLUSION_VIOLATION",
+                  "stage": "concepts"
+                },
+                {
+                  "code": "QUALITY_UNCERTAIN",
+                  "stage": "concepts"
+                }
+              ]
+            }
+          },
+          "recorded_decision": {
+            "valid": false,
+            "action": "hold",
+            "revision_count": 2,
+            "next_revision_count": 2,
+            "rerun_from": null,
+            "violations": [
+              {
+                "code": "EXCLUSION_VIOLATION",
+                "stage": "concepts"
+              },
+              {
+                "code": "QUALITY_UNCERTAIN",
+                "stage": "concepts"
+              }
+            ]
+          },
+          "current_validation": {
+            "status": "validated",
+            "decision": {
+              "valid": false,
+              "action": "hold",
+              "revision_count": 2,
+              "next_revision_count": 2,
+              "rerun_from": null,
+              "violations": [
+                {
+                  "code": "EXCLUSION_VIOLATION",
+                  "stage": "concepts"
+                },
+                {
+                  "code": "QUALITY_UNCERTAIN",
+                  "stage": "concepts"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "meaning_quality_scored": false
+    }
+  ],
+  "validator_sources": [
+    {
+      "path": "evals/core-semantic/replay_reviews.py",
+      "sha256": "dfa7c3aa0027570200289a6514ca2d8547030fa37358639dd5e811e812dbad26"
+    },
+    {
+      "path": "packages/core/src/lgax_core/semantic_review.py",
+      "sha256": "43bf14e29b44c7fa176f3315f9b757321a1c25f38c925eca40dfe40cf6e00a5d"
+    },
+    {
+      "path": "packages/core/src/lgax_core/judgement_contract.py",
+      "sha256": "db7560e7d61e81e8d228b439969d3a28293b0cd219b7560eddea12923a2b2c24"
+    }
+  ],
+  "meaning_quality_scored": false,
+  "baseline_comparison_complete": false,
+  "limitation": "Replays original declarations against current literal and scope guards. No new model output, correction result, independent quality score, or live improvement is established."
+}

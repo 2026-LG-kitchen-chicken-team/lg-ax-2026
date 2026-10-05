@@ -1,0 +1,163 @@
+{
+  "execution_kind": "live_model",
+  "source_kind": "synthetic",
+  "cases": [
+    {
+      "product_group": "fridge",
+      "before": {
+        "artifact": "evals/core-live-completion/20261005/three-product-before-repeat-02/fridge.before.json",
+        "artifact_sha256": "b38a86a48375941a6b014de2c9b7ae1d74917bbfb4773e0b09a84d6820b2b5bb",
+        "status": "held",
+        "calls": 4,
+        "revision_count": 0,
+        "decision": {
+          "valid": false,
+          "action": "hold",
+          "revision_count": 0,
+          "next_revision_count": 0,
+          "rerun_from": null,
+          "violations": [
+            {
+              "code": "EXCLUSION_VIOLATION",
+              "stage": "concepts"
+            },
+            {
+              "code": "QUALITY_UNCERTAIN",
+              "stage": "concepts"
+            }
+          ]
+        },
+        "seconds": 60.125
+      },
+      "after": {
+        "artifact": "evals/core-live-completion/20261005/three-product-reexecution-01/fridge.after.json",
+        "artifact_sha256": "8a5278a53fc7ee34936ca1d27ea3cb3b6f29d98d600952c7a9a781715019aa5e",
+        "status": "held",
+        "calls": 6,
+        "revision_count": 1,
+        "decision": {
+          "valid": false,
+          "action": "hold",
+          "revision_count": 1,
+          "next_revision_count": 1,
+          "rerun_from": null,
+          "violations": [
+            {
+              "code": "EXCLUSION_VIOLATION",
+              "stage": "concepts"
+            },
+            {
+              "code": "QUALITY_UNCERTAIN",
+              "stage": "concepts"
+            }
+          ]
+        },
+        "seconds": 145.61
+      }
+    },
+    {
+      "product_group": "dishwasher",
+      "before": {
+        "artifact": "evals/core-live-completion/20261005/three-product-before-repeat-02/dishwasher.before.json",
+        "artifact_sha256": "708716ea25628e8ff7ad81ff552868b26c708900d0d3394f4ac68656860a13e7",
+        "status": "held",
+        "calls": 4,
+        "revision_count": 0,
+        "decision": {
+          "valid": false,
+          "action": "hold",
+          "revision_count": 0,
+          "next_revision_count": 0,
+          "rerun_from": null,
+          "violations": [
+            {
+              "code": "EXCLUSION_VIOLATION",
+              "stage": "concepts"
+            }
+          ]
+        },
+        "seconds": 78.75
+      },
+      "after": {
+        "artifact": "evals/core-live-completion/20261005/three-product-reexecution-01/dishwasher.after.json",
+        "artifact_sha256": "b444234301a9ea4757838120ed3fcb34870ec414569cf90c2bef674d12242949",
+        "status": "held",
+        "calls": 2,
+        "revision_count": 0,
+        "decision": {
+          "valid": false,
+          "action": "hold",
+          "revision_count": 0,
+          "next_revision_count": 0,
+          "rerun_from": null,
+          "violations": [
+            {
+              "code": "GAP_MANUAL_MISSING",
+              "stage": "compare"
+            },
+            {
+              "code": "UNSUPPORTED_WITHOUT_MANUAL",
+              "stage": "compare"
+            }
+          ]
+        },
+        "seconds": 12.141
+      }
+    },
+    {
+      "product_group": "microwave",
+      "before": {
+        "artifact": "evals/core-live-completion/20261005/three-product-before-repeat-02/microwave.before.json",
+        "artifact_sha256": "b612b869710fb11783e529e7f32bbb5037aab680c3611507302e8d4a24ed1602",
+        "status": "held",
+        "calls": 2,
+        "revision_count": 0,
+        "decision": {
+          "valid": true,
+          "action": "hold",
+          "revision_count": 0,
+          "next_revision_count": 0,
+          "rerun_from": null,
+          "violations": []
+        },
+        "seconds": 9.266
+      },
+      "after": {
+        "artifact": "evals/core-live-completion/20261005/three-product-reexecution-01/microwave.after.json",
+        "artifact_sha256": "c0676812693a9cf67625fcea4e70e6e43bc26803c4d844c28fe4f367222ea5ad",
+        "status": "held",
+        "calls": 4,
+        "revision_count": 0,
+        "decision": {
+          "valid": false,
+          "action": "hold",
+          "revision_count": 0,
+          "next_revision_count": 0,
+          "rerun_from": null,
+          "violations": [
+            {
+              "code": "EXCLUSION_VIOLATION",
+              "stage": "concepts"
+            },
+            {
+              "code": "QUALITY_UNCERTAIN",
+              "stage": "concepts"
+            }
+          ]
+        },
+        "seconds": 63.156
+      }
+    }
+  ],
+  "quality_or_pm_completion_claimed": false,
+  "code_sha256": {
+    "packages/core/src/lgax_core/planning_agent.py": "b9aeb2e33de824549fef5d08e9a49f24fa9ab55110f1b9a04b8580bd3b81f0f5",
+    "packages/core/src/lgax_core/revision_guard.py": "56734c5dd363016a40e7cd01bd288f30c0fd907f6f888149f0b8e10e1fb01849",
+    "packages/core/src/lgax_core/reexecution.py": "e613ae8e76ee0bb9f1a28c003f557a1e481a76721246a2bedebd7da7e61c05a0",
+    "packages/core/src/lgax_core/correction_budget.py": "07201cd20b0144b3401a8601c64447d3aaec0f35c9325c378707ebcb922ea5e9",
+    "packages/core/src/lgax_core/semantic_review.py": "e7fca7081f512af353f6cd8abf7e419f1550f9e5967cb94f9997ec356e76af2f",
+    "packages/core/src/lgax_core/judgement_contract.py": "db7560e7d61e81e8d228b439969d3a28293b0cd219b7560eddea12923a2b2c24",
+    "packages/core/src/lgax_core/model_client.py": "c46e0cfbf3ea902bbaf14545c0f2719ca16672ba866dc1423d27b5beb76b9e8f"
+  },
+  "notice": "Original before examples represent revision_count2. The first direct calls were rejected before generation and remain in reexecution-01. An explicit owner-authorized repeat plan creates each fresh before run at0; failed prior attempts are not erased. Existing after runs use the same code, model and settings; they are linked without rerunning."
+}

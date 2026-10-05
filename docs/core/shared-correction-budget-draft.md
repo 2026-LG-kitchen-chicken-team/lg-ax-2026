@@ -1,4 +1,21 @@
-# CORE003 공유 수정 예산의 연결 준비
+# CORE003 공유 수정 예산 연결
+
+## 현재 로컬 구현 (2026-10-05, 작업016/E016)
+
+PM 인수 main e5de02e 기반에서 PlanningAgent와 RevisionSession이 같은 CorrectionBudget을 사용하도록 연결했다. 한 run에 Session을 한 번 설치하며 초기 생성/계약 오류는 stage_retry, 유효한 계약 분석 이후 의미 오류는 review_revision을 사용한다. 실패한 수정 응답도 회차를 소비하고 유효한 수정 뒤에는 별도 semantic_review를 실행한다. 두 번째 claim 뒤 예산이 닫혀도 이미 허용된 수정과 마지막 검토는 실행한다.
+
+수정 실패로 종료할 때는 원 후보를 rejected_output에 보존하고 내보내는 후보를 비운다. terminal output의 회차/입력 해시는 현재 입력과 맞추며 original_input과 과거 reviewed_input/출력은 보존한다. 결과에는 correction_budget과 revision_session의 사본·실제 모의 호출/원 응답 기록을 추가한다. 완료/보류/실패는 공유 예산을 닫고 새로운 claim을 허용하지 않는다.
+
+사용자 최신 지시로 이번 변경은 LLM 없는 로컬 검증만 수행한다. 서버/GPU/실제 모델 호출·push·새 PR은 실행하지 않는다. 이후 PM 인계 뒤 실제 검증 범위를 갖춘 일반 PR로 제출하며, 아래 초기 Draft의 일괄 PM 이관 문구를 향후 기본 책임으로 사용하지 않는다. 현재 통과는 작성된 MockTransport 응답에 대한 제어 흐름/저장/웹 소비자 검사이며 실제 모델 의미 품질 또는 CORE002/003 Done이 아니다.
+
+재현 입력/저장 snapshot/원 모의 호출은 `evals/core-revision-local/20261005/fixture-flows.json`, 실제 현재 웹 함수와 정적 HTML의 5경로 확인은 같은 폴더의 `web-consumer.json`에 남긴다. 단위 검사 재현:
+
+```text
+uv run python -m unittest discover -s tests -p test_semantic_review.py -v
+uv run python -m unittest discover -s tests -p test_revision_guard.py -v
+```
+
+## 초기 PR63 준비 기록 (원문 보존)
 
 PM 배정 [PM-20261005-CORE-002-ACTUAL-REVIEW-FOLLOWUP](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/8#issuecomment-5982755886)에 따른 최소 독립 구현입니다. **새 판단 코드의 실제 LLM 실행·검증은 미완료이며, 사용자 지정에 따라 PM 정이량이 이 Draft PR을 이어받아 진행합니다.**
 

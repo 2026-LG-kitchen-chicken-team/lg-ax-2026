@@ -52,6 +52,10 @@ with StructuredModelClient(LabModelAdapter(config)) as client:
 
 Lab 서버는 `services/inference/server.py`의 현재 계약을 그대로 사용한다. 스키마 필드를 API에 보내지 않으며 `max_output_tokens=256`, `context_tokens=4096` 외의 조합은 `INVALID_ARGUMENT`/`lab_generation_budget_is_fixed`로 거절한다. 설정을 받아 놓고 고정값으로 실행하지 않는다. 직접 Ollama는 `ModelConfig(max_output_tokens=..., context_tokens=...)`로 출력 상한과 문맥 길이를 지정할 수 있다.
 
+직접 Ollama의 SDK/환경변수 설정은 `temperature`(0~2), `top_p`(0 초과~1), `top_k`(0~1000 정수), `min_p`(0~1)를 명시할 수 있다. 환경변수 이름은 `LGAX_MODEL_TEMPERATURE`, `LGAX_MODEL_TOP_P`, `LGAX_MODEL_TOP_K`, `LGAX_MODEL_MIN_P`다. 기본 temperature0·seed42와 선택 항목 미지정은 기존 동작을 보존한다. 선택 항목을 지정하지 않으면 Ollama의 모델 기본값을 사용하므로 해당 모델의 `/api/show`도 실험에 보존한다. 실제 전달한 options와 성공 metadata가 일치하며 Session 설정 해시에 포함된다. 고정 Lab API는 샘플링 변경을 `lab_sampling_is_fixed`로 거절한다. CLI의 기본값은 기존과 동일하고 이 선택 항목은 SDK/환경변수 경로에서만 지정한다. [Qwen3 공식 추론 가이드](https://huggingface.co/Qwen/Qwen3-8B)는 추론 모드에 temperature0.6·top_p0.95·top_k20·min_p0을 권장한다. 설정 가능/요청 전달은 실제 판단 품질이나 별도 thinking 필드 발생의 증명이 아니다.
+
+Ollama의 SDK `api_mode="chat"` 또는 환경변수 `LGAX_MODEL_API_MODE=chat`(CLI `--api-mode chat`)으로 `/api/chat`을 명시할 수 있다. 기본은 기존 `/api/generate`이며 자동 전환/모델 fallback은 없다. 동일 prompt·native schema·options·top-level think·호출 전후 manifest pin 검사를 사용한다. Chat의 `message.content`만 최종 JSON으로 검사하며 `message.thinking`은 최종 응답으로 대체하지 않는다. 빈 최종 응답·잘림·스키마 위반은 실패다. 실제 API 경로를 metadata/실험 조건에 기록하고 전체 원 transport는 평가 관찰기에서 보존한다. 고정 Lab API는 chat 설정을 `lab_api_is_fixed`로 거절한다.
+
 두 경로의 기본 출력 상한은 256토큰이다. 긴 결과가 필요한 직접 Ollama 호출은 충분한 상한을 명시한다. 출력 상한은 32~8192, 문맥 길이는 1024~32768의 정수이고 `max_output_tokens <= context_tokens - 512`여야 한다. 이 설정 검사는 최소 512토큰의 여유만 요구하며, 전체 prompt·schema가 실제 문맥에 들어가는지나 모델의 지원 문맥·GPU 메모리를 보장하지 않는다. 문자 수 제한 역시 토큰 수나 실제 문맥 적합성을 보장하지 않는다.
 
 ## 입력·실패·정보 보호

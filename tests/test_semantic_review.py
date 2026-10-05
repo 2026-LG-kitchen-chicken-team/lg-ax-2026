@@ -35,6 +35,17 @@ class SemanticReviewTests(unittest.TestCase):
         self.assertLess(len(json.dumps(schema).encode()), 16384)
         self.assertEqual(self.review()["action"], "accept")
 
+    def test_generation_quotes_are_original_choices_without_changing_replay_validation(self):
+        schema = schema_for_review(self.payload, self.output, literal_choices=True)
+        Draft202012Validator.check_schema(schema)
+        Draft202012Validator(schema).validate(self.report)
+        self.report["quality_assessments"][0]["candidate_quote"] += "."
+        self.assertTrue(list(Draft202012Validator(schema).iter_errors(self.report)))
+        self.report = declaration(self.payload, self.output)
+        self.report["quality_assessments"][0]["candidate_quote"] = self.output["concepts"][0]["title"][:2]
+        self.assertFalse(list(Draft202012Validator(schema_for_review(self.payload, self.output)).iter_errors(self.report)))
+        self.assertEqual(self.review()["action"], "accept")
+
     def test_generation_schema_cannot_replace_user_exclusions_with_feature_conditions(self):
         schema = schema_for_review(self.payload, self.output)
         self.report["exclusion_assessments"][0]["condition"] = "설명서의 사용 조건을 충족해야 함"
@@ -184,11 +195,11 @@ class SemanticPipelineTests(unittest.TestCase):
         self.assertTrue(record["raw_response"])
         self.assertEqual(result["semantic_reviews"][0]["decision"]["action"], "accept")
 
-    def test_violation_feedback_revises_only_concepts_and_then_rechecks(self):
+    def test_violation_uses_revision_skill_and_then_rechecks(self):
         def alter(skill, context, value, _count):
             if skill == "semantic_review" and context["revision_count"] == 0:
                 value["exclusion_assessments"][0]["verdict"] = "violation"
-            if skill == "concept_draft" and context["revision_count"] == 1:
+            if skill == "review_revision" and context["revision_count"] == 1:
                 value["result"]["concepts"][0]["title"] = "조건을 재검토한 변경 후보"
             return value
         case, agent, transport = self.fixture(alter)
@@ -197,11 +208,76 @@ class SemanticPipelineTests(unittest.TestCase):
         self.assertEqual(result["status"], "completed")
         self.assertEqual(result["input"]["revision_count"], 1)
         self.assertEqual([p["skill"] for p in transport.posts],
-                         ["need_extract", "product_compare", "concept_draft", "semantic_review", "concept_draft", "semantic_review"])
-        self.assertEqual(transport.posts[4]["context"]["feedback"][0]["code"], "EXCLUSION_VIOLATION")
-        self.assertEqual(transport.posts[4]["context"]["feedback"][0]["details"],
+                         ["need_extract", "product_compare", "concept_draft", "semantic_review", "review_revision", "semantic_review"])
+        feedback = json.loads(transport.posts[4]["context"]["previous"]["violations"][0])
+        self.assertEqual(feedback["code"], "EXCLUSION_VIOLATION")
+        self.assertEqual(feedback["details"],
                          result["semantic_reviews"][0]["report"]["exclusion_assessments"][0])
+        self.assertEqual(result["output"]["concepts"][0]["title"], "조건을 재검토한 변경 후보")
         self.assertEqual(case.payload, original)
+
+    def test_stage_retry_and_revision_skill_share_budget_and_last_semantic_review(self):
+        def alter(skill, context, value, _count):
+            if skill == "need_extract" and context["revision_count"] == 0:
+                return "not JSON"
+            if skill == "semantic_review" and context["revision_count"] == 1:
+                value["exclusion_assessments"][0]["verdict"] = "violation"
+            return value
+        case, agent, transport = self.fixture(alter)
+        result = agent.run(case.payload)
+        self.assertEqual(result["status"], "completed", result)
+        self.assertEqual(result["input"]["revision_count"], 2)
+        self.assertEqual(result["original_input"], case.payload)
+        self.assertEqual(result["correction_budget"]["attempts"], [
+            {"operation": "stage_retry", "revision_count": 1},
+            {"operation": "review_revision", "revision_count": 2}])
+        self.assertEqual(result["revision_session"]["revision_count"], 2)
+        self.assertEqual([p["skill"] for p in transport.posts], [
+            "need_extract", "need_extract", "product_compare", "concept_draft",
+            "semantic_review", "review_revision", "semantic_review"])
+        self.assertEqual(transport.posts[-1]["context"]["revision_count"], 2)
+        for review in result["semantic_reviews"]:
+            self.assertEqual(review_semantics(review["reviewed_input"], review["reviewed_output"], review["report"]),
+                             review["decision"])
+
+    def test_failed_revision_completion_spends_attempt_and_reuses_same_session(self):
+        def alter(skill, context, value, _count):
+            if skill == "semantic_review" and context["revision_count"] == 0:
+                value["exclusion_assessments"][0]["verdict"] = "violation"
+            if skill == "review_revision" and context["revision_count"] == 1:
+                return "{broken revision"
+            return value
+        case, agent, transport = self.fixture(alter)
+        result = agent.run(case.payload)
+        self.assertEqual(result["status"], "completed", result)
+        self.assertEqual(result["input"]["revision_count"], 2)
+        audit = result["revision_session"]["audit"]
+        self.assertEqual([row["revision_count"] for row in audit], [1, 2])
+        self.assertEqual(audit[0]["raw_response"], "{broken revision")
+        self.assertEqual(result["correction_budget"]["attempts"], [
+            {"operation": "review_revision", "revision_count": 1},
+            {"operation": "review_revision", "revision_count": 2}])
+        self.assertEqual([p["skill"] for p in transport.posts][-3:],
+                         ["review_revision", "review_revision", "semantic_review"])
+        self.assertEqual(result["semantic_reviews"][-1]["decision"]["action"], "accept")
+
+    def test_two_invalid_revision_completions_stop_without_old_candidate_success(self):
+        def alter(skill, _context, value, _count):
+            if skill == "semantic_review":
+                value["exclusion_assessments"][0]["verdict"] = "violation"
+            return "{broken revision" if skill == "review_revision" else value
+        case, agent, transport = self.fixture(alter)
+        result = agent.run(case.payload)
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(result["input"]["revision_count"], 2)
+        self.assertEqual(result["output"]["concepts"], [])
+        self.assertTrue(result["rejected_output"]["concepts"])
+        self.assertIsNone(result["decision"])
+        self.assertEqual(len(transport.posts), 6)
+        self.assertEqual(len(result["revision_session"]["audit"]), 2)
+        self.assertEqual(result["errors"][-1]["code"], "INSUFFICIENT_EVIDENCE")
+        self.assertEqual(result["output"]["revision_count"], 2)
+        self.assertEqual(result["output"]["input_sha256"], input_digest(result["input"]))
 
     def test_persistent_violation_clears_candidates_after_two_shared_revisions(self):
         def alter(skill, _context, value, _count):
@@ -251,7 +327,7 @@ class SemanticPipelineTests(unittest.TestCase):
     def test_retry_then_review_error_does_not_save_an_old_correction_decision(self):
         for code, status in (("BACKEND_CONNECTION", "failed"), ("INVALID_ARGUMENT", "held")):
             with self.subTest(code=code):
-                def alter(skill, context, value, _count):
+                def alter(skill, context, value, _count, code=code):
                     if skill == "semantic_review":
                         if context["revision_count"] == 0:
                             value["exclusion_assessments"][0]["verdict"] = "violation"
