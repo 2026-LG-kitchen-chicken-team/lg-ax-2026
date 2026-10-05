@@ -4,7 +4,7 @@ import { ApiError } from './api';
 import { evidenceLocation } from './domain';
 import type { Evidence } from './domain';
 import { ExecutionPanel } from './JudgementViews';
-import { reasonText, rerunBaseNotice, selectableConcepts } from './judgement';
+import { exportJudgement, reasonText, rerunBaseNotice, selectableConcepts } from './judgement';
 import { runStatusView } from './liveWorkspace';
 import { editSummary, END_RULE, START_RULE } from './measurement';
 import type { EditSummary, ModificationMeasurement } from './measurement';
@@ -425,6 +425,60 @@ function DetailChanges({ previous, selected }: { previous: RunSnapshot | undefin
   </li>)}</ul>;
 }
 
+export interface OutcomeSide { status: string; decision: string | null; groups: Record<'questions' | 'reasons' | 'violations' | 'rejected', string[]> }
+export interface OutcomeRow { key: 'questions' | 'reasons' | 'violations' | 'rejected'; label: string; resolved: string[]; added: string[]; kept: string[] }
+
+/** The stored terminal state of one run: held/failed/unresolved reasons and the questions the Agent still asks. */
+export function outcomeOf(snapshot: RunSnapshot): OutcomeSide {
+  const record = exportJudgement(snapshot);
+  const unique = (items: string[]) => [...new Set(items)];
+  const held = heldItems(snapshot);
+  if (record?.record_valid) {
+    return { status: snapshot.run.status, decision: record.decision, groups: {
+      questions: record.questions,
+      reasons: unique([...record.hold_reasons, ...record.unresolved, ...record.no_candidate_reasons, ...record.errors.map(item => `${item.code}: ${item.message}`)].map(reasonText)),
+      violations: record.violations,
+      rejected: record.rejected_candidates.map(item => `${item.id} ${item.title}`),
+    } };
+  }
+  return { status: snapshot.run.status, decision: null, groups: {
+    questions: unique(held.flatMap(item => item.questions)),
+    reasons: unique([...snapshot.run.unresolved, ...(snapshot.output?.no_candidate_reasons ?? [])].map(reasonText)),
+    violations: record && !record.record_valid ? record.record_errors : [],
+    rejected: [],
+  } };
+}
+
+/** Before/after of the stored reasons between two runs; both runs stay as stored and nothing is hidden when they match. */
+export function outcomeChanges(previous: RunSnapshot, selected: RunSnapshot): OutcomeRow[] {
+  const before = outcomeOf(previous).groups;
+  const after = outcomeOf(selected).groups;
+  const labels = { questions: '추가 질문', reasons: '보류·미해결 이유', violations: '검사 위반', rejected: '거절된 후보' } as const;
+  return (Object.keys(labels) as OutcomeRow['key'][]).map(key => ({
+    key, label: labels[key],
+    resolved: before[key].filter(item => !after[key].includes(item)),
+    added: after[key].filter(item => !before[key].includes(item)),
+    kept: after[key].filter(item => before[key].includes(item)),
+  }));
+}
+
+/** Held, failed and unresolved results stay comparable with the run they were rerun from. */
+function OutcomeComparison({ previous, selected }: { previous: RunSnapshot | undefined; selected: RunSnapshot }) {
+  if (!previous) return <p className="muted">이전 실행이 없어 비교하지 않습니다. 이 실행이 원 요청 기준입니다.</p>;
+  const rows = outcomeChanges(previous, selected);
+  const side = (snapshot: RunSnapshot) => { const outcome = outcomeOf(snapshot); return `${snapshot.run.id} · ${snapshot.run.status}${outcome.decision ? ` / ${outcome.decision}` : ''}`; };
+  return <div className="outcome-comparison" aria-label="이전 실행과 결과 비교">
+    <p className="hint">{side(previous)} → {side(selected)}. 두 기록은 저장된 그대로 두고 이유와 질문만 대조합니다. 이유가 사라졌다고 해서 문제가 해결됐다는 뜻은 아니며 새 실행의 검사 결과를 따로 확인해야 합니다.</p>
+    <ul className="status-changes">{rows.map(row => <li key={row.key} data-outcome={row.key}>
+      <strong>{row.label}</strong>
+      {row.added.length ? <div className="added"><strong>+ 새로 생김</strong>{row.added.join(' / ')}</div> : null}
+      {row.resolved.length ? <div className="removed"><strong>− 이번 실행에 없음</strong>{row.resolved.join(' / ')}</div> : null}
+      {row.kept.length ? <div><strong>= 그대로 남음</strong>{row.kept.join(' / ')}</div> : null}
+      {!row.added.length && !row.resolved.length && !row.kept.length ? <span className="muted">두 실행 모두 없음</span> : null}
+    </li>)}</ul>
+  </div>;
+}
+
 export function HistoryView({ mode, runs, selected, onSelect, features, evidence, original, onRerun, busy = false, measure }: PlanningProps & { original: PlanningRequest; onRerun: (request: PlanningRequest, edits: EditSummary) => Promise<void>; busy?: boolean; measure: MeasureControls }) {
   const previous = runs.find(item => item.run.id === selected.previous_run_id);
   const changes = requestChanges(previous?.request ?? original, selected.request);
@@ -453,6 +507,8 @@ export function HistoryView({ mode, runs, selected, onSelect, features, evidence
         {changes.length ? <table className="change-table"><thead><tr><th>항목</th><th>변경 전</th><th>변경 후</th></tr></thead><tbody>{changes.map(item => <tr key={item.field}><th>{item.label}</th><td>{item.before}</td><td>{item.after}</td></tr>)}</tbody></table> : <p className="muted">이전 기준과 요청이 같습니다.</p>}
         <h4 className="sub">후보 변화 <small>제목·차별점·상태·요구사항·가정·근거</small></h4>
         <DetailChanges previous={previous} selected={selected} />
+        <h4 className="sub">보류·실패·질문 비교 <small>이전 실행 대비</small></h4>
+        <OutcomeComparison previous={previous} selected={selected} />
         {selected.run.events.length ? <><h4 className="sub">판단 순서와 사용한 Skill</h4><ol className="events">{selected.run.events.map((item, index) => <li key={`${item.stage}-${index}`}><span className="stage">{item.stage}</span><span>{item.summary}</span>{item.tool ? <code>{item.tool}</code> : null}</li>)}</ol></> : null}
         {selected.unconfirmed.length ? <div className="unresolved"><strong>미확인 사항</strong><ul>{selected.unconfirmed.map(item => <li key={item}>{item}</li>)}</ul></div> : null}
       </section>

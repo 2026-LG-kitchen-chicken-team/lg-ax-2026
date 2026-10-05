@@ -11,7 +11,7 @@ import type { Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { exportJudgement, planningExecutionView, rerunBaseNotice, runSources, selectableConcepts, violationText } from './judgement';
 import type { PlanningExecution } from './judgement';
-import { ConceptsView, HistoryView } from './PlanningViews';
+import { ConceptsView, HistoryView, outcomeChanges, outcomeOf } from './PlanningViews';
 import type { MeasureControls } from './PlanningViews';
 import { buildExport, contractErrors, exportCompleteness, exportMarkdown, storedExecution } from './planning';
 import type { PlanningRequest, RunSnapshot } from './planning';
@@ -132,6 +132,37 @@ describe('round2 live runs in the actual React DOM', () => {
     for (const row of record.semantic_reviews![0].report.exclusion_assessments) expect(text).toContain(row.reason);
     for (const exclusion of snapshot.request.exclusions) expect(text).toContain(exclusion);
     expect(host.querySelectorAll('.concept-card')).toHaveLength(0);
+  });
+
+  it('changed run: held reasons and questions are compared with the first run, both runs untouched', async () => {
+    const before = structuredClone(RUNS);
+    const rows = outcomeChanges(FIRST, SECOND);
+    const first = outcomeOf(FIRST);
+    const second = outcomeOf(SECOND);
+    expect(first.status).toBe('held');
+    expect(second.decision).toBe('hold');
+    for (const row of rows) {
+      // Every stored item lands in exactly one bucket per side; nothing is dropped from the comparison.
+      expect([...row.kept, ...row.added].sort()).toEqual([...second.groups[row.key]].sort());
+      expect([...row.kept, ...row.resolved].sort()).toEqual([...first.groups[row.key]].sort());
+    }
+    await act(async () => root.render(createElement(HistoryView, {
+      mode: 'live', runs: RUNS, selected: SECOND, original: FIRST.request, onSelect: () => {}, ...runSources(SECOND, [], []), onRerun, measure,
+    })));
+    const panel = host.querySelector('[aria-label="이전 실행과 결과 비교"]');
+    expect(panel?.textContent).toContain(FIRST.run.id);
+    expect(panel?.textContent).toContain('이유가 사라졌다고 해서 문제가 해결됐다는 뜻은 아니며');
+    expect(panel?.querySelectorAll('[data-outcome]')).toHaveLength(4);
+    for (const question of second.groups.questions) expect(panel?.textContent).toContain(question);
+    expect(RUNS).toEqual(before);
+  });
+
+  it('first run has no earlier run to compare', async () => {
+    await act(async () => root.render(createElement(HistoryView, {
+      mode: 'live', runs: RUNS, selected: FIRST, original: FIRST.request, onSelect: () => {}, ...runSources(FIRST, [], []), onRerun, measure,
+    })));
+    expect(host.querySelector('[aria-label="이전 실행과 결과 비교"]')).toBeNull();
+    expect(host.textContent).toContain('이전 실행이 없어 비교하지 않습니다');
   });
 
   it('changed run: only conditions can be corrected; the new request links to it and stored runs stay unchanged', async () => {
