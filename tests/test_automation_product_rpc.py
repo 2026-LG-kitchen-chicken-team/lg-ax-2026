@@ -7,10 +7,12 @@ import threading
 import time
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import httpx
 from lgax_core.model_client import ModelConfig, OllamaAdapter, StructuredModelClient
 
+from services.automation import product_rpc
 from services.automation.product_rpc import (
     DIGEST,
     MODEL,
@@ -20,6 +22,7 @@ from services.automation.product_rpc import (
     FileTransport,
     ProxyEndpoint,
     RPCError,
+    RPCReadUnstable,
     checked_request,
     checked_settings,
     decode,
@@ -162,6 +165,171 @@ class ProductRPCTests(unittest.TestCase):
         with self.assertRaises(RPCError):
             relay.step()
         self.assertEqual(len(self.calls), 1)
+
+    def test_windows_exchange_two_sharing_failures_retry_only_same_response_not_upstream(self):
+        relay = self.relay()
+        write_file(self.artifacts / REQUEST, request())
+        original, attempts = Path.replace, []
+
+        def shared_reader(source, target):
+            if source.name == "product-response.tmp":
+                attempts.append(source.read_bytes())
+                if len(attempts) <= 2:
+                    error = PermissionError("fixture Windows reader denied delete-sharing")
+                    error.winerror = 5
+                    raise error
+            return original(source, target)
+        with patch.object(product_rpc.os, "name", "nt"), patch.object(Path, "replace", shared_reader):
+            self.assertTrue(relay.step())
+        self.assertEqual(len(attempts), 3)
+        self.assertEqual(len(set(attempts)), 1)
+        self.assertEqual(len(self.calls), 1)
+        self.assertEqual(relay.state["generations"], 1)
+        self.assertEqual(relay.state["tokens"], 18)
+        self.assertEqual(relay.state["requests"][0]["state"], "completed")
+        self.assertEqual(decode((self.artifacts / RESPONSE).read_bytes())["response_sha256"], sha(completion()))
+
+    def test_permanent_windows_exchange_denial_is_bounded_and_does_not_replay_completion(self):
+        relay = self.relay()
+        write_file(self.artifacts / REQUEST, request())
+        original, attempts = Path.replace, []
+        now = [0.0]
+
+        def permanent_reader(source, target):
+            if source.name == "product-response.tmp":
+                attempts.append(source.read_bytes())
+                error = PermissionError("fixture permanent Windows denial")
+                error.winerror = 32
+                raise error
+            return original(source, target)
+        def advance(seconds):
+            now[0] += seconds
+        with patch.object(product_rpc.os, "name", "nt"), patch.object(Path, "replace", permanent_reader), \
+                patch.object(product_rpc.time, "monotonic", lambda: now[0]), patch.object(product_rpc.time, "sleep", advance), \
+                self.assertRaises(RPCError):
+            relay.step()
+        self.assertGreaterEqual(now[0], 1)
+        self.assertLess(now[0], 1.02)
+        self.assertEqual(len(set(attempts)), 1)
+        self.assertEqual(relay.state["failure"], "PermissionError")
+        self.assertEqual(len(self.calls), 1)
+        self.assertEqual(relay.state["tokens"], 18)
+        self.assertFalse((self.artifacts / RESPONSE).exists())
+        with self.assertRaises(RPCError):
+            relay.step()
+        self.assertEqual(len(self.calls), 1)
+
+    def test_atomic_retry_refuses_changed_temp_bytes_and_off_before_delivery(self):
+        for mode in ("tampered", "off"):
+            with self.subTest(mode=mode):
+                directory = self.root / mode
+                directory.mkdir()
+                destination = directory / RESPONSE
+                original = Path.replace
+
+                def refused_reader(source, target, selected=mode, expected=destination, replace=original):
+                    if source == expected.with_suffix(".tmp"):
+                        if selected == "tampered":
+                            source.write_bytes(b"{}")
+                        else:
+                            self.on = False
+                        error = PermissionError("fixture sharing denial")
+                        error.winerror = 5
+                        raise error
+                    return replace(source, target)
+                self.on = True
+                with patch.object(product_rpc.os, "name", "nt"), patch.object(Path, "replace", refused_reader), \
+                        self.assertRaises(RPCError):
+                    write_file(destination, {"fixture": "unchanged source"}, enabled=lambda: self.on)
+                self.assertFalse(destination.exists())
+
+    def test_only_bounded_ordinary_atomic_read_replacement_is_transient(self):
+        target = self.artifacts / RESPONSE
+        replacement = self.artifacts / "replacement.json"
+        original = Path.lstat
+        for mode in ("ordinary", "inplace", "oversize", "hardlink"):
+            with self.subTest(mode=mode):
+                target.write_bytes(b"old")
+                replacement.write_bytes(b"new" if mode != "oversize" else b"x" * 50)
+                alias = self.artifacts / "alias-replacement"
+                if mode == "hardlink":
+                    os.link(replacement, alias)
+                samples = []
+
+                def exchange_at_final(path, *, selected=mode, observed=samples):
+                    if path == target:
+                        observed.append(True)
+                        if len(observed) == 2:
+                            if selected == "inplace":
+                                path.write_bytes(b"same-inode-mutation")
+                            else:
+                                replacement.replace(path)
+                    return original(path)
+                with patch.object(Path, "lstat", exchange_at_final), self.assertRaises(RPCError) as caught:
+                    read_file(target, 30)
+                self.assertEqual(isinstance(caught.exception, RPCReadUnstable), mode == "ordinary")
+                if alias.exists():
+                    alias.unlink()
+                if replacement.exists():
+                    replacement.unlink()
+                target.unlink()
+
+    def test_unstable_request_is_repolled_without_any_reservation_or_upstream_replay(self):
+        relay = self.relay()
+        write_file(self.artifacts / REQUEST, request())
+        original, first = product_rpc.read_file, [True]
+
+        def atomic_read(path, maximum):
+            if path.name == REQUEST and first[0]:
+                first[0] = False
+                raise RPCReadUnstable("fixture ordinary atomic exchange")
+            return original(path, maximum)
+        with patch.object(product_rpc, "read_file", atomic_read):
+            self.assertFalse(relay.step())
+            self.assertEqual(relay.state["requests"], [])
+            self.assertFalse(self.calls)
+            self.assertTrue(relay.step())
+        self.assertEqual(len(self.calls), 1)
+        self.assertEqual(relay.state["generations"], 1)
+
+    @unittest.skipIf(os.name == "nt", "Linux permits replacing an inode while its reader is still open")
+    def test_linux_atomic_exchange_discards_old_unlinked_descriptor_without_relaxing_hardlinks(self):
+        target = self.artifacts / RESPONSE
+        replacement = self.artifacts / "replacement.json"
+        target.write_bytes(b"old")
+        replacement.write_bytes(b"new")
+        original, calls = os.fstat, []
+
+        def exchange_before_second_fstat(descriptor):
+            calls.append(True)
+            if len(calls) == 2:
+                replacement.replace(target)
+            return original(descriptor)
+        with patch.object(product_rpc.os, "fstat", exchange_before_second_fstat), self.assertRaises(RPCReadUnstable):
+            read_file(target, 30)
+        self.assertEqual(read_file(target, 30), b"new")
+
+    def test_unstable_response_repolls_same_request_without_rewriting_or_hiding_bad_json(self):
+        value = request()
+        response = {"schema_version": 1, "run_id": RUN, "sequence": 1, "request_sha256": value["request_sha256"],
+                    "response_sha256": sha(completion()), "response_base64": base64.b64encode(completion()).decode()}
+        write_file(self.artifacts / RESPONSE, response)
+        original, first = product_rpc.read_file, [True]
+
+        def atomic_read(path, maximum):
+            if path.name == RESPONSE and first[0]:
+                first[0] = False
+                raise RPCReadUnstable("fixture ordinary atomic exchange")
+            return original(path, maximum)
+        transport = FileTransport(self.artifacts, RUN, timeout_seconds=1, poll_seconds=0.001)
+        with patch.object(product_rpc, "read_file", atomic_read), patch.object(
+                product_rpc, "write_file", wraps=product_rpc.write_file) as writes:
+            actual = transport.handle_request(httpx.Request("POST", "http://127.0.0.1:18873/api/generate", json=generation()))
+            self.assertEqual(actual.read(), completion())
+            self.assertEqual(writes.call_count, 1)
+        (self.artifacts / RESPONSE).write_bytes(b"invalid json")
+        with self.assertRaises(RPCError):
+            transport.handle_request(httpx.Request("POST", "http://127.0.0.1:18873/api/generate", json=generation()))
 
     def test_reserved_unknown_cost_restart_never_replays(self):
         relay = self.relay()

@@ -32,6 +32,10 @@ class RPCError(ValueError):
     """Sanitized fixed protocol failure; never disclose response/auth contents."""
 
 
+class RPCReadUnstable(RPCError):
+    """Only an ordinary bounded mailbox's atomic file identity changed."""
+
+
 def encode(value) -> bytes:
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
 
@@ -69,26 +73,42 @@ def read_file(path: Path, maximum: int) -> bytes:
     # Exact fixed filename only, with no links/reparse/hard-link dereference.
     plain_parents(path)
     info = path.lstat()
-    if (not stat.S_ISREG(info.st_mode) or info.st_nlink != 1 or info.st_size > maximum or
-            getattr(info, "st_file_attributes", 0) & 0x400):
-        raise RPCError("protocol file is not bounded ordinary bytes")
+    def ordinary(row, links=(1,)):
+        if (not stat.S_ISREG(row.st_mode) or row.st_nlink not in links or row.st_size > maximum or
+                getattr(row, "st_file_attributes", 0) & 0x400):
+            raise RPCError("protocol file is not bounded ordinary bytes")
+    ordinary(info)
     descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0) |
                          getattr(os, "O_BINARY", 0))
     with os.fdopen(descriptor, "rb") as stream:
         opened = os.fstat(stream.fileno())
+        ordinary(opened)
+        if (opened.st_ino, opened.st_dev) != (info.st_ino, info.st_dev):
+            raise RPCReadUnstable("atomic mailbox identity changed while opening")
         if (opened.st_ino, opened.st_dev, opened.st_nlink, opened.st_size, opened.st_mtime_ns) != (
                 info.st_ino, info.st_dev, 1, info.st_size, info.st_mtime_ns):
             raise RPCError("protocol file replaced while opening")
         raw = stream.read(maximum + 1)
         after = os.fstat(stream.fileno())
     final = path.lstat()
-    if len(raw) > maximum or any((row.st_ino, row.st_dev, row.st_size, row.st_mtime_ns, row.st_nlink) !=
-            (info.st_ino, info.st_dev, info.st_size, info.st_mtime_ns, 1) for row in (after, final)):
+    # Linux may unlink the old, previously single-link inode during rename.
+    # Those bytes are discarded only if the current mailbox is a different
+    # ordinary single-link inode. Added hard links are never transient.
+    ordinary(after, links=(0, 1))
+    ordinary(final)
+    if len(raw) > maximum or (after.st_ino, after.st_dev, after.st_size, after.st_mtime_ns) != (
+            info.st_ino, info.st_dev, info.st_size, info.st_mtime_ns):
+        raise RPCError("protocol bytes changed or exceeded limit")
+    if (final.st_ino, final.st_dev) != (info.st_ino, info.st_dev):
+        raise RPCReadUnstable("atomic mailbox identity changed after reading")
+    if after.st_nlink != 1:
+        raise RPCError("protocol file link identity changed")
+    if (final.st_size, final.st_mtime_ns) != (info.st_size, info.st_mtime_ns):
         raise RPCError("protocol bytes changed or exceeded limit")
     return raw
 
 
-def write_file(path: Path, value) -> None:
+def write_file(path: Path, value, *, enabled=None) -> None:
     # A fixed temp name permits atomic Windows/Linux exchange. Never follow an
     # existing target/temp link placed by the guest.
     plain_parents(path)
@@ -97,9 +117,28 @@ def write_file(path: Path, value) -> None:
     temporary = path.with_suffix(".tmp")
     if temporary.exists() or temporary.is_symlink():
         raise RPCError("unexpected protocol temporary file")
+    raw = encode(value)
     with temporary.open("xb") as stream:
-        stream.write(encode(value))
-    temporary.replace(path)
+        stream.write(raw)
+    started = time.monotonic()
+    while True:
+        if enabled is not None and not enabled():
+            raise RPCError("OFF prevented atomic product response delivery")
+        try:
+            temporary.replace(path)
+            return
+        except PermissionError as exc:
+            # Windows readers may briefly deny delete-sharing while the guest
+            # reads the prior response. Retry only the exchange, never dispatch.
+            # Recheck exact temp bytes and link boundaries on every retry.
+            if os.name != "nt" or getattr(exc, "winerror", None) not in {5, 32} or time.monotonic() - started >= 1:
+                raise
+            if read_file(temporary, len(raw)) != raw:
+                raise RPCError("atomic protocol temporary bytes changed") from None
+            plain_parents(path)
+            if path.exists() or path.is_symlink():
+                read_file(path, MAX_RESPONSE * 4)
+            time.sleep(0.01)
 
 
 def positive(value, maximum):
@@ -227,7 +266,10 @@ class FileRelay:
         request_path = self.artifacts / REQUEST
         if not request_path.exists():
             return False
-        value = decode(read_file(request_path, MAX_REQUEST))
+        try:
+            value = decode(read_file(request_path, MAX_REQUEST))
+        except RPCReadUnstable:
+            return False  # No reservation or upstream call until stable bytes.
         rows = self.state["requests"]
         sequence = value.get("sequence") if isinstance(value, dict) else None
         if rows and sequence == rows[-1]["sequence"]:
@@ -284,7 +326,7 @@ class FileRelay:
                 raise RPCError("OFF or actual product token bound exceeded")
             write_file(self.artifacts / RESPONSE, {"schema_version": 1, "run_id": self.run_id,
                 "sequence": sequence, "request_sha256": value["request_sha256"], "response_sha256": sha(raw),
-                "response_base64": row["response_base64"]})
+                "response_base64": row["response_base64"]}, enabled=self.enabled)
         except Exception as exc:  # noqa: BLE001 - retain an ambiguous cost, disclose no endpoint/private response.
             self.failure = type(exc).__name__
             self.state["failure"] = self.failure
@@ -322,7 +364,11 @@ class FileTransport(httpx.BaseTransport):
         while time.monotonic() - started < self.timeout_seconds:
             path = self.artifacts / RESPONSE
             if path.exists():
-                response = decode(read_file(path, MAX_RESPONSE * 2))
+                try:
+                    response = decode(read_file(path, MAX_RESPONSE * 2))
+                except RPCReadUnstable:
+                    time.sleep(self.poll_seconds)
+                    continue  # Same request, no rewrite or upstream replay.
                 if response.get("sequence") == self.sequence:
                     if (set(response) != {"schema_version", "run_id", "sequence", "request_sha256", "response_sha256", "response_base64"}
                             or response.get("schema_version") != 1 or response.get("run_id") != self.run_id or
