@@ -17,6 +17,7 @@ import re
 import shutil
 import subprocess
 import sys
+import threading
 import time
 import tomllib
 import unicodedata
@@ -46,6 +47,7 @@ PROTECTED_FILES = {"AGENTS.md", "CLAUDE.md", ".gitignore", "pyproject.toml", "uv
 SECRET_NAMES = {"GH_TOKEN", "GITHUB_TOKEN", "GH_ENTERPRISE_TOKEN", "SSH_AUTH_SOCK", "SSH_AGENT_PID",
                 "GIT_ASKPASS", "SSH_ASKPASS", "CODEX_API_KEY", "OPENAI_API_KEY", "AZURE_OPENAI_API_KEY"}
 MAX_LOG_BYTES = 64 * 1024 * 1024
+WORKER_RUNTIME_VERSION = "worker-presence-v1"
 PINNED_MODEL_ID = "qwen3:8b"
 PINNED_MODEL_DIGEST = "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41"
 
@@ -123,6 +125,69 @@ class ControllerClient:
     def heartbeat(self, job):
         return self.request(f"/v1/jobs/{job['job_id']}/heartbeat", {
             "lease_token": job["lease_token"]}).get("continue") is True
+
+
+class WorkerPresence:
+    """Publisher-side, zero-model metadata; never a readiness or lease grant."""
+    _lgax_fixed_presence = True
+
+    def __init__(self, client, config, *, clock=time.time, interval_seconds=30):
+        self.client, self.config, self.clock = client, config, clock
+        self.instance_id = os.urandom(16).hex()
+        self.runtime_sha256 = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+        self.sequence = 0
+        self.phase, self.job = "starting", None
+        self.interval_seconds = interval_seconds
+        self._stop = threading.Event()
+        self._state_lock, self._send_lock = threading.Lock(), threading.Lock()
+        self._thread = None
+
+    def update(self, phase, job=None):
+        with self._state_lock:
+            self.phase = phase
+            self.job = None if job is None else {key: job[key] for key in ("job_id", "lease_token")}
+
+    def emit(self):
+        # Serialize send order even when an active phase update coincides with
+        # the timer. Metadata failure cannot renew/stop/retry a real job.
+        with self._send_lock:
+            with self._state_lock:
+                self.sequence += 1
+                payload = {"schema_version": 1, "source": "fixed_worker",
+                    "runtime_version": WORKER_RUNTIME_VERSION, "runtime_sha256": self.runtime_sha256,
+                    "engine": self.config.engine, "phase": self.phase, "instance_id": self.instance_id,
+                    "sequence": self.sequence, "reported_at": self.clock(),
+                    "job_id": self.job["job_id"] if self.job else None,
+                    "lease_token": self.job["lease_token"] if self.job else None}
+            try:
+                self.client.request("/v1/worker-presence", payload)
+            except (OSError, RuntimeError, ValueError) as exc:
+                # Never forward raw errors, credentials or paths to a board.
+                write_json(self.config.state_dir / "last-presence-error.json",
+                           {"at": now(), "error_type": type(exc).__name__, "metadata_only": True})
+
+    def _run(self):
+        while not self._stop.is_set():
+            self.emit()
+            self._stop.wait(self.interval_seconds)
+
+    def __enter__(self):
+        self.client._presence = self
+        self._thread = threading.Thread(target=self._run, name="lgax-worker-presence", daemon=True)
+        self._thread.start()
+        return self
+
+    def __exit__(self, *_args):
+        self._stop.set()
+        if self._thread:
+            self._thread.join(timeout=12)
+        self.client._presence = None
+
+
+def report_worker_phase(client, phase, job=None):
+    presence = getattr(client, "_presence", None)
+    if getattr(presence, "_lgax_fixed_presence", False) is True:
+        presence.update(phase, job)
 
 
 @dataclass(frozen=True)
@@ -685,6 +750,7 @@ def send_project_report(config, job, publication, run_dir):
 
 def execute_job(config, client, job):
     validate_job(job, config.account)
+    report_worker_phase(client, "preflight", job)
     run_dir = config.state_dir / "runs" / f"{job['job_id']}-attempt{job.get('attempt', 1)}-g{job.get('lease_generation', 1)}"
     if run_dir.exists():
         raise ValueError("existing run directory must be reconciled; no automatic overwrite/retry")
@@ -721,6 +787,7 @@ def execute_job(config, client, job):
             config, executor, guest, stage, run_dir, lambda: client.heartbeat(job))
         private_values = private_ai_values(config)
         checkpoint.update(state="agent_running", workspace=str(workspace), branch=branch, checked_out_commit=base)
+        report_worker_phase(client, "model", job)
         write_json(run_dir / "checkpoint.json", checkpoint)
         if config.engine == "claude":
             # Construct the same fixed file-tool policy without invoking a host
@@ -774,6 +841,7 @@ def execute_job(config, client, job):
         else:
             validate_commands(job["validation_commands"])
             checkpoint.update(state="validating")
+            report_worker_phase(client, "validating", job)
             write_json(run_dir / "checkpoint.json", checkpoint)
             # Testing gets a separate copy and zero authentication. A test may
             # generate caches/build files but cannot alter the checked source.
@@ -819,6 +887,7 @@ def execute_job(config, client, job):
             if time.monotonic() >= deadline:
                 raise ValueError("total approved execution time exhausted before publishing")
             checkpoint.update(state="publishing")
+            report_worker_phase(client, "publishing", job)
             write_json(run_dir / "checkpoint.json", checkpoint)
             publication = publish(config, client, job, workspace, branch, run_dir,
                                   output, checkpoint["checks"], paths)
@@ -883,7 +952,9 @@ def main():
                 return
             yield True
 
-    with exclusive_lock(config.state_dir / "worker.lock"):
+    presence_context = (WorkerPresence(client, config) if not args.once and not args.preflight
+                        else contextlib.nullcontext())
+    with exclusive_lock(config.state_dir / "worker.lock"), presence_context:
         github_identity(config)
         authentication, boundary = None, None
         while config.executor_image and config.execution_root and authentication is None:
@@ -912,6 +983,7 @@ def main():
                                       "state": "profile_busy", "model_executed": False,
                                       "automation_ready": False, "execution_started": False}), flush=True)
                     return
+                report_worker_phase(client, "profile_busy")
                 time.sleep(config.poll_seconds)
         if args.preflight:
             client.request("/v1/status")
@@ -928,6 +1000,7 @@ def main():
             raise ValueError("selected container authentication required; host/native fallback is forbidden")
         while True:
             try:
+                report_worker_phase(client, "idle")
                 # A PM decision/review may use this same owner's AI login. Claim
                 # only after acquiring the profile and release it while idle.
                 with available_profile() as acquired:
@@ -945,8 +1018,11 @@ def main():
                         print(json.dumps({"account": config.account, "engine": config.engine,
                                           "state": "profile_busy", "model_executed": False,
                                           "automation_ready": False, "execution_started": False}), flush=True)
+                    else:
+                        report_worker_phase(client, "profile_busy")
             except Exception as exc:  # noqa: BLE001 - bounded background service must retain its error.
                 write_json(config.state_dir / "last-worker-error.json", {"at": now(), "error": str(exc)[:500]})
+            report_worker_phase(client, "idle")
             if args.once:
                 break
             time.sleep(config.poll_seconds)
