@@ -340,7 +340,7 @@ class Journal:
 def stable_observation(observation):
     """Strip transport/heartbeat time churn, preserve all authority/evidence facts."""
     allowed = ("repo", "main_commit", "global_mode", "pm_mode", "members", "formal_snapshot", "jobs",
-               "prs", "capabilities_ready", "readiness", "operator_resume_nonce")
+               "prs", "capabilities_ready", "readiness", "operator_resume_nonce", "mail_reports", "parent_completion")
     stable = {key: deepcopy(observation[key]) for key in allowed if key in observation}
     for job in stable.get("jobs", []):
         for key in ("observed_at", "lease_expires_at", "heartbeat_at", "updated_at"):
@@ -659,6 +659,11 @@ class AutonomousPM:
                 "formal_snapshot": deepcopy(observation["formal_snapshot"]), "tasks": tasks,
                 "capabilities": capabilities, "capabilities_ready": observation["capabilities_ready"],
                 "members": observation.get("members", {}), "readiness": observation.get("readiness", {}),
+                "mail_reports": [{key: deepcopy(report[key]) for key in
+                                  ("event_id", "owner", "task_id", "assignment_id", "report", "authority")
+                                  if key in report} for report in observation.get("mail_reports", [])
+                                 if report.get("authority") == "report_only"],
+                "parent_completion": deepcopy(observation.get("parent_completion", {})),
                 "jobs": [{key: job[key] for key in ("job_id", "task_id", "capability_id", "owner", "status")
                           if key in job} for job in observation["jobs"]], "prs": prs}
 

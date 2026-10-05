@@ -268,6 +268,9 @@ class TrustedPMBroker:
             "schema_version": 1, "policy_sha256": config["policy_sha256"], "actions": {}, "units": {}, "proofs": {}, "budgets": {}}
         if self.state.get("policy_sha256") != config["policy_sha256"]:
             raise PMError("broker state belongs to another policy; explicit migration required")
+        from services.automation.orchestration import Orchestration
+
+        self.orchestration = Orchestration(self)
 
     def _released_capabilities(self):
         """Only the deployed host config releases new assignments.
@@ -635,6 +638,7 @@ class TrustedPMBroker:
         context = {"purpose": "Independent fixed-commit code review; do not trust developer claims.",
                    "head": pr["head"], "base": pr["base"], "acceptance": capability["acceptance"],
                    "scope": capability["allowed_paths"], "diff": raw.decode("utf-8", errors="strict")}
+        used = None
         try:
             record = self.driver.call(context, REVIEW_SCHEMA, self.policy["limits"]["decision_timeout_seconds"], purpose="pm-review")
             usage = record.get("usage", {})
@@ -648,8 +652,8 @@ class TrustedPMBroker:
                     task_tokens + used + decision_task_tokens > limits["max_model_tokens_per_task"]):
                 raise PMError("actual review usage exceeded remaining budget; no merge")
         except Exception as exc:
-            budget["tokens"] = max(budget["tokens"], limits["max_model_tokens_per_day"])
-            if "used" not in locals():
+            if used is None:
+                budget["tokens"] = max(budget["tokens"], limits["max_model_tokens_per_day"])
                 budget["tasks"][pr["task_id"]] = max(budget["tasks"].get(pr["task_id"], 0),
                                                       limits["max_model_tokens_per_task"])
             self.save()
@@ -681,6 +685,7 @@ class TrustedPMBroker:
         if not SHA.fullmatch(main):
             raise PMError("actual canonical main SHA required")
         jobs = status.get("jobs", [])
+        on = status.get("global_mode") == "on" and status.get("members", {}).get(PM) is True and self.policy["enabled"]
         # Unit association is trusted host state, never a PR-provided capability ID.
         for job in jobs:
             unit = self.state["units"].get(job["job_id"])
@@ -753,12 +758,22 @@ class TrustedPMBroker:
                 total["tokens"] += day_budget.get("tasks", {}).get(task_id, 0)
         external_usage = {"day": {"model_calls": budget.get("calls", 0), "tokens": budget.get("tokens", 0)},
                           "tasks": lifetime_tasks}
-        return {"repo": REPO, "main_commit": main, "global_mode": status["global_mode"],
+        observation = {"repo": REPO, "main_commit": main, "global_mode": status["global_mode"],
                 "pm_mode": "on" if status.get("members", {}).get(PM) else "off", "members": status["members"],
                 "formal_snapshot": status["formal_snapshot"], "jobs": jobs, "prs": prs,
                 "capabilities_ready": ready, "readiness": self._readiness(),
                 "operator_resume_nonce": self.config.get("operator_resume_nonce", "initial"),
                 "external_usage": external_usage}
+        self.orchestration.synchronize(observation)
+        if collect and on:
+            try:
+                observation["mail_reports"] = self.orchestration.mail_tick()
+            except (ValueError, RuntimeError, OSError):
+                # A failed mail read cannot authorize work or invent a reply.
+                # Keep previous immutable events; no automatic repeated send.
+                observation["mail_reports"] = []
+                observation["mail_connection"] = "unavailable"
+        return observation
 
     def _marker(self, action_id):
         if not ACTION_ID.fullmatch(action_id):
@@ -839,10 +854,14 @@ class TrustedPMBroker:
         return None
 
     def _notify(self, action_id, action, assignment):
-        # Browser/Gmail connector login is NOT inherited by this daemon.
         outbox = self.state_dir / "outbox" / (action_id + ".json")
         write_json(outbox, {"assignment": assignment, "recipient_account": action["owner"],
                            "status": "prepared", "email_sent": False})
+        if self.orchestration.mail:
+            try:
+                return self.orchestration.notify(outbox)
+            except (ValueError, RuntimeError, OSError):
+                return "unknown"
         hook = self.config.get("notification_hook")
         if not hook:
             return "prepared_unconfigured"
@@ -1031,7 +1050,8 @@ class TrustedPMBroker:
         else:
             raise PMError("unsupported live PM action")
         receipt = self._receipt(action_id, action, outcome, detail)
-        completed = {"phase": "receipt", "action_id": action_id, "receipt": receipt, "details": detail}
+        completed = {"phase": "receipt", "action_id": action_id, "action": action,
+                     "receipt": receipt, "details": detail}
         self.github.request("PATCH", f"repos/{REPO}/issues/comments/{comment['id']}",
                             {"body": self._marker(action_id) + "\n" + canonical(completed)})
         self.state["actions"][action_id] = completed
