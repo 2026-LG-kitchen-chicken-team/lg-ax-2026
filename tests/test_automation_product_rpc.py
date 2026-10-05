@@ -4,6 +4,7 @@ import copy
 import os
 import tempfile
 import threading
+import time
 import unittest
 from pathlib import Path
 
@@ -106,7 +107,13 @@ class ProductRPCTests(unittest.TestCase):
     def test_actual_application_stream_lifecycle_reads_pins_generation_and_reuses_client(self):
         # Fixture upstream only. Exercise the application's actual iter_raw()
         # consumption, which plain client.get() roundtrips cannot cover.
-        relay = self.relay()
+        def scheduled_fixture_upstream(method, path, body):
+            self.calls.append((method, path, body))
+            # ModelConfig's single end-to-end deadline spans tags/generate/tags.
+            # Reproduce scheduling delay exceeding the previous two seconds.
+            time.sleep(0.8)
+            return completion() if method == "POST" else encode({"models": [{"name": MODEL, "digest": DIGEST}]})
+        relay = self.relay(upstream=scheduled_fixture_upstream)
         stop, failures = threading.Event(), []
 
         def pump():
@@ -120,10 +127,12 @@ class ProductRPCTests(unittest.TestCase):
         thread = threading.Thread(target=pump)
         thread.start()
         try:
-            config = ModelConfig("http://127.0.0.1:18873", MODEL, DIGEST, timeout_seconds=2,
+            # One application deadline covers three durable file exchanges.
+            # Leave room for Windows filesystem/AV scheduling in CI fixtures.
+            config = ModelConfig("http://127.0.0.1:18873", MODEL, DIGEST, timeout_seconds=10,
                                  max_output_tokens=SETTINGS["num_predict"], context_tokens=SETTINGS["num_ctx"])
             with StructuredModelClient(OllamaAdapter(config, transport=FileTransport(
-                    self.artifacts, RUN, timeout_seconds=2, poll_seconds=0.005))) as client:
+                    self.artifacts, RUN, timeout_seconds=10, poll_seconds=0.005))) as client:
                 for _ in range(2):
                     result = client.generate("Fixture application input", {"type": "object"}, MODEL)
                     self.assertEqual(result.data, {"fixture": True})
@@ -133,6 +142,7 @@ class ProductRPCTests(unittest.TestCase):
         finally:
             stop.set()
             thread.join(3)
+            self.assertFalse(failures, "fixture relay failure must not be obscured by a client deadline")
         self.assertFalse(failures)
         self.assertEqual([path for _, path, _ in self.calls], ["/api/tags", "/api/generate", "/api/tags"] * 2)
         self.assertEqual(relay.state["generations"], 2)
