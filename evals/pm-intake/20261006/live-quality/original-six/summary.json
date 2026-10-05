@@ -1,0 +1,278 @@
+{
+  "scope": "finite_manual_PM_quality",
+  "cases": [
+    {
+      "case_id": "fridge-normal",
+      "source_commit": "37f7e3fd0e76eff8115941e7d456ffdf6424d0d4",
+      "dataset_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+      "input_sha256": "52440224ab725391c2677383b6aab4b5a9a0cdde1b450d76efe74af7b59e9aea",
+      "exit": 0,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "source_unchanged": true,
+      "status": "held",
+      "actual_calls": 2,
+      "tokens": 11550,
+      "usage_unknown": false,
+      "stop": null,
+      "relay_failed": false,
+      "model_id": "qwen3:8b",
+      "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "source_kind": "synthetic",
+      "revision_count": 0,
+      "independent_quality": null,
+      "file": "evals/pm-intake/20261006/live-quality/original-six/fridge-normal.output.json",
+      "output_sha256": "547a637b3d6278a7a0831fad0b7cdf01f3e0733c9d5f56458c8a761491f0ecd1",
+      "quality_complete": false
+    },
+    {
+      "case_id": "fridge-changed",
+      "source_commit": "37f7e3fd0e76eff8115941e7d456ffdf6424d0d4",
+      "dataset_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+      "input_sha256": "74dd4e2b4dbbbfc4c4cd43c24777e1415c57072d972967e9090e6a9ca2f3d67d",
+      "exit": 0,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "source_unchanged": true,
+      "status": "failed",
+      "actual_calls": 4,
+      "tokens": 22100,
+      "usage_unknown": false,
+      "stop": null,
+      "relay_failed": false,
+      "model_id": "qwen3:8b",
+      "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "source_kind": "synthetic",
+      "revision_count": 2,
+      "independent_quality": null,
+      "file": "evals/pm-intake/20261006/live-quality/original-six/fridge-changed.output.json",
+      "output_sha256": "7cbe2b3d35950b155303115c8e93759011aa17dd832ea6cb6af362f2b5095c34",
+      "quality_complete": false
+    },
+    {
+      "case_id": "dishwasher-normal",
+      "source_commit": "37f7e3fd0e76eff8115941e7d456ffdf6424d0d4",
+      "dataset_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+      "input_sha256": "d70d7cb19291a646d5e30e00739df5ace9924a5c680d3ff97a3273d98468257b",
+      "exit": 0,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "source_unchanged": true,
+      "status": "failed",
+      "actual_calls": 5,
+      "tokens": 17370,
+      "usage_unknown": false,
+      "stop": null,
+      "relay_failed": false,
+      "model_id": "qwen3:8b",
+      "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "source_kind": "synthetic",
+      "revision_count": 2,
+      "independent_quality": null,
+      "file": "evals/pm-intake/20261006/live-quality/original-six/dishwasher-normal.output.json",
+      "output_sha256": "88a1275cf44de7794fcefcad059b8ec8085fa4af7b5f888e72c2bf94908ab4b5",
+      "quality_complete": false
+    },
+    {
+      "case_id": "dishwasher-changed",
+      "source_commit": "37f7e3fd0e76eff8115941e7d456ffdf6424d0d4",
+      "dataset_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+      "input_sha256": "0f43c972b71a849d6d3d12b9a06514ad1dcf84954a717ddd396302a0359c1d99",
+      "exit": 0,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "source_unchanged": true,
+      "status": "failed",
+      "actual_calls": 5,
+      "tokens": 16684,
+      "usage_unknown": false,
+      "stop": null,
+      "relay_failed": false,
+      "model_id": "qwen3:8b",
+      "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "source_kind": "synthetic",
+      "revision_count": 2,
+      "independent_quality": null,
+      "file": "evals/pm-intake/20261006/live-quality/original-six/dishwasher-changed.output.json",
+      "output_sha256": "a2e4e5b2a23bf99a48ad39cb92699b62ca4db86dc2d8a8068173de9613b09fa1",
+      "quality_complete": false
+    },
+    {
+      "case_id": "microwave-normal",
+      "source_commit": "37f7e3fd0e76eff8115941e7d456ffdf6424d0d4",
+      "dataset_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+      "input_sha256": "01aa87a43018e6d213be988da17ddf212553e0733bf5a46cb202bc0414196a7e",
+      "exit": 0,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "source_unchanged": true,
+      "status": "failed",
+      "actual_calls": 4,
+      "tokens": 12542,
+      "usage_unknown": false,
+      "stop": null,
+      "relay_failed": false,
+      "model_id": "qwen3:8b",
+      "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "source_kind": "synthetic",
+      "revision_count": 2,
+      "independent_quality": null,
+      "file": "evals/pm-intake/20261006/live-quality/original-six/microwave-normal.output.json",
+      "output_sha256": "9502ed736ca54a739f31c3b78f75878828f11c5aa555701f749e26489ca95851",
+      "quality_complete": false
+    },
+    {
+      "case_id": "microwave-changed",
+      "source_commit": "37f7e3fd0e76eff8115941e7d456ffdf6424d0d4",
+      "dataset_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+      "input_sha256": "138b895caf1945f9faf6c41610b67c1d169f3ff49d523bcf3b8576ce56127d87",
+      "exit": 0,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "source_unchanged": true,
+      "status": "failed",
+      "actual_calls": 3,
+      "tokens": 8308,
+      "usage_unknown": false,
+      "stop": null,
+      "relay_failed": false,
+      "model_id": "qwen3:8b",
+      "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "source_kind": "synthetic",
+      "revision_count": 2,
+      "independent_quality": null,
+      "file": "evals/pm-intake/20261006/live-quality/original-six/microwave-changed.output.json",
+      "output_sha256": "f0fcd37829d621f15e13e05e920b2cf568a7f55b94d5b641e01f3a68fe10b887",
+      "quality_complete": false
+    }
+  ],
+  "automatic_quotas_or_old_jobs_reset": false,
+  "application_requirements_complete": false,
+  "quality_complete": false,
+  "market_or_real_customer_evidence": false,
+  "limitations": [
+    "Source inputs are synthetic; process exit0 is not judgment quality acceptance.",
+    "Actual model and source pins are preserved; original failures/quotas are not reset.",
+    "Independent development-case review is separate from held-out evaluation and a strong LLM baseline."
+  ]
+}
