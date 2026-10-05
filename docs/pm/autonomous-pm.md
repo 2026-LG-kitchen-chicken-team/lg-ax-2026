@@ -2,6 +2,14 @@
 
 2026-10-05 사용자는 “내 CLI가 알아서 판단하고 검토병합하고 배정까지” 하는 범위를 승인하고 구현을 지시했다. 매번 채팅 승인을 요청하는 구조에서 고정 필수 업무 안의 일상 판단·배정·검수·조건부 병합을 반복하는 구조로 확장했다. 공식 팀장 황대겸·개발 PM 정이량·개인 역할·보호 규칙은 유지한다.
 
+## 최신 사용자 위임 — 새 적용 대기
+
+10/5 사용자는 팀·정이량·황대겸·신진하·최길웅의 **전원 ON**, 충분한 의미 있는 작업 생성/배정·상시 반복, **담당자 자신의 구현·검사·소스 검수·수정 책임**, GitHub **사람 승인 0명**과 **관리자 bypass 유지**를 지정했다. PM은 공통 규격·우선순위·상위 통합·배정/인수·평가/제출을 맡는다. 새 24개 개발 큐·중앙 정책·고정 runtime·각 PC 적용은 이 원고 기준 **배포 대기**다. 실제 GitHub 설정·네 개인 모드·서비스/PID·job은 [운영 Issue #28](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28)의 배포 증거와 인증 상태를 확인한다.
+
+담당자의 자기 검수는 PR 전 완료해야 할 일이다. 검사를 통과한 뒤 diff·정상/오류 사례·원 자료/계약 유지 여부·미실행 조건을 검토하고 자신의 세션 근거로 제출한다. PM의 고정 broker는 해당 결과와 CI·독립 검수·정확한 소스/경로·통합 영향을 대조해 일상 병합/후속 배정을 수행한다. 모든 코드 줄에 대해 사람 PM의 새 승인을 기다리지 않으면서 실제 검사·권한·부모 전체 완료 조건을 유지한다.
+
+[24개 `development_only` 단위](development-queue-20261005.json)는 각 담당자 6개이며 별도 보호 registry/ledger로 등록한다. 개발 단위의 실제 accepted 선행은 개발 착수 근거로 사용할 수 있다. 원 부모 Done·실제 제품 실행·전체 요구·평가·제출 의존과 증거를 대체하지 않는다. 큐의 고정 요구/입출력/경로/검사/acceptance를 벗어나 임의 업무를 실행하지 않는다.
+
 ## 무엇을 자동으로 하는가
 
 `pm.py`는 승인 스냅샷·실제 main·개인 준비·큐·PR을 읽고 격리 CLI의 구조화 판단을 받는다. `pm_broker.py`는 고정 배포한 운영 권한으로 사실과 정책을 다시 확인해 실제 동작을 수행한다. 모델에 운영 토큰·임의 API·shell·게시 기능을 제공하지 않는다.
@@ -36,6 +44,8 @@ PM 코드는 편집 중인 clone/PR에서 실행하지 않는다. config·policy
 | notification_hook / mail | 기존 고정 hook 또는 보호된 CLI Gmail transport 설정/해시. 둘 다 없으면 메일 미발송 |
 | backlog | 승인된 연쇄 계획의 외부 경로/해시 |
 | parent_completion_enabled / parent_contract_source_commit | 보호된 부모 완료 수집·게시 사용 여부와 원본 계약 commit |
+| development_queue_registry | 원 계획에 묶인 새 development_only 큐의 외부 경로·실제 SHA256. 원 대장과 별도 development_ledger 사용 |
+| review_contract_revision | 필요할 때만 exact PR/head/base/원 검수 증거 해시를 version 2에 고정하는 새 독립 검수 1회 인계 |
 
 검토한 clean main에서 새 외부 runtime을 생성한 뒤 hash를 검사하는 entry로 실행한다. builder/entry는 ON·로그인·정책 승인을 수행하지 않는다. 실제 출력의 entry hash·dependency manifest·원본 commit을 근거에 남긴다.
 
@@ -94,7 +104,11 @@ PM installer의 `-PythonPath`에는 이제 **본인이 검증한 새 runtime의 
 
 병합은 현재 main/base와 head, 모든 필수 CI SUCCESS, 허용 경로, 서로 다른 implementation/reviewer session, unresolved finding 없음, 실제 고정 검사 근거를 요구한다. 같은 PM GitHub 계정의 작업도 개발과 다른 격리 검수 세션을 사용한다. PR 본문의 “승인”·branch JSON의 verified flag·개발자의 자기 평가를 trusted proof로 취급하지 않는다. broker가 직접 수집하고 고정 head/base와 연결한다.
 
-3명 승인·선형 이력은 그대로 유지한다. 이전 수동 관리자 bypass 지시만으로 무인 bypass를 켜지 않는다. 최신 자동 PM 위임에 근거한 allow_auto_merge/allow_admin_bypass와 각각의 delegation_reference를 외부 정책에 명시해야 한다. Worker는 bypass/merge/main push를 하지 않는다. merge 후 실제 응답·PR 상태·commit parent를 확인하고 base 경합이면 자동 완료 대신 복구 대상으로 남긴다.
+3명 승인은 최신 지시 이전의 역사 설정이다. 사용자의 새 지시에 따라 필요한 **사람 승인 수는 0명**으로 변경하고 관리자 bypass를 유지한다. 선형 이력·필수 CI 등 다른 설정의 현재 실제 값은 GitHub에서 별도로 조회한다. 자동 PM 위임에 근거한 allow_auto_merge/allow_admin_bypass와 각각의 delegation_reference는 외부 정책에 계속 명시한다. Worker는 bypass/merge/main push를 하지 않는다. merge 후 실제 응답·PR 상태·commit parent를 확인하고 base 경합이면 자동 완료 대신 복구 대상으로 남긴다.
+
+부분 단위의 코드 병합은 부모 전체 제품 증거와 분리한다. `completes_task: false`는 부모 Done을 만들지 않는 구현 단위다. 정확한 현재 main/base·head·CI·독립 검수·통합 조건을 모두 만족하면 부모 전체 증거가 미완료여도 그 단위를 병합할 수 있다. 오래된 base는 scoped revision을 요청해 새 검사/검수를 받는다. PM context의 `blocked_actions`는 실제 거부 이유를 제공하며 이를 부모 완료 실패로 추측하지 않는다.
+
+독립 검수는 `findings`에 차단 결함만 남기고 `approve`이면 `[]`를 반환한다. 정보성 설명·통과 관찰·후속 부모 검증은 `reason`에 쓴다. 과거의 모순된 approve/findings는 자동 삭제/정규화하지 않는다. PM은 원 known usage/proof를 보존하고 `review_contract_revision`의 exact target·원 evidence SHA256을 배포해 새 protocol session 한 번을 승인할 수 있다. 새 key는 원 증거 해시에 묶이며 해당 결과를 다시 호출하지 않는다. unknown/반려/정상 승인에 이 경로를 적용하거나 예산을 초기화하지 않는다.
 
 ## 예산·중복·복구
 
