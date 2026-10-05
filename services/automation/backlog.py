@@ -27,6 +27,69 @@ FORBIDDEN = {".git", ".github", "private", "harness", "AGENTS.md", "CLAUDE.md", 
 CORE_PARENT = "P2-CORE-002"
 CORE_ORIGINAL_UNITS = ("core-request-reuse-terminal-regression", "core-exclusion-residual-quality")
 CORE_CORRECTIONS = ("core-product-correction-1", "core-product-correction-2")
+MAX_DEVELOPMENT_UNITS = 32
+
+
+def validate_development_registry(original, registry):
+    """Combine an explicitly pinned implementation queue without rewriting history.
+
+    These offline, non-completing units may start on accepted implementation
+    prerequisites while whole-product dependency evidence is still being
+    collected. Original units and all parent contracts keep their formal gates.
+    The protected registry/policy bytes, not this function, authorize release.
+    """
+    keys = {"schema_version", "repo", "scope", "original_plan_digest", "source_commit",
+            "purpose", "capabilities"}
+    if (not isinstance(registry, dict) or set(registry) != keys or registry["schema_version"] != 1 or
+            registry["repo"] != original.get("repo") or registry["scope"] != "required" or
+            registry["original_plan_digest"] != _digest(original) or
+            not isinstance(registry["source_commit"], str) or not SHA.fullmatch(registry["source_commit"]) or
+            not isinstance(registry["purpose"], str) or not registry["purpose"].strip()):
+        raise BacklogError("development registry must bind the unchanged approved original plan")
+    additions = registry["capabilities"]
+    if not isinstance(additions, dict) or not 1 <= len(additions) <= MAX_DEVELOPMENT_UNITS:
+        raise BacklogError("bounded reviewed development capability registry required")
+    combined = deepcopy(original)
+    for key, cap in additions.items():
+        if (key in original["capabilities"] or key in CORE_CORRECTIONS or not isinstance(cap, dict) or
+                cap.get("development_only") is not True or cap.get("execution_kind") != "fixture" or
+                cap.get("completes_task") is not False or cap.get("max_attempts") != 1 or
+                cap.get("allow_partial_blocked_parent") is not True or cap.get("required_environments") != [] or
+                cap.get("expose_independent_answers") is not False or "product_correction" in cap):
+            raise BacklogError("development units must be new offline implementation, never parent completion or retry")
+        if (not isinstance(cap.get("development_prerequisites"), list) or
+                cap["development_prerequisites"] != cap.get("depends_on_capabilities") or
+                any(not isinstance(dep, str) or not ID.fullmatch(dep) for dep in cap["development_prerequisites"]) or
+                len(set(cap["development_prerequisites"])) != len(cap["development_prerequisites"])):
+            raise BacklogError("development prerequisites must be explicit immutable capability identities")
+        # Independent answer/private evaluation locations and operating policy
+        # remain unavailable to development packets, even when externally pinned.
+        paths = cap.get("allowed_paths")
+        if not isinstance(paths, list) or not paths or len(paths) > 40:
+            raise BacklogError("bounded exact development file scope required")
+        for path in paths:
+            _path(path)
+            if path.endswith("*"):
+                raise BacklogError("development units require exact file paths")
+        if any("independent" in path.casefold() or "private" in path.casefold() for path in paths):
+            raise BacklogError("development scope may not expose independent answers or private evidence")
+        combined["capabilities"][key] = deepcopy(cap)
+    return validate_backlog(combined)
+
+
+def ready_development_units(original, registry, observation, original_ledger, development_ledger,
+                            *, held_paths=(), held_resources=()):
+    """Two independently bound hash chains; accepted units still are not Done."""
+    combined = validate_development_registry(original, registry)
+    if any(row.get("capability_id") not in registry["capabilities"] for row in development_ledger):
+        raise BacklogError("development ledger cannot impersonate original capability history")
+    state = verify_progress(original, original_ledger) | verify_progress(combined, development_ledger)
+    result = _ready_units(combined, observation, state, held_paths=held_paths, held_resources=held_resources,
+                          candidate_ids=set(registry["capabilities"]))
+    additions = registry["capabilities"]
+    return {"ready": [key for key in result["ready"] if key in additions],
+            "waiting": {key: reason for key, reason in result["waiting"].items() if key in additions},
+            "registry_digest": _digest(registry), "formal_done": False}
 
 
 def with_core_product_corrections(plan):
@@ -163,6 +226,12 @@ def validate_backlog(plan, *, registered_tasks=None):
             raise BacklogError("environment gates must be explicit")
         if unit.get("expose_independent_answers") is not False:
             raise BacklogError("developer may never receive independent evaluation answers")
+        if "development_only" in unit and (
+                unit.get("development_only") is not True or unit.get("execution_kind") != "fixture" or
+                unit.get("completes_task") is not False or unit.get("max_attempts") != 1 or
+                unit.get("development_prerequisites") != dependencies or
+                unit.get("allow_partial_blocked_parent") is not True or unit.get("required_environments") != []):
+            raise BacklogError("offline implementation contract must retain explicit development prerequisites")
         if unit_id in CORE_CORRECTIONS or "product_correction" in unit:
             if unit_id not in CORE_CORRECTIONS or not all(key in units for key in CORE_ORIGINAL_UNITS):
                 raise BacklogError("unregistered product correction capability")
@@ -309,7 +378,7 @@ def ready_product_corrections(original, registry, observation, original_ledger, 
             "registry_digest": _digest(registry), "formal_done": False}
 
 
-def _ready_units(plan, observation, state, *, held_paths=(), held_resources=()):
+def _ready_units(plan, observation, state, *, held_paths=(), held_resources=(), candidate_ids=None):
     snapshot = observation.get("formal_snapshot", {})
     tasks = snapshot.get("tasks", {})
     waiting, ready = {}, []
@@ -320,6 +389,8 @@ def _ready_units(plan, observation, state, *, held_paths=(), held_resources=()):
         held_paths.extend(unit.get("allowed_paths", []))
         held_resources.update(unit.get("shared_resources", []))
     for unit_id, unit in sorted(plan["capabilities"].items(), key=lambda item: (-item[1]["priority"], item[0])):
+        if candidate_ids is not None and unit_id not in candidate_ids:
+            continue
         task_id, owner = unit["task_id"], unit["owner"]
         actual = tasks.get(task_id)
         reason = None
@@ -337,7 +408,8 @@ def _ready_units(plan, observation, state, *, held_paths=(), held_resources=()):
             reason = "owner_unavailable_or_unverified"
         elif actual.get("status") in {"blocked", "deferred"} and unit.get("allow_partial_blocked_parent") is not True:
             reason = "parent_blocked"
-        elif any(tasks.get(dep, {}).get("status") != "done" for dep in plan["tasks"][task_id]["depends_on"]):
+        elif unit.get("development_only") is not True and any(
+                tasks.get(dep, {}).get("status") != "done" for dep in plan["tasks"][task_id]["depends_on"]):
             reason = "formal_dependencies_incomplete"
         elif any(state.get(dep) not in {"accepted", "parent_verified"} for dep in unit.get("depends_on_capabilities", [])):
             reason = "previous_unit_not_accepted"

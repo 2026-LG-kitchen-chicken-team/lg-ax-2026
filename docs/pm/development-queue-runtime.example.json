@@ -1,0 +1,105 @@
+{
+  "artifact_kind": "inert_reviewed_deployment_example",
+  "execution_effect": "None. A repository declaration is never deployment, release, ON or Done.",
+  "registry_source": {
+    "path": "docs/pm/development-queue-20261005.json",
+    "sha256": "60948da4d40f9e0bcd0275e9a52be11c7a439153bff0b5de640a514ed221a073",
+    "original_plan_digest": "882a7fdf98e8b9a4d78b6dc31d00425715674291ce2c3f38b7da6b86cd442b43",
+    "new_units": 24,
+    "original_units": 23,
+    "correction_units": 2,
+    "combined_units": 49,
+    "registered_parents_unchanged": 19
+  },
+  "config_patch_example": {
+    "development_queue_registry": {
+      "path": "C:/LGAX-state/example/development-queue-20261005.json",
+      "sha256": "60948da4d40f9e0bcd0275e9a52be11c7a439153bff0b5de640a514ed221a073"
+    }
+  },
+  "policy_patch_example": {
+    "add_capabilities_from_registry": "capabilities",
+    "limits": {
+      "max_actions_per_task": 64,
+      "max_model_calls_per_task": 40,
+      "max_model_tokens_per_task": 1000000
+    },
+    "preserve_daily_limits": {
+      "max_model_calls_per_day": 80,
+      "max_actions_per_day": 100,
+      "max_model_tokens_per_day": 2000000
+    }
+  },
+  "released_capabilities_add": [
+    "dev-core-source-model-scope",
+    "dev-core-feature-support-states",
+    "dev-core-residual-discomfort-matrix",
+    "dev-core-concept-evidence-lineage",
+    "dev-core-source-instruction-boundary",
+    "dev-core-planning-quality-integration",
+    "dev-data-review-import",
+    "dev-data-original-source-ranges",
+    "dev-data-evidence-catalog",
+    "dev-data-bm25-grounded-search",
+    "dev-data-retrieval-comparison",
+    "dev-data-upload-query-integration",
+    "dev-web-evidence-trace-panel",
+    "dev-web-clarification-panel",
+    "dev-web-concept-comparison",
+    "dev-web-revision-timeline",
+    "dev-web-run-progress-errors",
+    "dev-web-workspace-components-integration",
+    "dev-pm-api-run-failure-contract",
+    "dev-pm-mcp-workspace-workflow",
+    "dev-pm-five-skill-provenance",
+    "dev-pm-whole-request-measurement",
+    "dev-pm-paired-baseline-runner",
+    "dev-pm-submission-replay-verifier"
+  ],
+  "old_contracts_and_history": [
+    "Keep original backlog bytes/SHA256, all original task contracts and all original/correction capability definitions unchanged.",
+    "Keep backlog_ledger and correction_ledger bytes/hash prefixes, old actions, units, proofs, blocked/unknown outcomes and all model/call/action budgets unchanged.",
+    "Add development_ledger only if absent; verify any existing ledger against exactly this independently bound registry. Never reset the ledger by changing the registry.",
+    "Preserve parent_completion_enabled, independent requirement collectors and final dependency gates. All new units are fixture/development_only/completes_task=false."
+  ],
+  "reviewed_migration_steps": [
+    "Authenticate the actual PM account and inspect active jobs, expected installed source/config/policy hashes and original plan digest.",
+    "Wait for a safe quiescent PM boundary; acquire the PM loop/journal mutexes. Do not stop or replace another active model call/Worker. Back up exact configuration/state/SQLite and registry bytes.",
+    "Validate the unchanged original plan plus this registry; verify original task/owner/requirements, new exact file scopes, validators and source CI. Copy the registry outside all editable checkouts and pin its actual bytes.",
+    "Add exactly these 24 capabilities to the current policy and release list. Apply only the explicitly reviewed finite per-task envelope. Validate policy serialized bytes stay below 256 KiB.",
+    "Migrate policy digest metadata under both locks with an explicit append-only operator event and old/new source/config/policy/registry hashes. Preserve every original usage/reservation.",
+    "Check actual controller owner_paths for every exact product/test path and both job-specific immutable record paths. Never enable forbidden operating paths. Existing packet schema already supports dependency_job_ids.",
+    "Build/hash-pin the reviewed fixed runtime outside the checkout. Verify login/isolation/publisher separation/Worker presence and all required readiness receipts; ON alone is not readiness.",
+    "Publish actual main/formal snapshot ACK, restart fixed CLI and verify each selected unit was actually queued/claimed/running before reporting startup."
+  ],
+  "development_dispatch_contract": [
+    "Only the protected development registry/policy authorizes development_only fixture scope. No model can invent new tasks, paths, commands or expected independent answers.",
+    "Accepted implementation prerequisite IDs are verified in the independently bound ledgers and mapped to exactly one reconciled actual queue-accepted job. Those exact job IDs are sent as dependency_job_ids.",
+    "These fixture packets use formal_task_dependencies=[] and max_attempts=1. Parent dependency lists are unchanged and still govern original units, live product completion, final evaluation and submission.",
+    "Same-tick offers and actual active/review jobs hold owner/file/resource scope. One available owner receives one deterministic offer at a time.",
+    "No unexplained blocked/unknown action is retried, refunded or deleted. No paid API fallback or rate-limit bypass is introduced."
+  ],
+  "initial_independent_units": [
+    "dev-core-source-model-scope",
+    "dev-data-review-import",
+    "dev-web-evidence-trace-panel",
+    "dev-pm-api-run-failure-contract"
+  ],
+  "verification_commands": [
+    [
+      "uv",
+      "run",
+      "--no-sync",
+      "python",
+      "-m",
+      "unittest",
+      "tests.test_automation_development_queue",
+      "tests.test_automation_backlog",
+      "tests.test_automation_orchestration",
+      "tests.test_automation_product_corrections",
+      "tests.test_automation_pm",
+      "tests.test_automation_pm_broker",
+      "-v"
+    ]
+  ]
+}
