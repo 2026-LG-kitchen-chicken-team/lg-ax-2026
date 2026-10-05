@@ -1,5 +1,11 @@
 # 팀 자동화 가동 — 2026-10-05
 
+**최신 15:32 KST:** PR99/100의 실제 병합·postmerge·Project/중앙 인수를 끝냈다. 새 source0c9d95d의 CI4와 native1,058검사(6skip)가 통과했고 해시 고정 PM r5 배포·실제 계정/격리 preflight를 확인했다. 이 운영 PR의 main 반영·정식 snapshot ACK 뒤 숨김 PM을 시작하며 [운영 Issue28](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28)에 실제 Running과 후속 행동을 이어 기록한다. [세 연결·상시 안내](orchestration-live-20261005.md)를 읽는다. 원 사용량·실패·원23단위를 보존했고 고정 수정2단위/누적 사례14/내부 일일2M만 검토된 범위로 추가했다. 팀/PM/황대겸/최길웅 ON, 신진하만 원 Git128 개인 OFF다. 실제 제품 의미 실패·Done5/31verified0 유지. 기존 준비자는 재설치/로그인 없이 Worker를 유지한다. 아래는 이전 시각의 원본 기록이다.
+
+**최신 12:22 KST:** 연쇄 운영 코드는 [PR94](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/94)의 실제 CI4 뒤 mainfa59e56c로 인수됐다. WEB PR93은 실제 postmerge4·원 소스 바이트 보존·Project/중앙 ACK 뒤 accepted다. 새 PM004 자동 작업 auto-c9c811a4…는 실제 등록·claim/running/attempt1이며, 이전 ownership422 실패 배정과 partial 댓글·journal·seen·예산은 삭제하지 않고 알려진 거절로 복구했다. 정확 PM8경로만 추가했고 전체66경로·보호/타owner4거부를 확인했다. [실제 가동 관측](../../evals/team-automation/20261005/orchestration-running.json)·정이량013/E026을 따른다.
+
+PM CLI/본인 Worker는 실제 Running이며 황대겸·최길웅 후속 Ready2를 확인했다. 본인 Worker와 PM 판단의 profile 경합을 줄이는 고정 승인 배정 경로와 실제 제품 실행 collector는 검수 중이다. CLI Gmail transport는 실제 계정/승인 연락처/검색·read·thread를 확인했으나 이 관측의 새 delivery0·부모 requirement bundle0을 발송·전체 완료로 바꾸지 않는다. DATA Git128 개인 pause·제품 Done5/31verified0을 유지한다. 기존 수동 SENT는 재발송하지 않는다. 아래는 각 시각의 역사 checkpoint다.
+
 **최신 10:06:51 KST:** 황대겸 첫 단위는 accepted이고 최길웅의 새 revision auto-583e043…는 실제 running/attempt1이다. 신진하 첫 auto-28a35ed…는 `trusted git command failed (128)`로 blocked라 원 실패를 보존하고 신진하 개인만 OFF로 잠시 멈췄다. 팀/PM/황대겸/최길웅 ON과 PM 실제 Running·unchanged/추가 모델0은 유지한다. Git128의 정확한 로컬 단계/명령·원인은 PM PC에서 미확인이며 성공으로 덮거나 맹목 재시도하지 않는다.
 
 신진하에게 [DATA-GIT128-R1](assignments/PM-20261005-DATA-GIT128-R1.json)·Issue12, 최길웅에게 [WEB-REVISION-R1](assignments/PM-20261005-WEB-REVISION-R1.json)·Issue25를 정식 후속 안내로 기록하고 연결 Gmail 실제 SENT/발신·수신·제목을 대조했다. 최길웅 새 안내는 사용자가 지정한 최신 private 주소를 실제 사용했다. 이전 메일 수신처·SENT·outbox는 소급 수정/재전송하지 않았다. 수신자 열람은 미확인이다. [최신 불변 관측](../../evals/team-automation/20261005/pm-start-followup.json)·정이량012/E025를 따른다.

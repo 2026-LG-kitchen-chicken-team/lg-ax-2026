@@ -57,6 +57,16 @@ class PMDriverBusy(PMError):
     """Trusted driver could not acquire its profile mutex before any call began."""
 
 
+class PMPreparationRejected(PMError):
+    """Fixed assignment preparation refused before any remote mutation."""
+
+    def __init__(self, code):
+        if code not in {"revision_product_bound", "revision_prompt_bound"}:
+            raise ValueError("unknown fixed preparation rejection")
+        self.code = code
+        super().__init__("fixed revision exceeds bounded context or safe task bounds; split or approve verified lossless transport")
+
+
 class PMBroker(Protocol):
     """Authenticated, fixed-deployment adapter, not code imported from a PR.
 
@@ -376,8 +386,8 @@ class AutonomousPM:
         if not isinstance(auth, dict) or auth.get("account") != PM or auth.get("operator") is not True:
             raise PMError("authenticated PM operator required; PM worker identity is insufficient")
 
-    def _observe(self):
-        observation = self.broker.observe()
+    def _observe(self, *, collect=True):
+        observation = self.broker.observe() if collect else self.broker.observe(collect=False)
         if not isinstance(observation, dict) or len(canonical(observation).encode()) > 1024 * 1024:
             raise PMError("bounded trusted metadata observation required")
         if observation.get("repo") != REPO or not SHA.fullmatch(observation.get("main_commit", "")):
@@ -694,6 +704,10 @@ class AutonomousPM:
                 # A driver failure after that point cannot refund unknown usage.
                 raise PMError("isolated driver failed after decision reservation") from None
 
+    def _fixed_ready_enabled(self):
+        return (getattr(self.broker, "allow_fixed_ready_dispatch", False) is True and
+                callable(getattr(self.broker, "fixed_ready_assignment", None)))
+
     def _tick(self):
         self.journal.verify()
         load_policy(self.policy_path, self.policy_digest)  # Detect live policy tampering, never silently reload.
@@ -701,7 +715,11 @@ class AutonomousPM:
         recovery = self._recover()
         if recovery:
             return recovery
-        observation = self._observe()
+        fixed_enabled = self._fixed_ready_enabled()
+        observation = self._observe(collect=not fixed_enabled)
+        fixed_raw = self.broker.fixed_ready_assignment(observation) if fixed_enabled else None
+        if fixed_enabled and fixed_raw is None:
+            observation = self._observe()
         parent = observation.get("parent_completion", {})
         if parent.get("must_reobserve") or (parent.get("main_commit") and parent["main_commit"] != observation["main_commit"]):
             return {"state": "reobserve_after_publication", "model_called": False, "mutated": False}
@@ -714,14 +732,29 @@ class AutonomousPM:
         with self.journal.connect() as db:
             if db.execute("SELECT state FROM seen WHERE fingerprint=?", (event,)).fetchone():
                 return {"state": "unchanged", "fingerprint": event, "model_called": False}
-            if self._exhausted(db, observation, day, next_call=True):
+            if self._exhausted(db, observation, day, next_call=fixed_raw is None):
                 return {"state": "budget_exhausted", "scope": "day", "model_called": False}
             tasks = {capability["task_id"] for capability in self.policy["capabilities"].values()}
-            if tasks and all(self._exhausted(db, observation, day, task, next_call=True) for task in tasks):
+            if tasks and all(self._exhausted(db, observation, day, task, next_call=fixed_raw is None) for task in tasks):
                 return {"state": "budget_exhausted", "scope": "task", "model_called": False}
             failures = db.execute("SELECT value FROM metadata WHERE key='driver_failures'").fetchone()
             if failures and int(failures[0]) >= limits["max_driver_failures"]:
                 return {"state": "driver_halted", "model_called": False}
+        if fixed_raw is not None:
+            raw = normalize_decision(fixed_raw)
+            if raw["action"] != "assign":
+                raise PMError("fixed Ready dispatch can only assign a registered unit")
+            action = self.validate_action(raw, observation)
+            with self.journal.connect() as db:
+                exhausted = self._exhausted(db, observation, day, action["task_id"])
+                if exhausted:
+                    return {"state": "budget_exhausted", "scope": exhausted, "model_called": False}
+                db.execute("INSERT INTO seen VALUES(?,'fixed_assignment_selected')", (event,))
+                self.journal.append(db, "fixed_assignment", {"fingerprint": event, "decision": raw,
+                    "source": "fixed_released_backlog", "model_called": False,
+                    "usage": {"input_tokens": 0, "output_tokens": 0}})
+            return self._execute_action(raw, observation, event, day, model_called=False,
+                                        source="fixed_released_backlog")
         tokens, raw = None, None
         try:
             result = self._decision_call(observation, event, day, limits)
@@ -775,40 +808,48 @@ class AutonomousPM:
             if kind == "wait":
                 db.execute("UPDATE seen SET state='wait' WHERE fingerprint=?", (event,))
                 return {"state": "wait", "reason": raw["reason"], "model_called": True, "mutated": False}
+        return self._execute_action(raw, observation, event, day, model_called=True, source="isolated_model")
+
+    def _execute_action(self, raw, observation, event, day, *, model_called, source):
+        """One shared authenticated mutation/journal boundary for both planners."""
         # Decision latency could outlive OFF, a new main/head, changed CI, or a
         # revoked snapshot. Reauthentication and full fresh validation are mandatory.
         self._authenticate()
-        fresh = self._observe()
-        if not self._is_on(fresh) or fingerprint(stable_observation(fresh)) != event:
+        fresh = self._observe(collect=model_called)
+        fixed_changed = (source == "fixed_released_backlog" and
+                         (not self._fixed_ready_enabled() or self.broker.fixed_ready_assignment(fresh) != raw))
+        if not self._is_on(fresh) or fingerprint(stable_observation(fresh)) != event or fixed_changed:
             with self.journal.connect() as db:
                 db.execute("UPDATE seen SET state='stale' WHERE fingerprint=?", (event,))
-                self.journal.append(db, "stale_decision", {"fingerprint": event})
-            return {"state": "stale", "model_called": True, "mutated": False}
+                self.journal.append(db, "stale_decision", {"fingerprint": event, "source": source})
+            return {"state": "stale", "model_called": model_called, "mutated": False}
         action = self.validate_action(raw, fresh)
+        task_id, kind = action["task_id"], action["action"]
         action_id = "pm-" + fingerprint({"policy": self.policy_digest, "event": event, "decision": raw})[:40]
         with self.journal.connect() as db:
             exhausted = self._exhausted(db, fresh, day, task_id)
             if exhausted:
                 db.execute("UPDATE seen SET state='budget_exhausted' WHERE fingerprint=?", (event,))
                 self.journal.append(db, "budget_exhausted", {"fingerprint": event, "scope": exhausted})
-                return {"state": "budget_exhausted", "scope": exhausted, "model_called": True, "mutated": False}
+                return {"state": "budget_exhausted", "scope": exhausted, "model_called": model_called, "mutated": False}
             db.execute("INSERT INTO actions VALUES(?,?,?,'intent',?,NULL)", (action_id, task_id, kind, canonical(action)))
             db.execute("UPDATE budgets SET actions=actions+1 WHERE scope=?", (day,))
             if task_id:
                 db.execute("UPDATE budgets SET actions=actions+1,revisions=revisions+? WHERE scope=?",
                            (int(kind == "request_changes"), "task:" + task_id))
             db.execute("UPDATE seen SET state='action_intent' WHERE fingerprint=?", (event,))
-            self.journal.append(db, "action_intent", {"action_id": action_id, "action": action, "fingerprint": event})
+            self.journal.append(db, "action_intent", {"action_id": action_id, "action": action, "fingerprint": event,
+                                                      "source": source, "model_called": model_called})
         try:
             receipt = self.broker.execute(action_id, action, event)
             known = self.journal.receipt(action_id, receipt)
         except Exception as exc:  # noqa: BLE001 - unknown remote mutation outcome must never be replayed.
             with self.journal.connect() as db:
                 self.journal.append(db, "action_response_lost", {"action_id": action_id, "error_type": type(exc).__name__})
-            return {"state": "reconciliation_required", "action_id": action_id, "model_called": True,
+            return {"state": "reconciliation_required", "action_id": action_id, "model_called": model_called,
                     "reason": "Action response unavailable; no automatic replay."}
         return {"state": receipt["outcome"] if known else "reconciliation_required", "action_id": action_id,
-                "action": kind, "task_id": task_id, "model_called": True, "receipt": receipt}
+                "action": kind, "task_id": task_id, "model_called": model_called, "source": source, "receipt": receipt}
 
     def tick(self):
         # Same lock is held across decision latency, persistence and mutation.

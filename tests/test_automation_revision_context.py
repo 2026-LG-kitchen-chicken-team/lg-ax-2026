@@ -233,7 +233,7 @@ class AssignmentPreflightTests(unittest.TestCase):
     def test_bad_revision_head_scope_or_prompt_cannot_post_save_register_or_consume_state(self):
         from tests import test_automation_pm_broker as fixture_module
 
-        for error in ("head moved", "outside scope", "prompt too large"):
+        for error in ("head moved", "outside scope"):
             with self.subTest(error=error):
                 fixture = fixture_module.BrokerTests()
                 fixture.setUp()

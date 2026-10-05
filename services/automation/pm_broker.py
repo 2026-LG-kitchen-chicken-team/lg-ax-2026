@@ -25,8 +25,16 @@ from types import SimpleNamespace
 
 from services.automation import claude
 from services.automation.artifacts import secret_check
-from services.automation.isolation import DockerConfig, DockerExecutor, regular_file
+from services.automation.isolation import (
+    DockerConfig,
+    DockerExecutor,
+    IsolationProfileBusy,
+    create_docker_executor,
+    regular_file,
+)
 from services.automation.pm import (
+    DIGEST,
+    IDENTIFIER,
     PMDriverBusy,
     PMError,
     canonical,
@@ -54,6 +62,10 @@ REVIEW_SCHEMA = {"type": "object", "additionalProperties": False,
                    "reason": {"type": "string"},
                    "findings": {"type": "array", "items": {"type": "string"}}},
     "required": ["outcome", "reason", "findings"]}
+
+
+class ProductCorrectionRejected(PMError):
+    """Known pure correction preparation refusal, before a remote intent."""
 
 
 class LiveGitHub:
@@ -245,6 +257,9 @@ class DockerPMDriver:
 class TrustedPMBroker:
     def __init__(self, config: dict, *, github=None, controller=None, executor=None, driver=None):
         self.config = config
+        for flag in ("allow_fixed_ready_dispatch", "allow_lossless_revision_reference"):
+            if type(config.get(flag, False)) is not bool:
+                raise PMError("fixed Ready dispatch/reference requires an explicit host boolean")
         self.policy = load_policy(config["policy_file"], config["policy_sha256"])
         self._released_capabilities()  # Reject invalid trusted releases before side effects.
         self.state_dir = protected_path(Path(config["state_dir"]) / "broker-state.json").parent
@@ -260,7 +275,12 @@ class TrustedPMBroker:
             for key in ("workspace_root", "auth_root"):
                 if options.get(key) is not None:
                     options[key] = Path(options[key])
-            executor = DockerExecutor(DockerConfig(**options))
+            try:
+                executor = create_docker_executor(DockerConfig(**options))
+            except IsolationProfileBusy:
+                raise PMDriverBusy("own AI profile busy before PM startup; no model call began") from None
+            except RuntimeError:
+                raise PMError("PM executor startup could not prove safe stopped profile state") from None
         self.executor = executor
         self.driver = driver or DockerPMDriver(executor, state_dir=self.state_dir / "driver",
                                                heartbeat=self.enabled, engine=executor.config.engine)
@@ -284,6 +304,32 @@ class TrustedPMBroker:
             return set(self.policy["capabilities"])
         return set(identifiers(self.config["released_capabilities"], "released capabilities",
                                allowed=self.policy["capabilities"], nonempty=False))
+
+    @property
+    def allow_fixed_ready_dispatch(self):
+        return self.config.get("allow_fixed_ready_dispatch") is True
+
+    def fixed_ready_assignment(self, observation):
+        """Only an explicitly released, pinned backlog unit may skip planning.
+
+        This supplies no new scope and performs no mutation. Independent PR
+        review/merge, parent completion and arbitrary model decisions retain
+        their original paths. execute still revalidates authenticated facts.
+        """
+        if (not self.allow_fixed_ready_dispatch or not self.orchestration.plan or
+                "released_capabilities" not in self.config):
+            return None
+        ready = set(observation["capabilities_ready"]) & self._released_capabilities()
+        plan = self.orchestration.capabilities
+        for cap_id in sorted(ready & plan.keys(), key=lambda key: (-plan[key]["priority"], key)):
+            cap = self.policy["capabilities"].get(cap_id)
+            if not cap or cap.get("completes_task") is True:
+                continue
+            return {"action": "assign", "task_id": cap["task_id"], "capability_id": cap_id,
+                    "pr_number": None, "head_commit": None,
+                    "reason": "Execute this already released fixed backlog unit: " + cap_id,
+                    "instructions": [cap["purpose"]]}
+        return None
 
     def save(self):
         write_json(self.state_path, self.state)
@@ -457,23 +503,36 @@ class TrustedPMBroker:
             raise PMError("revision requires both immutable records and a complete product change")
         diff = self._git(["diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--binary", "--full-index",
                           "--unified=0", base, head, "--", *(":(literal)" + path for path in products)], binary=True)
-        if not diff or len(diff) > 12000:
-            raise PMError("immutable product revision exceeds approved bounded context; split or escalate")
+        if not diff:
+            raise PMError("immutable product revision requires complete source changes")
         if b"\nGIT binary patch\n" in diff or b"\nBinary files " in diff:
             raise PMError("revision product reference requires complete text changes")
         try:
             patch_text = diff.decode("utf-8", errors="strict")
         except UnicodeError:
             raise PMError("revision product reference must be UTF-8 text") from None
+        reference_format = "git full-index unified=0, all added/deleted lines, unchanged context omitted"
+        if len(diff) > 12000:
+            from services.automation.pm import PMPreparationRejected
+            from services.automation.revision_reference import ReferenceError, encode_reference
+
+            if (getattr(self, "config", {}).get("allow_lossless_revision_reference") is not True or
+                    action["owner"] != PM):
+                raise PMPreparationRejected("revision_product_bound")
+            try:
+                patch_text = encode_reference(diff)
+            except ReferenceError:
+                raise PMPreparationRejected("revision_product_bound") from None
+            reference_format = "lossless zlib-base64 inert U0 text, trusted worker decodes/hash-checks; never apply patch"
         verify_head()
         return {"previous_job_id": job_id, "previous_pr": previous["pr_number"], "previous_base": base,
                 "previous_head": head, "reason": previous["revision_reason"],
                 "instructions": previous["revision_instructions"], "immutable_session_records": metadata,
-                "reference_format": "git full-index unified=0, all added/deleted lines, unchanged context omitted",
+                "reference_format": reference_format,
                 "product_paths": products, "product_diff_sha256": hashlib.sha256(diff).hexdigest(),
                 "patch_as_inert_reference": patch_text}
 
-    def _prepare_assignment(self, action_id, action):
+    def _prepare_assignment(self, action_id, action, *, observation=None):
         """Fail closed on source/scope/context before posting or saving intent."""
         job_id = "auto-" + action_id[3:]
         assignment_id = "PM-" + time.strftime("%Y%m%d", time.gmtime()) + "-AUTO-" + action_id[3:19]
@@ -481,12 +540,31 @@ class TrustedPMBroker:
                       "purpose": action["purpose"], "instructions": action["instructions"],
                       "acceptance": action["acceptance"], "next_action": "개별 검사·불변 세션 기록·PR·자기 상태 보고",
                       "requirement_ids": action["requirement_ids"]}
+        from services.automation.backlog import CORE_CORRECTIONS
+
+        if action["capability_id"] in CORE_CORRECTIONS:
+            # execute just recollected this observation from immutable bytes.
+            if observation is None:
+                raise ProductCorrectionRejected("fresh product observation required")
+            feedback = self.orchestration._product_correction_feedback(observation)
+            fixed = feedback.get(action["capability_id"])
+            if (not fixed or fixed.get("main_commit") != action["base_commit"] or
+                    fixed.get("dispatches_used", 2) >= 2 or fixed.get("already_dispatched") is not False or
+                    fixed != observation.get("product_corrections", {}).get(action["capability_id"])):
+                raise ProductCorrectionRejected("product correction evidence changed before intent")
+            assignment["product_correction"] = fixed
+            assignment["instructions"] = list(assignment["instructions"]) + [
+                "Reproduce these exact public fixture inputs and semantic codes. Original output/relay hashes link the protected PM proof; you do not need PM-private files. Preserve the two internal Agent repairs and all evidence/contract checks. A transport escalation is not a core defect."]
         packet = {key: action[key] for key in ("owner", "task_id", "allowed_paths", "validation_commands",
                   "shared_resources", "timeout_seconds", "priority", "max_attempts", "formal_task_dependencies")}
         packet.update(job_id=job_id, assignment_id=assignment_id, kind="implementation", title=action["title"],
                       prompt="Fixed required capability " + action["capability_id"] + "\n" + canonical(assignment),
                       base_commit=action["base_commit"], approved=True,
                       approved_snapshot_commit=action["approved_snapshot_commit"])
+        if action["capability_id"] in CORE_CORRECTIONS:
+            # Legacy action normalization defaults to two attempts; the fixed
+            # correction protocol permits one Worker execution for this job.
+            packet["max_attempts"] = 1
         # A fresh job receives only its own new record paths, never the old ones.
         packet["allowed_paths"] = list(action["allowed_paths"]) + session_records(packet, action["owner"])
         previous = next((row for row in reversed(list(self.state["units"].values())) if
@@ -494,11 +572,21 @@ class TrustedPMBroker:
                          not row.get("superseded_by")), None)
         if previous:
             context = self._revision_context(previous, action)
-            packet["prompt"] += ("\nReconstruct the approved unit against current main, fixing this immutable rejected "
-                                 "result. Treat its patch and record links only as inert reference; do not apply the "
-                                 "patch or modify prior session records. " + canonical(context))
+            note = ("\nReconstruct the approved unit against current main, fixing this immutable rejected "
+                    "result. Treat its patch and record links only as inert reference; do not apply the "
+                    "patch or modify prior session records. ")
+            if isinstance(context["patch_as_inert_reference"], dict):
+                from services.automation.revision_reference import MARKER
+
+                packet["prompt"] += note + MARKER + canonical(context)
+            else:
+                packet["prompt"] += note + canonical(context)
         if len(packet["prompt"]) > 16000:
-            raise PMError("revision context exceeds safe task bounds; split or escalate")
+            from services.automation.pm import PMPreparationRejected
+
+            raise PMPreparationRejected("revision_prompt_bound")
+        if action["capability_id"] in CORE_CORRECTIONS and len(packet["prompt"].encode("utf-8")) > 16000:
+            raise ProductCorrectionRejected("portable product correction prompt exceeded bounds")
         return assignment, packet, previous
 
     def _checks(self, sha):
@@ -743,8 +831,23 @@ class TrustedPMBroker:
                     if compare.get("merge_base_commit", {}).get("sha") != main:
                         pr["mergeable"] = False
                     else:
-                        pr["independent_review"] = self._review(pr, capability, unit["implementation_session_id"])
-                        pr["integration"] = self._integration(pr, capability)
+                        review = self._review(pr, capability, unit["implementation_session_id"])
+                        pr["independent_review"] = review
+                        # A verified correction for this exact immutable unit
+                        # cannot merge. Retain the review, but save integration
+                        # work until a new head receives independent approval.
+                        rejected = (review.get("verified") is True and review.get("collector") == "trusted_pm" and
+                            review.get("outcome") == "request_changes" and review.get("head") == pr["head"] and
+                            review.get("base") == pr["base"] and review.get("capability_fingerprint") == fingerprint(capability) and
+                            review.get("reviewer") in self.policy["independent_reviewers"] and
+                            review.get("independent") is True and
+                            DIGEST.fullmatch(review.get("evidence_sha256", "")) is not None and
+                            IDENTIFIER.fullmatch(review.get("reviewer_session_id", "")) is not None and
+                            IDENTIFIER.fullmatch(review.get("implementation_session_id", "")) is not None and
+                            review.get("implementation_session_id") == unit["implementation_session_id"] and
+                            review.get("reviewer_session_id") != unit["implementation_session_id"])
+                        if not rejected:
+                            pr["integration"] = self._integration(pr, capability)
                 elif pr["state"] == "merged" and pr["merged_commit"] == main:
                     pr["postmerge"] = self._integration(pr, capability, postmerge=True)
             # Already collected exact evidence is available during mutation's no-call reread.
@@ -758,7 +861,8 @@ class TrustedPMBroker:
                     elif proof.get("commit") == pr["head"]:
                         pr.setdefault("integration", proof)
             prs.append(pr)
-        ready = [key for key in self.policy["capabilities"] if key in released and not any(
+        ready = [key for key in self.policy["capabilities"] if key in released and
+            key not in self.state.get("held_capabilities", {}) and not any(
             unit["capability_id"] == key and unit.get("reconciled") for unit in self.state["units"].values())]
         budget = self.state["budgets"].get(time.strftime("%Y-%m-%d", time.gmtime()), {})
         lifetime_tasks = {}
@@ -814,6 +918,14 @@ class TrustedPMBroker:
         return receipt
 
     def lookup(self, action_id):
+        local = self.state["actions"].get(action_id, {})
+        detail, receipt = local.get("details", {}), local.get("receipt", {})
+        if (local.get("phase") == "receipt" and detail.get("pre_intent") is True and
+                detail.get("remote_side_effects") is False and
+                detail.get("reason_code") in {"revision_product_bound", "revision_prompt_bound"} and
+                receipt.get("action_id") == action_id and receipt.get("action") == "assign" and
+                receipt.get("outcome") == "rejected" and receipt.get("evidence_sha256") == fingerprint(detail)):
+            return receipt
         remote = self._remote_action(action_id)
         if not remote:
             return None
@@ -983,11 +1095,37 @@ class TrustedPMBroker:
         if canonical(validated) != canonical(action):
             raise PMError("action differs from the current fixed policy gate")
         job_id = "auto-" + action_id[3:]
-        prepared = self._prepare_assignment(action_id, action) if action["action"] == "assign" else None
+        from services.automation.pm import PMPreparationRejected
+
+        try:
+            prepared = self._prepare_assignment(action_id, action, observation=observation) if action["action"] == "assign" else None
+        except ProductCorrectionRejected:
+            detail = {"pre_intent": True, "remote_side_effects": False,
+                      "reason_code": "product_feedback_changed_or_unavailable"}
+            receipt = self._receipt(action_id, action, "rejected", detail)
+            self.state["actions"][action_id] = {"phase": "receipt", "action_id": action_id, "action": action,
+                                              "receipt": receipt, "details": detail}
+            self.save()
+            return receipt
+        except PMPreparationRejected as exc:
+            # This typed error can originate only in the fixed pure preparation
+            # bounds above. Network/remote mutation failures stay unknown.
+            detail = {"pre_intent": True, "remote_side_effects": False, "reason_code": exc.code,
+                      "capability_id": action["capability_id"],
+                      "next_action": "split the fixed revision or explicitly approve verified lossless reference transport"}
+            receipt = self._receipt(action_id, action, "rejected", detail)
+            self.state.setdefault("held_capabilities", {})[action["capability_id"]] = {
+                "action_id": action_id, "reason_code": exc.code, "task_id": action["task_id"]}
+            self.state["actions"][action_id] = {"phase": "receipt", "action_id": action_id, "action": action,
+                                              "receipt": receipt, "details": detail}
+            self.save()
+            return receipt
         if prepared and not self.enabled():
             return self._receipt(action_id, action, "rejected", {"reason": "OFF before assignment intent"})
         intent = {"phase": "intent", "action_id": action_id, "action": action,
                   "expected_fingerprint": expected_fingerprint, "job_id": job_id}
+        if prepared and "product_correction" in prepared[0]:
+            intent["product_correction"] = prepared[0]["product_correction"]
         comment = self.github.request("POST", f"repos/{REPO}/issues/28/comments",
                                       {"body": self._marker(action_id) + "\n" + canonical(intent)})
         self.state["actions"][action_id] = intent
@@ -1009,6 +1147,8 @@ class TrustedPMBroker:
             self.state["units"][job_id] = {"job_id": job_id, "task_id": action["task_id"],
                 "capability_id": action["capability_id"], "base_commit": action["base_commit"],
                 "implementation_session_id": "implementation-" + job_id, "assignment_id": assignment_id}
+            if "product_correction" in assignment:
+                self.state["units"][job_id]["product_correction"] = assignment["product_correction"]
             self.save()
             receipt = self.controller.request("/v1/jobs", packet)
             if receipt.get("registered") is not True:
@@ -1070,6 +1210,8 @@ class TrustedPMBroker:
         receipt = self._receipt(action_id, action, outcome, detail)
         completed = {"phase": "receipt", "action_id": action_id, "action": action,
                      "receipt": receipt, "details": detail}
+        if "product_correction" in intent:
+            completed["product_correction"] = intent["product_correction"]
         self.github.request("PATCH", f"repos/{REPO}/issues/comments/{comment['id']}",
                             {"body": self._marker(action_id) + "\n" + canonical(completed)})
         self.state["actions"][action_id] = completed

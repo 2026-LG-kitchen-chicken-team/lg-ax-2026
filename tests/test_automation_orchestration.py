@@ -171,6 +171,94 @@ class OrchestrationLifecycleTests(unittest.TestCase):
         self.assertNotIn("must_reobserve", self.live._parent_result)
         self.assertEqual(self.observation["main_commit"], BASE)
 
+    def fixed_parent(self):
+        return SimpleNamespace(store=SimpleNamespace(index={}), tick=Mock(return_value={"main_commit": BASE,
+            "tasks": {"P2-CORE-002": {"state": "waiting_evidence", "missing_requirements": ["R10"]}}}))
+
+    def test_absent_or_disabled_product_settings_keep_registered_default_without_product_creation(self):
+        self.broker.config["parent_completion_enabled"] = True
+        for settings in (None, {"enabled": False}, {"enabled": "true"}):
+            if settings is None:
+                self.broker.config.pop("product_evidence", None)
+            else:
+                self.broker.config["product_evidence"] = settings
+            parent = self.fixed_parent()
+            with (patch("services.automation.product_evidence.ProductEvidenceProducer") as producer,
+                  patch("services.automation.parent_collector.ParentCollector", return_value=parent) as factory,
+                  patch("services.automation.completion_publish.CompletionPublisher")):
+                live = Orchestration(self.broker)
+            producer.assert_not_called()
+            self.assertIsNone(live.product_producer)
+            self.assertIsNone(factory.call_args.kwargs["requirement_collector"])
+            self.assertIs(live.parent, parent)
+            self.assertEqual(live._collection_key(self.observation, {}), fingerprint({"main": BASE, "units": {}, "store": {}}))
+
+    def test_enabled_product_settings_wire_only_fixed_host_callable_and_need_parent_plan(self):
+        self.broker.config["parent_completion_enabled"] = True
+        self.broker.config["product_evidence"] = {"enabled": True}
+        fixed_producer = Mock(state_fingerprint="fixed-state-1")
+        parent = self.fixed_parent()
+        with (patch("services.automation.product_evidence.ProductEvidenceProducer", return_value=fixed_producer) as producer,
+              patch("services.automation.parent_collector.ParentCollector", return_value=parent) as factory,
+              patch("services.automation.completion_publish.CompletionPublisher")):
+            live = Orchestration(self.broker)
+        producer.assert_called_once_with(self.broker)
+        self.assertIs(factory.call_args.kwargs["requirement_collector"], fixed_producer)
+        self.assertIs(live.product_producer, fixed_producer)
+        self.broker.config["parent_completion_enabled"] = False
+        with patch("services.automation.product_evidence.ProductEvidenceProducer") as producer:
+            disabled = Orchestration(self.broker)
+        producer.assert_not_called()
+        self.assertIsNone(disabled.parent)
+
+    def test_product_state_change_wakes_collection_and_post_call_fingerprint_prevents_repetition(self):
+        self.result(FIRST)
+        self.broker.enabled = Mock(return_value=True)
+        parent = self.fixed_parent()
+        producer = SimpleNamespace(state_fingerprint="before-real-execution")
+        self.live.parent, self.live.product_producer = parent, producer
+
+        def collect(*_args, **_kwargs):
+            producer.state_fingerprint = "after-real-execution"
+            return {"main_commit": BASE, "tasks": {"P2-CORE-002": {"state": "waiting_evidence"}}}
+        parent.tick.side_effect = collect
+        self.live.synchronize(self.observation, collect=True)
+        key = self.live._parent_key
+        self.live.synchronize(deepcopy(self.observation), collect=True)
+        self.assertEqual(parent.tick.call_count, 1)
+        self.assertEqual(self.live._parent_key, key)
+        producer.state_fingerprint = "protected-failure-or-new-proof"
+        self.live.synchronize(deepcopy(self.observation), collect=False)
+        self.assertEqual(parent.tick.call_count, 1)
+        self.live.synchronize(deepcopy(self.observation), collect=True)
+        self.assertEqual(parent.tick.call_count, 2)
+        self.live.synchronize(deepcopy(self.observation), collect=True)
+        self.assertEqual(parent.tick.call_count, 2)
+        self.broker.enabled.return_value = False
+        producer.state_fingerprint = "new-state-while-off"
+        self.live.synchronize(deepcopy(self.observation), collect=True)
+        self.assertEqual(parent.tick.call_count, 2)
+
+    def test_malformed_product_host_config_is_refused_before_callback_registration(self):
+        self.broker.config.update(parent_completion_enabled=True, product_evidence="model-chosen-evaluator")
+        with patch("services.automation.product_evidence.ProductEvidenceProducer") as producer, self.assertRaises(PMError):
+            Orchestration(self.broker)
+        producer.assert_not_called()
+
+    def test_cached_pending_product_review_retries_free_profile_then_stops_once_observed(self):
+        self.result(FIRST)
+        self.broker.enabled = Mock(return_value=True)
+        self.live.parent = self.fixed_parent()
+        self.live.product_producer = SimpleNamespace(state_fingerprint="unchanged-executed-cases", pending_review=True)
+        self.live.synchronize(self.observation, collect=True)
+        self.live.synchronize(deepcopy(self.observation), collect=True)
+        self.assertEqual(self.live.parent.tick.call_count, 2)
+        # The fixed producer checks the profile before reserving any paid call.
+        # On actual review observation, no further cache wake/review is needed.
+        self.live.product_producer.pending_review = False
+        self.live.synchronize(deepcopy(self.observation), collect=True)
+        self.assertEqual(self.live.parent.tick.call_count, 2)
+
 
 class OrchestrationBrokerBoundaryTests(unittest.TestCase):
     def setUp(self):

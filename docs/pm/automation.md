@@ -52,7 +52,7 @@ uv run --no-sync python -X utf8 scripts/automation.py reconcile 작업ID --actio
 
 Worker는 자기 GitHub 계정으로 브랜치·PR까지만 게시한다. 고정 배포한 보고 스크립트의 해시를 확인한 뒤 자기 세션 두 문서를 같은 PR head 링크로 제출한다. 실제 ACCEPTED를 확인하며, 보고 실패는 PR을 보존하고 미완료로 남긴다. 팀원이 Project 설정·배정·공식 Done을 변경하지 않는다. PM의 읽기 검토 결과는 고정 head의 일반 댓글이며 승인·병합을 대신하지 않는다.
 
-PM이 검수 → 실제 병합 → 병합 후 통합 실행 → 기존 phase2·공식 Project 승인 스냅샷 갱신을 수행한다. 최신 사용자 위임으로 고정 자동 PM broker도 등록된 필수 capability 안의 일상 배정·독립 검수·조건부 병합·인수를 수행할 수 있다. 현재 main/base·PR head·필수 CI 전체 SUCCESS·개발과 다른 검수 세션·실제 검사 근거를 확인하고 즉시 재조회한다. 무인 관리자 bypass는 기존 수동 권한과 별도로 고정 정책에 명시하며 보호 규칙을 낮추지 않는다. 자동화 작업 `accepted`는 부모 phase2 Done·의존 해제와 별도다. 전체 완료는 모든 요구의 실제 근거와 전용 phase2 완료 collector가 필요하며 현재 live broker는 작은 업무 인수까지만 수행한다. Worker는 main push·병합·bypass를 하지 않으며, 범위/계약/운영 정책/권한 변경·공식 제출·추가 비용은 사용자 판단으로 올린다.
+PM이 검수 → 실제 병합 → 병합 후 통합 실행 → 기존 phase2·공식 Project 승인 스냅샷 갱신을 수행한다. 최신 사용자 위임으로 고정 자동 PM broker도 등록된 필수 capability 안의 일상 배정·독립 검수·조건부 병합·인수를 수행할 수 있다. 현재 main/base·PR head·필수 CI 전체 SUCCESS·개발과 다른 검수 세션·실제 검사 근거를 확인하고 즉시 재조회한다. 무인 관리자 bypass는 기존 수동 권한과 별도로 고정 정책에 명시하며 보호 규칙을 낮추지 않는다. 자동화 작업 `accepted`는 부모 phase2 Done·의존 해제와 별도다. 최신 부모 완료 경로는 [연쇄 운영 지침](orchestration.md)을 따른다. 모든 요구의 실제 근거·독립 판정·완료 증거 게시 PR·실제 CI/병합·Project 및 중앙 수신을 확인한 부모만 완료하고, 연결 설정이나 작은 업무 인수만으로 Done을 만들지 않는다. Worker는 main push·병합·bypass를 하지 않으며, 범위/계약/운영 정책/권한 변경·공식 제출·추가 비용은 사용자 판단으로 올린다.
 
 ## 현재 연결과 남은 설치
 

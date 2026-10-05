@@ -9,7 +9,8 @@ FILES = ["scripts/automation_pm.py", "scripts/automation_isolation.py", "scripts
     "services/automation/" + name for name in (
         "__init__.py", "pm.py", "pm_broker.py", "github_bridge.py", "state.py", "worker.py",
         "process.py", "claude.py", "artifacts.py", "isolation.py", "backlog.py", "completion.py",
-        "orchestration.py", "parent_collector.py", "completion_publish.py", "mail_broker.py", "mail_connector.py")]
+        "orchestration.py", "parent_collector.py", "completion_publish.py", "mail_broker.py", "mail_connector.py",
+        "product_rpc.py", "product_evidence.py", "revision_reference.py")]
 
 
 def build(destination):

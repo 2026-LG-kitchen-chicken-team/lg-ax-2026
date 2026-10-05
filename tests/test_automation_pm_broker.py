@@ -197,6 +197,35 @@ class BrokerTests(unittest.TestCase):
     def tearDown(self):
         self.temp.cleanup()
 
+    def test_real_startup_factory_acquires_worker_profile_before_validating_normal_cache(self):
+        from services.automation.isolation import DockerExecutor
+
+        launch = self.executor.config.auth_root / "tmp/arg0/codex-arg0STARTUP"
+        launch.mkdir(parents=True)
+        (launch / "apply_patch").write_text("inert generated launcher")
+        config = {**self.config, "executor": vars(self.executor.config)}
+        exe = "C:/Docker/docker.exe" if os.name == "nt" else "/usr/bin/docker"
+        with patch("services.automation.isolation.shutil.which", return_value=exe), patch(
+                "services.automation.isolation.subprocess.run", return_value=SimpleNamespace(
+                    returncode=0, stdout=b"")):
+            broker = TrustedPMBroker(config, github=self.github, controller=self.controller, driver=self.driver)
+        self.assertIsInstance(broker.executor, DockerExecutor)
+        self.assertFalse((self.executor.config.auth_root / "tmp").exists())
+        self.assertEqual(broker.state["budgets"], {})
+
+    def test_real_constructor_busy_is_free_without_auth_scan_budget_or_cleanup(self):
+        launch = self.executor.config.auth_root / "tmp/arg0/codex-arg0BUSY"
+        launch.mkdir(parents=True)
+        (launch / "apply_patch").write_text("inert running launcher")
+        config = {**self.config, "executor": vars(self.executor.config)}
+        with exclusive_lock(self.executor.config.auth_root / "lgax-worker.lock"), patch(
+                "services.automation.isolation.subprocess.run") as docker, self.assertRaises(PMDriverBusy):
+            TrustedPMBroker(config, github=self.github, controller=self.controller, driver=self.driver)
+        docker.assert_not_called()
+        self.assertTrue(launch.is_dir())
+        self.assertFalse((self.executor.config.auth_root.parent / ".lgax-cli-runtime-cache").exists())
+        self.assertFalse(self.github.calls)
+
     def action(self, kind):
         observation = self.broker.observe(collect=False)
         decision = {"action": kind, "task_id": TASK, "capability_id": CAP,
