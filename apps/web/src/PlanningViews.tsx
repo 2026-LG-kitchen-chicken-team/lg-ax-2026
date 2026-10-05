@@ -490,8 +490,11 @@ function OutcomeComparison({ previous, selected }: { previous: RunSnapshot | und
 }
 
 export function HistoryView({ mode, runs, selected, onSelect, features, evidence, original, onRerun, busy = false, measure }: PlanningProps & { original: PlanningRequest; onRerun: (request: PlanningRequest, edits: EditSummary) => Promise<void>; busy?: boolean; measure: MeasureControls }) {
-  const entry = buildRevisionTimeline(runs, selected.run.id, original).entries.find(item => item.run_id === selected.run.id);
-  const invalidLink = !!selected.previous_run_id && (!entry || entry.link_problems.length > 0);
+  const timeline = buildRevisionTimeline(runs, selected.run.id, original);
+  const entry = timeline.entries.find(item => item.run_id === selected.run.id);
+  const parentEntry = timeline.entries.find(item => item.run_id === selected.previous_run_id);
+  const invalidLink = !entry || entry.link_problems.length > 0 || entry.record_problems.length > 0
+    || !!parentEntry?.record_problems.length;
   const previous = invalidLink ? undefined : runs.find(item => item.run.id === selected.previous_run_id);
   const changes = requestChanges(previous?.request ?? original, selected.request);
 
@@ -513,7 +516,7 @@ export function HistoryView({ mode, runs, selected, onSelect, features, evidence
           <div><dt>기록 시각</dt><dd>{selected.created_at}</dd></div>
         </dl>
         <h4 className="sub">요청 변경</h4>
-        {invalidLink ? <p className="missing-note" role="alert">이전 실행 연결을 확인할 수 없어 요청·후보·결과의 변경 전후 비교를 보류합니다. 저장된 현재 실행은 아래에서 확인하세요.</p> : changes.length ? <table className="change-table"><thead><tr><th>항목</th><th>변경 전</th><th>변경 후</th></tr></thead><tbody>{changes.map(item => <tr key={item.field}><th>{item.label}</th><td>{item.before}</td><td>{item.after}</td></tr>)}</tbody></table> : <p className="muted">이전 기준과 요청이 같습니다.</p>}
+        {invalidLink ? <p className="missing-note" role="alert">이전 실행 연결 또는 회차 기록을 확인할 수 없어 요청·후보·결과의 변경 전후 비교를 보류합니다. 저장된 현재 실행은 아래에서 확인하세요.</p> : changes.length ? <table className="change-table"><thead><tr><th>항목</th><th>변경 전</th><th>변경 후</th></tr></thead><tbody>{changes.map(item => <tr key={item.field}><th>{item.label}</th><td>{item.before}</td><td>{item.after}</td></tr>)}</tbody></table> : <p className="muted">이전 기준과 요청이 같습니다.</p>}
         <h4 className="sub">후보 변화 <small>제목·차별점·상태·요구사항·가정·근거</small></h4>
         {invalidLink ? <p className="muted">후보 비교 보류</p> : <DetailChanges previous={previous} selected={selected} />}
         <h4 className="sub">보류·실패·질문 비교 <small>이전 실행 대비</small></h4>

@@ -50,4 +50,17 @@ describe('PM integrated planner screens', () => {
     expect(markup).not.toContain('외부 프로젝트 비공개 후보');
     expect(markup).not.toContain('이전 실행과 결과 비교');
   });
+  it('holds before/after results if a parent has an invalid Agent-internal revision count', () => {
+    const before = structuredClone(FIXTURE_RUNS[0]);
+    before.run.revision_count = 3;
+    const selected = FIXTURE_RUNS[1];
+    const markup = renderToStaticMarkup(createElement(HistoryView, {
+      mode: 'fixture', runs: [before, selected], selected, onSelect: () => {}, original: FIXTURE_ORIGINAL_REQUEST,
+      features: FIXTURE_BOOTSTRAP.features as unknown as Feature[], evidence: FIXTURE_BOOTSTRAP.evidence,
+      onRerun: async () => {}, measure: { records: [], start: () => {}, cancel: () => {}, exportRecords: () => {}, error: '' },
+    }));
+    expect(markup).toContain('0~2 범위를 벗어납니다');
+    expect(markup).toContain('비교를 보류합니다');
+    expect(markup).not.toContain('이전 실행과 결과 비교');
+  });
 });
