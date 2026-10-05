@@ -33,7 +33,9 @@ PM 코드는 편집 중인 clone/PR에서 실행하지 않는다. config·policy
 | readiness_files | 담당자별 고정 private 증거 경로/해시. 실제 경계/로그인 미검증은 false |
 | released_capabilities | PM이 개별 인수를 허용한 고정 capability ID 목록. 새 배포에는 반드시 명시하며 `[]`는 모든 새 배정을 금지 |
 | poll_seconds | 제한된 상태 조회 간격 |
-| notification_hook | 선택적인 외부 고정 발송 script/해시. 미설정이면 메일 미발송 |
+| notification_hook / mail | 기존 고정 hook 또는 보호된 CLI Gmail transport 설정/해시. 둘 다 없으면 메일 미발송 |
+| backlog | 승인된 연쇄 계획의 외부 경로/해시 |
+| parent_completion_enabled / parent_contract_source_commit | 보호된 부모 완료 수집·게시 사용 여부와 원본 계약 commit |
 
 검토한 clean main에서 새 외부 runtime을 생성한 뒤 hash를 검사하는 entry로 실행한다. builder/entry는 ON·로그인·정책 승인을 수행하지 않는다. 실제 출력의 entry hash·dependency manifest·원본 commit을 근거에 남긴다.
 
@@ -104,7 +106,7 @@ PM installer의 `-PythonPath`에는 이제 **본인이 검증한 새 runtime의 
 
 ## 기록과 아직 필요한 확인
 
-새 배정/수정 요청·실제 인수·다음 행동은 Issue와 불변 ID를 연결하고 개인/session 문서에 사용자 의도·AI 해석·수행·검사·실패·한계·미완료를 남긴다. Project 보고 ACCEPTED와 정식 phase2 상태를 구분한다. 메일은 고정 별도 hook와 실제 수신증 없이는 발송했다고 하지 않는다. CLI가 이 대화의 Gmail 연결을 자동 상속하지 않는다.
+새 배정/수정 요청·실제 인수·다음 행동은 Issue와 불변 ID를 연결하고 개인/session 문서에 사용자 의도·AI 해석·수행·검사·실패·한계·미완료를 남긴다. Project 보고 ACCEPTED와 정식 phase2 상태를 구분한다. 메일은 검증한 CLI Gmail transport 또는 기존 고정 hook의 실제 SENT 수신증이 있어야 발송으로 기록한다. 현재 transport는 별도 CLI 프로필 인증과 발신 계정을 직접 검사한다. 이 대화의 메일 도구를 자동 상속했다고 가정하지 않는다.
 
 실제 배포 image·canary·본인 로그인·첫 모델→검사→PR→독립 검수→병합→postmerge 인수의 근거는 운영 Issue28와 `evals/team-automation/20261005/`의 최신 commit을 읽는다. 여기 문서나 mock/단위 검사를 실제 완주로 표현하지 않는다. 팀원 PC와 현재 HTTPS 중계 정이량 PC가 온라인이어야 하며 네 PC 준비를 한 PC 결과로 대신하지 않는다.
 
