@@ -97,6 +97,7 @@ class CompareCitationRecoveryTests(unittest.TestCase):
         comparison = self.omit_manual(stages["product_compare"])
         for gap in comparison["result"]["gaps"]:
             gap["feature_ids"] = []
+            gap["evidence_ids"] = list(self.output["needs"][0]["evidence_ids"])
         stages["product_compare"] = comparison
         agent, transport = self.agent(stages=stages)
         result = agent.run(self.payload)
@@ -109,11 +110,12 @@ class CompareCitationRecoveryTests(unittest.TestCase):
             with self.subTest(basis=basis):
                 stages = stages_for(self.output)
                 comparison = self.omit_manual(stages["product_compare"])
-                for gap in comparison["result"]["gaps"]:
-                    gap["support_status"] = "insufficient_evidence"
-                for assessment in comparison["gap_assessments"]:
-                    assessment["support_basis"] = basis
-                    assessment["resolution"] = "unknown"
+                unknown_gap = deepcopy(stages["product_compare"]["result"]["gaps"][0])
+                unknown_gap.update(id="UNKNOWN-GAP", support_status="insufficient_evidence",
+                                   questions=["상충 또는 미언급된 원문을 확인할 수 있나요?"])
+                comparison["result"]["gaps"].append(unknown_gap)
+                comparison["gap_assessments"].append({"gap_id": "UNKNOWN-GAP", "support_basis": basis,
+                                                       "resolution": "unknown", "reason": "확인 불가능한 비교 근거"})
                 stages["product_compare"] = comparison
                 agent, transport = self.agent(stages=stages)
                 result = agent.run(self.payload)
