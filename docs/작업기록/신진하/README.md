@@ -2,10 +2,10 @@
 
 <!-- member-log:owner-updates:start -->
 ## 작성자의 최신 재개 요약
-- 최신 기록 ID / 한국시간 / 현재 목표: `신진하-20261006-DATA-ORIGINAL-AUDIT-TRENDS-01a1100e` · 2026-10-06 17:34 KST · #13 고정 출력 대조와 #148 부분 collector 제출.
-- 실제 완료 범위 / 미완료·막힘 / 다음 행동과 담당: 고정 결과 3개의 원문 ID·한글 text·locator·모델·버전 exact match 및 의미 오류표 작성; 기존 36 review·8열 CSV byte 보존; collector·candidate sidecar·범위 회귀 구현. 최신 main PR #171의 API/MCP 10개 검사는 `FixtureCollector` 경로만 통과했고 DATA collector/실제 날짜는 미검증. 운영 주입/실자료 날짜 승인/live 등록·검색·재시작 및 PM 인수 미완료. #13의 active reservation/409 해소와 sidecar/주입 승인은 @jeongiryang, semantic 검토는 @unknownamed, 소비 흐름 연결은 @choigilung 담당.
-- 상세 작업기록: [고유 기록ID](2026-10-06/신진하-20261006-DATA-ORIGINAL-AUDIT-TRENDS-01a1100e.md)
-- 관련 근거: 같은 commit의 [상세 근거](../../작업근거/신진하/2026-10-06/신진하-E-DATA-ORIGINAL-AUDIT-TRENDS-01a1100e.md)
+- 최신 기록 ID / 한국시간 / 현재 목표: `신진하-20261006-DATA-CONTINUATION-01a1100e` · 2026-10-06 17:58 KST · #13 원문 대조 결과·남은 등록/검색 검증과 #148 collector를 리뷰 가능한 상태로 인계.
+- 실제 완료 범위 / 미완료·막힘 / 다음 행동과 담당: GitHub에서 현재 배정된 open issue 13건과 #13의 하위 #109–#111/#114를 확인했다. 이번 부분 제출은 #13 고정 산출물 3개(11/11, 4/4, 11/11 source exact match 및 의미 오류표)와 #148 collector/36행·8열 CSV 보존·날짜 없는 10건 제외 수치다. PR #176은 4/4 CI 성공이며 문서의 과거 미완료 서술과 #167 병합 상태를 바로잡았다. 현재까지 등록·검색·재시작은 미실행; PM 17:35 조회 `matched=0`은 실제 PC 세션 종료 증거가 아니므로 #13의 16:56 HTTP 409는 미해결 경계로 남긴다. sidecar/taxonomy·PM 주입 결정은 @jeongiryang, 고정 결과 의미 검토는 @unknownamed, 증거 소비 연결은 @choigilung 담당. PR #166 병합은 확인했고 #167 최종 승인·병합은 확인되지 않았다.
+- 상세 작업기록: [고유 기록ID](2026-10-06/신진하-20261006-DATA-CONTINUATION-01a1100e.md)
+- 관련 근거: [이번 진행의 상세 근거](../../작업근거/신진하/2026-10-06/신진하-E-DATA-CONTINUATION-01a1100e.md) · [직전 대조·collector 기록](2026-10-06/신진하-20261006-DATA-ORIGINAL-AUDIT-TRENDS-01a1100e.md)
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
 
