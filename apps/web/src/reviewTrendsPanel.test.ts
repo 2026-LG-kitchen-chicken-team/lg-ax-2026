@@ -30,9 +30,9 @@ function deferred<T>() {
 }
 
 const DATA = { evidence: [{ id: 'R-1', model_id: MODEL, source_type: 'review', source_id: AGGREGATE.filters.source_ids[0], source_kind: 'synthetic' }] } as unknown as BootstrapData;
-function liveWorkspace(scopeVersion: number, trendEvidence: LiveWorkspace['trendEvidence']): LiveWorkspace {
+function liveWorkspace(scopeVersion: number, trendEvidence: LiveWorkspace['trendEvidence'], connection: LiveWorkspace['connection'] = 'connected'): LiveWorkspace {
   return {
-    connection: 'connected', scopeVersion,
+    connection, scopeVersion,
     project: { project: { id: 'PROJECT-TREND-FIXTURE', request: { model_ids: [MODEL], dataset_version: AGGREGATE.filters.dataset_version } } },
     reviewTrends: vi.fn().mockResolvedValue({ aggregate: AGGREGATE }),
     trendEvidence,
@@ -124,6 +124,21 @@ describe('review trends drill-down accepts only the latest matching evidence (PM
     await settle(() => reply.resolve(page(A.cell.bucket.bucket_id)));
     expect(host.querySelectorAll('.trend-bar')).toHaveLength(0);
     expect(host.querySelector('.trend-drilldown')).toBeNull();
+    expect(onUse).not.toHaveBeenCalled();
+  });
+
+  it('a dropped workspace connection clears the drill-down and ignores the reply that was in flight', async () => {
+    const reply = deferred<TrendEvidenceData>();
+    const evidence = vi.fn(() => reply.promise);
+    await openLive(liveWorkspace(0, evidence));
+    await click(A.index);
+    await render(liveWorkspace(0, evidence, 'error'));
+    await settle(() => reply.resolve(page(A.cell.bucket.bucket_id)));
+    // Without a connected workspace the panel falls back to the labelled synthetic fixture; the live page never returns.
+    expect(host.querySelector('.trend-drilldown')).toBeNull();
+    expect(host.querySelector<HTMLInputElement>('input[name="trend-source"]')!.checked).toBe(true);
+    expect(host.querySelectorAll<HTMLInputElement>('input[name="trend-source"]')[1].disabled).toBe(true);
+    expect(host.querySelector('.fixture-note')).not.toBeNull();
     expect(onUse).not.toHaveBeenCalled();
   });
 
