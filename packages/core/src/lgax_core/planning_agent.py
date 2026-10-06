@@ -31,6 +31,7 @@ from .semantic_review import INSTRUCTIONS, review_semantics, schema_for_review, 
 from .skill_runner import SkillRuntime
 from .skill_runner import schema_for as skill_schema
 from .source_boundary import SourceBoundary
+from .stage_alignment import stage_alignment_feedback
 from .store import DemoStore
 
 SKILLS = ("need_extract", "product_compare", "concept_draft")
@@ -336,6 +337,8 @@ class PlanningAgent:
                         "review_assessments에는 source_type=review인 review_evidence_ids만 각각 정확히 한 번 넣으세요. "
                         "manual_evidence_ids의 설명서는 리뷰가 아니므로 polarity를 선언하거나 Need의 evidence_ids에 넣지 마세요. "
                         "명확한 불편은 원 리뷰의 상황·pain과 연결하고 각 Need마다 desired_outcome을 작성하세요. "
+                        "각 Need의 pain과 희망 결과는 그 Need.evidence_ids 원문에 실제로 있는 문제에 대응해야 합니다. "
+                        "ID가 유효하더라도 다른 리뷰의 문제를 옮겨 붙이지 마세요. "
                         "긍정·무관 리뷰에서 불편을 만들지 말고 상충·모호한 리뷰 자체의 불확실성만 질문·보류로 표시하세요. "
                         "현재 겪는 불편의 근거와 향후 제품의 제조 가능성·효과 측정은 다른 문제입니다. "
                         "미래 설계가 아직 없거나 제조·효과를 검증하지 않았다는 이유로 명확한 사용 불편의 추출을 보류하지 마세요. "
@@ -347,6 +350,8 @@ class PlanningAgent:
                     "product_compare": (
                         "이번 업무는 각 입력 Need의 희망 결과와 현재 기능·사용 조건을 대조하는 단계입니다. "
                         "upstream_assessments의 desired_outcomes와 리뷰 극성을 참고하고 Need의 의미를 바꾸지 마세요. "
+                        "각 Gap.need_id와 remaining_pain은 그 입력 Need의 문제에 대응해야 합니다. "
+                        "서로 다른 리뷰의 문제를 하나의 Need ID에 모아 연결하지 마세요. "
                         "각 입력 Need마다 Gap을 반환하고 gap_assessments에는 결과 Gap의 ID마다 정확히 한 번 판단을 넣으세요. "
                         "Gap은 원 Need의 리뷰 근거와 feature_ids에 연결된 설명서 근거 전체를 인용해야 합니다. "
                         "출력 전에 각 Gap.evidence_ids가 그 Need.evidence_ids와 선택한 모든 Feature.evidence_ids를 "
@@ -387,8 +392,10 @@ class PlanningAgent:
                         "각 항목을 '후속 검증:'으로 시작하세요. 요청 문구 반복만으로 설계 검증 전제를 대신하지 마세요. "
                         "status는 proposed 또는 needs_review로 작성하고, result와 바깥의 hold_reasons 및 "
                         "작성한 no_candidate_reasons는 각각 일치시키세요.\n"
-                        "6. 충분한 근거로 판단했지만 적절한 신규 후보가 없으면 concepts=[]와 구체적인 "
-                        "no_candidate_reasons를 작성하고 questions와 hold_reasons는 빈 배열로 두며, "
+                        "6. 충분한 근거로 판단했지만 적절한 신규 후보가 없으면 concepts=[], "
+                        "concept_assessments=[]와 구체적인 no_candidate_reasons를 작성하고 "
+                        "questions와 hold_reasons는 빈 배열로 두세요. 제외한 가설의 평가를 "
+                        "반환하지 않은 후보 ID로 남기지 마세요. 후보가 있으면 해당 ID마다 한 번 평가하세요. "
                         "실제 판단 근거가 부족하면 concepts=[]와 필요한 확인 질문·보류 사유를 "
                         "questions/hold_reasons에 작성하고 사유 필드는 해당 입력의 판단문으로 적으세요.\n"
                     ),
@@ -424,6 +431,10 @@ class PlanningAgent:
                             and skill_result["no_candidate_reasons"] != reasons):
                         raise DomainError("VALIDATION_FAILED", "후보 없음 사유의 두 표현이 다릅니다.", {})
                     skill_result["no_candidate_reasons"] = deepcopy(reasons)
+                alignment = stage_alignment_feedback(payload, skill_id, generated.data)
+                if alignment is not None:
+                    raise DomainError("VALIDATION_FAILED", "현재 단계의 근거·평가 선언이 결과와 일치하지 않습니다.",
+                                      alignment)
                 return skill_result
             return generate
 
