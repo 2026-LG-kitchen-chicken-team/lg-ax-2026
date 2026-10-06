@@ -33,8 +33,8 @@ export const SMALL_SAMPLE = 20;
 // (kitchen-review-topics-candidate.v1) stay labelled as a preview classification wherever the taxonomy says so.
 const TOPIC_LABELS: Record<string, string> = {
   cleaning: '청소', odor: '냄새', storage: '수납·정리', noise: '소음', cooling: '냉각', loading: '적재', settings: '설정 반복',
-  temporary_storage: '임시 보관', food_findability: '식품 찾기', manual_guidance: '설명서 안내', dish_loading_guidance: '식기 적재 안내',
-  rotating_arm_clearance: '회전 노즐 간섭', heating_preset_management: '데우기 설정 관리',
+  temporary_storage: '임시 보관', food_findability: '식품 찾기', manual_guidance: '설명서·사용 안내', dish_loading_guidance: '식기 적재 안내',
+  rotating_arm_clearance: '회전 노즐 간섭', heating_preset_management: '가열 출력·설정 관리',
 };
 export const MENTION_NOTE = '비율은 그 주제를 언급한 리뷰의 비율입니다. 감정·불만 분류가 없어 불만 비율이나 계절 수요를 뜻하지 않습니다.';
 /** A candidate (not yet approved) topic taxonomy is shown as a preview classification. */

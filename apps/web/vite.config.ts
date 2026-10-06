@@ -10,7 +10,8 @@ export default defineConfig({
     strictPort: true,
     fs: { allow: [fileURLToPath(new URL('.', import.meta.url)), fileURLToPath(new URL('../../packages/contracts', import.meta.url)), fileURLToPath(new URL('../../evals/core-contract/schemas', import.meta.url))] },
     // LGAX_WORKSPACE_PROXY lets a separate planning-enabled workspace server (e.g. 18879) be used without touching 18869.
-    proxy: { '/api/workspace': process.env.LGAX_WORKSPACE_PROXY ?? 'http://127.0.0.1:18869', '/api': 'http://127.0.0.1:18867', '/health': 'http://127.0.0.1:18867' },
+    // LGAX_PUBLIC_API_PROXY lets a test public API (e.g. one serving a dated demo dataset) be used without touching 18867.
+    proxy: { '/api/workspace': process.env.LGAX_WORKSPACE_PROXY ?? 'http://127.0.0.1:18869', '/api': process.env.LGAX_PUBLIC_API_PROXY ?? 'http://127.0.0.1:18867', '/health': process.env.LGAX_PUBLIC_API_PROXY ?? 'http://127.0.0.1:18867' },
   },
   test: { environment: 'node', include: ['src/**/*.test.ts'] },
 });
