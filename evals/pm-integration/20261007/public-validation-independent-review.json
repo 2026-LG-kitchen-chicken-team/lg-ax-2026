@@ -1,0 +1,75 @@
+{
+  "review_date_kst": "2026-10-07",
+  "review_kind": "independent_exact_head_source_and_real_http_mcp_review",
+  "source_head": "748aaa402e0a36a18f1d232f3fd58e7ad6a82554",
+  "parent": "0631329280d17cf8072bba49b38252565a29a53f",
+  "decision": "approve_partial_code_integration",
+  "findings": [],
+  "reviewed_files": {
+    "apps/api/src/lgax_api/public_validation.py": "1a64fc28f778eb60eec04bb64bc9532ddd3a4335957b53605794d2a3101c0c58",
+    "apps/api/src/lgax_api/workspace_server.py": "76d6ef0d3b1c352c7bdd6530b4bede0a8811f6940700b254e0ed5796889e1daf",
+    "tests/test_public_validation_projection.py": "246232125a42011a7584a9f15b116dadc54658740096f0a281943ca34b1a3890",
+    "apps/web/src/publicValidationProjection.test.ts": "9f025dba12a4c338e39249f52e7909df1c6d72a8c762e84918470b088709a6e8"
+  },
+  "receipts": [
+    {
+      "kind": "independent_focused",
+      "path": "receipt.json",
+      "sha256": "f3d462b559c534e70cef6830000194e225af8bf20829d42d27697d87f9dadc2c",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "source_changed": [],
+      "model_calls": 0
+    },
+    {
+      "kind": "author_combined",
+      "path": "receipt.json",
+      "sha256": "e473d63bf3afa4c3bdf48031a474203efffb0e12513abaff029516d3fb9d1eda",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "source_changed": [],
+      "model_calls": 0
+    }
+  ],
+  "independent_focused_tests": 3,
+  "independent_evidence": [
+    "Actual HTTP POST/GET/history and stdio MCP preserve approved validation context",
+    "Private arbitrary error messages, fixture tokens, unknown codes, paths and source IDs omitted",
+    "Original private database diagnostics remain available privately",
+    "Ordinary held output and reasons preserved through HTTP and MCP"
+  ],
+  "author_additional_evidence": "28 focused Python, web 530 plus 4 safe-CI/type/build/browser matrix passed; emitted HTTP snapshot consumed by React DOM and JSON/Markdown export tests",
+  "limits": [
+    "Root publication exact head and combined-main CI remain separate",
+    "No model generations, merge, push, comments or automation changes by reviewer",
+    "Code integration does not complete original product requirements or model quality gates"
+  ]
+}

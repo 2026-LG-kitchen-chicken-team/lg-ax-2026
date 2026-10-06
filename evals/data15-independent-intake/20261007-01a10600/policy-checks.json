@@ -1,0 +1,45 @@
+{
+  "metadata_audit_and_required_byte_contract_checks_passed": true,
+  "policy_checks": [
+    {
+      "command": [
+        "python",
+        "-B",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "policy-check-1.log",
+      "sha256": "56b21f915cb5a695479359f4ca6063582b0b9bcbdaee1869782a2a805a2a82cd",
+      "network": "none",
+      "zero_auth": true
+    },
+    {
+      "command": [
+        "python",
+        "-B",
+        "scripts/check_contracts.py"
+      ],
+      "exit_code": 0,
+      "log": "policy-check-2.log",
+      "sha256": "83ff39a7aa73fcf380b0b281a91fbc9bad239834b2f70c6f93607d591faded90",
+      "network": "none",
+      "zero_auth": true
+    }
+  ],
+  "local_full_phase2_check": {
+    "command": [
+      "python",
+      "-B",
+      "scripts/phase2.py",
+      "validate"
+    ],
+    "exit_code": null,
+    "status": "not_repeated_same_unavailable_worktree_git_context",
+    "reference_issue14_failed_context_log": "Known failed context kept in #14 PR; not claimed PASS for #15",
+    "full_phase2_history_gate": "await actual GitHub CI with repository history"
+  },
+  "full_phase2_PASS_claimed": false,
+  "new_model_calls": 0,
+  "other_workspaces_or_protected_runtime_modified": false
+}

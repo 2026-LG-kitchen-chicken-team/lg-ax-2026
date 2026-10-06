@@ -1,0 +1,214 @@
+{
+  "integration_commit": "de09b64ca72d5ae918cc0a95f244b0e0562761b0",
+  "full_python": {
+    "result": "pass",
+    "suite_tests": 1546,
+    "documented_skips": 4,
+    "launcher_tests_passed": 6
+  },
+  "web": {
+    "result": "pass",
+    "vitest_passed": 530,
+    "opt_in_skips": 5,
+    "safe_ci_tests_passed": 4,
+    "typecheck_build": "pass",
+    "actual_public_http_mcp_to_react_json_markdown": "pass",
+    "pmdated_api_mcp_aggregates": 10,
+    "additional_browser_passed": 4,
+    "additional_browser_live_opt_in_skips": 1
+  },
+  "canonical_original_gates": {
+    "result": "pass",
+    "checks": [
+      "byte_equal_rules",
+      "contracts",
+      "phase2",
+      "harness",
+      "member_log_migration",
+      "document_navigation"
+    ]
+  },
+  "required_workflow_gates": {
+    "result": "pass",
+    "checks": [
+      "byte_equal_rules",
+      "contracts",
+      "phase2",
+      "harness",
+      "member_log_migration",
+      "document_navigation",
+      "inference_manifest",
+      "stdio_mcp_smoke",
+      "historical_scenario_spike",
+      "historical_topic_trial",
+      "historical_finalist_probe",
+      "historical_flow_audit"
+    ]
+  },
+  "extra_repo_wide_lint": {
+    "result": "fail",
+    "findings": 94,
+    "required_by_current_github_workflow": false,
+    "baseline_comparison_performed": false,
+    "not_a_clean_lint_claim": true
+  },
+  "strict_current_ci_browser": {
+    "schema_version": 1,
+    "mode": "browser_e2e",
+    "synthetic_data_only": true,
+    "planning_agent_executed": false,
+    "private_credentials": true,
+    "screenshots_traces_videos": false,
+    "status": "pass",
+    "checks": {
+      "real_synthetic_bootstrap_ready": true,
+      "unauthenticated_denied": true,
+      "new_private_workspace_is_empty": true,
+      "viewer_write_denied": true,
+      "exact_origin_allowed": true,
+      "other_origin_denied": true,
+      "all_three_browser_cases_pass_without_skip": true,
+      "owned_children_reaped": true,
+      "isolated_ports_released": true,
+      "temporary_material_removed": true
+    },
+    "browser_stats": {
+      "expected": 3,
+      "unexpected": 0,
+      "skipped": 0,
+      "flaky": 0
+    },
+    "browser_cases": [
+      {
+        "case": "fixture_planning",
+        "outcome": "expected",
+        "results": [
+          "passed"
+        ]
+      },
+      {
+        "case": "fixture_unmeasured",
+        "outcome": "expected",
+        "results": [
+          "passed"
+        ]
+      },
+      {
+        "case": "live_workspace",
+        "outcome": "expected",
+        "results": [
+          "passed"
+        ]
+      }
+    ],
+    "credentials_retained": false
+  },
+  "receipts": {
+    "full": {
+      "receipt_sha256": "6fd0b3bbbf37920ce4c5d7f9bc19ae83d6dae81d344dc69482fa3ad0408b0406",
+      "source_commit": "de09b64ca72d5ae918cc0a95f244b0e0562761b0",
+      "source_archive_sha256": "86797f57e9355e7958a737fc723604d5dc0df9181ab57bf3b591f2640eee3ccb",
+      "source_manifest_sha256": "372076889c978521f4cd7712b7a1c8ecf62a2587a9bd4fffa2706ce8f4dfb8aa",
+      "returncode": 0,
+      "model_calls": 0,
+      "source_changed": [],
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    "gates": {
+      "receipt_sha256": "3823fd9183464aa849dfd63276730df2acc41c2732c4fb69be9abeb2548828b6",
+      "source_commit": "de09b64ca72d5ae918cc0a95f244b0e0562761b0",
+      "source_archive_sha256": "86797f57e9355e7958a737fc723604d5dc0df9181ab57bf3b591f2640eee3ccb",
+      "source_manifest_sha256": "372076889c978521f4cd7712b7a1c8ecf62a2587a9bd4fffa2706ce8f4dfb8aa",
+      "returncode": 0,
+      "model_calls": 0,
+      "source_changed": [],
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    "extended_gates_with_extra_lint": {
+      "receipt_sha256": "8d43743ba91d34b2f1b3f0efcf1b3c0ab3ca7b467f757f1434bfa4b2b773faa7",
+      "source_commit": "de09b64ca72d5ae918cc0a95f244b0e0562761b0",
+      "source_archive_sha256": "86797f57e9355e7958a737fc723604d5dc0df9181ab57bf3b591f2640eee3ccb",
+      "source_manifest_sha256": "372076889c978521f4cd7712b7a1c8ecf62a2587a9bd4fffa2706ce8f4dfb8aa",
+      "returncode": 1,
+      "model_calls": 0,
+      "source_changed": [],
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    "web": {
+      "receipt_sha256": "abd9ee736e93de852ac5e7ad807e52b721373d6892ddb7e6ab69dcd9d8fff175",
+      "source_commit": "de09b64ca72d5ae918cc0a95f244b0e0562761b0",
+      "source_archive_sha256": "86797f57e9355e7958a737fc723604d5dc0df9181ab57bf3b591f2640eee3ccb",
+      "source_manifest_sha256": "372076889c978521f4cd7712b7a1c8ecf62a2587a9bd4fffa2706ce8f4dfb8aa",
+      "returncode": 0,
+      "model_calls": 0,
+      "source_changed": [],
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    }
+  },
+  "limitations": [
+    "No new model calls; no production or external-host cutover.",
+    "Fixture browser and isolated real synthetic API behavior do not prove model quality.",
+    "This proof pins de09b64 before later PM review documentation is added; later publication and checks are separate.",
+    "Extra repository-wide Ruff found 94 style findings and was not silently omitted."
+  ]
+}

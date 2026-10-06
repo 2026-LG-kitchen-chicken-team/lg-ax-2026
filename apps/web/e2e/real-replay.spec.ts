@@ -1,5 +1,5 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 
@@ -11,7 +11,7 @@ const tokenFile = process.env.LGAX_E2E_REPLAY_TOKEN_FILE;
 const summaryFile = process.env.LGAX_E2E_REPLAY_SUMMARY;
 const proofDir = process.env.LGAX_E2E_REPLAY_PROOF_DIR;
 
-interface Row { case: string; project_id: string; run_id: string; recorded_status: 'held' | 'failed' }
+interface Row { case: string; project_id: string; run_id: string; recorded_status: 'held' | 'failed'; envelope: string }
 
 async function openArea(page: Page, label: string) {
   await page.getByRole('navigation', { name: '기획 작업 영역' }).getByRole('button', { name: label }).click();
@@ -31,6 +31,9 @@ test('real held/failed runs from the workspace server never read as accepted or 
     await expect(page.locator('.workspace-state')).toContainText('연결됨');
     for (const row of rows) {
       await page.getByRole('combobox', { name: '프로젝트' }).selectOption(row.project_id);
+      // R4 (record 041): the review model follows the selected project's own request scope (not the default FRIDGE-A).
+      const envelope = JSON.parse(readFileSync(join(dirname(summaryFile!), row.envelope), 'utf8')) as { request: { model_ids: string[] } };
+      await expect(page.locator('#product-model')).toHaveValue(envelope.request.model_ids[0]);
       await openArea(page, '콘셉트 검토');
       const record = page.getByRole('region', { name: '판단 실행 기록' });
       await expect(record).toContainText(row.run_id);
@@ -47,6 +50,14 @@ test('real held/failed runs from the workspace server never read as accepted or 
         await expect(record).toContainText('보류를 일으킨 문제(근거 확인 필요)');
         await expect(record).toContainText('함께 발견된 판단 오류(보류로 내부 수정하지 않음)');
       }
+      // R4 U5 (record 043): reported usage, model vs whole-run time, both round counters and the scope notice.
+      const field = async (name: string) => (await record.locator(`[data-field="${name}"]`).first().textContent()) ?? '';
+      const usage = { model_calls: await field('model-calls'), tokens: await field('tokens'), run_time: await field('run-time'), settings: await field('settings'), rounds: await field('rounds') };
+      expect(usage.model_calls).toMatch(/^\d+회 · 모델 시간 \d+\.\d초$/);
+      expect(usage.tokens).toMatch(/^입력 [\d,]+ · 출력 [\d,]+ · 합 [\d,]+$/);
+      expect(usage.rounds).toContain('Agent 내부 수정');
+      await expect(record.getByRole('region', { name: '검증 범위' })).toContainText('의미 정확성 미검증');
+      await expect(record.getByRole('region', { name: '모델 호출 기록' }).locator('[data-call]')).toHaveCount((row as Row & { historical_model_calls: number }).historical_model_calls);
       const shot = `${row.case.replace('/', '--')}.png`;
       if (proofDir) { mkdirSync(proofDir, { recursive: true }); await page.screenshot({ path: join(proofDir, shot), fullPage: true }); }
       await openArea(page, '수정 이력');
@@ -56,7 +67,7 @@ test('real held/failed runs from the workspace server never read as accepted or 
       expect(candidates).not.toContain('첫 실행의 후보입니다.');
       const statusTitle = (await timeline.locator('[data-field="run-status"]').first().getAttribute('title')) ?? '';
       if (row.recorded_status === 'failed') expect(statusTitle).toContain('내부 수정 한도(2회)');
-      (proof.cases as unknown[]).push({ case: row.case, run_id: row.run_id, status: row.recorded_status, head_class: headClass, timeline_candidates: candidates, status_title: statusTitle, screenshot: proofDir ? shot : null });
+      (proof.cases as unknown[]).push({ case: row.case, run_id: row.run_id, status: row.recorded_status, head_class: headClass, usage, timeline_candidates: candidates, status_title: statusTitle, screenshot: proofDir ? shot : null });
     }
     proof.result = 'web_leg_ok';
   } catch (error) {

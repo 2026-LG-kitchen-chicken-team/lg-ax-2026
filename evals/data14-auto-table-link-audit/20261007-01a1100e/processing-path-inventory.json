@@ -1,0 +1,123 @@
+{
+  "source_commit": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+  "method": "saved JSON inspection plus static code read; no production path execution",
+  "saved_result_path": "evals/data003-live/20261005/ocr-v3/results.json",
+  "actual_saved_result_keys_union": [
+    "CER",
+    "attempts",
+    "case_id",
+    "column_note",
+    "crop_sha256",
+    "document_version",
+    "edit_distance",
+    "explicit_unit_correct",
+    "failure_count",
+    "gold_text",
+    "manually_assigned_source_column",
+    "median_ms",
+    "model_column_accuracy",
+    "normalized_exact_match",
+    "normalized_gold_length",
+    "numeric_correct",
+    "numeric_field_correct",
+    "numeric_total",
+    "observed_units",
+    "observed_values",
+    "p95_ms",
+    "page",
+    "recognized",
+    "region_id",
+    "source_model_id",
+    "stable_text_across_repeats",
+    "status",
+    "unit_total"
+  ],
+  "actual_saved_attempt_keys_union": [
+    "confidence",
+    "elapsed_ms",
+    "error",
+    "recognized",
+    "repeat",
+    "status"
+  ],
+  "model_column_accuracy_all_null": true,
+  "automatic_structure_fields_searched": [
+    "table_id",
+    "cell_id",
+    "row_index",
+    "column_index",
+    "rowspan",
+    "colspan",
+    "header_path",
+    "footnote_id",
+    "footnote_ref",
+    "footnote_links"
+  ],
+  "automatic_structure_fields_present": [],
+  "saved_manually_assigned_source_column_count": 11,
+  "manual_source_column_is_prediction": false,
+  "saved_observed_values_are_untyped_regex_values": true,
+  "paths": [
+    {
+      "path": "evals/data003-live/20261005/ocr-v3/runner-source.py",
+      "lines": [
+        39,
+        61,
+        231,
+        282,
+        299,
+        312
+      ],
+      "observed_output": "TextRecognition.rec_text / rec_score; 14 fixed manual crops × 5 repeats; input model/version/page/crop SHA copied; regex numbers/units; model_column_accuracy=null",
+      "automatic_row_column_model_unit_footnote_binding": "not output",
+      "scope": "archived historical producer matching saved runner SHA"
+    },
+    {
+      "path": "services/inference/ocr_benchmark.py",
+      "lines": [
+        1,
+        56,
+        78
+      ],
+      "observed_output": "2 synthetic text lines; recognized / rec_score / CER / timing",
+      "automatic_row_column_model_unit_footnote_binding": "not output",
+      "scope": "smoke code; distinct from saved 70 historical attempts; not run"
+    },
+    {
+      "path": "packages/core/src/lgax_core/pdf_text_worker.py",
+      "lines": [
+        13,
+        19
+      ],
+      "observed_output": "pages[] native text / parser/version / ocr_used=false; no text layer raises an error",
+      "automatic_row_column_model_unit_footnote_binding": "not output",
+      "scope": "fixed-main parser source read; worker not run"
+    },
+    {
+      "path": "packages/core/src/lgax_core/documents.py",
+      "lines": [
+        110,
+        141
+      ],
+      "observed_output": "approved selection excerpt + locator/page/section + plan model/feature IDs + source/character-range SHAs",
+      "automatic_row_column_model_unit_footnote_binding": "not output",
+      "scope": "fixed-main registration source read; registration/API not run"
+    }
+  ],
+  "repository_search": {
+    "paths": [
+      "packages/core",
+      "apps/api",
+      "services/inference",
+      "scripts"
+    ],
+    "pattern": "row_index|column_index|rowspan|colspan|footnote_id|footnote_ref|table_id|cell_id|header_path",
+    "matching_files": [],
+    "meaning": "bounded source-field search only; no assertion about unprovided remote/runtime payloads"
+  },
+  "automatic_structure_status": "검증 불가·출력 부재",
+  "automatic_accuracy": null,
+  "automatic_error_count": null,
+  "new_OCR_calls": 0,
+  "new_model_calls": 0
+}

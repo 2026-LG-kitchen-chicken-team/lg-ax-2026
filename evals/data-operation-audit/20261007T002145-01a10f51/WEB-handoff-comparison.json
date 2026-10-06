@@ -1,0 +1,58 @@
+{
+  "scope": "WEB PR186 test-only handoff consumed; no new browser execution or production claim",
+  "project_id": "project-3b951c86852d4e4796241f004406b5fc",
+  "aggregate_id": "TREND-df97edd623c1350ffb353560f38682537c2b65921a0dd4b746ad5672d5656081",
+  "dataset_version": "synthetic-dated-demo.20261006.v1",
+  "dataset_sha256": "d7740d3b61be29e78a4a4fd4d48a6e549eae3158c37994670493f02d4b33fff0",
+  "annotation_sha256": "0f534b263c87eb896146967158bc7dbb630bdd6290fe9471bdc90c274027e64b",
+  "counts": {
+    "input_review_count": 36,
+    "excluded_out_of_scope_count": 26,
+    "in_scope_review_count": 10,
+    "excluded_undated_count": 1,
+    "excluded_outside_period_count": 5,
+    "duplicate_count": 0,
+    "eligible_unique_review_count": 4,
+    "unclassified_review_count": 0
+  },
+  "cleaning": {
+    "label": "WEB-DATA9",
+    "bucket": "MONTH-2026-10",
+    "topic": "cleaning",
+    "denominator": 4,
+    "numerator": 1,
+    "ratio": 0.25,
+    "evidence_ids": [
+      "SYNTH-DATED-REVIEW-EVIDENCE-006"
+    ],
+    "recorded_response_status": "match",
+    "production_status": "unconfirmed"
+  },
+  "fixture_note_shown_reported": false,
+  "notices": [
+    "리뷰 수와 비율은 판매량이나 수요 증가를 뜻하지 않습니다.",
+    "비율은 그 주제를 언급한 리뷰의 비율입니다. 감정·불만 분류가 없어 불만 비율이나 계절 수요를 뜻하지 않습니다.",
+    "주제 분류 kitchen-review-topics-candidate.v1: PM 승인 전 미리보기 분류입니다.",
+    "\"자료 없음\"은 그 구간 리뷰가 없다는 뜻이며 0%와 다릅니다.",
+    "표본 20건 미만은 작은 표본이며 통계적 유의성 판정이 아닙니다."
+  ],
+  "source_kind": "synthetic",
+  "candidate_topic_approval": "pending",
+  "production_public_workspace_same_pack": "unconfirmed",
+  "preserved_screenshot_consumption": {
+    "path": "evals/web/20261006/web-r3-dated-precheck/web/web-trend-chart.png",
+    "sha256": "f066fbcdfe7de554f87dc1755b51b093aaa86ea907cd85f8033420aa334766f6",
+    "visually_checked_from_preserved_image": true,
+    "new_browser_run": false,
+    "observed": {
+      "denominator": 4,
+      "undated": 1,
+      "outside_period": 5,
+      "out_of_scope": 26,
+      "cleaning_ratio": 0.25,
+      "header": "시연용 합성자료",
+      "server_button_meaning": "시험 작업실의 실제 API; 운영 배포 증거 아님"
+    },
+    "review_006_text_is_not_visible_in_this_chart_image": "WEB drilldown/export receipt consumed separately"
+  }
+}

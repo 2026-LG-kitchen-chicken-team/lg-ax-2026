@@ -1,0 +1,63 @@
+{
+  "started_at": "2026-10-06T21:42:04.591007+09:00",
+  "base_commit": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+  "execution_code_commit": "d728d786a057ab6c3fccb1b97534653bcdcf22ea",
+  "image_id": "sha256:d2b9d2d0d1da29f3226a8293340d63f58877a03b7189d3982123ff6995e8e01c",
+  "source_files_sha256": {
+    "run_retrieval.py": "4d352b7de02a9f132d5f8ef6d2b8cb82d85b6a0e391bb6d181f84b95abd0f3a7",
+    "model-corpus.json": "1e097362bf1d7bf6564a3cc17281900d92aedf5a9c573706afdb2254fd9fbffe",
+    "model-queries.json": "399c51838a28a749991cd1b1e985df859545e0f1cc4f34b5cee86dece4189055",
+    "comparison-protocol.json": "ed144c72c0941995e0854ecc677e9f1663b11a8cc8ace1373758a441dd8875c8",
+    "model_benchmark.py": "6eff19cdede306f64519da1facfabbf4961e7c84031fce1f314a3479b3707a20"
+  },
+  "isolation": {
+    "network": "none",
+    "read_only_rootfs": true,
+    "user": "1000:1000",
+    "cpus": 4,
+    "memory_bytes": 7516192768,
+    "pids_limit": 256,
+    "cap_drop": [
+      "ALL"
+    ],
+    "no_new_privileges": true,
+    "mounts": [
+      {
+        "destination": "/artifacts",
+        "rw": true
+      },
+      {
+        "destination": "/embedding",
+        "rw": false
+      },
+      {
+        "destination": "/reranker",
+        "rw": false
+      },
+      {
+        "destination": "/workspace",
+        "rw": false
+      }
+    ],
+    "publisher_credentials_mounted": false,
+    "ai_profile_mounted": false,
+    "host_git_mounted": false
+  },
+  "command": [
+    "python",
+    "-B",
+    "/workspace/run_retrieval.py",
+    "--out",
+    "/artifacts",
+    "--code-version",
+    "d728d786a057ab6c3fccb1b97534653bcdcf22ea"
+  ],
+  "installation_authorization": "direct user reply: 프로젝트 내부 격리 환경 설치 승인",
+  "reservation_changes": 0,
+  "production_changes": 0,
+  "finished_at": "2026-10-06T21:52:53.228978+09:00",
+  "attach_exit_code": 0,
+  "exit_code": 0,
+  "oom_killed": false,
+  "status": "completed"
+}

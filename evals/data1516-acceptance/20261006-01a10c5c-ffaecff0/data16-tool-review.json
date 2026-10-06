@@ -1,0 +1,82 @@
+{
+  "artifact_kind": "independent_data005_operating_tool_source_review",
+  "reviewer": "/root/data16_snapshot_audit",
+  "mode": "read-only source inspection; no repository code or tests executed",
+  "base_main": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+  "reviewed_file_sha256": {
+    "scripts/check_data005_operating_snapshot.py": "c5842894f31643d91d62fefdf0b6bae031b4d0c8f59c0cdc468e34658f921fd3",
+    "tests/test_data005_operating_snapshot.py": "e1635caebb779323208edbbe9dd9119d2fab2dc530a8239b8a29a45edf3881e1",
+    "apps/api/src/lgax_api/workspace_trends.py": "99dff8ba46ef26ae6d5f201f42e77af34abdeb1dcef2982e2b91f1225e3e8128",
+    "apps/api/src/lgax_api/review_trends.py": "e5b9998a4eb1db4c47b3c9ddfccc691dd0416c8ff99ef73467ac69cc5f84319a",
+    "apps/api/src/lgax_api/trend_validation.py": "fa89894953d75942f36f00de4bbd4cc49aff41675d7aa1cc75fe59a900e6b455"
+  },
+  "findings": [
+    {
+      "id": "D16-TOOL-EMPTY-DUPLICATE-PAGE",
+      "priority": 2,
+      "file": "scripts/check_data005_operating_snapshot.py",
+      "line": 137,
+      "title": "빈 원문 페이지의 중복 offset을 거절하지 않음",
+      "trigger": "기존 test fixture _fixture(original=True)의 valid capture에서 offset=0, total=0, evidence=[], next_offset=null인 evidence_pages[0]을 그대로 복사해 evidence_pages 끝에 추가한다.",
+      "expected": "중복 페이지 overlap으로 mismatch를 반환해야 한다.",
+      "source_inferred_actual": "len(ids)=0일 때 두 page 모두 selected=[]와 next_offset=null이 맞고 offset=page.offset+len(selected)는 계속0이다. page.offset!=offset 검사와 마지막offset!=len(ids) 검사도 모두 거짓이므로 이 페이지 검수는 통과하여 match가 된다.",
+      "evidence": "scripts/check_data005_operating_snapshot.py:136-150; tests/test_data005_operating_snapshot.py:86은 undated 정상만 확인, :161의 중복 페이지 검사는 cleaning1건 DATA fixture만 사용한다.",
+      "recommended_change": "같은(bucket_id,topic_id) 내 이미 본 offset을 명시적으로 거절하고, 빈 topic/빈 기간에 duplicate-empty-page 회귀 사례를 추가한다.",
+      "runtime_reproduction_executed": false
+    }
+  ],
+  "requirement_checks": [
+    {
+      "requirement": "canonical JSON digest와 파일 원 bytes digest 구분",
+      "status": "PASS_SOURCE_INSPECTION",
+      "evidence": "compare_snapshot은 canonical_dataset_sha256과 expected annotation digest를 반환하고 CLI _read_json은 별도 *_file_sha256을 file_pins에 보존한다. 두 종류를 동일값으로 요구하지 않는다."
+    },
+    {
+      "requirement": "현 캡처 프로젝트로 aggregate identity 재계산",
+      "status": "PASS_SOURCE_INSPECTION",
+      "evidence": "validate_trend_request(snapshot.filters,snapshot.project,...) 이후 build_review_trend_collection(snapshot.project,...); 현 project id 포함 trend_identity. 별도 fixture projectID와 과거 projectID 거절 검사가 있다."
+    },
+    {
+      "requirement": "전체 __all__ membership와 분모 원문 보존",
+      "status": "PASS_SOURCE_INSPECTION",
+      "evidence": "expected.memberships 모든 topic의 ID 합집합을 frozen.evidence로 구성하고 stored_snapshot.memberships/evidence를 canonical exact 비교한다. __all__ pop 회귀 검사로 분모 ID 누락을 거절한다."
+    },
+    {
+      "requirement": "재개 이후 metadata와 원문 snapshot",
+      "status": "PASS_SOURCE_INSPECTION",
+      "evidence": "restart_snapshot에도 aggregate/metadata/memberships/evidence 네 필드를 동일하게 요구한다. 없음은 unconfirmed, 다른 원문은 mismatch; aggregate-only 재개로 완료되지 않는다."
+    },
+    {
+      "requirement": "topic 모든 페이지 gap/overlap 및 모델·버전·원문",
+      "status": "FINDING_EMPTY_DUPLICATE_PAGE",
+      "evidence": "비어 있지 않은 페이지는 expected offset, total, next_offset와 원 Evidence 전체를 비교하여 ID·모델·document_version·source_kind·source_id·locator·text 변경을 거절한다. 빈 ID집합에 대해 동일offset 중복은 별도 검사가 없다."
+    },
+    {
+      "requirement": "자기선언 PM 승인/운영 검증을 승인 근거로 사용하지 않음",
+      "status": "PASS_SOURCE_INSPECTION",
+      "evidence": "operating_origin_verified=false, PM_approval_verified=false를 출력 고정하고 입력 capture의 production_verified/PM_approval_verified 선언을 소비하지 않는다. match는 자료와 캡처의 정합성이다."
+    },
+    {
+      "requirement": "현 WorkspaceTrends 저장 snapshot 모양과 canonical metadata 정합",
+      "status": "PASS_SOURCE_INSPECTION",
+      "evidence": "WorkspaceTrends.collect가 aggregate/metadata/memberships/evidence 네 필드로 SQLite snapshot_json을 저장한다. metadata는 canonical_annotation, build_review_trend_collection도 canonical_annotation된 sidecar를 metadata로 반환한다. tool의 frozen 네 필드 및 metadata 형식은 현재 저장 형식과 일치한다."
+    },
+    {
+      "requirement": "빠진 자료를 성공으로 승계하지 않음",
+      "status": "PASS_SOURCE_INSPECTION",
+      "evidence": "API/MCP/restart aggregate, stored/restart snapshot 각 필드, date provenance source file hash, topic 원문 pages 누락은 missing→unconfirmed이다."
+    }
+  ],
+  "limitations": [
+    "이 검수는 소스 읽기이며 tests를 실행하거나 부모의 격리 validator 결과를 독립 수신·확인한 것이 아니다.",
+    "도구는 제공된 데이터/annotation/캡처와 실제 저장 형식의 내용 정합을 검수한다. 자료 origin, 실제 운영 수집 사실, PM 승인, 독립 평가 승인 자체를 인증하지 않는다.",
+    "호출별 HTTP/MCP 상태·12음성 요청 domain code·운영 restart 실행 진실성은 이 snapshot 정합 도구의 범위 밖이며 별도 보호 수집 근거가 필요하다.",
+    "현 HTTP 원문 API는 __all__ 조회를 허용하지 않는다. 전체 분모 원문 검증에는 PM이 승인해 수집한 stored_snapshot/restart_snapshot export가 추가로 필요하다.",
+    "새 모델/OCR·설치·운영 연결·배포·PR·외부 발송은 수행하지 않았다."
+  ],
+  "repository_files_modified": [],
+  "controls_written": [
+    "data16-tool-review.json"
+  ],
+  "checked_at_utc": "2026-10-06T14:37:44.1740263Z"
+}

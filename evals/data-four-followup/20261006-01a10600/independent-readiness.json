@@ -1,0 +1,115 @@
+{
+  "observed_at": "2026-10-06T21:49:32.459931+09:00",
+  "base_commit": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+  "status": "blocked_pending_PM_decisions_and_independent_review",
+  "new_check_scope": "six public core-contract input files only; no fixture outputs or private final answers",
+  "new_public_input_checks": 6,
+  "new_exact_canonical_duplicates": 0,
+  "public_checks": [
+    {
+      "case_id": "HELD-normal",
+      "type": "normal",
+      "input_filename": "normal.input.json",
+      "heldout_raw_sha256": "c7be1c33d5de0bee3ba4c5e0a4ddb7fda952129b526a64c6f2596f6ef7c1ed92",
+      "development_raw_sha256": "a6b0f8dea39c2914cabb8b7e471c28b5fa5fa31feb0eb5138a52f2079321f1d9",
+      "canonical_input_equal": false,
+      "byte_equal": false,
+      "heldout_blob": "d1a2a87d51d1f7a7c3c0ceb990e3c359ff906980",
+      "development_blob": "0eadc40839ffe1804e8a1cac68cc6d3ebb86745a"
+    },
+    {
+      "case_id": "HELD-duplicate",
+      "type": "duplicate",
+      "input_filename": "duplicate.input.json",
+      "heldout_raw_sha256": "aeabf4176c77fb53fda7fe6fc003004a9818e8b0e15728a6aeb8235d242e0c41",
+      "development_raw_sha256": "ea787edfbcfe1f81020429d05f1871172612b8c9d595ed37c01b52b91850f9f0",
+      "canonical_input_equal": false,
+      "byte_equal": false,
+      "heldout_blob": "220d3109b599e096cd073f4391bc99b47ac9f1dc",
+      "development_blob": "48193511b42f8eff26e2526f26e008c4a22eb978"
+    },
+    {
+      "case_id": "HELD-model_confusion",
+      "type": "model_confusion",
+      "input_filename": "model_confusion.input.json",
+      "heldout_raw_sha256": "0b945b5047e04563782d5be84b3c8b804f9b34bdc108d299412350dc7c3f3a70",
+      "development_raw_sha256": "633f46da5788e071d39afb13817f02581c34c8074603e946deb79b121987b9c5",
+      "canonical_input_equal": false,
+      "byte_equal": false,
+      "heldout_blob": "e6e7a5863d0ac1ad6a729d32aa4e3da8242e3b9b",
+      "development_blob": "c07c9883c2fbabb2532830b4a517b05f47d1113c"
+    },
+    {
+      "case_id": "HELD-conflicting_reviews",
+      "type": "conflicting_reviews",
+      "input_filename": "conflicting_reviews.input.json",
+      "heldout_raw_sha256": "367452d5b94d502a04db74665a0e5c7e3ae9723f907c5ae251faff907d03f4ea",
+      "development_raw_sha256": "06462269bf25e18f283647b8b3986adaa7edfb3d50ea4c4c7e85a822d1eb3e77",
+      "canonical_input_equal": false,
+      "byte_equal": false,
+      "heldout_blob": "618b1b250226f1dea936bec83891567b1ad0b6d7",
+      "development_blob": "5032fbd2fa3518437fa984a083dc26aef3a894de"
+    },
+    {
+      "case_id": "HELD-missing_evidence",
+      "type": "missing_evidence",
+      "input_filename": "missing_evidence.input.json",
+      "heldout_raw_sha256": "9756cb1e00bba704b57724dc047c6c072879158b48438aca3d59d15054e98361",
+      "development_raw_sha256": "264ef8bb87942c5cdb5ce4154626ccce641ae165bb8548ba376a77d22976024e",
+      "canonical_input_equal": false,
+      "byte_equal": false,
+      "heldout_blob": "37449103016d02ccbac779e2f75d342a029541d7",
+      "development_blob": "0f31dcdbaa96ea7a9d9d810e839b4fdaba49ad1d"
+    },
+    {
+      "case_id": "HELD-spec_change",
+      "type": "spec_change",
+      "input_filename": "spec_change.input.json",
+      "heldout_raw_sha256": "b623bafef2e0a1869a27db7dc2b176db9b3f194c276f772be02779cbe17cfa4d",
+      "development_raw_sha256": "da14e1685560b7ebae46fc942ce4c0e02f48792b719295bdbb14a8354ddeb4f4",
+      "canonical_input_equal": false,
+      "byte_equal": false,
+      "heldout_blob": "0e16d0d125cde18eb755a63880c9de8f842d8948",
+      "development_blob": "0397b979f6c59c19025281dda6fe213ee787667e"
+    }
+  ],
+  "prior_handoff_pack": {
+    "inputs": 8,
+    "heldout_files_overlapped": 7,
+    "independence_approved": false,
+    "directly_rechecked_private_inputs_this_run": false,
+    "evidence": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/15#issuecomment-6014764654",
+    "receipt": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/15#issuecomment-6014777575",
+    "meaning": "ACCEPTED blocked report; not independent evaluation pass"
+  },
+  "public_PM_manifest": {
+    "path": "evals/core-semantic/manifest.json",
+    "raw_sha256": "7e867555e562c6c2c3105a420919ea11bcfc1cd7aa0b4ce74da2c0ca9822281b",
+    "declared_independent_from_development": true,
+    "required_categories_present": true,
+    "category_counts": {
+      "normal": 1,
+      "duplicate_feature": 1,
+      "model_version_confusion": 1,
+      "conflicting_reviews": 1,
+      "missing_evidence": 1,
+      "specification_change": 1
+    },
+    "declared_flag_is_human_independence_approval": false,
+    "request_bodies_forwarded_to_retrieval_or_tuning": false
+  },
+  "CORE_meaning_criteria_handoff": {
+    "received": true,
+    "source": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/15#issuecomment-6014986814"
+  },
+  "remaining": [
+    "PM replacement or diagnostic-only disposition of previously overlapped inputs",
+    "Independent reviewer identity and approved private recipient/channel",
+    "Both externally executed whole-input Agent and strong-baseline result bundles with fixed matching conditions",
+    "Independent semantic validity review/scoring; retain all failures and costs"
+  ],
+  "new_product_generation_calls": 0,
+  "new_independent_scores": null,
+  "private_answer_content_read": false,
+  "private_answer_content_published": false
+}

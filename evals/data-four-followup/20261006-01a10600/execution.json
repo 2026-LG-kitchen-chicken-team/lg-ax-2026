@@ -1,0 +1,123 @@
+{
+  "status": "measurement_completed",
+  "started_at": "2026-10-06T12:42:05.386342+00:00",
+  "code_version": "d728d786a057ab6c3fccb1b97534653bcdcf22ea",
+  "runner_sha256": "4d352b7de02a9f132d5f8ef6d2b8cb82d85b6a0e391bb6d181f84b95abd0f3a7",
+  "historical_bm25_source_sha256": "6eff19cdede306f64519da1facfabbf4961e7c84031fce1f314a3479b3707a20",
+  "model_corpus_sha256": "1e097362bf1d7bf6564a3cc17281900d92aedf5a9c573706afdb2254fd9fbffe",
+  "model_queries_sha256": "399c51838a28a749991cd1b1e985df859545e0f1cc4f34b5cee86dece4189055",
+  "original_protocol_sha256": "ed144c72c0941995e0854ecc677e9f1663b11a8cc8ace1373758a441dd8875c8",
+  "dataset_version": "lg-manual-scope-20261006.3-pm-intake",
+  "split": "development",
+  "measurement_mode": "raw rankings and provisional metrics; FR-01 gold decision pending",
+  "original_protocol_full_acceptance": false,
+  "methods": [
+    "bm25_filtered",
+    "bge_m3_filtered",
+    "bge_m3_filtered_reranker"
+  ],
+  "query_count": 15,
+  "corpus_count": 21,
+  "repeats": 5,
+  "warmups_per_method": 2,
+  "query_order": [
+    "DW-01",
+    "DW-05",
+    "FR-04",
+    "MW-03",
+    "MW-01",
+    "MW-02",
+    "DW-03",
+    "FR-01",
+    "MW-04",
+    "FR-02",
+    "FR-03",
+    "DW-02",
+    "MW-05",
+    "DW-04",
+    "FR-05"
+  ],
+  "hardware": {
+    "cpu": "11th Gen Intel(R) Core(TM) i7-1165G7 @ 2.80GHz",
+    "os": "Linux-6.18.40.1-microsoft-standard-WSL2-x86_64-with-glibc2.36",
+    "python": "3.11.17",
+    "device": "cpu",
+    "cpu_threads": 4,
+    "container_cpus_limit": 4,
+    "container_memory_limit_bytes": 7516192768,
+    "system_memory_kib": 7971200,
+    "torch": "2.8.0+cpu",
+    "transformers": "4.57.1",
+    "torch_interop_threads": 1
+  },
+  "boundary": {
+    "external_network_reachable": false,
+    "publisher_credentials_mounted": false,
+    "ai_profile_mounted": false,
+    "host_git_mounted": false,
+    "docker_socket_mounted": false
+  },
+  "cold_load_ms": {
+    "embedding": 23916.96199200004,
+    "reranker": 2261.5259189999506
+  },
+  "index_build_ms": 25647.367232000022,
+  "warmups": [
+    {
+      "method": "bm25_filtered",
+      "number": 1,
+      "query_id": "DW-01",
+      "latency_ms": 0.37503000004335263
+    },
+    {
+      "method": "bm25_filtered",
+      "number": 2,
+      "query_id": "DW-05",
+      "latency_ms": 0.14022499999555293
+    },
+    {
+      "method": "bge_m3_filtered",
+      "number": 1,
+      "query_id": "DW-01",
+      "latency_ms": 415.4144679999945
+    },
+    {
+      "method": "bge_m3_filtered",
+      "number": 2,
+      "query_id": "DW-05",
+      "latency_ms": 353.3275099999855
+    },
+    {
+      "method": "bge_m3_filtered_reranker",
+      "number": 1,
+      "query_id": "DW-01",
+      "latency_ms": 20043.459246
+    },
+    {
+      "method": "bge_m3_filtered_reranker",
+      "number": 2,
+      "query_id": "DW-05",
+      "latency_ms": 7906.164319000027
+    }
+  ],
+  "inference_forward_calls": {
+    "encoder": 147,
+    "reranker": 72
+  },
+  "product_generation_calls": 0,
+  "paid_api_calls": 0,
+  "new_OCR_calls": 0,
+  "notes": [
+    "Structural model/version filters do not establish semantic rejection or AI answer correctness.",
+    "No reviewer answers or expected responses were mounted.",
+    "Current API literal_token_count is a separate baseline and was not measured."
+  ],
+  "tokenizer_load_ms": {
+    "embedding": 2050.4630570000018,
+    "reranker": 1129.6635709999805
+  },
+  "finished_at": "2026-10-06T12:52:33.869129+00:00",
+  "measured_attempts": 225,
+  "failure_count": 0,
+  "peak_rss_mb": 3609.61328125
+}

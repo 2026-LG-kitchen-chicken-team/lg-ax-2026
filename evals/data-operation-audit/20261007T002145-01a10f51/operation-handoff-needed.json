@@ -1,0 +1,62 @@
+{
+  "owner": "PM operation handoff; DATA consumes approved records",
+  "operation_response": {
+    "required": [
+      "observed_at",
+      "deployed_commit",
+      "approved_pack_name",
+      "dataset_version",
+      "dataset_sha256",
+      "dataset_hash_domain",
+      "source_ids",
+      "allowed_model_ids",
+      "allowed_evidence_ids",
+      "document_versions",
+      "raw_text_or_UTF8_text_sha256",
+      "visibility_scope"
+    ],
+    "separate_public_and_workspace": true,
+    "compare_common_approved_visibility_only": true,
+    "token_in_PR_or_issue": false
+  },
+  "trend_response": {
+    "required": [
+      "project_id",
+      "aggregate_id",
+      "dataset_version",
+      "dataset_sha256",
+      "annotation_sha256",
+      "filters",
+      "counts",
+      "buckets",
+      "evidence_ids",
+      "same_scope_evidence_page"
+    ],
+    "aggregate_ID_from_actual_project": true
+  },
+  "three_product_results": {
+    "required": [
+      "code_commit",
+      "runner/input/dataset/schema_hashes",
+      "model_revision_and_settings",
+      "run_id",
+      "status",
+      "final_output_or_held_error",
+      "original_input",
+      "current_revision_input",
+      "decision",
+      "questions",
+      "hold_reasons",
+      "unresolved",
+      "source_metadata_and_locators",
+      "recorded_request_response_hashes"
+    ],
+    "fixed_PR190_handoff_missing": true
+  },
+  "review_scope": {
+    "approved_main_manual_pack_reviews": 0,
+    "preserved_LG_page_excerpt_count": 3,
+    "preserved_excerpts_are_not_current_operation_or_PM_acceptance": true,
+    "synthetic_36_are_development_examples": true
+  }
+}

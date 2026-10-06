@@ -32,6 +32,7 @@ from .skill_runner import SkillRuntime
 from .skill_runner import schema_for as skill_schema
 from .source_boundary import SourceBoundary
 from .stage_alignment import stage_alignment_feedback
+from .stage_metadata import prepare_stage_declaration
 from .store import DemoStore
 
 SKILLS = ("need_extract", "product_compare", "concept_draft")
@@ -428,17 +429,18 @@ class PlanningAgent:
                 )
                 generated = model_call(STAGE[skill_id], skill_id, context, prompt,
                                        generation_schema(skill_id, review_evidence_ids=review_ids))
-                state[skill_id] = deepcopy(generated.data)
+                declaration = prepare_stage_declaration(skill_id, generated.data)
+                state[skill_id] = deepcopy(declaration)
                 if skill_id == "concept_draft" and generated.data["hold_reasons"] != generated.data["result"]["hold_reasons"]:
                     raise DomainError("VALIDATION_FAILED", "후보 보류 사유의 두 표현이 다릅니다.", {})
-                skill_result = deepcopy(generated.data["result"])
+                skill_result = deepcopy(declaration["result"])
                 if skill_id == "concept_draft":
                     reasons = generated.data["no_candidate_reasons"]
                     if ("no_candidate_reasons" in skill_result
                             and skill_result["no_candidate_reasons"] != reasons):
                         raise DomainError("VALIDATION_FAILED", "후보 없음 사유의 두 표현이 다릅니다.", {})
                     skill_result["no_candidate_reasons"] = deepcopy(reasons)
-                alignment = stage_alignment_feedback(payload, skill_id, generated.data)
+                alignment = stage_alignment_feedback(payload, skill_id, declaration)
                 if alignment is not None:
                     raise DomainError("VALIDATION_FAILED", "현재 단계의 근거·평가 선언이 결과와 일치하지 않습니다.",
                                       alignment)

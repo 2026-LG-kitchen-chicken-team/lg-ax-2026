@@ -1,0 +1,50 @@
+{
+  "metadata_audit_and_required_byte_contract_checks_passed": true,
+  "policy_checks": [
+    {
+      "command": [
+        "python",
+        "-B",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "policy-check-1.log",
+      "sha256": "56b21f915cb5a695479359f4ca6063582b0b9bcbdaee1869782a2a805a2a82cd",
+      "network": "none",
+      "zero_auth": true
+    },
+    {
+      "command": [
+        "python",
+        "-B",
+        "scripts/check_contracts.py"
+      ],
+      "exit_code": 0,
+      "log": "policy-check-2.log",
+      "sha256": "83ff39a7aa73fcf380b0b281a91fbc9bad239834b2f70c6f93607d591faded90",
+      "network": "none",
+      "zero_auth": true
+    }
+  ],
+  "local_full_phase2_check": {
+    "command": [
+      "python",
+      "-B",
+      "scripts/phase2.py",
+      "validate"
+    ],
+    "exit_code": 1,
+    "log": "policy-check-3.log",
+    "sha256": "fa10b3eeae6d2a4aac2fa44b3f524a87f98785cae5803c7bab35c40b85866e8c",
+    "reported_errors": 270,
+    "context": "Host worktree .git points outside the container; no host Git/auth directory is mounted.",
+    "interpretation": "Historical Git lookup is unavailable here; not a completed full phase2 integrity gate.",
+    "local_clone_repair": "attempted once; fixed worker protocol.file.allow=never returned Git128; no policy override",
+    "current_audit_data_or_product_code_modified": false,
+    "original_failure_preserved": true
+  },
+  "full_phase2_PASS_claimed": false,
+  "new_model_calls": 0,
+  "other_workspaces_or_protected_runtime_modified": false
+}

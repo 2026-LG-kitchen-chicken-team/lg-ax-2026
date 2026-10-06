@@ -1,0 +1,65 @@
+All checks passed!
+{"status": "pass", "definitions": 48, "models": 5, "reviews": 36, "planning_requests": 3, "analysis_implemented": false}
+PASS: AGENTS.md and CLAUDE.md are byte-identical
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/workspace/apps/web[39m
+
+ [32m✓[39m src/reasonText.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 214[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+[2m   Start at [22m 14:13:04
+[2m   Duration [22m 6.84s[2m (transform 547ms, setup 0ms, import 4.16s, tests 214ms, environment 0ms)[22m
+
+TAP version 13
+# Subtest: only a refused connection means free; a connected server is busy
+ok 1 - only a refused connection means free; a connected server is busy
+  ---
+  duration_ms: 1.2749
+  type: 'test'
+  ...
+# Subtest: permissions, network errors and timeout are unknown rather than free
+ok 2 - permissions, network errors and timeout are unknown rather than free
+  ---
+  duration_ms: 2.280251
+  type: 'test'
+  ...
+# Subtest: unknown observation and busy port never invoke installation
+ok 3 - unknown observation and busy port never invoke installation
+  ---
+  duration_ms: 0.3966
+  type: 'test'
+  ...
+# Subtest: all observed ports free permits exactly one install and propagates its result
+ok 4 - all observed ports free permits exactly one install and propagates its result
+  ---
+  duration_ms: 0.298181
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 105.403028
+
+> @lgax/planning-workspace@0.1.0 build
+> tsc -b && vite build
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 226 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.67 kB │ gzip:   0.45 kB
+dist/assets/index-D4nuyXNz.css   39.85 kB │ gzip:   9.04 kB
+dist/assets/index-BgjXcmW7.js   596.00 kB │ gzip: 175.93 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 8.12s

@@ -1,0 +1,49 @@
+{
+  "workspace_date_kst": "2026-10-07",
+  "source_commit": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+  "issue14": {
+    "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/14",
+    "title": "[P2-DATA-003] 공개 모델 검색·재정렬·OCR 실제 비교",
+    "state": "open",
+    "assignees": [
+      "ginaginaring"
+    ],
+    "body": "책임자: **신진하 / @ginaginaring**\n담당 Epic: https://github.com/jeongiryang/lg-ax-2026/issues/5\n작업 ID: `P2-DATA-003` · 초기 기술 상태: `pending` · PM: **정이량**\n\n## 작업 의도·편집 영역\n업무: 자료 처리·검색·원문/제품/버전 근거·공개 모델 비교. 허용 편집 영역은 root AGENTS.md/CLAUDE.md의 담당 경계를 따른다.\n- 모델 ID·revision·라이선스·설정을 고정한다.\n- BM25/텍스트 파서와 비교하고 성능을 실제 측정한다.\n\n## 입출력·의존성\n- 입력: 연결된 요구사항·공통 JSON Schema·버전이 고정된 자료/계약과 PM 작업 패킷.\n- 출력: 검토 가능한 코드·재현 입력/명령·결과·실패/미해결·실행 증빙.\n의존 작업: P2-DATA-002\n\n## 완료 조건\n- [ ] **R03** 업로드·파싱·자료 검증·조회가 실제 작동한다\n- [ ] **R05** 각 기능 판단에서 해당 모델·자료 버전·페이지/행/문단 근거를 조회한다\n- [ ] **R13** 주요 불편마다 유효한 리뷰 ID·근거 위치를 제공한다\n- [ ] **E03** 측정 조건과 실제 기록을 제공하고 미측정을 성능 개선으로 쓰지 않는다\n- [ ] 자기 작업기록·근거·재개 요약 갱신.\n- [ ] 실제 검증 근거와 PR 연결, PM 검수·병합 후 통합 확인.\n\n## 재개·검수\n`python scripts/phase2.py packet P2-DATA-003`\n다음 대기열: `python scripts/phase2.py next --member 신진하`\n개별 테스트나 fixture 성공은 참가작 전체 완료가 아니다."
+  },
+  "prior_reviews": [
+    {
+      "pr_number": 191,
+      "pr_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/191",
+      "state": "closed",
+      "merged": true,
+      "head_sha": "21d5aaecf77ffe343d293be0f51f42fa8dba33bb",
+      "base_sha": "b160c18a643c362dcf3923ac49742a05f7bb537d",
+      "merge_commit_sha": "4fa67a701dd57e09bc6c71e566b601d9dbf9a94f",
+      "merged_at": "2026-10-06T11:57:50Z",
+      "review_comment": {
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/191#issuecomment-6015688103",
+        "author": "jeongiryang",
+        "created_at": "2026-10-06T11:54:59Z",
+        "updated_at": "2026-10-06T11:54:59Z",
+        "body": "PM 독립 대조: head3e8abdfb31066963b37560df2d362f9950f85f30, CI4/4 SUCCESS. 원Git 49개 산출물 SHA/바이트·13입력·원14행 ledger·70인식 결과·14/19행 JSON/CSV·상대링크 등177/177 대조와 원 PDF 표/단위/조건/각주 시각 확인을 통과했습니다. 17개source-confirmed/2unknown, 자동 정확도 null·새OCR실행0을 그대로 유지해 원문 검수 근거로 부분 인수합니다. PR193의22행 보충 검수는 본19행을 완전 대체하지 않으므로 양쪽 원본을 별도로 보존·상호 연결합니다. 부모 Done/새모델 성능으로 승격하지 않으며 자동화 OFF입니다."
+      }
+    },
+    {
+      "pr_number": 193,
+      "pr_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/193",
+      "state": "closed",
+      "merged": true,
+      "head_sha": "7be3a7bb27d93ffe50a64b0115ee5014518b2612",
+      "base_sha": "4fa67a701dd57e09bc6c71e566b601d9dbf9a94f",
+      "merge_commit_sha": "68b40c0a665d47027160fb914762a41a25dbf25f",
+      "merged_at": "2026-10-06T12:01:27Z",
+      "review_comment": {
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/193#issuecomment-6015787482",
+        "author": "jeongiryang",
+        "created_at": "2026-10-06T12:01:23Z",
+        "updated_at": "2026-10-06T12:01:23Z",
+        "body": "PM 독립 검수: 최신 head7be3a7bb27d93ffe50a64b0115ee5014518b2612, CI4/4 SUCCESS. 기존2996파일변경0·신규10원blob 보존,9입력/9산출SHA·14crop PDF/page/bbox/hash일치 및191원PDF렌더로22행 표/단위/조건/각주 시각 대조 충돌0을 확인했습니다.193의 새 렌더PNG는 PR에 없어 해당PNG 자체 재생검증은 미확인입니다.191의19항목 전체치수/전원/원인용맥락을193으로 대체하지 않고 MW17 700/1000W 조건 등 보충 기록으로 별도부분인수합니다. 같은 과거14영역/70OCR의 재검토이며 새모델/OCR성능·부모Done아닙니다.191 https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/191 원본과 함께 조회합니다. 자동화OFF."
+      }
+    }
+  ]
+}

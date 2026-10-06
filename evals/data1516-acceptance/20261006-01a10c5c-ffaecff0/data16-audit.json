@@ -1,0 +1,2761 @@
+{
+  "artifact_kind": "independent_read_only_data16_metadata_audit",
+  "created_at": "2026-10-06T23:30:26.209409+09:00",
+  "auditor_task": "/root/data16_snapshot_audit",
+  "peer_commit": "66bd627be91e2438bb6a5c6413cece3f690d1049",
+  "tested_main": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+  "input_pins_main": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+  "scope": "원 JSON/CSV/Git blob의 표준 라이브러리 읽기·SHA 대조. 저장소 코드·테스트·네트워크 요청·모델/OCR·설치·배포·운영 주입 미실행.",
+  "file_byte_sha256": {
+    "authority-observation.json": "1b909c902c4f8f46dbd7dee7b1d2cc6d99026c65af4ced523c7332512c4ce0ef",
+    "evaluation-readiness.json": "453ded077f4d7250e32df9f1c186b68922e20dedcff5c7549b23884a327aed68",
+    "execution-source.py.txt": "acf2b1833ff9e80fca5829cce13a30942031a584fbc35a07046d713cb8e0f542",
+    "input-pins.json": "1f777918562bce88bd0c6f4b534c354295ec93de20ac5502e9daf5995e1434cb",
+    "PM-WEB-next-actions.md": "a800bd4d38d630668aad521f032235027787cdfa307ad8c1dd5a0630ef2ed4db",
+    "preservation.json": "b4a7cc29bea7536fef5f8fc23801190b85945780590d7f2509828b1f26a3d5a0",
+    "query-handoff.csv": "31576a0e07123554f26d6f7f3b4ad5b5291a379865abc3390a07fc381d04b287",
+    "README.md": "19690301e3db3d379c328773b21ce412385167159e832f2b1fb07c70fcae1616",
+    "three-pack-api-mcp.json": "55a2efdf1214148f864aeb5109693b3db36d6ebb76bb2aad76dcabb0abe0afe2",
+    "topic-label-source-audit.json": "0b79fae092fe43cc42894de9992fce51c389f18bc300de6949aaa2e6cd9381e1",
+    "validation.json": "1c9ea867eb36cd61aac049a50ee54dbf798c1d34e166ced3111abedb8a72c0ef",
+    "web-DATA9-acceptance-pack.json": "612965b18fe3f06d27ac262f71ede7f187a11b3d81ce9fbc510d5625ad879013"
+  },
+  "source_file_pins": [
+    {
+      "role": "dataset",
+      "commit": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+      "repo_path": "data/demo/dataset.json",
+      "file_byte_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+      "pack": "original"
+    },
+    {
+      "role": "annotation",
+      "commit": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+      "repo_path": "data/research/P2-DATA-005-trends-20261006/annotation.candidate.v1.json",
+      "file_byte_sha256": "0b3d75727a6c5c33379672494bbed6e0e729f80b441c23197889ea275d801117",
+      "pack": "original"
+    },
+    {
+      "role": "dataset",
+      "commit": "2d4ea07e078e99776d534a10f4ed43ab8fec7095",
+      "repo_path": "data/demo/review-trends-dated/dataset.json",
+      "file_byte_sha256": "a2c9c260316c1e8067531e7ba9e42ffec5338363f782092fea0f5cf1449d2b89",
+      "pack": "pm"
+    },
+    {
+      "role": "annotation",
+      "commit": "2d4ea07e078e99776d534a10f4ed43ab8fec7095",
+      "repo_path": "data/demo/review-trends-dated/annotation.candidate.json",
+      "file_byte_sha256": "101b0560337fbbb61f1b4117e2ef47562aacae458d0db5a044c5e36ae2ea1d79",
+      "pack": "pm"
+    },
+    {
+      "role": "date-source",
+      "commit": "2d4ea07e078e99776d534a10f4ed43ab8fec7095",
+      "repo_path": "data/demo/review-trends-dated/date-schedule.json",
+      "file_byte_sha256": "7d528dfc50b8e0474b455327852e363d52603fe5fab0270c75dad9f4430d1f70",
+      "pack": "pm"
+    },
+    {
+      "role": "dataset",
+      "commit": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+      "repo_path": "data/research/DATA-owner-followup-20261006-01a1100e/dataset.synthetic-dated-demo.v1.json",
+      "file_byte_sha256": "37dcaaa2ec5f38024fa61c369ad1a3e357afdb9e2f07e4a3837b99811d458ee2",
+      "pack": "data"
+    },
+    {
+      "role": "annotation",
+      "commit": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+      "repo_path": "data/research/DATA-owner-followup-20261006-01a1100e/annotation.synthetic-dated-demo.v1.json",
+      "file_byte_sha256": "365059e2bcd170a3e99e84d9fd6d4216c3d515eb4f4fbf6265000f6e6dbada44",
+      "pack": "data"
+    },
+    {
+      "role": "date-source",
+      "commit": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+      "repo_path": "data/research/DATA-owner-followup-20261006-01a1100e/source.synthetic-dated-demo.v1.json",
+      "file_byte_sha256": "cbb3ef73f7e84d8524ecbb640b48db9cd39a16c42b5b7db93a3989c5c908ce81",
+      "pack": "data"
+    }
+  ],
+  "checks": [
+    {
+      "id": "peer_head_is_requested_pin",
+      "status": "PASS",
+      "details": "66bd627be91e2438bb6a5c6413cece3f690d1049"
+    },
+    {
+      "id": "published_artifact_byte_hash:authority-observation.json",
+      "status": "PASS",
+      "details": {
+        "expected": "1b909c902c4f8f46dbd7dee7b1d2cc6d99026c65af4ced523c7332512c4ce0ef",
+        "observed": "1b909c902c4f8f46dbd7dee7b1d2cc6d99026c65af4ced523c7332512c4ce0ef"
+      }
+    },
+    {
+      "id": "published_artifact_byte_hash:evaluation-readiness.json",
+      "status": "PASS",
+      "details": {
+        "expected": "453ded077f4d7250e32df9f1c186b68922e20dedcff5c7549b23884a327aed68",
+        "observed": "453ded077f4d7250e32df9f1c186b68922e20dedcff5c7549b23884a327aed68"
+      }
+    },
+    {
+      "id": "published_artifact_byte_hash:execution-source.py.txt",
+      "status": "PASS",
+      "details": {
+        "expected": "acf2b1833ff9e80fca5829cce13a30942031a584fbc35a07046d713cb8e0f542",
+        "observed": "acf2b1833ff9e80fca5829cce13a30942031a584fbc35a07046d713cb8e0f542"
+      }
+    },
+    {
+      "id": "published_artifact_byte_hash:input-pins.json",
+      "status": "PASS",
+      "details": {
+        "expected": "1f777918562bce88bd0c6f4b534c354295ec93de20ac5502e9daf5995e1434cb",
+        "observed": "1f777918562bce88bd0c6f4b534c354295ec93de20ac5502e9daf5995e1434cb"
+      }
+    },
+    {
+      "id": "published_artifact_byte_hash:PM-WEB-next-actions.md",
+      "status": "PASS",
+      "details": {
+        "expected": "a800bd4d38d630668aad521f032235027787cdfa307ad8c1dd5a0630ef2ed4db",
+        "observed": "a800bd4d38d630668aad521f032235027787cdfa307ad8c1dd5a0630ef2ed4db"
+      }
+    },
+    {
+      "id": "published_artifact_byte_hash:preservation.json",
+      "status": "PASS",
+      "details": {
+        "expected": "b4a7cc29bea7536fef5f8fc23801190b85945780590d7f2509828b1f26a3d5a0",
+        "observed": "b4a7cc29bea7536fef5f8fc23801190b85945780590d7f2509828b1f26a3d5a0"
+      }
+    },
+    {
+      "id": "published_artifact_byte_hash:query-handoff.csv",
+      "status": "PASS",
+      "details": {
+        "expected": "31576a0e07123554f26d6f7f3b4ad5b5291a379865abc3390a07fc381d04b287",
+        "observed": "31576a0e07123554f26d6f7f3b4ad5b5291a379865abc3390a07fc381d04b287"
+      }
+    },
+    {
+      "id": "published_artifact_byte_hash:README.md",
+      "status": "PASS",
+      "details": {
+        "expected": "19690301e3db3d379c328773b21ce412385167159e832f2b1fb07c70fcae1616",
+        "observed": "19690301e3db3d379c328773b21ce412385167159e832f2b1fb07c70fcae1616"
+      }
+    },
+    {
+      "id": "published_artifact_byte_hash:three-pack-api-mcp.json",
+      "status": "PASS",
+      "details": {
+        "expected": "55a2efdf1214148f864aeb5109693b3db36d6ebb76bb2aad76dcabb0abe0afe2",
+        "observed": "55a2efdf1214148f864aeb5109693b3db36d6ebb76bb2aad76dcabb0abe0afe2"
+      }
+    },
+    {
+      "id": "published_artifact_byte_hash:topic-label-source-audit.json",
+      "status": "PASS",
+      "details": {
+        "expected": "0b79fae092fe43cc42894de9992fce51c389f18bc300de6949aaa2e6cd9381e1",
+        "observed": "0b79fae092fe43cc42894de9992fce51c389f18bc300de6949aaa2e6cd9381e1"
+      }
+    },
+    {
+      "id": "published_artifact_byte_hash:web-DATA9-acceptance-pack.json",
+      "status": "PASS",
+      "details": {
+        "expected": "612965b18fe3f06d27ac262f71ede7f187a11b3d81ce9fbc510d5625ad879013",
+        "observed": "612965b18fe3f06d27ac262f71ede7f187a11b3d81ce9fbc510d5625ad879013"
+      }
+    },
+    {
+      "id": "csv_rows_are_15_and_unique",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "input_blob_pin:original:dataset",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "input_blob_pin:original:annotation",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "canonical_dataset_hash:original",
+      "status": "PASS",
+      "details": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03"
+    },
+    {
+      "id": "canonical_annotation_hash:original",
+      "status": "PASS",
+      "details": "3939b5eec99f4637dec60a84802052577711ea8242718d296d0977c466afe5a8"
+    },
+    {
+      "id": "annotation_exact_review_coverage:original",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-019",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-019",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-022",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-022",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-029",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-029",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-002",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-002",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-035",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-035",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-014",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-014",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-016",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-016",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-027",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-027",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-003",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-003",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-032",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-032",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-020",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-020",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-009",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-009",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-012",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-012",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-028",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-028",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-025",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-025",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-023",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-023",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-005",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-005",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-015",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-015",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-013",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-013",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-004",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-004",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-034",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-034",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-036",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-036",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-017",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-017",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-031",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-031",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-021",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-021",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-026",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-026",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-001",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-001",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-018",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-018",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-010",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-010",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-030",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-030",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-008",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-008",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-007",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-007",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-011",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-011",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-033",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-033",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-024",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-024",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:original:REVIEW-006",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:original:REVIEW-006",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "whole_pack_date_counts:original",
+      "status": "PASS",
+      "details": {
+        "dated": 0,
+        "unknown": 36
+      }
+    },
+    {
+      "id": "aggregate_count_recalculation:original:october",
+      "status": "PASS",
+      "details": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 10,
+        "excluded_outside_period_count": 0,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 0,
+        "unclassified_review_count": 0
+      }
+    },
+    {
+      "id": "aggregate_metadata_matches_annotation:original:october",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_id_recalculation:original:october",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "bucket_counts_ids_ratio:original:october",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "saved_evidence_ids_hash:original:october",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "case_derived_fields:original:october",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "handoff_csv_exact_saved_values:original:october",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "recorded_parity_flags:original:october",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_count_recalculation:original:empty",
+      "status": "PASS",
+      "details": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 10,
+        "excluded_outside_period_count": 0,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 0,
+        "unclassified_review_count": 0
+      }
+    },
+    {
+      "id": "aggregate_metadata_matches_annotation:original:empty",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_id_recalculation:original:empty",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "bucket_counts_ids_ratio:original:empty",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "saved_evidence_ids_hash:original:empty",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "case_derived_fields:original:empty",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "handoff_csv_exact_saved_values:original:empty",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "recorded_parity_flags:original:empty",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_count_recalculation:original:winter",
+      "status": "PASS",
+      "details": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 10,
+        "excluded_outside_period_count": 0,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 0,
+        "unclassified_review_count": 0
+      }
+    },
+    {
+      "id": "aggregate_metadata_matches_annotation:original:winter",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_id_recalculation:original:winter",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "bucket_counts_ids_ratio:original:winter",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "saved_evidence_ids_hash:original:winter",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "case_derived_fields:original:winter",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "handoff_csv_exact_saved_values:original:winter",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "recorded_parity_flags:original:winter",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_count_recalculation:original:december",
+      "status": "PASS",
+      "details": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 10,
+        "excluded_outside_period_count": 0,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 0,
+        "unclassified_review_count": 0
+      }
+    },
+    {
+      "id": "aggregate_metadata_matches_annotation:original:december",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_id_recalculation:original:december",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "bucket_counts_ids_ratio:original:december",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "saved_evidence_ids_hash:original:december",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "case_derived_fields:original:december",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "handoff_csv_exact_saved_values:original:december",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "recorded_parity_flags:original:december",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_count_recalculation:original:january",
+      "status": "PASS",
+      "details": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 10,
+        "excluded_outside_period_count": 0,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 0,
+        "unclassified_review_count": 0
+      }
+    },
+    {
+      "id": "aggregate_metadata_matches_annotation:original:january",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_id_recalculation:original:january",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "bucket_counts_ids_ratio:original:january",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "saved_evidence_ids_hash:original:january",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "case_derived_fields:original:january",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "handoff_csv_exact_saved_values:original:january",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "recorded_parity_flags:original:january",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "per_pack_counters_consistent:original",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "input_blob_pin:pm:dataset",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "input_blob_pin:pm:annotation",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "input_blob_pin:pm:date-source",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "canonical_dataset_hash:pm",
+      "status": "PASS",
+      "details": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1"
+    },
+    {
+      "id": "canonical_annotation_hash:pm",
+      "status": "PASS",
+      "details": "6a23e26343802dc2b4495e8da1e3efc6ffa9ac03cab3a0ed98bee1abc479093a"
+    },
+    {
+      "id": "annotation_exact_review_coverage:pm",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-001",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-001",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-001",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-002",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-002",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-002",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-003",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-003",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-003",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-004",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-004",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-004",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-005",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-005",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-005",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-006",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:pm:DEMO-TREND-REVIEW-006",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-007",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-007",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-007",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-008",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-008",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-008",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-009",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-009",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-009",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-010",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:pm:DEMO-TREND-REVIEW-010",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-011",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-011",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-011",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-012",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-012",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-012",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-013",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-013",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-013",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-014",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-014",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-014",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-015",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-015",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-015",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-016",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-016",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-016",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-017",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-017",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-017",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-018",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-018",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-018",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-019",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-019",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-019",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-020",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:pm:DEMO-TREND-REVIEW-020",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-021",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-021",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-021",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-022",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-022",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-022",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-023",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-023",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-023",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-024",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-024",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-024",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-025",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-025",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-025",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-026",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-026",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-026",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-027",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-027",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-027",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-028",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-028",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-028",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-029",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-029",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-029",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-030",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:pm:DEMO-TREND-REVIEW-030",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-031",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-031",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-031",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-032",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-032",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-032",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-033",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-033",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-033",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-034",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-034",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-034",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-035",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:pm:DEMO-TREND-REVIEW-035",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:pm:DEMO-TREND-REVIEW-035",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:pm:DEMO-TREND-REVIEW-036",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:pm:DEMO-TREND-REVIEW-036",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "whole_pack_date_counts:pm",
+      "status": "PASS",
+      "details": {
+        "dated": 31,
+        "unknown": 5
+      }
+    },
+    {
+      "id": "aggregate_count_recalculation:pm:october",
+      "status": "PASS",
+      "details": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 2,
+        "excluded_outside_period_count": 5,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 3,
+        "unclassified_review_count": 0
+      }
+    },
+    {
+      "id": "aggregate_metadata_matches_annotation:pm:october",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_id_recalculation:pm:october",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "bucket_counts_ids_ratio:pm:october",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "saved_evidence_ids_hash:pm:october",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "case_derived_fields:pm:october",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "handoff_csv_exact_saved_values:pm:october",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "recorded_parity_flags:pm:october",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_count_recalculation:pm:empty",
+      "status": "PASS",
+      "details": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 2,
+        "excluded_outside_period_count": 8,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 0,
+        "unclassified_review_count": 0
+      }
+    },
+    {
+      "id": "aggregate_metadata_matches_annotation:pm:empty",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_id_recalculation:pm:empty",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "bucket_counts_ids_ratio:pm:empty",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "saved_evidence_ids_hash:pm:empty",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "case_derived_fields:pm:empty",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "handoff_csv_exact_saved_values:pm:empty",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "recorded_parity_flags:pm:empty",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_count_recalculation:pm:winter",
+      "status": "PASS",
+      "details": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 2,
+        "excluded_outside_period_count": 7,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 1,
+        "unclassified_review_count": 0
+      }
+    },
+    {
+      "id": "aggregate_metadata_matches_annotation:pm:winter",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_id_recalculation:pm:winter",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "bucket_counts_ids_ratio:pm:winter",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "saved_evidence_ids_hash:pm:winter",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "case_derived_fields:pm:winter",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "handoff_csv_exact_saved_values:pm:winter",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "recorded_parity_flags:pm:winter",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_count_recalculation:pm:december",
+      "status": "PASS",
+      "details": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 2,
+        "excluded_outside_period_count": 8,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 0,
+        "unclassified_review_count": 0
+      }
+    },
+    {
+      "id": "aggregate_metadata_matches_annotation:pm:december",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_id_recalculation:pm:december",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "bucket_counts_ids_ratio:pm:december",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "saved_evidence_ids_hash:pm:december",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "case_derived_fields:pm:december",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "handoff_csv_exact_saved_values:pm:december",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "recorded_parity_flags:pm:december",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_count_recalculation:pm:january",
+      "status": "PASS",
+      "details": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 2,
+        "excluded_outside_period_count": 7,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 1,
+        "unclassified_review_count": 0
+      }
+    },
+    {
+      "id": "aggregate_metadata_matches_annotation:pm:january",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_id_recalculation:pm:january",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "bucket_counts_ids_ratio:pm:january",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "saved_evidence_ids_hash:pm:january",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "case_derived_fields:pm:january",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "handoff_csv_exact_saved_values:pm:january",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "recorded_parity_flags:pm:january",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "per_pack_counters_consistent:pm",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "input_blob_pin:data:dataset",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "input_blob_pin:data:annotation",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "input_blob_pin:data:date-source",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "canonical_dataset_hash:data",
+      "status": "PASS",
+      "details": "d7740d3b61be29e78a4a4fd4d48a6e549eae3158c37994670493f02d4b33fff0"
+    },
+    {
+      "id": "canonical_annotation_hash:data",
+      "status": "PASS",
+      "details": "0f534b263c87eb896146967158bc7dbb630bdd6290fe9471bdc90c274027e64b"
+    },
+    {
+      "id": "annotation_exact_review_coverage:data",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-001",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:data:SYNTH-DATED-REVIEW-001",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:data:SYNTH-DATED-REVIEW-001",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-002",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:data:SYNTH-DATED-REVIEW-002",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:data:SYNTH-DATED-REVIEW-002",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-003",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:data:SYNTH-DATED-REVIEW-003",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:data:SYNTH-DATED-REVIEW-003",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-004",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:data:SYNTH-DATED-REVIEW-004",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:data:SYNTH-DATED-REVIEW-004",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-005",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-005",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-006",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:data:SYNTH-DATED-REVIEW-006",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:data:SYNTH-DATED-REVIEW-006",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-007",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:data:SYNTH-DATED-REVIEW-007",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:data:SYNTH-DATED-REVIEW-007",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-008",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:data:SYNTH-DATED-REVIEW-008",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:data:SYNTH-DATED-REVIEW-008",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-009",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:data:SYNTH-DATED-REVIEW-009",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:data:SYNTH-DATED-REVIEW-009",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-010",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_hash:data:SYNTH-DATED-REVIEW-010",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "date_source_row_binding:data:SYNTH-DATED-REVIEW-010",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-011",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-011",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-012",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-012",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-013",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-013",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-014",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-014",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-015",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-015",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-016",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-016",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-017",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-017",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-018",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-018",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-019",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-019",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-020",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-020",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-021",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-021",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-022",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-022",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-023",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-023",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-024",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-024",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-025",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-025",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-026",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-026",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-027",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-027",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-028",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-028",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-029",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-029",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-030",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-030",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-031",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-031",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-032",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-032",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-033",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-033",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-034",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-034",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-035",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-035",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_annotation_evidence_binding:data:SYNTH-DATED-REVIEW-036",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "explicit_unknown_date:data:SYNTH-DATED-REVIEW-036",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "whole_pack_date_counts:data",
+      "status": "PASS",
+      "details": {
+        "dated": 9,
+        "unknown": 27
+      }
+    },
+    {
+      "id": "aggregate_count_recalculation:data:october",
+      "status": "PASS",
+      "details": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 1,
+        "excluded_outside_period_count": 5,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 4,
+        "unclassified_review_count": 0
+      }
+    },
+    {
+      "id": "aggregate_metadata_matches_annotation:data:october",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_id_recalculation:data:october",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "bucket_counts_ids_ratio:data:october",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "saved_evidence_ids_hash:data:october",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "case_derived_fields:data:october",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "handoff_csv_exact_saved_values:data:october",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "recorded_parity_flags:data:october",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_count_recalculation:data:empty",
+      "status": "PASS",
+      "details": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 1,
+        "excluded_outside_period_count": 9,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 0,
+        "unclassified_review_count": 0
+      }
+    },
+    {
+      "id": "aggregate_metadata_matches_annotation:data:empty",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_id_recalculation:data:empty",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "bucket_counts_ids_ratio:data:empty",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "saved_evidence_ids_hash:data:empty",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "case_derived_fields:data:empty",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "handoff_csv_exact_saved_values:data:empty",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "recorded_parity_flags:data:empty",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_count_recalculation:data:winter",
+      "status": "PASS",
+      "details": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 1,
+        "excluded_outside_period_count": 7,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 2,
+        "unclassified_review_count": 0
+      }
+    },
+    {
+      "id": "aggregate_metadata_matches_annotation:data:winter",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_id_recalculation:data:winter",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "bucket_counts_ids_ratio:data:winter",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "saved_evidence_ids_hash:data:winter",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "case_derived_fields:data:winter",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "handoff_csv_exact_saved_values:data:winter",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "recorded_parity_flags:data:winter",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_count_recalculation:data:december",
+      "status": "PASS",
+      "details": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 1,
+        "excluded_outside_period_count": 8,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 1,
+        "unclassified_review_count": 0
+      }
+    },
+    {
+      "id": "aggregate_metadata_matches_annotation:data:december",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_id_recalculation:data:december",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "bucket_counts_ids_ratio:data:december",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "saved_evidence_ids_hash:data:december",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "case_derived_fields:data:december",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "handoff_csv_exact_saved_values:data:december",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "recorded_parity_flags:data:december",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_count_recalculation:data:january",
+      "status": "PASS",
+      "details": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 1,
+        "excluded_outside_period_count": 9,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 0,
+        "unclassified_review_count": 0
+      }
+    },
+    {
+      "id": "aggregate_metadata_matches_annotation:data:january",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "aggregate_id_recalculation:data:january",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "bucket_counts_ids_ratio:data:january",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "saved_evidence_ids_hash:data:january",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "case_derived_fields:data:january",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "handoff_csv_exact_saved_values:data:january",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "recorded_parity_flags:data:january",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "per_pack_counters_consistent:data",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_id_and_review_evidence_disjoint:original:pm",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_id_and_review_evidence_disjoint:original:data",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "review_id_and_review_evidence_disjoint:pm:data",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "three_pack_receipt_and_csv_case_count",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "validation_counts_match_saved_counters",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "restart_saved_query_count",
+      "status": "PASS",
+      "details": null
+    },
+    {
+      "id": "operating_claims_are_explicitly_false",
+      "status": "PASS",
+      "details": null
+    }
+  ],
+  "summary": {
+    "PASS": 419,
+    "MISMATCH": 0,
+    "recorded_counters": {
+      "HTTP": 75,
+      "queries": 15,
+      "MCP_tool_calls": 45,
+      "original_pages": 15,
+      "rejections": 12
+    },
+    "recorded_restart_queries": 15,
+    "production_verified": false,
+    "new_model_calls": 0,
+    "new_ocr_calls": 0,
+    "private_answers_read": false
+  },
+  "packs": [
+    {
+      "name": "original",
+      "dataset_version": "0.1.0",
+      "source_ids": [
+        "REVIEWS-CSV-v1.0"
+      ],
+      "review_count": 36,
+      "dated": 0,
+      "unknown": 36,
+      "canonical_dataset_sha256": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03",
+      "canonical_annotation_sha256": "3939b5eec99f4637dec60a84802052577711ea8242718d296d0977c466afe5a8",
+      "annotation_version": "candidate-2026-10-06-v1",
+      "classification": {
+        "method": "human",
+        "model_id": null,
+        "revision": null
+      },
+      "source_kind": "synthetic",
+      "taxonomy_status": "candidate-preview",
+      "source_pins": [
+        {
+          "role": "dataset",
+          "commit": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+          "repo_path": "data/demo/dataset.json",
+          "file_byte_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0"
+        },
+        {
+          "role": "annotation",
+          "commit": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+          "repo_path": "data/research/P2-DATA-005-trends-20261006/annotation.candidate.v1.json",
+          "file_byte_sha256": "0b3d75727a6c5c33379672494bbed6e0e729f80b441c23197889ea275d801117"
+        }
+      ],
+      "october": {
+        "denominator": 0,
+        "cleaning_numerator": 0,
+        "cleaning_ratio": null
+      }
+    },
+    {
+      "name": "pm",
+      "dataset_version": "pm-synthetic-trends.v1",
+      "source_ids": [
+        "PM-TREND-DEMO-REVIEWS-v1"
+      ],
+      "review_count": 36,
+      "dated": 31,
+      "unknown": 5,
+      "canonical_dataset_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+      "canonical_annotation_sha256": "6a23e26343802dc2b4495e8da1e3efc6ffa9ac03cab3a0ed98bee1abc479093a",
+      "annotation_version": "pm-synthetic-demo-candidate.v1",
+      "classification": {
+        "method": "rule",
+        "model_id": null,
+        "revision": null
+      },
+      "source_kind": "synthetic",
+      "taxonomy_status": "candidate-preview",
+      "source_pins": [
+        {
+          "role": "dataset",
+          "commit": "2d4ea07e078e99776d534a10f4ed43ab8fec7095",
+          "repo_path": "data/demo/review-trends-dated/dataset.json",
+          "file_byte_sha256": "a2c9c260316c1e8067531e7ba9e42ffec5338363f782092fea0f5cf1449d2b89"
+        },
+        {
+          "role": "annotation",
+          "commit": "2d4ea07e078e99776d534a10f4ed43ab8fec7095",
+          "repo_path": "data/demo/review-trends-dated/annotation.candidate.json",
+          "file_byte_sha256": "101b0560337fbbb61f1b4117e2ef47562aacae458d0db5a044c5e36ae2ea1d79"
+        },
+        {
+          "role": "date-source",
+          "commit": "2d4ea07e078e99776d534a10f4ed43ab8fec7095",
+          "repo_path": "data/demo/review-trends-dated/date-schedule.json",
+          "file_byte_sha256": "7d528dfc50b8e0474b455327852e363d52603fe5fab0270c75dad9f4430d1f70"
+        }
+      ],
+      "october": {
+        "denominator": 3,
+        "cleaning_numerator": 1,
+        "cleaning_ratio": 0.3333333333333333
+      }
+    },
+    {
+      "name": "data",
+      "dataset_version": "synthetic-dated-demo.20261006.v1",
+      "source_ids": [
+        "SYNTH-REVIEWS-DATED-DEMO-v1"
+      ],
+      "review_count": 36,
+      "dated": 9,
+      "unknown": 27,
+      "canonical_dataset_sha256": "d7740d3b61be29e78a4a4fd4d48a6e549eae3158c37994670493f02d4b33fff0",
+      "canonical_annotation_sha256": "0f534b263c87eb896146967158bc7dbb630bdd6290fe9471bdc90c274027e64b",
+      "annotation_version": "synthetic-dated-demo.20261006.v1",
+      "classification": {
+        "method": "human",
+        "model_id": null,
+        "revision": null
+      },
+      "source_kind": "synthetic",
+      "taxonomy_status": "candidate-preview",
+      "source_pins": [
+        {
+          "role": "dataset",
+          "commit": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+          "repo_path": "data/research/DATA-owner-followup-20261006-01a1100e/dataset.synthetic-dated-demo.v1.json",
+          "file_byte_sha256": "37dcaaa2ec5f38024fa61c369ad1a3e357afdb9e2f07e4a3837b99811d458ee2"
+        },
+        {
+          "role": "annotation",
+          "commit": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+          "repo_path": "data/research/DATA-owner-followup-20261006-01a1100e/annotation.synthetic-dated-demo.v1.json",
+          "file_byte_sha256": "365059e2bcd170a3e99e84d9fd6d4216c3d515eb4f4fbf6265000f6e6dbada44"
+        },
+        {
+          "role": "date-source",
+          "commit": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+          "repo_path": "data/research/DATA-owner-followup-20261006-01a1100e/source.synthetic-dated-demo.v1.json",
+          "file_byte_sha256": "cbb3ef73f7e84d8524ecbb640b48db9cd39a16c42b5b7db93a3989c5c908ce81"
+        }
+      ],
+      "october": {
+        "denominator": 4,
+        "cleaning_numerator": 1,
+        "cleaning_ratio": 0.25
+      }
+    }
+  ],
+  "expected_memberships_derived_from_pinned_sources": [
+    {
+      "pack": "original",
+      "period": "october",
+      "bucket_id": "MONTH-2026-10",
+      "expected_all_evidence_ids": [],
+      "expected_cleaning_evidence_ids": [],
+      "actual_all_membership_exported": false,
+      "cleaning_exported": true
+    },
+    {
+      "pack": "original",
+      "period": "empty",
+      "bucket_id": "MONTH-2030-05",
+      "expected_all_evidence_ids": [],
+      "expected_cleaning_evidence_ids": [],
+      "actual_all_membership_exported": false,
+      "cleaning_exported": true
+    },
+    {
+      "pack": "original",
+      "period": "winter",
+      "bucket_id": "SEASON-2026-WINTER",
+      "expected_all_evidence_ids": [],
+      "expected_cleaning_evidence_ids": [],
+      "actual_all_membership_exported": false,
+      "cleaning_exported": true
+    },
+    {
+      "pack": "original",
+      "period": "december",
+      "bucket_id": "MONTH-2026-12",
+      "expected_all_evidence_ids": [],
+      "expected_cleaning_evidence_ids": [],
+      "actual_all_membership_exported": false,
+      "cleaning_exported": true
+    },
+    {
+      "pack": "original",
+      "period": "january",
+      "bucket_id": "MONTH-2027-01",
+      "expected_all_evidence_ids": [],
+      "expected_cleaning_evidence_ids": [],
+      "actual_all_membership_exported": false,
+      "cleaning_exported": true
+    },
+    {
+      "pack": "pm",
+      "period": "october",
+      "bucket_id": "MONTH-2026-10",
+      "expected_all_evidence_ids": [
+        "DEMO-TREND-REVIEW-EVIDENCE-001",
+        "DEMO-TREND-REVIEW-EVIDENCE-002",
+        "DEMO-TREND-REVIEW-EVIDENCE-004"
+      ],
+      "expected_cleaning_evidence_ids": [
+        "DEMO-TREND-REVIEW-EVIDENCE-001"
+      ],
+      "actual_all_membership_exported": false,
+      "cleaning_exported": true
+    },
+    {
+      "pack": "pm",
+      "period": "empty",
+      "bucket_id": "MONTH-2030-05",
+      "expected_all_evidence_ids": [],
+      "expected_cleaning_evidence_ids": [],
+      "actual_all_membership_exported": false,
+      "cleaning_exported": true
+    },
+    {
+      "pack": "pm",
+      "period": "winter",
+      "bucket_id": "SEASON-2026-WINTER",
+      "expected_all_evidence_ids": [
+        "DEMO-TREND-REVIEW-EVIDENCE-009"
+      ],
+      "expected_cleaning_evidence_ids": [
+        "DEMO-TREND-REVIEW-EVIDENCE-009"
+      ],
+      "actual_all_membership_exported": false,
+      "cleaning_exported": true
+    },
+    {
+      "pack": "pm",
+      "period": "december",
+      "bucket_id": "MONTH-2026-12",
+      "expected_all_evidence_ids": [],
+      "expected_cleaning_evidence_ids": [],
+      "actual_all_membership_exported": false,
+      "cleaning_exported": true
+    },
+    {
+      "pack": "pm",
+      "period": "january",
+      "bucket_id": "MONTH-2027-01",
+      "expected_all_evidence_ids": [
+        "DEMO-TREND-REVIEW-EVIDENCE-009"
+      ],
+      "expected_cleaning_evidence_ids": [
+        "DEMO-TREND-REVIEW-EVIDENCE-009"
+      ],
+      "actual_all_membership_exported": false,
+      "cleaning_exported": true
+    },
+    {
+      "pack": "data",
+      "period": "october",
+      "bucket_id": "MONTH-2026-10",
+      "expected_all_evidence_ids": [
+        "SYNTH-DATED-REVIEW-EVIDENCE-002",
+        "SYNTH-DATED-REVIEW-EVIDENCE-003",
+        "SYNTH-DATED-REVIEW-EVIDENCE-006",
+        "SYNTH-DATED-REVIEW-EVIDENCE-007"
+      ],
+      "expected_cleaning_evidence_ids": [
+        "SYNTH-DATED-REVIEW-EVIDENCE-006"
+      ],
+      "actual_all_membership_exported": false,
+      "cleaning_exported": true
+    },
+    {
+      "pack": "data",
+      "period": "empty",
+      "bucket_id": "MONTH-2030-05",
+      "expected_all_evidence_ids": [],
+      "expected_cleaning_evidence_ids": [],
+      "actual_all_membership_exported": false,
+      "cleaning_exported": true
+    },
+    {
+      "pack": "data",
+      "period": "winter",
+      "bucket_id": "SEASON-2026-WINTER",
+      "expected_all_evidence_ids": [
+        "SYNTH-DATED-REVIEW-EVIDENCE-009",
+        "SYNTH-DATED-REVIEW-EVIDENCE-010"
+      ],
+      "expected_cleaning_evidence_ids": [
+        "SYNTH-DATED-REVIEW-EVIDENCE-009"
+      ],
+      "actual_all_membership_exported": false,
+      "cleaning_exported": true
+    },
+    {
+      "pack": "data",
+      "period": "december",
+      "bucket_id": "MONTH-2026-12",
+      "expected_all_evidence_ids": [
+        "SYNTH-DATED-REVIEW-EVIDENCE-009"
+      ],
+      "expected_cleaning_evidence_ids": [
+        "SYNTH-DATED-REVIEW-EVIDENCE-009"
+      ],
+      "actual_all_membership_exported": false,
+      "cleaning_exported": true
+    },
+    {
+      "pack": "data",
+      "period": "january",
+      "bucket_id": "MONTH-2027-01",
+      "expected_all_evidence_ids": [],
+      "expected_cleaning_evidence_ids": [],
+      "actual_all_membership_exported": false,
+      "cleaning_exported": true
+    }
+  ],
+  "confirmed": {
+    "source_files": 8,
+    "review_annotation_evidence_bindings": 108,
+    "stored_query_aggregates": 15,
+    "query_handoff_rows": 15,
+    "shared_non_review_manual_evidence_ids": [
+      "MANUAL-001",
+      "MANUAL-002",
+      "MANUAL-003",
+      "MANUAL-004",
+      "MANUAL-005",
+      "MANUAL-006"
+    ]
+  },
+  "unverified": [
+    {
+      "id": "actual-operating-response",
+      "reason": "PM 승인 실제 운영 응답·운영 코드/자료팩/프로젝트 핀이 아직 이 검수 입력에 없다. 이전 접속 실패는 운영 OFF 또는 자료 불일치의 증거가 아니다."
+    },
+    {
+      "id": "full-denominator-membership",
+      "reason": "각 case는 cleaning 원문 ID/hash와 aggregate 분모를 보존한다. 서버 snapshot의 memberships.__all__ 및 해당 전체 evidence 페이지는 보존하지 않아 실제 분모 membership을 직접 읽어 대조한 증거는 없다. 원 source로 기대 IDs만 독립 계산했다."
+    },
+    {
+      "id": "raw-transport-and-rejection-payloads",
+      "reason": "75 직접 HTTP·45 MCP·15 재개·12 거절 카운터는 저장 요약/실행 소스/15 case와 일치한다. 원 요청별 상태·원 응답 전체가 이 묶음에 없어 각 전송 사실과 오류 코드를 재검수하지는 못했다."
+    },
+    {
+      "id": "restart-original-evidence",
+      "reason": "재시작 검사는 저장 aggregate만 조회하며, 원문·metadata·memberships 전체 snapshot이 재개 뒤 동일한지는 이 실행 소스와 저장 case에 직접 검증돼 있지 않다."
+    },
+    {
+      "id": "final-topic-approval-and-web",
+      "reason": "candidate-preview 7주제이며 최종 PM 승인·실제 WEB 화면·내보내기 검증은 별도다."
+    }
+  ],
+  "potential_errors": [
+    {
+      "id": "fixture-vs-operation-aggregate-id",
+      "detail": "aggregate_id는 project_id를 포함한다. 다른 운영 프로젝트의 ID와 소유 테스트 프로젝트의 ID를 직접 같다고 요구하면 거짓 불일치다. 운영 프로젝트 핀·동일 정규화 filters·metadata로 ID를 다시 계산해야 한다."
+    },
+    {
+      "id": "file-vs-canonical-hash",
+      "detail": "input-pins의 SHA는 파일 원 bytes, aggregate.dataset_sha256은 contract_version 제외한 정규 JSON, annotation SHA는 자기 digest 제외·행/주제 정렬 정규 JSON이다. 서로 다른 해시 종류를 비교하지 않는다."
+    },
+    {
+      "id": "rejection-status-too-broad",
+      "detail": "peer 소스는 12 음성 요청을 status>=400만으로 거절 인정해 5xx도 통과할 수 있다. 저장 개별 status/error-code가 없으므로 의도한 domain 거절인지 미확인이다."
+    },
+    {
+      "id": "topic-vs-polarity",
+      "detail": "DATA006 긍정 청소 문장도 topic cleaning numerator에 포함된다. 청소 언급1/4를 불만률·실고객 수요로 바꾸면 안 된다."
+    },
+    {
+      "id": "all-ids-distinct-overclaim",
+      "detail": "36 review IDs와36 review evidence IDs는 팩 간 모두 다르지만 6 synthetic manual evidence IDs 및 product models는 재사용한다. 모든 자료 ID가 새 것이라는 주장은 하지 않는다."
+    },
+    {
+      "id": "http-vs-mcp-double-count",
+      "detail": "75는 직접 HTTP 요청만의 수다. 45 MCP tools는 같은 소유 API로 HTTP를 전달하므로 총 네트워크 요청 수 또는 120독립 질문으로 표시하지 않는다."
+    }
+  ],
+  "operating_handoff_required_fields": {
+    "authority": [
+      "PM 승인/인계 ID·확인시각·운영 service identity·code commit·승인 자료팩 선택·자료 source/version 및 원 bytes SHA; 비밀값 제외"
+    ],
+    "project_query": [
+      "실제 project_id와 model_ids/document_versions·canonical dataset SHA",
+      "정규화 source_ids/topic_ids/dataset_version/model_id/source_kind/start_date/end_date_exclusive/granularity/Asia-Seoul",
+      "같은 운영 프로젝트 query 및 saved/get aggregate에서 같은 aggregate ID"
+    ],
+    "metadata": [
+      "dataset_version/dataset_sha256",
+      "annotation_version/annotation_sha256",
+      "classification method/model_id/revision",
+      "topic_taxonomy_version/dedup_policy_version/aggregation_version/trend_contract_version",
+      "각 date_provenance source_id/locator/source_sha256와 고정 날짜 출처 원문"
+    ],
+    "counts_buckets": [
+      "input/excluded/out-of-scope/undated/outside-period/duplicate/eligible/unclassified 모든 counts",
+      "bucket_id/period bounds/partial_period/total_reviews",
+      "topic_review_count/ratio/evidence_count/evidence_ids/truncated/warnings/notes"
+    ],
+    "frozen_snapshot": [
+      "metadata·모든 bucket의 memberships.__all__와 cleaning ID 전체",
+      "IDs에 연결된 frozen Evidence 원문 model_id/document_version/source_kind/source_id/locator/text의 UTF-8 SHA",
+      "페이지가 있으면 모든 cursor 페이지 합집합·중복없음·분모/분자와 같음",
+      "저장·조회·API/MCP·재시작 이후 aggregate 및 원문 frozen snapshot 동일성. 운영 restart는 별도 PM 수행/승인된 재개 receipt로 확인"
+    ]
+  },
+  "next_tool_scope": "원 pins와 공식 운영 export JSON을 오프라인 비교하는 data-only 도구는 의미가 있다. 서비스 로그인/배포/주입/연결 작업 없이 export의 자료팩 binding, canonical hashes, normalized query, counts, full memberships, raw evidence hashes를 검증한다. 현재 묶음에 빠진 __all__·실제 오류 payload·재개 원문을 없는 값으로 성공 처리하지 않는다.",
+  "preservation_claim_limit": "preservation.json의 기존3148파일 unchanged는 실행자의 보존 보고다. 독립 검수자는 이 5파일/관련 묶음 및 원8file Git 핀을 읽었으며 전체3148 보호 baseline 원파일을 재검수하지 않았다."
+}

@@ -1,0 +1,207 @@
+{
+  "at": "2026-10-06T22:04:40.671267+09:00",
+  "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+  "snapshot_source_commit": "6744985c1a2d9d49a32fe7a76866c93ac01444c4",
+  "tracked_files_exported": 3171,
+  "snapshot_bytes": 129511713,
+  "all_checks_exit_zero": true,
+  "checks": [
+    {
+      "check_id": "EC01",
+      "command": [
+        "python",
+        "-B",
+        "scripts/check_contracts.py"
+      ],
+      "source_commit": "6744985c1a2d9d49a32fe7a76866c93ac01444c4",
+      "exit_code": 0,
+      "stdout_sha256": "83ff39a7aa73fcf380b0b281a91fbc9bad239834b2f70c6f93607d591faded90",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "network": "none",
+      "credentials_mounted": false,
+      "host_git_mounted": false,
+      "product_generation_calls": 0,
+      "formal_harness_state_changed": false,
+      "log": "existing-check-01.log",
+      "output": {
+        "status": "pass",
+        "definitions": 48,
+        "models": 5,
+        "reviews": 36,
+        "planning_requests": 3,
+        "analysis_implemented": false
+      }
+    },
+    {
+      "check_id": "EC02",
+      "command": [
+        "python",
+        "-B",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "source_commit": "6744985c1a2d9d49a32fe7a76866c93ac01444c4",
+      "exit_code": 0,
+      "stdout_sha256": "56b21f915cb5a695479359f4ca6063582b0b9bcbdaee1869782a2a805a2a82cd",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "network": "none",
+      "credentials_mounted": false,
+      "host_git_mounted": false,
+      "product_generation_calls": 0,
+      "formal_harness_state_changed": false,
+      "log": "existing-check-02.log",
+      "output": "PASS: AGENTS.md and CLAUDE.md are byte-identical"
+    },
+    {
+      "check_id": "EC03",
+      "command": [
+        "python",
+        "-B",
+        "-c",
+        "import importlib.util,json;from pathlib import Path;p=Path('scripts/migrate_member_logs.py');s=importlib.util.spec_from_file_location('migration',p);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);r=m.verify_plan(Path('.'),json.loads(Path(m.MANIFEST_PATH).read_text('utf-8')));print(json.dumps({'status':'saved_byte_preservation_pass','Git_source_binding_verified_in_this_command':False,**r},ensure_ascii=False))"
+      ],
+      "source_commit": "6744985c1a2d9d49a32fe7a76866c93ac01444c4",
+      "exit_code": 0,
+      "stdout_sha256": "1e8be88f601b7feca1c9bbce10366e0e7fe5edf8e7b7e9ccd7c28fa20f03f4aa",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "network": "none",
+      "credentials_mounted": false,
+      "host_git_mounted": false,
+      "product_generation_calls": 0,
+      "formal_harness_state_changed": false,
+      "log": "existing-check-03.log",
+      "output": {
+        "status": "saved_byte_preservation_pass",
+        "Git_source_binding_verified_in_this_command": false,
+        "source_files": 8,
+        "sections": 231,
+        "session_files": 28,
+        "body_bytes": 818663,
+        "relative_links": 128
+      }
+    },
+    {
+      "check_id": "EC04",
+      "command": [
+        "python",
+        "-B",
+        "scripts/phase2.py",
+        "next",
+        "--member",
+        "신진하"
+      ],
+      "source_commit": "6744985c1a2d9d49a32fe7a76866c93ac01444c4",
+      "exit_code": 0,
+      "stdout_sha256": "424ef89cf10f5aa4e06d3028186c84b501c3a1a59b455cff940904dea1e26c86",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "network": "none",
+      "credentials_mounted": false,
+      "host_git_mounted": false,
+      "product_generation_calls": 0,
+      "formal_harness_state_changed": false,
+      "log": "existing-check-04.log",
+      "read_only_packet_metadata": {
+        "id": null,
+        "task_id": null,
+        "owner": null,
+        "status": null,
+        "title": null,
+        "member": "신진하"
+      }
+    },
+    {
+      "check_id": "EC05",
+      "command": [
+        "python",
+        "-B",
+        "scripts/phase2.py",
+        "packet",
+        "P2-DATA-003"
+      ],
+      "source_commit": "6744985c1a2d9d49a32fe7a76866c93ac01444c4",
+      "exit_code": 0,
+      "stdout_sha256": "8a61c65e1a5f4ae9b67105c37195c65dbf104f29cbec7fdd8eebcb9c4af70234",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "network": "none",
+      "credentials_mounted": false,
+      "host_git_mounted": false,
+      "product_generation_calls": 0,
+      "formal_harness_state_changed": false,
+      "log": "existing-check-05.log",
+      "read_only_packet_metadata": {
+        "id": null,
+        "task_id": null,
+        "owner": null,
+        "status": null,
+        "title": null,
+        "member": null
+      }
+    },
+    {
+      "check_id": "EC06",
+      "command": [
+        "python",
+        "-B",
+        "scripts/phase2.py",
+        "packet",
+        "P2-DATA-004"
+      ],
+      "source_commit": "6744985c1a2d9d49a32fe7a76866c93ac01444c4",
+      "exit_code": 0,
+      "stdout_sha256": "4b79502a23d92ec41f91a3a529471a0294e740eb335bd3fc3e388e540c5bc39b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "network": "none",
+      "credentials_mounted": false,
+      "host_git_mounted": false,
+      "product_generation_calls": 0,
+      "formal_harness_state_changed": false,
+      "log": "existing-check-06.log",
+      "read_only_packet_metadata": {
+        "id": null,
+        "task_id": null,
+        "owner": null,
+        "status": null,
+        "title": null,
+        "member": null
+      }
+    },
+    {
+      "check_id": "EC07",
+      "command": [
+        "python",
+        "-B",
+        "scripts/phase2.py",
+        "packet",
+        "P2-DATA-005"
+      ],
+      "source_commit": "6744985c1a2d9d49a32fe7a76866c93ac01444c4",
+      "exit_code": 0,
+      "stdout_sha256": "a49156f4949b6d365ec09c1f7dc492a3d0c33d2044c112761e8f5a1530d43c0a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "network": "none",
+      "credentials_mounted": false,
+      "host_git_mounted": false,
+      "product_generation_calls": 0,
+      "formal_harness_state_changed": false,
+      "log": "existing-check-07.log",
+      "read_only_packet_metadata": {
+        "id": null,
+        "task_id": null,
+        "owner": null,
+        "status": null,
+        "title": null,
+        "member": null
+      }
+    }
+  ],
+  "migration_cli_Git_source_binding": "Not executed in Git-free container; full Git-binding check is CI gate",
+  "current_source_sha256": {
+    "data/demo/dataset.json": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+    "packages/core/src/lgax_core/store.py": "2dba0b34a62b58f704fc1fc617e9113d7cdb277819cd5b72d3df1849411245fe",
+    "scripts/check_contracts.py": "de1e1c635f6d57bf597b76534b2f3dd55de3ef49cfec34f648e840beb147fdd6",
+    "scripts/migrate_member_logs.py": "335a99f64b9d82dbf8fe5418580a4dfe465ed62898b802c11fbaba7b6c9a18b8",
+    "scripts/phase2.py": "7688ce3e5ae2798696ce4f0273b98e1cb69577439c2db1c06a84d352216f51b1",
+    "scripts/sync_agent_rules.py": "599d71a80e54ee9dd0548c647b00764d5d648ea163ba108ee5ad6e637d18f767"
+  },
+  "performance_results_are_separate_fixed_d728_run": true
+}

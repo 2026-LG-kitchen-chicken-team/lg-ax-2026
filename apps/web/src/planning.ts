@@ -5,7 +5,7 @@ import { ApiError } from './api';
 import { evidenceLocation } from './domain';
 import type { Evidence, ProductGroup } from './domain';
 // judgement.ts also imports from this module; neither uses the other at module load, so the cycle is safe.
-import { executionKindText, exportJudgement, judgedNotes, reasonText, SUPPORT_FROM_BASIS } from './judgement';
+import { errorDetailText, executionKindText, exportJudgement, judgedNotes, reasonText, scopeLines, seconds, SUPPORT_FROM_BASIS, tokenText } from './judgement';
 import type { ExportJudgement, JudgedNotes } from './judgement';
 
 export type DataMode = 'live' | 'fixture';
@@ -508,7 +508,14 @@ export function comparisonVerdict(row: Pick<ExportDocument['comparison'][number]
 }
 
 // The budget closes before the final correction runs. revision_limit can coexist with a connection/other execution error.
-const TERMINAL_TEXT: Record<string, string> = {
+const SOURCE_KINDS: Record<string, string> = { synthetic: '합성자료', public: '공개자료', licensed: '이용허락 자료', private: '비공개 자료' };
+
+/** Real vs synthetic origin stays visible wherever a source is quoted. */
+export function sourceKindLabel(kind: string): string {
+  return SOURCE_KINDS[kind] ?? kind;
+}
+
+export const TERMINAL_TEXT: Record<string, string> = {
   revision_limit: '내부 수정 한도 도달(구체적인 종료 경과는 실행 기록 확인)', hold: '보류로 종료(내부 수정 없음)', unresolved: '미해결 종료',
   backend_failure: '모델 연결 오류로 중단', policy_changed: '수정 정책 변경으로 중단', completed: '완료',
 };
@@ -528,17 +535,23 @@ function judgementMarkdown(judgement: ExportJudgement | null): string[] {
   return [
     '## 판단 실행 기록', '',
     `- 실행 종류: ${executionKindText(judgement.execution_kind, judgement.model_calls)} · 종료 상태: ${STATUS_TEXT[judgement.status]} · 코어 결정: ${judgement.decision ? DECISION_TEXT[judgement.decision] ?? judgement.decision : '없음'}`,
-    `- 모델: ${judgement.models.join(', ') || '호출 기록 없음'} · 호출 ${judgement.model_calls}회`,
+    `- 모델: ${judgement.models.join(', ') || '호출 기록 없음'} · 호출 ${judgement.model_calls}회${judgement.model_calls ? ` · 모델 시간 ${seconds(judgement.metrics.model_elapsed_ms)}` : ''}`,
+    // Record 034 audit U5: reported usage (미기록, never 0, when absent); run time is cumulative and includes retrieval and checks.
+    `- 토큰(모델 서버 보고): ${tokenText(judgement.metrics)} · 생성 설정: ${judgement.model_calls ? judgement.metrics.settings.join(' / ') || '미기록' : '호출 없음'} · 전체 실행 시간(조회·검사 포함): ${seconds(judgement.metrics.run_elapsed_ms)}`,
+    `- Agent 내부 수정: ${judgement.internal_revisions.used}/${judgement.internal_revisions.max}회 (같은 요청 안 자동 수정 · 기획자 조건 변경은 위 요청 회차)`,
     ...(judgement.terminal_reason ? [`- 종료 사유: ${TERMINAL_TEXT[judgement.terminal_reason] ?? judgement.terminal_reason} (\`${judgement.terminal_reason}\`)`] : []), RAW_NOTE, '',
+    ...list('검증 범위(이 실행이 확인하지 않은 것)', scopeLines(judgement.scope, judgement.execution_kind)),
     ...(judgement.unrevised_errors.length && judgement.hold_causes.length
       ? [...list('보류를 일으킨 문제(근거 확인 필요)', judgement.hold_causes), ...list('함께 발견된 판단 오류(보류로 내부 수정하지 않음)', judgement.unrevised_errors)]
       : list('검사에서 발견한 문제', judgement.violations)),
     ...(judgement.record_problems.length ? list('저장 기록 불일치', judgement.record_problems) : []),
-    ...(judgement.errors.length ? list('실행 오류', judgement.errors.map(item => `${item.code}: ${item.message}`)) : []),
+    ...(judgement.errors.length ? list('실행 오류', judgement.errors.map(item => `${item.code}: ${item.message}${item.details.length ? ` — 세부 검사: ${item.details.map(errorDetailText).join(' / ')}` : ''}${item.notes.length ? ` — ${item.notes.join(' / ')}` : ''}`)) : []),
     ...list('확인할 질문', judgement.questions.map(reasonText)), ...list('보류 사유', judgement.hold_reasons.map(reasonText)),
     ...list('미해결', judgement.unresolved.map(reasonText)),
     ...list(`후보 없음 사유(판단 모델 작성 · 후보 없음 검토 ${judgement.no_candidate_reviews ? `${judgement.no_candidate_reviews}회` : '없음'})`, judgement.no_candidate_reasons.map(reasonText)),
-    ...(judgement.rejected_candidates.length ? list('검사에서 거절된 후보(선택 대상 아님)', judgement.rejected_candidates.map(item => `${item.id} ${item.title}`)) : []),
+    ...(judgement.rejected_candidates.length ? list('검사에서 거절된 후보(선택 대상 아님)', judgement.rejected_candidates.map(item => `${item.id} ${item.title} · 대응 Gap ${item.gap_ids.join(', ') || '없음'}${item.lineage_valid === null ? '' : item.lineage_valid ? ' · 확인된 불편 Gap에 연결됨' : ' · 확인되지 않은 Gap에 연결됨'} · ${item.codes.length ? `검사 위반: ${item.codes.map(reasonText).join(' / ')}` : item.lineage_valid === null ? '후보별 사유 기록 없음' : '자기 위반 없음, 실행 전체가 끝나 선택 불가'}`)) : []),
+    // Record 034 audit U3: the Agent's internal check rounds (not the planner's request revisions), repeats marked.
+    ...(judgement.check_rounds.length ? list('회차별 검사 결과(Agent 내부 수정 회차, 사용자 조건 변경 회차와 다름)', judgement.check_rounds.map(round => `${round.round}회차(내부 수정 ${round.revision_count}회 뒤): ${DECISION_TEXT[round.action] ?? round.action} · 위반 ${round.codes.join(', ') || '없음'}${round.details.length ? ` · 세부: ${round.details.join(' / ')}` : ''}${round.repeated ? ' · 이전 회차와 같은 위반 반복' : ''}`)) : []),
     // Record 034 audit U4: the model's own declarations behind the violations, so the export explains them like the screen.
     ...(judgement.review_assessments.length ? list('리뷰 판단(판단 모델의 선언, 독립 검증 아님)', judgement.review_assessments.map(item => `${item.evidence_id}: ${POLARITY_TEXT[item.polarity] ?? item.polarity} — ${item.reason}`)) : []),
     ...(judgement.unused_review_ids.length ? list('어느 불편·Gap에도 쓰이지 않은 리뷰', judgement.unused_review_ids.map(id => `${id}(${POLARITY_TEXT[judgement.review_assessments.find(item => item.evidence_id === id)?.polarity ?? ''] ?? '판단 없음'})`)) : []),

@@ -19,6 +19,7 @@ from lgax_core.workspace_planning import EnvPlanningRunner, PlanningRunner
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from .workspace_auth import TokenRegistry
+from .public_validation import public_validation_details
 from .trend_configuration import load_trend_runtime
 from .workspace_trends import TrendCollector, WorkspaceTrends
 
@@ -58,18 +59,31 @@ def public_run(snapshot: dict) -> dict:
     """
     result = deepcopy(snapshot)
 
+    output = result.get("output")
+    execution = output.get("planning_execution") if isinstance(output, dict) else None
+    input_record = execution.get("input") if isinstance(execution, dict) else None
+    sources = input_record.get("sources") if isinstance(input_record, dict) else None
+    evidence_ids = {item["id"] for item in sources if isinstance(item, dict)
+                    and isinstance(item.get("id"), str)} if isinstance(sources, list) else set()
+
+    def diagnostic_error(value):
+        code = value.get("code") if isinstance(value, dict) else None
+        projected = public_error(code if isinstance(code, str) else "CONTRACT_MISMATCH")["error"]
+        details = public_validation_details(value, evidence_ids) if isinstance(value, dict) else {}
+        if details:
+            projected["details"] = details
+        return projected
+
     def diagnostics(value):
         if isinstance(value, list):
             return [diagnostics(item) for item in value]
         if isinstance(value, dict):
             if "code" in value and "message" in value:
-                code = value["code"]
-                return public_error(code if isinstance(code, str) else "CONTRACT_MISMATCH")["error"]
+                return diagnostic_error(value)
             return {key: diagnostics(item) for key, item in value.items()
                     if key != "rejected_execution"}
         return value
 
-    output = result.get("output")
     if isinstance(output, dict) and isinstance(output.get("planning_execution"), dict):
         execution = output["planning_execution"]
         # Only diagnostic fields are projected: source text, versions, input,
@@ -79,8 +93,7 @@ def public_run(snapshot: dict) -> dict:
                 execution[key] = diagnostics(execution[key])
         errors = execution.get("errors", [])
         execution["errors"] = [
-            public_error(item.get("code") if isinstance(item, dict)
-                         and isinstance(item.get("code"), str) else "CONTRACT_MISMATCH")["error"]
+            diagnostic_error(item)
             for item in (errors if isinstance(errors, list) else [errors])
         ]
         execution.pop("rejected_execution", None)

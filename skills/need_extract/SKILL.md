@@ -34,3 +34,15 @@ uv run --offline --no-sync python skills/need_extract/scripts/run.py --input ski
 스키마 또는 UTF-8 JSON 직렬화가 실패한 입력은 저장하지 않고 해당 run ID의 오류를 남긴다.
 `ok:true`라도 미해결 사유가 있으면 기록상 `held`다. 등록 backend/adapter 선언과 실제 모델 호출 증거는 다르다.
 실모델 반복 실행·작동 코드/자료 버전·선택 adapter는 별도 trusted collector가 검증한다.
+
+리뷰별 판단을 반환하는 handler는 `result.review_assessments`에 요청한 리뷰 ID를 정확히 한 번씩 넣고,
+`polarity`와 비어 있지 않은 `reason`을 모델이 작성해야 한다. `uncertain` 또는 `conflicting`에는
+같은 ID의 `result.uncertainty_assessments`를 넣어 판단 사유, 아직 모르는 `missing_information`,
+이를 확인할 `questions`를 보존한다. 판단 사유나 확인 질문을 코드가 대신 만들어 넣지 않는다.
+판단 사유는 원문이 확인된 불편인지, 긍정인지, 상충인지, 아직 판단할 수 없는지 설명해야 한다.
+
+니즈가 없는 타당한 보류도 원 리뷰 `sources`와 모델이 작성한 사유·미확인 항목·질문을 남긴다.
+누락 시 `REVIEW_REASON_MISSING`/`UNCERTAINTY_FIELD_MISSING`과 정확한 리뷰 ID·필드 경로를
+같은 수정 예산의 피드백에 전달한다. 원 응답을 보존해 모델이 수정하도록 하며, `uncertain`을
+확정 불편이나 확인된 기능 부재로 바꾸지 않는다. 예전 metadata 없는 handler 계약은 유지하되
+새 판단 handler에는 이 필드들을 명시적으로 연결해야 한다. PlanningAgent 공통 연결은 통합 담당이 수행한다.

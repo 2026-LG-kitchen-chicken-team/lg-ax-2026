@@ -11,10 +11,11 @@ import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { exportJudgement, judgementView, planningExecutionView, rejectedCandidateCount, rerunBaseNotice, runSources, selectableConcepts, terminalReason } from './judgement';
+import { errorDetails, errorDetailText, errorNotes, executionMetrics, traceFacts, exportJudgement, judgementView, planningExecutionView, rejectedCandidateCount, rerunBaseNotice, runSources, selectableConcepts, terminalReason, tokenText, verificationScope } from './judgement';
 import type { PlanningExecution } from './judgement';
 import { runStatusView } from './liveWorkspace';
 import { ConceptsView, HistoryView } from './PlanningViews';
+import { reasonText } from './judgement';
 import type { MeasureControls } from './PlanningViews';
 import { buildComparison, buildExport, contractErrors, exportCompleteness, exportMarkdown } from './planning';
 import type { PlanningRequest, RunSnapshot } from './planning';
@@ -233,6 +234,217 @@ describe('exports explain the judgement and keep cited and uncited inputs apart 
   });
 });
 
+describe('turned-down candidates, violation targets and check rounds read from the stored trace (R4 U3, record 042)', () => {
+  // Expectations straight from the raw recording's trace, not from traceFacts.
+  type Raw = { operation: string; outputs?: Record<string, { violations?: { code: string; gap_id?: string; concept_id?: string }[]; candidates?: { concept_id: string; valid: boolean }[] }> & { action?: string; violations?: { code: string }[] } };
+  const raw = (record: PlanningExecution) => {
+    const trace = record.trace as unknown as Raw[];
+    const quality = [...trace].reverse().find(step => step.operation === 'quality_context')!.outputs!;
+    const items = ['feature_support', 'residual_matrix', 'concept_lineage'].flatMap(part => quality[part]?.violations ?? []);
+    const decisions = trace.filter(step => step.operation === 'review_decision').map(step => step.outputs!);
+    return { items, candidates: quality.concept_lineage?.candidates ?? [], decisions };
+  };
+
+  it('violations name the gaps/candidates they target; questions with a code get the same IDs', () => {
+    for (const { row, snapshot } of RUNS) {
+      const record = execution(snapshot);
+      const { items } = raw(record);
+      const judgement = exportJudgement(snapshot)!;
+      if (!judgement.record_valid) throw new Error('expected a valid record');
+      for (const violation of record.decision!.violations) {
+        const ids = [...new Set(items.filter(item => item.code === violation.code).map(item => item.gap_id ?? item.concept_id!))];
+        const line = judgement.violations.find(text => text.includes(`(${violation.code} ·`))!;
+        if (ids.length) expect(line, `${row.case} ${violation.code}`).toContain(`대상 ${ids.join(', ')}`);
+        else expect(line).not.toContain('대상 ');
+      }
+    }
+    const enumGuide = exportJudgement(RUNS[0].snapshot)!;
+    if (!enumGuide.record_valid) throw new Error('expected a valid record');
+    expect(enumGuide.violations.find(text => text.includes('(SUPPORT_UNKNOWN ·'))).toContain('대상 GAP-002, GAP-003, GAP-005, GAP-007, GAP-008');
+  });
+
+  it('each turned-down candidate carries its stored lineage verdict and own codes; one without codes is not called rejected on its merits', () => {
+    for (const { snapshot } of HELD) {
+      const record = execution(snapshot);
+      const { items, candidates } = raw(record);
+      const judgement = exportJudgement(snapshot)!;
+      if (!judgement.record_valid) throw new Error('expected a valid record');
+      for (const item of judgement.rejected_candidates) {
+        expect(item.lineage_valid).toBe(candidates.find(candidate => candidate.concept_id === item.id)?.valid ?? null);
+        expect(item.codes).toEqual([...new Set(items.filter(violation => violation.concept_id === item.id).map(violation => violation.code))]);
+      }
+      const markdown = exportMarkdown(buildExport('live', snapshot, [], [], '2026-10-06T10:00:00.000Z', [snapshot]));
+      for (const item of judgement.rejected_candidates) expect(markdown).toContain(item.codes.length ? `${item.id} ${item.title} · 대응 Gap` : '자기 위반 없음, 실행 전체가 끝나 선택 불가');
+    }
+    const enumGuide = exportJudgement(RUNS[0].snapshot)!;
+    if (!enumGuide.record_valid) throw new Error('expected a valid record');
+    expect(enumGuide.rejected_candidates.map(item => [item.id, item.lineage_valid, item.codes])).toEqual([['CONCEPT-001', true, []], ['CONCEPT-002', false, ['CONCEPT_WITHOUT_CONFIRMED_GAP']]]);
+  });
+
+  it('check rounds follow every stored review decision and mark repeats; the 8B runs repeat the same violations to the revision limit', () => {
+    for (const { row, snapshot } of RUNS) {
+      const record = execution(snapshot);
+      const { decisions } = raw(record);
+      const judgement = exportJudgement(snapshot)!;
+      if (!judgement.record_valid) throw new Error('expected a valid record');
+      expect(judgement.check_rounds.map(round => [round.action, round.codes])).toEqual(decisions.map(item => [item.action, item.violations!.map(v => v.code)]));
+      const markdown = exportMarkdown(buildExport('live', snapshot, [], [], '2026-10-06T10:00:00.000Z', [snapshot]));
+      expect(markdown, row.case).toContain('회차별 검사 결과(Agent 내부 수정 회차, 사용자 조건 변경 회차와 다름):');
+    }
+    for (const { snapshot } of FAILED) {
+      const judgement = exportJudgement(snapshot)!;
+      if (!judgement.record_valid) throw new Error('expected a valid record');
+      expect(judgement.check_rounds.map(round => [round.action, round.repeated])).toEqual([['revise', false], ['revise', true], ['unresolved', true]]);
+    }
+  });
+});
+
+describe('model usage, run time and verification scope read from the stored record (R4 U5, record 043)', () => {
+  // Facts of the recordings (summed once from each call's metadata with Python, record 043 evidence), not from the code.
+  const USAGE: Record<string, { prompt: number; output: number; model_s: string; run_s: string; calls: number; revisions: number }> = {
+    '27b-enum-guide/fridge-normal': { prompt: 10246, output: 4011, model_s: '141.9', run_s: '142.1', calls: 3, revisions: 0 },
+    '27b-bounded12/fridge-normal': { prompt: 9565, output: 3719, model_s: '135.9', run_s: '136.2', calls: 3, revisions: 0 },
+    '8b-bounded12/fridge-normal': { prompt: 33278, output: 11109, model_s: '130.1', run_s: '130.9', calls: 9, revisions: 2 },
+    '8b-bounded12/microwave-normal': { prompt: 17376, output: 4297, model_s: '52.7', run_s: '53.2', calls: 9, revisions: 2 },
+  };
+
+  it('tokens and model time are the per-call sums; the run time is the cumulative trace and is reported apart', () => {
+    for (const { row, snapshot } of RUNS) {
+      const expected = USAGE[row.case];
+      const metrics = executionMetrics(execution(snapshot));
+      expect([metrics.calls.length, metrics.prompt_tokens, metrics.output_tokens, metrics.unrecorded_token_calls]).toEqual([expected.calls, expected.prompt, expected.output, 0]);
+      expect(((metrics.model_elapsed_ms ?? NaN) / 1000).toFixed(1)).toBe(expected.model_s);
+      expect(((metrics.run_elapsed_ms ?? NaN) / 1000).toFixed(1)).toBe(expected.run_s);
+      expect(metrics.settings).toEqual(['temperature 0 · seed 42 · 문맥 16384 · 최대 출력 8192']);
+      const judgement = exportJudgement(snapshot)!;
+      if (!judgement.record_valid) throw new Error(row.case);
+      expect(judgement.internal_revisions).toEqual({ used: expected.revisions, max: 2 });
+      const markdown = exportMarkdown(buildExport('live', snapshot, [], [], '2026-10-06T10:00:00.000Z', [snapshot]));
+      expect(markdown).toContain(`모델 시간 ${expected.model_s}초`);
+      expect(markdown).toContain(`- 토큰(모델 서버 보고): 입력 ${expected.prompt.toLocaleString('en-US')} · 출력 ${expected.output.toLocaleString('en-US')} · 합 ${(expected.prompt + expected.output).toLocaleString('en-US')}`);
+      expect(markdown).toContain(`전체 실행 시간(조회·검사 포함): ${expected.run_s}초`);
+      expect(markdown).toContain(`- Agent 내부 수정: ${expected.revisions}/2회`);
+    }
+  });
+
+  it('a call without reported tokens or time makes the totals unrecorded, never 0 or a partial sum', () => {
+    const record = structuredClone(execution(RUNS[0].snapshot));
+    delete record.model_calls[1].metadata!.eval_count;
+    delete record.model_calls[2].metadata!.elapsed_ms;
+    const metrics = executionMetrics(record);
+    expect([metrics.prompt_tokens, metrics.output_tokens, metrics.model_elapsed_ms, metrics.unrecorded_token_calls]).toEqual([10246, null, null, 1]);
+    expect(metrics.calls[1].output_tokens).toBeNull();
+    expect(tokenText(metrics)).toBe('미기록(3회 중 1회 기록 없음 · 합계 계산 안 함)');
+    record.model_calls = [];
+    expect(tokenText(executionMetrics(record))).toBe('호출 없음');
+    expect(executionMetrics(record).prompt_tokens).toBeNull();
+  });
+
+  it('scope comes from the record: no semantic or no-candidate review, rule modules unverified, untrusted collector, synthetic input', () => {
+    for (const { row, snapshot } of RUNS) {
+      const record = execution(snapshot);
+      const scope = verificationScope(record);
+      expect([scope.semantic_reviews, scope.no_candidate_reviews, scope.has_output]).toEqual([0, 0, true]);
+      expect(scope.trusted_collector_verified).toBe(false);
+      expect(scope.source_kinds).toEqual(['synthetic']);
+      type Rule = { violations: unknown[]; semantic_accuracy_verified: boolean };
+      const quality = [...record.trace].reverse().find(step => step.operation === 'quality_context')!.outputs as Record<string, Rule>;
+      expect(scope.rule_modules).toEqual(['feature_support', 'residual_matrix', 'concept_lineage'].map(module => ({ module, violations: quality[module].violations.length, semantic_accuracy_verified: quality[module].semantic_accuracy_verified })));
+      expect(scope.rule_modules.every(item => item.semantic_accuracy_verified === false)).toBe(true);
+      const markdown = exportMarkdown(buildExport('live', snapshot, [], [], '2026-10-06T10:00:00.000Z', [snapshot]));
+      expect(markdown, row.case).toContain('검증 범위(이 실행이 확인하지 않은 것):');
+      expect(markdown).toContain('의미 검토 0회 · 후보 없음 검토 0회');
+      expect(markdown).toContain('신뢰 수집기 검증 안 됨');
+    }
+  });
+});
+
+describe('specific check codes inside an error are shown, not only VALIDATION_FAILED (R4, PR #190 error details, record 045)', () => {
+  // Exact shapes PR #190 head 28e4431 raises: need_extraction.py VALIDATION_FAILED with details.violations, and
+  // skill_runner.py with details.code. One malformed entry must be skipped, never guessed.
+  const ERRORS = [
+    { code: 'VALIDATION_FAILED', message: '리뷰 판단 사유·미확인 정보·확인 질문을 보완해야 합니다.', details: { stage: 'need_extract', violations: [
+      { code: 'UNCERTAINTY_FIELD_MISSING', evidence_id: 'REVIEW-EVIDENCE-002', path: 'uncertainty_assessments/0/questions', field: 'questions' },
+      { code: 'NON_COMPLAINT_AS_NEED', evidence_id: 'REVIEW-EVIDENCE-001', need_id: 'NEED-001', declared_polarity: 'positive' },
+      { code: 'REVIEW_ASSESSMENT_COVERAGE', expected_review_evidence_ids: ['REVIEW-EVIDENCE-001'], actual_review_evidence_ids: [] },
+      { code: 'not a code' }, 5,
+    ], expected_review_evidence_ids: ['REVIEW-EVIDENCE-001', 'REVIEW-EVIDENCE-002'] } },
+    { code: 'VALIDATION_FAILED', message: '니즈를 추출하지 못했다면 이유를 남겨야 합니다.', details: { stage: 'need_extract', code: 'EMPTY_NEEDS_WITHOUT_JUDGEMENT', expected_review_evidence_ids: [] } },
+    { code: 'INVALID_EVIDENCE_ID', message: '근거 ID가 입력에 없습니다.' },
+  ];
+  const withErrors = () => {
+    const snapshot = structuredClone(FAILED[0].snapshot);
+    execution(snapshot).errors = structuredClone(ERRORS);
+    return snapshot;
+  };
+
+  it('reads the codes, review IDs and paths as stored; malformed entries and errors without details give nothing', () => {
+    expect(errorDetails(ERRORS[0])).toEqual([
+      { code: 'UNCERTAINTY_FIELD_MISSING', evidence_id: 'REVIEW-EVIDENCE-002', path: 'uncertainty_assessments/0/questions' },
+      { code: 'NON_COMPLAINT_AS_NEED', evidence_id: 'REVIEW-EVIDENCE-001', path: null },
+      { code: 'REVIEW_ASSESSMENT_COVERAGE', evidence_id: null, path: null },
+    ]);
+    expect(errorDetails(ERRORS[1])).toEqual([{ code: 'EMPTY_NEEDS_WITHOUT_JUDGEMENT', evidence_id: null, path: null }]);
+    expect(errorDetails(ERRORS[2])).toEqual([]);
+    expect(errorDetailText(errorDetails(ERRORS[0])[0])).toBe(`${reasonText('UNCERTAINTY_FIELD_MISSING')} · 리뷰 REVIEW-EVIDENCE-002 · 위치 uncertainty_assessments/0/questions`);
+    expect(reasonText('NON_COMPLAINT_AS_NEED')).not.toContain('설명이 등록되지 않은');
+  });
+
+  it('JSON summary and Markdown carry the same details; the record stays valid', () => {
+    const snapshot = withErrors();
+    expect(planningExecutionView(snapshot).kind).toBe('ok');
+    const judgement = exportJudgement(snapshot)!;
+    if (!judgement.record_valid) throw new Error('invalid');
+    expect(judgement.errors.map(item => item.details.map(detail => detail.code))).toEqual([
+      ['UNCERTAINTY_FIELD_MISSING', 'NON_COMPLAINT_AS_NEED', 'REVIEW_ASSESSMENT_COVERAGE'], ['EMPTY_NEEDS_WITHOUT_JUDGEMENT'], []]);
+    const markdown = exportMarkdown(buildExport('live', snapshot, [], [], '2026-10-06T10:00:00.000Z', [snapshot]));
+    expect(markdown).toContain(`- VALIDATION_FAILED: 리뷰 판단 사유·미확인 정보·확인 질문을 보완해야 합니다. — 세부 검사: ${errorDetailText(errorDetails(ERRORS[0])[0])} / `);
+    expect(markdown).toContain(`- VALIDATION_FAILED: 니즈를 추출하지 못했다면 이유를 남겨야 합니다. — 세부 검사: ${reasonText('EMPTY_NEEDS_WITHOUT_JUDGEMENT')}`);
+    expect(markdown).toContain('- INVALID_EVIDENCE_ID: 근거 ID가 입력에 없습니다.\n');
+  });
+});
+
+describe('error details of real PR #190 head core records (fixture transport, no model; record 049)', () => {
+  // First error of each record produced by PR #190 head 28e4431's PlanningAgent with its own test transport; long
+  // free-text policy/instruction fields dropped. Code and paths are byte-for-byte the core's.
+  const REAL = {"failed-context-missing": {"code": "VALIDATION_FAILED", "message": "리뷰 판단 사유·미확인 정보·확인 질문을 보완해야 합니다.", "details": {"stage": "need_extract", "violations": [{"code": "UNCERTAINTY_CONTEXT_MISSING", "evidence_id": "DEV-01-REVIEW", "required_fields": ["reason", "missing_information", "questions"]}], "expected_review_evidence_ids": ["DEV-01-REVIEW"]}}, "failed-p1-polarity": {"code": "VALIDATION_FAILED", "message": "단계 판단 메타데이터의 두 표현이 다릅니다.", "details": {"violations": [{"code": "VALIDATION_FAILED", "stage": "needs"}], "conflicting_paths": ["review_assessments", "result/review_assessments"]}}, "failed-scope-mismatch": {"code": "VALIDATION_FAILED", "message": "미확인 정보와 리뷰 판단의 근거 ID·극성이 다릅니다.", "details": {"violations": [{"code": "VALIDATION_FAILED", "stage": "needs"}], "evidence_id": "DEV-01-REVIEW", "declared_polarity": "uncertain"}}, "failed-field-missing": {"code": "VALIDATION_FAILED", "message": "모델 출력이 JSON 형식 또는 요청한 스키마를 충족하지 않습니다.", "details": {"reason": "schema_mismatch"}}};
+  it('shows the specific code, the conflicting declarations and the stated reason; never the parent code again', () => {
+    expect(errorDetails(REAL['failed-context-missing']).map(errorDetailText)).toEqual([`${reasonText('UNCERTAINTY_CONTEXT_MISSING')} · 리뷰 DEV-01-REVIEW`]);
+    expect(errorNotes(REAL['failed-context-missing'])).toEqual([]);
+    expect(errorDetails(REAL['failed-p1-polarity'])).toEqual([]);
+    expect(errorNotes(REAL['failed-p1-polarity'])).toEqual(['서로 다른 두 선언: review_assessments ↔ result/review_assessments']);
+    expect(errorDetails(REAL['failed-scope-mismatch'])).toEqual([]);
+    expect(errorNotes(REAL['failed-scope-mismatch'])).toEqual(['리뷰 DEV-01-REVIEW(선언 극성 uncertain)']);
+    expect(errorNotes(REAL['failed-field-missing'])).toEqual(['사유: schema_mismatch']);
+  });
+  it('each check round carries the failed stage error stored right before its decision', () => {
+    const decision = (revision: number, action: string) => ({ stage: 'review', operation: 'review_decision',
+      outputs: { valid: false, action, revision_count: revision, violations: [{ code: 'VALIDATION_FAILED', stage: 'needs' }] } });
+    const failed = (error: unknown) => ({ stage: 'needs', operation: 'need_extract', outputs: { ok: false, error } });
+    // Same order as the real failed-context-missing record: failed need_extract → review_decision, three times; the last round differs.
+    const facts = traceFacts([failed(REAL['failed-context-missing']), decision(0, 'revise'), failed(REAL['failed-context-missing']), decision(1, 'revise'),
+      failed(REAL['failed-p1-polarity']), decision(2, 'unresolved')]);
+    expect(facts.rounds.map(round => [round.codes, round.details, round.repeated])).toEqual([
+      [['VALIDATION_FAILED'], [`${reasonText('UNCERTAINTY_CONTEXT_MISSING')} · 리뷰 DEV-01-REVIEW`], false],
+      [['VALIDATION_FAILED'], [`${reasonText('UNCERTAINTY_CONTEXT_MISSING')} · 리뷰 DEV-01-REVIEW`], true],
+      [['VALIDATION_FAILED'], ['서로 다른 두 선언: review_assessments ↔ result/review_assessments'], false],
+    ]);
+    // A decision with no failed stage before it (the stored 8B runs) keeps no details.
+    expect(traceFacts(execution(FAILED[0].snapshot).trace).rounds.every(round => round.details.length === 0)).toBe(true);
+  });
+
+  it('the export carries the same notes', () => {
+    const snapshot = structuredClone(FAILED[0].snapshot);
+    execution(snapshot).errors = structuredClone(Object.values(REAL));
+    const judgement = exportJudgement(snapshot)!;
+    if (!judgement.record_valid) throw new Error('invalid');
+    expect(judgement.errors.map(item => item.notes)).toEqual(Object.values(REAL).map(errorNotes));
+    const markdown = exportMarkdown(buildExport('live', snapshot, [], [], '2026-10-06T10:00:00.000Z', [snapshot]));
+    expect(markdown).toContain('- VALIDATION_FAILED: 단계 판단 메타데이터의 두 표현이 다릅니다. — 서로 다른 두 선언: review_assessments ↔ result/review_assessments');
+    expect(markdown).not.toContain('세부 검사: 모델 응답이 단계 규격에 맞지 않습니다');
+  });
+});
+
 describe('real held / failed runs in the actual React DOM (record 034)', () => {
   let host: HTMLDivElement;
   let root: Root;
@@ -278,6 +490,38 @@ describe('real held / failed runs in the actual React DOM (record 034)', () => {
     const cited = new Set([...output.needs.flatMap(need => need.evidence_ids), ...output.gaps.flatMap(gap => gap.evidence_ids)]);
     const unused = output.review_assessments.map(item => item.evidence_id).filter(id => !cited.has(id));
     expect([...host.querySelectorAll('[data-unused-review]')].map(node => node.getAttribute('data-unused-review'))).toEqual(unused);
+    // R4 U3: every rejected candidate states why, rows without a candidate body are listed, and check rounds are shown.
+    const rejectedOutput = execution(snapshot).rejected_output;
+    expect([...host.querySelectorAll('[data-rejected-concept]')].map(node => node.getAttribute('data-rejected-concept'))).toEqual((rejectedOutput?.concepts ?? []).map(concept => concept.id));
+    for (const node of host.querySelectorAll('[data-rejected-concept]')) expect(node.querySelector('[data-field="rejection"]')).not.toBeNull();
+    const orphans = (rejectedOutput?.concept_assessments ?? []).filter(item => !(rejectedOutput?.concepts ?? []).some(concept => concept.id === item.concept_id)).map(item => item.concept_id);
+    expect([...host.querySelectorAll('[data-orphan-assessment]')].map(node => node.getAttribute('data-orphan-assessment'))).toEqual(orphans);
+    expect(host.querySelectorAll('.check-rounds [data-round]').length).toBeGreaterThan(0);
+    if (row.recorded_status === 'failed') expect(host.querySelector('.check-rounds [data-field="terminal"]')?.textContent).toContain('revision_limit');
+    // R4 U5: model time, tokens and run time apart; rounds name both counters; scope notice and per-call originals present.
+    const metrics = executionMetrics(execution(snapshot));
+    expect(panel.querySelector('[data-field="model-calls"]')?.textContent).toBe(`${metrics.calls.length}회 · 모델 시간 ${((metrics.model_elapsed_ms ?? NaN) / 1000).toFixed(1)}초`);
+    expect(panel.querySelector('[data-field="tokens"]')?.textContent).toBe(tokenText(metrics));
+    expect(panel.querySelector('[data-field="run-time"]')?.textContent).toBe(`${((metrics.run_elapsed_ms ?? NaN) / 1000).toFixed(1)}초`);
+    expect(panel.querySelector('[data-field="rounds"]')?.textContent).toContain(`요청 회차 ${snapshot.request_revision}(기획자 조건 변경) · Agent 내부 수정 ${execution(snapshot).correction_budget!.revision_count}/2`);
+    expect(panel.textContent).toContain('합성자료');
+    expect(panel.querySelector('[aria-label="검증 범위"]')?.textContent).toContain('의미 정확성 미검증(semantic_accuracy_verified=false)');
+    expect(panel.querySelectorAll('[aria-label="모델 호출 기록"] [data-call]')).toHaveLength(metrics.calls.length);
+    expect(panel.querySelector('[aria-label="모델 호출 기록"] pre')?.textContent).toBe(execution(snapshot).model_calls[0].formatted_prompt);
+    expect(panel.textContent).toContain('시간은 실행 시작부터 누적');
+  });
+
+  it('error details are listed under each stored error with the review ID and field path (R4, PR #190)', async () => {
+    const snapshot = structuredClone(FAILED[0].snapshot);
+    execution(snapshot).errors = [{ code: 'VALIDATION_FAILED', message: '리뷰 판단 사유·미확인 정보·확인 질문을 보완해야 합니다.', details: { stage: 'need_extract', violations: [
+      { code: 'UNCERTAINTY_FIELD_MISSING', evidence_id: 'REVIEW-EVIDENCE-002', path: 'uncertainty_assessments/0/questions', field: 'questions' },
+      { code: 'NON_COMPLAINT_AS_NEED', evidence_id: 'REVIEW-EVIDENCE-001', need_id: 'NEED-001', declared_polarity: 'positive' }] } },
+    { code: 'INVALID_EVIDENCE_ID', message: '근거 ID가 입력에 없습니다.' }];
+    await act(async () => root.render(createElement(ConceptsView, { mode: 'live', runs: [snapshot], selected: snapshot, onSelect: () => {}, ...runSources(snapshot, [], []) })));
+    const items = [...host.querySelectorAll('[data-error-details="0"] li')].map(node => node.textContent);
+    expect(items).toEqual(errorDetails(execution(snapshot).errors[0]).map(errorDetailText));
+    expect(items[0]).toContain('리뷰 REVIEW-EVIDENCE-002 · 위치 uncertainty_assessments/0/questions');
+    expect(host.querySelector('[data-error-details="1"]')).toBeNull();
   });
 
   it.each(RUNS.map(item => [item.row.case, item] as const))('%s: the revision timeline does not call a first run without candidates "the first run\'s candidates"', async (_name, { snapshot }) => {
