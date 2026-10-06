@@ -51,6 +51,22 @@ def check(root: Path, check_protected: bool = False, check_source_git: bool = Fa
     errors: list[str] = []
     archives = manifest["sources"]
     checked_links = 0
+    previous_validation = manifest.get("previous_validation")
+    if previous_validation:
+        proof_path = inside(root, previous_validation["path"])
+        if not proof_path.is_file():
+            errors.append("Missing previous-stage validation proof")
+        else:
+            proof_raw = proof_path.read_bytes()
+            if len(proof_raw) != previous_validation["body_bytes"] or sha256(proof_raw) != previous_validation["sha256"]:
+                errors.append("Previous-stage validation proof bytes/hash changed")
+            if check_source_git:
+                original_proof = subprocess.run(
+                    ["git", "-C", str(root), "show", f"{previous_validation['source_commit']}:{previous_validation['original_path']}"],
+                    check=True, capture_output=True,
+                ).stdout
+                if original_proof != proof_raw:
+                    errors.append("Previous-stage proof differs from pinned accepted commit")
     for source in archives:
         original = source["original_path"]
         archive = inside(root, source["archive_path"])
@@ -141,6 +157,7 @@ def check(root: Path, check_protected: bool = False, check_source_git: bool = Fa
         "current_entries_checked": len(manifest["current_entries"]),
         "protected_files_checked": protected_checked,
         "pinned_git_source_checked": check_source_git,
+        "previous_stage_proof_preserved": bool(previous_validation),
         "product_execution": False,
         "network_calls": 0,
     }

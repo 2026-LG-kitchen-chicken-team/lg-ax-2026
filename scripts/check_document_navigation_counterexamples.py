@@ -16,6 +16,8 @@ FIXTURE.mkdir(parents=True)
 MANIFEST_PATH = 'docs/history/project/20261006/manifest.json'
 manifest = json.loads((ROOT / MANIFEST_PATH).read_text(encoding='utf-8'))
 files = {MANIFEST_PATH, manifest['link_index'], *manifest['current_entries']}
+if manifest.get('previous_validation'):
+    files.add(manifest['previous_validation']['path'])
 for source in manifest['sources']:
     files.add(source['archive_path'])
     files.update(link['resolved_path'] for link in source['local_markdown_links'] if link['existed_at_source'])
@@ -72,6 +74,14 @@ try:
     assert result.returncode == 1 and 'Missing reverse link' in result.stdout
     results.append({'case': 'reverse_anchor_link_removed', 'rejected': True})
     index.write_bytes(original)
+    if manifest.get('previous_validation'):
+        prior_proof = FIXTURE / manifest['previous_validation']['path']
+        original = prior_proof.read_bytes()
+        prior_proof.write_bytes(original + b'\n')
+        result = verify()
+        assert result.returncode == 1 and 'Previous-stage validation proof bytes/hash changed' in result.stdout
+        results.append({'case': 'previous_stage_proof_byte_added', 'rejected': True})
+        prior_proof.write_bytes(original)
     assert verify().returncode == 0
     results.append({'case': 'restored_fixture', 'accepted': True})
     print(json.dumps({'cases': results, 'copied_metadata_files': len(files), 'product_execution': False, 'model_calls': 0, 'network_calls': 0}, ensure_ascii=False, indent=2))

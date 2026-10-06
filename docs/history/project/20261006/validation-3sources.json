@@ -1,0 +1,44 @@
+{
+  "source_commit": "0078975ef4579008eb7c5921541122a8f569ce3a",
+  "checked_date_kst": "2026-10-06",
+  "mode": "static-document-files-and-local-git-only",
+  "product_execution": false,
+  "model_calls": 0,
+  "network_calls": 0,
+  "tracked_source_mutation": false,
+  "positive_command": "python scripts/check_document_navigation.py --check-protected --check-source-git",
+  "positive_result": {
+    "original_byte_archives": 3,
+    "original_bytes_preserved": 116248,
+    "original_headings_preserved": 83,
+    "source_relative_links_checked": 84,
+    "current_entries_checked": 4,
+    "protected_files_checked": 374,
+    "pinned_git_source_checked": true
+  },
+  "counterexample_command": "python scripts/check_document_navigation_counterexamples.py",
+  "counterexample_fixture_files": 81,
+  "counterexample_results": [
+    "unchanged fixture accepted",
+    "archive byte addition rejected",
+    "original heading change rejected",
+    "reverse anchor link deletion rejected",
+    "restored fixture accepted"
+  ],
+  "prior_counterexample_attempt": "Windows default subprocess output encoding was decoded as UTF-8 and failed in the probe tool; fixed the probe with python -X utf8. Tracked source/archive files unchanged.",
+  "entry_sizes_bytes": {
+    "original_3_sources": 116248,
+    "replacement_3_entries_with_compatible_headings": 26814,
+    "new_document_hub": 8245,
+    "replacement_entries_plus_hub": 35059
+  },
+  "limitations": [
+    "No product tests, fresh model quality, browser anchor engine, remote GitHub, service/source-proof deployment, permissions, team states or Notion synchronization checked",
+    "Markdown heading order/duplicate compatibility and source-base links checked; code-fence templates/reference-style/backtick/JSON path dependencies require their existing gates",
+    "Protected-at-migration check is one-time; legitimate future owner summaries and records are not frozen by the default checker"
+  ],
+  "validator_sha256": {
+    "scripts/check_document_navigation.py": "53f9da625107b7f8087033e19db85164fe2df16f2f8699e7d0cfedad93e038c8",
+    "scripts/check_document_navigation_counterexamples.py": "dbe8935920a5bfc0aa435dffb665d8379a9620d7bf048b861a108cd7b89c0f8f"
+  }
+}
