@@ -1,0 +1,172 @@
+{
+  "review_kind": "independent_zero_auth_fixture_reproduction",
+  "pull_request": 190,
+  "source_head": "f5359ae8496009531afe274b0172d8f775a5035e",
+  "source_archive_sha256": "e3c2466117a56e3c5931d7327e224178739be3cfd5728df7f44b9961799047a8",
+  "bootstrap_sha256": "5540af19ee2d7fa58144c5f3ee9e08c374e800e31f7fd28d2b43c147288f4dcd",
+  "receipt_sha256": "83604b00bad6bdd85846ee3bae6716d069fbe0bf720ab3df2e9892fea97e3687",
+  "executor_log_sha256": "0e2b76417cf4decfc0625678b309c1aac438f90e2676e6ed194c56e0f280f12b",
+  "execution_boundary": {
+    "backend": "docker",
+    "image_id": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+    "role": "validator",
+    "uid": 1000,
+    "readonly_root": true,
+    "caps_dropped": true,
+    "no_new_privileges": true,
+    "network": "none",
+    "mount_targets": [
+      "/artifacts",
+      "/workspace"
+    ],
+    "publisher_credentials_mounted": false,
+    "ai_profile_mounted": false
+  },
+  "returncode": 0,
+  "source_files_changed": [],
+  "external_model_calls": 0,
+  "finding": {
+    "priority": "P1",
+    "title": "Conflicting nested need judgement can be accepted while uncertainty is dropped",
+    "location": {
+      "path": "packages/core/src/lgax_core/skill_runner.py",
+      "line": 98
+    },
+    "related_locations": [
+      {
+        "path": "packages/core/src/lgax_core/need_extraction.py",
+        "line": 161
+      },
+      {
+        "path": "packages/core/src/lgax_core/planning_agent.py",
+        "line": 457
+      },
+      {
+        "path": "packages/core/src/lgax_core/planning_agent.py",
+        "line": 460
+      }
+    ],
+    "fixture": {
+      "transport": "httpx.MockTransport; repository test_planning_agent.PlanningAgentTests fixture helper; no network",
+      "source_review_id": "DEV-01-REVIEW",
+      "legacy_top_level_review_assessments": [
+        {
+          "evidence_id": "DEV-01-REVIEW",
+          "polarity": "positive",
+          "reason": "No verified pain"
+        }
+      ],
+      "legacy_top_level_questions": [],
+      "legacy_top_level_hold_reasons": [],
+      "new_nested_need_result": {
+        "needs": [],
+        "desired_outcomes": [],
+        "unresolved": [],
+        "review_assessments": [
+          {
+            "evidence_id": "DEV-01-REVIEW",
+            "polarity": "uncertain",
+            "reason": "Missing context"
+          }
+        ],
+        "uncertainty_assessments": [
+          {
+            "evidence_id": "DEV-01-REVIEW",
+            "reason": "NESTED_HOLD_REASON",
+            "missing_information": [
+              "NESTED_MISSING_FIELD"
+            ],
+            "questions": [
+              "NESTED_QUESTION"
+            ]
+          }
+        ],
+        "questions": []
+      },
+      "needs": [],
+      "concepts": []
+    },
+    "expected": {
+      "contract_consistency": "Reject inconsistent top-level positive and nested uncertain declarations; do not silently overwrite polarity or fabricate fields",
+      "if_uncertain_is_preserved_as_canonical": {
+        "status": "held",
+        "decision_action": "hold",
+        "questions": [
+          "NESTED_QUESTION"
+        ],
+        "hold_reasons": [
+          "NESTED_HOLD_REASON"
+        ],
+        "missing_information": [
+          "NESTED_MISSING_FIELD"
+        ]
+      },
+      "accept_allowed": false
+    },
+    "actual": {
+      "status": "completed",
+      "decision_action": "accept",
+      "final_review_assessments": [
+        {
+          "evidence_id": "DEV-01-REVIEW",
+          "polarity": "positive",
+          "reason": "No verified pain"
+        }
+      ],
+      "final_hold_reasons": [],
+      "final_questions": [],
+      "new_uncertainty_metadata_in_final_output": false,
+      "skill_record_decision": {
+        "status": "held",
+        "hold_reasons": [
+          "NESTED_HOLD_REASON"
+        ]
+      },
+      "raw_nested_metadata_preserved": true
+    },
+    "impact": "The optional metadata is included in generation_schema through the modified Skill schema. A model response may contain both declarations. Standalone Skill records a hold, but the final Agent consumer overwrites nested reviews with top-level reviews and drops uncertainty reasons/questions/missing_information. Web/MCP consumers can see accept with the hold lost.",
+    "required_followup": [
+      "CORE owner defines one canonical judgement representation or exact cross-representation consistency validation",
+      "Propagate original uncertainty reason/questions/missing_information into final shared decision without fabricated defaults",
+      "Add full PlanningAgent regression for conflicting declarations and a legitimate uncertain hold; then apply DATA runtime/schema changes",
+      "Register seven new web reason labels without weakening reasonText coverage test",
+      "Re-run contracts, zero-auth full Python/web tests and fixed live model gates after integration"
+    ]
+  },
+  "separate_p2_contract_conflict": {
+    "canonical_stage_alignment_feedback": null,
+    "new_nested_judgement": {
+      "code": "VALIDATION_FAILED",
+      "details": {
+        "stage": "need_extract",
+        "violations": [
+          {
+            "code": "NON_COMPLAINT_AS_NEED",
+            "evidence_id": "DEV-01-REVIEW",
+            "need_id": "DEV-01-NEED",
+            "declared_polarity": "conflicting"
+          }
+        ],
+        "expected_review_evidence_ids": [
+          "DEV-01-REVIEW"
+        ],
+        "feedback_policy": "Preserve the raw reply. Ask the model to fill the identified fields; never fabricate reasons, pain or questions."
+      }
+    }
+  },
+  "prior_validation": {
+    "full_python_test_count": 1457,
+    "failures": 0,
+    "skipped": 3,
+    "model_calls": 0,
+    "note": "Full old test suite success does not cover this new cross-representation counterexample"
+  },
+  "decision": "request_changes_hold_merge",
+  "parent_done_changed": false,
+  "original_receipt_or_log_modified": false,
+  "limitations": [
+    "Synthetic fixture demonstrates integration logic, not real model quality or hallucination rate",
+    "No host product imports, no new product model/OCR calls, no authenticated host transport",
+    "No author code or private credentials modified"
+  ]
+}

@@ -496,7 +496,7 @@
     {
       "pr": 188,
       "scope": "PM adapter cap, actual model/data/browser integration and document migration",
-      "head": "96ec98c06ed7f74a1a34dd01797794bab15b5b5a",
+      "head": "79bc1b8e5be7957be46b28dfbf0d6dbe48c191d1",
       "state": "pm_review_and_final_integration",
       "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/188",
       "merge_commit": null,
@@ -523,7 +523,10 @@
           "status": "COMPLETED"
         }
       ],
-      "formal_parent_done": false
+      "formal_parent_done": false,
+      "earlier_observed_heads": [
+        "96ec98c06ed7f74a1a34dd01797794bab15b5b5a"
+      ]
     },
     {
       "pr": 189,
@@ -597,15 +600,15 @@
       "pr": 191,
       "scope": "DATA original PDF OCR19 annotations; historical70 outputs preserved",
       "head": "21d5aaecf77ffe343d293be0f51f42fa8dba33bb",
-      "state": "reviewed_waiting_current_ci",
+      "state": "merged_partial_intake",
       "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/191",
-      "merge_commit": null,
-      "merged_at": null,
+      "merge_commit": "4fa67a701dd57e09bc6c71e566b601d9dbf9a94f",
+      "merged_at": "2026-10-06T11:57:50Z",
       "checks": [
         {
           "name": "python-and-harness",
-          "conclusion": "",
-          "status": "IN_PROGRESS"
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
         },
         {
           "name": "python-and-harness",
@@ -614,8 +617,8 @@
         },
         {
           "name": "web",
-          "conclusion": "",
-          "status": "IN_PROGRESS"
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
         },
         {
           "name": "web",
@@ -661,11 +664,11 @@
     {
       "pr": 193,
       "scope": "DATA OCR22 supplemental original-source annotations; does not replace191",
-      "head": "37b38e6003d49577137ca99431272c5a3496a4c0",
-      "state": "reviewed_waiting_current_ci",
+      "head": "7be3a7bb27d93ffe50a64b0115ee5014518b2612",
+      "state": "merged_partial_intake",
       "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/193",
-      "merge_commit": null,
-      "merged_at": null,
+      "merge_commit": "68b40c0a665d47027160fb914762a41a25dbf25f",
+      "merged_at": "2026-10-06T12:01:27Z",
       "checks": [
         {
           "name": "python-and-harness",
@@ -689,7 +692,10 @@
         }
       ],
       "formal_parent_done": false,
-      "evidence_relation": "191 has19 full context annotations;193 supplements22rows and is not a replacement. Preserve both fixed raw evidence."
+      "evidence_relation": "191 has19 full context annotations;193 supplements22rows and is not a replacement. Preserve both fixed raw evidence.",
+      "earlier_observed_heads": [
+        "37b38e6003d49577137ca99431272c5a3496a4c0"
+      ]
     }
   ],
   "rules": [
@@ -697,5 +703,5 @@
     "같은 코드/개인 문서의 stack·겹침은 원 지시와 원본을 보존하며 조정",
     "Draft·실패 CI·미검증 품질을 성공으로 바꾸지 않음"
   ],
-  "observed_at": "2026-10-06T11:57:06.959510+00:00"
+  "observed_at": "2026-10-06T12:03:59.601251+00:00"
 }
