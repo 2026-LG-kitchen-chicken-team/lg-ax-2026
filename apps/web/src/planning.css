@@ -20,8 +20,10 @@
 .question-list li { font-size: 10px; line-height: 1.7; color: #8a6b45; background: #fff7ec; border: 1px solid #f0e2cd; border-radius: 6px; padding: 8px 10px; }
 .question-list strong { display: block; font-size: 9px; color: #a57b45; }
 
-.change-table { width: 100%; border-collapse: collapse; font-size: 10px; }
-.change-table th, .change-table td { text-align: left; padding: 7px 8px; border-bottom: 1px solid #edf0e8; vertical-align: top; line-height: 1.7; }
+/* R4 (record 046, PM #188 screenshot): fixed columns so a long ID in one cell can't squeeze 원 요청 to one character. */
+.change-table { width: 100%; border-collapse: collapse; font-size: 10px; table-layout: fixed; }
+.change-table tr > :first-child { width: 64px; }
+.change-table th, .change-table td { text-align: left; padding: 7px 8px; border-bottom: 1px solid #edf0e8; vertical-align: top; line-height: 1.7; overflow-wrap: anywhere; }
 .change-table thead th { font-size: 9px; color: #9aa48c; font-weight: 500; }
 .change-table tbody th { color: #758763; font-weight: 500; white-space: nowrap; }
 .change-table td:last-child { color: #4f7a3a; font-weight: 500; }
@@ -159,7 +161,9 @@
 .model-picker label { display: inline-flex; align-items: center; gap: 6px; margin: 0 8px 8px 0; padding: 7px 11px; border: 1px solid #e1e8d9; border-radius: 7px; font-size: 11px; color: #657653; background: #fcfdf9; cursor: pointer; }
 .model-picker label.checked { border-color: #89a276; background: #f0f5e8; }
 .model-picker label small { font-size: 9px; color: #9aa48c; }
-.model-picker input { width: auto; margin: 0; accent-color: #486d38; }
+/* .request-form input (styles.css, width 100% + padding) used to win here and squeezed the label text into a column. */
+.request-form .model-picker input { width: auto; margin: 0; padding: 0; accent-color: #486d38; }
+.model-picker label { white-space: nowrap; }
 .model-cell { font-family: Manrope, Arial, sans-serif; font-size: 9px !important; color: #6f8a55 !important; white-space: nowrap; }
 
 /* Candidate comparison, combined review and rerun (P2-WEB-003) */
