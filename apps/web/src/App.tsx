@@ -11,6 +11,7 @@ import { runSources } from './judgement';
 import { contractErrors, draftRunFromRequest, missingRequestQuestions, nextRequestRevision, requestChanges } from './planning';
 import type { DataMode, Feature, PlanningRequest, RunSnapshot } from './planning';
 import { PendingJudgement } from './PendingJudgement';
+import { ReviewTrendsPanel } from './ReviewTrendsPanel';
 import { ConceptsView, download, FixtureBanner, HistoryView, ModeSwitch, RequestInsights, ServerEvidenceSearch, WorkspaceBar } from './PlanningViews';
 import { currentEvidenceForSnapshot } from './EvidenceTracePanel';
 import type { MeasureControls } from './PlanningViews';
@@ -22,6 +23,7 @@ const NAV: { id: View; label: string; number: string }[] = [
   { id: 'evidence', label: '근거 대조', number: '02' },
   { id: 'concepts', label: '콘셉트 검토', number: '03' },
   { id: 'history', label: '수정 이력', number: '04' },
+  { id: 'trends', label: '리뷰 동향', number: '05' },
 ];
 
 type DataState = { status: 'loading' } | { status: 'error'; message: string; code: string } | { status: 'ready'; data: BootstrapData };
@@ -60,13 +62,15 @@ function lines(value: string): string[] {
   return [...new Set(value.split('\n').map(item => item.trim()).filter(Boolean))];
 }
 
-function RequestView({ data, group, modelId, mode, live }: { data: BootstrapData | undefined; group: ProductGroup; modelId: string; mode: DataMode; live?: LiveRequestTarget }) {
+function RequestView({ data, group, modelId, mode, live, trendNote = '' }: { data: BootstrapData | undefined; group: ProductGroup; modelId: string; mode: DataMode; live?: LiveRequestTarget; trendNote?: string }) {
   const scenario = SCENARIOS.find(item => item.group === group)!;
   // A connected project in this product group seeds the form, so edits become change requests on that project.
   const projectRequest = live?.project?.project.request as PlanningRequest | undefined;
   const seed = projectRequest?.product_group === group ? live?.latest?.request ?? projectRequest : undefined;
   const groupModels = (data?.products ?? []).filter(product => product.product_group === group).map(product => product.model_id);
-  const [prompt, setPrompt] = useState(seed?.improvement_task ?? scenario.prompt as string);
+  // A bucket carried over from the review-trend panel is appended once, visibly, so the planner can edit or remove it.
+  const [prompt, setPrompt] = useState(() => { const base = seed?.improvement_task ?? scenario.prompt as string; return trendNote && !base.includes(trendNote) ? `${base}
+${trendNote}` : base; });
   const [situation, setSituation] = useState(seed?.use_situation ?? scenario.situation as string);
   const [customer, setCustomer] = useState(seed?.target_customer ?? '일상에서 키친 가전을 사용하는 고객');
   const [excluded, setExcluded] = useState((seed?.exclusions ?? ['이미 있는 기능을 다시 제안하지 않기']).join('\n'));
@@ -178,6 +182,7 @@ export default function App() {
   const [runChoice, setRunChoice] = useState('');
   // Bumped only when the user connects or switches project, so the request form reseeds without losing a save result.
   const [formSeed, setFormSeed] = useState(0);
+  const [trendNote, setTrendNote] = useState('');
   // The fixture goes through the same contract parser as live responses, so a broken fixture fails loudly.
   const fixtureState = useMemo<DataState>(() => {
     try { return { status: 'ready', data: parseBootstrap({ ok: true, data: FIXTURE_BOOTSTRAP }) }; } catch (error) {
@@ -363,7 +368,11 @@ export default function App() {
             {active.status === 'loading' ? <div className="loading-state" role="status"><div className="skeleton" /><div className="skeleton" /><div className="skeleton" /><p>공통 API에서 근거를 불러오는 중입니다…</p></div> : !data ? <EmptyState title="API 연결이 필요합니다" text="서버가 연결되면 실제 자료와 근거를 확인할 수 있습니다." /> : !visibleEvidence.length ? <EmptyState title={allModelEvidence.length ? '검색 결과가 없습니다' : '등록된 근거가 없습니다'} text={allModelEvidence.length ? '검색어 또는 자료 유형을 바꿔 보세요.' : '이 모델에 리뷰와 제품 문서를 등록하면 여기에 표시됩니다.'} /> : <ul>{visibleEvidence.map(item => <li key={item.id}><button className={`evidence-card ${selected?.id === item.id ? 'selected' : ''}`} aria-pressed={selected?.id === item.id} onClick={() => setSelectedId(item.id)}><div className="evidence-card-top"><SourceBadge type={item.source_type} /><span>{evidenceLocation(item)}</span></div><p>{item.text}</p><div className="evidence-card-bottom"><span>{item.model_id} · {item.document_version}</span><ArrowIcon /></div></button></li>)}</ul>}
           </div><EvidenceDetail selected={selected} features={data?.features ?? []} /></div>
           <footer className="evidence-footer"><span className={`status-dot ${active.status}`} /><p>{data ? '원문과 모델별 필터를 조회합니다. 판단에 사용된 근거는 각 저장된 실행에서 확인하세요.' : '자료 API가 연결되면 원문을 조회할 수 있습니다.'}</p></footer>
-        </section> : view === 'request' ? <RequestView key={`${group}-${mode}-${formSeed}-${requestConnectionKey}`} data={data} group={group} modelId={modelId} mode={mode} live={mode === 'live' && workspace.connection === 'connected' ? { project: workspace.project, latest: workspace.runs[workspace.runs.length - 1] ?? null, busy: workspace.busy, save: (request, continueProject) => {
+        </section> : view === 'trends' ? <ReviewTrendsPanel mode={mode} workspace={workspace} data={data} modelId={modelId} onUseInPlanning={(note, model) => {
+          const product = data?.products.find(item => item.model_id === model);
+          if (product && product.product_group !== group) { setGroup(product.product_group as ProductGroup); setModelChoice(model); }
+          setTrendNote(note); setFormSeed(value => value + 1); setView('request');
+        }} /> : view === 'request' ? <RequestView key={`${group}-${mode}-${formSeed}-${requestConnectionKey}`} data={data} group={group} modelId={modelId} mode={mode} trendNote={trendNote} live={mode === 'live' && workspace.connection === 'connected' ? { project: workspace.project, latest: workspace.runs[workspace.runs.length - 1] ?? null, busy: workspace.busy, save: (request, continueProject) => {
           invalidateMeasurements(); setRunChoice('');
           return continueProject ? workspace.addRun(request, workspace.runs[workspace.runs.length - 1]?.run.id ?? null) : workspace.saveRequest(request, data?.products ?? []);
         } } : undefined} /> : selectedRun && originalRequest && view === 'concepts' ? <ConceptsView {...planningProps} selected={selectedRun} /> : selectedRun && originalRequest ? <HistoryView {...planningProps} selected={selectedRun} original={originalRequest} onRerun={rerun} busy={workspace.busy} measure={measure} /> : view === 'concepts' ? <section className="panel future-panel"><EmptyState type="future" title="근거를 갖춘 콘셉트를 이곳에서 검토합니다" text="작업실에 연결하고 기획 요청을 저장하면 실행 결과를 확인할 수 있습니다. 요청만 저장됐거나 분석이 보류된 경우에는 후보를 표시하지 않습니다." /><div className="future-columns"><div><strong>콘셉트 비교</strong><span>최대 3개 타당한 후보 · 근거 부족 시 보류</span></div><div><strong>요구사항 확인</strong><span>연결된 원문 · 남은 불편 · 검토할 조건</span></div><div><strong>기획자 검토</strong><span>선택 · 수정 요청 · 추가 조건</span></div></div></section> : <section className="panel future-panel"><EmptyState type="future" title="아직 실행·수정 이력이 없습니다" text="작업실에 연결하면 동일 기획의 저장된 실행과 변경 전후, 사용한 자료 버전을 확인할 수 있습니다." /><div className="history-plan"><span>기획 요청</span><ArrowIcon /><span>근거·판단 기록</span><ArrowIcon /><span>새 자료로 재검토</span><ArrowIcon /><span>변경 전후 비교</span></div></section>}

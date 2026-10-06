@@ -4,7 +4,7 @@ import { ApiError } from './api';
 import type { Evidence, Product } from './domain';
 import type { PlanningRequest, RunSnapshot } from './planning';
 import { WorkspaceClient } from './workspace';
-import type { WorkspaceProject } from './workspace';
+import type { ReviewTrendData, ReviewTrendFilters, TrendEvidenceData, WorkspaceProject } from './workspace';
 
 export interface ErrorView { code: string; title: string; action: string; tone: 'error' | 'notice' }
 
@@ -99,6 +99,10 @@ export interface LiveWorkspace {
   saveRequest: (request: PlanningRequest, products: Product[]) => Promise<RunSnapshot | null>;
   addRun: (request: PlanningRequest, previousRunId: string | null) => Promise<RunSnapshot | null>;
   search: (query: string, modelId: string) => Promise<EvidenceSearch | null>;
+  /** Read-only review-trend calls. Errors (e.g. NOT_IMPLEMENTED while no collector is connected) are thrown to the
+   *  caller instead of the shared banner; a result from a superseded login/project scope resolves to null. */
+  reviewTrends: (filters: ReviewTrendFilters) => Promise<ReviewTrendData | null>;
+  trendEvidence: (aggregateId: string, bucketId: string, topicId: string, offset?: number) => Promise<TrendEvidenceData | null>;
   clearError: () => void;
 }
 
@@ -252,6 +256,29 @@ export function useLiveWorkspace(): LiveWorkspace {
         }
         return result;
       });
+    },
+    async reviewTrends(filters) {
+      const api = client.current;
+      const scope = generation.current;
+      const project = requireProject();
+      if (!api) throw new ApiError('UNAUTHORIZED', '작업실 인증이 필요합니다.');
+      if (filters.project_id !== project.project.id) throw new ApiError('INVALID_ARGUMENT', '선택한 프로젝트와 조회 조건이 다릅니다.');
+      const data = await api.reviewTrends(filters);
+      if (scope !== generation.current) return null;
+      if (data.aggregate.project_id !== project.project.id) throw new ApiError('CONTRACT_MISMATCH', '동향 집계의 프로젝트 범위가 다릅니다.');
+      return data;
+    },
+    async trendEvidence(aggregateId, bucketId, topicId, offset = 0) {
+      const api = client.current;
+      const scope = generation.current;
+      const project = requireProject();
+      if (!api) throw new ApiError('UNAUTHORIZED', '작업실 인증이 필요합니다.');
+      const data = await api.trendEvidence(project.project.id, aggregateId, bucketId, topicId, offset, 50);
+      if (scope !== generation.current) return null;
+      if (data.aggregate_id !== aggregateId || data.bucket_id !== bucketId || data.topic_id !== topicId) {
+        throw new ApiError('CONTRACT_MISMATCH', '원문 조회 결과의 집계·구간·주제가 요청과 다릅니다.');
+      }
+      return data;
     },
   };
 }
