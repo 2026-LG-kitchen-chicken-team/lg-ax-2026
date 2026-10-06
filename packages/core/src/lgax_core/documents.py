@@ -26,6 +26,7 @@ def digest(data: bytes) -> str:
 
 class DocumentRepository:
     def __init__(self, directory: Path, plan: dict, extractor_python: str):
+        plan = deepcopy(plan)  # Freeze the caller's approved scope before indexing it.
         if plan.get("artifact_kind") != "trusted_document_plan":
             raise ValueError("Explicit trusted document plan required")
         models = [s["product"]["model_id"] for s in plan["documents"]]
@@ -39,15 +40,15 @@ class DocumentRepository:
         self.directory = Path(directory)
         self.directory.mkdir(parents=True, exist_ok=True)
         self.db = self.directory / "documents.sqlite"
-        self.plan = deepcopy(plan)
+        self.plan = plan
         self.extractor_python = extractor_python
-        self.specs = {spec["document_id"]: spec for spec in plan["documents"]}
+        self.specs = {spec["document_id"]: spec for spec in self.plan["documents"]}
         if len(self.specs) != len(plan["documents"]):
             raise ValueError("Duplicate document ID")
         for did in self.specs:
             if not re.fullmatch(r"[A-Za-z0-9_.-]{1,100}", did):
                 raise ValueError("Invalid document ID")
-        self.plan_sha256 = digest(json.dumps(plan, ensure_ascii=False, sort_keys=True).encode())
+        self.plan_sha256 = digest(json.dumps(self.plan, ensure_ascii=False, sort_keys=True).encode())
         with closing(sqlite3.connect(self.db)) as db, db:
             db.execute("CREATE TABLE IF NOT EXISTS scope (id INTEGER PRIMARY KEY, sha TEXT NOT NULL)")
             db.execute("INSERT OR IGNORE INTO scope VALUES (1,?)", (self.plan_sha256,))

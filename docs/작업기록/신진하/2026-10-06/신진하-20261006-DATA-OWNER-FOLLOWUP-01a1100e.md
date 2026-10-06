@@ -50,3 +50,11 @@
 ## PR 게시·검수 요청 — 19:53 KST
 
 [PR183](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/183)을 실제 게시하고 Ready for review(open/non-draft), 본인 assignee, PM jeongiryang reviewer 요청을 확인했다. 구현 게시 commit은 `342cfb32a881b04a3fb729e0945438458eb516e7`이며 PR176의 과거 CI를 새PR 통과로 사용하지 않았다. 해당 head의 CI4개가 실행 중이며 PM review/승인·병합은 아직 없다. 현재 날짜 기록과 README의 이 게시 사실을 먼저 push한 뒤 #12~#16 자기보고·#148/개발111~114 및 PR168 인계 댓글을 실제 수신증과 연결한다. 로그의 원시 출력 끝 공백은 hash로 보존한 실행 artifact이며 코드/Markdown whitespace 검사는 별도로 확인했다.
+
+## 최종 인계·승인계획 변경 회귀
+
+#12/13/14/15/16 자기보고와 #16/148·개발111~114·PR168 담당자 태그 인계를 실제 게시했다. [#16 정식보고](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/16#issuecomment-6014743458)의 [접수 수신증](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/16#issuecomment-6014745439), [역할별 현재성과·막힘·다음행동](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/16#issuecomment-6014864082), [148 날짜 인계](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/148#issuecomment-6014864356)를 확인했다. 접수는 품질/PM 승인·병합·전체Done이 아니다.
+
+최신 main1c344df의 CORE R5/WEB180·181을 반영한 head d5b3ee742b481543df7cc9d1ca44b795f2bd7a5e에서도 CI4/4 SUCCESS를 직접 조회했다. DATA변경 파일은8db2bad와 동일했다. 이후 자기검수에서 caller가 constructor에 넘긴 plan 객체를 바꾸면 승인되지 않은 모델·문서개정으로 등록되는 문제를 기존 PDF 회귀에 추가해 재현했다(수정 전1FAIL, fixture파싱/실모델0). DocumentRepository가 검증 전에 deepcopy한 계획만 index/hash하도록 수정했다. 원본PDF/원문/중앙예약/판단/계약은 변경하지 않았다. 새 변경·원문 연결·CORE/WEB 최신 main을 포함한 집중85회귀와5무결성 명령은 다시 전부exit0이다. checks-plan-freeze와plan-freeze-regression.json에 근거를 보존했다. 새 수정 commit의 CI/PM 인수는 이전 d5성공과 구분한다.
+
+당장 DATA에서 수행 가능한 새 자료 모듈·원문 대조·시연 연결은 제출했다. 운영 주입·dated demo/taxonomy 승인·독립 평가자료 처분/수신은 PM, 질문 없는 보류의 실모델 의미 품질은 CORE, 새 날짜 버전의 브라우저/내보내기는 WEB 인계 사항이다. 같은모델생성·원 비용/원 실패 초기화·부모Done 선언은 하지 않았다.

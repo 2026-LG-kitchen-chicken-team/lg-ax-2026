@@ -37,3 +37,7 @@ python -B -X utf8 data/research/DATA-owner-followup-20261006-01a1100e/run_checks
 ## 게시 수신증
 
 [PR183](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/183) 실제 생성·open/non-draft 확인, assignee ginaginaring·reviewer jeongiryang 요청. 최초 구현 head `342cfb32a881b04a3fb729e0945438458eb516e7`. 19:53 KST CI4개 실행 중, PM 인수·병합·정식 보고 접수는 별도다. 코드 85회귀와 과거 기록 보존의 실제 통과를 PR의 CI/부모 Done으로 확대하지 않는다.
+
+## 인계 수신·승인계획 보호 추가
+
+[실제 GitHub 수신증 목록](../../../../data/research/DATA-owner-followup-20261006-01a1100e/github-report-receipts.json)에5부모보고·7담당인계·#16접수를 연결했다. [모델/문서개정 외부 변경 회귀](../../../../data/research/DATA-owner-followup-20261006-01a1100e/plan-freeze-regression.json)는 수정 전 등록메타의CALLER-CHANGED-MODEL/caller-changed-edition을 재현했고, 현재는 원 승인 T876MEE1H1/Rev.00_032526을 보존한다. [수정 후85검사와무결성](../../../../data/research/DATA-owner-followup-20261006-01a1100e/checks-plan-freeze/checks.json) 모두exit0, 새모델0. 과거 checks-final과실행 실패는 지우지 않았다. CI4/4 SUCCESS는 d5b3ee7에 대한 관측이며 새 코드 수정/기록 commit의 CI·PM 승인은 별도다.
