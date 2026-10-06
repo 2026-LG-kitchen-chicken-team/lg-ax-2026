@@ -8,14 +8,14 @@ import { buildEvidenceTrace, EvidenceTracePanel, subjectFromGap } from './Eviden
 import { buildRevisionTimeline, isIntermediateRun, RevisionTimeline } from './RevisionTimeline';
 import { ClarificationPanel } from './ClarificationPanel';
 import { PendingJudgement } from './PendingJudgement';
-import { exportJudgement, planningExecutionView, reasonText, rerunBaseNotice, selectableConcepts } from './judgement';
+import { exportJudgement, judgedNotes, planningExecutionView, reasonText, rejectedCandidateCount, rerunBaseNotice, selectableConcepts, terminalReason } from './judgement';
 import { runStatusView, stageLabel } from './liveWorkspace';
 import { editSummary, END_RULE, START_RULE } from './measurement';
 import type { EditSummary, ModificationMeasurement } from './measurement';
 import type { ErrorView, EvidenceSearch, LiveWorkspace } from './liveWorkspace';
 import {
   buildComparison, buildExport, buildRerunRequest, candidateChoicesFor, conceptDetailChanges, exportMarkdown, FIXTURE_NOTICE, heldItems,
-  nextRequestRevision, requestChanges, scopeWarnings, scopeWarningText, splitConditions, statusLabel,
+  nextRequestRevision, POLARITY_TEXT, requestChanges, RESOLUTION_TEXT, rowNotes, scopeWarnings, scopeWarningText, splitConditions, statusLabel,
 } from './planning';
 import type { CandidateChoice, Concept, ConceptTextChange, DataMode, Feature, MissingQuestion, PlanningRequest, RequestChange, RunSnapshot } from './planning';
 import { ArrowIcon, SearchIcon } from './icons';
@@ -154,20 +154,29 @@ export function RequestInsights({ questions, changes, revision, mode }: { questi
 }
 
 function ComparisonTable({ snapshot, features, evidence }: { snapshot: RunSnapshot; features: Feature[]; evidence: Map<string, Evidence> }) {
-  if (!snapshot.output) return <p className="muted pad">이 실행에는 대조 결과가 없습니다. {runStatusView(snapshot.run.status).detail}</p>;
+  if (!snapshot.output) return <p className="muted pad">이 실행에는 대조 결과가 없습니다. {runStatusView(snapshot.run.status, terminalReason(snapshot)).detail}</p>;
   const rows = buildComparison(snapshot.output, features, [...evidence.values()]);
-  return <div className="table-scroll"><table className="comparison-table">
+  const notes = judgedNotes(snapshot);
+  return <div className="table-scroll">
+    {notes && !notes.accepted ? <p className="scope-flag" role="note" data-comparison-unaccepted>코어가 채택하지 않은 실행이거나 저장 기록이 일치하지 않습니다({runStatusView(snapshot.run.status).label}). 원문 검토용이며 결론이 아닙니다. '판단'은 현재 기능의 설명서 지원이고, 불편 해소 여부는 따로 표시합니다.</p> : null}
+    <table className="comparison-table">
     <thead><tr><th>모델</th><th>고객 불편</th><th>연결된 기존 기능</th><th>기능 조건</th><th>판단</th><th>남은 불편</th><th>근거</th><th>확인할 질문</th></tr></thead>
-    <tbody>{rows.map(row => <tr key={row.need.id}>
+    <tbody>{rows.map(row => {
+      const note = rowNotes(row, notes);
+      return <tr key={`${row.need.id}-${row.gap?.id ?? 'none'}`} data-gap-id={row.gap?.id ?? ''}>
       <td className="model-cell">{row.need.model_id}</td>
-      <td><span className="id">{row.need.id}</span><strong>{row.need.pain}</strong><small>{row.need.situation}</small></td>
+      <td><span className="id">{row.need.id}{row.gap ? ` · ${row.gap.id}` : ''}</span><strong>{row.need.pain}</strong><small>{row.need.situation}</small>{note.desired_outcome ? <small className="desired-outcome">바라는 결과: {note.desired_outcome}</small> : null}</td>
       <td>{row.features.length ? row.features.map(item => <span key={item.id} className="feature-chip" title={item.description}>{item.name}<small>{item.id} · 문서 {item.document_version}</small></span>) : <span className="muted">없음</span>}</td>
       <td>{row.conditions.length ? row.conditions.join(', ') : <span className="muted">없음</span>}</td>
-      <td><span className={`status-pill ${row.gap?.support_status ?? 'none'}`}>{statusLabel(row.gap?.support_status ?? null)}</span></td>
+      <td><span className={`status-pill ${row.gap?.support_status ?? 'none'}`}>{statusLabel(row.gap?.support_status ?? null)}</span>
+        {note.resolution ? <span className={`status-pill resolution-${note.resolution}`} data-field="resolution">{RESOLUTION_TEXT[note.resolution] ?? note.resolution}</span> : null}
+        {note.basis_mismatch ? <span className="scope-flag" data-field="basis-mismatch"> · 선언과 설명서 근거 불일치</span> : null}</td>
       <td>{row.gap?.remaining_pain || <span className="muted">-</span>}</td>
-      <td><Refs ids={row.evidence.map(item => item.id)} evidence={evidence} />{row.missingIds.length ? <span className="missing-note">누락: {row.missingIds.join(', ')}</span> : null}</td>
+      <td><Refs ids={row.evidence.map(item => item.id)} evidence={evidence} />{row.missingIds.length ? <span className="missing-note">누락: {row.missingIds.join(', ')}</span> : null}
+        {note.non_complaint_reviews.length ? <span className="scope-flag" data-field="non-complaint">불편 근거로 인용했지만 같은 실행이 불편으로 판단하지 않은 리뷰: {note.non_complaint_reviews.map(item => `${item.evidence_id}(${POLARITY_TEXT[item.polarity] ?? item.polarity})`).join(', ')}</span> : null}</td>
       <td>{[...row.need.uncertainties, ...(row.gap?.questions ?? [])].map(text => <p key={text} className="question">{text}</p>)}</td>
-    </tr>)}</tbody>
+    </tr>;
+    })}</tbody>
   </table></div>;
 }
 
@@ -197,8 +206,19 @@ function RunPicker({ runs, selected, onSelect }: { runs: RunSnapshot[]; selected
 
 interface PlanningProps { mode: DataMode; runs: RunSnapshot[]; selected: RunSnapshot; onSelect: (id: string) => void; features: Feature[]; evidence: Evidence[]; currentEvidence?: Evidence[] }
 
+/**
+ * "No candidates" must not read as "the model made none" when it did and the core turned them down (record 034: the
+ * real 27B held runs generated 2–3 candidates). The rejected ones stay in the core record panel, never selectable.
+ */
+function noCandidateText(snapshot: RunSnapshot): string {
+  const rejected = rejectedCandidateCount(snapshot);
+  if (!rejected) return '생성된 후보가 없습니다.';
+  const ended = snapshot.run.status === 'held' || snapshot.run.status === 'failed' ? `${runStatusView(snapshot.run.status).label}로 끝나` : '채택되지 않아';
+  return `채택된 후보가 없습니다. 모델이 만든 후보 ${rejected}개는 코어 검사 결과 ${ended} 선택 대상에서 뺐습니다. 아래 판단 실행 기록의 '검사에서 거절된 마지막 후보'에서 확인하세요.`;
+}
+
 function RunStatus({ snapshot, mode }: { snapshot: RunSnapshot; mode: DataMode }) {
-  const view = runStatusView(snapshot.run.status);
+  const view = runStatusView(snapshot.run.status, terminalReason(snapshot));
   // Fixture runs are hand-written examples, so their status must not read as an Agent result.
   const fixture = mode === 'fixture' && snapshot.actor_id !== 'local-draft';
   return <span className={`run-status ${fixture ? 'fixture' : view.tone}`} title={fixture ? FIXTURE_NOTICE : view.detail}>{fixture ? `fixture 예시 · ${snapshot.run.status}` : view.label}<small title={`${snapshot.run.status} · ${snapshot.run.stage}`}>{stageLabel(snapshot.run.stage)}</small></span>;
@@ -295,7 +315,7 @@ export function ConceptsView({ mode, runs, selected, onSelect, features, evidenc
           <dt>근거 원문</dt><dd><Refs ids={concept.evidence_ids} evidence={evidenceById} /></dd>
         </dl>
         <button type="button" className={`review-button ${reviewed?.id === concept.id ? 'active' : ''}`} aria-pressed={reviewed?.id === concept.id} onClick={() => setReviewId(concept.id)}>원문·판단 함께 보기</button>
-      </article>)}</div> : <p className="muted pad">{selected.run.status === 'not_implemented' ? '이 실행은 요청만 기록된 초안입니다. Agent가 연결되지 않아 후보를 만들지 않았습니다.' : '생성된 후보가 없습니다.'}</p>}
+      </article>)}</div> : <p className="muted pad">{selected.run.status === 'not_implemented' ? '이 실행은 요청만 기록된 초안입니다. Agent가 연결되지 않아 후보를 만들지 않았습니다.' : noCandidateText(selected)}</p>}
       {selected.run.unresolved.length ? <div className="unresolved"><strong>보류·미해결</strong><ul>{selected.run.unresolved.map(item => <li key={item}>{reasonText(item)}</li>)}</ul></div> : null}
     </section>
     {selected.run.concepts.length > 1 ? <section className="panel planning-panel"><div className="planning-head"><div><p className="eyebrow">SIDE BY SIDE</p><h3>후보 비교표</h3></div></div><CandidateMatrix snapshot={selected} /></section> : null}

@@ -29,6 +29,7 @@ def stage_alignment_feedback(payload: dict, skill_id: str, declaration: dict) ->
     if duplicate_entities or duplicate_assessments:
         violations.append({"code": "DUPLICATE_ID", "stage": stage})
     non_complaint_links = []
+    unextracted_complaints = []
     if skill_id == "need_extract":
         polarities = {row["evidence_id"]: row["polarity"] for row in assessments}
         for need in entities:
@@ -40,13 +41,23 @@ def stage_alignment_feedback(payload: dict, skill_id: str, declaration: dict) ->
                                                "declared_polarity": polarities.get(eid)})
         if non_complaint_links:
             violations.append({"code": "NON_COMPLAINT_AS_NEED", "stage": stage})
+        # Report the existing complaint-coverage rule with the exact source IDs.
+        # A genuine information hold does not require fabricating a Need.
+        if not (declaration["questions"] and declaration["hold_reasons"]):
+            cited_reviews = {eid for need in entities for eid in need["evidence_ids"]}
+            complaints = {eid for eid, polarity in polarities.items() if polarity == "complaint" and eid in expected}
+            unextracted_complaints = sorted(complaints - cited_reviews)
+            if unextracted_complaints:
+                violations.append({"code": "COMPLAINT_NOT_EXTRACTED", "stage": stage})
     if not violations:
         return None
     return {"violations": violations, "entity_field": entity_field,
             "duplicate_entity_ids": duplicate_entities, "non_complaint_links": non_complaint_links,
+            "unextracted_complaint_ids": unextracted_complaints,
             "assessment_coverage": {"field": assessment_field, "expected_ids": sorted(expected),
                                     "actual_ids": actual_ids, "missing_ids": sorted(expected - actual),
                                     "unexpected_ids": sorted(actual - expected),
                                     "duplicate_ids": duplicate_assessments},
-            "instruction": "원문과 해당 ID를 다시 대조해 극성 선언과 니즈 근거를 일치시키고, 실제 결과 ID마다 "
+            "instruction": "원문과 해당 ID를 다시 대조해 극성 선언과 니즈 근거를 일치시키고, 누락된 불편 리뷰의 "
+                           "니즈를 추출하거나 필요한 누락 정보의 구체 질문과 보류 사유를 남기세요. 실제 결과 ID마다 "
                            "평가를 정확히 한 번 작성하세요. 코드가 극성·니즈·후보를 대신 고치지 않습니다."}

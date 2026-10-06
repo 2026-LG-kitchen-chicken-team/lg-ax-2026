@@ -1,8 +1,8 @@
 # 황대겸 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
-- 2026-10-06 CORE-R4-01a10729: PR173 main8f9d83f 병합 후 고정8B3건 실제9호출, 모두 failed/수정2. 원 비용·원 응답 보존과 보류 feedback 보완.
-- [새 상세](2026-10-06/CORE-R4-01a10729.md) · [실제 원 결과](../../../evals/core-manual-quality/20261006/r4/README.md). 후보 accept/적절한 hold·WEB/MCP·독립 품질과 PM Done은 남아 있다.
+- 2026-10-06 CORE-R6-01a10729: 사용자 직접 요청으로 고정8B 실제 검증 시작. 신규시도2/수신1, 두 번째 응답 유실·완주0. 누적11/24회, 관측44233토큰+미확인 사용량 보존.
+- [새 상세](2026-10-06/CORE-R6-01a10729.md) · [원 요청/응답 근거](../../../evals/core-manual-quality/20261006/r6/README.md). 본인 예약 해제/컨테이너 제거, PM 중계 metadata 대조 뒤 후속 품질 검증. 현재 사용자 직접 검수 항목0·전체 품질/PM Done 미완료.
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
 

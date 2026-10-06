@@ -100,7 +100,9 @@ const VIOLATION_LABELS: Record<string, string> = {
   REVIEW_CONFLICT: '리뷰가 서로 상충합니다',
   REVIEW_UNCERTAIN: '불편인지 불확실한 리뷰를 근거로 썼습니다',
   NO_REVIEW_EVIDENCE: '불편을 뒷받침하는 리뷰가 없습니다',
-  NON_COMPLAINT_AS_NEED: '불편이 아닌 리뷰를 불편 근거로 썼습니다',
+  // The flag means the run's own review assessment did not call the cited review a complaint/conflict (record 034:
+  // real 8B runs labelled explicit complaints "positive"), so the label credits that mismatch instead of asserting it.
+  NON_COMPLAINT_AS_NEED: '불편 근거로 인용한 리뷰를 같은 실행의 리뷰 판단에서 불편·상충으로 분류하지 않았습니다(리뷰 판단과 불편 근거 불일치)',
   DUPLICATE_CONCEPT: '후보가 기존 기능과 중복됩니다',
   UNCERTAIN_DUPLICATION: '후보의 기존 기능 중복 여부가 불확실합니다',
   MISSING_EVIDENCE: '인용한 근거 ID가 현재 입력 자료에 없습니다',
@@ -202,6 +204,11 @@ export function violationText(item: { code: string; stage: string; details?: unk
 }
 
 const SEMANTIC = /^(EXCLUSION|QUALITY|SEMANTIC|INVALID_SEMANTIC)_/;
+/**
+ * Codes that make the core hold instead of revising (packages/core judgement_contract.py `finish`, "grounding"). Any
+ * other violation in a held decision was found too but not revised, because the hold ends the run first.
+ */
+const GROUNDING = new Set(['REVIEW_CONFLICT', 'REVIEW_UNCERTAIN', 'NO_REVIEW_EVIDENCE', 'SUPPORT_UNKNOWN', 'SOURCE_KIND_MISMATCH', 'UNSUPPORTED_WITHOUT_MANUAL', 'UNCERTAIN_DUPLICATION']);
 
 /** What an accept does and does not establish (PM semantic review 2026-10-05: an excluded candidate passed accept). */
 export const ACCEPT_DETAIL = '판단 계약의 형식·인용·관계 검사를 통과했습니다. 제외 조건을 의미상 지켰는지, 후보가 실현 가능하거나 효과가 있는지는 이 검사가 판정하지 않으므로 기획자가 원문과 함께 검토해야 합니다.';
@@ -214,6 +221,8 @@ export interface JudgementView {
   declared_status_overridden: boolean;
   violations: string[]; questions: string[]; hold_reasons: string[]; unresolved: string[]; no_candidate_reasons: string[];
   out_of_scope_sources: string[];
+  /** For a hold: the violations that caused it, and the other judgement errors left unrevised because the run stopped. */
+  hold_causes: string[]; unrevised_errors: string[];
 }
 
 /** What the planner should read first: the core's decision, not the status the judgement declared about itself. */
@@ -225,12 +234,16 @@ export function judgementView(input: JudgementInput, output: JudgementOutput, de
     violations: decision.violations.map(violationText), questions: [...output.questions, ...output.gaps.flatMap(gap => gap.questions)],
     hold_reasons: output.hold_reasons, unresolved: output.unresolved, no_candidate_reasons: output.no_candidate_reasons,
     out_of_scope_sources: input.sources.filter(item => `${item.model_id}@${item.document_version}` !== scope).map(item => `${item.id} (${item.model_id} · 문서 ${item.document_version})`),
+    hold_causes: decision.action === 'hold' ? decision.violations.filter(item => GROUNDING.has(item.code)).map(violationText) : [],
+    unrevised_errors: decision.action === 'hold' ? decision.violations.filter(item => !GROUNDING.has(item.code) && !SEMANTIC.test(item.code)).map(violationText) : [],
   };
   switch (decision.action) {
     case 'accept': return { ...base, label: '계약 검사 통과 · 의미 미검증', tone: 'done', detail: ACCEPT_DETAIL };
     case 'hold': return { ...base, label: '보류', tone: 'notice', detail: decision.violations.some(item => SEMANTIC.test(item.code))
       ? '의미 검토에서 제외 조건·기획 기준 준수가 불확실하거나 확인할 질문이 남아 후보를 보류했습니다. 아래 질문에 답하거나 조건을 고쳐 새로 실행해야 하며, 이 결과의 후보는 선택할 수 없습니다.'
-      : '자료 범위나 근거를 확인한 뒤 새 입력으로 다시 실행해야 합니다. 이 결과의 후보는 선택할 수 없습니다.' };
+      : base.unrevised_errors.length && base.hold_causes.length
+        ? `근거 확인이 필요한 문제 ${base.hold_causes.length}건으로 코어가 보류했습니다. 함께 발견된 판단 오류 ${base.unrevised_errors.length}건은 보류로 실행이 끝나 내부 수정을 시도하지 않았습니다(자료 부족만의 문제가 아님). 근거와 판단을 확인한 뒤 새 입력으로 다시 실행해야 하며, 이 결과의 후보는 선택할 수 없습니다.`
+        : '자료 범위나 근거를 확인한 뒤 새 입력으로 다시 실행해야 합니다. 이 결과의 후보는 선택할 수 없습니다.' };
     case 'revise': return { ...base, label: `수정 필요 · ${decision.rerun_from} 단계부터 재실행`, tone: 'notice', detail: `내부 수정 ${decision.next_revision_count ?? '?'}/2회차로 다시 실행할 중간 결과입니다. 저장·선택 대상이 아닙니다.` };
     default: return { ...base, label: '미해결 종료', tone: 'error', detail: '두 번 수정한 뒤에도 문제가 남았거나 판단에 실패했습니다. 추가 모델 호출을 멈추고 사유를 남깁니다.' };
   }
@@ -291,6 +304,48 @@ export interface PlanningExecution {
   rejected_output?: JudgementOutput;
   semantic_reviews?: SemanticReview[];
   rejected_execution?: unknown; rejected_execution_omitted?: string;
+  /** Shared revision budget (packages/core correction_budget.py); terminal_reason says why the run stopped. */
+  correction_budget?: { revision_count: number; max_revisions: number; closed: boolean; terminal_reason: string | null; attempts?: unknown[] };
+}
+
+/** packages/core feature_support.py SUPPORT: the support_status a gap's manual basis allows. */
+export const SUPPORT_FROM_BASIS: Record<string, string> = { explicit_supported: 'supported', explicit_unsupported: 'unsupported', unmentioned: 'insufficient_evidence', conflicting: 'insufficient_evidence' };
+
+/**
+ * Stored judgement facts shown next to each comparison row (record 034 audit U2). "supported" only means the current
+ * feature is documented — the core prompt says so even when the desired outcome is not met — so the resolution, the
+ * desired outcome and the review polarity are read from the same run's record. Display only; nothing is re-judged.
+ */
+export interface JudgedNotes {
+  accepted: boolean; status: PlanningExecution['status'];
+  resolution: Map<string, string>; basis: Map<string, string>; desired: Map<string, string>; polarity: Map<string, string>;
+}
+
+export function judgedNotes(snapshot: RunSnapshot): JudgedNotes | null {
+  const view = planningExecutionView(snapshot);
+  if (view.kind !== 'ok' || !view.execution.output) return null;
+  const output = view.execution.output;
+  return {
+    accepted: acceptedStoredExecution(snapshot, view), status: view.execution.status,
+    resolution: new Map(output.gap_assessments.map(item => [item.gap_id, item.resolution])),
+    basis: new Map(output.gap_assessments.map(item => [item.gap_id, item.support_basis])),
+    desired: new Map(output.desired_outcomes.map(item => [item.need_id, item.desired_outcome])),
+    polarity: new Map(output.review_assessments.map(item => [item.evidence_id, item.polarity])),
+  };
+}
+
+/** How many candidates the model produced that the core turned down (rejected_output); never selectable. */
+export function rejectedCandidateCount(snapshot: RunSnapshot): number {
+  const execution = (snapshot.output as { planning_execution?: { rejected_output?: { concepts?: unknown } } } | null)?.planning_execution;
+  const concepts = execution?.rejected_output?.concepts;
+  return Array.isArray(concepts) ? concepts.length : 0;
+}
+
+/** Why a stored run stopped, read from its core record without re-judging; null when not recorded. */
+export function terminalReason(snapshot: RunSnapshot): string | null {
+  const execution = (snapshot.output as { planning_execution?: { correction_budget?: { terminal_reason?: unknown } } } | null)?.planning_execution;
+  const reason = execution?.correction_budget?.terminal_reason;
+  return typeof reason === 'string' ? reason : null;
 }
 export type ExecutionView =
   | { kind: 'none' }
@@ -439,10 +494,36 @@ export type ExportJudgement =
   | {
     record_valid: true; execution_kind: PlanningExecution['execution_kind']; status: PlanningExecution['status'];
     decision: StoredDecision['action'] | null; violations: string[]; record_problems: string[]; errors: { code: string; message: string }[];
+    /** Hold only: violations that caused the hold, and judgement errors the hold left unrevised (screen lists the same). */
+    hold_causes: string[]; unrevised_errors: string[]; terminal_reason: string | null;
     questions: string[]; hold_reasons: string[]; unresolved: string[]; no_candidate_reasons: string[];
     rejected_candidates: { id: string; title: string }[]; semantic_reviews: { round: number; action: string; violations: string[] }[];
     semantic_rows: ExportSemanticRow[]; models: string[]; model_calls: number;
+    /**
+     * The judging model's own declarations (record 034 audit U4): review polarity, gap support/resolution and candidate
+     * duplication, including duplication rows left without a candidate. Declarations, not an independent check.
+     */
+    review_assessments: { evidence_id: string; polarity: string; reason: string }[];
+    gap_assessments: { gap_id: string; support_basis: string; resolution: string; reason: string }[];
+    concept_assessments: { concept_id: string; duplication: string; reason: string; from: 'output' | 'rejected_output'; has_candidate: boolean }[];
+    /** Assessed reviews no need or gap cites; a complaint among them was dropped by the judgement. */
+    unused_review_ids: string[];
+    /** How many no-candidate reviews checked the stated no-candidate reasons (0 = not reviewed). */
+    no_candidate_reviews: number;
   };
+
+/** Reviews the run assessed but no need or gap cites (display only). */
+export function unusedReviewIds(output: JudgementOutput): string[] {
+  const cited = new Set([...output.needs.flatMap(need => need.evidence_ids), ...output.gaps.flatMap(gap => gap.evidence_ids)]);
+  return output.review_assessments.map(item => item.evidence_id).filter(id => !cited.has(id));
+}
+
+function conceptAssessments(output: JudgementOutput | null | undefined, from: 'output' | 'rejected_output') {
+  return (output?.concept_assessments ?? []).map(item => ({
+    concept_id: item.concept_id, duplication: item.duplication, reason: item.reason, from,
+    has_candidate: (output?.concepts ?? []).some(concept => concept.id === item.concept_id),
+  }));
+}
 
 export function exportJudgement(snapshot: RunSnapshot): ExportJudgement | null {
   const view = planningExecutionView(snapshot);
@@ -456,6 +537,8 @@ export function exportJudgement(snapshot: RunSnapshot): ExportJudgement | null {
     record_valid: true, execution_kind: execution.execution_kind, status: execution.status, decision: execution.decision?.action ?? null,
     violations: (execution.decision?.violations ?? []).map(violationText), record_problems: [...view.problems],
     errors: execution.errors.map(item => ({ code: item.code, message: item.message })),
+    ...(output && execution.decision ? (({ hold_causes, unrevised_errors }) => ({ hold_causes, unrevised_errors }))(judgementView(execution.input, output, execution.decision)) : { hold_causes: [], unrevised_errors: [] }),
+    terminal_reason: terminalReason(snapshot),
     questions: unique([...(output?.questions ?? []), ...(output?.gaps ?? []).flatMap(gap => gap.questions), ...reviews.flatMap(review => review.report.questions)]),
     hold_reasons: [...(output?.hold_reasons ?? [])], unresolved: [...(output?.unresolved ?? [])], no_candidate_reasons: [...(output?.no_candidate_reasons ?? [])],
     rejected_candidates: (execution.rejected_output?.concepts ?? []).map(concept => ({ id: concept.id, title: concept.title })),
@@ -465,5 +548,10 @@ export function exportJudgement(snapshot: RunSnapshot): ExportJudgement | null {
       verdict: row.verdict, candidate_quote: row.candidate_quote, reason: row.reason,
     }))),
     models: [...view.models], model_calls: view.model_calls,
+    review_assessments: (output?.review_assessments ?? []).map(item => ({ evidence_id: item.evidence_id, polarity: item.polarity, reason: item.reason })),
+    gap_assessments: (output?.gap_assessments ?? []).map(item => ({ gap_id: item.gap_id, support_basis: item.support_basis, resolution: item.resolution, reason: item.reason })),
+    concept_assessments: [...conceptAssessments(output, 'output'), ...conceptAssessments(execution.rejected_output, 'rejected_output')],
+    unused_review_ids: output ? unusedReviewIds(output) : [],
+    no_candidate_reviews: Array.isArray((execution as { no_candidate_reviews?: unknown }).no_candidate_reviews) ? ((execution as { no_candidate_reviews?: unknown[] }).no_candidate_reviews ?? []).length : 0,
   };
 }

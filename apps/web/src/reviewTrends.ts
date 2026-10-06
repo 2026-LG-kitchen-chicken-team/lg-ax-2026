@@ -21,15 +21,27 @@ export interface TrendAggregate {
   aggregate_id: string; project_id: string; dataset_version: string; trend_contract_version: string;
   filters: ReviewTrendFilters; counts: TrendCounts; buckets: TrendBucket[]; warnings: string[]; notes?: string;
   classification?: { method: string; model_id: string | null; revision: string | null };
+  topic_taxonomy_version?: string;
   [key: string]: unknown;
 }
 
 /** Below this the panel marks a small sample. It is a reading aid, not a significance test (contract v1). */
 export const SMALL_SAMPLE = 20;
 
+// PM decision 2026-10-06 (#176 review): the contract has no polarity, so a topic share is a share of reviews that MENTION
+// the topic, never a complaint/sentiment ratio or seasonal demand. Labels name the topic only; DATA candidate topics
+// (kitchen-review-topics-candidate.v1) stay labelled as a preview classification wherever the taxonomy says so.
 const TOPIC_LABELS: Record<string, string> = {
-  cleaning: '청소 불편', odor: '냄새', storage: '수납·정리', noise: '소음', cooling: '냉각', loading: '적재', settings: '설정 반복',
+  cleaning: '청소', odor: '냄새', storage: '수납·정리', noise: '소음', cooling: '냉각', loading: '적재', settings: '설정 반복',
+  temporary_storage: '임시 보관', food_findability: '식품 찾기', manual_guidance: '설명서·사용 안내', dish_loading_guidance: '식기 적재 안내',
+  rotating_arm_clearance: '회전 노즐 간섭', heating_preset_management: '가열 출력·설정 관리',
 };
+export const MENTION_NOTE = '비율은 그 주제를 언급한 리뷰의 비율입니다. 감정·불만 분류가 없어 불만 비율이나 계절 수요를 뜻하지 않습니다.';
+/** A candidate (not yet approved) topic taxonomy is shown as a preview classification. */
+export function taxonomyNote(version: string | null | undefined): string | null {
+  if (!version) return null;
+  return version.includes('candidate') ? `주제 분류 ${version}: PM 승인 전 미리보기 분류입니다.` : `주제 분류 ${version}`;
+}
 export function topicLabel(id: string): string {
   return Object.hasOwn(TOPIC_LABELS, id) ? `${TOPIC_LABELS[id]} (${id})` : id;
 }
@@ -162,6 +174,8 @@ export function trendSnapshotExport(aggregate: TrendAggregate, input: { fixture:
     notices: [
       ...(input.fixture ? ['합성 fixture 집계입니다. 실제 collector 결과나 고객 수요의 증거가 아닙니다.'] : []),
       '리뷰 수와 비율은 판매량이나 수요 증가를 뜻하지 않습니다.',
+      MENTION_NOTE,
+      ...[taxonomyNote(aggregate.topic_taxonomy_version)].filter((item): item is string => item !== null),
       '"자료 없음"은 그 구간 리뷰가 없다는 뜻이며 0%와 다릅니다.',
       `표본 ${SMALL_SAMPLE}건 미만은 작은 표본이며 통계적 유의성 판정이 아닙니다.`,
     ],
