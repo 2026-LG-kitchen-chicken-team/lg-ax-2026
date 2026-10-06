@@ -11,3 +11,5 @@
 - 미완료/의존: PM고정모델digest/source/input/누적예산/중계인계→실제정상·변경accept/적절한hold→같은완료runWEB/MCP/독립품질/다음제품·원27B문제1건·부모Done. 중앙낮은잔여/STOP미정, 새모델선택·추가비용·메일발송·PM병합/통합/Done을 대신하지 않는다. 컨설팅10/7 15:00 사용자확인과 공식URL/소요시간·API공급모델/크레딧/개발허용/지정API의무·로컬병행은 수신 근거 확인과 구분해 별도 인계한다.
 - [전체 원문 대조/근거](../../../../evals/core-manual-quality/20261006/integration-r4-audit/README.md), [PM 배정](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/11#issuecomment-6015339301).
 - 실제 검사 수신: 관련 회귀124/실패0/오류0, 규칙·원 개인문서8파일231구역28세션 보존·계약/phase2 통과. 공식메일10/7 15:00/접속안내·회의후 캡처1장 제출 요구를 직접 확인했고 소요시간/API 조건은미확인이다. 접속정보는비공개이며 새모델0/후속의미품질미검증이다.
+
+- 후속 main 반영: PR192 PM 부분 인수/병합 뒤 main4fa67a7을 병합해 README owner 요약2충돌만 해결하고 원구역 바이트를 보존했다. PR195 최초1e6a35d CI2/2와 원commit을 보존했으며, 합친 제품코드/Skill SHA에서 회귀124·정적 검증을 다시 통과했다. 타 담당 main 원파일의 줄바꿈 경고는 비공개 원 로그로 보존하고 수정하지 않았다. [추가 검사 수신](../../../../evals/core-manual-quality/20261006/integration-r4-audit/main-merge-checks.json). 새모델0·의미품질미검증 유지.

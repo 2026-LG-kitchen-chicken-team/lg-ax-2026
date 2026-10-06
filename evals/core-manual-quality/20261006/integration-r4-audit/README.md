@@ -26,3 +26,5 @@ full-guided는 client4/실제3호출 뒤 concepts 요청의16,000자 guard, full
 좁은 보완은 실제 product_compare 지시의 Need↔설명서 실제 비교 관계와 concept_draft의 제안 형태↔kind 설명, 동일 담당 Skill 문서다. schema enum·validator·자동 의미 치환·PM 어댑터/공통 계약·16,000자 guard·공유 수정2회는 변경하지 않는다. PR192의 상황/희망 보완은 별도 PR이며 이번 branch에 미병합 코드를 복사하지 않았다. 보완 후 실모델 효과는 미검증이다. [검사 수신](checks.json)에 기존 회귀·정적 검사와 원SHA 보존을 연결한다.
 
 다음: 작은 PR/자기보고·정확head CI/PM 검수. PM이 모델digest·소스·입력·잔여 누적 예산·연결/사용량 대조를 고정 인계한 뒤 정상/변경accept·적절한hold·같은완료run WEB/MCP를 검증한다. 새생성/자동재전송/원6평가재채점0, 전체품질/부모Done 미완료.
+
+PR195 후속: PR192 병합을 반영한 제품코드의 [추가 회귀124/정적 검사](main-merge-checks.json)를 보존했다. 최초 검사/원 실행과 새 검사 수신을 덮어쓰지 않는다.
