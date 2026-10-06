@@ -1,0 +1,26 @@
+<!-- member-log:entry v1; generated navigation, original content below -->
+원본: `docs/작업근거/정이량.md` · source commit `84844b86d4d90faf341c0b19ef7407be274b9d17`
+
+원문 byte 구간: 20693..27772 · 원문 행: 91..106
+
+[개인 목차](../README.md) · [원바이트 전체 원본](../archive/84844b86-original.md)
+
+<!-- member-log:body:start -->
+## 정이량-E035-TEAM-DISPATCH-CONFIRMED — 인수와 최신 코드 배정 복구
+
+- 23:47 후속 관측: 비공개 `team-dispatch-final-actual-20261005.json`에서 전원 ON·config4644382850addabe593b7f5624adfca085a00dabf987f0b142ee2a8e39146b34·동일 R8 PM Running·승인 main02f를 읽었다. 새 CORE 정상 action/receipt SHA d02e9e952632f645db5c05939f9b387ea7e68d9fe9dd92c0a05c77da2964eabe·배정 Issue9·실제 메일 verified Sent를 확인했다. job62cf는 PR145/head1bddade41d36103be0f2a27923246efd83fcea3d·review_requested, CI4 PASS, PM 검토 job completed_review다. 원13da 실패와 비용은 보존하며 독립 broker 승인·병합은 이 관측 시점의 증거가 아니다.
+- WEB 원본/적용: 인증된 Issue25 댓글5996106265, 원 readiness SHA6199bff2b2d5d5478002cb665accc8d92dc865be179f07480f951420f3ce6ca4, 담당 근거 SHA0311b99678c4893309c89debeadf0179098160aca47e4ee15a7dc8981910ced8, PR144/143 고정 validator summary SHA c3f1d96621c45ffc678f8faebe4283dcc1d0f93ec85aaf84a9d50cb49d099ce1/bf166b2036267ae3cb2dfbae85cc835ed6614d5cba4ce97f05a7f40977d34375를 대조했다. ROOT의 PC 재검사가 아니라 담당자 인증된 원 실행을 인수한 증거다. 보호된 적용 receipt WEB-HOST-RELEASE-20261005T2238-6199bff2, config d6f→46443828·런처 c2e63481→7e2dc665의 두 핀 변경·정확10hold 제거·원 jobs/비용/정책/수동 예약 불변·같은 R8 재시작을 확인했다. 원 blocked 두 작업은 attempt1/generation1을 보존한다.
+- 적용 실패/검사 한계: 앞선 WEB 세 시도는 30초 bounded whole-tick 잠금 획득 전 거절됐다. 원 PM 조회 자식을 죽이거나 파일 잠금을 삭제하지 않았다. 실제 idle 관측 뒤 동일 helper SHAace2fc3b5195c537081fd9b4a83c2f89c4ec8aa88f487e9d8a1ed9d41a0569af 적용은 exit0·오류 로그 빈값·불변 수신증으로 확인했다. PM 이전 loop의 halted/PMError는 별도로 원인 조사 중이며 보류 해제·Running으로 정상 연쇄를 입증하지 않는다.
+- 23:52:39 실제 WEB: PM 고정 backlog action pm-bb18aeb662ec3c3da6ebbc123f5c55243861b54f/receipt28c5e942999b996c8a2a827518ea8b07744b798515242bbc5f5dd78fa693a776→동일 job·taskWEB003·dev-web-clarification-panel·ownerchoigilung·main02f·attempt1/generation1·running·메일 verified sent다. ROOT가 완료를 대신 만든 결과가 아니다. fresh Ready 원 감사 private/runtime/ready-after-web-release-audit-20261005.json과 WEB 새 배정 감사 private/runtime/web-normal-assignment-postapply-audit-20261005.json은 실제 고정 source/정상 수신증/현재 수동 PR·예약을 읽기 전용으로 대조했다. DATA blocked_no_automatic_retry·후속 previous_unit_not_accepted/formal_dependencies_incomplete·PR133 두 편집 영역 중복·stage4 예약을 확인해 추가 Ready0이다. WEB 현재 작업도 owner_has_active_work다.
+- 23:55:46 PMError 원인: 실제 고정 R8 `_review_reserved`의 독립 검수 day calls16/config max_reviews_per_day16을 읽기 전용 broker/SQLite mode=ro·save/diff/실행 거부로 확인했다. 거절 메시지는 코드에 고정된 independent review daily budget exhausted이고 원 state bytes 불변이다. 당시 정책 day52호출/2,752,006토큰 + 독립16호출/685,071토큰 =68/80호출·3,437,077/4,000,000토큰이다. PR145 정확 head/base의 독립 cached proof가 없어 새 검수는 한도 때문에 대기다. 새 모델 호출/원 예산 초기화/한도 변경은 하지 않았다. 다음 UTC-day 10/6 09:00 KST가 정상 재평가 시점이며 작업별 누적 한도는 유지한다.
+- 진단 원 수신증 SHAaf213fd9e843f34227f15cb5a5609136adc1aac391868271b16239ffe03b41ce. 고정 코드 순서에서 Ready 배정은 독립 검수 수집보다 먼저 실행되므로 현재 검수 한도가 실제 WEB 개발·새 적격 고정 배정을 모두 정지시키는 것은 아니다. 현재 재현한 거절과 과거 일반 PMError 로그 전체의 원인 확정을 구분한다.
+- 2026-10-05 23:06 KST 실제 조회: 고정 R8 PM/정이량 R7 Worker Running, 팀/네 개인 ON, 승인 main02f9a643e92c4665f2f0f71a5690f9ed6ed28930. 고정 config SHA d6f2616ab3a8988983b64e8c22af1f44bbb540943ac081f412a64a6b5bbade0c와 정책 SHA7ce32421d67fbb86bd0ee4593de2fc328aec01f519d3e0706defa4d9af6755f0를 유지한다.
+- CORE139: 원 자동 jobauto-de46e545bcc3e38293743bc63c9cb584c9af83a7, 고정 head202571823c587b02a90c42396d4060565540ef5e·base089ab16cc5c4fd727a2de904c516b62ea8ab493d, 독립 approve/findings[]·24,383토큰/실제 격리 검사·CI 뒤 merge actionpm-96eb04381f786494a1785d62fc3f923b19284064와 mainc05ee880b160353414180e689f32a42dd23c2d64를 대조했다. 병합 후 검사·정식 Project/중앙 일치 뒤 reconcilepm-dfe3153506a7799e2f94efc918f753346490e1c8/accepted·reconciled true/formal_done false다. 비공개 감사 SHA17ee82c2c263f0a616c3aa6b58ace5626c864436a32768ce02c7f760ccb8e64d.
+- main134: 실제 CI4 뒤 22:36:19 병합했고 exact main02f의 CI2 성공을 확인했다. 요청5995640104/수신5995652063 ACCEPTED와 중앙 같은 승인 commit ACK를 확인했다. 이전 실패와 제한 재실행 실패를 삭제하지 않는다.
+- CORE 버전 전환 실패: auto-13da38fb66b2ebec7c767dfc5e228cbf6bc20f93/taskCORE003/capdev-core-source-instruction-boundary/basec05/attempt1/generation1의 actual stale-base 결과를 보존한다. 명시 PM 복구 출처는 운영 Issue28 댓글5995859933이다. 고정 helper SHA3e6c4ad0de38e43c1c3239d95e481385ba35f621f49778ea58c5dcc3c3ef3db6을 독립 감사/읽기 점검한 뒤 ROOT가 적용했다. ledger27→28 unblocked 한 항목만 추가, 완전 원 상태 비교·원 jobs/modes/reservations/config/policy/costs 불변·같은 PM 재시작 수신증을 보관한다. 실제 mode API 복구는 별도 수신증이며 원 failed job을 재queue/초기화하지 않았다. 메타데이터 작업의 모델 호출0은 원 게스트 비용0을 뜻하지 않는다.
+- DATA19조건 독립 감사 SHA5a508651c2561fc4e2b20d69f8ad86bbb0516bb4cbc7ddd57c00417b8dece26f와 담당자 원 증거를 따른다. 22:22의 유효 manual-data003 예약은 보호했으며 23:07에는 만료시각23:03:12가 지나 활성 예약0으로 재조회됐다. 종료한 manual-data001·본인 제출 PR141·PM의 임의 예약 삭제를 구분한다. WEB latest Worker2fc6·online, authenticated Issue25 댓글5996106265와 PR144 exacthead3742b412d420d46be76e790f59b5447d9070c2ef의 원 readiness/두 원 실패 판정·격리 재검증은 인수 검수 중이다. 10보류 해제는 그 검수 뒤 별도 실제 수신증으로 판단한다. 이메일 발송과 열람/개인 PC 적용을 구분한다.
+- 한계: 온라인 표시는 이전 CORE 실행기에 보고 경로가 없는 never_seen metadata이며 실제 claim/PR139/인수 사실을 부정하지 않는다. 새 배정/claim은 새로운 증거로 확인한다. 부모 Done5/31요구 verified0, 전체 실모델 품질/독립 평가/제출 미완료는 유지한다. 일반 수정 전달 PR140 준비가 고정 master/member 배포를 뜻하지 않는다.
+
+
+
+<!-- member-log:body:end -->

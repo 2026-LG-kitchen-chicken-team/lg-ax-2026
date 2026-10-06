@@ -473,7 +473,7 @@ def packet(bundle, tid):
     return {"task": t, "notice": "Packet is an instruction to the current worker, not background execution.",
             "execution_authorized": not adoption_errors(bundle.get("_root", ROOT), bundle, t),
             "adoption_blockers": adoption_errors(bundle.get("_root", ROOT), bundle, t),
-            "read_first": ["AGENTS.md", "CLAUDE.md", "docs/작업기록/README.md", f"docs/작업기록/{t['owner']}.md", f"docs/작업근거/{t['owner']}.md"],
+            "read_first": ["AGENTS.md", "CLAUDE.md", "docs/작업기록/README.md", f"docs/작업기록/{t['owner']}/README.md", f"docs/작업근거/{t['owner']}/README.md"],
             "evidence_contract": {"task_id": tid, "owner": t["owner"], "result": "pass", "execution_kind": t["allowed_execution_kinds"],
               "observations": ["actual result"], "code_versions": [{"path": "changed source", "sha256": "actual hash"}],
               "source_versions": [{"path": "fixed source/contract/input", "sha256": "actual hash"}], "models": [], "checks": [{"name": "actual command/check", "passed": True, "evidence": {"path": "immutable output", "sha256": "actual hash"}}], "limitations": ["actual limitation"]},
