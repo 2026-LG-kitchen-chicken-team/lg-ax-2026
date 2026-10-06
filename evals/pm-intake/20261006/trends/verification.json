@@ -137,9 +137,40 @@
       "source_changed": [],
       "model_calls": 0,
       "private_receipt_sha256": "0188f737ce1c5d8b8e6f5a61dae63eedfb897f19a77e535c4dbb233c93acf960"
+    },
+    "full_1345_skip_3": {
+      "source_commit": "b477860b2612f51b7e81f37b635c05ba02338bfb",
+      "worktree_input_sha256": "cbaa10cdb87e83709a27d639dcacc52b80047e73e6118ec0f019006ffcd80584",
+      "input_files": 2356,
+      "command": [
+        "python",
+        "-c",
+        "import os,sys,subprocess,pathlib; subprocess.run([sys.executable,\"-m\",\"venv\",\"--system-site-packages\",\"/artifacts/test-env\"],check=True); pathlib.Path(\"/artifacts/test-env/lib/python3.11/site-packages/lgax-validator.pth\").write_text(\"/opt/lgax-venv/lib/python3.11/site-packages\\n/workspace/apps/api/src\\n/workspace/apps/mcp/src\\n/workspace/packages/core/src\\n/workspace/packages/contracts/src\\n\"); subprocess.run([\"git\",\"init\",\"/workspace\"],check=True); subprocess.run([\"git\",\"-c\",\"safe.directory=/workspace\",\"fetch\",\"--no-tags\",\"/workspace/.validator-history.bundle\",\"refs/remotes/origin/main:refs/heads/history\"],check=True); os.environ.update(GIT_CONFIG_COUNT=\"1\",GIT_CONFIG_KEY_0=\"safe.directory\",GIT_CONFIG_VALUE_0=\"/workspace\"); os.execv(\"/artifacts/test-env/bin/python\",[\"/artifacts/test-env/bin/python\",\"-m\",\"unittest\",\"discover\",\"-s\",\"tests\",\"-v\"])"
+      ],
+      "returncode": 0,
+      "stopped_reason": null,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "source_changed": [],
+      "model_calls": 0,
+      "private_receipt_sha256": "842fd4e61447d688a935ce2d76ec73b7c22fb9787ac0a463a4f1de3ab731c6f9"
     }
   },
-  "full_regression": "Final isolation reproduction and actual PR CI pending; initial environment failures preserved privately",
+  "full_regression": "1345 tests passed (3 skipped) in zero-auth Docker; actual PR CI is separately observed",
   "independent_source_review": {
     "reviewer": "/root/pr_data_triage",
     "unresolved_blockers": [],

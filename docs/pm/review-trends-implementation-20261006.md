@@ -107,4 +107,4 @@ SQLite `workspace_review_trends`에는 aggregate·정규 metadata·완전 member
 3. CORE150: 필수 판단 품질 보완 뒤 승인 원문을 기존 근거 경로로 연결한다. closed PlanningRequest에 임의 aggregate 필드를 추가하지 않는다.
 4. PM152: 격리 테스트·CI·병합/통합 증빙을 기록하고 승인 collector를 명시적으로 연결한다. ChatGPT·Claude 계정에서 새 private 도구의 실제 발견/호출은 별도로 검증한다.
 
-공용 fixture, Python 형식/의미 검사, API·저장·원문·MCP mock/SDK, 웹 계약/클라이언트 검사를 작성했다. **현재 테스트 수치·CI 결과는 대기다.** SDK나 MockTransport 결과를 외부 ChatGPT/Claude 연결 성공으로 표현하지 않는다. 실제 호스트 연결·운영 날짜 승인·사용자 그래프·기획 Agent 전체 품질·제출 완성은 남아 있다.
+공용 fixture, Python 형식/의미 검사, API·저장·원문·MCP mock/SDK, 웹 계약/클라이언트 검사를 작성하고 인증 없는 Docker에서 전체1345(3 skip)·관련87·웹433+4/빌드·계약/하네스/지침·lint 통과를 확인했다. [PR156](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/156)의 실제 CI/브라우저/병합·운영 인수는 해당 PR과 운영 Issue28의 후속 checkpoint에서 확인한다. 수신증·입력 해시는 `evals/pm-intake/20261006/trends/verification.json`이다. SDK나 MockTransport 결과를 외부 ChatGPT/Claude 연결 성공으로 표현하지 않는다. 실제 호스트 연결·운영 날짜 승인·사용자 그래프·기획 Agent 전체 품질·제출 완성은 남아 있다.
