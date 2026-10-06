@@ -1,0 +1,28 @@
+{
+  "assignment_id": "PM-20261006-DATA-TRENDS-REBALANCE-R2",
+  "task_id": "P2-DATA-005",
+  "purpose": "정식 채택된 리뷰 날짜·주제 sidecar와 원문 연결 집계기 구현",
+  "source": "2026-10-06 사용자 총괄 분석/조정·재배정 지시; 팀원 중단 보고와 최신 GitHub/연구실 실제 조회",
+  "requirement_ids": [
+    "R12",
+    "R15"
+  ],
+  "deadline": "PM 운영 목표: 2026-10-06 18:00 KST 부분 PR/검증 근거 또는 구체 막힘 보고. 10/7 오전 리허설·15시 컨설팅 준비; 공식 제출 마감이 아님.",
+  "instructions": [
+    "팀·개인 자동화와 Worker 예약은 OFF/비활성으로 유지하고 직접 지시를 받은 개인 AI가 수동 진행한다. 이번 배정은 원 자동 job/attempt/실패/비용을 초기화하거나 재시도하는 지시가 아니다.",
+    "최신 main AGENTS.md/CLAUDE.md와 docs/pm/rebalance-20261006.md, 자기 기록/근거, 연결 이슈/PR을 읽는다. 새 착수와 선행 전체 완료 전 부분 작업을 구분해 상세 의도·수행·근거를 남긴다.",
+    "이 배정은DATA필수원본회귀뒤의승인된후속이다. DATA005/#16의채택근거가공식승인스냅샷에반영된뒤005로보고한다. 승인전에는148일반부분댓글로거절/막힘을남긴다.",
+    "PM152 main공통계약/TrendCollection(aggregate,metadata,memberships)을사용한다. 원36리뷰/8열CSV는보존하고없는날짜는excluded_undated_count로기록한다. 시연날짜/주제는별도승인된합성버전·provenance/분류버전으로준비한다.",
+    "review_trends/자료영역집계기에서source/review/model/version/hash·annotation_digest/trend_identity·canonicalperiod·완전__all__/주제membership을제공한다. API/MCP/JSONSchema를직접수정하지않고PM에게소비경로와입출력전달한다.",
+    "분모0/null·중복·날짜누락·월/KST경계·겨울연도·작은표본·다주제분모불변·원문/hash/모델교차변조거부를검증한다. 정상/빈구간/오류pack을WEB/PM에게제공한다."
+  ],
+  "acceptance": [
+    "실제계산한집계/완전membership과정규metadata·원문근거/동일ID",
+    "원자료불변·합성/실자료분리·표본경고/분모/겨울/중복/변조회귀",
+    "PM운영collector주입·실서비스원문/API/MCP·웹통합전은부분완료"
+  ],
+  "next_action": "DATA005/#16에정식보고·148에구체PR연결. WEB005/#149와PM152가같은pack/aggregateID를소비하도록인계한다.",
+  "pm_account": "jeongiryang",
+  "recipient_account": "ginaginaring",
+  "assignment_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/16#issuecomment-6009796214"
+}

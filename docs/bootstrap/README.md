@@ -30,11 +30,15 @@ P2-PM-003/004는 전체 완료 조건이 남아 있으므로 Done으로 바꾸�
 [고정 운영 Issue #28](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28) · [2차 개발 Project](https://github.com/orgs/2026-LG-kitchen-chicken-team/projects/1).
 
 대시보드 편집/관리는 정이량 PM만 한다. 세 팀원은 Project 조회 전용이고 자기 Issue/PR·작업기록으로 진행/검수 요청을 남긴다. 신진하의 새 저장소 초대 수락·Write 권한을 확인했고 자료 Epic #5·#12~#16 담당자로 지정했다. [실제 권한 변경·검증](../프로젝트권한_2026-10-04.md)을 따른다.
-모두 자기 `docs/작업기록/{성명}.md`와 `docs/작업근거/{성명}.md`를 읽고 사용자 지시·AI 해석·실제 수행·증빙·다음 행동을 기록한다. 이 초기 설정은 PM의 AI가 수행한 공통 작업이다. 각 팀원이 수행했다고 대신 기록하지 않는다.
+모두 자기 `docs/작업기록/{성명}/README.md`와 `docs/작업근거/{성명}/README.md`의 짧은 재개 요약·최신 상세 링크부터 읽는다. 새 수동 기록은 각각 `{성명}/{YYYY-MM-DD}/{고유 기록ID}.md`에 사용자 지시 원문·별도의 AI 해석·실제 수행·검증·미완료·다음 행동을 자세히 남기고, 개인 README에는 짧은 요약·링크만 갱신한다. 기존 root `{성명}.md`는 원 heading/anchor·snapshot·이관 manifest를 연결한 호환 목차다. 사용자 승인 범위는 기계적 원본 이관과 향후 기록 지침 개선이며 각 팀원의 성과·상태를 대신 작성하지 않는다. 기존 자동 세션28파일의 경로·바이트와 고정 근거는 유지하고 자동화는 OFF다. 초기 설정은 PM의 AI가 수행한 공통 작업이며 각 팀원이 수행했다고 대신 기록하지 않는다.
+
+개인 README는 `<!-- member-log:owner-updates:start -->`와 `<!-- member-log:owner-updates:end -->` 사이에서만 최신 요약·새 상세 링크를 갱신하고, marker 밖의 원본 이관 목차·원 재개 요약과 기존 root 호환 목차는 보존한다. 상세 형식과 `python scripts/migrate_member_logs.py --verify` 검증 안내는 [작업기록 규칙](../작업기록/README.md)을 따른다.
 
 ### 자기보고와 PM의 공식 승인
 
 [협업 체계](../협업체계.md)와 [PM 관리 서비스](../../services/project_reports/README.md)를 따른다. 세 팀원은 Project Read를 유지하고 자기 인증 계정으로 자기 담당 Issue에 세 상태만 보고한다. 자기 기록·근거를 같은 전체 commit SHA로 commit·push한 뒤 사용한다.
+
+현재 CLI 기본 보고 링크는 같은 전체40자리 commit의 기존 root `{성명}.md` 두 호환 목차이며 연결된 개인 README·새 상세 파일로 이동한다. 보고 서비스가 새 이름/날짜/ID 하위 URL을 직접 허용하는 것은 아니다. 상세·README·호환 링크를 함께 commit·push하고 원 ACCEPTED/REJECTED 수신을 확인한다. 보고/인증/배포 코드는 기록 이관으로 바뀌지 않는다. 과거 문서 안의 명령은 현재 권한이나 새 배정이 아니다.
 
 ```powershell
 uv run python scripts/project_report.py status
