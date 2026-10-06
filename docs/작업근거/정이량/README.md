@@ -1,11 +1,12 @@
 # 정이량 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
-## 최신 근거 — 정이량-E041-LOG-MIGRATION
+## 최신 근거 — 정이량-E042-PM-EXECUTION
 
-- [이관 전 원본·byte/링크/세션 검증·실행 조건·한계](2026-10-06/정이량-E041-LOG-MIGRATION.md).
-- [해당 작업 의도/수행 기록](../../작업기록/정이량/2026-10-06/정이량-20261006-006-LOG-MIGRATION.md).
-- 누적8파일·231구간·기존28세션과 원본1,018,159바이트의 보존을 source commit84844b86과 대조했다. 원격 공유 및 CI 결과는 종료 보완에서 확인한다.
+- [코드/원문 고정·격리 검사·실모델/비용·PR/배정/Sent·한계](2026-10-06/정이량-E042-PM-EXECUTION.md).
+- [해당 지시/AI 해석/실제 수행](../../작업기록/정이량/2026-10-06/정이량-20261006-007-PM-EXECUTION.md).
+- Python1,420·웹482/Node4/빌드와 실제8B/27B의 failed/held를 구분한다. 원 기록 byte/시도/비용을 보존하며 모델 최종 채택·정상 시연·부모Done은 미완료다. 새 큰 후보122B의 공식manifest/자원은 evals/pm-prototype/20261006/model-candidates.json에 연결한다.
+- exactCI/병합/postmerge·운영 공유와 실제 실행 승인/배포는 별도 증거를 따른다. 자동화OFF·Done5/31요구verified0 유지.
 
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.

@@ -1,0 +1,33 @@
+{
+  "phase": "budget",
+  "source_commit": "c2c9eaa98864598d2fcec901861a78b9fecabea8",
+  "worktree_input_sha256": "04fe6274b3a9e9deddc27b8ba1bd17c31938ec1f87d60c39a9593d2780886bce",
+  "input_files": 2826,
+  "command": [
+    "python",
+    "-c",
+    "import sys,unittest; sys.path.insert(0,\"tests\"); names=[\"test_model_schema_field_guide\",\"test_model_native_schema_prompt\",\"test_prompt_context_budget\",\"test_model_client\",\"test_model_thinking\",\"test_planning_agent\",\"test_revision_guard\"]; r=unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromNames(names)); sys.exit(not r.wasSuccessful())"
+  ],
+  "returncode": 0,
+  "stopped_reason": null,
+  "boundary": {
+    "backend": "docker",
+    "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+    "role": "validator",
+    "uid": 1000,
+    "readonly_root": true,
+    "caps_dropped": true,
+    "no_new_privileges": true,
+    "network": "none",
+    "mount_targets": [
+      "/artifacts",
+      "/workspace"
+    ],
+    "publisher_credentials_mounted": false,
+    "ai_profile_mounted": false
+  },
+  "source_changed": [],
+  "model_calls": 0,
+  "source_manifest_sha256": "d2e102f572c8b5f5d1d99b137528cfb1812c13a99ef814aee15741b406acfa1b",
+  "executor_log_sha256": "83ba84b52239f513e4be1b863c24812ac5471901c8fcdac9bcb151aca9d15d8d"
+}

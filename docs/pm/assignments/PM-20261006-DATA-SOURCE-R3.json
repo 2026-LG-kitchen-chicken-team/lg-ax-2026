@@ -1,0 +1,31 @@
+{
+  "assignment_id": "PM-20261006-DATA-SOURCE-R3",
+  "task_id": "P2-DATA-002",
+  "purpose": "등록 원문·검색·재시작 경로와 실제 리뷰 동향 집계 인계",
+  "instructions": [
+    "자동화 OFF·수동 개인 branch/worktree 유지. PR166/167은 main에 부분 병합됐으며 부모 과제 Done이 아니다. PR168 Draft는 검수했으므로 본인 Ready 여부와 경로 오류의 남은 조건을 Issue13에 확인한다.",
+    "현재 원문21개·문서개정·source hash·제품/모델/원문 위치를 등록→검색→재시작 경로에서 실제 확인한다. 개발용 요약과 평가 원문을 혼동하지 않는다. 먼저 재현 가능한 작은 산출물1개와 실패/막힘을 제출한다.",
+    "새 BM25/BGE-M3/재정렬225행 비교는 현재 등록 원문과 같은 고정 입력/정답/버전으로만 측정한다. 새 성적은 현재 null이며 이전 자료의 성적을 새 실측으로 전용하지 않는다. 비공개 독립 평가 원문은 승인된 private 인계 경로로 전달한다.",
+    "다음 작업은 Issue148·P2-DATA-005/#16의 날짜/주제 sidecar와 결정적 collector다. docs/pm/review-trends-implementation-20261006.md의 API152 계약을 따라 월/계절 분모·날짜누락·중복·겨울 연도·evidence IDs·원문 조회를 연결한다. 날짜 없는 리뷰에 임의 날짜를 만들지 않는다.",
+    "공통 모델client/계약·판단 코드는 PM/CORE 소유로 중복 편집하지 않는다. 모델/GPU 대형 배치 대신 자료 연결·검색 회귀와 실제 집계 경로를 우선한다.",
+    "새 날짜/고유ID 개인 기록·근거와 개인 README 작성자 갱신 block에 지시·AI 해석·수행·검사·미완료·다음 행동을 기록한다. 실제 동작/성적과 준비 문서 인수를 구분해 Issue13·14·16·148에 연결한다."
+  ],
+  "acceptance": [
+    "현재 원문/문서개정/hash와 등록→검색→재시작의 실제 입력·명령·응답이 연결된다.",
+    "새 검색 비교 성적과 비공개 평가자료 수신·독립 정답 검수의 미완료를 정확히 구분한다.",
+    "집계기가 동일 aggregate ID의 숫자·분모·evidence IDs·원문을 API/MCP 소비 계약으로 전달하며 날짜누락/범위/중복 회귀를 포함한다."
+  ],
+  "next_action": "PR168 Ready 여부·경로 막힘과 등록 원문 실제 연결의 작은 산출물부터 Issue13에 인계한다. 이후 collector148을 진행한다.",
+  "deadline": "내부 목표10/6 18:00 KST 부분 산출물 또는 구체 막힘 보고",
+  "source": "2026-10-06 사용자 PM 남은 작업 전체 진행·최신 PR 검수; 정이량007/E042",
+  "requirement_ids": [
+    "R01",
+    "R02",
+    "R05",
+    "R12",
+    "R15"
+  ],
+  "pm_account": "jeongiryang",
+  "recipient_account": "ginaginaring",
+  "assignment_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/13#issuecomment-6011538542"
+}

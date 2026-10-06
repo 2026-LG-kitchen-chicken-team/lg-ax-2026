@@ -1,0 +1,33 @@
+{
+  "phase": "full",
+  "source_commit": "d35f03513d4a8b2080a2c0f4edaebfbceb48f653",
+  "worktree_input_sha256": "9b2ab4a5e0312e22c989d33d1aac5835ce3f72f18101d43ebd48c1e3a017ebb4",
+  "input_files": 2766,
+  "command": [
+    "python",
+    "-c",
+    "import os,sys,subprocess,pathlib; subprocess.run([sys.executable,\"-m\",\"venv\",\"--system-site-packages\",\"/artifacts/test-env\"],check=True); pathlib.Path(\"/artifacts/test-env/lib/python3.11/site-packages/lgax-validator.pth\").write_text(\"/opt/lgax-venv/lib/python3.11/site-packages\\n/workspace/apps/api/src\\n/workspace/apps/mcp/src\\n/workspace/packages/core/src\\n/workspace/packages/contracts/src\\n\"); subprocess.run([\"git\",\"init\",\"/workspace\"],check=True); subprocess.run([\"git\",\"-c\",\"safe.directory=/workspace\",\"fetch\",\"--no-tags\",\"/workspace/.validator-history.bundle\",\"refs/remotes/origin/main:refs/heads/history\"],check=True); os.environ.update(GIT_CONFIG_COUNT=\"1\",GIT_CONFIG_KEY_0=\"safe.directory\",GIT_CONFIG_VALUE_0=\"/workspace\"); os.execv(\"/artifacts/test-env/bin/python\",[\"/artifacts/test-env/bin/python\",\"-m\",\"unittest\",\"discover\",\"-s\",\"tests\",\"-v\"])"
+  ],
+  "returncode": 0,
+  "stopped_reason": null,
+  "boundary": {
+    "backend": "docker",
+    "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+    "role": "validator",
+    "uid": 1000,
+    "readonly_root": true,
+    "caps_dropped": true,
+    "no_new_privileges": true,
+    "network": "none",
+    "mount_targets": [
+      "/artifacts",
+      "/workspace"
+    ],
+    "publisher_credentials_mounted": false,
+    "ai_profile_mounted": false
+  },
+  "source_changed": [],
+  "model_calls": 0,
+  "source_manifest_sha256": "2f3f0ad730b169b2f74176516f9bc969d13eb07a2b06686244df6fe43acf559f",
+  "executor_log_sha256": "8a143fe9ec1cb33896645c46fb5c113b688e79c8a925d130b6350521cda3ae08"
+}
