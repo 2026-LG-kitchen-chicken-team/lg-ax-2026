@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ApiError } from './api';
 import type { BootstrapData, Evidence } from './domain';
 import { evidenceLocation } from './domain';
@@ -15,6 +15,9 @@ type Source = 'fixture' | 'live';
 type Granularity = ReviewTrendFilters['granularity'];
 const GRANULARITY_LABEL: Record<Granularity, string> = { month: '월별', season: '계절별', year: '연도별' };
 const NOT_CONNECTED = '승인된 리뷰 동향 집계기가 아직 서버에 연결되지 않았습니다(501). 숫자나 그래프를 대신 만들지 않습니다. 화면 흐름은 합성 fixture로 확인할 수 있습니다.';
+
+/** One drill-down target. A page is shown, extended or sent to planning only while it still matches this key. */
+const drillKey = (aggregateId: string, bucketId: string, topicId: string) => JSON.stringify([aggregateId, bucketId, topicId]);
 
 interface Props {
   mode: DataMode; workspace: LiveWorkspace; data: BootstrapData | undefined; modelId: string;
@@ -37,8 +40,12 @@ export function ReviewTrendsPanel({ mode, workspace, data, modelId, onUseInPlann
   const [loading, setLoading] = useState(false);
   const [topic, setTopic] = useState('');
   const [selected, setSelected] = useState<string | null>(null);
-  const [page, setPage] = useState<TrendEvidenceData | null>(null);
+  const [page, setPage] = useState<{ key: string; data: TrendEvidenceData } | null>(null);
   const [pageError, setPageError] = useState('');
+  const [pendingKey, setPendingKey] = useState<string | null>(null);
+  // Every drill-down request and every live query gets a generation; only the latest one may change the screen.
+  const drillGeneration = useRef(0);
+  const queryGeneration = useRef(0);
 
   const aggregate = source === 'fixture' ? FIXTURE_TRENDS[granularity] : liveAggregate;
   const problems = useMemo(() => aggregate ? aggregateProblems(aggregate) : [], [aggregate]);
@@ -46,10 +53,24 @@ export function ReviewTrendsPanel({ mode, workspace, data, modelId, onUseInPlann
   const activeTopic = topics.includes(topic) ? topic : topics[0] ?? '';
   const cells = aggregate && activeTopic ? trendCells(aggregate, activeTopic) : [];
   const cell = cells.find(item => item.bucket.bucket_id === selected) ?? null;
+  const cellKey = (target: TrendCell) => aggregate ? drillKey(aggregate.aggregate_id, target.bucket.bucket_id, target.topic?.topic_id ?? activeTopic) : '';
+  const currentKey = cell ? cellKey(cell) : null;
+  const shownPage = page && page.key === currentKey ? page.data : null;
   const maxRatio = Math.max(0.0001, ...cells.map(item => item.ratio ?? 0));
 
-  // A different aggregate or topic never keeps an old drill-down on screen.
-  useEffect(() => { setSelected(null); setPage(null); setPageError(''); }, [aggregate?.aggregate_id, activeTopic]);
+  // PM review of #158: a new query, topic, aggregate, source or login/project scope drops the old drill-down and makes
+  // any in-flight evidence response stale, so a January page can never sit under (or be sent as) a May bucket.
+  const projectId = workspace.project?.project.id ?? null;
+  const loginScope = JSON.stringify([mode, workspace.connection, workspace.scopeVersion, projectId]);
+  useEffect(() => {
+    drillGeneration.current += 1;
+    setSelected(null); setPage(null); setPageError(''); setPendingKey(null);
+  }, [aggregate?.aggregate_id, activeTopic, source, granularity, loginScope]);
+  // A live aggregate belongs to one login/project scope; a later scope never shows it or accepts its slow reply.
+  useEffect(() => {
+    queryGeneration.current += 1;
+    setLiveAggregate(null); setLiveError(null); setLoading(false);
+  }, [loginScope]);
   useEffect(() => { if (!liveReady && source === 'live') setSource('fixture'); }, [liveReady, source]);
 
   async function queryLive() {
@@ -60,30 +81,41 @@ export function ReviewTrendsPanel({ mode, workspace, data, modelId, onUseInPlann
     const sourceIds = [...new Set(data.evidence.filter(item => item.model_id === model && item.source_type === 'review').map(item => item.source_id))];
     const kind = (data.evidence.find(item => item.model_id === model)?.source_kind ?? 'synthetic') as ReviewTrendFilters['source_kind'];
     const built = buildTrendFilters({ projectId: project.project.id, modelId: model, sourceIds, datasetVersion: request.dataset_version, start, end, granularity, topicIds: [], sourceKind: kind });
+    const generation = ++queryGeneration.current;
     setLiveAggregate(null); setLiveError(null);
     if ('error' in built) { setLiveError({ code: 'INVALID_INPUT', message: built.error }); return; }
     setLoading(true);
     try {
       const result = await workspace.reviewTrends(built.filters);
+      if (generation !== queryGeneration.current) return;
       if (result) setLiveAggregate(result.aggregate as unknown as TrendAggregate);
     } catch (failure) {
+      if (generation !== queryGeneration.current) return;
       const code = failure instanceof ApiError ? failure.code : 'UNKNOWN_ERROR';
       setLiveError({ code, message: code === 'NOT_IMPLEMENTED' ? NOT_CONNECTED : failure instanceof Error ? failure.message : '동향을 조회하지 못했습니다.' });
-    } finally { setLoading(false); }
+    } finally { if (generation === queryGeneration.current) setLoading(false); }
   }
 
   async function openCell(target: TrendCell, offset = 0) {
-    if (!aggregate || !target.topic || target.state !== 'value') { setSelected(target.bucket.bucket_id); setPage(null); return; }
+    const generation = ++drillGeneration.current;
+    const key = cellKey(target);
     setSelected(target.bucket.bucket_id); setPageError('');
+    if (!offset) setPage(null);
+    if (!aggregate || !target.topic || target.state !== 'value') { setPendingKey(null); return; }
+    const topicId = target.topic.topic_id;
+    setPendingKey(key);
     try {
       const next = source === 'fixture'
-        ? fixtureTrendEvidence(aggregate, target.bucket.bucket_id, target.topic.topic_id, offset)
-        : await workspace.trendEvidence(aggregate.aggregate_id, target.bucket.bucket_id, target.topic.topic_id, offset);
-      if (!next) return;
-      setPage(previous => offset && previous ? { ...next, evidence: [...previous.evidence, ...next.evidence] } : next);
+        ? fixtureTrendEvidence(aggregate, target.bucket.bucket_id, topicId, offset)
+        : await workspace.trendEvidence(aggregate.aggregate_id, target.bucket.bucket_id, topicId, offset);
+      if (generation !== drillGeneration.current || !next) return;
+      if (drillKey(next.aggregate_id, next.bucket_id, next.topic_id) !== key) throw new Error('원문 조회 결과의 집계·구간·주제가 요청과 다릅니다.');
+      // "More" only extends the page of the same key; anything else starts over from this response.
+      setPage(previous => offset && previous?.key === key ? { key, data: { ...next, evidence: [...previous.data.evidence, ...next.evidence] } } : { key, data: next });
     } catch (failure) {
+      if (generation !== drillGeneration.current) return;
       setPageError(failure instanceof Error ? failure.message : '원문을 불러오지 못했습니다.');
-    }
+    } finally { if (generation === drillGeneration.current) setPendingKey(null); }
   }
 
   const counts = aggregate?.counts;
@@ -145,11 +177,14 @@ export function ReviewTrendsPanel({ mode, workspace, data, modelId, onUseInPlann
         <h4>{cell.bucket.label} · {topicLabel(activeTopic)} 원문</h4>
         {cell.state === 'empty' ? <p className="muted">이 기간에는 유효한 리뷰가 없습니다.</p> : cell.state === 'zero' ? <p className="muted">이 기간 리뷰 {cell.total}건 중 이 주제에 해당하는 리뷰가 없습니다(0%).</p> : null}
         {pageError ? <p className="form-error" role="alert">{pageError}</p> : null}
-        {page ? <>
-          <p className="hint">{page.total}건 중 {page.evidence.length}건 · 집계 {page.aggregate_id}에 실제 포함된 원문만 보여 줍니다.</p>
-          <ul className="trend-evidence">{(page.evidence as unknown as Evidence[]).map(item => <li key={item.id}><span className="id">{item.id}</span><blockquote>{item.text}</blockquote><small>{item.source_kind === 'synthetic' ? '합성자료' : item.source_kind} · {item.model_id} · 문서 {item.document_version} · {evidenceLocation(item)}</small></li>)}</ul>
-          {page.next_offset !== null ? <button type="button" className="text-button" onClick={() => void openCell(cell, page.next_offset!)}>원문 더 보기</button> : null}
-          <button type="button" className="primary-button" onClick={() => onUseInPlanning(planningTrendNote(aggregate, cell, (page.evidence as unknown as Evidence[]).map(item => item.id), source === 'fixture'), aggregate.filters.model_id)}>이 구간을 기획 요청에 추가</button>
+        {pendingKey && pendingKey === currentKey && !shownPage ? <p className="muted" role="status">원문을 불러오는 중입니다…</p> : null}
+        {shownPage ? <>
+          <p className="hint">{shownPage.total}건 중 {shownPage.evidence.length}건 · 집계 {shownPage.aggregate_id}에 실제 포함된 원문만 보여 줍니다.</p>
+          <ul className="trend-evidence">{(shownPage.evidence as unknown as Evidence[]).map(item => <li key={item.id}><span className="id">{item.id}</span><blockquote>{item.text}</blockquote><small>{item.source_kind === 'synthetic' ? '합성자료' : item.source_kind} · {item.model_id} · 문서 {item.document_version} · {evidenceLocation(item)}</small></li>)}</ul>
+          {shownPage.next_offset !== null ? <button type="button" className="text-button" disabled={pendingKey !== null} onClick={() => void openCell(cell, shownPage.next_offset!)}>{pendingKey ? '원문 불러오는 중…' : '원문 더 보기'}</button> : null}
+          {/* Locked until the evidence of exactly this aggregate/bucket/topic has finished loading. */}
+          <button type="button" className="primary-button" disabled={pendingKey !== null}
+            onClick={() => onUseInPlanning(planningTrendNote(aggregate, cell, (shownPage.evidence as unknown as Evidence[]).map(item => item.id), source === 'fixture'), aggregate.filters.model_id)}>이 구간을 기획 요청에 추가</button>
         </> : null}
       </div> : null}
     </> : null}
