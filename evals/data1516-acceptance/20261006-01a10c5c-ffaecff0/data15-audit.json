@@ -1,0 +1,704 @@
+{
+  "schema_version": 1,
+  "task_id": "P2-DATA-004",
+  "scope": "current_metadata_intake_audit_not_independent_scoring",
+  "record_id": "data1516-acceptance-20261006-01a10c5c-ffaecff0-data15",
+  "audited_at_utc": "2026-10-06T14:31:14.883461+00:00",
+  "auditor": "신진하/Codex data15_intake_audit",
+  "fixed_main": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+  "prepared_source_main": "b477860b2612f51b7e81f37b635c05ba02338bfb",
+  "previous_publication_base_main": "d0e8f1d525360c8a03467d13b3b78fc76e8384e9",
+  "previous_PR129_head": "0fef0eafd7e9b8f4d8e1fc55de38a6a5707244e0",
+  "PR167_preparation_merge": {
+    "number": 167,
+    "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/167",
+    "title": "[#15] 평가 원문 검수·비공개 인계 준비 결과",
+    "state": "closed",
+    "merged": true,
+    "merged_at": "2026-10-06T07:12:07Z",
+    "head": "406319b4fae86fce5ea1fa6ff6d2a98093f02bb4",
+    "merge_commit": "9a26af9b5f0c562783bd2160532ea24cb0b1b469"
+  },
+  "peer_original_commit": "66bd627be91e2438bb6a5c6413cece3f690d1049",
+  "source_versions": {
+    "current_private_preparation": "DATA004-handoff-20261006-01a108c8-r2",
+    "public_summary": "P2-DATA-004-handoff-report-20261006-01a108c8",
+    "historical_development_preparation_manifests": [
+      {
+        "version": "20261005",
+        "split": "development",
+        "cases": 12,
+        "generator_sha256": "ad5f58d387b9bb1e2f7bd727d7ccbf7e4c01c905f820351774f3001d39f396c7",
+        "source_reference_sha256": "cdbc8e8dbcacf6f95d219856ff48f827d9b23a06d0f72d9e7f94d7a0854c8f17",
+        "status": "prepared_not_executed"
+      },
+      {
+        "version": "20261005-v2",
+        "split": "development",
+        "cases": 12,
+        "generator_sha256": "7eef2c8b68a2f78fd25337de4aabebac26aee1dfc03795d662fb55b8a22fea21",
+        "source_reference_sha256": "cdbc8e8dbcacf6f95d219856ff48f827d9b23a06d0f72d9e7f94d7a0854c8f17",
+        "status": "prepared_not_executed"
+      }
+    ],
+    "fixture_locations": "Synthetic logical page/row locators; physical LG PDF/CSV or real-customer evidence is not asserted",
+    "current_contract_hash_scope": "Fingerprint only; no new verification against private case content or private schemas performed"
+  },
+  "input_and_exposure_metadata": {
+    "primary_cases": 6,
+    "supplement_inputs": 2,
+    "input_count": 8,
+    "evidence_occurrences": 16,
+    "six_types": [
+      "normal",
+      "duplicate_feature",
+      "model_version_confusion",
+      "conflicting_reviews",
+      "missing_evidence",
+      "specification_change"
+    ],
+    "comparison_development_file_count": 10,
+    "exact_development_match_records": 0,
+    "public_heldout_file_count": 7,
+    "publicly_overlapping_input_count": 8,
+    "independence": false,
+    "outside_compared_scope_author_training_prior_tuning_exposure": "unknown",
+    "source_review_author": "신진하/Codex",
+    "original_fixture_author": "unknown",
+    "independent_reviewer": null
+  },
+  "archive_metadata": [
+    {
+      "path": "pm-inputs.zip",
+      "recorded_sha256": "3ca7d3d6d404a8e641f77f20daf0431a8b10e3acce3871ab1fda092a1009f2cc",
+      "recorded_bytes": 11220,
+      "recorded_file_count": 12,
+      "role": "input_only_pending_independence",
+      "content_opened_this_audit": false,
+      "archive_entries_reverified_this_audit": false,
+      "sha_recomputed_this_audit": true,
+      "currently_exists": true,
+      "current_stat_bytes": 11220,
+      "stat_size_matches_record": true,
+      "current_sha256": "3ca7d3d6d404a8e641f77f20daf0431a8b10e3acce3871ab1fda092a1009f2cc",
+      "current_hashed_bytes": 11220,
+      "opaque_bytes_hashed_this_audit": true,
+      "decoded_or_ZIP_opened_this_audit": false,
+      "current_sha_matches_record": true
+    },
+    {
+      "path": "pm-review-private-r2.zip",
+      "recorded_sha256": "481553dc974f69104262adfd7a767c957433a923e2f4bd401c0e8570f6a9a88a",
+      "recorded_bytes": 237991,
+      "recorded_file_count": 98,
+      "role": "PM_CORE_private_review_never_model_input",
+      "content_opened_this_audit": false,
+      "archive_entries_reverified_this_audit": false,
+      "sha_recomputed_this_audit": true,
+      "currently_exists": true,
+      "current_stat_bytes": 237991,
+      "stat_size_matches_record": true,
+      "current_sha256": "481553dc974f69104262adfd7a767c957433a923e2f4bd401c0e8570f6a9a88a",
+      "current_hashed_bytes": 237991,
+      "opaque_bytes_hashed_this_audit": true,
+      "decoded_or_ZIP_opened_this_audit": false,
+      "current_sha_matches_record": true
+    }
+  ],
+  "verified_intake_conditions": {
+    "preparation_metadata_integrity": true,
+    "prior_self_review_156": "preserved prior source checks, not newly executed tests and not an independent score",
+    "CORE_meaning_criteria_received": true,
+    "CORE_meaning_criteria_source": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/15#issuecomment-6014986814",
+    "CORE_specific_gold_finalized": false,
+    "PM_three_part_release_decision_found_in_checked_snapshots": false,
+    "PM_source_disposition_or_replacement_approved": null,
+    "PM_independent_reviewer_assigned": null,
+    "PM_approved_private_channel": null,
+    "external_transfer_receipt": null,
+    "may_accept_as_preparation_metadata": true,
+    "may_claim_independent_ready_or_run_comparison": false,
+    "current_archive_fingerprints_match": true
+  },
+  "authority_scope": {
+    "issue_snapshots": {
+      "13": {
+        "count": 39,
+        "authors": [
+          "ginaginaring",
+          "jeongiryang",
+          "unknownamed"
+        ],
+        "latest_created_at": "2026-10-06T12:00:59Z",
+        "latest_updated_at": "2026-10-06T12:00:59Z",
+        "PM_comment_ids": [
+          5991958336,
+          5992248482,
+          5992791571,
+          5993545046,
+          6007500888,
+          6007511242,
+          6007520630,
+          6007753734,
+          6009789261,
+          6009815327,
+          6009819645,
+          6011245139,
+          6011538542,
+          6011574044,
+          6011587805,
+          6012438474,
+          6012519569,
+          6014776096,
+          6015348109,
+          6015363391,
+          6015375609,
+          6015778218,
+          6015781228
+        ]
+      },
+      "15": {
+        "count": 10,
+        "authors": [
+          "ginaginaring",
+          "jeongiryang",
+          "unknownamed"
+        ],
+        "latest_created_at": "2026-10-06T11:11:39Z",
+        "latest_updated_at": "2026-10-06T11:11:39Z",
+        "PM_comment_ids": [
+          5992778783,
+          6011219411,
+          6014777575
+        ]
+      },
+      "21": {
+        "count": 16,
+        "authors": [
+          "ginaginaring",
+          "jeongiryang"
+        ],
+        "latest_created_at": "2026-10-06T02:00:34Z",
+        "latest_updated_at": "2026-10-06T02:00:34Z",
+        "PM_comment_ids": [
+          5978572283,
+          5978575141,
+          5978576214,
+          5978576325,
+          5978579413,
+          5978582303,
+          5978657970,
+          5978661875,
+          5979900431,
+          5979905324,
+          5981091623,
+          5981097379,
+          5994384193,
+          6007778819,
+          6007783534
+        ]
+      }
+    },
+    "PM_issue15_receipts": [
+      {
+        "id": 5992778783,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/15#issuecomment-5992778783",
+        "created_at": "2026-10-05T10:36:46Z",
+        "kind": "report_receipt_only_not_PM_quality_approval"
+      },
+      {
+        "id": 6011219411,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/15#issuecomment-6011219411",
+        "created_at": "2026-10-06T07:06:45Z",
+        "kind": "report_receipt_only_not_PM_quality_approval"
+      },
+      {
+        "id": 6014777575,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/15#issuecomment-6014777575",
+        "created_at": "2026-10-06T10:58:06Z",
+        "kind": "report_receipt_only_not_PM_quality_approval"
+      }
+    ],
+    "PM_relevant_comments_examined": [
+      {
+        "issue": 13,
+        "comment_id": 5991958336,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/13#issuecomment-5991958336",
+        "created_at": "2026-10-05T09:42:04Z",
+        "kind": "PM_assignment_or_self_report_reviewed_not_a_three_part_release_decision"
+      },
+      {
+        "issue": 13,
+        "comment_id": 5992248482,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/13#issuecomment-5992248482",
+        "created_at": "2026-10-05T10:01:24Z",
+        "kind": "PM_assignment_or_self_report_reviewed_not_a_three_part_release_decision"
+      },
+      {
+        "issue": 13,
+        "comment_id": 6007500888,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/13#issuecomment-6007500888",
+        "created_at": "2026-10-06T01:33:25Z",
+        "kind": "PM_assignment_or_self_report_reviewed_not_a_three_part_release_decision"
+      },
+      {
+        "issue": 13,
+        "comment_id": 6007520630,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/13#issuecomment-6007520630",
+        "created_at": "2026-10-06T01:35:19Z",
+        "kind": "PM_assignment_or_self_report_reviewed_not_a_three_part_release_decision"
+      },
+      {
+        "issue": 13,
+        "comment_id": 6009789261,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/13#issuecomment-6009789261",
+        "created_at": "2026-10-06T05:11:56Z",
+        "kind": "PM_assignment_or_self_report_reviewed_not_a_three_part_release_decision"
+      },
+      {
+        "issue": 13,
+        "comment_id": 6009819645,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/13#issuecomment-6009819645",
+        "created_at": "2026-10-06T05:14:48Z",
+        "kind": "PM_assignment_or_self_report_reviewed_not_a_three_part_release_decision"
+      },
+      {
+        "issue": 13,
+        "comment_id": 6011538542,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/13#issuecomment-6011538542",
+        "created_at": "2026-10-06T07:29:26Z",
+        "kind": "PM_assignment_or_self_report_reviewed_not_a_three_part_release_decision"
+      },
+      {
+        "issue": 13,
+        "comment_id": 6011587805,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/13#issuecomment-6011587805",
+        "created_at": "2026-10-06T07:32:59Z",
+        "kind": "PM_assignment_or_self_report_reviewed_not_a_three_part_release_decision"
+      },
+      {
+        "issue": 13,
+        "comment_id": 6012438474,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/13#issuecomment-6012438474",
+        "created_at": "2026-10-06T08:29:47Z",
+        "kind": "PM_assignment_or_self_report_reviewed_not_a_three_part_release_decision"
+      },
+      {
+        "issue": 13,
+        "comment_id": 6012519569,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/13#issuecomment-6012519569",
+        "created_at": "2026-10-06T08:35:00Z",
+        "kind": "PM_assignment_or_self_report_reviewed_not_a_three_part_release_decision"
+      },
+      {
+        "issue": 13,
+        "comment_id": 6015348109,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/13#issuecomment-6015348109",
+        "created_at": "2026-10-06T11:32:46Z",
+        "kind": "PM_assignment_or_self_report_reviewed_not_a_three_part_release_decision"
+      },
+      {
+        "issue": 13,
+        "comment_id": 6015375609,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/13#issuecomment-6015375609",
+        "created_at": "2026-10-06T11:34:37Z",
+        "kind": "PM_assignment_or_self_report_reviewed_not_a_three_part_release_decision"
+      },
+      {
+        "issue": 13,
+        "comment_id": 6015781228,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/13#issuecomment-6015781228",
+        "created_at": "2026-10-06T12:00:59Z",
+        "kind": "PM_assignment_or_self_report_reviewed_not_a_three_part_release_decision"
+      },
+      {
+        "issue": 21,
+        "comment_id": 5978572283,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/21#issuecomment-5978572283",
+        "created_at": "2026-10-04T09:36:02Z",
+        "kind": "PM_assignment_or_self_report_reviewed_not_a_three_part_release_decision"
+      },
+      {
+        "issue": 21,
+        "comment_id": 5978579413,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/21#issuecomment-5978579413",
+        "created_at": "2026-10-04T09:37:05Z",
+        "kind": "PM_assignment_or_self_report_reviewed_not_a_three_part_release_decision"
+      },
+      {
+        "issue": 21,
+        "comment_id": 5978657970,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/21#issuecomment-5978657970",
+        "created_at": "2026-10-04T09:48:11Z",
+        "kind": "PM_assignment_or_self_report_reviewed_not_a_three_part_release_decision"
+      },
+      {
+        "issue": 21,
+        "comment_id": 5979900431,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/21#issuecomment-5979900431",
+        "created_at": "2026-10-04T12:25:55Z",
+        "kind": "PM_assignment_or_self_report_reviewed_not_a_three_part_release_decision"
+      },
+      {
+        "issue": 21,
+        "comment_id": 5981091623,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/21#issuecomment-5981091623",
+        "created_at": "2026-10-04T14:32:47Z",
+        "kind": "PM_assignment_or_self_report_reviewed_not_a_three_part_release_decision"
+      },
+      {
+        "issue": 21,
+        "comment_id": 5994384193,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/21#issuecomment-5994384193",
+        "created_at": "2026-10-05T12:24:31Z",
+        "kind": "PM_assignment_or_self_report_reviewed_not_a_three_part_release_decision"
+      },
+      {
+        "issue": 21,
+        "comment_id": 6007778819,
+        "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/21#issuecomment-6007778819",
+        "created_at": "2026-10-06T02:00:08Z",
+        "kind": "PM_assignment_or_self_report_reviewed_not_a_three_part_release_decision"
+      }
+    ],
+    "R4_assignment_source": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/13#issuecomment-6015348109",
+    "decision_absence_scope": "No concrete three-part DATA004 release decision found in the checked Issue13/15/21 snapshots and metadata; this is not a universal assertion about all private communications",
+    "mail_check_inherited_from_root": {
+      "read_only": true,
+      "notification_message_ids": [
+        "1a110fd2bf095ad5",
+        "1a1111cefae4bf9b"
+      ],
+      "GitHub_comment_matches": [
+        6015348109,
+        6015886606
+      ],
+      "direct_mail_query": "after:2026/10/06 (중복 OR 운영팩 OR 비공개) (LGAX OR LG AX) -from:notifications@github.com",
+      "matches": 0,
+      "scope_limitation": "No results in this search scope; not proof that no private decision exists",
+      "mail_content_copied": false
+    }
+  },
+  "checks": {
+    "kind": "standard_library_metadata_consistency_and_file_fingerprint_only",
+    "repository_code_or_tests_executed": false,
+    "model_or_OCR_calls": 0,
+    "passed": true,
+    "check_count": 23,
+    "failed_count": 0,
+    "items": [
+      {
+        "name": "current_AGENTS_CLAUDE_bytes_identical",
+        "passed": true,
+        "details": null
+      },
+      {
+        "name": "six_primary_two_supplement_inputs_metadata",
+        "passed": true,
+        "details": null
+      },
+      {
+        "name": "eight_inputs_overlap_seven_public_files",
+        "passed": true,
+        "details": null
+      },
+      {
+        "name": "development_zero_exact_match_is_scoped",
+        "passed": true,
+        "details": null
+      },
+      {
+        "name": "independence_not_approved",
+        "passed": true,
+        "details": null
+      },
+      {
+        "name": "prior156_are_source_preparation_checks",
+        "passed": true,
+        "details": null
+      },
+      {
+        "name": "prior_peer_source_summary_fingerprint_matches_current",
+        "passed": true,
+        "details": null
+      },
+      {
+        "name": "private_source_and_package_integrity_hashes_cross_match",
+        "passed": true,
+        "details": null
+      },
+      {
+        "name": "semantic_gold_not_finalized_and_evaluation_not_completed",
+        "passed": true,
+        "details": null
+      },
+      {
+        "name": "PM_three_release_fields_remain_unspecified_in_peer_record",
+        "passed": true,
+        "details": null
+      },
+      {
+        "name": "private_handoff_and_external_transfer_not_completed",
+        "passed": true,
+        "details": null
+      },
+      {
+        "name": "archive_hash_and_role_metadata_cross_match",
+        "passed": true,
+        "details": null
+      },
+      {
+        "name": "private_archive_stat_sizes_match_prior_attestation",
+        "passed": true,
+        "details": "OS file stat only; archive contents and hashes were not read/recomputed"
+      },
+      {
+        "name": "private_README_preserves_pending_independence_and_overlap",
+        "passed": true,
+        "details": null
+      },
+      {
+        "name": "CORE_guide_is_not_specific_gold_or_PM_approval",
+        "passed": true,
+        "details": null
+      },
+      {
+        "name": "PM_issue15_comments_are_receipts_only",
+        "passed": true,
+        "details": null
+      },
+      {
+        "name": "historical_PR131_development_manifests_not_promoted",
+        "passed": true,
+        "details": null
+      },
+      {
+        "name": "old_PR129_original_preserved_not_readded",
+        "passed": true,
+        "details": null
+      },
+      {
+        "name": "published_metadata_contains_no_new_Agent_or_independent_scoring_claim",
+        "passed": true,
+        "details": null
+      },
+      {
+        "name": "prior_publication_checks_were_privacy_not_evaluation",
+        "passed": true,
+        "details": null
+      },
+      {
+        "name": "PR167_preparation_merge_pin_available",
+        "passed": true,
+        "details": null
+      },
+      {
+        "name": "current_opaque_archive_sha256_matches_prior_pm-inputs.zip",
+        "passed": true,
+        "details": "Only opaque byte hashing; no ZIP library, entry enumeration, source/answer decoding, or transfer"
+      },
+      {
+        "name": "current_opaque_archive_sha256_matches_prior_pm-review-private-r2.zip",
+        "passed": true,
+        "details": "Only opaque byte hashing; no ZIP library, entry enumeration, source/answer decoding, or transfer"
+      }
+    ]
+  },
+  "not_read_or_changed": {
+    "private_case_originals": true,
+    "expected_response_drafts_or_answers": true,
+    "ZIP_contents": true,
+    "private_case_inventory_evidence_bundle_or_keys": true,
+    "prior_files_shared_README_and_code_preserved": true,
+    "git_PR_mail_or_cross_thread_mutation_performed": false,
+    "answers_copied_to_output_or_development": false
+  },
+  "unconfirmed": [
+    "PM choice: retain the publicly exposed 8 inputs for diagnostic use or approve an unexposed replacement",
+    "Independent reviewer identity and independence from input/output authors and development",
+    "Approved private receiver/channel and proof of actual transfer/receipt",
+    "Final expected responses reviewed against each actual case source",
+    "Final code/material/input/command/model and complete untruncated delivery fixed for paired evaluation",
+    "Archive entry/source semantics and the private delivery-manifest bytes were not revalidated; the two complete opaque archive fingerprints are now verified against prior public hashes"
+  ],
+  "recommended_next_units": [
+    {
+      "owner": "PM 정이량",
+      "action": "Issue15에 자료 처분, 독립 검토자, 승인 비공개 수신 경로를 하나의 고유 결정 ID와 고정 버전으로 명시"
+    },
+    {
+      "owner": "DATA 신진하",
+      "depends_on": "PM disposition decision",
+      "action": "진단용 보존이면 independence=false 유지; 교체 승인일 때만 개발에 노출되지 않은 별도 입력을 새 버전으로 준비하고 노출 기록을 연결"
+    },
+    {
+      "owner": "독립 검토자/CORE/PM",
+      "depends_on": "reviewer and private delivery approval",
+      "action": "각 실제 원문과 기대 대응 초안을 독립 검토하고 수신 파일·SHA·검토 일시·미확정을 남김"
+    },
+    {
+      "owner": "PM 정이량",
+      "depends_on": "accepted cases and full-delivery receipts",
+      "action": "같은 조건의 Agent/기준선 실행 및 결과 작성과 독립된 채점 수행; 실패 원인과 필요한 사례 재실행을 보존"
+    }
+  ],
+  "source_files": [
+    {
+      "source_scope": "main",
+      "path": ".worktrees/data1516-acceptance-20261006-01a10c5c-ffaecff0/data/research/P2-DATA-004-handoff-report-20261006-01a108c8/source-review-summary.json",
+      "role": "published_DATA004_preparation_metadata",
+      "bytes": 1659,
+      "sha256": "a008ed40c753f4bf909a987422d1940ffb3b50241126a039d081907596e8bd1c"
+    },
+    {
+      "source_scope": "main",
+      "path": ".worktrees/data1516-acceptance-20261006-01a10c5c-ffaecff0/data/research/P2-DATA-004-handoff-report-20261006-01a108c8/private-handoff-attestation.json",
+      "role": "published_DATA004_preparation_metadata",
+      "bytes": 1224,
+      "sha256": "447280bcb85225938cdbb2513dd0e38f7821589b09a4189416576cdaea46e6a3"
+    },
+    {
+      "source_scope": "main",
+      "path": ".worktrees/data1516-acceptance-20261006-01a10c5c-ffaecff0/data/research/P2-DATA-004-handoff-report-20261006-01a108c8/publication-checks.json",
+      "role": "published_DATA004_preparation_metadata",
+      "bytes": 1508,
+      "sha256": "9eaea8134b36f63c422ee531b2ee8132d22b6738f81131b4b55d4ce64cc09432"
+    },
+    {
+      "source_scope": "main",
+      "path": ".worktrees/data1516-acceptance-20261006-01a10c5c-ffaecff0/data/research/P2-DATA-004-handoff-report-20261006-01a108c8/publication-delta.json",
+      "role": "published_DATA004_preparation_metadata",
+      "bytes": 1162,
+      "sha256": "6806c0385210044ea2d56701cccc6de068aeccaea1fd7806b14e70e1052334bc"
+    },
+    {
+      "source_scope": "main",
+      "path": ".worktrees/data1516-acceptance-20261006-01a10c5c-ffaecff0/data/research/P2-DATA-004-handoff-report-20261006-01a108c8/README.md",
+      "role": "published_preparation_scope_and_pending_intake",
+      "bytes": 4337,
+      "sha256": "6fb0e10565db835721e5bb9d952629ce0fd997cd110eccb9c733142dc6ea6e78"
+    },
+    {
+      "source_scope": "peer_commit_66bd627be91e2438bb6a5c6413cece3f690d1049",
+      "path": ".worktrees/data1516-followup-20261006T123152Z-01a10f51/evals/data1516-followup/20261006T123152Z-01a10f51/evaluation-readiness.json",
+      "role": "unpublished_metadata_only_readiness",
+      "bytes": 2461,
+      "sha256": "453ded077f4d7250e32df9f1c186b68922e20dedcff5c7549b23884a327aed68"
+    },
+    {
+      "source_scope": "peer_commit_66bd627be91e2438bb6a5c6413cece3f690d1049",
+      "path": ".worktrees/data1516-followup-20261006T123152Z-01a10f51/evals/data1516-followup/20261006T123152Z-01a10f51/authority-observation.json",
+      "role": "prior_GitHub_observation_not_current_decision",
+      "bytes": 2577,
+      "sha256": "1b909c902c4f8f46dbd7dee7b1d2cc6d99026c65af4ced523c7332512c4ce0ef"
+    },
+    {
+      "source_scope": "private_metadata_only",
+      "path": "team-lg-ax-2026/private/evaluation/DATA004-handoff-20261006-01a108c8-r2/README.md",
+      "role": "only_private_content_opened_README_metadata",
+      "bytes": 4962,
+      "sha256": "9929fc53a13f4a3173323a1d34ac4c70b719c7d7668c7376415500f1a7f5869b"
+    },
+    {
+      "source_scope": "main",
+      "path": ".worktrees/data1516-acceptance-20261006-01a10c5c-ffaecff0/AGENTS.md",
+      "role": "current_rules_or_owner_summary_or_contract_fingerprint",
+      "bytes": 74684,
+      "sha256": "bbeb42e9eeed7442c529d24699a859dca5bf67a87566957e074c1cf779732639"
+    },
+    {
+      "source_scope": "main",
+      "path": ".worktrees/data1516-acceptance-20261006-01a10c5c-ffaecff0/CLAUDE.md",
+      "role": "current_rules_or_owner_summary_or_contract_fingerprint",
+      "bytes": 74684,
+      "sha256": "bbeb42e9eeed7442c529d24699a859dca5bf67a87566957e074c1cf779732639"
+    },
+    {
+      "source_scope": "main",
+      "path": ".worktrees/data1516-acceptance-20261006-01a10c5c-ffaecff0/docs/pm/evaluation.md",
+      "role": "current_rules_or_owner_summary_or_contract_fingerprint",
+      "bytes": 14542,
+      "sha256": "1eda82cd6522b1efc9a3d926ddf76581f9b955f01468a05e6e3d4215b6ad47ab"
+    },
+    {
+      "source_scope": "main",
+      "path": ".worktrees/data1516-acceptance-20261006-01a10c5c-ffaecff0/docs/작업기록/신진하/README.md",
+      "role": "current_rules_or_owner_summary_or_contract_fingerprint",
+      "bytes": 9597,
+      "sha256": "71560aea837aed95cde48b7ac7f036151f4d4bf685c6502c85c67eb3f438670c"
+    },
+    {
+      "source_scope": "main",
+      "path": ".worktrees/data1516-acceptance-20261006-01a10c5c-ffaecff0/docs/작업근거/신진하/README.md",
+      "role": "current_rules_or_owner_summary_or_contract_fingerprint",
+      "bytes": 5798,
+      "sha256": "6874772a2ba924bfa541a8cd575468c6e551b0c448f8ed42bbb2c93c2f4b11ce"
+    },
+    {
+      "source_scope": "main",
+      "path": ".worktrees/data1516-acceptance-20261006-01a10c5c-ffaecff0/packages/contracts/schemas/lgax.schema.json",
+      "role": "current_rules_or_owner_summary_or_contract_fingerprint",
+      "bytes": 45996,
+      "sha256": "cf85c6119551a5cea30af2b6d9368bba43475a1ccc503cb72fdaaaaf4a6db666"
+    },
+    {
+      "source_scope": "main_historical_preservation",
+      "path": ".worktrees/data1516-acceptance-20261006-01a10c5c-ffaecff0/evals/pr-queue/20261006/data/originals/pr131/evals/data004-preparation/20261005/manifest.json",
+      "role": "historical_development_preparation_manifest",
+      "bytes": 801,
+      "sha256": "b443645ad95a013ee1551e20f80be0a0ba9e7f5691743b1a20a49337df20b568"
+    },
+    {
+      "source_scope": "main_historical_preservation",
+      "path": ".worktrees/data1516-acceptance-20261006-01a10c5c-ffaecff0/evals/pr-queue/20261006/data/originals/pr131/evals/data004-preparation/20261005-v2/manifest.json",
+      "role": "historical_development_preparation_manifest",
+      "bytes": 801,
+      "sha256": "9f99a401130e6c8eb728ba0914a2d8a8cad68ef5d81166480597fdd09224e4d0"
+    },
+    {
+      "source_scope": "current_root_collected_GitHub_snapshot",
+      "path": "publication/data1516-acceptance-20261006-01a10c5c-ffaecff0/issue-13-comments.json",
+      "role": "authoritative_comment_response",
+      "bytes": 127756,
+      "sha256": "43ca985668cbd9a77b4f7501798a27276ee7e080a217c36ca19e26587160ccf7"
+    },
+    {
+      "source_scope": "current_root_collected_GitHub_snapshot",
+      "path": "publication/data1516-acceptance-20261006-01a10c5c-ffaecff0/issue-15-comments.json",
+      "role": "authoritative_comment_response",
+      "bytes": 36334,
+      "sha256": "cc8486a3ffa56013931d22d56c54a57063d799e228928768740c8c7de0a66162"
+    },
+    {
+      "source_scope": "current_root_collected_GitHub_snapshot",
+      "path": "publication/data1516-acceptance-20261006-01a10c5c-ffaecff0/issue-21-comments.json",
+      "role": "authoritative_comment_response",
+      "bytes": 40491,
+      "sha256": "542067a3d831b6ca55a4b6773318e16af395343d21cb4ed23fd3126aaf13f4ed"
+    },
+    {
+      "path": "pm-inputs.zip",
+      "sha256": "3ca7d3d6d404a8e641f77f20daf0431a8b10e3acce3871ab1fda092a1009f2cc",
+      "bytes": 11220,
+      "role": "approved_opaque_archive_hash_only",
+      "source_scope": "private_metadata_opaque",
+      "ZIP_entries_decoded": false
+    },
+    {
+      "path": "pm-review-private-r2.zip",
+      "sha256": "481553dc974f69104262adfd7a767c957433a923e2f4bd401c0e8570f6a9a88a",
+      "bytes": 237991,
+      "role": "approved_opaque_archive_hash_only",
+      "source_scope": "private_metadata_opaque",
+      "ZIP_entries_decoded": false
+    }
+  ],
+  "archive_hash_authorization": "Parent explicitly authorized current pm-inputs.zip and pm-review-private-r2.zip opaque-byte hashing for #15 intake; ZIP decoding/entry enumeration remains forbidden",
+  "private_delivery_manifest_metadata": {
+    "recorded_sha256": "65aad3ffee48c0ca93c1378102b077c3b2343a510e296c7fcc2415ea85cfaf32",
+    "current_sha256": null,
+    "status": "published_attestation_hash_only; private delivery manifest not opened or hashed because this audit permission names only README metadata and the two opaque archives",
+    "independence_from_public_and_prior_metadata": false
+  },
+  "previous_unhashed_audit_sha256": "a01be63aa30f646a4855059d1323cfd5a58a787c0e1d204f63a49ef43ccc278e"
+}

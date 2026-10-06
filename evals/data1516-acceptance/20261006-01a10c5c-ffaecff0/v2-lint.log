@@ -1,0 +1,52 @@
+RUF100 [*] Unused `noqa` directive (non-enabled: `E402`)
+  --> /tmp/data005-lint-wkqo04sl/scripts/check_data005_operating_snapshot.py:17:39
+   |
+15 |     sys.path.insert(0, str(ROOT / folder))
+16 |
+17 | from lgax_api.review_trends import (  # noqa: E402
+   |                                       ^^^^^^^^^^^^
+18 |     build_review_trend_collection,
+19 |     canonical_dataset_sha256,
+   |
+help: Remove unused `noqa` directive
+   |
+16 |
+   - from lgax_api.review_trends import (  # noqa: E402
+17 + from lgax_api.review_trends import (
+18 |     build_review_trend_collection,
+   |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `E402`)
+  --> /tmp/data005-lint-wkqo04sl/scripts/check_data005_operating_snapshot.py:21:63
+   |
+19 |     canonical_dataset_sha256,
+20 | )
+21 | from lgax_api.trend_validation import validate_trend_request  # noqa: E402
+   |                                                               ^^^^^^^^^^^^
+22 | from lgax_core.errors import DomainError  # noqa: E402
+   |
+help: Remove unused `noqa` directive
+   |
+20 | )
+   - from lgax_api.trend_validation import validate_trend_request  # noqa: E402
+21 + from lgax_api.trend_validation import validate_trend_request
+22 | from lgax_core.errors import DomainError  # noqa: E402
+   |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `E402`)
+  --> /tmp/data005-lint-wkqo04sl/scripts/check_data005_operating_snapshot.py:22:43
+   |
+20 | )
+21 | from lgax_api.trend_validation import validate_trend_request  # noqa: E402
+22 | from lgax_core.errors import DomainError  # noqa: E402
+   |                                           ^^^^^^^^^^^^
+help: Remove unused `noqa` directive
+   |
+21 | from lgax_api.trend_validation import validate_trend_request  # noqa: E402
+   - from lgax_core.errors import DomainError  # noqa: E402
+22 + from lgax_core.errors import DomainError
+23 |
+   |
+
+Found 3 errors.
+[*] 3 fixable with the `--fix` option.

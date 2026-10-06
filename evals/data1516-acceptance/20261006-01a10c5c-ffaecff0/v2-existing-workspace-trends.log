@@ -1,0 +1,38 @@
+/opt/lgax-venv/lib/python3.11/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+test_bound_snapshot_has_same_id_for_repeat_collection (test_workspace_trends.WorkspaceTrendTests.test_bound_snapshot_has_same_id_for_repeat_collection) ... ok
+test_changed_dataset_version_is_409_before_collector (test_workspace_trends.WorkspaceTrendTests.test_changed_dataset_version_is_409_before_collector) ... ok
+test_drilldown_rejects_missing_memberships_and_invalid_page_bounds (test_workspace_trends.WorkspaceTrendTests.test_drilldown_rejects_missing_memberships_and_invalid_page_bounds) ... ok
+test_drilldown_reserved_denominator_is_invalid_input (test_workspace_trends.WorkspaceTrendTests.test_drilldown_reserved_denominator_is_invalid_input) ... ok
+test_http_and_mcp_proxy_share_aggregate_and_original_evidence (test_workspace_trends.WorkspaceTrendTests.test_http_and_mcp_proxy_share_aggregate_and_original_evidence) ... ok
+test_invalid_query_is_422_and_never_invokes_collector (test_workspace_trends.WorkspaceTrendTests.test_invalid_query_is_422_and_never_invokes_collector) ... ok
+test_missing_collector_is_501_not_an_empty_success (test_workspace_trends.WorkspaceTrendTests.test_missing_collector_is_501_not_an_empty_success) ... ok
+test_missing_or_invalid_auth_is_401_before_collector (test_workspace_trends.WorkspaceTrendTests.test_missing_or_invalid_auth_is_401_before_collector) ... ok
+test_provider_arithmetic_and_membership_cannot_claim_unincluded_reviews (test_workspace_trends.WorkspaceTrendTests.test_provider_arithmetic_and_membership_cannot_claim_unincluded_reviews) ... ok
+test_provider_dataset_annotation_and_identity_hashes_are_checked (test_workspace_trends.WorkspaceTrendTests.test_provider_dataset_annotation_and_identity_hashes_are_checked) ... ok
+test_provider_diagnostics_are_hidden_and_failure_not_saved (test_workspace_trends.WorkspaceTrendTests.test_provider_diagnostics_are_hidden_and_failure_not_saved) ... ok
+test_provider_missing_small_sample_warning_is_rejected (test_workspace_trends.WorkspaceTrendTests.test_provider_missing_small_sample_warning_is_rejected) ... ok
+test_provider_wrong_model_source_and_original_hash_are_rejected (test_workspace_trends.WorkspaceTrendTests.test_provider_wrong_model_source_and_original_hash_are_rejected) ... ok
+test_reordered_metadata_rows_reuse_same_immutable_snapshot (test_workspace_trends.WorkspaceTrendTests.test_reordered_metadata_rows_reuse_same_immutable_snapshot) ... ok
+test_same_identity_changed_payload_does_not_overwrite_original (test_workspace_trends.WorkspaceTrendTests.test_same_identity_changed_payload_does_not_overwrite_original) ... ok
+test_saved_drilldown_preserves_original_after_live_dataset_changes (test_workspace_trends.WorkspaceTrendTests.test_saved_drilldown_preserves_original_after_live_dataset_changes) ... ok
+test_saved_snapshot_and_drilldown_stay_in_project_owner_scope (test_workspace_trends.WorkspaceTrendTests.test_saved_snapshot_and_drilldown_stay_in_project_owner_scope) ... ok
+test_saved_snapshot_checksum_corruption_is_rejected (test_workspace_trends.WorkspaceTrendTests.test_saved_snapshot_checksum_corruption_is_rejected) ... ok
+test_saved_snapshot_survives_restart_without_collector (test_workspace_trends.WorkspaceTrendTests.test_saved_snapshot_survives_restart_without_collector) ... ok
+test_sdk_stdio_lists_three_readonly_trend_tools_and_calls_mock_transport (test_workspace_trends.WorkspaceTrendTests.test_sdk_stdio_lists_three_readonly_trend_tools_and_calls_mock_transport) ... /opt/lgax-venv/lib/python3.11/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+Processing request of type ListToolsRequest
+Processing request of type CallToolRequest
+HTTP Request: GET http://127.0.0.1/api/workspace/projects/project-e678007398204e93a50fd0b9a0785e42/review-trends?model_id=FRIDGE-A&source_ids=REVIEWS-CSV-v1.0&dataset_version=0.1.0&start_date=2026-10-01&end_date_exclusive=2026-11-01&granularity=month&topic_ids=cleaning&source_kind=synthetic&timezone=Asia%2FSeoul "HTTP/1.1 200 OK"
+Processing request of type CallToolRequest
+HTTP Request: GET http://127.0.0.1/api/workspace/projects/project-e678007398204e93a50fd0b9a0785e42/review-trends/TREND-3eb0c89a6e041017d4f4568a7c518c08f72686fdb01d34fd90b4ce4877a223c2 "HTTP/1.1 200 OK"
+Processing request of type CallToolRequest
+HTTP Request: GET http://127.0.0.1/api/workspace/projects/project-e678007398204e93a50fd0b9a0785e42/review-trends/TREND-3eb0c89a6e041017d4f4568a7c518c08f72686fdb01d34fd90b4ce4877a223c2/evidence?bucket_id=MONTH-2026-10&topic_id=cleaning&offset=0&limit=50 "HTTP/1.1 200 OK"
+ok
+test_success_counts_nullable_dates_and_originals_are_bound (test_workspace_trends.WorkspaceTrendTests.test_success_counts_nullable_dates_and_originals_are_bound) ... ok
+test_viewer_reads_and_other_owner_rejected_before_collector (test_workspace_trends.WorkspaceTrendTests.test_viewer_reads_and_other_owner_rejected_before_collector) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 18.847s
+
+OK

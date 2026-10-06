@@ -1,0 +1,35 @@
+{
+  "artifact_kind": "independent_data005_tool_review_resolution",
+  "reviewer": "/root/data16_snapshot_audit",
+  "mode": "narrow read-only source inspection",
+  "base_main": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+  "original_review": {
+    "file": "data16-tool-review.json",
+    "sha256": "3c980be6936918439606e67a5a97419749061e46f5458218c8c15bcd907b39b9",
+    "preserved": true
+  },
+  "reviewed_file_sha256": {
+    "scripts/check_data005_operating_snapshot.py": "fffd37e90a3983afb1b6be5f35a9366a77bb46c5ca1c2b2540ac5d8b0654825d",
+    "tests/test_data005_operating_snapshot.py": "7c0464ccb51e7419076b47febb925e2272fbcc52158bd90d2e7422fb9be26165"
+  },
+  "resolution": [
+    {
+      "finding_id": "D16-TOOL-EMPTY-DUPLICATE-PAGE",
+      "status": "RESOLVED_BY_SOURCE_INSPECTION",
+      "code_evidence": "scripts/check_data005_operating_snapshot.py:137-142 그룹별 seen_offsets를 만들고 이미 본 offset이면 DUPLICATE_PAGE_OFFSET을 mismatches에 기록한다. 빈 원문은 offset이 증가하지 않아도 두 번째 offset=0이 거절되어 기존 통과 경로가 닫힌다.",
+      "regression_evidence": "tests/test_data005_operating_snapshot.py:92-96 test_duplicate_empty_page_cannot_pass는 _fixture(original=True)의 빈 페이지를 중복 append하고 mismatch를 요구한다.",
+      "runtime_tests_executed_by_reviewer": false
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "이번 검수는 지적한 빈 페이지 결함 수정부와 새 회귀 사례만 좁게 다시 읽었다. 원 도구의 전체 요구 대조는 보존된 data16-tool-review.json에 연결한다.",
+    "부모가 별도 network-none/UID1000/readonly/zero-auth validator에서 회귀 검사를 수행 중이지만 이 검수자는 실행하지 않았고 그 완료 결과를 확인한 것으로 보고하지 않는다.",
+    "오프라인 match가 운영 수집 사실 또는 PM 자료 승인 자체를 인증한다는 주장은 하지 않는다."
+  ],
+  "repository_files_modified": [],
+  "new_model_calls": 0,
+  "new_ocr_calls": 0,
+  "operating_connections": 0,
+  "checked_at_utc": "2026-10-06T14:42:48.7127531Z"
+}
