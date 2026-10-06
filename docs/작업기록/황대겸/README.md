@@ -1,8 +1,8 @@
 # 황대겸 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
-- 2026-10-06 CORE-R6-01a10729: 사용자 직접 요청으로 고정8B 실제 검증 시작. 신규시도2/수신1, 두 번째 응답 유실·완주0. 누적11/24회, 관측44233토큰+미확인 사용량 보존.
-- [새 상세](2026-10-06/CORE-R6-01a10729.md) · [원 요청/응답 근거](../../../evals/core-manual-quality/20261006/r6/README.md). 본인 예약 해제/컨테이너 제거, PM 중계 metadata 대조 뒤 후속 품질 검증. 현재 사용자 직접 검수 항목0·전체 품질/PM Done 미완료.
+- 2026-10-06 CORE-INTEGRATION-R4-01a10729-01: 원10리뷰/제한2리뷰/길이guard 의미 반례 감사와 R6 원ledger↔PM 완료metadata 대조. 추가5044로 관측49277토큰, 원응답유실·11/24시도 보존.
+- [새 상세](2026-10-06/CORE-INTEGRATION-R4-01a10729-01.md) · [원문 대조/추가 관측/검사](../../../evals/core-manual-quality/20261006/integration-r4-audit/README.md). 실제 기능 관련성·후보kind 지침 보완, 신규 모델0·후속효과 미검증. PR192 CI4/4·보고수신은 별도이며 PM 고정배치/의미품질·부모Done이 남았다.
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
 

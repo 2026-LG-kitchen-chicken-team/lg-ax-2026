@@ -1,0 +1,221 @@
+{
+  "source_commit": "96ec98c06ed7f74a1a34dd01797794bab15b5b5a",
+  "development_only": true,
+  "cases": [
+    {
+      "group": "122b-full-guided",
+      "case_id": "fridge-normal",
+      "scope": "full_original_10_reviews",
+      "source_commit": "3debda72d123289197ed1fa23b32b9ef3aedeb51",
+      "model_id": "qwen3.5:122b-a10b-q4_K_M",
+      "model_digest": "8b9d11d807c57feb1e2ecb0d6cbf40334c37dcc3523bed5540af4f927f112a37",
+      "status": "held",
+      "actual_calls": 3,
+      "tokens": 14631,
+      "output_sha256": "ad5387cf5a660297260d81cea1f644fcceced10c3592e619840885c768f70871",
+      "output_bytes": 468551,
+      "client_attempts": 4,
+      "review_input_count": 10,
+      "upstream_not_called_errors": [
+        {
+          "stage": "concepts",
+          "error": {
+            "code": "INVALID_ARGUMENT",
+            "message": "모델 호출 설정·입력·스키마가 유효하지 않습니다.",
+            "details": {
+              "reason": "prompt_too_large",
+              "maximum": 16000
+            }
+          }
+        }
+      ],
+      "source_path": "evals/pm-integration/20261006/model-quality/122b-full-guided/fridge-normal.output.json",
+      "execution_source_commit": "3debda72d123289197ed1fa23b32b9ef3aedeb51",
+      "published_artifact_commit": "96ec98c06ed7f74a1a34dd01797794bab15b5b5a"
+    },
+    {
+      "group": "122b-full-columns-v2",
+      "case_id": "fridge-normal",
+      "scope": "full_original_10_reviews",
+      "source_commit": "79f31a912d307c4e8653b38dbb6fa7612e8a5443",
+      "model_id": "qwen3.5:122b-a10b-q4_K_M",
+      "model_digest": "8b9d11d807c57feb1e2ecb0d6cbf40334c37dcc3523bed5540af4f927f112a37",
+      "status": "held",
+      "actual_calls": 5,
+      "tokens": 27397,
+      "output_sha256": "1cc749eb413ba3397159a84fa6404ccece59102038a25282657baeeb73844e38",
+      "output_bytes": 985257,
+      "client_attempts": 6,
+      "review_input_count": 10,
+      "upstream_not_called_errors": [
+        {
+          "stage": "review",
+          "error": {
+            "code": "INVALID_ARGUMENT",
+            "message": "모델 호출 설정·입력·스키마가 유효하지 않습니다.",
+            "details": {
+              "reason": "prompt_too_large",
+              "maximum": 16000
+            }
+          }
+        }
+      ],
+      "source_path": "evals/pm-integration/20261006/model-quality/122b-full-columns-v2/fridge-normal.output.json",
+      "execution_source_commit": "79f31a912d307c4e8653b38dbb6fa7612e8a5443",
+      "published_artifact_commit": "96ec98c06ed7f74a1a34dd01797794bab15b5b5a"
+    },
+    {
+      "group": "27b-full",
+      "case_id": "fridge-normal",
+      "scope": "full_original_10_reviews",
+      "source_commit": "fc1d9e3ca53865c3db49b04c3a470d4563bd412f",
+      "model_id": "qwen3.5:27b-q4_K_M",
+      "model_digest": "64ae5b1d651fb2709d5928ccb8dcfb4bb2cc9c2c8001ac34497e36a6cf905b59",
+      "status": "held",
+      "actual_calls": 3,
+      "tokens": 16050,
+      "output_sha256": "e4c2143386fb5cc4e58f825030b99a4d5af7be46967dfa062a5982fabe7df448",
+      "output_bytes": 492238,
+      "client_attempts": 3,
+      "review_input_count": 10,
+      "upstream_not_called_errors": [],
+      "source_path": "evals/pm-integration/20261006/model-quality/27b-full/fridge-normal.output.json",
+      "execution_source_commit": "fc1d9e3ca53865c3db49b04c3a470d4563bd412f",
+      "published_artifact_commit": "96ec98c06ed7f74a1a34dd01797794bab15b5b5a"
+    },
+    {
+      "group": "122b-focus-guided",
+      "case_id": "fridge-normal",
+      "scope": "pm_selected_2_review_development_subset",
+      "source_commit": "d5f6676e8007eecacbbb6f01b4a8f0358c2582a0",
+      "model_id": "qwen3.5:122b-a10b-q4_K_M",
+      "model_digest": "8b9d11d807c57feb1e2ecb0d6cbf40334c37dcc3523bed5540af4f927f112a37",
+      "status": "completed",
+      "actual_calls": 4,
+      "tokens": 10677,
+      "output_sha256": "2237b7554b5c628a8f0e43c5ed2c3d166a0aa6425af45f70f00b45c53576649e",
+      "output_bytes": 301633,
+      "client_attempts": 4,
+      "review_input_count": 2,
+      "upstream_not_called_errors": [],
+      "source_path": "evals/pm-integration/20261006/model-quality/122b-focus-guided/fridge-normal.output.json",
+      "execution_source_commit": "d5f6676e8007eecacbbb6f01b4a8f0358c2582a0",
+      "published_artifact_commit": "96ec98c06ed7f74a1a34dd01797794bab15b5b5a"
+    },
+    {
+      "group": "122b-focus-guided",
+      "case_id": "fridge-changed",
+      "scope": "pm_selected_2_review_development_subset",
+      "source_commit": "d5f6676e8007eecacbbb6f01b4a8f0358c2582a0",
+      "model_id": "qwen3.5:122b-a10b-q4_K_M",
+      "model_digest": "8b9d11d807c57feb1e2ecb0d6cbf40334c37dcc3523bed5540af4f927f112a37",
+      "status": "held",
+      "actual_calls": 3,
+      "tokens": 7302,
+      "output_sha256": "307fc4a3af6ce7e07fbecf01adbc70654970821462e5e92d04da09bc7e1c0260",
+      "output_bytes": 221878,
+      "client_attempts": 3,
+      "review_input_count": 2,
+      "upstream_not_called_errors": [],
+      "source_path": "evals/pm-integration/20261006/model-quality/122b-focus-guided/fridge-changed.output.json",
+      "execution_source_commit": "d5f6676e8007eecacbbb6f01b4a8f0358c2582a0",
+      "published_artifact_commit": "96ec98c06ed7f74a1a34dd01797794bab15b5b5a"
+    },
+    {
+      "group": "122b-focus-guided",
+      "case_id": "fridge-missing-manual",
+      "scope": "pm_selected_2_review_development_subset",
+      "source_commit": "d5f6676e8007eecacbbb6f01b4a8f0358c2582a0",
+      "model_id": "qwen3.5:122b-a10b-q4_K_M",
+      "model_digest": "8b9d11d807c57feb1e2ecb0d6cbf40334c37dcc3523bed5540af4f927f112a37",
+      "status": "held",
+      "actual_calls": 3,
+      "tokens": 7048,
+      "output_sha256": "78df4b65c0fb4d5b25cf774cf4f2bf7486549c41e7657dde34021f63412d1f7f",
+      "output_bytes": 205408,
+      "client_attempts": 3,
+      "review_input_count": 2,
+      "upstream_not_called_errors": [],
+      "source_path": "evals/pm-integration/20261006/model-quality/122b-focus-guided/fridge-missing-manual.output.json",
+      "execution_source_commit": "d5f6676e8007eecacbbb6f01b4a8f0358c2582a0",
+      "published_artifact_commit": "96ec98c06ed7f74a1a34dd01797794bab15b5b5a"
+    }
+  ],
+  "hardware_labeled_service": [
+    {
+      "assumptions": [
+        "후속 검증: 선반 하부에 청소용 슬롯이 설치되어도 냉장고 내부 온도 유지 및 식품 안전성이 보장되는지 확인 필요",
+        "후속 검증: 슬라이딩 메커니즘의 내구성과 식품 진동 방지 성능이 장기 사용 시 유지되는지 검증 필요"
+      ],
+      "differentiation": "기존 기능은 선반을 완전히 분리하여 세척해야 하므로 모든 식품을 이동해야 하지만, 본 가설은 선반 하부에 청소 슬롯을 설치하여 선반을 분리하지 않고도 세척액을 주입하고 배출할 수 있게 함. 사용자는 선반 위의 식품을 이동하지 않은 채 청소 흐름을 수행함.",
+      "evidence_ids": [
+        "MANUAL-001",
+        "REVIEW-EVIDENCE-001",
+        "REVIEW-EVIDENCE-002"
+      ],
+      "gap_ids": [
+        "GAP-001"
+      ],
+      "id": "CONCEPT-001",
+      "kind": "service",
+      "requirements": [
+        "선반 하부에 청소액 주입 및 배출을 위한 슬롯 구조가 존재해야 함",
+        "사용자가 선반 위의 식품을 이동하지 않고도 청소 액체를 주입하고 배출할 수 있는 인터페이스 제공",
+        "청소액이 식품에 직접 접촉하지 않도록 차단 구조가 필수적임"
+      ],
+      "status": "proposed",
+      "title": "선반 분리 없이 세척 가능한 슬롯형 선반 구조"
+    }
+  ],
+  "changed_gap_manual_omission": [
+    {
+      "evidence_ids": [
+        "REVIEW-EVIDENCE-001",
+        "MANUAL-001"
+      ],
+      "feature_ids": [
+        "FEATURE-001"
+      ],
+      "id": "GAP-001",
+      "model_id": "FRIDGE-A",
+      "need_id": "NEED-001",
+      "questions": [],
+      "remaining_pain": "선반을 분리하여 세척할 때 위에 있는 식품을 모두 옮겨야 하는 번거로움이 해결되지 않음.",
+      "support_status": "supported"
+    },
+    {
+      "evidence_ids": [
+        "REVIEW-EVIDENCE-002"
+      ],
+      "feature_ids": [
+        "FEATURE-001"
+      ],
+      "id": "GAP-002",
+      "model_id": "FRIDGE-A",
+      "need_id": "NEED-002",
+      "questions": [
+        "선반 분리 시 옮겨진 식품을 임시로 보관할 수 있는 충분한 공간이 제품 내에 마련되어 있는지 확인이 필요합니다."
+      ],
+      "remaining_pain": "선반을 분리하여 식품을 꺼내는 동안 임시로 둘 곳이 부족하다는 문제가 해결되지 않음.",
+      "support_status": "insufficient_evidence"
+    }
+  ],
+  "missing_manual_input_features": [],
+  "missing_manual_unfounded_feature_claim": [
+    {
+      "candidate_quote": "제품 설명서 또는 기능 목록에 선반 청소 시 식품 이동 최소화 구조 및 임시 보관 공간에 대한 명시적 기술이 없어 현재 기능 지원 여부 확인 불가",
+      "criterion": "feature_resolution",
+      "reason": "현재 제품 기능 목록이 비어있고, '선반 분리' 기능만 존재할 뿐 이를 해결하는 '임시 보관 공간'이나 '이동 최소화 구조'에 대한 기술이 없어 잔여 불편이 해결되지 않았음을 올바르게 판단했습니다.",
+      "source_quotes": [
+        {
+          "evidence_id": "REVIEW-EVIDENCE-002",
+          "quote": "선반을 분리할 수 있지만 식품을 꺼내는 동안 둘 곳이 부족해요."
+        }
+      ],
+      "verdict": "consistent"
+    }
+  ],
+  "post_change_actual_outputs": null,
+  "new_model_calls": 0,
+  "original_six_regraded": false
+}

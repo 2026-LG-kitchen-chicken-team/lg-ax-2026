@@ -7,6 +7,8 @@ description: 고객 니즈를 같은 모델·문서 버전의 기존 제품 기�
 
 각 Gap의 need_id·remaining_pain은 그 입력 Need와 인용 리뷰의 문제에 대응한다. 설정 반복 입력·기능 인지 부족·호출 위치 찾기처럼 다른 문제를 유효한 Need ID 하나에 묶어 같은 문제로 바꾸지 않는다. 각 실제 Gap ID의 평가를 정확히 한 번 작성한다. 이 일관성 검사는 원문 의미가 맞다는 입증을 대신하지 않는다.
 
+feature_ids는 해당 Need의 상황·문제와 설명서의 기능·사용 조건 사이에 실제 비교 관계가 있을 때만 연결한다. 문서에 있는 한 기능을 서로 다른 문제 모두의 지원 근거로 복사하지 않는다. 현재 기능 존재·해당 불편의 해소·희망 결과는 각각 대조하며, 미언급을 미지원으로 확정하지 않는다. 같은 지침을 실제 product_compare handler의 지시에 반영하며, 코드가 의미를 자동 치환하지 않는다.
+
 Agent는 `feature_support`와 `residual_matrix`의 원문 연결 검사 결과를 후보 생성과 의미 검토에 전달한다. 명시 지원/명시 미지원/미언급/상충 선언과 해결/잔여/미확인 선언을 따로 보존한다. 이 검사는 모델의 해석이 맞다는 입증이 아니므로, 후보 없는 보류 결과도 `no_candidate_review`에서 원문·사용 조건·보류 이유를 검토한다. 제품의 사용 조건을 사용자의 제외 조건으로 바꾸지 않는다.
 
 기본 standalone CLI에는 판단 handler를 자동 등록하지 않아 `NOT_IMPLEMENTED`를 반환한다. 명시적으로 설정한 모델을 받는 `PlanningAgent`는 세 판단 Skill과 한 `RevisionSession`의 `review_revision`을 등록해 실행한다. `skill_trace`의 실제 handler 호출과 `model_calls`의 전송·원문 응답을 함께 확인하며 fixture를 실모델 실행으로 바꾸지 않는다. SKILL.md·스키마·샘플이나 구조 검사 통과는 의미 품질·완성의 증거가 아니다.
