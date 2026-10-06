@@ -8,6 +8,7 @@
 - 관련 근거: [실제 실행·검사](../../작업근거/신진하/2026-10-06/신진하-E-DATA-OWNER-FOLLOWUP-01a1100e.md)
 - [새 부분 PR183·PM 검수 요청](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/183). open/non-draft·PM reviewer 요청을 확인했고 최초 head342cfb3의CI4개는 실행 중이다. 검토 요청/수신은 승인·병합·전체Done이 아니다.
 - 최종 수행: PR183은 PM 부분 인수·CI4/4 후20:15 병합. 승인계획 모델/버전 바꿔치기 보호는 별도 후속branch로 분리했고 최신main 위85검사·5무결성 통과. PM 운영/독립평가·CORE 의미·WEB 새날짜 검증은 담당자 인계, 부모Done은 미완료. [병합·후속 근거](../../../data/research/DATA-owner-followup-20261006-01a1100e/post-merge-followup.json)
+- 별도 운영 읽기 조회 `OPS-READONLY-01a10600`(2026-10-06T21:04 KST): PR183/main7파일 기준 동일, 운영GET6 응답 미확보로 일치 미확인. [새 운영 읽기 작업기록](2026-10-06/신진하-20261006-OPS-READONLY-01a10600.md); 기존 R4 후속·원실행/실패는 유지.
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
 
