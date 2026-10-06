@@ -1,0 +1,61 @@
+{
+  "kind": "zero_auth_historical_run_consumption_validation",
+  "observed_date_kst": "2026-10-06",
+  "source_commit": "e2ed53d39affc1a286cd60aab6a41942ac93445e",
+  "source_archive_sha256": "1b3230b00c2b612c87a4a8c1d1e3ed401ea011b249f9be78f473cc94d46e51d6",
+  "metadata_supervisor_sourceproof_sha256": "399565e68244160d5856b1e075cb35ca0d92caef5915292acd4560e67decd771",
+  "metadata_helper_sha256": "5c40f67762e81664f00763e73cd9baf4ba2ae94e0b1e28a4b2f315a6b0471b17",
+  "returncode": 0,
+  "stop": null,
+  "boundary": {
+    "backend": "docker",
+    "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+    "role": "validator",
+    "uid": 1000,
+    "readonly_root": true,
+    "caps_dropped": true,
+    "no_new_privileges": true,
+    "network": "none",
+    "mount_targets": [
+      "/artifacts",
+      "/workspace"
+    ],
+    "publisher_credentials_mounted": false,
+    "ai_profile_mounted": false
+  },
+  "source_changed": [],
+  "replay_only": true,
+  "new_model_calls": 0,
+  "quality_asserted": false,
+  "artifacts": [
+    {
+      "name": "http-readback.json",
+      "bytes": 2456458,
+      "sha256": "2331bf1c8b3a51bfc743d95a1ce0fb7d60e5ea1066054ab2d57d6e230a3f9a7e",
+      "storage": "noncommitted isolated execution artifact; full body duplicates pinned original execution"
+    },
+    {
+      "name": "mcp-readback.json",
+      "bytes": 2456458,
+      "sha256": "2331bf1c8b3a51bfc743d95a1ce0fb7d60e5ea1066054ab2d57d6e230a3f9a7e",
+      "storage": "noncommitted isolated execution artifact; full body duplicates pinned original execution"
+    },
+    {
+      "name": "summary.json",
+      "bytes": 2636,
+      "sha256": "15389e27d8768fa35bd9a978f1d6cabad6ca15c338688a7b8ee6c0671c2c4861",
+      "storage": "consumption-summary.json"
+    }
+  ],
+  "claims": [
+    "HTTP and stdio MCP preserve the same original input/execution, terminal status and project/run IDs for three pinned historical recordings.",
+    "HTTP and MCP readback artifacts have identical bytes and SHA256.",
+    "The isolated consumer source remained unchanged."
+  ],
+  "exclusions": [
+    "No browser or production endpoint was exercised.",
+    "No new model ran.",
+    "No accepted normal, changed or semantic appropriate-hold gate is complete.",
+    "This proof does not attest the teammate PC environment or production collector wiring."
+  ]
+}
