@@ -323,6 +323,15 @@ class ModelConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class _OllamaPromptBudget:
+    """Forwardable request-size policy, not a token-capacity or permission proof."""
+
+    config: ModelConfig
+    max_characters: int = 24000
+    max_utf8_bytes: int = 45000
+
+
+@dataclass(frozen=True, slots=True)
 class StructuredModelResult:
     data: Any
     metadata: dict[str, Any]
@@ -484,6 +493,14 @@ class OllamaAdapter(_ModelAdapter):
     adapter_name = "ollama"
     backend_schema_enforced = True
 
+    @property
+    def prompt_budget(self) -> _OllamaPromptBudget | None:
+        # ModelConfig validates the explicit context/output settings. This
+        # larger transport envelope does not assert that tokenization will fit.
+        if type(self.config) is ModelConfig and self.config.context_tokens >= 16384:
+            return _OllamaPromptBudget(self.config)
+        return None
+
     def _verify_pin(self, deadline: float) -> dict[str, Any]:
         tags = self._request("GET", "/api/tags", deadline)
         models = tags.get("models")
@@ -584,8 +601,25 @@ class StructuredModelClient:
                 "출력은 아래 JSON Schema를 충족해야 합니다.\n"
                 f"JSON Schema:\n{encoded_schema}\n\n{guide}요청:\n{prompt}"
             )
-        if len(formatted) > self.adapter.max_prompt_characters:
-            raise _fail("INVALID_ARGUMENT", "prompt_too_large", maximum=self.adapter.max_prompt_characters)
+        # A validated Ollama budget may be forwarded by the two completion
+        # recorders. A context value or native-schema flag alone cannot expand
+        # an unknown adapter's envelope, and Lab retains its existing 5k cap.
+        max_characters = min(self.adapter.max_prompt_characters, 16000)
+        max_utf8_bytes = None
+        budget = getattr(self.adapter, "prompt_budget", None)
+        if (type(budget) is _OllamaPromptBudget
+                and type(self.adapter.config) is ModelConfig
+                and budget.config is self.adapter.config
+                and self.adapter.config.context_tokens >= 16384
+                and native_schema
+                and type(budget.max_characters) is int and budget.max_characters == 24000
+                and type(budget.max_utf8_bytes) is int and budget.max_utf8_bytes == 45000):
+            max_characters, max_utf8_bytes = budget.max_characters, budget.max_utf8_bytes
+        if len(formatted) > max_characters:
+            raise _fail("INVALID_ARGUMENT", "prompt_too_large", maximum=max_characters)
+        if max_utf8_bytes is not None and len(formatted.encode("utf-8")) > max_utf8_bytes:
+            raise _fail("INVALID_ARGUMENT", "prompt_too_large", maximum=max_characters,
+                        maximum_utf8_bytes=max_utf8_bytes, limit="utf8_bytes")
         output = self.adapter.generate(formatted, schema)
         data, response_format = _model_json(output["response"], validator)
         return StructuredModelResult(data, {
