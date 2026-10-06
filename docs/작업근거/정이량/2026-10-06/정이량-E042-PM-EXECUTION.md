@@ -25,7 +25,7 @@
 private metadata supervisor `pm_execution_validator_20261006.py {budget|full|web}`는고정외부source-proof를검증후plain source를export한다. command/파일목록SHA·sourcehead·worktreeinputSHA·executorlogSHA는[검사수신증](../../../../evals/pm-prototype/20261006/validation/)에있다. Dockerimage76ed86…/uid1000/networknone/read-onlyroot/dropcaps/no-new-privileges,workspace/artifact외마운트0,게시/GH/PM/controller/개인AI프로필mount0. sourcechanged0.
 
 - 최종native/promptcontext+웹보완입력SHA9b2ab4a…: Python1,412 실패0/skip3,웹482PASS/skip5·Node4PASS·tsc/VitebuildPASS. 수신증의당시sourcehead d35f는worktree다른변경을포함하므로그head단독clean실행으로표현하지않는다.
-- 안내후targeted:117검사/실패0·3.683s,수신증78d7711…/worktreeinput04fe6274…. 안내후full:1,420검사/실패0·skip3·138.809s,수신증9c4c2c7…/sourceccbbe080/worktreeinput3224ad8…. source명령/해시전체는해당JSON을따른다.
+- 안내후targeted:117검사/실패0·3.683s,private실행폴더ID78d7711…/worktreeinput04fe6274…. 안내후full:1,420검사/실패0·skip3·138.809s,private실행폴더ID9c4c2c7…/sourceccbbe080/worktreeinput3224ad8…. 검사수·시간은각private executor.log의unittest완료요약과대조했다. 공개targetedJSON의byteSHA는a628f26d69b56ef8d0e082176980f0d2ca5eed23e36c472065cdbff554429fa8,공개fullJSON은fb5fc00dc471531413a2508d59baa953c5caa25c146f51c0c38dcc6fa787c13e이다. 이JSON에는명령·returncode·source/worktree/isolation과원logSHA가있으며폴더ID를수신증SHA로해석하지않는다.
 - 중간full1error(lineagelinks누락)·web8fail(fixture내용불일치)와수정전실행logs는private에원본보존. 현재성공에합산하거나지우지않았다.
 - Dockerbackend복구는private설정백업과동일LocalAppData경계socketbackup만수행,EnableInferencefalse로Docker자체ModelRunner중단. Windows보호낮춤/factoryreset/volume삭제0. 연구실LG모델runtime와구분한다.
 
