@@ -40,3 +40,10 @@ PM의 #13 배정 댓글 `6011538542`는 21개 원문 근거의 실제 등록→�
 | 정확한 원자료 독립 평가/실측 검색 비교 및 formal acceptance | 이전 PR/fixture 결과는 이번 운영 실측이나 PM accept가 아님. #15 review 요청은 통과 아님. #16 body의 미채택 상태도 남아 있음. | 데이터/API·평가 범위를 정이량과 relevant owners가 확인한 후 해당 task별 증거와 정식 판정 갱신. |
 
 18:00은 팀 내부 진행 보고 목표다. 이번 제출은 실제 live 검증, PM acceptance, parent/child close, 전체 DATA assignment 완료를 주장하지 않는다.
+
+## 기록 후 GitHub 후속 확인 — 18:04 KST
+
+- PR #176을 Ready for review로 전환했다. GitHub에 정이량을 CODEOWNER reviewer로 요청한 이벤트가 생성됐다. PR 설명에서도 Draft 표현을 Ready-for-review 부분 제출로 바로잡았다.
+- 최신 문서 커밋 `a55458d`까지 필요한 CI 4/4 성공을 화면에서 확인했다. 현재 review pending이며 branch가 최신 main보다 뒤처져 있다. merge는 하지 않았다.
+- #16에 18:03 KST 후속 진행·남은 작업 댓글을 추가해 #13/#148 수치, PR/CI/reviewer 상태, 13개 open assignment 검색 결과, #13 session blocker, #16 본문과 최신 R2 배정의 상태 불일치를 태그와 함께 보고했다.
+- #16 issue body와 checklist는 건드리지 않았다. 본문은 계속 `PM 미채택 확장`, 체크리스트는 미완료로 표시되어 있고, PM의 공식 상태 정리가 필요하다.

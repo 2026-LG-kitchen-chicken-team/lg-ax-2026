@@ -12,6 +12,8 @@
 - #13 화면: Open, 0/8 checklist, 0/4 subissues; 하위 항목은 #109/#110/#111/#114. 최신 PM 진행 상태의 관련 메시지는 issuecomment `6012519569`: 17:33:46 KST central `/v1/status` 조회 시 기존 reservation ID `matched=0`, team/personal 모두 OFF. 메시지는 이 조회가 원 PC의 실제 세션 종료 증명이나 HTTP409 자동 해소가 아니라고 명시한다.
 - #13 내 고정 결과 독립 비교 보고는 comment `6012653629`, #148 collector 보고는 `6012685993`, #16 formal partial report는 `6012707248`이다. 각 보고에서 PM accept/작업 complete라고 하지 않았다.
 - PR #176은 issue #13/#148과 연결된 부분 산출물이다. 이전 확인(17:46 기록)에는 4/4 checks success, Draft 상태, PM review 대기였다. 이 evidence 작성 후 Ready-for-review 변경 여부는 별도 수신 확인이 필요하다.
+- 후속 확인(18:04 KST): PR #176은 Ready for review이며 code owner `jeongiryang` 검토 요청 이벤트가 표시된다. 본문 Draft 표현을 Ready 부분 제출로 수정했다. 최신 커밋 `a55458d`의 필수 CI 4/4 성공, review pending, branch out-of-date를 화면에서 확인했다. 보호 브랜치 직접 push 권한이 없다는 merge blocker도 표시되나 merge는 하지 않았다.
+- #16에 18:03 KST 후속 보고를 게시했다. 검색 결과 13개 open assigned issue와 진행한 #13/#148 범위, 남은 live/source/session 경계, role handoff를 남겼다. #16 body의 `PM 미채택 확장` 표시와 PM R2 배정 사이 상태 불일치도 PM에게 정리를 요청했다.
 - 사용자가 보고한 상태: PR #166 merged. PR #167에서 16:09에 확인된 변경은 작업 브랜치에 최신 main을 가져온 것이며 최종 승인·병합은 확인되지 않았다. #15의 review request는 승인/통과 판정이 아니다.
 
 ## 작업트리·산출물 경로
