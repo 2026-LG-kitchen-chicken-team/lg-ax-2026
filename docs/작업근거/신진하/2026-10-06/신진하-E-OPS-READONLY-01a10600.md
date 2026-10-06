@@ -13,3 +13,5 @@
 원문 위치는 입력파일 JSON pointer와 문서 page/section·리뷰 row/section 둘 다 보존한다. 공식PDF SHA는 PR183 plan의 pin을 읽은 것으로 이번 원PDF 재해시 증거가 아니다. text SHA는 UTF-8 재계산. 날짜팩 dataset canonical SHA와 annotation canonical SHA·source raw bytes SHA를 각각 재확인한다. 운영 response가 없으므로 metadata 동일·검색 원문 일치·배포 SHA·전체 연결 성공을 주장하지 않는다.
 
 새 문서등록/프로젝트/집계/예약/설정/배포/재시작/모델/메일발송/Issue댓글0. controller/PM/admin/테스트 자격증명 전용0, token 전송0, 인증 생성/변경0. 사용자 직접 승인에 따라 이 자료 조회 결과만 새 PR로 게시하고 최종 URL/HEAD/CI는 로컬 게시 수신증과 PR에서 확인한다. 자료 버전·runtime 버전은 자동 일치로 간주하지 않는다.
+
+게시후 최신main `9d7c896e2cea62914ceeb3b957e3a535ccc4d47f` 반영: 공유 개인 README 충돌2건은 최신 ownerR4 내용 보존+이번링크만 추가로 해소. PR189 보호와PR194 R4자료비교의 실제 병합을 직접 확인했다. 원자료7파일·177행·원GET6실패·이전 코드/자료SHA는 유지했고 운영/모델 호출을 추가하지 않았다. 새 제출 commit은 현재 PRHEAD와 로컬publication-manifest에 연결한다.

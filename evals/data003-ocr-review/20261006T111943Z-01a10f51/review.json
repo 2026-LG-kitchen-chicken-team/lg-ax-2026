@@ -1,0 +1,125 @@
+{
+  "task_id": "P2-DATA-003",
+  "issue": 14,
+  "review_id": "20261006T111943Z-01a10f51",
+  "reviewed_at_kst": "2026-10-06T20:39:20.489742+09:00",
+  "base_commit": "a3452a29180f7996a06ca141d9c416a31513587c",
+  "method": "manual original-PDF page/crop visual comparison plus saved OCR metadata review",
+  "counts": {
+    "original_pdfs": 3,
+    "complete_pages_viewed": 9,
+    "original_region_rerenders_viewed": 14,
+    "extra_cover_footer_detail_viewed": 1,
+    "ledger_regions_reviewed": 14,
+    "plan_source_checks_reviewed": 3,
+    "source_context_rows": 22,
+    "saved_OCR_text_difference_regions": 6,
+    "whitespace_difference_regions": 5,
+    "footnote_glyph_difference_regions": 1,
+    "numeric_auxiliary_footnote_contamination_regions": 1
+  },
+  "historical_statistics_preserved": {
+    "cases": 6,
+    "regions": 14,
+    "measured_attempts": 70,
+    "failed_attempts": 0,
+    "macro_CER": 0.0689935064935065,
+    "micro_CER": 0.06870229007633588,
+    "normalized_exact_matches": 8,
+    "numeric_correct": 15,
+    "numeric_total": 15,
+    "numeric_value_accuracy": 1.0,
+    "numeric_fields_correct": 10,
+    "numeric_fields_total": 11,
+    "explicit_unit_correct": 12,
+    "unit_total": 12,
+    "explicit_unit_accuracy": 1.0,
+    "model_column_accuracy": null,
+    "median_ms": 309.34209999395534,
+    "p95_ms": 513.4351999731734
+  },
+  "new_OCR_calls": 0,
+  "new_model_calls": 0,
+  "new_table_model_selected": false,
+  "table_extraction_accuracy": null,
+  "model_column_accuracy": null,
+  "automatically_extracted_row_column_errors": null,
+  "manual_source_crop_mapping": "14 original rectangles/gold snippets confirmed; not automatic layout accuracy",
+  "plan_check_results": [
+    {
+      "model_id": "DUE6BGL2E",
+      "page": 57,
+      "evidence_id": "DATA003-DUE6BGL2E-D03",
+      "expected_header": "DUE6**E/DUE6***E/DUE6****E/DEE6**E built-in right column",
+      "expected_values": [
+        598,
+        815,
+        567
+      ],
+      "unit": "mm",
+      "condition": "same values also appear for freestanding with top removed; retain column/type header",
+      "observed_table_assignment": null,
+      "table_error": null,
+      "manual_source_checked": true,
+      "manual_plan_value_unit_condition_match": true
+    },
+    {
+      "model_id": "MW23FDI",
+      "page": 37,
+      "evidence_id": "DATA003-MW23FDI-M06",
+      "expected_values": [
+        1000
+      ],
+      "unit": "W",
+      "condition": "Max. and *1 short-time output footnote; not constant output",
+      "observed_table_assignment": null,
+      "table_error": null,
+      "manual_source_checked": true,
+      "manual_plan_value_unit_condition_match": true
+    },
+    {
+      "model_id": "MW23FDI",
+      "page": 37,
+      "evidence_id": "DATA003-MW23FDI-M07",
+      "expected_values": [
+        1570
+      ],
+      "unit": "W",
+      "condition": "rated electrical consumption distinct from microwave output",
+      "observed_table_assignment": null,
+      "table_error": null,
+      "manual_source_checked": true,
+      "manual_plan_value_unit_condition_match": true
+    }
+  ],
+  "unconfirmed": [
+    {
+      "id": "U01",
+      "item": "자동 표 검출·행/열/모델 연결 정확도",
+      "reason": "저장 결과는 수동 고정 crop 인식이며 구조화 표 출력이 없음"
+    },
+    {
+      "id": "U02",
+      "item": "T876MEE1H1의 유형1/유형2 치수와 구성품 *1 실제 적용",
+      "reason": "공용 PDF에 정확 SKU 대응이 없고 치수 스티커/일부모델 조건이 있음"
+    },
+    {
+      "id": "U03",
+      "item": "소비 경로의 mm 머리글 상속·병합 셀·Max/*1 조건 보존",
+      "reason": "원본 조건은 확인했지만 기존 OCR 소비 코드를 수정/재실행하지 않음"
+    },
+    {
+      "id": "U04",
+      "item": "냉장고 다른 출처5cm와 PDF10cm의 최종 처분",
+      "reason": "이번 범위는 기존 ledger/plan과 원 PDF 대조이며 외부 출처 적용 검증을 수행하지 않음"
+    },
+    {
+      "id": "U05",
+      "item": "간편조리 설정의 정확 SKU 적용·전원 분리 후 유지",
+      "reason": "공용 안내의 모델별 차이 조건이 있고 실기기 확인/추가 실행 없음"
+    }
+  ],
+  "issue14_done": false,
+  "stage5_independent_evaluation_done": false,
+  "existing_personal_READMEs_modified": false
+}

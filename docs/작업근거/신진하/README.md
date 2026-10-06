@@ -2,12 +2,11 @@
 
 <!-- member-log:owner-updates:start -->
 ## 작성자의 최신 재개 요약
-- 최신 기록 ID / 한국시간 / 현재 목표: `신진하-E-DATA-OWNER-FOLLOWUP-01a1100e` · 2026-10-06 20:31 KST · PR183 실제 병합 확인 및 승인계획 외부 변경 차단 후속 제출.
-- 실제 완료 범위 / 미완료·막힘 / 다음 행동과 담당: 공개PDF3/SHA·21원문/HTTP46·재시작·변경/삭제/다른ID·모델·버전 거부를 구현 전후 별도 폴더에 보존했다. 카탈로그/BM25/비교/새CSV/PDF/workspace 원본검증 연결과85회귀를 통과했다. R4 세 고정 결과는11/11·11/11·10/10 exact,9prompt/raw 해시 일치지만failed/questions[]다. 새 구성 날짜source/dataset/sidecar에서10월 분모4/날짜누락1/청소언급0.25, 실제API/MCP 같은aggregate/원문/재시작을 확인했다. 원36CSV8열 보존, 새 모델 호출0. 현재 PM 운영 배포·taxonomy 승인/WEB 새날짜 브라우저/CORE accept·적절한hold/독립평가·검색225행은 미완료. 로컬 준비 실패도 별도 이력으로 보존했다.
-- 상세 작업근거: [고유 근거ID](2026-10-06/신진하-E-DATA-OWNER-FOLLOWUP-01a1100e.md)
-- 관련 작업기록: [이번 수행](../../작업기록/신진하/2026-10-06/신진하-20261006-DATA-OWNER-FOLLOWUP-01a1100e.md)
-- [새 부분 PR183·PM 검수 요청](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/183). open/non-draft·PM reviewer 요청을 확인했고 최초 head342cfb3의CI4개는 실행 중이다. 검토 요청/수신은 승인·병합·전체Done이 아니다.
-- 최종 수행: PR183은 PM 부분 인수·CI4/4 후20:15 병합. 승인계획 모델/버전 바꿔치기 보호는 별도 후속branch로 분리했고 최신main 위85검사·5무결성 통과. PM 운영/독립평가·CORE 의미·WEB 새날짜 검증은 담당자 인계, 부모Done은 미완료. [병합·후속 근거](../../../data/research/DATA-owner-followup-20261006-01a1100e/post-merge-followup.json)
+- 최신 기록 ID / 한국시간 / 현재 목표: `신진하-E-DATA-INTEGRATION-R4-01a1100e` · 2026-10-06 20:56 KST · PM DATA-INTEGRATION-R4의3팩원문/날짜/검색 대조·후속제출.
+- 실제 완료 범위 / 미완료·막힘 / 다음 행동과 담당: 원36/CSV8열 보존, 108원문·ID/모델/버전 연결, 15query독립재계산/재생·40거절, 최신검사main087bd에서PDF3/근거21/실HTTP46·재시작PASS. 원날짜미상/PM31날짜/DATA9날짜는각source/version/IDs로유지;청소1/3과1/4는원문membership가다름. PM 운영/분류/독립자료 승인, CORE 의미/보류, WEB 새DATA9팩화면·내보내기가남음. 부모Done/실고객수요아님.
+- 상세 작업근거: [R4 고유 기록ID](2026-10-06/신진하-E-DATA-INTEGRATION-R4-01a1100e.md)
+- 관련 근거: [3팩 고정값·실행·담당 인계](../../../evals/data-integration-r4/20261006/README.md)
+- 선행 실제상태: PR183·PR189 실제병합 확인. 최신main b67886f 위R4단위에서108바인딩/15query/40거절·실HTTP46/PDF3/근거21/재시작PASS. PM188날짜3파일은고정핀과같음; 공통문서nav는PM188미병합으로미제공. 이번R4의새PR/CI/PM 인수·운영은별도.
 - 별도 운영 읽기 조회 `OPS-READONLY-01a10600`(2026-10-06T21:04 KST): PR183/main7파일 기준 동일, 운영GET6 응답 미확보로 일치 미확인. [새 운영 읽기 근거](2026-10-06/신진하-E-OPS-READONLY-01a10600.md); 기존 R4 후속·원실행/실패는 유지.
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.

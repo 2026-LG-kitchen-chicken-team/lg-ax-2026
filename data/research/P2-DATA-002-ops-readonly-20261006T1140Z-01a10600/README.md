@@ -56,3 +56,5 @@ PDF 원문은 이번에 다운로드·재해시하지 않았다. 위 값은 PR18
 자료 기준 PR183 head `8fbe6ded37f7e515ce66c24d3dc8558f8281a9fc`, 비교 고정 main `b160c18a643c362dcf3923ac49742a05f7bb537d`. 제출 commit은 이 폴더와 같은 PR의 HEAD다. JSON의 text SHA는 해당 고정 commit의 `reference_path`/`reference_json_pointer`에서 text를 읽어 UTF-8로 그대로 인코딩해 재계산한다. 파일 SHA·원 PDF SHA·text SHA·canonical 자료 SHA는 서로 비교하지 않는다.
 
 현재 다음 하나는 **PM이 승인된 운영 읽기 주소와 본인 viewer 연결 또는 비밀 없는 버전/해시 응답을 인계하는 것**이다. 인계 후 같은 기준 목록에 실제 응답을 연결하고 일치/불일치를 판정한다. 사용자가 주소를 모른다고 답했으므로 추가 주소 질문을 반복하지 않는다.
+
+추가 기록(2026-10-06T21:13:31.164759+09:00): 제출 branch는 최신 main `9d7c896e2cea62914ceeb3b957e3a535ccc4d47f`를 병합했다. 기존 R4/계획보호 PR194·189 병합을 남은 작업 표에 갱신했다. 기준7자료 바이트는 여전히 동일하며 기존 GET6건을 새로 실행한 것으로 바꾸지 않았다.

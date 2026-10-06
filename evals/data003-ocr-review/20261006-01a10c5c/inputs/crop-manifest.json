@@ -1,0 +1,809 @@
+{
+  "status": "crops_generated_awaiting_visual_review",
+  "scope": "input_preparation_and_text_extraction_only",
+  "created_at_kst": "2026-10-05T04:41:31.507785+09:00",
+  "input_cases_sha256": "101746c6bcd384bdafe0eb7375d82cef9fe2de7cdab33149bfb0dfbca6c3919a",
+  "protocol_sha256": "cb33a7f3666430470b9ad50bbf7b2f72e09fceeaff73b7a0bd31c2593280ed28",
+  "script_sha256": "a459ea6c557e5fd5324a3e775a18c41229f6340fa32e7687197545c631101a8c",
+  "runtime": {
+    "python": "3.12.14",
+    "pdfplumber": "0.11.9",
+    "pypdf": "6.10.0",
+    "pypdfium2": "5.13.0",
+    "Pillow": "12.3.0"
+  },
+  "counts": {
+    "cases": 6,
+    "recognition_regions": 14,
+    "phrases_found_in_text": 14
+  },
+  "cases": [
+    {
+      "id": "OCR-FR-LINE",
+      "model_id": "T876MEE1H1",
+      "document_version": "MFL71401557 Rev.00_032526",
+      "page": 19,
+      "source_pdf_sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815",
+      "source_url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=OKSVlmUDzoQqSyeRo6kwiw",
+      "raster_path": "private/data003-ocr/20261005-v2/T876MEE1H1-p19-300dpi.png",
+      "raster_sha256": "33f8727590791a48e86cc847e7ec11ee08b15ef3584c0722be8acb880c5f91a9",
+      "raster_size_px": [
+        2150,
+        3038
+      ],
+      "page_size_points": [
+        516,
+        729
+      ],
+      "dpi": 300,
+      "color": "RGB",
+      "render_ms": 232.9662,
+      "kind": "source_line",
+      "rotation_degrees": 0,
+      "denoise": false,
+      "source_fact_ids": [
+        "F10"
+      ],
+      "recognition_status": "not_executed",
+      "regions": [
+        {
+          "id": "OCR-FR-LINE-01",
+          "gold_text": "선반 위에 있는 식품을 치운 후",
+          "gold_text_sha256": "eae78e16a83ad2c5b1374bb3db9a249756788b1d391e27e4550d88e04ccc0a7e",
+          "source_text_bbox_points": [
+            110.81872200000001,
+            668.335,
+            222.34070400000013,
+            677.335
+          ],
+          "padding_points": [
+            0.5,
+            2,
+            0.5,
+            2
+          ],
+          "crop_bbox_px": [
+            459,
+            2776,
+            929,
+            2832
+          ],
+          "crop_path": "private/data003-ocr/20261005-v2/OCR-FR-LINE-01.png",
+          "crop_size_px": [
+            470,
+            56
+          ],
+          "crop_sha256": "7ff8463af2c6b2a320c586bfb35632ccbc5445879695bd3bd2bcd3df2788d001",
+          "field_target": null,
+          "gold_origin": "short exact source phrase or manually located numeric value; not recognition output",
+          "unit_in_crop": null,
+          "column_assignment": "manual_fixed_source_coordinates_not_layout_prediction",
+          "visual_review": "pending"
+        }
+      ]
+    },
+    {
+      "id": "OCR-FR-NUM",
+      "model_id": "T876MEE1H1",
+      "document_version": "MFL71401557 Rev.00_032526",
+      "page": 22,
+      "source_pdf_sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815",
+      "source_url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=OKSVlmUDzoQqSyeRo6kwiw",
+      "raster_path": "private/data003-ocr/20261005-v2/T876MEE1H1-p22-300dpi.png",
+      "raster_sha256": "47204d08e7f1aef4e6a5ec7f46a821d243e06ab14646c7960ace31b825d0e218",
+      "raster_size_px": [
+        2150,
+        3038
+      ],
+      "page_size_points": [
+        516,
+        729
+      ],
+      "dpi": 300,
+      "color": "RGB",
+      "render_ms": 63.8495,
+      "kind": "numeric_rows",
+      "rotation_degrees": 0,
+      "denoise": false,
+      "source_fact_ids": [
+        "F12",
+        "F13"
+      ],
+      "recognition_status": "not_executed",
+      "regions": [
+        {
+          "id": "OCR-FR-NUM-01",
+          "gold_text": "10 cm",
+          "gold_text_sha256": "5a8bb84c72fb6f0ebe5f60e2fe071e5a449cc1c33bb6ad3ce3476f6618ab9572",
+          "source_text_bbox_points": [
+            369.479538,
+            560.575,
+            393.144036,
+            569.575
+          ],
+          "padding_points": [
+            0.5,
+            2,
+            0.5,
+            2
+          ],
+          "crop_bbox_px": [
+            1537,
+            2327,
+            1641,
+            2382
+          ],
+          "crop_path": "private/data003-ocr/20261005-v2/OCR-FR-NUM-01.png",
+          "crop_size_px": [
+            104,
+            55
+          ],
+          "crop_sha256": "a106f982357e7acc9462d76007b3e1b7cd19d70851903e7c28fa8c4fdd836659",
+          "field_target": {
+            "label": "벽면 간격",
+            "fact_id": "F12",
+            "value_path": [],
+            "value": 10,
+            "unit": "cm"
+          },
+          "gold_origin": "short exact source phrase or manually located numeric value; not recognition output",
+          "unit_in_crop": true,
+          "column_assignment": "manual_fixed_source_coordinates_not_layout_prediction",
+          "visual_review": "pending"
+        },
+        {
+          "id": "OCR-FR-NUM-02",
+          "gold_text": "2.5 cm",
+          "gold_text_sha256": "74ad1034e59ed95ee017d9d3e1d39fd817898079210d3a487506439178cd7165",
+          "source_text_bbox_points": [
+            435.003282,
+            644.515,
+            461.067606,
+            653.515
+          ],
+          "padding_points": [
+            0.5,
+            2,
+            0.5,
+            2
+          ],
+          "crop_bbox_px": [
+            1810,
+            2677,
+            1924,
+            2732
+          ],
+          "crop_path": "private/data003-ocr/20261005-v2/OCR-FR-NUM-02.png",
+          "crop_size_px": [
+            114,
+            55
+          ],
+          "crop_sha256": "1013dcb657679bab51339d70e1fa524d7468fb192d993f7ef01f0bf8152a8ed5",
+          "field_target": {
+            "label": "문 위쪽과 설치장 간격",
+            "fact_id": "F13",
+            "value_path": [],
+            "value": 2.5,
+            "unit": "cm"
+          },
+          "gold_origin": "short exact source phrase or manually located numeric value; not recognition output",
+          "unit_in_crop": true,
+          "column_assignment": "manual_fixed_source_coordinates_not_layout_prediction",
+          "visual_review": "pending"
+        }
+      ]
+    },
+    {
+      "id": "OCR-DW-LINE",
+      "model_id": "DUE6BGL2E",
+      "document_version": "MFL71959117 Rev.07_030626",
+      "page": 23,
+      "source_pdf_sha256": "ff60f78ab8326c40b9a3446f11b49531b8f0c823a310ba98366716b633ba63f5",
+      "source_url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=47eEeOZ5yQ3pVzw1uosMxg",
+      "raster_path": "private/data003-ocr/20261005-v2/DUE6BGL2E-p23-300dpi.png",
+      "raster_sha256": "afe4b5f0c85298e30ab987dd03b031a1fb66a78e4b9f7c00998312a77d4ab34d",
+      "raster_size_px": [
+        2150,
+        3038
+      ],
+      "page_size_points": [
+        516,
+        729
+      ],
+      "dpi": 300,
+      "color": "RGB",
+      "render_ms": 225.803,
+      "kind": "source_line",
+      "rotation_degrees": 0,
+      "denoise": false,
+      "source_fact_ids": [
+        "D09"
+      ],
+      "recognition_status": "not_executed",
+      "regions": [
+        {
+          "id": "OCR-DW-LINE-01",
+          "gold_text": "높이를 3단계로 조절",
+          "gold_text_sha256": "2552f84fba36d96d66de9726093d16787ac780f553ca9faa3ef9b17c3485e7ec",
+          "source_text_bbox_points": [
+            342.297738,
+            227.03500000000003,
+            418.6503,
+            236.03500000000003
+          ],
+          "padding_points": [
+            0.5,
+            2,
+            0.5,
+            2
+          ],
+          "crop_bbox_px": [
+            1424,
+            937,
+            1747,
+            992
+          ],
+          "crop_path": "private/data003-ocr/20261005-v2/OCR-DW-LINE-01.png",
+          "crop_size_px": [
+            323,
+            55
+          ],
+          "crop_sha256": "2d0e76726f70d3c9e1a26302352526f0ad3a97133528d4fb32f9d0fb71db916d",
+          "field_target": null,
+          "gold_origin": "short exact source phrase or manually located numeric value; not recognition output",
+          "unit_in_crop": null,
+          "column_assignment": "manual_fixed_source_coordinates_not_layout_prediction",
+          "visual_review": "pending"
+        }
+      ]
+    },
+    {
+      "id": "OCR-DW-TABLE",
+      "model_id": "DUE6BGL2E",
+      "document_version": "MFL71959117 Rev.07_030626",
+      "page": 57,
+      "source_pdf_sha256": "ff60f78ab8326c40b9a3446f11b49531b8f0c823a310ba98366716b633ba63f5",
+      "source_url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=47eEeOZ5yQ3pVzw1uosMxg",
+      "raster_path": "private/data003-ocr/20261005-v2/DUE6BGL2E-p57-300dpi.png",
+      "raster_sha256": "8d0bff4477cea8a7104e9503cc21e85d9cf6ca4b654256b823dfede32d28c06f",
+      "raster_size_px": [
+        2150,
+        3038
+      ],
+      "page_size_points": [
+        516,
+        729
+      ],
+      "dpi": 300,
+      "color": "RGB",
+      "render_ms": 58.5601,
+      "kind": "numeric_rows",
+      "rotation_degrees": 0,
+      "denoise": false,
+      "source_fact_ids": [
+        "D02",
+        "D03",
+        "D04",
+        "D05",
+        "D06"
+      ],
+      "recognition_status": "not_executed",
+      "regions": [
+        {
+          "id": "OCR-DW-TABLE-01",
+          "gold_text": "598 mm X 815 mm X 567 mm",
+          "gold_text_sha256": "49f16343886d48b4a5c562c62fc951b8ff5bfed55a4b762b12a243fd22ada59b",
+          "source_text_bbox_points": [
+            335.76,
+            537.355,
+            448.93534800000003,
+            546.355
+          ],
+          "padding_points": [
+            0.5,
+            2,
+            0.5,
+            2
+          ],
+          "crop_bbox_px": [
+            1396,
+            2231,
+            1873,
+            2286
+          ],
+          "crop_path": "private/data003-ocr/20261005-v2/OCR-DW-TABLE-01.png",
+          "crop_size_px": [
+            477,
+            55
+          ],
+          "crop_sha256": "9445f197d8155ebde8f58ace7e148fe258eca9b8b3906137fe5042d93a953e3c",
+          "field_target": {
+            "label": "빌트인 폭×높이×깊이",
+            "fact_id": "D03",
+            "value_path": [
+              "width",
+              "height",
+              "depth"
+            ],
+            "value": [
+              598,
+              815,
+              567
+            ],
+            "unit": "mm",
+            "column": "DUE 빌트인"
+          },
+          "gold_origin": "short exact source phrase or manually located numeric value; not recognition output",
+          "unit_in_crop": true,
+          "column_assignment": "manual_fixed_source_coordinates_not_layout_prediction",
+          "visual_review": "pending"
+        },
+        {
+          "id": "OCR-DW-TABLE-02",
+          "gold_text": "45 kg",
+          "gold_text_sha256": "f2706c8a4f8eae7761e3762482d9fbd0538c9789b48d9fb8da9e3fb1e7c2a32b",
+          "source_text_bbox_points": [
+            381.84,
+            561.355,
+            402.81123599999995,
+            570.355
+          ],
+          "padding_points": [
+            0.5,
+            2,
+            0.5,
+            2
+          ],
+          "crop_bbox_px": [
+            1588,
+            2331,
+            1681,
+            2386
+          ],
+          "crop_path": "private/data003-ocr/20261005-v2/OCR-DW-TABLE-02.png",
+          "crop_size_px": [
+            93,
+            55
+          ],
+          "crop_sha256": "0b99a7cb8740e9b67bc6a57e54c98e16c533f37f5149e8b5b571a013653cb0f0",
+          "field_target": {
+            "label": "빌트인 무게",
+            "fact_id": "D04",
+            "value_path": [],
+            "value": 45,
+            "unit": "kg",
+            "column": "DUE 빌트인"
+          },
+          "gold_origin": "short exact source phrase or manually located numeric value; not recognition output",
+          "unit_in_crop": true,
+          "column_assignment": "manual_fixed_source_coordinates_not_layout_prediction",
+          "visual_review": "pending"
+        },
+        {
+          "id": "OCR-DW-TABLE-03",
+          "gold_text": "14인용",
+          "gold_text_sha256": "d85286b414a904f54edc4ea9fa0dbbb05b84bd8b080192b0a08b9e2ce56b5cf8",
+          "source_text_bbox_points": [
+            289.44,
+            475.375,
+            315.693084,
+            484.375
+          ],
+          "padding_points": [
+            0.5,
+            2,
+            0.5,
+            2
+          ],
+          "crop_bbox_px": [
+            1203,
+            1972,
+            1318,
+            2027
+          ],
+          "crop_path": "private/data003-ocr/20261005-v2/OCR-DW-TABLE-03.png",
+          "crop_size_px": [
+            115,
+            55
+          ],
+          "crop_sha256": "a344b2772ba505594a8a2bbfd988a23a4d0339728c661600bbfa205051b6fefc",
+          "field_target": {
+            "label": "최대 용량",
+            "fact_id": "D02",
+            "value_path": [],
+            "value": 14,
+            "unit": "인용"
+          },
+          "gold_origin": "short exact source phrase or manually located numeric value; not recognition output",
+          "unit_in_crop": true,
+          "column_assignment": "manual_fixed_source_coordinates_not_layout_prediction",
+          "visual_review": "pending"
+        },
+        {
+          "id": "OCR-DW-TABLE-04",
+          "gold_text": "1600 W",
+          "gold_text_sha256": "a5ee7ed67a3ca813847f5320d0b803f4eb283dc3a99d8dcd3c163e075289879f",
+          "source_text_bbox_points": [
+            288.54,
+            513.355,
+            316.95267,
+            522.355
+          ],
+          "padding_points": [
+            0.5,
+            2,
+            0.5,
+            2
+          ],
+          "crop_bbox_px": [
+            1200,
+            2130,
+            1323,
+            2186
+          ],
+          "crop_path": "private/data003-ocr/20261005-v2/OCR-DW-TABLE-04.png",
+          "crop_size_px": [
+            123,
+            56
+          ],
+          "crop_sha256": "15da4796b226a0cc552aca83977ed7bf1e2cc2c4d19ca14fc8c8f02994207235",
+          "field_target": {
+            "label": "소비전력",
+            "fact_id": "D05",
+            "value_path": [],
+            "value": 1600,
+            "unit": "W"
+          },
+          "gold_origin": "short exact source phrase or manually located numeric value; not recognition output",
+          "unit_in_crop": true,
+          "column_assignment": "manual_fixed_source_coordinates_not_layout_prediction",
+          "visual_review": "pending"
+        }
+      ],
+      "context": {
+        "path": "private/data003-ocr/20261005-v2/OCR-DW-TABLE-context.png",
+        "sha256": "7f4c4e79a595efb29d208998ff8e82883bd4955b8e8dc90c6994e74f2e4be877",
+        "bbox_px": [
+          229,
+          1658,
+          1942,
+          2393
+        ],
+        "purpose": "human inspection of model column and unit header; not a recognition crop"
+      }
+    },
+    {
+      "id": "OCR-MW-LINE",
+      "model_id": "MW23FDI",
+      "document_version": "MFL68822538 Rev.00_120925",
+      "page": 17,
+      "source_pdf_sha256": "3ceec78295d02352fd467309bc613cf59c9bf7bce0bae3e9d5de3ad4bae2f7bc",
+      "source_url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=uTblKnUavHksC4PsafxKeQ",
+      "raster_path": "private/data003-ocr/20261005-v2/MW23FDI-p17-300dpi.png",
+      "raster_sha256": "aa61d5d8bdbbb88f57f2e370763fe03031ebc97959484feb0fa3182d535aa00e",
+      "raster_size_px": [
+        2150,
+        3038
+      ],
+      "page_size_points": [
+        516,
+        729
+      ],
+      "dpi": 300,
+      "color": "RGB",
+      "render_ms": 72.5345,
+      "kind": "source_line",
+      "rotation_degrees": 0,
+      "denoise": false,
+      "source_fact_ids": [
+        "M14"
+      ],
+      "recognition_status": "not_executed",
+      "regions": [
+        {
+          "id": "OCR-MW-LINE-01",
+          "gold_text": "버튼을 누를 때마다 30초씩",
+          "gold_text_sha256": "29da77677e97aaae20c6f95f2465021005dcd07089abe892fe3a358f7cc0c37a",
+          "source_text_bbox_points": [
+            57.00024,
+            672.295,
+            157.11168,
+            681.295
+          ],
+          "padding_points": [
+            0.5,
+            2,
+            0.5,
+            0
+          ],
+          "crop_bbox_px": [
+            235,
+            2793,
+            657,
+            2840
+          ],
+          "crop_path": "private/data003-ocr/20261005-v2/OCR-MW-LINE-01.png",
+          "crop_size_px": [
+            422,
+            47
+          ],
+          "crop_sha256": "05da6a3206072feea83b9611e9e8418296c12303aa98bf33868394c4ebd5abf5",
+          "field_target": null,
+          "gold_origin": "short exact source phrase or manually located numeric value; not recognition output",
+          "unit_in_crop": null,
+          "column_assignment": "manual_fixed_source_coordinates_not_layout_prediction",
+          "visual_review": "pending"
+        }
+      ]
+    },
+    {
+      "id": "OCR-MW-TABLE",
+      "model_id": "MW23FDI",
+      "document_version": "MFL68822538 Rev.00_120925",
+      "page": 37,
+      "source_pdf_sha256": "3ceec78295d02352fd467309bc613cf59c9bf7bce0bae3e9d5de3ad4bae2f7bc",
+      "source_url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=uTblKnUavHksC4PsafxKeQ",
+      "raster_path": "private/data003-ocr/20261005-v2/MW23FDI-p37-300dpi.png",
+      "raster_sha256": "20d18637096134c0d5ec9fde54cbe6c2c3e96febe08225f1d3a2b78c82251075",
+      "raster_size_px": [
+        2150,
+        3038
+      ],
+      "page_size_points": [
+        516,
+        729
+      ],
+      "dpi": 300,
+      "color": "RGB",
+      "render_ms": 80.5407,
+      "kind": "numeric_rows",
+      "rotation_degrees": 0,
+      "denoise": false,
+      "source_fact_ids": [
+        "M02",
+        "M03",
+        "M06",
+        "M07"
+      ],
+      "recognition_status": "not_executed",
+      "regions": [
+        {
+          "id": "OCR-MW-TABLE-01",
+          "gold_text": "476 × 272 × 369",
+          "gold_text_sha256": "06128d6c1a7fe658415375549c618d5ecad069b5f7b93deb36a1dd472502cb3c",
+          "source_text_bbox_points": [
+            224.28,
+            624.715,
+            291.62442,
+            633.715
+          ],
+          "padding_points": [
+            0.5,
+            2,
+            0.5,
+            2
+          ],
+          "crop_bbox_px": [
+            932,
+            2595,
+            1218,
+            2650
+          ],
+          "crop_path": "private/data003-ocr/20261005-v2/OCR-MW-TABLE-01.png",
+          "crop_size_px": [
+            286,
+            55
+          ],
+          "crop_sha256": "4cc252a79d7791eb78dd409e422f78634166071f0bb1202228773f93c3da1785",
+          "field_target": {
+            "label": "MW23FDI 외형 폭×높이×깊이",
+            "fact_id": "M03",
+            "value_path": [
+              "width",
+              "height",
+              "depth"
+            ],
+            "value": [
+              476,
+              272,
+              369
+            ],
+            "unit": "mm",
+            "column": "MW23FDI"
+          },
+          "gold_origin": "short exact source phrase or manually located numeric value; not recognition output",
+          "unit_in_crop": false,
+          "column_assignment": "manual_fixed_source_coordinates_not_layout_prediction",
+          "visual_review": "pending"
+        },
+        {
+          "id": "OCR-MW-TABLE-02",
+          "gold_text": "23 L",
+          "gold_text_sha256": "826e2a1f31fe9bd304d8e0ad31111ffefe84ada860f3799e48891923dad44e7f",
+          "source_text_bbox_points": [
+            218.88,
+            648.715,
+            234.88599,
+            657.715
+          ],
+          "padding_points": [
+            0.5,
+            2,
+            0.5,
+            2
+          ],
+          "crop_bbox_px": [
+            909,
+            2695,
+            981,
+            2750
+          ],
+          "crop_path": "private/data003-ocr/20261005-v2/OCR-MW-TABLE-02.png",
+          "crop_size_px": [
+            72,
+            55
+          ],
+          "crop_sha256": "32f2fbe3dab6d57bb38148c5c22536d8678ae07d707620de617d2209874b4cc2",
+          "field_target": {
+            "label": "조리실 용량",
+            "fact_id": "M02",
+            "value_path": [
+              "nominal"
+            ],
+            "value": 23,
+            "unit": "L",
+            "column": "MW23FDI"
+          },
+          "gold_origin": "short exact source phrase or manually located numeric value; not recognition output",
+          "unit_in_crop": true,
+          "column_assignment": "manual_fixed_source_coordinates_not_layout_prediction",
+          "visual_review": "pending"
+        },
+        {
+          "id": "OCR-MW-TABLE-03",
+          "gold_text": "13 L)",
+          "gold_text_sha256": "6f03747f18b2a33788e96b05f21439b8a3444820efe8893f5f8180fcbee4b01d",
+          "source_text_bbox_points": [
+            278.14635000000004,
+            648.715,
+            297.02234999999996,
+            657.715
+          ],
+          "padding_points": [
+            0.5,
+            2,
+            0.5,
+            2
+          ],
+          "crop_bbox_px": [
+            1156,
+            2695,
+            1240,
+            2750
+          ],
+          "crop_path": "private/data003-ocr/20261005-v2/OCR-MW-TABLE-03.png",
+          "crop_size_px": [
+            84,
+            55
+          ],
+          "crop_sha256": "12cc38b4d3c31918fcc962d16e104c2a7131a92575af4c5a9468c41cd8a6f7e2",
+          "field_target": {
+            "label": "가용 용량",
+            "fact_id": "M02",
+            "value_path": [
+              "usable"
+            ],
+            "value": 13,
+            "unit": "L",
+            "column": "MW23FDI"
+          },
+          "gold_origin": "short exact source phrase or manually located numeric value; not recognition output",
+          "unit_in_crop": true,
+          "column_assignment": "manual_fixed_source_coordinates_not_layout_prediction",
+          "visual_review": "pending"
+        },
+        {
+          "id": "OCR-MW-TABLE-04",
+          "gold_text": "1570 W",
+          "gold_text_sha256": "5ab360e771f2688391a6a22283c3a7a630f6ffa27f9540c1cf07833b480dd7f8",
+          "source_text_bbox_points": [
+            318.42,
+            531.595,
+            346.83267,
+            540.595
+          ],
+          "padding_points": [
+            0.5,
+            2,
+            0.5,
+            2
+          ],
+          "crop_bbox_px": [
+            1324,
+            2207,
+            1448,
+            2262
+          ],
+          "crop_path": "private/data003-ocr/20261005-v2/OCR-MW-TABLE-04.png",
+          "crop_size_px": [
+            124,
+            55
+          ],
+          "crop_sha256": "71393a5f7ba77c6d00752e274315ef3f90e25dcc232cae0e11e7da38d89ea61a",
+          "field_target": {
+            "label": "정격 소비전력",
+            "fact_id": "M07",
+            "value_path": [],
+            "value": 1570,
+            "unit": "W"
+          },
+          "gold_origin": "short exact source phrase or manually located numeric value; not recognition output",
+          "unit_in_crop": true,
+          "column_assignment": "manual_fixed_source_coordinates_not_layout_prediction",
+          "visual_review": "pending"
+        },
+        {
+          "id": "OCR-MW-TABLE-05",
+          "gold_text": "1000 W*1",
+          "gold_text_sha256": "dde23bb824e5edbb3cc3d1c5b140a19169c2360cd6fee9290a9a3693ab0522a5",
+          "source_text_bbox_points": [
+            325.05738,
+            550.4872,
+            360.38971303,
+            561.775
+          ],
+          "padding_points": [
+            0.5,
+            2,
+            0.5,
+            2
+          ],
+          "crop_bbox_px": [
+            1352,
+            2285,
+            1504,
+            2350
+          ],
+          "crop_path": "private/data003-ocr/20261005-v2/OCR-MW-TABLE-05.png",
+          "crop_size_px": [
+            152,
+            65
+          ],
+          "crop_sha256": "6802f2f9c4948d67a75dbf437b60f0ef4ed2d891193616672b110f4326ff778c",
+          "field_target": {
+            "label": "최대 고주파 출력",
+            "fact_id": "M06",
+            "value_path": [],
+            "value": 1000,
+            "unit": "W",
+            "condition": "짧은 시간의 최대 출력; 시간 경과에 따라 변경 가능"
+          },
+          "gold_origin": "short exact source phrase or manually located numeric value; not recognition output",
+          "unit_in_crop": true,
+          "column_assignment": "manual_fixed_source_coordinates_not_layout_prediction",
+          "visual_review": "pending"
+        }
+      ],
+      "context": {
+        "path": "private/data003-ocr/20261005-v2/OCR-MW-TABLE-context.png",
+        "sha256": "707977de70c27272f962f6d53666bd1918dc2bfa7b4965888dc3eed192bbc2b0",
+        "bbox_px": [
+          229,
+          2008,
+          1946,
+          2793
+        ],
+        "purpose": "human inspection of model column and unit header; not a recognition crop"
+      }
+    }
+  ],
+  "ocr_calls": 0,
+  "whole_page_layout_evaluated": false,
+  "limits": [
+    "Manual segmentation and source text search are preparation, not automatic OCR/layout",
+    "Text presence can include values in the wrong table column and cannot establish numeric field accuracy",
+    "MW dimension mm unit is in table context, not its numeric crop; unit-in-crop is false",
+    "Source page images and full extracted page text remain private",
+    "OCR recognition and PM/source semantic review remain separate"
+  ]
+}

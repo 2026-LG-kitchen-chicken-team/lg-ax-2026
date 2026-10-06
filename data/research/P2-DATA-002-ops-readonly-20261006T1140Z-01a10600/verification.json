@@ -119,11 +119,11 @@
     }
   ],
   "file_sha256": {
-    "README.md": "b2b8d5d4931184c9dfff0c9ebc0af483e67d68d59562638a7f35bdba13cedcf8",
+    "README.md": "ad743db19393008c2fd17de4b276a58aea07c5002444be5e01c3bb2bcef9ac9e",
     "expected-inventory.json": "0bf55992eb01306961f811d67336f02d6fa8f59377101edc1fc5b4a4e913ed4a",
     "query-evidence.json": "6c7e18312b7e2483c1716f2d108c6bfc548f84d7e951295fcfd7be7f42b6726b",
     "source-comparison.csv": "42fe60d7ba5ebd77b6a8fa877230de272adf9d998921ee5f810c918c6e4479dc",
-    "remaining-pm-work.md": "fd43438d3b4ae9142f5bcc540ab271dcd8d8c5b26e565447d4614cff35396ce1"
+    "remaining-pm-work.md": "95a15807ce48ef9a96a8ea78c6976e2a18b43b12ec033418d72d9c18f42e51ab"
   },
   "artifact_verifier": {
     "command": "approved Python 3.11 -X utf8 verify_report.py",
@@ -208,5 +208,39 @@
     "result": "AssertionError on preserved MANUAL-006 FRIDGE-A document_version 2.0 vs product default 1.0",
     "resolution": "corrected audit assumption; preserved original versions; no dataset change",
     "runtime_or_prior_regression_failure": false
+  },
+  "postmerge_metadata_check": {
+    "at": "2026-10-06T21:13:31.164759+09:00",
+    "integration_main": "9d7c896e2cea62914ceeb3b957e3a535ccc4d47f",
+    "PR183_reference_files_equal": 7,
+    "README_conflicts_resolved": 2,
+    "latest_owner_text_preservation": {
+      "docs/작업기록/신진하/README.md": {
+        "latest_main_bytes_preserved_after_removing_only_own_new_line": true,
+        "latest_main_file_sha256": "71560aea837aed95cde48b7ac7f036151f4d4bf685c6502c85c67eb3f438670c"
+      },
+      "docs/작업근거/신진하/README.md": {
+        "latest_main_bytes_preserved_after_removing_only_own_new_line": true,
+        "latest_main_file_sha256": "6874772a2ba924bfa541a8cd575468c6e551b0c448f8ed42bbb2c93c2f4b11ce"
+      }
+    },
+    "source_inventory_rows_unchanged": 177,
+    "new_runtime_requests": 0,
+    "new_model_calls": 0,
+    "scoped_whitespace_check": {
+      "result": "PASS",
+      "command": "git diff --cached --check <integration-main> -- <10 exact PR paths>",
+      "scope": "own PR changes relative to observed main; inherited main bytes preserved",
+      "unscoped_merge_check_exit": 2,
+      "unscoped_failure_is_not_own_PR_diff": true
+    }
+  },
+  "local_git_preparation_failure": {
+    "original_merge_exit": 128,
+    "worktree_changed_before_recovery": false,
+    "cause": "missing committer identity under intentionally empty publisher Git config",
+    "recovery": "reuse own prior commit identity in process-local environment before merge",
+    "global_config_changed": false,
+    "prior_Git_failure_history_modified": false
   }
 }
