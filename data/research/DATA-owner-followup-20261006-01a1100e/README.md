@@ -24,3 +24,11 @@
 - @choigilung: 승인된 새 버전과7표시명으로 동일aggregate ID 차트·원문·내보내기를 WEB에서 검증한다. API/MCP까지는 이번 실제 수신증으로 연결됐지만 새 날짜 버전의 브라우저 검사는 WEB 담당이다.
 
 공개 설명서의 실고객 리뷰0·SKU 선택기능 적용/독립 의미 품질·실등록45/225행 모델 비교·실고객 시계열·PM 운영 반영·부모 Done은 남아 있다. 각 담당자가 막힌 지점과 다음 행동을 개인 날짜/기록ID 및 정식 Issue 보고에 연결한다.
+
+## 제출 후 추가 자기검수
+
+[승인계획 외부 모델·개정 변경 회귀](plan-freeze-regression.json)를 재현·수정했다. constructor 입력을 변경해도 원 승인계획의 모델·버전·SHA만 사용한다. [추가 검증85PASS/무결성](checks-plan-freeze/checks.json), [GitHub 보고·인계 수신증](github-report-receipts.json)을 추가했다. 원 로그/실패는 보존했다. 이전 구현head d5b3ee7의CI4/4 성공과 새 수정commitCI·PM 승인/병합을 구분한다.
+
+## PR183 merged and follow-up
+
+PR183 merged by jeongiryang at 20:15:21 KST; partial DATA acceptance only. Caller-plan freeze is a separate follow-up, validated on main `3f88c0a`: [receipt](post-merge-followup.json), [85 regressions / 5 integrity checks](checks-followup-main/checks.json). No new model calls.

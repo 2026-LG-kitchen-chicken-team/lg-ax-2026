@@ -135,14 +135,22 @@ class UploadQueryIntegrationTests(unittest.TestCase):
         spec["selections"][0].update(page=1, excerpt="합성 청소 안내", feature_ids=[])
         spec["features"] = []
         plan["documents"] = [spec]
+        approved_plan = deepcopy(plan)
         repo = DocumentRepository(self.directory, plan, "python")
+        # Mutating the caller's object cannot rebind an approved original to a
+        # different model/edition after the repository has frozen its scope.
+        plan["documents"][0]["product"]["model_id"] = "CALLER-CHANGED-MODEL"
+        plan["documents"][0]["product"]["document_version"] = "caller-changed-edition"
+        plan["documents"][0]["document_version"] = "caller-changed-edition"
         with patch.object(repo, "_parse", return_value={"pages": ["제목\n합성 청소 안내\n끝"],
                           "parser": "fixture", "parser_version": "1"}):
-            repo.upload(spec["document_id"], raw)
+            record = repo.upload(spec["document_id"], raw)
+        self.assertEqual(record["product"], approved_plan["documents"][0]["product"])
+        self.assertEqual(record["document_version"], approved_plan["documents"][0]["document_version"])
         store = repo.store()
         self.assertEqual(store.search_ranked_evidence("청소")["items"][0]["evidence"]["locator"]["page"], 1)
         self.assertEqual(store.catalog.get_evidence(spec["selections"][0]["evidence_id"])["text"], "합성 청소 안내")
-        reopened = DocumentRepository(self.directory, plan, "python")
+        reopened = DocumentRepository(self.directory, approved_plan, "python")
         self.assertEqual(reopened.store().search_evidence("청소"), store.search_evidence("청소"))
         with closing(sqlite3.connect(repo.db)) as db, db:
             record = json.loads(db.execute("SELECT record FROM documents").fetchone()[0])
