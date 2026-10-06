@@ -453,9 +453,9 @@ function cell(text: string): string {
 
 const DECISION_TEXT: Record<string, string> = { accept: '계약 검사 통과(의미 검증 아님)', hold: '보류', revise: '수정 중', unresolved: '미해결 종료' };
 const STATUS_TEXT: Record<string, string> = { completed: '완료', held: '보류', failed: '실패' };
-// correction_budget.terminal_reason (packages/core correction_budget.py); a failed run at revision_limit is not an execution error.
+// The budget closes before the final correction runs. revision_limit can coexist with a connection/other execution error.
 const TERMINAL_TEXT: Record<string, string> = {
-  revision_limit: '내부 수정 한도 도달(검사 위반이 남음, 실행 오류 아님)', hold: '보류로 종료(내부 수정 없음)', unresolved: '미해결 종료',
+  revision_limit: '내부 수정 한도 도달(구체적인 종료 경과는 실행 기록 확인)', hold: '보류로 종료(내부 수정 없음)', unresolved: '미해결 종료',
   backend_failure: '모델 연결 오류로 중단', policy_changed: '수정 정책 변경으로 중단', completed: '완료',
 };
 
