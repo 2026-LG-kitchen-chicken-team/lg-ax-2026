@@ -1,0 +1,385 @@
+{
+  "artifact_kind": "pm_current_actual_trend_browser_validation",
+  "source_commit": "79f31a912d307c4e8653b38dbb6fa7612e8a5443",
+  "source_sha256": "cf89aa43b3f6ade9f7f99505069a336749c0b48a0b078ce27f60bf393bc8e75a",
+  "source_input_file_count": 3008,
+  "source_extra_evaluation_helpers": [
+    "evals/pm-integration/20261006/trend-browser-current/tools/browser_runner.py",
+    "evals/pm-integration/20261006/trend-browser-current/tools/supplemental.spec.ts"
+  ],
+  "source_area_file_sha256": {
+    "apps/api/src/lgax_api/__init__.py": "52f6b2d68c0942f14c547de7d996a832cff0aec2da6c9620f908a19639b3c13e",
+    "apps/api/src/lgax_api/review_trends.py": "e5b9998a4eb1db4c47b3c9ddfccc691dd0416c8ff99ef73467ac69cc5f84319a",
+    "apps/api/src/lgax_api/server.py": "d752c53101769473e51aa72164c7c22e16f9d56a82798fa98fbb637e5ebcd96a",
+    "apps/api/src/lgax_api/trend_configuration.py": "f961c6ccf0824460249d45bfb3103633aa1617f5b8657b853087e0cab21f63c6",
+    "apps/api/src/lgax_api/trend_validation.py": "fa89894953d75942f36f00de4bbd4cc49aff41675d7aa1cc75fe59a900e6b455",
+    "apps/api/src/lgax_api/workspace_auth.py": "b132d1c08870fd498bae93342a43c518de75bdd872614b24b5f45d023042ec47",
+    "apps/api/src/lgax_api/workspace_server.py": "0e3c5a8d77974f52892c183c9492b7a977c2bf316c5852f7c8de8fec05390bc3",
+    "apps/api/src/lgax_api/workspace_trends.py": "99dff8ba46ef26ae6d5f201f42e77af34abdeb1dcef2982e2b91f1225e3e8128",
+    "apps/mcp/src/lgax_mcp/__init__.py": "563da2b7d1a76c6fa70e3a1fa70b884c0aba825addce511ff7cd5f9c82dafabd",
+    "apps/mcp/src/lgax_mcp/server.py": "a9a37314850569506aba32bff6b0585022f578d103163e96407682175850258e",
+    "apps/mcp/src/lgax_mcp/workspace_client.py": "7832970701c96a69bb44acf98ecfb88d6130870f3d7968862defb8ac1619fff5",
+    "apps/mcp/src/lgax_mcp/workspace_server.py": "0d4d2b20aee904e93b6b62b39a81a1a266b104cce7d6ebcc836d22fd0ec7923a",
+    "apps/web/.gitignore": "027ff5aeb07feaac76df52b016629f23c4676b68f9f7e2dc065914959c75cc9e",
+    "apps/web/README.md": "b284448499a699bff419d226c367aa3cd6e59c7c24f406252291d72d3a6b8e5c",
+    "apps/web/e2e/live-model-proof.ts": "0f001b15da5b3bc17a0af61ede5805945ea9bcc35e48040fa957a9f40e118681",
+    "apps/web/e2e/live-results.spec.ts": "a2e2c88c8fe8f787d6b7b652589caed9e038cd8a3ae343d915094073a2e13646",
+    "apps/web/e2e/planner-flow.spec.ts": "73d1dec3344eb69919ac9049d47146e1127c0f574c633719d550951c85a73b9c",
+    "apps/web/e2e/real-planning.spec.ts": "4b54110aaad86c0aeacc76f5e26b6e15471546155f37f6ac8e67e0735a5285b5",
+    "apps/web/e2e/real-replay.spec.ts": "b81fecfef9095ed67b341a0210d0b0c18c760b757b10efaf0407fa38e9245bff",
+    "apps/web/e2e/rebalance-manual-check.spec.ts": "93c9a329183d355b34e07207cc2c02ca2278ed2d9f4e29b7e47bc2ae503ecbd3",
+    "apps/web/e2e/round2-live.spec.ts": "def72915822044435a86f11ab38f1287e208b34b86e7b597be5d4bfb42d221a7",
+    "apps/web/e2e/trend-consumption.spec.ts": "162bc5c6ed8f3affc5aeb36e415ad77358ce0ec28961bc7022112fcaab41fe59",
+    "apps/web/index.html": "057426331f903296f79ea89cc5db0ca67aa07813b214ba07b24c9ffe03771b4c",
+    "apps/web/package-lock.json": "271f5c742de25ff68f71370684ca53218750e654ce75a62fa901a42e27953981",
+    "apps/web/package.json": "8219df7f9a6ddec343dd28c1ecc740f6e5aef7e7cc87e275a2a4599a436aa6c6",
+    "apps/web/playwright.config.ts": "88d2755fccb09c77937eb1b7f9782fb22af0c99050be86594a572ff4c626e732",
+    "apps/web/public/kitchen-evidence-icon.png": "7c16e8a545de92faa29d8e35ce5bd63dd5d8c64d18bfb91fa765c956214d0c75",
+    "apps/web/scripts/safe-ci.check.mjs": "c12cab22b59db5b9399515e6917c9abd68a2d588f2733a9ce6c943a61e4287f9",
+    "apps/web/scripts/safe-ci.mjs": "922e719ce2c7ad884cf2cf3e0c837a6ff434c9be3f119ec3f92210693da4644e",
+    "apps/web/src/App.tsx": "00a0e4b884959d2cea91c323cad4010e06dbf868f0c6d34a8ff6d61edf358364",
+    "apps/web/src/ClarificationPanel.tsx": "eb4732c1b926062c67fcfe7565c1b3a82280b3e2d0a21fc0da640f67e363c860",
+    "apps/web/src/EvidenceTracePanel.tsx": "1c4081e72f5e4725831c4940210b5024f3d3b1604f28c63b94babc6aa237ccf0",
+    "apps/web/src/JudgementViews.tsx": "2890650e152d8bed63a5c4061c6b3175bfee3fdf0ac0835b2959b85452dd9514",
+    "apps/web/src/PendingJudgement.tsx": "40a24f95223b6c2ced7c935c841d8770109cd8d4871e40f05dbc79e0ea3f1d62",
+    "apps/web/src/PlanningViews.tsx": "5dbfc1e4b8bb1c96f3d1a83df0b934a124a88450fc0b07bb3dd2b5e2bf53e0a5",
+    "apps/web/src/ReviewTrendsPanel.tsx": "dd4d3ee554bb2a2ce35cef316db0cd6208fa26f2779a863a4ac43b2141350d85",
+    "apps/web/src/RevisionTimeline.tsx": "c0d5c3ddfd1d97a5078fef020d6a8daf45b99f07ae04073f03d18d9275b78728",
+    "apps/web/src/api.test.ts": "dfb1b0d9e5189e10267f6450701bf9c3f16cc2f7ed7dffacde2a4d1eafde24aa",
+    "apps/web/src/api.ts": "5f1250b562fd961f19c68d8d9ea86ab2bda9cc0c433c1356f8b2d8b19f716188",
+    "apps/web/src/caseMatrix.test.ts": "ca0445ca7f5e92e96ff1503a2df695878cbfada498ebf0ceb81039d40a469d80",
+    "apps/web/src/clarificationPanel.test.ts": "46e7bbf7d552d2669859d0c9524d42efd98e9b0d8a59f00d20a29f830cbff1e4",
+    "apps/web/src/conceptTextChanges.test.ts": "d95555ece396dd96c6c3b6c841f4085e8fa7d86a727cd56cb5607f8d0c6b45a2",
+    "apps/web/src/coreRecords.test.ts": "5dc14fc881cb5cfcb6047853e9433c1c913a4f97b8be85bbf6acf291afaae11b",
+    "apps/web/src/correctionBudgetFailure.test.ts": "4e0595c6f939599f76f82e18cb2175739c5966cd3d2c16a63b73eb926c2a6d02",
+    "apps/web/src/domain.test.ts": "89937412e0278e4e38e28f1271d34bd5da4c9b560d3ba57a5eeff00764300369",
+    "apps/web/src/domain.ts": "764de453b6e51a8eecc6d2a45076181626f2fbc4c3976b64f106e960a6d8c7d0",
+    "apps/web/src/evidenceTracePanel.test.ts": "351cf97cf3afcf261d4ee8a49e76ed9795f33c0d7b4e03984fe5411bbfc94597",
+    "apps/web/src/executionSafety.test.ts": "d044a5005ac3ced37de84a6f578c70c1a212b719ff3a71f48936406b24fc89fe",
+    "apps/web/src/fixtures/bootstrap.fixture.json": "0e97dd44771a0f07f225dbe099f0cbcac6da8b7224c496c5d6d91015531691f7",
+    "apps/web/src/fixtures/caseMatrix.fixture.ts": "b8e3e1c622f942bdfc68c24eb880457540afec183c1137f06cb450875628c2ff",
+    "apps/web/src/fixtures/planning.fixture.ts": "5f7cb4543a1f15adbb994bcad755156811cbb55b6cd2cb02b8de6a82eb38815a",
+    "apps/web/src/fixtures/reviewTrends.fixture.ts": "1919d1ff16b60859350fcdb87ceae72ddf6696ed2abde2a4fa438d8548a83770",
+    "apps/web/src/icons.tsx": "27ea17f260a0b71659a4a964220e2f1ad5e9a41d52273e2ff70e995860e01e09",
+    "apps/web/src/judgement.test.ts": "c322e3d61ff8390a42e62bcd5aa8d947b6070b6d942e8abe9150199fb1967690",
+    "apps/web/src/judgement.ts": "d2d915ede246f17ac8682105a49bc3c85f9c5aa43096836d61f46f3ec9adf32e",
+    "apps/web/src/liveCaseMatrix.test.ts": "bf88493069fd9c4f9f7291b07271f3c95db233fdd66f72e952f2054286bab034",
+    "apps/web/src/liveModelProof.test.ts": "76f4aa519c39238b5f1fedf681a2f078bf629de5073e05f56c33e9e163824e5b",
+    "apps/web/src/livePlanning.test.ts": "5600bea496356493065683dc54c16b65aadbab768cab6febf25a9712cdfe8b58",
+    "apps/web/src/liveResults.test.ts": "a4ca560f810047835520332afe5ee2ca039fce0dd73abbb5b46a5c76b58a172f",
+    "apps/web/src/liveTerminal.test.ts": "6b770e12f6302c37ae1f4af87059f286e15a0c4c027ddf2826c818db0db0e9cb",
+    "apps/web/src/liveWorkspace.state.test.ts": "e2f3126bdb8b50176db6796aee941f425d7f9e8ea77800708314b1adc169d8de",
+    "apps/web/src/liveWorkspace.test.ts": "8e05238df291fe36fedd598e34ebdc595275df569e525995ff5eaf9bbdf6a853",
+    "apps/web/src/liveWorkspace.ts": "c6d29b23df8181be7f59b697c568c0a874fdb2f4bcdc300d0c55fc6b0062ab87",
+    "apps/web/src/main.tsx": "0e8e74a69d640707761a586d48592aef02ed36c321b2b5f86dfc144fcf80ceb3",
+    "apps/web/src/manualFlow.test.ts": "f8196336c6dab0ad6ea81ac57715235b13b39b5e9b93c753beaeab06306877b0",
+    "apps/web/src/measurement.scope.test.ts": "1a015ab414a12379238483ccfa002512d307334277a0db1d1964eed6f79b001d",
+    "apps/web/src/measurement.test.ts": "7717659766e6a8d211cd72267dc1888f2c0bad4878bf3d5fe1d312270f50dcca",
+    "apps/web/src/measurement.ts": "41312ead069b1ff494c899974a8988b38294353b9d7553631b7568752f16d5e3",
+    "apps/web/src/planning.css": "7edeb33897e8f28452bd54859c151cb7f31def9d03950270ef69af59c396a21a",
+    "apps/web/src/planning.test.ts": "09b2fabde68d1e3dfdd5d4114a101f4a8618766bc530868659bc919f77fbc0a7",
+    "apps/web/src/planning.ts": "b5f70965889818a017949474706d9aa5e97a02151062cce5b0bee56eb311df90",
+    "apps/web/src/realModelReplay.test.ts": "70a37b31a4a0f3ea450bd903ba17e43a51ad1e6546523b834c21d20d4ab9267e",
+    "apps/web/src/reasonText.test.ts": "80591fc1270b91fbeac4cad37278f59893531ac15d752495e4d153c6558eac21",
+    "apps/web/src/reviewTrends.test.ts": "5ccf6317a894d0bedd693ace530e3e670e49c954cbaaa9a7cd8e57e5e12b367f",
+    "apps/web/src/reviewTrends.ts": "ce7eb78f9fb72d0fe3372fdaa45034ec776c7714f8858e4d88965bc78a495a39",
+    "apps/web/src/reviewTrendsClient.test.ts": "aea1b48ddfcae3dc12f283069eb423ad9d96fab35c05cd532251899a3c95cccb",
+    "apps/web/src/reviewTrendsContracts.test.ts": "e3eebdfbb34c1f780f9b3383175eba200294b5b83bea0fb5fb9da5785914de07",
+    "apps/web/src/reviewTrendsMention.test.ts": "ce44f89bd5da5408b0401741842be546dbcfeb97ec669dbf0c7433705aa2ff99",
+    "apps/web/src/reviewTrendsPanel.test.ts": "de3eb628200f3ae79efa6d6766c2f7562308797837dc1aa5e6ace6c7e50a684c",
+    "apps/web/src/reviewTrendsSnapshot.test.ts": "314d581ec22315a0dac96bea5438f8375dfc2ecd2abd0ea232a7b9170357e7df",
+    "apps/web/src/revisionTimeline.test.ts": "2978f43167f1811e98be9b2552db40466651d3e9ed02ebf03bbc99a6e17825b4",
+    "apps/web/src/round2Live.test.ts": "146cff5130131a1b377f6bc55eaef1185e61d5e11f780e66e755d1cac8297184",
+    "apps/web/src/styles.css": "8f8c2ffa6f43d4da0dab3531be17647f52e5b9b25e99aab4793feaf769500fc2",
+    "apps/web/src/terminalLabels.test.ts": "f9eef011b5bccd45c25c66e170b7e86f7d3162b97e80b0fa3a96c3678e219033",
+    "apps/web/src/terminalUx.test.ts": "441f30c99ba6dab64009e517d0cbbcf7a5ebb03817db3f9319d348a6ff4e5354",
+    "apps/web/src/webIntake.test.ts": "8c005ae0579c057a94f2060cdeb2cc97e39f3beacac5b6769810bbccbcdba6b3",
+    "apps/web/src/workspace.test.ts": "770d3fc8b9d2583e6c5f424d4d61c721d959f75b36ade40e848485edf2ff1840",
+    "apps/web/src/workspace.ts": "f94ce87d0805e61cd2087bfedf1083ebee8bedb5afe78718b508f5a6dde794fb",
+    "apps/web/tsconfig.json": "89b5ae774c2894aba12f669f4b636b76609b489048681c61f4163bb426bddb89",
+    "apps/web/vite.config.ts": "8879a83e879aa48107fa6b44c423ded8f9732542b1dbc90342e153d4301fb3e5",
+    "data/demo/dataset.json": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+    "data/demo/manifest.json": "71aa5b05e3e7e86140aac22782e1b5c33f9183efc2b417a9721fb41a80765470",
+    "data/demo/planning_requests.json": "89b445290a48646844279ffc2c08b6284e0a1402d9c736cb197013659742e54a",
+    "data/demo/review-trends-dated/README.md": "b651b40f308416830a30962aa5df061f1c75af4b16dd27dcc51d7a611514b4b2",
+    "data/demo/review-trends-dated/annotation.candidate.json": "101b0560337fbbb61f1b4117e2ef47562aacae458d0db5a044c5e36ae2ea1d79",
+    "data/demo/review-trends-dated/dataset.json": "a2c9c260316c1e8067531e7ba9e42ffec5338363f782092fea0f5cf1449d2b89",
+    "data/demo/review-trends-dated/date-schedule.json": "7d528dfc50b8e0474b455327852e363d52603fe5fab0270c75dad9f4430d1f70",
+    "packages/contracts/fixtures/review-trends.v1.json": "30b9f08382d01d4d3014998c6583bc898b13d0df8b13068fed308b73a30dd060",
+    "packages/contracts/schemas/lgax.schema.json": "cf85c6119551a5cea30af2b6d9368bba43475a1ccc503cb72fdaaaaf4a6db666",
+    "packages/contracts/src/lgax_contracts/__init__.py": "b96b5c730ef30272ade0804e239e08a54ca06c07da6053e6400c3948f1897efd",
+    "packages/contracts/src/lgax_contracts/validation.py": "a7a244b042a6cd69cc973171526938189bebbb8e6b0e762e1d55409295f70826"
+  },
+  "execution_folder_id": "pm-trend-browser-current-0120f96ce581474c8f658a24d16b5d25",
+  "raw_receipt_sha256": "100ae8a916b85b1a1fb020f249addd5a0ae0bf9121d9a59b2bd5ee2766dce155",
+  "raw_executor_log_sha256": "0d09ca3f8ce2ab9a2705e4463680908e118048e7e951dcf2567b758bcab5d4f9",
+  "raw_input_manifest_sha256": "649d33cba9d044cde0bcb0aa5f63d214604072ed211d120442bf892355ecbe72",
+  "returncode": 0,
+  "elapsed_seconds": 40.062999999849126,
+  "stopped_reason": null,
+  "source_changed": [],
+  "model_calls": 0,
+  "host_product_import_execution": false,
+  "boundary": {
+    "backend": "docker",
+    "image_id": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+    "role": "validator",
+    "uid": 1000,
+    "readonly_root": true,
+    "caps_dropped": true,
+    "no_new_privileges": true,
+    "network": "none",
+    "mount_targets": [
+      "/artifacts",
+      "/workspace"
+    ],
+    "publisher_credentials_mounted": false,
+    "ai_profile_mounted": false
+  },
+  "workspace_read_only": true,
+  "host_services_contacted": false,
+  "image": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+  "dependency_installation": "Same pinned 5a Linux overlay dependencies; writable guest node_modules root with individual image dependency symlinks; normal guest Python venv/.pth; SDK unmodified",
+  "package_sha256": "8219df7f9a6ddec343dd28c1ecc740f6e5aef7e7cc87e275a2a4599a436aa6c6",
+  "lock_sha256": "271f5c742de25ff68f71370684ca53218750e654ce75a62fa901a42e27953981",
+  "modes": {
+    "dated": {
+      "api_mcp_checks_passed": 10,
+      "browser_tests_passed": 2,
+      "aggregate_id": "TREND-c3c9634d35bb92f63031b115ff335e5132f8d164d675546b03a852a8074aba62",
+      "filters": {
+        "project_id": "project-e62b7d753a024436a9b3dd21446b9b39",
+        "model_id": "FRIDGE-A",
+        "source_ids": [
+          "PM-TREND-DEMO-REVIEWS-v1"
+        ],
+        "dataset_version": "pm-synthetic-trends.v1",
+        "start_date": "2026-10-01",
+        "end_date_exclusive": "2026-11-01",
+        "granularity": "month",
+        "topic_ids": [],
+        "source_kind": "synthetic",
+        "timezone": "Asia/Seoul"
+      },
+      "counts": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 2,
+        "excluded_outside_period_count": 5,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 3,
+        "unclassified_review_count": 0
+      },
+      "dataset_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+      "annotation_version": "pm-synthetic-demo-candidate.v1",
+      "annotation_sha256": "6a23e26343802dc2b4495e8da1e3efc6ffa9ac03cab3a0ed98bee1abc479093a",
+      "browser_version": "153.0.8010.12",
+      "selected_evidence_ids": [
+        "DEMO-TREND-REVIEW-EVIDENCE-001"
+      ],
+      "planning_handoff_executed": true,
+      "json_markdown_mention_and_candidate_notices": "verified actual browser downloads"
+    },
+    "undated": {
+      "api_mcp_checks_passed": 10,
+      "browser_tests_passed": 2,
+      "aggregate_id": "TREND-42d0e7be48f5cfa36dab9abec29ba01fcd59f7cfff4dae762e5c0720b5f767aa",
+      "filters": {
+        "project_id": "project-ed54f36c02004fbd9e7c57cfe4e3faab",
+        "model_id": "FRIDGE-A",
+        "source_ids": [
+          "REVIEWS-CSV-v1.0"
+        ],
+        "dataset_version": "0.1.0",
+        "start_date": "2026-10-01",
+        "end_date_exclusive": "2026-11-01",
+        "granularity": "month",
+        "topic_ids": [],
+        "source_kind": "synthetic",
+        "timezone": "Asia/Seoul"
+      },
+      "counts": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 10,
+        "excluded_outside_period_count": 0,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 0,
+        "unclassified_review_count": 0
+      },
+      "dataset_sha256": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03",
+      "annotation_version": "candidate-2026-10-06-v1",
+      "annotation_sha256": "3939b5eec99f4637dec60a84802052577711ea8242718d296d0977c466afe5a8",
+      "browser_version": "153.0.8010.12",
+      "selected_evidence_ids": [],
+      "planning_handoff_executed": false,
+      "json_markdown_mention_and_candidate_notices": "verified actual browser downloads"
+    }
+  },
+  "public_raw_artifact_pins": {
+    "dated/api-mcp-path.json": {
+      "sha256": "39f2d14230d62890bf16d7b621b96ee97b0aaf092b9067e25ab719bd2041cefd",
+      "bytes": 6384
+    },
+    "dated/browser/pm-exact-proof.json": {
+      "sha256": "f3e80870d9546f82230b5efcaf45e3d57c4ff10b60e193784c8c369dfa05e0b9",
+      "bytes": 1597
+    },
+    "dated/browser/pm-planning-handoff.png": {
+      "sha256": "9821dae91d1afd97ecd16882b016277c8a167af3b302def1aca9e7d2ec01cc40",
+      "bytes": 206484
+    },
+    "dated/browser/pm-selected-original.png": {
+      "sha256": "e81a5ed05fa0f7570cbeac65989018e452d947aa5b7906e2cc7ce0adca0bdccb",
+      "bytes": 91280
+    },
+    "dated/browser/pm-snapshot.json": {
+      "sha256": "3c74cf289c800485512a39ba3d991fce2106a9ce302f34f1495165f9bf50a229",
+      "bytes": 4671
+    },
+    "dated/browser/pm-snapshot.md": {
+      "sha256": "f6b69b13f523750533cec848ed6c13b2a86ac8dd2515932d434d9b1c11c4ed0c",
+      "bytes": 1880
+    },
+    "dated/browser/web-leg-proof.json": {
+      "sha256": "79b916215ee20c5e414565460871860e080051ee59104b7c158cb84103554e96",
+      "bytes": 708
+    },
+    "dated/browser/web-snapshot.json": {
+      "sha256": "26124e7749f14fceefa155ee2e8fd2b6496c04b930c8c58e07aa91c3b18e5de8",
+      "bytes": 4670
+    },
+    "dated/browser/web-snapshot.md": {
+      "sha256": "39d062c2fc743041e43f22ce0577c3be0aa52918bb772b2d1235740fef1c8581",
+      "bytes": 1880
+    },
+    "dated/browser/web-trend-chart.png": {
+      "sha256": "ca1f724960b7f8855f64b8cef11cb3f14b4b73512289fde8f5c2f69ed7670564",
+      "bytes": 158279
+    },
+    "undated/api-mcp-path.json": {
+      "sha256": "8b257864683970c1aabbbeeb2a7b8e38cfdc14e7044c5cde880bbf9dd4d42336",
+      "bytes": 5603
+    },
+    "undated/browser/pm-empty-scope.png": {
+      "sha256": "6a4a13ce2e3d9a88668c4ef951d9730d75537b07df4b53f2d5aa559f01f3ca9a",
+      "bytes": 173021
+    },
+    "undated/browser/pm-exact-proof.json": {
+      "sha256": "638bfe7ce135820560871d12a7240866561433a7f529123be2dcb8621879efda",
+      "bytes": 641
+    },
+    "undated/browser/web-leg-proof.json": {
+      "sha256": "cda069830470e62aded03f049ecfab2a38a9bd73d1257536231f1b6fed57ffa5",
+      "bytes": 768
+    },
+    "undated/browser/web-snapshot.json": {
+      "sha256": "534c840305bc283e61bd277968f7ff9a32682b014d88e9e785ad1a27f219b9ca",
+      "bytes": 4249
+    },
+    "undated/browser/web-snapshot.md": {
+      "sha256": "b7e2b696797972f8f053f1651a21e52a1f345d4541c6c825525ac36dc31f04d2",
+      "bytes": 1664
+    },
+    "undated/browser/web-trend-chart.png": {
+      "sha256": "6a4a13ce2e3d9a88668c4ef951d9730d75537b07df4b53f2d5aa559f01f3ca9a",
+      "bytes": 173021
+    },
+    "execution-receipt.json": {
+      "sha256": "100ae8a916b85b1a1fb020f249addd5a0ae0bf9121d9a59b2bd5ee2766dce155",
+      "bytes": 1188
+    },
+    "prior-attempt.receipt.json": {
+      "sha256": "813fe4a8a43fb7d7c46910e47c7c0726c3a50bfb79b52bb1ecf4db3c3f42eed1",
+      "bytes": 993
+    }
+  },
+  "private_log_pins": {
+    "dated/playwright.log": {
+      "sha256": "3fb047650bf503d7d77ade033ba59846b7fdab03a57a5dd0ef2783b2f5465f99",
+      "bytes": 354,
+      "public_copy": false
+    },
+    "dated/api-0.log": {
+      "sha256": "ed17054a89fee6568c070b035a6b8f7e59d8479e523cf9e93a982d682da29dc2",
+      "bytes": 597,
+      "public_copy": false
+    },
+    "dated/api-1.log": {
+      "sha256": "f40bc5aca7417b00d29b9e4b14cdb750b5e0cb08f765d69a8e1589e1baea01db",
+      "bytes": 4160,
+      "public_copy": false
+    },
+    "undated/playwright.log": {
+      "sha256": "6383ee33448160ee09c80d3da059c214bc01083ce0c6cf14a2f5ec0874fe5fcd",
+      "bytes": 354,
+      "public_copy": false
+    },
+    "undated/api-0.log": {
+      "sha256": "3bc74936b6509fe29beed5a81a2527169414ffba6ca6ad5b4ecba2d5a011d587",
+      "bytes": 599,
+      "public_copy": false
+    },
+    "undated/api-1.log": {
+      "sha256": "e947b2047c258bb085bb86eb6041ffb1a91f169ce31687621d2ac2ad3b97027d",
+      "bytes": 3524,
+      "public_copy": false
+    }
+  },
+  "prior_attempt": {
+    "execution_folder_id": "pm-trend-browser-current-4d8987b6c13744a4b0a3d357bd61194f",
+    "raw_receipt_sha256": "813fe4a8a43fb7d7c46910e47c7c0726c3a50bfb79b52bb1ecf4db3c3f42eed1",
+    "raw_executor_log_sha256": "ab1e2e713ba6983aba7b504117ac5cbf2a89113ac1d8b203e104d5a273d7c682",
+    "raw_input_manifest_sha256": "ad901ad08b8537aaebb0d6f6b6f2359276475440f1a52e3f51e6f54aaa744ddf",
+    "source_sha256": "e4f746150b1c9f6d3c77757cebc697acb84745e48a9129c14a2639bc03a0527e",
+    "input_file_count": 3006,
+    "returncode": 1,
+    "elapsed_seconds": 40.39100000006147,
+    "source_changed": [],
+    "model_calls": 0,
+    "dated_api_mcp_passed": 10,
+    "dated_original_member_e2e_passed": 1,
+    "supplemental_failures": 1,
+    "undated_run": false,
+    "reason": "Historical supplemental:34 expected old heading 리뷰 주제 언급 비율; current intentional heading is 리뷰 주제 언급 동향. Observed current hint and 청소 label also changed. No product defect asserted from this text mismatch."
+  },
+  "tool_adjustment": {
+    "approval": "Root explicitly authorized preserving original failure and one finite rerun with current intentional markup/labels, without weakening numeric/source/scope/null/mention/preview claims.",
+    "diff": "tools-adjustment.patch",
+    "changes": "Current copy only: one supplemental source path; heading/hint/cleaning label expectations updated; four JSON/Markdown mention+candidate notice assertions added. Historical tools and existing member E2E unchanged.",
+    "helper_sha256": {
+      "browser_runner.py": "05d29f488326234fdcd92153f4ce83a028d5f6875a635b511dee8f07b3c021b3",
+      "supplemental.spec.ts": "7de1dc620b0a1b64369700c1635aa6b463372996e4cd9677eaab47102bd0037f"
+    },
+    "unchanged_historical_tool_sha256": {
+      "browser_runner.py": "0b22cc676c5de2802875b01b3dbf7a798f6350d54e75fab38da8262308054949",
+      "supplemental.spec.ts": "8d1557b45dd9d1d90e5db198c7ba5d91ee1e4936d6cbd0d0a0e6fcca8537d93e"
+    }
+  },
+  "historical_proof": {
+    "source_commit": "c916b84598367eaa5d55f7e407b528300bb05d8d",
+    "proof_commit": "90326968c767450889f395711de164fa4b127d1b",
+    "validation_sha256": "7e9e40acbd563ffa00745a95c4dff6d3bab0a6897b8f39656398532c7f85f87b",
+    "changed_files": 0
+  },
+  "visual_inspection": {
+    "reviewed_pngs": [
+      "dated/browser/pm-selected-original.png",
+      "dated/browser/pm-planning-handoff.png",
+      "undated/browser/pm-empty-scope.png"
+    ],
+    "findings": "Same ID/FRIDGE-A/document1.0 and 1/3·33.3%/exact original001 visible, synthetic/preview notices visible; undated0/excluded10/자료 없음 distinct from0%; handoff textarea same ID/evidence/model/month. No token value visible after connection or in selected-panel crop.",
+    "nonblocking_followup": "Existing old-prompt change table still wraps narrowly in fullpage handoff; no CSS edit."
+  },
+  "scope_limits": [
+    "Actual latest pinned79f31a Chromium153/API/MCP/Vite consumption of synthetic data and aggregates only; no normal completed-model run claimed.",
+    "Datepack31 assigned synthetic dates/unknown5; original36 undated reviews untouched. Dated October scope3 withcleaning1/3; originalscope0 withundated10 andratio null.",
+    "Planning handoff adds an editable textarea reference only, no save or model judgement.",
+    "JSON/Markdown mention and candidate preview notices verified in both actual downloads; candidate taxonomy is not customer/sentiment/demand validation.",
+    "No model/GPU/real-customer collector/external-account MCP/live deployment/full-web or CI claim.",
+    "One October/month/cleaning path; other topics/seasons/pagination/scope changes and DATA183 alternate9-datepack are separate validation.",
+    "Original failure preserved; only one authorized adjusted rerun."
+  ]
+}
