@@ -1,0 +1,152 @@
+{
+  "observed_at": "2026-10-06T20:53:18.907017+09:00",
+  "code_commit": "f7794f343c6c192b24643f2cc9356a8946875e31",
+  "pm_input_commit": "2d4ea07e078e99776d534a10f4ed43ab8fec7095",
+  "pm_input_pr": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/188",
+  "original_csv_sha256": "3c7560aec2d3fa855590baf097b3514aa348ee40a77037c69ef358b413f488b9",
+  "original_csv_rows": 36,
+  "original_csv_columns": 8,
+  "exact_text_model_version_bindings": 108,
+  "queries_checked": 15,
+  "rejections_checked": 40,
+  "model_calls": 0,
+  "production_injected": false,
+  "classification_status": "candidate preview; mention counts, no complaint polarity",
+  "public_bm25_contract_changed": false,
+  "independent_evaluation": false,
+  "all_passed": true,
+  "packs": [
+    {
+      "commit": "f7794f343c6c192b24643f2cc9356a8946875e31",
+      "dataset_path": "data/demo/dataset.json",
+      "annotation_path": "data/research/P2-DATA-005-trends-20261006/annotation.candidate.v1.json",
+      "date_source_path": null,
+      "dataset_bytes_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+      "annotation_bytes_sha256": "0b3d75727a6c5c33379672494bbed6e0e729f80b441c23197889ea275d801117",
+      "date_source_bytes_sha256": null,
+      "name": "original",
+      "dataset_version": "0.1.0",
+      "dataset_canonical_sha256": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03",
+      "annotation_canonical_sha256": "3939b5eec99f4637dec60a84802052577711ea8242718d296d0977c466afe5a8",
+      "dated_total": 0,
+      "unknown_total": 36,
+      "source_ids": [
+        "REVIEWS-CSV-v1.0"
+      ],
+      "october_query": {
+        "project_id": "data-r4-pack-binding",
+        "model_id": "FRIDGE-A",
+        "source_ids": [
+          "REVIEWS-CSV-v1.0"
+        ],
+        "dataset_version": "0.1.0",
+        "start_date": "2026-10-01",
+        "end_date_exclusive": "2026-11-01",
+        "granularity": "month",
+        "topic_ids": [
+          "cleaning"
+        ],
+        "source_kind": "synthetic",
+        "timezone": "Asia/Seoul"
+      },
+      "october_counts": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 10,
+        "excluded_outside_period_count": 0,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 0,
+        "unclassified_review_count": 0
+      }
+    },
+    {
+      "commit": "2d4ea07e078e99776d534a10f4ed43ab8fec7095",
+      "dataset_path": "data/demo/review-trends-dated/dataset.json",
+      "annotation_path": "data/demo/review-trends-dated/annotation.candidate.json",
+      "date_source_path": "data/demo/review-trends-dated/date-schedule.json",
+      "dataset_bytes_sha256": "a2c9c260316c1e8067531e7ba9e42ffec5338363f782092fea0f5cf1449d2b89",
+      "annotation_bytes_sha256": "101b0560337fbbb61f1b4117e2ef47562aacae458d0db5a044c5e36ae2ea1d79",
+      "date_source_bytes_sha256": "7d528dfc50b8e0474b455327852e363d52603fe5fab0270c75dad9f4430d1f70",
+      "name": "pm",
+      "dataset_version": "pm-synthetic-trends.v1",
+      "dataset_canonical_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+      "annotation_canonical_sha256": "6a23e26343802dc2b4495e8da1e3efc6ffa9ac03cab3a0ed98bee1abc479093a",
+      "dated_total": 31,
+      "unknown_total": 5,
+      "source_ids": [
+        "PM-TREND-DEMO-REVIEWS-v1"
+      ],
+      "october_query": {
+        "project_id": "data-r4-pack-binding",
+        "model_id": "FRIDGE-A",
+        "source_ids": [
+          "PM-TREND-DEMO-REVIEWS-v1"
+        ],
+        "dataset_version": "pm-synthetic-trends.v1",
+        "start_date": "2026-10-01",
+        "end_date_exclusive": "2026-11-01",
+        "granularity": "month",
+        "topic_ids": [
+          "cleaning"
+        ],
+        "source_kind": "synthetic",
+        "timezone": "Asia/Seoul"
+      },
+      "october_counts": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 2,
+        "excluded_outside_period_count": 5,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 3,
+        "unclassified_review_count": 0
+      }
+    },
+    {
+      "commit": "f7794f343c6c192b24643f2cc9356a8946875e31",
+      "dataset_path": "data/research/DATA-owner-followup-20261006-01a1100e/dataset.synthetic-dated-demo.v1.json",
+      "annotation_path": "data/research/DATA-owner-followup-20261006-01a1100e/annotation.synthetic-dated-demo.v1.json",
+      "date_source_path": "data/research/DATA-owner-followup-20261006-01a1100e/source.synthetic-dated-demo.v1.json",
+      "dataset_bytes_sha256": "37dcaaa2ec5f38024fa61c369ad1a3e357afdb9e2f07e4a3837b99811d458ee2",
+      "annotation_bytes_sha256": "365059e2bcd170a3e99e84d9fd6d4216c3d515eb4f4fbf6265000f6e6dbada44",
+      "date_source_bytes_sha256": "cbb3ef73f7e84d8524ecbb640b48db9cd39a16c42b5b7db93a3989c5c908ce81",
+      "name": "data",
+      "dataset_version": "synthetic-dated-demo.20261006.v1",
+      "dataset_canonical_sha256": "d7740d3b61be29e78a4a4fd4d48a6e549eae3158c37994670493f02d4b33fff0",
+      "annotation_canonical_sha256": "0f534b263c87eb896146967158bc7dbb630bdd6290fe9471bdc90c274027e64b",
+      "dated_total": 9,
+      "unknown_total": 27,
+      "source_ids": [
+        "SYNTH-REVIEWS-DATED-DEMO-v1"
+      ],
+      "october_query": {
+        "project_id": "data-r4-pack-binding",
+        "model_id": "FRIDGE-A",
+        "source_ids": [
+          "SYNTH-REVIEWS-DATED-DEMO-v1"
+        ],
+        "dataset_version": "synthetic-dated-demo.20261006.v1",
+        "start_date": "2026-10-01",
+        "end_date_exclusive": "2026-11-01",
+        "granularity": "month",
+        "topic_ids": [
+          "cleaning"
+        ],
+        "source_kind": "synthetic",
+        "timezone": "Asia/Seoul"
+      },
+      "october_counts": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 1,
+        "excluded_outside_period_count": 5,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 4,
+        "unclassified_review_count": 0
+      }
+    }
+  ]
+}

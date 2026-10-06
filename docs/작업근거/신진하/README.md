@@ -2,10 +2,11 @@
 
 <!-- member-log:owner-updates:start -->
 ## 작성자의 최신 재개 요약
-- 최신 기록 ID / 한국시간 / 현재 목표: `신진하-E-DATA-ORIGINAL-AUDIT-TRENDS-01a1100e` · 2026-10-06 17:34 KST · 세 고정 출력 원문 대조와 날짜·주제 collector 근거 보존.
-- 실제 완료 범위 / 미완료·막힘 / 다음 행동과 담당: 원자료 source/model/version/text 결합과 고정 output SHA 확인; 36행·8열 CSV 및 Korean NFC/NFD importer 회귀 보존. 집계 결과 0/null·중복·겨울 KST·윤일 및 혼입 거부를 검증. PR #171은 FixtureCollector API/MCP 경로만 통과했고 DATA 수집기·실제 날짜 미검증. 운영 주입·실자료 날짜 provenance·live restart 미완료; #13의 409 reservation과 로컬 workspace trend test cleanup 오류를 보존 기록. PM @jeongiryang, CORE @unknownamed, WEB @choigilung의 다음 행동은 날짜별 기록에 정리.
-- 상세 작업근거: [고유 근거ID](2026-10-06/신진하-E-DATA-ORIGINAL-AUDIT-TRENDS-01a1100e.md)
-- 관련 작업기록: 같은 commit의 [상세 기록](../../작업기록/신진하/2026-10-06/신진하-20261006-DATA-ORIGINAL-AUDIT-TRENDS-01a1100e.md)
+- 최신 기록 ID / 한국시간 / 현재 목표: `신진하-E-DATA-INTEGRATION-R4-01a1100e` · 2026-10-06 20:56 KST · PM DATA-INTEGRATION-R4의3팩원문/날짜/검색 대조·후속제출.
+- 실제 완료 범위 / 미완료·막힘 / 다음 행동과 담당: 원36/CSV8열 보존, 108원문·ID/모델/버전 연결, 15query독립재계산/재생·40거절, 최신검사main087bd에서PDF3/근거21/실HTTP46·재시작PASS. 원날짜미상/PM31날짜/DATA9날짜는각source/version/IDs로유지;청소1/3과1/4는원문membership가다름. PM 운영/분류/독립자료 승인, CORE 의미/보류, WEB 새DATA9팩화면·내보내기가남음. 부모Done/실고객수요아님.
+- 상세 작업근거: [R4 고유 기록ID](2026-10-06/신진하-E-DATA-INTEGRATION-R4-01a1100e.md)
+- 관련 근거: [3팩 고정값·실행·담당 인계](../../../evals/data-integration-r4/20261006/README.md)
+- 선행 실제상태: PR183·PR189 실제병합 확인. 최신main b67886f 위R4단위에서108바인딩/15query/40거절·실HTTP46/PDF3/근거21/재시작PASS. PM188날짜3파일은고정핀과같음; 공통문서nav는PM188미병합으로미제공. 이번R4의새PR/CI/PM 인수·운영은별도.
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
 

@@ -1,8 +1,8 @@
 # 황대겸 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
-- 2026-10-06 CORE-R5-01a10729: PR177 PM 부분 인수/병합 후 main fdb0ea2에서 누락 불편 리뷰 ID 피드백 보완. 관련297·전체1,438검사(건너뜀3), 실모델 신규0.
-- [새 상세](2026-10-06/CORE-R5-01a10729.md) · [검사 근거](../../../evals/core-manual-quality/20261006/r5/README.md) · [R4 원 결과](../../../evals/core-manual-quality/20261006/r4/README.md). 실모델 accept/적절한 hold·WEB/MCP·독립 품질과 PM Done은 남아 있다.
+- 2026-10-06 CORE-INTEGRATION-R4-01a10729-01: 원10리뷰/제한2리뷰/길이guard 의미 반례 감사와 R6 원ledger↔PM 완료metadata 대조. 추가5044로 관측49277토큰, 원응답유실·11/24시도 보존.
+- [새 상세](2026-10-06/CORE-INTEGRATION-R4-01a10729-01.md) · [원문 대조/추가 관측/검사](../../../evals/core-manual-quality/20261006/integration-r4-audit/README.md). 실제 기능 관련성·후보kind 지침 보완, 신규 모델0·후속효과 미검증. PR192 CI4/4·보고수신은 별도이며 PM 고정배치/의미품질·부모Done이 남았다.
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
 

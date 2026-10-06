@@ -1,0 +1,22 @@
+{
+  "failures": [
+    {
+      "attempt": "run-01a1100e",
+      "type": "audit fixture preparation",
+      "failure": "WorkspaceProjectSnapshot request omitted required product_group and other fields",
+      "product_code_changed": false,
+      "resolution": "Reuse complete pinned planning_request and complete project snapshot. Ruff loop capture findings addressed with bound defaults.",
+      "model_calls": 0
+    },
+    {
+      "attempt": "run-01a1100e-02",
+      "type": "audit expectation",
+      "failure": "wrong model returns DomainError INVALID_MODEL_ID; audit incorrectly expected empty items",
+      "product_code_changed": false,
+      "resolution": "Verify explicit rejection for unknown model and document version; preserve actual catalog behavior.",
+      "model_calls": 0
+    }
+  ],
+  "successful_run": "run-01a1100e-03",
+  "all_passed": true
+}
