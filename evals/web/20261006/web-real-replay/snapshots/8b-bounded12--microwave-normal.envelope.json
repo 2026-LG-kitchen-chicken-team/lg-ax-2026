@@ -1,0 +1,289 @@
+{
+  "actor_id": "model-study-replay-owner",
+  "client": "web",
+  "created_at": "2026-10-06T09:29:23.611037Z",
+  "dataset_sha256": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03",
+  "document_versions": {
+    "MICROWAVE-A": "1.0"
+  },
+  "output": {
+    "gaps": [
+      {
+        "evidence_ids": [
+          "MANUAL-005",
+          "REVIEW-EVIDENCE-034",
+          "REVIEW-EVIDENCE-035",
+          "REVIEW-EVIDENCE-036"
+        ],
+        "feature_ids": [
+          "FEATURE-005"
+        ],
+        "id": "GAP-001",
+        "model_id": "MICROWAVE-A",
+        "need_id": "NEED-001",
+        "questions": [],
+        "remaining_pain": "매일 같은 음식을 데우는데 시간과 출력을 다시 입력해요",
+        "support_status": "supported"
+      },
+      {
+        "evidence_ids": [
+          "MANUAL-005",
+          "REVIEW-EVIDENCE-034",
+          "REVIEW-EVIDENCE-035",
+          "REVIEW-EVIDENCE-036"
+        ],
+        "feature_ids": [
+          "FEATURE-005"
+        ],
+        "id": "GAP-002",
+        "model_id": "MICROWAVE-A",
+        "need_id": "NEED-001",
+        "questions": [],
+        "remaining_pain": "설정 저장 기능이 있다는 것을 몰랐어요",
+        "support_status": "supported"
+      },
+      {
+        "evidence_ids": [
+          "MANUAL-005",
+          "REVIEW-EVIDENCE-034",
+          "REVIEW-EVIDENCE-035",
+          "REVIEW-EVIDENCE-036"
+        ],
+        "feature_ids": [
+          "FEATURE-005"
+        ],
+        "id": "GAP-003",
+        "model_id": "MICROWAVE-A",
+        "need_id": "NEED-001",
+        "questions": [],
+        "remaining_pain": "저장한 설정을 호출하는 버튼을 찾기 어려워요",
+        "support_status": "supported"
+      }
+    ],
+    "needs": [
+      {
+        "evidence_ids": [
+          "REVIEW-EVIDENCE-034"
+        ],
+        "id": "NEED-001",
+        "model_id": "MICROWAVE-A",
+        "pain": "매일 같은 음식을 데우는데 시간과 출력을 다시 입력해요",
+        "situation": "데우기 기능과 설정을 고를 때",
+        "uncertainties": []
+      }
+    ],
+    "no_candidate_reasons": [
+      "기존 기능과 동일한 기능으로, 반복 조작의 불편을 줄이는 기능이 아님"
+    ],
+    "planning_execution": {
+      "$replay_record": "evals/pm-prototype/20261006/finite-model-study/8b-bounded12/microwave-normal.json",
+      "sha256": "a0483657fef00979717bfa8b27ec0710c2314e748780e2d97e83043a188bea01"
+    }
+  },
+  "previous_run_id": null,
+  "request": {
+    "dataset_version": "0.1.0",
+    "exclusions": [],
+    "improvement_task": "기존 데우기 기능과 중복되는 후보를 제외하고 반복 조작의 불편을 줄인다",
+    "model_ids": [
+      "MICROWAVE-A"
+    ],
+    "product_group": "microwave",
+    "target_customer": "전자레인지로 간편식을 데우는 사용자",
+    "use_situation": "데우기 기능과 설정을 고를 때"
+  },
+  "request_revision": 0,
+  "run": {
+    "concepts": [],
+    "contract_version": "0.1.0",
+    "dataset_version": "0.1.0",
+    "events": [
+      {
+        "evidence_ids": [],
+        "stage": "plan",
+        "summary": "plan 실행 기록 · live_model",
+        "tool": "plan"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "retrieve",
+        "summary": "bootstrap 실행 기록 · live_model",
+        "tool": "bootstrap"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "retrieve",
+        "summary": "select_feature_scope 실행 기록 · live_model",
+        "tool": "select_feature_scope"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "retrieve",
+        "summary": "list_products 실행 기록 · live_model",
+        "tool": "list_products"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "retrieve",
+        "summary": "get_evidence 실행 기록 · live_model",
+        "tool": "get_evidence"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "retrieve",
+        "summary": "get_evidence 실행 기록 · live_model",
+        "tool": "get_evidence"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "retrieve",
+        "summary": "get_evidence 실행 기록 · live_model",
+        "tool": "get_evidence"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "retrieve",
+        "summary": "get_evidence 실행 기록 · live_model",
+        "tool": "get_evidence"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "needs",
+        "summary": "need_extract 실행 기록 · live_model",
+        "tool": "need_extract"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "compare",
+        "summary": "product_compare 실행 기록 · live_model",
+        "tool": "product_compare"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "concepts",
+        "summary": "concept_draft 실행 기록 · live_model",
+        "tool": "concept_draft"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "review",
+        "summary": "quality_context 실행 기록 · live_model",
+        "tool": "quality_context"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "review",
+        "summary": "review_judgement 실행 기록 · live_model",
+        "tool": "review_judgement"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "review",
+        "summary": "review_decision 실행 기록 · live_model",
+        "tool": "review_decision"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "review",
+        "summary": "revise 실행 기록 · live_model",
+        "tool": "revise"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "needs",
+        "summary": "need_extract 실행 기록 · live_model",
+        "tool": "need_extract"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "compare",
+        "summary": "product_compare 실행 기록 · live_model",
+        "tool": "product_compare"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "concepts",
+        "summary": "concept_draft 실행 기록 · live_model",
+        "tool": "concept_draft"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "review",
+        "summary": "quality_context 실행 기록 · live_model",
+        "tool": "quality_context"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "review",
+        "summary": "review_judgement 실행 기록 · live_model",
+        "tool": "review_judgement"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "review",
+        "summary": "review_decision 실행 기록 · live_model",
+        "tool": "review_decision"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "review",
+        "summary": "revise 실행 기록 · live_model",
+        "tool": "revise"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "needs",
+        "summary": "need_extract 실행 기록 · live_model",
+        "tool": "need_extract"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "compare",
+        "summary": "product_compare 실행 기록 · live_model",
+        "tool": "product_compare"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "concepts",
+        "summary": "concept_draft 실행 기록 · live_model",
+        "tool": "concept_draft"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "review",
+        "summary": "quality_context 실행 기록 · live_model",
+        "tool": "quality_context"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "review",
+        "summary": "review_judgement 실행 기록 · live_model",
+        "tool": "review_judgement"
+      },
+      {
+        "evidence_ids": [],
+        "stage": "review",
+        "summary": "review_decision 실행 기록 · live_model",
+        "tool": "review_decision"
+      }
+    ],
+    "evidence_ids": [
+      "MANUAL-005",
+      "REVIEW-EVIDENCE-034",
+      "REVIEW-EVIDENCE-035",
+      "REVIEW-EVIDENCE-036"
+    ],
+    "id": "run-c9f061be9af448fab08925a016069798",
+    "max_revisions": 2,
+    "project_id": "project-9f28e5289ba448cfbad5af040a93caae",
+    "revision_count": 2,
+    "stage": "review",
+    "status": "failed",
+    "unresolved": [
+      "NON_COMPLAINT_AS_NEED",
+      "ASSESSMENT_COVERAGE",
+      "기존 기능과 동일한 기능으로, 반복 조작의 불편을 줄이는 기능이 아님"
+    ]
+  },
+  "unconfirmed": []
+}
