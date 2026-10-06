@@ -473,7 +473,7 @@ function judgementMarkdown(judgement: ExportJudgement | null): string[] {
     ...list('검사에서 발견한 문제', judgement.violations),
     ...(judgement.record_problems.length ? list('저장 기록 불일치', judgement.record_problems) : []),
     ...(judgement.errors.length ? list('실행 오류', judgement.errors.map(item => `${item.code}: ${item.message}`)) : []),
-    ...list('확인할 질문', judgement.questions), ...list('보류 사유', judgement.hold_reasons.map(reasonText)),
+    ...list('확인할 질문', judgement.questions.map(reasonText)), ...list('보류 사유', judgement.hold_reasons.map(reasonText)),
     ...list('미해결', judgement.unresolved.map(reasonText)), ...list('후보 없음 사유', judgement.no_candidate_reasons.map(reasonText)),
     ...(judgement.rejected_candidates.length ? list('검사에서 거절된 후보(선택 대상 아님)', judgement.rejected_candidates.map(item => `${item.id} ${item.title}`)) : []),
     ...(judgement.semantic_reviews.length ? [

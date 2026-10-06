@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { ApiError } from './api';
-import { exportJudgement } from './judgement';
+import { exportJudgement, reasonText } from './judgement';
+import { PendingJudgement } from './PendingJudgement';
 import { contractErrors, heldItems } from './planning';
 import type { DataMode, PlanningRequest, RunSnapshot } from './planning';
 
@@ -62,7 +63,7 @@ export function ClarificationPanel({ snapshot, mode, busy = false, onSubmit }: {
     {mode === 'fixture' ? <p className="fixture-note">화면 확인용 합성 예시 · 답변은 브라우저 초안만 생성하며 모델을 호출하지 않습니다.</p> : null}
     {questions.length ? <>
       <ol className="clarification-list">{questions.map((question, index) => <li key={question}>
-        <label htmlFor={`clarification-answer-${index}`}>{question}</label>
+        <label htmlFor={`clarification-answer-${index}`}>{reasonText(question)}</label>
         <textarea id={`clarification-answer-${index}`} rows={3} maxLength={2000} disabled={locked}
           value={answers[question] ?? ''} onChange={event => { const text = event.target.value; setAnswers(previous => ({ ...previous, [question]: text })); }} />
       </li>)}</ol>
@@ -71,6 +72,7 @@ export function ClarificationPanel({ snapshot, mode, busy = false, onSubmit }: {
         <button className="primary-button" type="submit" disabled={locked}>{submitting ? '저장 중…' : mode === 'fixture' ? '답변으로 새 실행 초안' : '답변으로 다시 검토'}</button>
       </div>
     </> : <p className="muted">이 실행에 저장된 추가 질문이 없습니다. 조건을 바꾸려면 아래 재실행 패널을 이용하세요.</p>}
+    <PendingJudgement active={submitting && mode !== 'fixture'} action="답변 저장과 다시 검토" />
     {error ? <p className="form-error" role="alert">{error}</p> : null}
   </form>;
 }

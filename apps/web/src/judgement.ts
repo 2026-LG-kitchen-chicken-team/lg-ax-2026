@@ -158,10 +158,16 @@ const BARE_CODE = /^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+$/;
  * its label with the code kept; free-text reasons pass through unchanged. Display only — stored data is not rewritten.
  */
 export function reasonText(item: string): string {
-  const label = VIOLATION_LABELS[item];
+  const label = Object.hasOwn(VIOLATION_LABELS, item) ? VIOLATION_LABELS[item] : undefined;
   if (label) return `${label} (${item})`;
-  return BARE_CODE.test(item) ? `${item} (설명이 등록되지 않은 검사 코드)` : item;
+  if (BARE_CODE.test(item)) return `${item} (설명이 등록되지 않은 검사 코드)`;
+  // The core also writes codes inside generated sentences ("판단 근거의 REVIEW_UNCERTAIN 조건을 … 있나요?"). Known codes
+  // get their label in place, keeping the code; unknown tokens and everything else stay exactly as stored.
+  return item.replace(INLINE_CODE, code => Object.hasOwn(VIOLATION_LABELS, code) ? `'${VIOLATION_LABELS[code]}'(${code})` : code);
 }
+
+// A code already written as "(CODE" (a label we produced, or violationText) is left alone so labels never stack.
+const INLINE_CODE = /(?<!\()\b[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+\b/g;
 
 const QUALITY_LABELS: Record<string, string> = {
   mechanism: '작동 방식', difference_from_current_features: '현재 기능과 차이', unverified_assumptions: '미검증 가정', unsupported_claims: '근거 없는 단정', unsupported_factual_claims: '근거 없는 단정',
@@ -186,7 +192,7 @@ export function violationDetail(details: unknown): string | null {
 
 export function violationText(item: { code: string; stage: string; details?: unknown }): string {
   const detail = violationDetail(item.details);
-  return `${VIOLATION_LABELS[item.code] ?? item.code} (${item.code} · ${item.stage} 단계)${detail ? ` · ${detail}` : ''}`;
+  return `${Object.hasOwn(VIOLATION_LABELS, item.code) ? VIOLATION_LABELS[item.code] : item.code} (${item.code} · ${item.stage} 단계)${detail ? ` · ${detail}` : ''}`;
 }
 
 const SEMANTIC = /^(EXCLUSION|QUALITY|SEMANTIC|INVALID_SEMANTIC)_/;
