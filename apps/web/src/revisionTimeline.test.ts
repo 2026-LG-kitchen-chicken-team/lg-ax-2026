@@ -153,7 +153,7 @@ describe('RevisionTimeline renders in the DOM', () => {
     ['not_implemented', '요청만 저장됨'], ['pending', '진행 중'], ['running', '진행 중'],
   ] as const)('shows saved %s status and its stage on the run row', async (status, label) => {
     const saved: RunSnapshot = { ...first, run: { ...first.run, status, concepts: [] } };
-    await mount([saved], saved.run.id, vi.fn(), 'api');
+    await mount([saved], saved.run.id, vi.fn(), 'live');
     const shown = host.querySelector('[data-field="run-status"]');
     expect(shown?.textContent).toContain(label);
     expect(shown?.textContent).toContain(`${status} · ${saved.run.stage}`);
