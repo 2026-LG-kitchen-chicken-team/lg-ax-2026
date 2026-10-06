@@ -11,7 +11,7 @@ import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { errorDetails, errorDetailText, errorNotes, executionMetrics, exportJudgement, judgementView, planningExecutionView, rejectedCandidateCount, rerunBaseNotice, runSources, selectableConcepts, terminalReason, tokenText, verificationScope } from './judgement';
+import { errorDetails, errorDetailText, errorNotes, executionMetrics, traceFacts, exportJudgement, judgementView, planningExecutionView, rejectedCandidateCount, rerunBaseNotice, runSources, selectableConcepts, terminalReason, tokenText, verificationScope } from './judgement';
 import type { PlanningExecution } from './judgement';
 import { runStatusView } from './liveWorkspace';
 import { ConceptsView, HistoryView } from './PlanningViews';
@@ -417,6 +417,22 @@ describe('error details of real PR #190 head core records (fixture transport, no
     expect(errorNotes(REAL['failed-scope-mismatch'])).toEqual(['리뷰 DEV-01-REVIEW(선언 극성 uncertain)']);
     expect(errorNotes(REAL['failed-field-missing'])).toEqual(['사유: schema_mismatch']);
   });
+  it('each check round carries the failed stage error stored right before its decision', () => {
+    const decision = (revision: number, action: string) => ({ stage: 'review', operation: 'review_decision',
+      outputs: { valid: false, action, revision_count: revision, violations: [{ code: 'VALIDATION_FAILED', stage: 'needs' }] } });
+    const failed = (error: unknown) => ({ stage: 'needs', operation: 'need_extract', outputs: { ok: false, error } });
+    // Same order as the real failed-context-missing record: failed need_extract → review_decision, three times; the last round differs.
+    const facts = traceFacts([failed(REAL['failed-context-missing']), decision(0, 'revise'), failed(REAL['failed-context-missing']), decision(1, 'revise'),
+      failed(REAL['failed-p1-polarity']), decision(2, 'unresolved')]);
+    expect(facts.rounds.map(round => [round.codes, round.details, round.repeated])).toEqual([
+      [['VALIDATION_FAILED'], [`${reasonText('UNCERTAINTY_CONTEXT_MISSING')} · 리뷰 DEV-01-REVIEW`], false],
+      [['VALIDATION_FAILED'], [`${reasonText('UNCERTAINTY_CONTEXT_MISSING')} · 리뷰 DEV-01-REVIEW`], true],
+      [['VALIDATION_FAILED'], ['서로 다른 두 선언: review_assessments ↔ result/review_assessments'], false],
+    ]);
+    // A decision with no failed stage before it (the stored 8B runs) keeps no details.
+    expect(traceFacts(execution(FAILED[0].snapshot).trace).rounds.every(round => round.details.length === 0)).toBe(true);
+  });
+
   it('the export carries the same notes', () => {
     const snapshot = structuredClone(FAILED[0].snapshot);
     execution(snapshot).errors = structuredClone(Object.values(REAL));
