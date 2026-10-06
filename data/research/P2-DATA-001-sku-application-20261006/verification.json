@@ -56,9 +56,9 @@
   "record_layout": "data_directory_record_proposals",
   "new_dated_record_paths_not_registered": true,
   "files_sha256": {
-    "README.md": "4a515380aefe1f127cdfff7292a0168225ca2a6eae1765b48d67099f851f1811",
-    "sku-application.csv": "60c1844a1f3371d139931a04997349314ab822b9a1ecfe753ef1ccbe02076e85",
-    "sku-application.json": "0281c80d778d5864880ce9d5071dbe9e877bc6e4b73bb09bb29ddf78a998a0d6"
+    "README.md": "f8061d5601a760c3acac9c8ece97bd5419eed243188660a70d0735eb0c1d86f0",
+    "sku-application.csv": "5c6cdcfacef16042932c885927dd47215caefd4f7d3d9492c38a0cf38b6d9d0d",
+    "sku-application.json": "1ce5686678e645f533a5576b8019681beef92e44b8af1ff6649d2e7803d34d9d"
   },
   "cached_manual_cover_sha256": {
     "T876MEE1H1": "14dcd849ddd38adbec78f3a944232ab2170ed26a27ea11a20d2bac0719d69764",
@@ -106,5 +106,63 @@
       }
     ],
     "actual_model_generations": 0
+  },
+  "pre_export_crlf_files_sha256": {
+    "README.md": "4a515380aefe1f127cdfff7292a0168225ca2a6eae1765b48d67099f851f1811",
+    "sku-application.csv": "60c1844a1f3371d139931a04997349314ab822b9a1ecfe753ef1ccbe02076e85",
+    "sku-application.json": "0281c80d778d5864880ce9d5071dbe9e877bc6e4b73bb09bb29ddf78a998a0d6"
+  },
+  "pm_line_ending_reconciliation": {
+    "actor": "정이량 PM AI",
+    "checked_at": "2026-10-06T20:37:47.164389+09:00",
+    "source_pr": 187,
+    "source_head_commit": "6cc698f33046fbcea328cbd7010808f922aa205d",
+    "original_verification_git_blob_sha256": "4f18664299511b09a1ad55206d051963d719545eb8682ff72fc8e1a622528528",
+    "original_verification_archive_path": "evals/pm-intake/20261006/pr187/original-verification.json",
+    "original_verification_archive_exact_bytes_preserved": true,
+    "original_verification_archive_gitattributes": "original-verification.json -text",
+    "reason": "Original files_sha256 values described pre-export CRLF bytes. Git publishes these three artifacts as LF, so published artifact hashes must be pinned separately.",
+    "conversion": {
+      "from": "CRLF",
+      "to": "LF",
+      "original_hashes_retained_in": "pre_export_crlf_files_sha256",
+      "published_hashes_in": "files_sha256",
+      "content_change": false
+    },
+    "artifact_checks": [
+      {
+        "path": "data/research/P2-DATA-001-sku-application-20261006/README.md",
+        "pre_export_crlf_sha256": "4a515380aefe1f127cdfff7292a0168225ca2a6eae1765b48d67099f851f1811",
+        "published_lf_git_blob_sha256": "f8061d5601a760c3acac9c8ece97bd5419eed243188660a70d0735eb0c1d86f0",
+        "reconstructed_crlf_sha256": "4a515380aefe1f127cdfff7292a0168225ca2a6eae1765b48d67099f851f1811",
+        "reconstructed_original_hash_matches": true,
+        "utf8_decoded_content_equal_after_line_ending_normalization": true
+      },
+      {
+        "path": "data/research/P2-DATA-001-sku-application-20261006/sku-application.csv",
+        "pre_export_crlf_sha256": "60c1844a1f3371d139931a04997349314ab822b9a1ecfe753ef1ccbe02076e85",
+        "published_lf_git_blob_sha256": "5c6cdcfacef16042932c885927dd47215caefd4f7d3d9492c38a0cf38b6d9d0d",
+        "reconstructed_crlf_sha256": "60c1844a1f3371d139931a04997349314ab822b9a1ecfe753ef1ccbe02076e85",
+        "reconstructed_original_hash_matches": true,
+        "utf8_decoded_content_equal_after_line_ending_normalization": true
+      },
+      {
+        "path": "data/research/P2-DATA-001-sku-application-20261006/sku-application.json",
+        "pre_export_crlf_sha256": "0281c80d778d5864880ce9d5071dbe9e877bc6e4b73bb09bb29ddf78a998a0d6",
+        "published_lf_git_blob_sha256": "1ce5686678e645f533a5576b8019681beef92e44b8af1ff6649d2e7803d34d9d",
+        "reconstructed_crlf_sha256": "0281c80d778d5864880ce9d5071dbe9e877bc6e4b73bb09bb29ddf78a998a0d6",
+        "reconstructed_original_hash_matches": true,
+        "utf8_decoded_content_equal_after_line_ending_normalization": true
+      }
+    ],
+    "csv_json_rows_compared": 10,
+    "csv_json_roundtrip_exact": true,
+    "scope": "PM mechanical artifact-hash reconciliation only. Research conclusions, product data, author work/evidence proposals and prior verification statements are preserved. The original PR body reported CSV/JSON preservation after LF normalization but the listed hashes still represented CRLF bytes; this annotation records that published-byte validation mismatch.",
+    "repository_product_code_import_or_execution": 0,
+    "actual_model_generations": 0,
+    "author_record_changes": 0,
+    "parent_issue_done": false,
+    "independent_semantic_or_full_agent_completion_asserted": false,
+    "dated_record_path_422_resolved_by_this_correction": false
   }
 }
