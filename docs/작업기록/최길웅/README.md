@@ -3,6 +3,8 @@
 <!-- member-log:owner-updates:start -->
 ## 최신 재개 요약 (작성자 갱신, 2026-10-06 16:2x KST)
 
+- **R3 착수(16:4x KST):** 배정 PM-20261006-WEB-INTEGRATION-R3(P2-WEB-005). #169(PM 통합) 병합 전에는 그 영역을 편집하지 않는다. 범위 회귀는 #169에 있다(빈 topic_ids·대체 모델 없음). 지금 할 일은 단위 FixtureCollector 주입 서버로 같은 aggregate ID의 웹 → MCP 소비 경로 E2E를 준비하는 것이다. [상세 031](2026-10-06/최길웅-20261006-031.md)
+
 - 상태: 자동화 OFF, Worker 예약 `LGAX-Worker-choigilung` Disabled. 수동 진행. 기록은 #165 새 규칙(날짜·ID 파일 + 이 구역)을 따른다.
 - 열린 PR(모두 PM 검수 대기):
   - [#158](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/158) 리뷰 동향(WEB005/#27 정식 보고): PM 검수 결함(원문 혼선·늦은 응답) 수정, 분모 0 보완, main 반영.
