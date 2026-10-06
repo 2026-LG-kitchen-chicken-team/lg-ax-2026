@@ -1,0 +1,19 @@
+..F...............................................................................................................................
+======================================================================
+FAIL: test_conflicting_need_keeps_existing_question_hold_policy (test_stage_metadata.StageMetadataTests.test_conflicting_need_keeps_existing_question_hold_policy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/lgax-i4/tests/test_stage_metadata.py", line 130, in test_conflicting_need_keeps_existing_question_hold_policy
+    self.assertEqual(result["status"], "held")
+AssertionError: 'failed' != 'held'
+- failed
++ held
+
+
+----------------------------------------------------------------------
+Ran 130 tests in 9.698s
+
+FAILED (failures=1)
+{"ok": false, "error": {"code": "INVALID_ARGUMENT", "message": "모델 호출 설정·입력·스키마가 유효하지 않습니다.", "details": {"reason": "missing_model_environment"}}}
+{"ok": false, "reason": "output_must_not_overwrite_input"}
+{"tests": 130, "failures": 1, "errors": 0, "skipped": 0, "live_model_calls": 0}

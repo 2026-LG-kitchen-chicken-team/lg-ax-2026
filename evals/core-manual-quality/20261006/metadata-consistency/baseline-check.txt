@@ -1,0 +1,60 @@
+EFF.FF
+======================================================================
+ERROR: test_conflicting_duplicate_polarity_never_reaches_accept (test_stage_metadata.StageMetadataTests.test_conflicting_duplicate_polarity_never_reaches_accept)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/lgax-i4/tests/test_stage_metadata.py", line 51, in test_conflicting_duplicate_polarity_never_reaches_accept
+    self.assertEqual(details["conflicting_paths"], ["review_assessments", "result/review_assessments"])
+                     ~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'conflicting_paths'
+
+======================================================================
+FAIL: test_conflicting_duplicate_question_uses_shared_retry (test_stage_metadata.StageMetadataTests.test_conflicting_duplicate_question_uses_shared_retry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/lgax-i4/tests/test_stage_metadata.py", line 115, in test_conflicting_duplicate_question_uses_shared_retry
+    self.assertEqual(result["input"]["revision_count"], 1)
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_conflicting_need_keeps_existing_question_hold_policy (test_stage_metadata.StageMetadataTests.test_conflicting_need_keeps_existing_question_hold_policy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/lgax-i4/tests/test_stage_metadata.py", line 130, in test_conflicting_need_keeps_existing_question_hold_policy
+    self.assertEqual(result["status"], "held")
+AssertionError: 'failed' != 'held'
+- failed
++ held
+
+
+======================================================================
+FAIL: test_pm_original_positive_uncertain_counterexample_is_rejected (test_stage_metadata.StageMetadataTests.test_pm_original_positive_uncertain_counterexample_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/lgax-i4/tests/test_stage_metadata.py", line 90, in test_pm_original_positive_uncertain_counterexample_is_rejected
+    self.assertEqual(result["status"], "failed")
+AssertionError: 'completed' != 'failed'
+- completed
++ failed
+
+
+======================================================================
+FAIL: test_uncertainty_metadata_reaches_shared_hold_without_invented_fields (test_stage_metadata.StageMetadataTests.test_uncertainty_metadata_reaches_shared_hold_without_invented_fields)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/lgax-i4/tests/test_stage_metadata.py", line 71, in test_uncertainty_metadata_reaches_shared_hold_without_invented_fields
+    self.assertEqual([p["skill"] for p in transport.posts], ["need_extract", "no_candidate_review"])
+AssertionError: Lists differ: ['need_extract'] != ['need_extract', 'no_candidate_review']
+
+Second list contains 1 additional elements.
+First extra element 1:
+'no_candidate_review'
+
+- ['need_extract']
++ ['need_extract', 'no_candidate_review']
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.422s
+
+FAILED (failures=4, errors=1)
+{"tests": 6, "failures": 4, "errors": 1, "skipped": 0, "live_model_calls": 0}
