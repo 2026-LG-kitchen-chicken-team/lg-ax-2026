@@ -1,0 +1,95 @@
+{
+  "base": "1a8e4363b3b1c0105a52371fe11d0b92084b5d74",
+  "checks": [
+    {
+      "name": "current-core-coverage",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_stage_complaint_coverage.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "stopped_reason": null,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "log_sha256": "00a552aaed37fda2cf8017192c6d0b3bf233fede1c8db8753cf307180d0aeb7c"
+    },
+    {
+      "name": "lint-git-file-modes",
+      "argv": [
+        "python",
+        "-c",
+        "import pathlib,shutil,tempfile,subprocess; paths=['packages/core/src/lgax_core/need_extraction.py', 'packages/core/src/lgax_core/skill_runner.py', 'scripts/check_data001_output_evidence.py', 'scripts/check_data001_fixed_storage.py', 'tests/test_need_extraction_judgement.py', 'tests/test_data001_output_evidence.py', 'tests/test_data001_fixed_storage.py']; dest=pathlib.Path(tempfile.mkdtemp()); exec('for name in paths+[\\\"pyproject.toml\\\"]:\\n p=dest/name; p.parent.mkdir(parents=True,exist_ok=True); shutil.copyfile(name,p); p.chmod(0o644)'); raise SystemExit(subprocess.run(['python','-m','ruff','check','--no-cache',*paths],cwd=dest).returncode)"
+      ],
+      "exit_code": 0,
+      "stopped_reason": null,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "name": "phase2-validate",
+      "argv": [
+        "python",
+        "scripts/phase2.py",
+        "validate"
+      ],
+      "exit_code": 1,
+      "stopped_reason": null,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "log_sha256": "fa10b3eeae6d2a4aac2fa44b3f524a87f98785cae5803c7bab35c40b85866e8c"
+    }
+  ],
+  "git_file_modes": "100644 15b5125c56bd567ad04ad936e78fe3c307b966cc 0\tpackages/core/src/lgax_core/need_extraction.py\n100644 d6cf52cb60b7c7b51a3a580dd298eeeddeafb498 0\tpackages/core/src/lgax_core/skill_runner.py\n100644 024ee05ccb73a0b5a5846f3b02dfff2eb64bedff 0\tscripts/check_data001_fixed_storage.py\n100644 117acb375a5c6e6b66fd21a656741a0dd9fba0a5 0\tscripts/check_data001_output_evidence.py\n100644 d68cc27a7d83ce700746583b2393b0898374618d 0\ttests/test_data001_fixed_storage.py\n100644 86842a74ef8bb0fa51de09f7e398c7aa964c3d12 0\ttests/test_data001_output_evidence.py\n100644 c84a08f0e8723e933e26582a21ac80d31b4b1633 0\ttests/test_need_extraction_judgement.py\n",
+  "initial_lint_windows_mount_mode_failure_preserved": true,
+  "new_model_ocr_calls": 0
+}

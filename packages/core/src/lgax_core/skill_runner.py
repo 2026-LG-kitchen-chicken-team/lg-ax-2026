@@ -23,6 +23,8 @@ from lgax_contracts import CONTRACT_VERSION, load_schema, validate
 
 from .document_store import DocumentStore
 from .errors import DomainError
+from .need_extraction import has_explained_no_need, metadata_properties, validate_judgement
+from .need_extraction import hold_reasons as need_hold_reasons
 from .store import DemoStore
 
 SKILL_IDS = ("evidence_lookup", "need_extract", "product_compare", "concept_draft", "review_revision")
@@ -93,12 +95,15 @@ def schema_for(skill_id: str, direction: str) -> dict:
         optional = {"evidence_lookup": {"limit"}, "concept_draft": {"max_concepts"}}.get(skill_id, set())
         schema = _object(properties, [key for key in properties if key not in optional])
     else:
+        if skill_id == "need_extract":
+            result_fields[skill_id].update(metadata_properties())
+        required_result = (['needs', 'desired_outcomes', 'unresolved'] if skill_id == 'need_extract'
+                           else ["concepts", "hold_reasons"] if skill_id == 'concept_draft' else None)
         data = _object({**common, "skill_id": {"const": skill_id}, "contract_version": {"const": CONTRACT_VERSION},
                         "execution_kind": {"enum": list(EXECUTION_KINDS)},
                         "backend_id": {"type": "string", "minLength": 1},
                         "source_kind": _ref("SourceKind"),
-                        "result": _object(result_fields[skill_id],
-                                           ["concepts", "hold_reasons"] if skill_id == "concept_draft" else None),
+                        "result": _object(result_fields[skill_id], required_result),
                          "sources": _array(_ref("Evidence"))})
         schema = {"oneOf": [_object({"ok": {"const": True}, "data": data}),
                             _object({"ok": {"const": False}, "error": _ref("Error")})]}
@@ -395,6 +400,8 @@ class SkillRuntime:
             response = error.response()
         result = response.get("data", {}).get("result", {})
         reasons = list(result.get("unresolved", [])) + list(result.get("hold_reasons", []))
+        if skill_id == 'need_extract':
+            reasons.extend(need_hold_reasons(result))
         reasons.extend(f"insufficient_evidence:{gap['id']}" for gap in result.get("gaps", [])
                        if gap["support_status"] == "insufficient_evidence")
         error = response.get("error")
@@ -452,6 +459,8 @@ class SkillRuntime:
                         "model_id": payload["model_id"], "document_version": payload["document_version"],
                         "source_kind": record["provenance"]["products"][0]["source_kind"],
                         "result": result, "sources": []}}
+            judgement_sources = (validate_judgement(result, payload['review_evidence_ids'])
+                                 if skill_id == 'need_extract' else set())
             self._validate(skill_id, "output", response)
             if skill_id == "evidence_lookup":
                 item_ids = [item["id"] for item in result["items"]]
@@ -465,6 +474,7 @@ class SkillRuntime:
             else:
                 objects = {**payload, **{key: result[key] for key in ("needs", "gaps", "concepts") if key in result}}
                 used = self._check_objects(payload, objects, context)
+                used.update(judgement_sources)
                 if skill_id == "need_extract":
                     extracted = self._ids(result["needs"], "needs")
                     outcome_ids = [item["need_id"] for item in result["desired_outcomes"]]
@@ -490,8 +500,15 @@ class SkillRuntime:
                             "missing_need_ids": sorted(expected_needs - compared_needs),
                             "unexpected_need_ids": sorted(compared_needs - expected_needs),
                         })
-                if skill_id == "need_extract" and not result["needs"] and not result["unresolved"]:
-                    raise DomainError("VALIDATION_FAILED", "니즈를 추출하지 못했다면 이유를 남겨야 합니다.", {})
+                if (skill_id == "need_extract" and not result["needs"] and not result["unresolved"]
+                        and not has_explained_no_need(result)):
+                    raise DomainError("VALIDATION_FAILED", "니즈를 추출하지 못했다면 이유를 남겨야 합니다.", {
+                        "stage": "need_extract", "code": "EMPTY_NEEDS_WITHOUT_JUDGEMENT",
+                        "expected_review_evidence_ids": list(payload['review_evidence_ids']),
+                        "required_judgement_fields": ['review_assessments[].reason',
+                            'uncertainty_assessments[].missing_information', 'uncertainty_assessments[].questions'],
+                        "feedback_policy": "Do not invent a complaint. Return the model's actual judgement reason and needed clarification for these review IDs.",
+                    })
                 if skill_id == "review_revision":
                     if result["revision_count"] != payload["revision_count"] + 1:
                         raise DomainError("VALIDATION_FAILED", "수정 횟수는 실행마다 한 번 증가해야 합니다.", {})

@@ -1,0 +1,297 @@
+{
+  "base_commit": "1a8e4363b3b1c0105a52371fe11d0b92084b5d74",
+  "original_commit": "04177a10ccbd118997cf6867bde2ceae06999230",
+  "source_digest": "590e16f5159f84db1c102b14550f1c00d4c529b2d85ec47b2f7b4ae4e530e89f",
+  "executor_image": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+  "new_product_model_calls": 0,
+  "new_ocr_calls": 0,
+  "checks": [
+    {
+      "name": "need-review",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_need_extraction_judgement.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "stopped_reason": null,
+      "log_sha256": "c244c94757a4bda4fb45b07e6baa1159b449349bf92a0b36262df290c6930b7e",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    {
+      "name": "trace-review",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_data001_output_evidence.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "stopped_reason": null,
+      "log_sha256": "fda1548b0577438126a8208ea872a5d318144fbd0cd4ebfe7257181d4f94f042",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    {
+      "name": "storage-review",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_data001_fixed_storage.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "stopped_reason": null,
+      "log_sha256": "ef21dc39dcbcaf21c5db697629713b32634e724ba2c18a673ca0e482227a094a",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    {
+      "name": "skill-runtime",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_skill_runner.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "stopped_reason": null,
+      "log_sha256": "5a5793f4ba5364c0730eda75c2e046b344e66572de09c0a72a4eade16218ecde",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    {
+      "name": "planning-compatible",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_planning_quality_integration.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "stopped_reason": null,
+      "log_sha256": "9c19220b72013c5702d7e130c073de6c8cc345297be59eb932de9844044cce7a",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    {
+      "name": "current-core-compatible",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_need_review_assessment.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "stopped_reason": null,
+      "log_sha256": "0022ee81eaae586301bd919619db568337b011018f4f635ccdae17bcdd457edb",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    {
+      "name": "contracts",
+      "argv": [
+        "python",
+        "scripts/check_contracts.py"
+      ],
+      "exit_code": 0,
+      "stopped_reason": null,
+      "log_sha256": "83ff39a7aa73fcf380b0b281a91fbc9bad239834b2f70c6f93607d591faded90",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    {
+      "name": "rules",
+      "argv": [
+        "python",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stopped_reason": null,
+      "log_sha256": "56b21f915cb5a695479359f4ca6063582b0b9bcbdaee1869782a2a805a2a82cd",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    {
+      "name": "lint",
+      "argv": [
+        "python",
+        "-m",
+        "ruff",
+        "check",
+        "--no-cache",
+        "packages/core/src/lgax_core/need_extraction.py",
+        "packages/core/src/lgax_core/skill_runner.py",
+        "scripts/check_data001_output_evidence.py",
+        "scripts/check_data001_fixed_storage.py",
+        "tests/test_need_extraction_judgement.py",
+        "tests/test_data001_output_evidence.py",
+        "tests/test_data001_fixed_storage.py"
+      ],
+      "exit_code": 1,
+      "stopped_reason": null,
+      "log_sha256": "e6e8bfd9dc94621b5cd3ea38221f9cc177e7fc7194a18c4f48ec3d44c8ae61b5",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    }
+  ]
+}
