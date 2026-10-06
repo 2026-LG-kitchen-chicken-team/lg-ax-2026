@@ -1,9 +1,11 @@
 # 정이량 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
-## 최신 재개 요약 — 정이량-20261006-010-INTEGRATION
+## 최신 재개 요약 — 정이량-20261007-002-REVIEWED-HISTORY
 
-- 수동 PM 인수·통합·후속 배정, 자동화 OFF. 이번 원/새 PR의 실제 head·검수/CI·병합·190 Request changes·Draft 보존은 [PR 큐](../../pm/pr-intake-queue-20261006.json)와 실제 GitHub를 대조한다. 개인의 개별 검사/코드 인수와 부모 Done은 구분한다.
+- 10/7 사용자 직접 지시로 중단 PM188 미커밋5개를 복구·공유·e7bc486 실제 병합했고 Project21/공식 ACCEPTED/중앙OFF ACK를 확인했다. CORE198→DATA190 원P1 재검수 통과, CORE199·DATA8·WEB6의17후속PR을 원커밋 그대로 새 통합본에 담았다. Draft140/168 보존·Figma 제외·부모Done/31요구검증 보류.
+- 고정de09b64 전체1546+launcher6/웹530+Node4/type/build/규격·하네스·원문이관/HTTP·MCP·실제응답→화면·내보내기/집계10·브라우저 검사가 PASS다. API의WEB210 상세누락을 닫힌allowlist로 보완했다. 새 통합CI/병합·실모델3사례·같은운영release·최종공식수신은 후속 결과를 대조한다.
+- [10/7 상세002](2026-10-07/정이량-20261007-002-REVIEWED-HISTORY.md)·[E047](../../작업근거/정이량/2026-10-07/정이량-E047-REVIEWED-HISTORY.md)·[새 인수 체크포인트](../../pm/integration-review-20261007.md)·[새 큐](../../pm/pr-intake-queue-20261007.json). 아래10/6 항목은 원 checkpoint로 보존하며 새 판정은002/후속 종료증거를 따른다.
 - [문서 허브](../../README.md)에 정본·현재/과거·작성 위치를 정리했다. 입구5개 원문161753B·104제목·169링크/anchor와 개인 원기록을 보존하고 AGENTS/CLAUDE·CI를 연결했다. 새 기록은 이름/날짜/ID, 보고 URL은 고정commit의 기존 이름.md 호환 목차다.
 - 실제 PDF3등록/검색/restart·API/MCP 같은 aggregate/원문·Chromium20/20+4/4을 확인했다. 원36날짜미상/PM31+5/DATA9+27을 구분하며 합성언급비율·자료없음 null을 실수요·실운영배포로 확대하지 않는다.
 - 실제27B/122B53호출·193708토큰·13원출력. v3 의미검토 응답으로 입력 제한은 해결했지만 신규가설/현재사실 혼동으로 품질 보류다. 이후192/195 지침 효과는 아직 미실측. CORE 유실5044는 관측사용량이며 원응답 복원·원예약 초기화가 아니다.
