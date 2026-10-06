@@ -120,7 +120,7 @@ const VIOLATION_LABELS: Record<string, string> = {
   QUALITY_UNCERTAIN: '의미 검토: 기획 품질 기준 충족이 불확실합니다',
   SEMANTIC_QUESTION: '의미 검토에서 추가 확인이 필요한 질문이 남았습니다',
   INVALID_SEMANTIC_REVIEW: '의미 검토 응답이 규격에 맞지 않습니다',
-  INVALID_NO_CANDIDATE_REVIEW: '후보 없음 검토 응답이 규격에 맞지 않습니다',
+  INVALID_NO_CANDIDATE_REVIEW: '후보 없음 판단을 검토한 응답이 원문·범위·완전성 확인을 통과하지 못했습니다(후보 없음 자체의 오류가 아님)',
   // Remaining review_judgement codes (packages/core judgement_contract.py), first seen raw in a live run (record 020).
   DUPLICATE_ID: '같은 ID가 중복됩니다',
   SOURCE_FEATURE_MISSING: '근거가 없는 기능을 가리킵니다',

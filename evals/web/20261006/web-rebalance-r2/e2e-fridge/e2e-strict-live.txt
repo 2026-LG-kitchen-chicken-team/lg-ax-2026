@@ -1,0 +1,35 @@
+
+Running 1 test using 1 worker
+
+  x  1 e2e\real-planning.spec.ts:55:1 › real planning server: browser-initiated run → same run ID review → downloaded exports → rerun, previous run unchanged (54.4s)
+
+
+  1) e2e\real-planning.spec.ts:55:1 › real planning server: browser-initiated run → same run ID review → downloaded exports → rerun, previous run unchanged 
+
+    AssertionError: Generation metadata missing
+
+       at live-model-proof.ts:19
+
+      17 |     assert.equal(call.model_digest, digest, 'Unexpected generation digest');
+      18 |     const metadata = call.metadata as Record<string, unknown> | undefined;
+    > 19 |     assert.ok(metadata && typeof metadata === 'object', 'Generation metadata missing');
+         |            ^
+      20 |     assert.equal(metadata.model_id, modelId, 'Metadata model does not match the expected model');
+      21 |     assert.equal(metadata.revision, digest, 'Metadata pin does not match the expected digest');
+      22 |     assert.equal(metadata.pin_verification, 'before_and_after_generation', 'Generation pin verification missing');
+        at requireLiveModelProof (C:\Users\rlfdn\Desktop\lgax-wt-live\apps\web\e2e\live-model-proof.ts:19:12)
+        at C:\Users\rlfdn\Desktop\lgax-wt-live\apps\web\e2e\real-planning.spec.ts:96:63
+
+    Error Context: test-results\real-planning-real-plannin-3b09b-erun-previous-run-unchanged\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\real-planning-real-plannin-3b09b-erun-previous-run-unchanged\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\real-planning-real-plannin-3b09b-erun-previous-run-unchanged\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    e2e\real-planning.spec.ts:55:1 › real planning server: browser-initiated run → same run ID review → downloaded exports → rerun, previous run unchanged 
+exit 1

@@ -1,0 +1,44 @@
+
+Running 1 test using 1 worker
+
+  x  1 e2e\real-planning.spec.ts:55:1 › real planning server: browser-initiated run → same run ID review → downloaded exports → rerun, previous run unchanged (7.1s)
+
+
+  1) e2e\real-planning.spec.ts:55:1 › real planning server: browser-initiated run → same run ID review → downloaded exports → rerun, previous run unchanged 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('.connection-status')
+    Expected substring: "공통 API 연결됨"
+    Received string:    "API 연결 확인 중"
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toContainText" locator('.connection-status') with timeout 5000ms
+      - waiting for locator('.connection-status')
+        14 × locator resolved to <div class="connection-status">…</div>
+           - unexpected value "API 연결 확인 중"
+
+
+      73 |   try {
+      74 |     await page.goto('/');
+    > 75 |     await expect(page.locator('.connection-status')).toContainText('공통 API 연결됨');
+         |                                                      ^
+      76 |     await page.getByLabel('작업실 토큰').fill(token);
+      77 |     await page.getByRole('button', { name: '연결', exact: true }).click();
+      78 |     await expect(page.locator('.workspace-state')).toContainText('연결됨');
+        at C:\Users\rlfdn\Desktop\lgax-wt-live\apps\web\e2e\real-planning.spec.ts:75:54
+
+    Error Context: test-results\real-planning-real-plannin-3b09b-erun-previous-run-unchanged\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\real-planning-real-plannin-3b09b-erun-previous-run-unchanged\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\real-planning-real-plannin-3b09b-erun-previous-run-unchanged\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    e2e\real-planning.spec.ts:55:1 › real planning server: browser-initiated run → same run ID review → downloaded exports → rerun, previous run unchanged 
+exit 1
