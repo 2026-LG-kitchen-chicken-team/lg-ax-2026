@@ -2,10 +2,11 @@
 
 <!-- member-log:owner-updates:start -->
 ## 작성자의 최신 재개 요약
-- 최신 기록 ID / 한국시간 / 현재 목표: `신진하-E-DATA-OWNER-FOLLOWUP-01a1100e` · 2026-10-06 19:49 KST · 새 자료 연결·R4 대조·별도 날짜 시연의 실행 근거 인계.
+- 최신 기록 ID / 한국시간 / 현재 목표: `신진하-E-DATA-OWNER-FOLLOWUP-01a1100e` · 2026-10-06 19:53 KST · 새 자료 연결·R4 대조·별도 날짜 시연의 실행 근거 인계.
 - 실제 완료 범위 / 미완료·막힘 / 다음 행동과 담당: 공개PDF3/SHA·21원문/HTTP46·재시작·변경/삭제/다른ID·모델·버전 거부를 구현 전후 별도 폴더에 보존했다. 카탈로그/BM25/비교/새CSV/PDF/workspace 원본검증 연결과85회귀를 통과했다. R4 세 고정 결과는11/11·11/11·10/10 exact,9prompt/raw 해시 일치지만failed/questions[]다. 새 구성 날짜source/dataset/sidecar에서10월 분모4/날짜누락1/청소언급0.25, 실제API/MCP 같은aggregate/원문/재시작을 확인했다. 원36CSV8열 보존, 새 모델 호출0. 현재 PM 운영 배포·taxonomy 승인/WEB 새날짜 브라우저/CORE accept·적절한hold/독립평가·검색225행은 미완료. 로컬 준비 실패도 별도 이력으로 보존했다.
 - 상세 작업근거: [고유 근거ID](2026-10-06/신진하-E-DATA-OWNER-FOLLOWUP-01a1100e.md)
 - 관련 작업기록: [이번 수행](../../작업기록/신진하/2026-10-06/신진하-20261006-DATA-OWNER-FOLLOWUP-01a1100e.md)
+- [새 부분 PR183·PM 검수 요청](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/183). open/non-draft·PM reviewer 요청을 확인했고 최초 head342cfb3의CI4개는 실행 중이다. 검토 요청/수신은 승인·병합·전체Done이 아니다.
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
 

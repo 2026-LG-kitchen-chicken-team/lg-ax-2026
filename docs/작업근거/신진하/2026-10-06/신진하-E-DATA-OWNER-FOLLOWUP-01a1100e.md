@@ -33,3 +33,7 @@ python -B -X utf8 data/research/DATA-owner-followup-20261006-01a1100e/run_checks
 ```
 
 전달 한계: 실제 socket/API/MCP를 검사했으나 사용자 운영 서버나 PM 중앙에 배포하지 않았다. new BM25는 내부 개발 방법이며 공통 계약 literal_token_count를 바꾸지 않았다. 구성 날짜와 주제 preview는 실제 고객 게시일·감정·불편비율·시즌 수요가 아니다. 독립 평가자료 교체/수신/의미 검수와 CORE의 accept/적절한hold, WEB 최신 날짜 시연, PM 검수·병합·전체 Done은 미완료다.
+
+## 게시 수신증
+
+[PR183](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/183) 실제 생성·open/non-draft 확인, assignee ginaginaring·reviewer jeongiryang 요청. 최초 구현 head `342cfb32a881b04a3fb729e0945438458eb516e7`. 19:53 KST CI4개 실행 중, PM 인수·병합·정식 보고 접수는 별도다. 코드 85회귀와 과거 기록 보존의 실제 통과를 PR의 CI/부모 Done으로 확대하지 않는다.
