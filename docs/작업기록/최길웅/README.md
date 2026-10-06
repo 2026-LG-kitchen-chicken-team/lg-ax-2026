@@ -1,22 +1,28 @@
 # 최길웅 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
-## 최신 재개 요약 (작성자 갱신, 2026-10-06 19:3x KST, 기록 038)
+## 최신 재개 요약 (작성자 갱신, 2026-10-06 23:1x KST, 기록 042)
 
-- 상태: 자동화 OFF, Worker 예약 `LGAX-Worker-choigilung` Disabled. 수동 진행. 작업 전 메일·의존 점검 규칙(main `dcbd18e`)을 따른다.
-- 병합됨: #172(기록 정정 035), #178(#176 collector 사전 확인 036), #179(실제 27B held·8B failed 원본 재생·상태 표시 정직성 034, PM 보완 `0f70e63`: revision_limit에서도 실행 오류가 있을 수 있어 단정하지 않음) → main `bc8f69e`.
+- 현재 배정: **PM-20261006-WEB-INTEGRATION-R4**([#25 원문](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25#issuecomment-6015359201), 메일 11:35Z). 기한은 10/7 15:00 KST 컨설팅 전 검토본이고, PM 내부 목표는 10/7 12:00이다.
+- 상태: 자동화 OFF, 수동 진행. 작업 전 메일·의존 점검 규칙을 따른다.
+- 병합됨: #179(실제 27B/8B 원본 재생·상태 표시), #180(동향 주제 언급 비율), #181(비교표 U2), #185(내보내기 U4), #186(#183 날짜 시연 사전 확인).
 - 열린 PR(PM 검수 대기):
-  - [#181](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/181) WEB-003 U2 비교표: Gap당 한 행, missing_gaps, 해결 여부·근거 불일치·바라는 결과·불편 근거 오류 표시. [기록 038](2026-10-06/최길웅-20261006-038.md)
-  - [#180](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/180) WEB-005: PM 결정대로 동향을 "주제 언급 비율"로, 후보 분류는 미리보기로 표시. [기록 037](2026-10-06/최길웅-20261006-037.md)
-- 막힘:
-  - WEB-003/#25: WEB 검증용 정상(accept) run 없음(코어 결과는 held/failed).
-  - WEB-005/#27: #176 collector는 main에 있으나 PM의 API/MCP 주입과 날짜 합성 시연 자료가 아직이다.
-- 다음:
-  - 남은 표시 결함(`evals/web/20261006/web-real-replay/display-audit.json`): U4 내보내기 완전성(인용 범위 과다, 같은 사유 3번 반복) → U3 거절 사유·위반 대상 → U5 토큰·시간. 쓰이지 않은 불편 리뷰 표시(r2d2)도 남음.
-  - 관찰: 전자레인지 프로젝트에서도 상단 '검토 모델' 선택이 FRIDGE-A로 보임. 원인 확인 필요.
-  - 정상 run을 받으면 후보 선택 → 조건 변경 → 내보내기 검증. PM 주입 뒤 동향 drilldown 연결.
-- 실서버 시험: 조회만 하는 화면 시험은 `LGAX_E2E_PORT=5183` 별도 Vite와 `LGAX_WORKSPACE_PROXY`로 하고 사용자 5173·18867·18869는 건드리지 않는다. 재생 DB `private/workspace-model-study-replay`(읽기 전용 서버 18879).
-- 최신 기록 ID: 최길웅-20261006-038. 상세:
+  - [#201](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/201): 선택 프로젝트의 제품군·검토 모델 범위(전자레인지에 FRIDGE-A가 남던 문제). [기록 041](2026-10-06/최길웅-20261006-041.md)
+  - [#202](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/202): U3 거절 후보 사유·위반 대상·회차별 반복·코드 질문 대상. [기록 042](2026-10-06/최길웅-20261006-042.md)
+- R4 남은 일(순서):
+  1. U5: 모델 호출·토큰·시간·검증 범위 표시. 미확인 사용량을 0으로 만들지 않고, 내부 수정 2회와 사용자 변경 회차를 구분한다. 감사 그룹 `U5_execution_metrics_and_scope`(`evals/web/20261006/web-real-replay/display-audit.json`)를 참고한다.
+  2. PM 날짜팩(합성 날짜 31·미상 5, PM PR #188)의 같은 집계→구간→원문→JSON/Markdown→기획 입력을 검증해 WEB-005/#27에 보고한다. DATA 날짜팩(9·27)과는 다른 버전이다.
+  3. PR190 신규 오류 7개 한국어 설명은 CORE/DATA 정책이 확정된 뒤에 한다.
+  4. 정상 full-scope run을 PM에게 받으면 같은 run으로 후보 선택→조건 변경→내보내기/MCP를 검증한다.
+- PM 결정 대기: 공개 API와 작업실의 dataset 버전·source 범위를 정렬하는 방식(PM이 운영 설정으로 맞춘다고 회신함).
+- 시험 요령:
+  - 조회만 하는 화면 시험은 `LGAX_E2E_PORT=5183`의 별도 Vite로 하고, `LGAX_WORKSPACE_PROXY`·`LGAX_PUBLIC_API_PROXY`로 시험 서버를 가리킨다. 사용자 5173·18867·18869는 건드리지 않는다.
+  - 재생 DB `private/workspace-model-study-replay`를 쓰는 읽기 전용 서버: `uv run --no-sync python -X utf8 -m lgax_api.workspace_server --db private/workspace-model-study-replay/workspace.sqlite --credentials private/workspace-model-study-replay/credentials.json --port 18879`(작업 공간 `Desktop/lgax-wt-live`).
+- 최신 기록 ID: 최길웅-20261006-042. 상세:
+  - 042 R4 U3 거절 후보 사유·위반 대상·회차(PR #202): [상세](2026-10-06/최길웅-20261006-042.md)
+  - 041 R4 프로젝트 제품군·검토 모델 범위(PR #201, 병합 뒤 열림): [상세](2026-10-06/최길웅-20261006-041.md)
+  - 040 #183 날짜 시연 사전 확인(PR #186 병합): [상세](2026-10-06/최길웅-20261006-040.md)
+  - 039 내보내기 완전성 U4(PR #185 병합): [상세](2026-10-06/최길웅-20261006-039.md)
   - 038 비교표 U2(PR #181): [상세](2026-10-06/최길웅-20261006-038.md)
   - 037 동향 주제 언급 비율 표시(PR #180, 병합 뒤 열림): [상세](2026-10-06/최길웅-20261006-037.md)
   - 034 실제 27B held·8B failed 원본 웹 재생·상태 표시 정직성 수정(PR #179): [상세](2026-10-06/최길웅-20261006-034.md)
