@@ -78,11 +78,14 @@ def create_workspace_mcp(client: WorkspaceClient) -> FastMCP:
 
     @mcp.tool(annotations=read)
     def review_trends(filters: dict) -> dict:
-        """Read approved dated review counts for one project/model. No dates or sales are inferred.
+        """Read server-selected review counts for one project/model. No dates or sales are inferred.
 
         The private backend requires a trusted collector. NOT_IMPLEMENTED means
         there is no trend result; never invent a chart or describe it as analysis.
         Keep the returned aggregate_id and use trend_evidence for source originals.
+        A connected collector can return empty buckets because dates are unknown.
+        Preserve synthetic/candidate warnings; topic mention ratios are not complaint
+        or sentiment rates. HTTP/MCP callers cannot upload or approve annotations.
         """
         return call(client.review_trends, filters)
 
