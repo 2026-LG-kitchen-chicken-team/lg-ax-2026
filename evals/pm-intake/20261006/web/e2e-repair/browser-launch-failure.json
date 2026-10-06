@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "mode": "browser_e2e",
+  "synthetic_data_only": true,
+  "planning_agent_executed": false,
+  "private_credentials": true,
+  "screenshots_traces_videos": false,
+  "status": "fail",
+  "checks": {
+    "real_synthetic_bootstrap_ready": true,
+    "unauthenticated_denied": true,
+    "new_private_workspace_is_empty": true,
+    "viewer_write_denied": true,
+    "exact_origin_allowed": true,
+    "other_origin_denied": true,
+    "all_three_browser_cases_pass_without_skip": false,
+    "owned_children_reaped": true,
+    "isolated_ports_released": true,
+    "temporary_material_removed": true
+  },
+  "browser_stats": {
+    "expected": 0,
+    "unexpected": 3,
+    "skipped": 0,
+    "flaky": 0
+  },
+  "browser_cases": [
+    {
+      "case": "fixture_planning",
+      "outcome": "unexpected",
+      "results": [
+        "failed"
+      ]
+    },
+    {
+      "case": "fixture_unmeasured",
+      "outcome": "unexpected",
+      "results": [
+        "failed"
+      ]
+    },
+    {
+      "case": "live_workspace",
+      "outcome": "unexpected",
+      "results": [
+        "failed"
+      ]
+    }
+  ],
+  "failure": "browser_cases_did_not_all_pass",
+  "credentials_retained": false,
+  "safe_fixed_label_diagnostics": [
+    {
+      "case": "fixture_planning",
+      "assertions": [
+        "browserType.launch"
+      ],
+      "selectors": [],
+      "expected_labels": [],
+      "source": "unrecognized_location",
+      "line": null
+    },
+    {
+      "case": "fixture_unmeasured",
+      "assertions": [
+        "browserType.launch"
+      ],
+      "selectors": [],
+      "expected_labels": [],
+      "source": "unrecognized_location",
+      "line": null
+    },
+    {
+      "case": "live_workspace",
+      "assertions": [
+        "browserType.launch"
+      ],
+      "selectors": [],
+      "expected_labels": [],
+      "source": "unrecognized_location",
+      "line": null
+    }
+  ]
+}

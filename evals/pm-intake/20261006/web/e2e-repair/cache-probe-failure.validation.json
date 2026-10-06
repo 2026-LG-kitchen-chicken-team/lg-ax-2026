@@ -1,0 +1,65 @@
+{
+  "source_commit": "9f087040c5c90e420954d45a2917ed8230b3e642",
+  "source_archive_sha256": "d08ede2d6cdddf187fb205d63be1c1479d6161f4fcfb8ff124c366e69b9c3965",
+  "checks": [
+    {
+      "argv": [
+        "npm",
+        "--prefix",
+        "apps/web",
+        "ci",
+        "--offline",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "returncode": 0,
+      "stop": null,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    {
+      "argv": [
+        "python",
+        "-c",
+        "import json,pathlib;paths=[pathlib.Path(p) for p in [\"/opt/playwright\",\"/opt/ms-playwright\",\"/home/executor/.cache/ms-playwright\",\"/root/.cache/ms-playwright\"]];print(json.dumps({\"browser_cache_presence\":{str(p):p.is_dir() for p in paths}}))"
+      ],
+      "returncode": 1,
+      "stop": null,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    }
+  ],
+  "source_changed": [],
+  "zero_auth": true,
+  "model_calls": 0,
+  "all_pass": false
+}
