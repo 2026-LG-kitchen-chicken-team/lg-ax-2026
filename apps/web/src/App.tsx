@@ -214,6 +214,16 @@ export default function App() {
   const planningProps = { mode, runs, selected: selectedRun, onSelect: selectRun, features: runScope.features, evidence: runScope.evidence,
     currentEvidence: mode === 'fixture' ? data?.evidence : currentEvidenceForSnapshot(data, selectedRun) };
   const originalRequest = mode === 'fixture' ? FIXTURE_ORIGINAL_REQUEST : workspace.project?.project.request as PlanningRequest | undefined;
+  // R4 (record 041): a selected live project fixes the product scope. The group/model used to stay at the default
+  // fridge/FRIDGE-A for a microwave project, so the evidence, trend and request views showed another product's scope
+  // and a "continue this project" request could carry it. Sync once per project; the planner can still change it after.
+  const projectScope = mode === 'live' && originalRequest ? `${workspace.project?.project.id}|${originalRequest.product_group}|${originalRequest.model_ids.join(',')}` : '';
+  useEffect(() => {
+    if (!projectScope || !originalRequest) return;
+    setGroup(originalRequest.product_group as ProductGroup);
+    setModelChoice(originalRequest.model_ids[0] ?? '');
+    setSelectedId('');
+  }, [projectScope]);
   // Expiry/reconnect must discard private form state. Connected project creation also changes scopeVersion,
   // but must keep its in-flight form mounted so the successful save result and entered request remain visible.
   const requestConnectionKey = mode === 'live' && workspace.connection !== 'connected' ? `${workspace.connection}-${workspace.scopeVersion}` : 'connected';
