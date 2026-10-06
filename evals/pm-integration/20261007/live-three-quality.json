@@ -1,0 +1,300 @@
+{
+  "reviewed_at_utc": "2026-10-06T23:28:13.151513+00:00",
+  "review_kind": "independent_quality_of_single_bounded_real_model_three_case_study",
+  "source_commit": "de09b64ca72d5ae918cc0a95f244b0e0562761b0",
+  "model_id": "qwen3.5:122b-a10b-q4_K_M",
+  "model_digest": "8b9d11d807c57feb1e2ecb0d6cbf40334c37dcc3523bed5540af4f927f112a37",
+  "scope": "Full original10-review synthetic development cases; not customer/user-approved product data",
+  "summary_sha256": "42310e0560496eae3c81ddfb79a5c1f5a2b795ab1441a6e6362d95dd04aa7038",
+  "new_study_actual_generations": 15,
+  "new_study_measured_tokens": 91587,
+  "unknown_usage": false,
+  "budget": {
+    "source_commit": "de09b64ca72d5ae918cc0a95f244b0e0562761b0",
+    "study": "user-direct-20261007-reviewed-three-cases",
+    "max_generations": 18,
+    "max_tokens": 150000,
+    "per_case_max_generations": 6,
+    "per_case_max_tokens": 100000,
+    "reserved_or_completed_generations": 15,
+    "actual_or_conservative_unknown_tokens": 91587,
+    "per_generation_token_reservation": 24576,
+    "reason": "case_finished_or_failed_no_automatic_repeat",
+    "old53generation_193708token_records_modified": false,
+    "original_unknown_ledgers_modified": false,
+    "automatic_repeat": false
+  },
+  "cases": [
+    {
+      "case_id": "fridge-normal",
+      "status": "failed",
+      "revision_count": 2,
+      "actual_generations": 6,
+      "measured_tokens": 42626,
+      "usage_unknown": false,
+      "original_review_scope": 10,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "source_unchanged": true,
+      "input_sha256": "d07e0e18ccf9b12bbed92fc71205bec7e38fb5094a91b902ef3d22b56dc11f91",
+      "dataset_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+      "output": "fridge-normal/output.json",
+      "output_sha256": "5625c0ff13d7e4282cbe7e6eb3ea0aa43d848cec8bf3d47c45845cf32d670f3d",
+      "relay": "fridge-normal/relay.json",
+      "relay_sha256": "d122b732075b551ba8a9bbb2527fcd612be46d014a1b4edcdd7e5b2524b8e796",
+      "actual_upstream_response_hashes_and_usage": [
+        {
+          "sequence": 2,
+          "response_sha256": "9547bfbcb5df61a94b0731d2157d7bcda01ed5e1017808d60fbb4eb7db492297",
+          "prompt_eval_count": 2283,
+          "eval_count": 1311
+        },
+        {
+          "sequence": 5,
+          "response_sha256": "82ad10143c5e0869f96502791e51899af3b4039705fbaf234fd6ee75d7dbe455",
+          "prompt_eval_count": 2700,
+          "eval_count": 2438
+        },
+        {
+          "sequence": 8,
+          "response_sha256": "633248d1430efb557e81a810d1149391b8f63ff198f566f5b2a47ae2bc681d8b",
+          "prompt_eval_count": 4194,
+          "eval_count": 1969
+        },
+        {
+          "sequence": 11,
+          "response_sha256": "b41e50d06bff056b361d58a8e476ac325e1f772c931f82b11bcc6ff28238f552",
+          "prompt_eval_count": 5311,
+          "eval_count": 1304
+        },
+        {
+          "sequence": 14,
+          "response_sha256": "fc50fee77a7873574ab2fb02da07917a54c70084967d043d186c833602a76b19",
+          "prompt_eval_count": 7980,
+          "eval_count": 2288
+        },
+        {
+          "sequence": 17,
+          "response_sha256": "e3dd1d1fce58f9eafbae168ec716ebff89009b1c88a2b15c07beef8c33ebb61e",
+          "prompt_eval_count": 5715,
+          "eval_count": 5133
+        }
+      ],
+      "original_relay_run_id": "product-ae76ce8bfcb5dff81a094f616f0f0393d18674e6"
+    },
+    {
+      "case_id": "fridge-changed",
+      "status": "failed",
+      "revision_count": 2,
+      "actual_generations": 5,
+      "measured_tokens": 27769,
+      "usage_unknown": false,
+      "original_review_scope": 10,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "source_unchanged": true,
+      "input_sha256": "4d6611488d64788b8c212d5ce1c2ebeffaac5562b464182e9f1738220331055e",
+      "dataset_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+      "output": "fridge-changed/output.json",
+      "output_sha256": "95833e754b034d7f0ec6749c549fb3f2f80ca3fa240d5bc1c98d80b49c8046e5",
+      "relay": "fridge-changed/relay.json",
+      "relay_sha256": "40a2ffaf4571eea69870aa57df11010822188c8be4a2fe96bfa40f89ce6c84bb",
+      "actual_upstream_response_hashes_and_usage": [
+        {
+          "sequence": 2,
+          "response_sha256": "55acb27c87205193d1af7165ae97140c21017114fc3cd5bceb0fc3aabbcfd4f1",
+          "prompt_eval_count": 2295,
+          "eval_count": 1309
+        },
+        {
+          "sequence": 5,
+          "response_sha256": "36cd979ce01f9f7d0b60695048a52c92b22458b4ebe8af1e9a0bc2dfb04906bc",
+          "prompt_eval_count": 2712,
+          "eval_count": 2422
+        },
+        {
+          "sequence": 8,
+          "response_sha256": "13ca52a56048f7bd464dd61dafe15cc94ecba10760185da0a5f3b734493f2ebc",
+          "prompt_eval_count": 4206,
+          "eval_count": 1939
+        },
+        {
+          "sequence": 11,
+          "response_sha256": "069b6aaa00c602afac13d74a8795a787922fc5d3f2f20c25dac208c581f85573",
+          "prompt_eval_count": 5305,
+          "eval_count": 1324
+        },
+        {
+          "sequence": 14,
+          "response_sha256": "1c59547d84a6093477af035e37f38daed0c75557e75a3a8df07943cb62abf416",
+          "prompt_eval_count": 4902,
+          "eval_count": 1355
+        }
+      ],
+      "original_relay_run_id": "product-ae984780ca4461c7237337b30c1f00ce99f29fb5"
+    },
+    {
+      "case_id": "fridge-missing-manual",
+      "status": "held",
+      "revision_count": 1,
+      "actual_generations": 4,
+      "measured_tokens": 21192,
+      "usage_unknown": false,
+      "original_review_scope": 10,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "source_unchanged": true,
+      "input_sha256": "74892c19dcbbfbdf120987e224bb9617975162bcadc37c2792b9ca0c82c545d8",
+      "dataset_sha256": "3e5896bc363d93dbfe5d6bb049a550fb1cd204209264b9ef0e078f7d8f2dfcd9",
+      "output": "fridge-missing-manual/output.json",
+      "output_sha256": "d4a7af4f3a881256e0af779174518c1e3e0176ed86a0b9e923bcf6f833ebb688",
+      "relay": "fridge-missing-manual/relay.json",
+      "relay_sha256": "d0ccea3174210b0b465e899fe2335559c71ee772588443cbc32934c52f18eecc",
+      "actual_upstream_response_hashes_and_usage": [
+        {
+          "sequence": 2,
+          "response_sha256": "a5a5d7b4855fadbe4a8d61dfa7518d8f974c1dbc5aaaf3a3070ac24f9e089c82",
+          "prompt_eval_count": 2109,
+          "eval_count": 2305
+        },
+        {
+          "sequence": 5,
+          "response_sha256": "06df63cd4c9ab112ad9b39536252f58018244591daa4d6ce92aa7db8ab735189",
+          "prompt_eval_count": 2496,
+          "eval_count": 2461
+        },
+        {
+          "sequence": 8,
+          "response_sha256": "16d5ca82fd860a923f7a3fb52b6e6efbaef07db778fbedc7844f8efdcf1254cf",
+          "prompt_eval_count": 4002,
+          "eval_count": 1895
+        },
+        {
+          "sequence": 11,
+          "response_sha256": "b9907f1f226cc93e292873a4910148e01a36ccf5086e144b028b4499a127c473",
+          "prompt_eval_count": 5014,
+          "eval_count": 910
+        }
+      ],
+      "original_relay_run_id": "product-f2426a18e445ebd9b062da941150bae8d43ea386"
+    }
+  ],
+  "quality_findings": [
+    {
+      "id": "LIVE-NORMAL-01",
+      "kind": "observed_model_output_quality_blocker",
+      "case_id": "fridge-normal",
+      "evidence": "COMPLAINT_NOT_EXTRACTED repaired; semantic difference citations omit REVIEW-EVIDENCE-008 for linked GAP-007; final review_revision asks hold with no questions",
+      "result": "failed/revision2/concepts0",
+      "independent_quality_pass": false,
+      "code_safety": "Invalid drafts rejected; raw replies retained; no transport/budget failure"
+    },
+    {
+      "id": "LIVE-CHANGED-01",
+      "kind": "observed_model_output_quality_blocker",
+      "case_id": "fridge-changed",
+      "evidence": "CONCEPT-002/003 omit required linked MANUAL-001 evidence twice despite explicit linked gaps",
+      "result": "failed/revision2/concepts0",
+      "independent_quality_pass": false,
+      "core199_live_exclusion_review": "Not reached; this case is not evidence of semantic review exclusion correctness"
+    },
+    {
+      "id": "LIVE-MISSING-01",
+      "kind": "observed_model_reviewer_inaccuracy",
+      "case_id": "fridge-missing-manual",
+      "evidence": "No-candidate reviewer says REVIEW-EVIDENCE-007 has no Need, but reviewed_output and final output contain NEED-006 citing that review",
+      "correct_missing_evidence_hold": true,
+      "extra_missing_need_question_is_false": true,
+      "result": "held/revision1/concepts0",
+      "independent_quality_pass": false
+    }
+  ],
+  "decision": "Code partial integration remains approved; normal/changed quality gate and clean missing-evidence-review quality not accepted",
+  "successfully_accepted_normal_full_run_available": false,
+  "source_input_byte_pin_verified": true,
+  "raw_records_edited": false,
+  "automatic_repeat": false,
+  "old53generation_193708token_and_unknown_ledgers_preserved": true,
+  "limits": [
+    "No new paid API, download, service change, automation activation or parent Done promotion",
+    "Normal accepted live run display/readback cannot be approved because this study has no accepted normal run",
+    "Final GitHub merge/CI and operating-source equivalence are separately owned by root",
+    "Public closed validation allowlist covers reviewed declared field mismatches, not every newly observed quality rejection reason",
+    "Observed model inaccuracies are rejected/held records; not an old P1 recurrence or a proven code safety regression"
+  ],
+  "summary": "summary.json",
+  "source_pin_proof": "live-source-pin-de09b64ca72d-live-v2.json",
+  "preflight_proof": "model-preflight-de09b64ca72d-live-v2.json",
+  "official_main_source_equivalence": {
+    "commit": "f490fc2356fcbcc4cec0fbc7a71d72b6278c087f",
+    "source_pin_ancestor": true,
+    "product_data_delta_empty": true,
+    "source_provenance_note": "Models ran from de09; f490 main is a later same-product-code/data merge, not an extra model execution"
+  },
+  "previous_study": {
+    "measured_generations": 53,
+    "measured_tokens": 193708,
+    "ledger_and_original_failures_preserved": true,
+    "unknown_usage_not_reset_or_inferred": true,
+    "new_study_usage_kept_separate": true
+  },
+  "core199_effect_limit": "No controlled A/B or causal effect claim. Normal semantic response was rejected for citation coverage; changed case did not reach semantic review. Integration/code approval does not prove CORE199 live quality.",
+  "boundary_preflight_summary": {
+    "model_digest_match": true,
+    "candidate_gpu_indexes": [
+      0,
+      2,
+      3
+    ],
+    "protected_gpu_indexes": [
+      1
+    ],
+    "read_only_gpu_inventory_completed": true,
+    "model_downloads": 0,
+    "service_changes": 0,
+    "planning_generation_inside_http_service": false,
+    "source": "Fresh approved metadata preflight before this one bounded isolated study"
+  }
+}

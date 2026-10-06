@@ -1,0 +1,196 @@
+{
+  "head": "7e764aff9703001fc78fc6aec84f49e1e5331d68",
+  "base": "f490fc2356fcbcc4cec0fbc7a71d72b6278c087f",
+  "changed_files": [
+    "docs/작업근거/최길웅/2026-10-07/최길웅-20261007-050.md",
+    "docs/작업기록/최길웅/2026-10-07/최길웅-20261007-050.md",
+    "docs/작업기록/최길웅/README.md",
+    "evals/web/20261007/web-r4-postmerge/date-pack/api-mcp-matrix.json",
+    "evals/web/20261007/web-r4-postmerge/date-pack/baseline-api-mcp-path.json",
+    "evals/web/20261007/web-r4-postmerge/date-pack/web-baseline-proof.json",
+    "evals/web/20261007/web-r4-postmerge/date-pack/web-scope-proof.json",
+    "evals/web/20261007/web-r4-postmerge/http-error-details/public-errors.json",
+    "evals/web/20261007/web-r4-postmerge/http-error-details/record.png",
+    "evals/web/20261007/web-r4-postmerge/http-error-details/screen.json"
+  ],
+  "product_code_changed": false,
+  "evidence_hashes": {
+    "evals/web/20261007/web-r4-postmerge/date-pack/api-mcp-matrix.json": {
+      "sha256": "7b89fd6c840c057c6304c80b4faeb2f3ede17e429446f6db5bff883785528b08",
+      "bytes": 68877
+    },
+    "evals/web/20261007/web-r4-postmerge/date-pack/baseline-api-mcp-path.json": {
+      "sha256": "6b221bd1ce089d060db75196e23190c4057e44b79ef78d7127cb36f1c739c717",
+      "bytes": 3466
+    },
+    "evals/web/20261007/web-r4-postmerge/date-pack/web-baseline-proof.json": {
+      "sha256": "f64219de2ff023a715e2d909b0aa8d06699076971f47ec300d98fbf72398429a",
+      "bytes": 708
+    },
+    "evals/web/20261007/web-r4-postmerge/date-pack/web-scope-proof.json": {
+      "sha256": "d928414e3652d976c924fb03980b4b203e90e85ccc543224708b3f7c84138719",
+      "bytes": 6238
+    },
+    "evals/web/20261007/web-r4-postmerge/http-error-details/public-errors.json": {
+      "sha256": "9f4b41465ea9a581f468eaf6e84c83e90b1f1603647048a5980b4a50105ecf00",
+      "bytes": 895
+    },
+    "evals/web/20261007/web-r4-postmerge/http-error-details/record.png": {
+      "sha256": "9d1281a9a1e1ea9906b3fbc004ea98767a4c29c0586e8722b070f419b349d19a",
+      "bytes": 174281
+    },
+    "evals/web/20261007/web-r4-postmerge/http-error-details/screen.json": {
+      "sha256": "37cb55e04de1ae3d1d862ae74ab7c299987b491bb083d76dc06876504e3383c6",
+      "bytes": 690
+    }
+  },
+  "matrix_summary": {
+    "kind": "pm_dated_pack_scope_matrix",
+    "observed_at": "2026-10-06T23:18:58.004360+00:00",
+    "server": "http://127.0.0.1:18883",
+    "dataset_version": "pm-synthetic-trends.v1",
+    "files_sha256": {
+      "dataset.json": "a2c9c260316c1e8067531e7ba9e42ffec5338363f782092fea0f5cf1449d2b89",
+      "annotation.candidate.json": "101b0560337fbbb61f1b4117e2ef47562aacae458d0db5a044c5e36ae2ea1d79",
+      "date-schedule.json": "7d528dfc50b8e0474b455327852e363d52603fe5fab0270c75dad9f4430d1f70"
+    },
+    "pack_facts": {
+      "reviews": 36,
+      "dated": 31,
+      "undated": 5,
+      "instant_dates": [
+        {
+          "review_id": "DEMO-TREND-REVIEW-009",
+          "published_at": "2026-12-31T15:00:00Z",
+          "kst_day": "2027-01-01"
+        }
+      ]
+    },
+    "result": "scope_matrix_ok"
+  },
+  "baseline_summary": {
+    "kind": "review_trend_consumption_path",
+    "observed_at": "2026-10-06T23:19:43.879474+00:00",
+    "server": "http://127.0.0.1:18883",
+    "collector": "main e7bc486 (#188 merged) + R4 web PRs, pm-synthetic-trends.v1 (test servers 18883/18885)",
+    "project_id": "project-da6858f5e0c6405ea0b799ea219ad72e",
+    "filters": {
+      "project_id": "project-da6858f5e0c6405ea0b799ea219ad72e",
+      "model_id": "FRIDGE-A",
+      "source_ids": [
+        "PM-TREND-DEMO-REVIEWS-v1"
+      ],
+      "dataset_version": "pm-synthetic-trends.v1",
+      "start_date": "2026-10-01",
+      "end_date_exclusive": "2026-11-01",
+      "granularity": "month",
+      "topic_ids": [],
+      "source_kind": "synthetic",
+      "timezone": "Asia/Seoul"
+    },
+    "checks": {
+      "api_requery_same_aggregate": true,
+      "api_empty_topic_filter_kept": true,
+      "api_evidence_same_key": true,
+      "api_evidence_in_bucket_ids": true,
+      "api_evidence_document_version": true,
+      "mcp_tools_present": true,
+      "mcp_query_same_id": true,
+      "mcp_saved_identical": true,
+      "mcp_same_dataset_sha256": true,
+      "mcp_evidence_identical": true
+    },
+    "api_evidence_status": 200,
+    "aggregate_id": "TREND-ae0d7d36f6b78bdbbad34e57d1122c394b2e3908618aa1466e8e4e71518ab9c9",
+    "dataset_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+    "counts": {
+      "input_review_count": 36,
+      "excluded_out_of_scope_count": 26,
+      "in_scope_review_count": 10,
+      "excluded_undated_count": 2,
+      "excluded_outside_period_count": 5,
+      "duplicate_count": 0,
+      "eligible_unique_review_count": 3,
+      "unclassified_review_count": 0
+    },
+    "buckets": [
+      {
+        "bucket_id": "MONTH-2026-10",
+        "label": "2026년 10월",
+        "period_start": "2026-10-01",
+        "period_end_exclusive": "2026-11-01",
+        "partial_period": false,
+        "total_reviews": 3,
+        "topics": [
+          {
+            "topic_id": "cleaning",
+            "topic_review_count": 1,
+            "ratio": 0.3333333333333333,
+            "evidence_count": 1,
+            "evidence_ids": [
+              "DEMO-TREND-REVIEW-EVIDENCE-001"
+            ],
+            "evidence_ids_truncated": false
+          },
+          {
+            "topic_id": "food_findability",
+            "topic_review_count": 0,
+            "ratio": 0.0,
+            "evidence_count": 0,
+            "evidence_ids": [],
+            "evidence_ids_truncated": false
+          },
+          {
+            "topic_id": "manual_guidance",
+            "topic_review_count": 1,
+            "ratio": 0.3333333333333333,
+            "evidence_count": 1,
+            "evidence_ids": [
+              "DEMO-TREND-REVIEW-EVIDENCE-004"
+            ],
+            "evidence_ids_truncated": false
+          },
+          {
+            "topic_id": "temporary_storage",
+            "topic_review_count": 1,
+            "ratio": 0.3333333333333333,
+            "evidence_count": 1,
+            "evidence_ids": [
+              "DEMO-TREND-REVIEW-EVIDENCE-002"
+            ],
+            "evidence_ids_truncated": false
+          }
+        ]
+      }
+    ],
+    "evidence_ids": [
+      "DEMO-TREND-REVIEW-EVIDENCE-001"
+    ],
+    "mcp_tools": [
+      "create_workspace_project",
+      "create_workspace_run",
+      "get_review_trends",
+      "get_workspace_project",
+      "get_workspace_run",
+      "list_workspace_projects",
+      "list_workspace_runs",
+      "review_trends",
+      "search_workspace_evidence",
+      "trend_evidence"
+    ],
+    "result": "consumption_path_ok"
+  },
+  "scope_case_count": 4,
+  "scope_result": "web_scope_matrix_ok",
+  "actual_http_fixture_only": true,
+  "screen_details": 6,
+  "private_leak": false,
+  "token_leak": false,
+  "findings": [],
+  "github_readback": {
+    "state": "MERGED",
+    "merged_at": "2026-10-06T23:42:16Z",
+    "merge_commit": "f44145da4ca15d53b9e4e85c754bceda9b694c36",
+    "required_checks_successful": 4
+  }
+}
