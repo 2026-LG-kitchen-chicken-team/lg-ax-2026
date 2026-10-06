@@ -49,7 +49,13 @@
 .status-pill { display: inline-block; font-size: 9px; border-radius: 4px; padding: 2px 7px; white-space: nowrap; background: #eef1ea; color: #7d8a70; }
 .status-pill.unsupported, .status-pill.needs_review { background: #fff1df; color: #a26d2d; }
 .status-pill.insufficient_evidence { background: #f3eef6; color: #7b6290; }
-.status-pill.supported, .status-pill.accepted { background: #e8f2e0; color: #4f7a3a; }
+.status-pill.accepted { background: #e8f2e0; color: #4f7a3a; }
+/* "supported" = the current feature is documented, not that the pain is solved (record 034), so it is not shown in the adopted green. */
+.status-pill.supported { background: #e9f1f3; color: #4f7480; }
+.status-pill.resolution-remaining { background: #fff1df; color: #a26d2d; margin-left: 4px; }
+.status-pill.resolution-resolved { background: #e8f2e0; color: #4f7a3a; margin-left: 4px; }
+.status-pill.resolution-unknown { background: #f3eef6; color: #7b6290; margin-left: 4px; }
+.comparison-table .desired-outcome { display: block; margin-top: 4px; color: #4f7480; }
 .status-pill.proposed { background: #e9f1f3; color: #4f7480; }
 .status-pill.rejected { background: #f7e9e6; color: #a2574a; text-decoration: line-through; }
 

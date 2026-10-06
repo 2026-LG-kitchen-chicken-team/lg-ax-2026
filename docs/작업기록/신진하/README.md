@@ -2,10 +2,11 @@
 
 <!-- member-log:owner-updates:start -->
 ## 작성자의 최신 재개 요약
-- 최신 기록 ID / 한국시간 / 현재 목표: `신진하-20261006-DATA-CONTINUATION-01a1100e` · 2026-10-06 18:07 KST · #13 원문 대조 결과·남은 등록/검색 검증과 #148 collector를 PR #176 부분 검토로 인계.
-- 실제 완료 범위 / 미완료·막힘 / 다음 행동과 담당: GitHub에서 현재 배정된 open issue 13건과 #13의 하위 #109–#111/#114를 확인했다. 이번 부분 제출은 #13 고정 산출물 3개(11/11, 4/4, 11/11 source exact match 및 의미 오류표)와 #148 collector/36행·8열 CSV 보존·날짜 없는 10건 제외 수치다. PR #176을 Ready for review로 바꾸고 코드 소유자 @jeongiryang을 요청했다. head `a55458d`까지 4/4 CI 성공을 확인했지만, 개인 상세 기록을 추가한 `3e42e43`에서 CI 4개가 재실행 중이다. PR은 아직 리뷰·인수·병합되지 않았고 branch는 main보다 뒤처져 있다. 현재까지 등록·검색·재시작은 미실행; PM 17:35 조회 `matched=0`은 실제 PC 세션 종료 증거가 아니므로 #13의 16:56 HTTP 409 경계는 미확인이다. 결과/상태를 #16 및 #148에 보고했다. sidecar/taxonomy·PM 주입 결정은 @jeongiryang, 고정 결과 의미 검토는 @unknownamed, 증거 소비 연결은 @choigilung 담당. PR #166 병합은 확인했고 #167 최종 승인·병합은 확인되지 않았다.
-- 상세 작업기록: [고유 기록ID](2026-10-06/신진하-20261006-DATA-CONTINUATION-01a1100e.md)
-- 관련 근거: [이번 진행의 상세 근거](../../작업근거/신진하/2026-10-06/신진하-E-DATA-CONTINUATION-01a1100e.md) · [직전 대조·collector 기록](2026-10-06/신진하-20261006-DATA-ORIGINAL-AUDIT-TRENDS-01a1100e.md)
+- 최신 기록 ID / 한국시간 / 현재 목표: `신진하-20261006-DATA-OWNER-FOLLOWUP-01a1100e` · 2026-10-06 19:53 KST · 최신 PM 배정과 본인 #111~#114/#148 후속을 구현·검사했고 부분 PR·정식 보고를 게시한다.
+- 실제 완료 범위 / 미완료·막힘 / 다음 행동과 담당: PR176은19:09 main에 실제 병합됐고 PR167도 병합 확인했다. 이번 새 결과는 공개PDF3·근거21의 실제HTTP46요청/재시작/거부, 카탈로그·한국어BM25·동일 입력 비교·새CSV/PDF 및 원본검증을 유지하는 workspace 주입, R4 고정3건의 원문·해시 대조, 별도 구성 날짜36건의 비어 있지 않은 API/MCP 원문·재시작이다. 집중85검사/계약·기록보존 모두통과, 새 모델 호출0. 원36리뷰/CSV8열/날짜unknown은 보존했다. PM @jeongiryang 코드 검수·BM25 방법명/dated demo/taxonomy 승인·운영 반영·#15 독립자료 처분/검수자/비공개 수신경로, CORE @unknownamed 질문 없는 보류와 문맥 수정, WEB @choigilung 새날짜7표시명·차트/원문/내보내기 검증이 남았다. 실제 검색225행 모델비교·실고객 시계열·부모 Done은 미완료다. 이전409의 소유 세션 최종 확인은 중앙OFF/로컬검사 성공과 구분한다.
+- 상세 작업기록: [고유 기록ID](2026-10-06/신진하-20261006-DATA-OWNER-FOLLOWUP-01a1100e.md)
+- 관련 근거: [실제 실행·검사](../../작업근거/신진하/2026-10-06/신진하-E-DATA-OWNER-FOLLOWUP-01a1100e.md)
+- [새 부분 PR183·PM 검수 요청](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/183). open/non-draft·PM reviewer 요청을 확인했고 최초 head342cfb3의CI4개는 실행 중이다. 검토 요청/수신은 승인·병합·전체Done이 아니다.
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
 

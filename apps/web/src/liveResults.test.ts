@@ -8,11 +8,11 @@ import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ACCEPT_DETAIL, planningExecutionView, runSources } from './judgement';
+import { ACCEPT_DETAIL, judgedNotes, planningExecutionView, runSources, selectableConcepts } from './judgement';
 import type { PlanningExecution } from './judgement';
 import { ConceptsView, HistoryView } from './PlanningViews';
 import type { MeasureControls } from './PlanningViews';
-import { buildComparison, buildExport, candidateExclusion, contractErrors, exportCompleteness, exportMarkdown } from './planning';
+import { buildComparison, buildExport, candidateExclusion, comparisonVerdict, contractErrors, exportCompleteness, exportMarkdown, statusLabel } from './planning';
 import type { PlanningRequest, RunSnapshot } from './planning';
 
 // vitest runs from apps/web (npm test); repository files are read as plain data, not bundled.
@@ -61,6 +61,17 @@ const ZERO = variant(FIRST, (copy, record) => {
   record.output!.concept_assessments = [];
   copy.run.concepts = [];
 });
+
+// Synthetic inconsistent storage counterexamples; the historical accepted recording is never changed.
+const UNACCEPTED_COMPARISONS = [
+  ['original request mismatch', variant(FIRST, copy => { copy.request.improvement_task += ' (다른 저장 요청)'; })],
+  ['document scope mismatch', variant(FIRST, (copy, record) => { copy.document_versions[record.input.product.model_id] = 'different-version'; })],
+  ['invalid decision with no violations', variant(FIRST, (_copy, record) => { record.decision!.valid = false; })],
+  ['invalid decision with a violation', variant(FIRST, (_copy, record) => {
+    record.decision!.valid = false;
+    record.decision!.violations = [{ code: 'MISSING_EVIDENCE', stage: 'needs' }];
+  })],
+] as const;
 
 describe('recorded live workspace runs (PM, Qwen3:8B, replayed as data)', () => {
   it('are stored-run contract snapshots linked as first run and changed rerun', () => {
@@ -146,6 +157,33 @@ describe('recorded live workspace runs (PM, Qwen3:8B, replayed as data)', () => 
     const swapped = planningExecutionView(otherRequest);
     expect(swapped.kind === 'ok' && swapped.problems).toContain('판단에 들어간 원 요청이 이 실행의 요청과 다릅니다.');
   });
+
+  it('the comparison accepts the intact storage record, without claiming a new model quality result', () => {
+    expect(judgedNotes(FIRST)?.accepted).toBe(true);
+    expect(selectableConcepts(FIRST)).toEqual(FIRST.run.concepts);
+  });
+
+  it.each(UNACCEPTED_COMPARISONS)('%s never appears accepted in the comparison or Markdown', (_name, snapshot) => {
+    expect(planningExecutionView(snapshot).kind).toBe('ok');
+    expect(judgedNotes(snapshot)?.accepted).toBe(false);
+    expect(selectableConcepts(snapshot)).toEqual([]);
+    const scoped = runSources(snapshot, [], []);
+    const doc = buildExport('fixture', snapshot, scoped.features, scoped.evidence, '2026-10-06T11:00:00.000Z');
+    expect(exportMarkdown(doc)).toContain('코어가 채택하지 않은 실행이거나 저장 기록이 일치하지 않습니다');
+  });
+
+  it('malformed core records do not produce accepted comparison notes', () => {
+    const malformed = variant(FIRST, (_copy, record) => { (record.output as unknown as Record<string, unknown>).status = 'done'; });
+    expect(planningExecutionView(malformed).kind).toBe('invalid');
+    expect(judgedNotes(malformed)).toBeNull();
+    expect(selectableConcepts(malformed)).toEqual([]);
+  });
+
+  it('the unsupported feature label stays separate from whether the pain was resolved', () => {
+    expect(statusLabel('unsupported')).toBe('설명서상 미지원');
+    expect(comparisonVerdict({ support_status: 'unsupported', resolution: 'resolved', support_basis: 'explicit_unsupported', basis_mismatch: false }))
+      .toBe('설명서상 미지원 · 불편 해소');
+  });
 });
 
 describe('recorded live runs in the actual React DOM', () => {
@@ -171,6 +209,15 @@ describe('recorded live runs in the actual React DOM', () => {
     const scoped = runSources(selected, [], []);
     await act(async () => root.render(createElement(ConceptsView, { mode: 'live', runs, selected, onSelect: () => {}, features: scoped.features, evidence: scoped.evidence })));
   }
+
+  it.each(UNACCEPTED_COMPARISONS)('%s keeps the comparison warning visible while blocking candidate selection', async (_name, snapshot) => {
+    await showConcepts(snapshot, [snapshot]);
+    expect(host.querySelector('[data-comparison-unaccepted]')?.textContent).toContain('저장 기록이 일치하지 않습니다');
+    expect(host.textContent).toContain('선택·재실행 대상이 아닙니다');
+    expect(selectableConcepts(snapshot)).toEqual([]);
+    // Existing cards remain visible for source review; the display fix must not discard stored candidates.
+    expect(host.querySelectorAll('.concept-card')).toHaveLength(snapshot.run.concepts.length);
+  });
 
   it('changed run: shows the core record, the exclusion and the candidate that still conflicts with it, under one run ID', async () => {
     await showConcepts(SECOND);
