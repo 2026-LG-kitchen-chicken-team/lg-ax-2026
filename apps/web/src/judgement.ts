@@ -219,7 +219,11 @@ export interface TraceFacts {
   /** concept_id → lineage valid (linked to a confirmed remaining-pain gap) and its own violation codes. */
   lineage: Map<string, { valid: boolean; codes: string[] }>;
   /** Each review_decision in order: the Agent's internal revision rounds, not the planner's request revisions. */
-  rounds: { round: number; revision_count: number; action: string; codes: string[]; repeated: boolean }[];
+  /**
+   * details: the failed stage step stored right before this decision ({ok: false, error}), read with errorDetails/
+   * errorNotes — e.g. VALIDATION_FAILED from need_extract carries UNCERTAINTY_CONTEXT_MISSING (record 049).
+   */
+  rounds: { round: number; revision_count: number; action: string; codes: string[]; details: string[]; repeated: boolean }[];
 }
 
 export function traceFacts(trace: TraceStep[]): TraceFacts {
@@ -247,13 +251,23 @@ export function traceFacts(trace: TraceStep[]): TraceFacts {
     }
   }
   const rounds: TraceFacts['rounds'] = [];
+  let failed: string[] = [];
   for (const step of trace) {
-    const out = step.operation === 'review_decision' && isObject(step.outputs) ? step.outputs : null;
+    if (step.operation !== 'review_decision') {
+      if (isObject(step.outputs) && step.outputs.ok === false && isObject(step.outputs.error)) {
+        const error = step.outputs.error as { code?: string; details?: unknown };
+        failed = [...errorDetails(error).map(errorDetailText), ...errorNotes(error)];
+      }
+      continue;
+    }
+    const out = isObject(step.outputs) ? step.outputs : null;
     if (!out || typeof out.action !== 'string' || typeof out.revision_count !== 'number' || !Array.isArray(out.violations)) continue;
     const codes = out.violations.flatMap(item => isObject(item) && typeof item.code === 'string' ? [item.code] : []);
     const previous = rounds[rounds.length - 1];
-    rounds.push({ round: rounds.length + 1, revision_count: out.revision_count, action: out.action, codes,
-      repeated: Boolean(previous && codes.length && previous.codes.join('|') === codes.join('|')) });
+    const key = (item: { codes: string[]; details: string[] }) => [...item.codes, ...item.details].join('|');
+    rounds.push({ round: rounds.length + 1, revision_count: out.revision_count, action: out.action, codes, details: failed,
+      repeated: Boolean(previous && codes.length && key(previous) === key({ codes, details: failed })) });
+    failed = [];
   }
   return { targets, lineage, rounds };
 }
