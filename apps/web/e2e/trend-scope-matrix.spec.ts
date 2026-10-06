@@ -15,6 +15,7 @@ const proofDir = process.env.LGAX_E2E_TREND_PROOF_DIR;
 
 interface Topic { topic_id: string; count: number; ratio: number | null; evidence_ids: string[] }
 interface Bucket { bucket_id: string; label: string; partial_period: boolean; total_reviews: number; topics: Topic[] }
+interface SnapshotBucket { bucket_id: string; total_reviews: number; topics: { topic_id: string; topic_review_count: number }[] }
 interface Case {
   model_id: string; granularity: 'month' | 'season'; project_id: string; aggregate_id: string; ok: boolean; dataset_sha256: string;
   filters: { start_date: string; end_date_exclusive: string }; counts: { eligible_unique_review_count: number; excluded_undated_count: number }; buckets: Bucket[];
@@ -88,7 +89,7 @@ test('PM date pack: every model scope, bar and topic on the web equals the API/M
       const [jsonDownload] = await Promise.all([page.waitForEvent('download'), page.locator('.trend-export').getByRole('button', { name: 'JSON' }).click()]);
       const snapshot = JSON.parse(await readDownload(jsonDownload));
       expect([snapshot.source, snapshot.aggregate_id, snapshot.aggregate.dataset_sha256]).toEqual(['server', item.aggregate_id, item.dataset_sha256]);
-      expect(snapshot.aggregate.buckets.map((bucket: Bucket & { topics: { topic_id: string; topic_review_count: number }[] }) => [bucket.bucket_id, bucket.total_reviews, bucket.topics.map(topic => `${topic.topic_id}:${topic.topic_review_count}`)]))
+      expect((snapshot.aggregate.buckets as SnapshotBucket[]).map(bucket => [bucket.bucket_id, bucket.total_reviews, bucket.topics.map(topic => `${topic.topic_id}:${topic.topic_review_count}`)]))
         .toEqual(item.buckets.map(bucket => [bucket.bucket_id, bucket.total_reviews, bucket.topics.map(topic => `${topic.topic_id}:${topic.count}`)]));
       expect([...snapshot.viewed_evidence.evidence_ids].sort()).toEqual([...target.topic.evidence_ids].sort());
       const [mdDownload] = await Promise.all([page.waitForEvent('download'), page.locator('.trend-export').getByRole('button', { name: '문서(Markdown)' }).click()]);
