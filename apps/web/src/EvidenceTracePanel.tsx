@@ -130,7 +130,7 @@ export function EvidenceTracePanel({ trace, currentAvailable = true }: { trace: 
     {trace.sufficient
       ? <p className="muted" data-trace="sufficient">{currentAvailable ? '조회한 자료의' : '판단에 사용된'} 리뷰와 설명서 원문이 모두 검토 범위 안에서 확인되었습니다. 의미가 맞는지는 원문을 읽고 기획자가 판단합니다.</p>
       : <div className="unresolved" role="alert" data-trace="insufficient"><strong>근거 부족</strong><ul>{trace.insufficiency.map(item => <li key={item}>{item}</li>)}</ul></div>}
-    <ul className="quote-list">{trace.rows.map(row => <li key={row.id} data-status={row.status}>
+    <ul className="quote-list" aria-label="판단 근거 추적 원문">{trace.rows.map(row => <li key={row.id} data-status={row.status}>
       <span className={`status-pill ${row.status}`}>{traceStatusLabel(row.status)}</span>
       <SourceLine row={row} />
       {row.note ? <small className="scope-flag">{row.note}</small> : null}

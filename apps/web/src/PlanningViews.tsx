@@ -252,7 +252,7 @@ function CandidateReview({ snapshot, concept, features, evidence, currentEvidenc
     </div>
     <div className="review-col">
       <h4>근거 원문 <span className="count">{concept.evidence_ids.length}건</span></h4>
-      <ul className="quote-list">{concept.evidence_ids.map(id => {
+      <ul className="quote-list" aria-label="후보 인용 원문">{concept.evidence_ids.map(id => {
         const item = evidence.get(id);
         return <li key={id}>{item ? <><q>{item.text}</q><small>{id} · {sourceKindLabel(item.source_kind)} · {item.source_type === 'review' ? '고객 리뷰' : '제품 설명서'} · {item.model_id} · 문서 {item.document_version} · {evidenceLocation(item)}{outOfScope.has(id) ? <span className="scope-flag"> · 검토 범위 밖 문서 버전</span> : null}</small></> : <span className="missing-note">{id} · 원문을 찾을 수 없습니다(자료 누락)</span>}</li>;
       })}</ul>

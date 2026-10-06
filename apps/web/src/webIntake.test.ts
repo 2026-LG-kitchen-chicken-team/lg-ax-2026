@@ -43,10 +43,10 @@ describe('PM integrated planner screens', () => {
     await act(async () => inspect[1].click());
     const review = host.querySelector('[aria-label="후보 상세 검토"]')!;
     expect(review.querySelectorAll('.quote-list')).toHaveLength(2);
-    const cited = review.querySelectorAll('.review-col > .quote-list');
+    const cited = review.querySelectorAll('ul[aria-label="후보 인용 원문"]');
     expect(cited).toHaveLength(1);
     expect(cited[0].textContent).toContain('선반 분리 방법이 설명서 어디 있는지 모르겠어요.');
-    expect(review.querySelector('[aria-label="근거 추적"] .quote-list')).not.toBeNull();
+    expect(review.querySelector('[aria-label="근거 추적"] ul[aria-label="판단 근거 추적 원문"]')).not.toBeNull();
   });
   it('a cross-project parent cannot leak its candidate or question into comparisons', () => {
     const foreign = structuredClone(FIXTURE_RUNS[0]);

@@ -34,7 +34,7 @@ test('fixture: request questions → candidate review → corrected rerun → ex
   const review = page.getByRole('region', { name: '후보 상세 검토' });
   await expect(review).toContainText('청소 전 식품 이동 범위 안내');
   // The separate trace panel also quotes evidence; assert the candidate's own source list.
-  await expect(review.locator('.review-col > .quote-list')).toContainText('선반 분리 방법이 설명서 어디 있는지 모르겠어요.');
+  await expect(review.getByRole('list', { name: '후보 인용 원문' })).toContainText('선반 분리 방법이 설명서 어디 있는지 모르겠어요.');
   await expect(review.locator('.held-list')).toContainText('GAP-FX-002');
 
   // R27: the export carries every cited source and its own completeness check.
