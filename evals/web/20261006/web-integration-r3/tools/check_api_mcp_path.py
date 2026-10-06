@@ -50,11 +50,14 @@ def main() -> int:
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--collector-label", default="tests/test_workspace_trends.py::FixtureCollector (unit fixture, not DATA #148)")
     parser.add_argument("--project-name", default="R3 동향 소비 경로 단위 fixture")
+    parser.add_argument("--dataset-version", default="0.1.0", help="the server dataset's manifest version (e.g. a dated demo)")
+    parser.add_argument("--source-id", default="REVIEWS-CSV-v1.0", help="review source of that dataset")
     args = parser.parse_args()
     token = json.loads(args.credential_file.read_text("utf-8"))["token"]
     api = httpx.Client(base_url=args.url, headers={"Authorization": f"Bearer {token}", "Origin": "http://127.0.0.1:5173"}, timeout=30)
     request = json.loads((ROOT / "data/demo/planning_requests.json").read_text("utf-8"))[0]
     request["model_ids"] = ["FRIDGE-A"]
+    request["dataset_version"] = args.dataset_version
     created = api.post("/api/workspace/projects", json={"name": args.project_name, "request": request,
                                                        "document_versions": {"FRIDGE-A": "1.0"}})
     created.raise_for_status()
@@ -62,7 +65,7 @@ def main() -> int:
     document_versions = created.json()["data"]["document_versions"]
     project_id = project["id"]
     # Empty topic_ids on purpose: assignment R3 asks to compare an empty topic filter exactly.
-    filters = {"project_id": project_id, "model_id": "FRIDGE-A", "source_ids": ["REVIEWS-CSV-v1.0"], "dataset_version": "0.1.0",
+    filters = {"project_id": project_id, "model_id": "FRIDGE-A", "source_ids": [args.source_id], "dataset_version": args.dataset_version,
                "start_date": "2026-10-01", "end_date_exclusive": "2026-11-01", "granularity": "month", "topic_ids": [],
                "source_kind": "synthetic", "timezone": "Asia/Seoul"}
     base = f"/api/workspace/projects/{project_id}/review-trends"

@@ -1,0 +1,122 @@
+{
+  "development_only": true,
+  "independent_evaluation": false,
+  "k": 3,
+  "input_sha256": "f00304efcc26c5405ac265c8389606edb072bf9426784516cacd044620bac9c6",
+  "catalog_sha256": "f0d7d972bd2dce83857c48f0ac8c9cb424d62a11a9ebc9291ce52a5666f93607",
+  "results": [
+    {
+      "method": "bm25",
+      "execution_kind": "measured_here_cpu",
+      "model": null,
+      "revision": null,
+      "config": {
+        "k1": 1.2,
+        "b": 0.75,
+        "tokenizer_version": "nfc-casefold-words-hangul-bigrams.v1"
+      },
+      "input_sha256": "f00304efcc26c5405ac265c8389606edb072bf9426784516cacd044620bac9c6",
+      "catalog_sha256": "f0d7d972bd2dce83857c48f0ac8c9cb424d62a11a9ebc9291ce52a5666f93607",
+      "model_calls": 0,
+      "latency_ms": 12.513200170360506,
+      "metrics": {
+        "labelled_cases": 3,
+        "recall_at_k": 1.0,
+        "mrr_at_k": 1.0,
+        "ndcg_at_k": 1.0,
+        "empty_query_results": 1
+      },
+      "responses": [
+        {
+          "case_id": "fridge-folding",
+          "query": "접이식 선반",
+          "filters": {
+            "model_id": "T876MEE1H1",
+            "document_version": "MFL71401557 Rev.00_032526",
+            "dataset_version": "lg-manual-scope-20261006.3-pm-intake",
+            "source_kind": "public"
+          },
+          "latency_ms": 5.987800075672567,
+          "model_calls": 0,
+          "ranked_evidence_ids": [
+            "T876MEE1H1-MANUAL-F08",
+            "T876MEE1H1-MANUAL-F10-P18",
+            "T876MEE1H1-MANUAL-F10-FOOD"
+          ]
+        },
+        {
+          "case_id": "dishwasher-height",
+          "query": "양쪽 높이 동일",
+          "filters": {
+            "model_id": "DUE6BGL2E",
+            "document_version": "MFL71959117 Rev.07_030626",
+            "dataset_version": "lg-manual-scope-20261006.3-pm-intake",
+            "source_kind": "public"
+          },
+          "latency_ms": 2.337799989618361,
+          "model_calls": 0,
+          "ranked_evidence_ids": [
+            "DUE6BGL2E-MANUAL-D13-P24",
+            "DATA003-DUE6BGL2E-D03",
+            "DUE6BGL2E-MANUAL-D09"
+          ]
+        },
+        {
+          "case_id": "microwave-output",
+          "query": "고주파 출력",
+          "filters": {
+            "model_id": "MW23FDI",
+            "document_version": "MFL68822538 Rev.00_120925",
+            "dataset_version": "lg-manual-scope-20261006.3-pm-intake",
+            "source_kind": "public"
+          },
+          "latency_ms": 2.086400054395199,
+          "model_calls": 0,
+          "ranked_evidence_ids": [
+            "DATA003-MW23FDI-M06",
+            "DATA003-MW23FDI-M13"
+          ]
+        },
+        {
+          "case_id": "unrelated-empty",
+          "query": "xyzUnrelated98765",
+          "filters": {
+            "model_id": "T876MEE1H1",
+            "document_version": "MFL71401557 Rev.00_032526",
+            "dataset_version": "lg-manual-scope-20261006.3-pm-intake",
+            "source_kind": "public"
+          },
+          "latency_ms": 2.101200050674379,
+          "model_calls": 0,
+          "ranked_evidence_ids": []
+        }
+      ]
+    },
+    {
+      "method": "bge-m3",
+      "execution_kind": "unrun",
+      "model": null,
+      "revision": null,
+      "config": null,
+      "model_calls": null,
+      "latency_ms": null,
+      "metrics": null,
+      "responses": null,
+      "input_sha256": "f00304efcc26c5405ac265c8389606edb072bf9426784516cacd044620bac9c6",
+      "catalog_sha256": "f0d7d972bd2dce83857c48f0ac8c9cb424d62a11a9ebc9291ce52a5666f93607"
+    },
+    {
+      "method": "reranker",
+      "execution_kind": "unrun",
+      "model": null,
+      "revision": null,
+      "config": null,
+      "model_calls": null,
+      "latency_ms": null,
+      "metrics": null,
+      "responses": null,
+      "input_sha256": "f00304efcc26c5405ac265c8389606edb072bf9426784516cacd044620bac9c6",
+      "catalog_sha256": "f0d7d972bd2dce83857c48f0ac8c9cb424d62a11a9ebc9291ce52a5666f93607"
+    }
+  ]
+}
