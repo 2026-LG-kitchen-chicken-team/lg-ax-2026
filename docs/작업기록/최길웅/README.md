@@ -1,7 +1,7 @@
 # 최길웅 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
-## 최신 재개 요약 (작성자 갱신, 2026-10-07 04:5x KST, 기록 046)
+## 최신 재개 요약 (작성자 갱신, 2026-10-07 05:1x KST, 기록 047)
 
 - 현재 배정: **PM-20261006-WEB-INTEGRATION-R4**([#25 원문](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25#issuecomment-6015359201), 메일 11:35Z). 기한은 10/7 15:00 KST 컨설팅 전 검토본이고, PM 내부 목표는 10/7 12:00이다.
 - 상태: 자동화 OFF, 수동 진행. 작업 전 메일·의존 점검 규칙을 따른다.
@@ -13,6 +13,7 @@
   - [#209](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/209): PM 날짜팩(#188 head `6153c23`, 시험 서버) 웹 검증. 5모델×월/계절 10집계와 52칸을 원 파일 독립 재계산·MCP와 대조했다. 웹은 4범위의 모든 막대·원문·JSON·Markdown·기획 입력이 같았고, KST 경계(009→2027-01)와 빈 구간 '자료 없음'도 맞았다. 기준 경로(FRIDGE-A 10월 1/3)도 통과했다. 웹 코드 변경 없이 #208 위에 쌓았다(**#208 다음**). 첫 head의 web CI 실패(spec 타입)는 `a74195b`에서 고쳤다. [기록 044](2026-10-07/최길웅-20261007-044.md)
   - [#210](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/210): PR190의 오류 7개 코드는 `VALIDATION_FAILED`의 details에만 있어 웹에 보이지 않았다. 오류 아래 세부 검사 코드·리뷰 ID·위치를 화면·JSON·Markdown에 표시한다(설명은 #190 병합 뒤 한국어로 보임). #209 위에 쌓았다(**#209 다음**). [기록 045](2026-10-07/최길웅-20261007-045.md)
   - [#211](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/211): PM #188 화면 후속 사항. 변경표의 원 요청 열이 긴 ID 때문에 28px로 줄던 문제와, 검토 모델 카드 줄바꿈(체크박스 폭 덮어쓰기)을 CSS로 고쳤다. 1280px 회귀 e2e를 추가했다. #210 위에 쌓았다(**#210 다음**). [기록 046](2026-10-07/최길웅-20261007-046.md)
+  - 병합 미리보기(기록 047): #201과 #208이 `real-replay.spec.ts`의 같은 줄을 고쳐 충돌하던 것을 #208에서 고쳤고(`0803c9d`), #209~#211에 merge로 반영했다. 이제 어느 순서로 병합해도 충돌이 없다. 합친 결과도 526 테스트·build·실서버 재생 e2e를 통과했다. [기록 047](2026-10-07/최길웅-20261007-047.md)
 - R4 남은 일(순서):
   1. (완료, PM 검수 대기) U5 — 기록 043.
   2. (시험 서버 검증 완료, #27 보고) PM 날짜팩 — 기록 044. #188이 병합·운영 주입되면 운영 설정으로 다시 확인한다.
@@ -22,7 +23,8 @@
 - 시험 요령:
   - 조회만 하는 화면 시험은 `LGAX_E2E_PORT=5183`의 별도 Vite로 하고, `LGAX_WORKSPACE_PROXY`·`LGAX_PUBLIC_API_PROXY`로 시험 서버를 가리킨다. 사용자 5173·18867·18869는 건드리지 않는다.
   - 재생 DB `private/workspace-model-study-replay`를 쓰는 읽기 전용 서버: `uv run --no-sync python -X utf8 -m lgax_api.workspace_server --db private/workspace-model-study-replay/workspace.sqlite --credentials private/workspace-model-study-replay/credentials.json --port 18879`(작업 공간 `Desktop/lgax-wt-live`).
-- 최신 기록 ID: 최길웅-20261007-046. 상세:
+- 최신 기록 ID: 최길웅-20261007-047. 상세:
+  - 047 R4 PR 병합 미리보기·#201 충돌 수정: [상세](2026-10-07/최길웅-20261007-047.md)
   - 046 R4 기획 요청 화면 배치(원 요청 열·모델 카드, [#211](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/211)): [상세](2026-10-07/최길웅-20261007-046.md)
   - 045 R4 오류 세부 검사 코드 표시(PR190 설명 노출, [#210](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/210)): [상세](2026-10-07/최길웅-20261007-045.md)
   - 044 R4 PM 날짜팩 같은 집계·모든 모델/월·계절 웹 검증([#209](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/209)): [상세](2026-10-07/최길웅-20261007-044.md)
