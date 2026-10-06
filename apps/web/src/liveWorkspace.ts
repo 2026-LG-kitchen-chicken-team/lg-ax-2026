@@ -15,6 +15,7 @@ const ERROR_VIEWS: Record<string, Omit<ErrorView, 'code'>> = {
   NOT_FOUND: { title: '작업 기록을 찾을 수 없습니다', action: '목록을 새로 불러온 뒤 다시 선택해 주세요.', tone: 'error' },
   DATASET_MISMATCH: { title: '프로젝트 생성 이후 자료가 바뀌었습니다', action: '기존 기록은 읽을 수 있지만 새 실행과 근거 조회는 막혀 있습니다. 새 프로젝트로 다시 시작해 주세요.', tone: 'error' },
   INVALID_ARGUMENT: { title: '입력을 확인해 주세요', action: '필수 항목·검토 모델·제품군 범위를 확인해 주세요.', tone: 'error' },
+  INVALID_INPUT: { title: '조회 조건을 확인해 주세요', action: '자료·제품·기간과 조회 범위를 확인해 주세요.', tone: 'error' },
   INVALID_REQUEST: { title: '입력을 확인해 주세요', action: '필수 항목·검토 모델·제품군 범위를 확인해 주세요.', tone: 'error' },
   INVALID_MODEL_ID: { title: '모델을 찾을 수 없습니다', action: '현재 자료에 있는 모델을 선택해 주세요.', tone: 'error' },
   INVALID_DOCUMENT_VERSION: { title: '문서 버전을 찾을 수 없습니다', action: '선택한 모델의 문서 버전을 확인해 주세요.', tone: 'error' },

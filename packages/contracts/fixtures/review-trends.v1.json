@@ -1,0 +1,251 @@
+{
+  "fixture_contract_version": "review-trends.v1",
+  "purpose": "Synthetic schema-only fixtures, not approved source data, computed snapshots, successful collector execution or customer demand evidence. Cross-field arithmetic, canonical hashes, authorization and source binding must be tested separately.",
+  "templates": {
+    "row_day": {
+      "review_id": "REVIEW-TREND-1",
+      "evidence_id": "EVIDENCE-TREND-1",
+      "source_id": "SOURCE-TREND-1",
+      "model_id": "FRIDGE-TREND-DEMO",
+      "document_version": "synthetic-source.v1",
+      "source_kind": "synthetic",
+      "text_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "published_at": "2026-12-15",
+      "date_precision": "day",
+      "date_provenance": {
+        "source_id": "SOURCE-TREND-1",
+        "locator": { "row": 1 },
+        "source_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "topic_ids": ["cleaning"],
+      "classification_status": "classified",
+      "dedup_key": null
+    },
+    "metadata": {
+      "dataset_version": "synthetic-trend-fixture.v1",
+      "dataset_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "annotation_version": "synthetic-annotations.v1",
+      "annotation_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "topic_taxonomy_version": "topics.v1",
+      "dedup_policy_version": "scoped-original-review.v1",
+      "classification": { "method": "rule", "model_id": null, "revision": "rules.v1" },
+      "rows": []
+    },
+    "request": {
+      "project_id": "PROJECT-TREND-DEMO",
+      "model_id": "FRIDGE-TREND-DEMO",
+      "source_ids": ["SOURCE-TREND-1"],
+      "dataset_version": "synthetic-trend-fixture.v1",
+      "start_date": "2026-12-01",
+      "end_date_exclusive": "2027-03-01",
+      "granularity": "season",
+      "topic_ids": ["cleaning"],
+      "source_kind": "synthetic",
+      "timezone": "Asia/Seoul"
+    },
+    "aggregate": {
+      "aggregate_id": "TREND-0000000000000000000000000000000000000000000000000000000000000000",
+      "project_id": "PROJECT-TREND-DEMO",
+      "dataset_version": "synthetic-trend-fixture.v1",
+      "dataset_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "annotation_version": "synthetic-annotations.v1",
+      "annotation_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "trend_contract_version": "review-trends.v1",
+      "filters": {
+        "project_id": "PROJECT-TREND-DEMO",
+        "model_id": "FRIDGE-TREND-DEMO",
+        "source_ids": ["SOURCE-TREND-1"],
+        "dataset_version": "synthetic-trend-fixture.v1",
+        "start_date": "2026-12-01",
+        "end_date_exclusive": "2027-03-01",
+        "granularity": "season",
+        "topic_ids": ["cleaning"],
+        "source_kind": "synthetic",
+        "timezone": "Asia/Seoul"
+      },
+      "timezone": "Asia/Seoul",
+      "aggregation_version": "review-trends.aggregate.v1",
+      "classification": { "method": "rule", "model_id": null, "revision": "rules.v1" },
+      "topic_taxonomy_version": "topics.v1",
+      "dedup_policy_version": "scoped-original-review.v1",
+      "counts": {
+        "input_review_count": 1,
+        "excluded_out_of_scope_count": 0,
+        "in_scope_review_count": 1,
+        "excluded_undated_count": 0,
+        "excluded_outside_period_count": 0,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 1,
+        "unclassified_review_count": 0
+      },
+      "buckets": [
+        {
+          "bucket_id": "SEASON-2026-WINTER",
+          "period_start": "2026-12-01",
+          "period_end_exclusive": "2027-03-01",
+          "label": "2026년 겨울",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "topic_review_count": 1,
+              "ratio": 1,
+              "evidence_count": 1,
+              "evidence_ids": ["EVIDENCE-TREND-1"],
+              "evidence_ids_truncated": false
+            }
+          ]
+        }
+      ],
+      "warnings": ["합성 계약 fixture이며 실제 집계 또는 고객 수요의 증거가 아닙니다."],
+      "notes": "ID와 해시는 형식 검사용 자리표시자입니다. 의미 검증 fixture에서는 실제 canonical 값으로 계산해야 합니다."
+    },
+    "evidence_request": {
+      "project_id": "PROJECT-TREND-DEMO",
+      "aggregate_id": "TREND-0000000000000000000000000000000000000000000000000000000000000000",
+      "bucket_id": "SEASON-2026-WINTER",
+      "topic_id": "cleaning",
+      "offset": 0,
+      "limit": 50
+    },
+    "evidence_response": {
+      "ok": true,
+      "data": {
+        "project_id": "PROJECT-TREND-DEMO",
+        "aggregate_id": "TREND-0000000000000000000000000000000000000000000000000000000000000000",
+        "bucket_id": "SEASON-2026-WINTER",
+        "topic_id": "cleaning",
+        "offset": 0,
+        "limit": 50,
+        "total": 1,
+        "next_offset": null,
+        "evidence": [
+          {
+            "id": "EVIDENCE-TREND-1",
+            "model_id": "FRIDGE-TREND-DEMO",
+            "document_version": "synthetic-source.v1",
+            "source_kind": "synthetic",
+            "source_type": "review",
+            "source_id": "SOURCE-TREND-1",
+            "locator": { "row": 1 },
+            "text": "계약 검증용 합성 리뷰: 냉장고 청소가 번거롭습니다.",
+            "feature_ids": []
+          }
+        ],
+        "contract_version": "0.1.0"
+      }
+    }
+  },
+  "cases": [
+    { "id": "day-known-provenance", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": true, "changes": [] },
+    { "id": "public-source-shape", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": true, "changes": [{ "path": ["source_kind"], "value": "public" }] },
+    { "id": "licensed-source-shape", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": true, "changes": [{ "path": ["source_kind"], "value": "licensed" }] },
+    { "id": "private-source-shape", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": true, "changes": [{ "path": ["source_kind"], "value": "private" }] },
+    { "id": "unknown-date-is-explicit", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": true, "changes": [
+      { "path": ["published_at"], "value": null },
+      { "path": ["date_precision"], "value": "unknown" },
+      { "path": ["date_provenance"], "value": null }
+    ] },
+    { "id": "classified-empty-topics", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": true, "changes": [{ "path": ["topic_ids"], "value": [] }] },
+    { "id": "unclassified-empty-topics", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": true, "changes": [
+      { "path": ["classification_status"], "value": "unclassified" }, { "path": ["topic_ids"], "value": [] }
+    ] },
+    { "id": "day-leap-year", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": true, "changes": [{ "path": ["published_at"], "value": "2028-02-29" }] },
+    { "id": "day-leap-century", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": true, "changes": [{ "path": ["published_at"], "value": "2000-02-29" }] },
+    { "id": "instant-kst-offset", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": true, "changes": [
+      { "path": ["published_at"], "value": "2027-01-01T00:00:00+09:00" }, { "path": ["date_precision"], "value": "instant" }
+    ] },
+    { "id": "instant-utc-before-kst-year", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": true, "changes": [
+      { "path": ["published_at"], "value": "2026-12-31T15:00:00.123Z" }, { "path": ["date_precision"], "value": "instant" }
+    ] },
+    { "id": "metadata-empty-approved-sidecar-shape", "definition": "ReviewTrendMetadata", "template": "metadata", "valid": true, "changes": [] },
+    { "id": "model-classifier-explicit-revision", "definition": "ReviewTrendMetadata", "template": "metadata", "valid": true, "changes": [
+      { "path": ["classification"], "value": { "method": "model", "model_id": "TOPIC-MODEL", "revision": "model-revision-1" } }
+    ] },
+    { "id": "model-classifier-huggingface-id", "definition": "ReviewTrendMetadata", "template": "metadata", "valid": true, "changes": [
+      { "path": ["classification"], "value": { "method": "model", "model_id": "Qwen/Qwen3-8B", "revision": "fixture-revision-only" } }
+    ] },
+    { "id": "request-one-model-season", "definition": "ReviewTrendRequest", "template": "request", "valid": true, "changes": [] },
+    { "id": "request-no-topic-filter", "definition": "ReviewTrendRequest", "template": "request", "valid": true, "changes": [{ "path": ["topic_ids"], "value": [] }] },
+    { "id": "aggregate-season-shape", "definition": "ReviewTrendAggregate", "template": "aggregate", "valid": true, "changes": [] },
+    { "id": "aggregate-empty-ratio-null", "definition": "ReviewTrendAggregate", "template": "aggregate", "valid": true, "changes": [
+      { "path": ["counts", "input_review_count"], "value": 0 }, { "path": ["counts", "in_scope_review_count"], "value": 0 },
+      { "path": ["counts", "eligible_unique_review_count"], "value": 0 }, { "path": ["buckets", 0, "total_reviews"], "value": 0 },
+      { "path": ["buckets", 0, "topics", 0, "topic_review_count"], "value": 0 }, { "path": ["buckets", 0, "topics", 0, "ratio"], "value": null },
+      { "path": ["buckets", 0, "topics", 0, "evidence_count"], "value": 0 }, { "path": ["buckets", 0, "topics", 0, "evidence_ids"], "value": [] }
+    ] },
+    { "id": "aggregate-observed-topic-zero", "definition": "ReviewTrendAggregate", "template": "aggregate", "valid": true, "changes": [
+      { "path": ["buckets", 0, "topics", 0, "topic_review_count"], "value": 0 }, { "path": ["buckets", 0, "topics", 0, "ratio"], "value": 0 },
+      { "path": ["buckets", 0, "topics", 0, "evidence_count"], "value": 0 }, { "path": ["buckets", 0, "topics", 0, "evidence_ids"], "value": [] }
+    ] },
+    { "id": "evidence-request", "definition": "ReviewTrendEvidenceRequest", "template": "evidence_request", "valid": true, "changes": [] },
+    { "id": "canonical-evidence-envelope", "definition": "WorkspaceTrendEvidenceResponse", "template": "evidence_response", "valid": true, "changes": [] },
+    { "id": "impossible-february-date", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": false, "changes": [{ "path": ["published_at"], "value": "2026-02-30" }] },
+    { "id": "nonleap-february-29", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": false, "changes": [{ "path": ["published_at"], "value": "2026-02-29" }] },
+    { "id": "nonleap-century", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": false, "changes": [{ "path": ["published_at"], "value": "1900-02-29" }] },
+    { "id": "invalid-april-31", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": false, "changes": [{ "path": ["published_at"], "value": "2026-04-31" }] },
+    { "id": "invalid-zero-year", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": false, "changes": [{ "path": ["published_at"], "value": "0000-02-29" }] },
+    { "id": "invalid-day-width", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": false, "changes": [{ "path": ["published_at"], "value": "2026-2-03" }] },
+    { "id": "instant-missing-timezone", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": false, "changes": [
+      { "path": ["published_at"], "value": "2026-12-15T12:00:00" }, { "path": ["date_precision"], "value": "instant" }
+    ] },
+    { "id": "instant-invalid-calendar", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": false, "changes": [
+      { "path": ["published_at"], "value": "2026-02-30T12:00:00Z" }, { "path": ["date_precision"], "value": "instant" }
+    ] },
+    { "id": "instant-invalid-hour", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": false, "changes": [
+      { "path": ["published_at"], "value": "2026-12-15T24:00:00Z" }, { "path": ["date_precision"], "value": "instant" }
+    ] },
+    { "id": "instant-invalid-offset", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": false, "changes": [
+      { "path": ["published_at"], "value": "2026-12-15T12:00:00+24:00" }, { "path": ["date_precision"], "value": "instant" }
+    ] },
+    { "id": "day-precision-with-instant", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": false, "changes": [{ "path": ["published_at"], "value": "2026-12-15T12:00:00Z" }] },
+    { "id": "unknown-date-invented", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": false, "changes": [{ "path": ["date_precision"], "value": "unknown" }] },
+    { "id": "known-date-no-provenance", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": false, "changes": [{ "path": ["date_provenance"], "value": null }] },
+    { "id": "unknown-date-provenance-not-null", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": false, "changes": [
+      { "path": ["published_at"], "value": null }, { "path": ["date_precision"], "value": "unknown" }
+    ] },
+    { "id": "bad-source-kind", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": false, "changes": [{ "path": ["source_kind"], "value": "real" }] },
+    { "id": "duplicate-topics", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": false, "changes": [{ "path": ["topic_ids"], "value": ["cleaning", "cleaning"] }] },
+    { "id": "unclassified-with-topic", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": false, "changes": [{ "path": ["classification_status"], "value": "unclassified" }] },
+    { "id": "missing-text-digest", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": false, "changes": [{ "path": ["text_sha256"], "remove": true }] },
+    { "id": "uppercase-text-digest", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": false, "changes": [{ "path": ["text_sha256"], "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" }] },
+    { "id": "raw-text-not-in-sidecar", "definition": "ReviewTrendMetadataRow", "template": "row_day", "valid": false, "changes": [{ "path": ["text"], "value": "replaced source text" }] },
+    { "id": "model-classifier-without-revision", "definition": "ReviewTrendMetadata", "template": "metadata", "valid": false, "changes": [
+      { "path": ["classification"], "value": { "method": "model", "model_id": "TOPIC-MODEL", "revision": null } }
+    ] },
+    { "id": "human-classifier-pretends-model", "definition": "ReviewTrendMetadata", "template": "metadata", "valid": false, "changes": [
+      { "path": ["classification"], "value": { "method": "human", "model_id": "TOPIC-MODEL", "revision": null } }
+    ] },
+    { "id": "request-empty-source-scope", "definition": "ReviewTrendRequest", "template": "request", "valid": false, "changes": [{ "path": ["source_ids"], "value": [] }] },
+    { "id": "request-duplicate-source-scope", "definition": "ReviewTrendRequest", "template": "request", "valid": false, "changes": [{ "path": ["source_ids"], "value": ["SOURCE-TREND-1", "SOURCE-TREND-1"] }] },
+    { "id": "request-multiple-models", "definition": "ReviewTrendRequest", "template": "request", "valid": false, "changes": [{ "path": ["model_id"], "value": ["FRIDGE-TREND-DEMO", "DISHWASHER-TREND-DEMO"] }] },
+    { "id": "request-unsupported-timezone", "definition": "ReviewTrendRequest", "template": "request", "valid": false, "changes": [{ "path": ["timezone"], "value": "UTC" }] },
+    { "id": "request-invalid-calendar", "definition": "ReviewTrendRequest", "template": "request", "valid": false, "changes": [{ "path": ["start_date"], "value": "2026-02-30" }] },
+    { "id": "request-cannot-upload-annotations", "definition": "ReviewTrendRequest", "template": "request", "valid": false, "changes": [{ "path": ["rows"], "value": [] }] },
+    { "id": "aggregate-invalid-id", "definition": "ReviewTrendAggregate", "template": "aggregate", "valid": false, "changes": [{ "path": ["aggregate_id"], "value": "TREND-1" }] },
+    { "id": "aggregate-negative-count", "definition": "ReviewTrendAggregate", "template": "aggregate", "valid": false, "changes": [{ "path": ["counts", "duplicate_count"], "value": -1 }] },
+    { "id": "aggregate-ratio-over-one", "definition": "ReviewTrendAggregate", "template": "aggregate", "valid": false, "changes": [{ "path": ["buckets", 0, "topics", 0, "ratio"], "value": 1.1 }] },
+    { "id": "aggregate-duplicate-evidence-ids", "definition": "ReviewTrendAggregate", "template": "aggregate", "valid": false, "changes": [{ "path": ["buckets", 0, "topics", 0, "evidence_ids"], "value": ["EVIDENCE-TREND-1", "EVIDENCE-TREND-1"] }] },
+    { "id": "aggregate-wrong-extension-version", "definition": "ReviewTrendAggregate", "template": "aggregate", "valid": false, "changes": [{ "path": ["trend_contract_version"], "value": "review-trends.v2" }] },
+    { "id": "aggregate-does-not-allow-client-derived-id", "definition": "ReviewTrendAggregate", "template": "aggregate", "valid": false, "changes": [{ "path": ["client"], "value": "web" }] },
+    { "id": "evidence-limit-too-large", "definition": "ReviewTrendEvidenceRequest", "template": "evidence_request", "valid": false, "changes": [{ "path": ["limit"], "value": 51 }] },
+    { "id": "evidence-negative-offset", "definition": "ReviewTrendEvidenceRequest", "template": "evidence_request", "valid": false, "changes": [{ "path": ["offset"], "value": -1 }] },
+    { "id": "evidence-empty-limit", "definition": "ReviewTrendEvidenceRequest", "template": "evidence_request", "valid": false, "changes": [{ "path": ["limit"], "value": 0 }] },
+    { "id": "evidence-locator-required", "definition": "WorkspaceTrendEvidenceResponse", "template": "evidence_response", "valid": false, "changes": [{ "path": ["data", "evidence", 0, "locator"], "value": {} }] },
+    { "id": "evidence-cannot-add-invented-date", "definition": "WorkspaceTrendEvidenceResponse", "template": "evidence_response", "valid": false, "changes": [{ "path": ["data", "evidence", 0, "published_at"], "value": "2026-12-15" }] }
+  ],
+  "semantic_cases": [
+    { "id": "request-reversed-period", "definition": "ReviewTrendRequest", "template": "request", "schema_valid": true, "changes": [{ "path": ["start_date"], "value": "2027-03-01" }], "semantic_error": "INVALID_INPUT" },
+    { "id": "request-over-ten-years", "definition": "ReviewTrendRequest", "template": "request", "schema_valid": true, "changes": [{ "path": ["end_date_exclusive"], "value": "2037-03-01" }], "semantic_error": "INVALID_INPUT" },
+    { "id": "request-unauthorized-source", "definition": "ReviewTrendRequest", "template": "request", "schema_valid": true, "changes": [{ "path": ["source_ids"], "value": ["SOURCE-OUTSIDE-PROJECT"] }], "semantic_error": "FORBIDDEN" },
+    { "id": "aggregate-count-arithmetic", "definition": "ReviewTrendAggregate", "template": "aggregate", "schema_valid": true, "changes": [{ "path": ["counts", "input_review_count"], "value": 2 }], "semantic_error": "CONTRACT_MISMATCH" },
+    { "id": "aggregate-topic-denominator", "definition": "ReviewTrendAggregate", "template": "aggregate", "schema_valid": true, "changes": [{ "path": ["buckets", 0, "topics", 0, "topic_review_count"], "value": 2 }], "semantic_error": "CONTRACT_MISMATCH" },
+    { "id": "aggregate-ratio-calculation", "definition": "ReviewTrendAggregate", "template": "aggregate", "schema_valid": true, "changes": [{ "path": ["buckets", 0, "topics", 0, "ratio"], "value": 0.5 }], "semantic_error": "CONTRACT_MISMATCH" },
+    { "id": "aggregate-zero-denominator-not-zero-percent", "definition": "ReviewTrendAggregate", "template": "aggregate", "schema_valid": true, "changes": [{ "path": ["buckets", 0, "total_reviews"], "value": 0 }], "semantic_error": "CONTRACT_MISMATCH" },
+    { "id": "aggregate-other-project-filter", "definition": "ReviewTrendAggregate", "template": "aggregate", "schema_valid": true, "changes": [{ "path": ["filters", "project_id"], "value": "PROJECT-OTHER" }], "semantic_error": "CONTRACT_MISMATCH" },
+    { "id": "aggregate-winter-wrong-year", "definition": "ReviewTrendAggregate", "template": "aggregate", "schema_valid": true, "changes": [{ "path": ["buckets", 0, "period_start"], "value": "2027-01-01" }], "semantic_error": "CONTRACT_MISMATCH" },
+    { "id": "aggregate-foreign-evidence-membership", "definition": "ReviewTrendAggregate", "template": "aggregate", "schema_valid": true, "changes": [{ "path": ["buckets", 0, "topics", 0, "evidence_ids"], "value": ["EVIDENCE-OUTSIDE-AGGREGATE"] }], "semantic_error": "CONTRACT_MISMATCH" },
+    { "id": "evidence-next-offset-not-progress", "definition": "WorkspaceTrendEvidenceResponse", "template": "evidence_response", "schema_valid": true, "changes": [{ "path": ["data", "next_offset"], "value": 0 }], "semantic_error": "CONTRACT_MISMATCH" }
+  ]
+}

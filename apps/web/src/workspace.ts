@@ -4,6 +4,11 @@ import schema from '../../../packages/contracts/schemas/lgax.schema.json';
 import { ApiError } from './api';
 
 const ajv = new Ajv2020({ allErrors: true, strict: false });
+ajv.addFormat('date', { type: 'string', validate: value => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const timestamp = Date.parse(value);
+  return Number.isFinite(timestamp) && new Date(timestamp).toISOString().slice(0, 10) === value;
+} });
 ajv.addFormat('date-time', { type: 'string', validate: value => /^\d{4}-\d{2}-\d{2}T/.test(value) && Number.isFinite(Date.parse(value)) });
 ajv.addSchema(schema, 'workspace');
 const contracts = new Map<string, ReturnType<typeof ajv.compile>>();
@@ -50,6 +55,27 @@ export interface WorkspaceRun {
   created_at: string;
   unconfirmed: string[];
   output: Record<string, unknown> | null;
+}
+
+/** PM-owned API contracts; dates/annotations are approved on the server, never submitted here. */
+export interface ReviewTrendFilters {
+  project_id: string; model_id: string; source_ids: string[]; dataset_version: string;
+  start_date: string; end_date_exclusive: string; granularity: 'month' | 'season' | 'year';
+  topic_ids: string[]; source_kind: 'synthetic' | 'public' | 'licensed' | 'private';
+  timezone: 'Asia/Seoul';
+}
+export interface ReviewTrendData {
+  aggregate: {
+    aggregate_id: string; project_id: string; filters: ReviewTrendFilters;
+    counts: Record<string, number>; buckets: Array<Record<string, unknown>>;
+    warnings: string[]; [key: string]: unknown;
+  };
+  contract_version: string;
+}
+export interface TrendEvidenceData {
+  project_id: string; aggregate_id: string; bucket_id: string; topic_id: string;
+  offset: number; limit: number; total: number; next_offset: number | null;
+  evidence: Array<Record<string, unknown>>; contract_version: string;
 }
 
 function identifier(id: string): string {
@@ -127,5 +153,30 @@ export class WorkspaceClient {
   search(projectId: string, q: string, modelId: string): Promise<Record<string, unknown>> {
     const params = new URLSearchParams({ q, model_id: modelId });
     return this.request('GET', `/projects/${identifier(projectId)}/evidence?${params}`, 'WorkspaceEvidenceResponse');
+  }
+
+  reviewTrends(filters: ReviewTrendFilters): Promise<ReviewTrendData> {
+    check('ReviewTrendRequest', filters);
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(filters)) {
+      if (key === 'project_id') continue;
+      for (const item of Array.isArray(value) ? value : [value]) params.append(key, String(item));
+    }
+    return this.request('GET', `/projects/${identifier(filters.project_id)}/review-trends?${params}`,
+      'WorkspaceReviewTrendResponse');
+  }
+  getReviewTrends(projectId: string, aggregateId: string): Promise<ReviewTrendData> {
+    return this.request('GET', `/projects/${identifier(projectId)}/review-trends/${identifier(aggregateId)}`,
+      'WorkspaceReviewTrendResponse');
+  }
+  trendEvidence(projectId: string, aggregateId: string, bucketId: string, topicId: string,
+    offset = 0, limit = 50): Promise<TrendEvidenceData> {
+    const input = { project_id: projectId, aggregate_id: aggregateId, bucket_id: bucketId,
+      topic_id: topicId, offset, limit };
+    check('ReviewTrendEvidenceRequest', input);
+    const params = new URLSearchParams({ bucket_id: bucketId, topic_id: topicId,
+      offset: String(offset), limit: String(limit) });
+    return this.request('GET', `/projects/${identifier(projectId)}/review-trends/${identifier(aggregateId)}/evidence?${params}`,
+      'WorkspaceTrendEvidenceResponse');
   }
 }

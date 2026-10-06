@@ -41,7 +41,8 @@ async def smoke(url: str, credential_file: Path, web_proof: Path):
         initialized = await session.initialize()
         tools = await session.list_tools()
         names = {tool.name for tool in tools.tools}
-        assert len(names) == 7
+        assert len(names) == 10
+        assert {"review_trends", "get_review_trends", "trend_evidence"} <= names
         results = []
 
         async def call(name, arguments, definition=None):

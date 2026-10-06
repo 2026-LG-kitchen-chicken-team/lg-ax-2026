@@ -569,7 +569,8 @@
             "NOT_FOUND",
             "DATASET_MISMATCH",
             "CONNECTION_FAILED",
-            "CONTRACT_MISMATCH"
+            "CONTRACT_MISMATCH",
+            "INVALID_INPUT"
           ]
         },
         "message": {
@@ -1296,6 +1297,267 @@
         "ok",
         "data"
       ],
+      "additionalProperties": false
+    },
+    "ReviewTrendIdentifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+    },
+    "ReviewTrendSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "ReviewTrendVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "ReviewTrendDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Gregorian calendar date, years 0001 through 9999. The pattern is also enforced when a client has no date format validator.",
+      "pattern": "^(?:(?!0000)[0-9]{4}-(?:(?:01|03|05|07|08|10|12)-(?:0[1-9]|[12][0-9]|3[01])|(?:04|06|09|11)-(?:0[1-9]|[12][0-9]|30)|02-(?:0[1-9]|1[0-9]|2[0-8]))|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)$"
+    },
+    "ReviewTrendDateTime": {
+      "type": "string",
+      "format": "date-time",
+      "description": "A valid Gregorian date and RFC3339 timestamp with an explicit offset or Z; timezone-free values and leap seconds are not supported.",
+      "pattern": "^(?:(?!0000)[0-9]{4}-(?:(?:01|03|05|07|08|10|12)-(?:0[1-9]|[12][0-9]|3[01])|(?:04|06|09|11)-(?:0[1-9]|[12][0-9]|30)|02-(?:0[1-9]|1[0-9]|2[0-8]))|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](?:\\.[0-9]+)?(?:Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])$"
+    },
+    "ReviewTrendAggregateId": {
+      "type": "string",
+      "pattern": "^TREND-[a-f0-9]{64}$"
+    },
+    "ReviewTrendClassification": {
+      "type": "object",
+      "properties": {
+        "method": { "enum": ["human", "rule", "model", "unclassified"] },
+        "model_id": { "anyOf": [{ "$ref": "#/$defs/ReviewTrendVersion" }, { "type": "null" }] },
+        "revision": { "anyOf": [{ "$ref": "#/$defs/ReviewTrendVersion" }, { "type": "null" }] }
+      },
+      "required": ["method", "model_id", "revision"],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": { "properties": { "method": { "const": "model" } }, "required": ["method"] },
+          "then": { "properties": { "model_id": { "$ref": "#/$defs/ReviewTrendVersion" }, "revision": { "$ref": "#/$defs/ReviewTrendVersion" } } },
+          "else": { "properties": { "model_id": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "method": { "const": "unclassified" } }, "required": ["method"] },
+          "then": { "properties": { "revision": { "type": "null" } } }
+        }
+      ]
+    },
+    "ReviewTrendDateProvenance": {
+      "type": "object",
+      "properties": {
+        "source_id": { "$ref": "#/$defs/ReviewTrendIdentifier" },
+        "locator": { "$ref": "#/$defs/Locator" },
+        "source_sha256": { "$ref": "#/$defs/ReviewTrendSha256" }
+      },
+      "required": ["source_id", "locator", "source_sha256"],
+      "additionalProperties": false
+    },
+    "ReviewTrendMetadataRow": {
+      "type": "object",
+      "description": "Approved sidecar for an immutable canonical Review and its review Evidence. Source, text digest and date provenance binding require server-side semantic validation.",
+      "properties": {
+        "review_id": { "$ref": "#/$defs/ReviewTrendIdentifier" },
+        "evidence_id": { "$ref": "#/$defs/ReviewTrendIdentifier" },
+        "source_id": { "$ref": "#/$defs/ReviewTrendIdentifier" },
+        "model_id": { "$ref": "#/$defs/ReviewTrendIdentifier" },
+        "document_version": { "$ref": "#/$defs/ReviewTrendVersion" },
+        "source_kind": { "$ref": "#/$defs/SourceKind" },
+        "text_sha256": { "$ref": "#/$defs/ReviewTrendSha256" },
+        "published_at": { "anyOf": [{ "$ref": "#/$defs/ReviewTrendDate" }, { "$ref": "#/$defs/ReviewTrendDateTime" }, { "type": "null" }] },
+        "date_precision": { "enum": ["day", "instant", "unknown"] },
+        "date_provenance": { "anyOf": [{ "$ref": "#/$defs/ReviewTrendDateProvenance" }, { "type": "null" }] },
+        "topic_ids": { "type": "array", "items": { "$ref": "#/$defs/ReviewTrendIdentifier" }, "maxItems": 50, "uniqueItems": true },
+        "classification_status": { "enum": ["classified", "unclassified"] },
+        "dedup_key": { "type": ["string", "null"], "minLength": 1, "maxLength": 200 }
+      },
+      "required": ["review_id", "evidence_id", "source_id", "model_id", "document_version", "source_kind", "text_sha256", "published_at", "date_precision", "date_provenance", "topic_ids", "classification_status", "dedup_key"],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": { "properties": { "date_precision": { "const": "unknown" } }, "required": ["date_precision"] },
+          "then": { "properties": { "published_at": { "type": "null" }, "date_provenance": { "type": "null" } } },
+          "else": { "properties": { "date_provenance": { "$ref": "#/$defs/ReviewTrendDateProvenance" } } }
+        },
+        {
+          "if": { "properties": { "date_precision": { "const": "day" } }, "required": ["date_precision"] },
+          "then": { "properties": { "published_at": { "$ref": "#/$defs/ReviewTrendDate" } } }
+        },
+        {
+          "if": { "properties": { "date_precision": { "const": "instant" } }, "required": ["date_precision"] },
+          "then": { "properties": { "published_at": { "$ref": "#/$defs/ReviewTrendDateTime" } } }
+        },
+        {
+          "if": { "properties": { "classification_status": { "const": "unclassified" } }, "required": ["classification_status"] },
+          "then": { "properties": { "topic_ids": { "maxItems": 0 } } }
+        }
+      ]
+    },
+    "ReviewTrendMetadata": {
+      "type": "object",
+      "description": "Trusted, immutable server-approved annotation sidecar. Annotation digest excludes only annotation_sha256 and uses the versioned canonical serialization policy.",
+      "properties": {
+        "dataset_version": { "$ref": "#/$defs/ReviewTrendVersion" },
+        "dataset_sha256": { "$ref": "#/$defs/ReviewTrendSha256" },
+        "annotation_version": { "$ref": "#/$defs/ReviewTrendVersion" },
+        "annotation_sha256": { "$ref": "#/$defs/ReviewTrendSha256" },
+        "topic_taxonomy_version": { "$ref": "#/$defs/ReviewTrendVersion" },
+        "dedup_policy_version": { "$ref": "#/$defs/ReviewTrendVersion" },
+        "classification": { "$ref": "#/$defs/ReviewTrendClassification" },
+        "rows": { "type": "array", "items": { "$ref": "#/$defs/ReviewTrendMetadataRow" } }
+      },
+      "required": ["dataset_version", "dataset_sha256", "annotation_version", "annotation_sha256", "topic_taxonomy_version", "dedup_policy_version", "classification", "rows"],
+      "additionalProperties": false
+    },
+    "ReviewTrendRequest": {
+      "type": "object",
+      "description": "One approved model and source kind in a KST half-open calendar interval. Date ordering, the ten-year limit and project/source authorization require semantic validation. Topic filters do not reduce denominators.",
+      "properties": {
+        "project_id": { "$ref": "#/$defs/ReviewTrendIdentifier" },
+        "model_id": { "$ref": "#/$defs/ReviewTrendIdentifier" },
+        "source_ids": { "type": "array", "items": { "$ref": "#/$defs/ReviewTrendIdentifier" }, "minItems": 1, "maxItems": 50, "uniqueItems": true },
+        "dataset_version": { "$ref": "#/$defs/ReviewTrendVersion" },
+        "start_date": { "$ref": "#/$defs/ReviewTrendDate" },
+        "end_date_exclusive": { "$ref": "#/$defs/ReviewTrendDate" },
+        "granularity": { "enum": ["month", "season", "year"] },
+        "topic_ids": { "type": "array", "items": { "$ref": "#/$defs/ReviewTrendIdentifier" }, "maxItems": 50, "uniqueItems": true },
+        "source_kind": { "$ref": "#/$defs/SourceKind" },
+        "timezone": { "const": "Asia/Seoul" }
+      },
+      "required": ["project_id", "model_id", "source_ids", "dataset_version", "start_date", "end_date_exclusive", "granularity", "topic_ids", "source_kind", "timezone"],
+      "additionalProperties": false
+    },
+    "ReviewTrendCounts": {
+      "type": "object",
+      "description": "Mutually exclusive exclusions in scope -> known date -> period -> duplicate order. Arithmetic and subset checks are semantic, not inferred from a successful schema validation.",
+      "properties": {
+        "input_review_count": { "type": "integer", "minimum": 0 },
+        "excluded_out_of_scope_count": { "type": "integer", "minimum": 0 },
+        "in_scope_review_count": { "type": "integer", "minimum": 0 },
+        "excluded_undated_count": { "type": "integer", "minimum": 0 },
+        "excluded_outside_period_count": { "type": "integer", "minimum": 0 },
+        "duplicate_count": { "type": "integer", "minimum": 0 },
+        "eligible_unique_review_count": { "type": "integer", "minimum": 0 },
+        "unclassified_review_count": { "type": "integer", "minimum": 0 }
+      },
+      "required": ["input_review_count", "excluded_out_of_scope_count", "in_scope_review_count", "excluded_undated_count", "excluded_outside_period_count", "duplicate_count", "eligible_unique_review_count", "unclassified_review_count"],
+      "additionalProperties": false
+    },
+    "ReviewTrendTopic": {
+      "type": "object",
+      "properties": {
+        "topic_id": { "$ref": "#/$defs/ReviewTrendIdentifier" },
+        "topic_review_count": { "type": "integer", "minimum": 0 },
+        "ratio": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "evidence_count": { "type": "integer", "minimum": 0 },
+        "evidence_ids": { "type": "array", "items": { "$ref": "#/$defs/ReviewTrendIdentifier" }, "maxItems": 50, "uniqueItems": true },
+        "evidence_ids_truncated": { "type": "boolean" }
+      },
+      "required": ["topic_id", "topic_review_count", "ratio", "evidence_count", "evidence_ids", "evidence_ids_truncated"],
+      "additionalProperties": false
+    },
+    "ReviewTrendBucket": {
+      "type": "object",
+      "description": "Canonical whole month/season/year boundaries. Counts are clipped to request dates and partial_period marks clipping. WinterYYYY begins in DecemberYYYY.",
+      "properties": {
+        "bucket_id": { "$ref": "#/$defs/ReviewTrendIdentifier" },
+        "period_start": { "$ref": "#/$defs/ReviewTrendDate" },
+        "period_end_exclusive": { "$ref": "#/$defs/ReviewTrendDate" },
+        "label": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "partial_period": { "type": "boolean" },
+        "total_reviews": { "type": "integer", "minimum": 0 },
+        "topics": { "type": "array", "items": { "$ref": "#/$defs/ReviewTrendTopic" }, "maxItems": 50 }
+      },
+      "required": ["bucket_id", "period_start", "period_end_exclusive", "label", "partial_period", "total_reviews", "topics"],
+      "additionalProperties": false
+    },
+    "ReviewTrendAggregate": {
+      "type": "object",
+      "description": "Deterministic snapshot shared by private web and MCP. Project, canonical filters, frozen hashes and algorithm/taxonomy/dedup versions determine aggregate_id; client and time do not. Binding, counts, ratios and immutable-ID verification require semantic checks.",
+      "properties": {
+        "aggregate_id": { "$ref": "#/$defs/ReviewTrendAggregateId" },
+        "project_id": { "$ref": "#/$defs/ReviewTrendIdentifier" },
+        "dataset_version": { "$ref": "#/$defs/ReviewTrendVersion" },
+        "dataset_sha256": { "$ref": "#/$defs/ReviewTrendSha256" },
+        "annotation_version": { "$ref": "#/$defs/ReviewTrendVersion" },
+        "annotation_sha256": { "$ref": "#/$defs/ReviewTrendSha256" },
+        "trend_contract_version": { "const": "review-trends.v1" },
+        "filters": { "$ref": "#/$defs/ReviewTrendRequest" },
+        "timezone": { "const": "Asia/Seoul" },
+        "aggregation_version": { "$ref": "#/$defs/ReviewTrendVersion" },
+        "classification": { "$ref": "#/$defs/ReviewTrendClassification" },
+        "topic_taxonomy_version": { "$ref": "#/$defs/ReviewTrendVersion" },
+        "dedup_policy_version": { "$ref": "#/$defs/ReviewTrendVersion" },
+        "counts": { "$ref": "#/$defs/ReviewTrendCounts" },
+        "buckets": { "type": "array", "items": { "$ref": "#/$defs/ReviewTrendBucket" }, "maxItems": 120 },
+        "warnings": { "type": "array", "items": { "type": "string", "minLength": 1, "maxLength": 800 }, "uniqueItems": true },
+        "notes": { "type": "string", "maxLength": 800 }
+      },
+      "required": ["aggregate_id", "project_id", "dataset_version", "dataset_sha256", "annotation_version", "annotation_sha256", "trend_contract_version", "filters", "timezone", "aggregation_version", "classification", "topic_taxonomy_version", "dedup_policy_version", "counts", "buckets", "warnings"],
+      "additionalProperties": false
+    },
+    "ReviewTrendEvidenceRequest": {
+      "type": "object",
+      "properties": {
+        "project_id": { "$ref": "#/$defs/ReviewTrendIdentifier" },
+        "aggregate_id": { "$ref": "#/$defs/ReviewTrendAggregateId" },
+        "bucket_id": { "$ref": "#/$defs/ReviewTrendIdentifier" },
+        "topic_id": { "$ref": "#/$defs/ReviewTrendIdentifier" },
+        "offset": { "type": "integer", "minimum": 0 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 50 }
+      },
+      "required": ["project_id", "aggregate_id", "bucket_id", "topic_id", "offset", "limit"],
+      "additionalProperties": false
+    },
+    "WorkspaceReviewTrendResponse": {
+      "type": "object",
+      "properties": {
+        "ok": { "const": true },
+        "data": {
+          "type": "object",
+          "properties": {
+            "aggregate": { "$ref": "#/$defs/ReviewTrendAggregate" },
+            "contract_version": { "const": "0.1.0" }
+          },
+          "required": ["aggregate", "contract_version"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["ok", "data"],
+      "additionalProperties": false
+    },
+    "WorkspaceTrendEvidenceResponse": {
+      "type": "object",
+      "description": "Only canonical review Evidence included in the selected immutable aggregate, bucket and topic. Pagination totals, offsets and membership require semantic validation.",
+      "properties": {
+        "ok": { "const": true },
+        "data": {
+          "type": "object",
+          "properties": {
+            "project_id": { "$ref": "#/$defs/ReviewTrendIdentifier" },
+            "aggregate_id": { "$ref": "#/$defs/ReviewTrendAggregateId" },
+            "bucket_id": { "$ref": "#/$defs/ReviewTrendIdentifier" },
+            "topic_id": { "$ref": "#/$defs/ReviewTrendIdentifier" },
+            "offset": { "type": "integer", "minimum": 0 },
+            "limit": { "type": "integer", "minimum": 1, "maximum": 50 },
+            "total": { "type": "integer", "minimum": 0 },
+            "next_offset": { "type": ["integer", "null"], "minimum": 0 },
+            "evidence": { "type": "array", "items": { "$ref": "#/$defs/Evidence" }, "maxItems": 50 },
+            "contract_version": { "const": "0.1.0" }
+          },
+          "required": ["project_id", "aggregate_id", "bucket_id", "topic_id", "offset", "limit", "total", "next_offset", "evidence", "contract_version"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["ok", "data"],
       "additionalProperties": false
     },
     "WorkspaceEvidenceResponse": {
