@@ -4,12 +4,436 @@
   "source": "사용자 4번까지 진행 및 처리 중 새 PR도 큐에 추가 지시",
   "meaning": "수동 PM 검수 큐이며 자동 Worker release/부모 완료가 아니다",
   "items": [
-    {"pr":177,"head":"1923b6f697cf318fe02bb40eb758593ac80dbb56","scope":"CORE feedback + raw failed evidence","state":"independent_review_passed_pm_docker_pending"},
-    {"pr":176,"head":"bebb54efb5d82e412e9e14ca784d701c7b05a533","scope":"DATA original audit + deterministic collector","state":"independent_review_passed_runtime_integration_pending"},
-    {"pr":172,"head":"e2190209b3e5921e5e237c265b5ff2b4a24a86df","scope":"WEB historical cause correction","state":"source_review_passed_ci_cleanup_race_under_review"},
-    {"pr":178,"head":"2325c7ab5706ccb36d5463ad6411de18d8ef95c6","scope":"WEB176 precheck and empty-data consumption; stacked on172","state":"queued_independent_review"},
-    {"pr":168,"head":"0d1967c48e9082e8ae4a3913f863b9705e6d865a","scope":"historical partial preparation/failure handoff","state":"draft_preserved"},
-    {"pr":140,"head":"6d98cc976a5fdd4bfa8efeeccd0713d0af396fdf","scope":"historical lossless records","state":"draft_preserved"}
+    {
+      "pr": 177,
+      "head": "1923b6f697cf318fe02bb40eb758593ac80dbb56",
+      "scope": "CORE feedback + raw failed evidence",
+      "state": "merged_partial_intake",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/177",
+      "merge_commit": "af9cb7bf0fd324cec518fcd9e14b3de7ea244e8e",
+      "merged_at": "2026-10-06T09:53:27Z",
+      "checks": [
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        }
+      ],
+      "formal_parent_done": false
+    },
+    {
+      "pr": 176,
+      "head": "d02356b419ce687cf525115bf481505ef09b27b4",
+      "scope": "DATA original audit + deterministic collector",
+      "state": "merged_partial_intake",
+      "earlier_observed_heads": [
+        "bebb54efb5d82e412e9e14ca784d701c7b05a533"
+      ],
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/176",
+      "merge_commit": "cefe23ee77ac775467a6432d7ad668a171859fe4",
+      "merged_at": "2026-10-06T10:09:43Z",
+      "checks": [
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        }
+      ],
+      "formal_parent_done": false
+    },
+    {
+      "pr": 172,
+      "head": "de5edb08e15a75cac5154f42032c8bf6c05360bd",
+      "scope": "WEB historical cause correction",
+      "state": "merged_partial_intake",
+      "earlier_observed_heads": [
+        "e2190209b3e5921e5e237c265b5ff2b4a24a86df"
+      ],
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/172",
+      "merge_commit": "94fd316a218432780e61b56c05f7dd38ebdd0099",
+      "merged_at": "2026-10-06T10:00:36Z",
+      "checks": [
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        }
+      ],
+      "formal_parent_done": false
+    },
+    {
+      "pr": 178,
+      "head": "70407e3e7b0c7ed3e5d92d82792f65f97ba85765",
+      "scope": "WEB176 precheck and empty-data consumption; stacked on172",
+      "state": "merged_partial_intake",
+      "earlier_observed_heads": [
+        "2325c7ab5706ccb36d5463ad6411de18d8ef95c6"
+      ],
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/178",
+      "merge_commit": "fdb0ea2667c80ead07b38fbcf5ca58df292bc7e9",
+      "merged_at": "2026-10-06T10:13:40Z",
+      "checks": [
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        }
+      ],
+      "formal_parent_done": false
+    },
+    {
+      "pr": 168,
+      "head": "0d1967c48e9082e8ae4a3913f863b9705e6d865a",
+      "scope": "historical partial preparation/failure handoff",
+      "state": "draft_preserved",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/168",
+      "merge_commit": null,
+      "merged_at": null,
+      "checks": [
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        }
+      ],
+      "formal_parent_done": false
+    },
+    {
+      "pr": 140,
+      "head": "6d98cc976a5fdd4bfa8efeeccd0713d0af396fdf",
+      "scope": "historical lossless records",
+      "state": "draft_preserved",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/140",
+      "merge_commit": null,
+      "merged_at": null,
+      "checks": [
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        }
+      ],
+      "formal_parent_done": false
+    },
+    {
+      "pr": 179,
+      "scope": "WEB historical held/failed replay + honest error status",
+      "head": "0f70e633ef4d809714893b99ec7ae5dfba43dc19",
+      "state": "merged_partial_intake",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/179",
+      "merge_commit": "bc8f69e43c849a254e8b0dfcdd3e7a30707ac1ec",
+      "merged_at": "2026-10-06T10:27:18Z",
+      "checks": [
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        }
+      ],
+      "formal_parent_done": false
+    },
+    {
+      "pr": 180,
+      "scope": "WEB mention ratio and candidate taxonomy display",
+      "head": "0f612504faa30351a7f7d4e9d74968fd79e18404",
+      "state": "merged_partial_intake",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/180",
+      "merge_commit": "1b4e9117e62c410daedb6a2b6e8fdcf0d8213104",
+      "merged_at": "2026-10-06T10:40:28Z",
+      "checks": [
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        }
+      ],
+      "formal_parent_done": false
+    },
+    {
+      "pr": 181,
+      "scope": "WEB per-Gap comparison + stored-validation alignment",
+      "head": "ea7acdf2b664d3ace464ca80461299bea5bda726",
+      "state": "merged_partial_intake",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/181",
+      "merge_commit": "502080441615d53b78c5fc55d9a3a0b00a645baa",
+      "merged_at": "2026-10-06T11:02:38Z",
+      "checks": [
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        }
+      ],
+      "formal_parent_done": false
+    },
+    {
+      "pr": 182,
+      "scope": "CORE unextracted complaint-ID feedback",
+      "head": "76a6bbf3b7140bab1327b1d2f54a0e3097ba0732",
+      "state": "merged_partial_intake",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/182",
+      "merge_commit": "1c344df27216a5de4a2ff2006bf57789021885b4",
+      "merged_at": "2026-10-06T10:45:39Z",
+      "checks": [
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        }
+      ],
+      "formal_parent_done": false
+    },
+    {
+      "pr": 183,
+      "scope": "DATA original HTTP, catalog/BM25, separate synthetic dated preview and R4 source audit",
+      "head": "8fbe6ded37f7e515ce66c24d3dc8558f8281a9fc",
+      "state": "merged_partial_intake",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/183",
+      "merge_commit": "a3452a29180f7996a06ca141d9c416a31513587c",
+      "merged_at": "2026-10-06T11:15:21Z",
+      "checks": [
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        }
+      ],
+      "formal_parent_done": false
+    },
+    {
+      "pr": 184,
+      "scope": "CORE interrupted live-model requests, lost response and unknown usage evidence",
+      "head": "d98e1aa079cd9fa842efb22e9814b4bea72c0017",
+      "state": "merged_partial_intake",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/184",
+      "merge_commit": "3f88c0aa880a793c54e1c94e519fda4d8c068d3e",
+      "merged_at": "2026-10-06T11:19:55Z",
+      "checks": [
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        }
+      ],
+      "formal_parent_done": false
+    },
+    {
+      "pr": 185,
+      "scope": "WEB judgement declarations, uncited inputs and complete exports",
+      "head": "114f651b3a5de90520da4fb7b82478e322ef1379",
+      "state": "merged_partial_intake",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/185",
+      "merge_commit": "1a8e4363b3b1c0105a52371fe11d0b92084b5d74",
+      "merged_at": "2026-10-06T11:05:12Z",
+      "checks": [
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "python-and-harness",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        },
+        {
+          "name": "web",
+          "conclusion": "SUCCESS",
+          "status": "COMPLETED"
+        }
+      ],
+      "formal_parent_done": false
+    }
   ],
-  "rules": ["各 인수/공유 단계에서 새 열린 PR과 실제 head/CI를 다시 조회", "같은 코드/개인 문서의 stack·겹침은 원 지시와 원본을 보존하며 조정", "Draft·실패 CI·미검증 품질을 성공으로 바꾸지 않음"]
+  "rules": [
+    "각 인수/공유 단계에서 새 열린 PR과 실제 head/CI를 다시 조회",
+    "같은 코드/개인 문서의 stack·겹침은 원 지시와 원본을 보존하며 조정",
+    "Draft·실패 CI·미검증 품질을 성공으로 바꾸지 않음"
+  ],
+  "observed_at": "2026-10-06T11:20:08.557839+00:00"
 }

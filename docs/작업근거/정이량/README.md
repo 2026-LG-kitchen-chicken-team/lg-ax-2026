@@ -1,14 +1,13 @@
 # 정이량 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
-## 최신 근거 — 정이량-E044-MAIL-FIRST
+## 최신 근거 — 정이량-E045-INTEGRATION
 
-- 종료 보완: PR174의 실제병합/CI/노션·PR173 exacthead CI4/독립blocker0/PM zero-auth115검사·rawreceipt/log SHA와 부분인수한계를E044 및공개수신증에추가했다. 자동화OFF·기존원문과다른담당상태보존.
-
-- 기존 지침에는 Project 메일안내/PM 발송만 있고 매번 실제 mail-first 의무가 없었다. 새 두 지침의 전체 동일성과 시작 순서·의존 협의·조회 실패/권한 경계를 연결한다.
-- 실제 LG 메일6건 및 Issue/PR 대조: CORE 인계·DATA 예약충돌·WEB 정상/collector 대기. PR172 기록 정확성 정정 요청과 DATA 원 예약 담당 확인 댓글을 게시했다. 메일 발송/상태변경·새 모델 실행0.
-- main531의 Project21·ACCEPTED·중앙metadata 수신은 실제 확인했다. 전원OFF와 원jobs/잠금/비용 보존이며 제품배포/품질/전체Done은 미완료다.
-- [E044상세](2026-10-06/정이량-E044-MAIL-FIRST.md)·[작업009](../../작업기록/정이량/2026-10-06/정이량-20261006-009-MAIL-FIRST.md)·[E043이전](2026-10-06/정이량-E043-CLOSEOUT.md).
+- 원PR·새PR178~185 actual head/CI/병합·원 실패/비용/owner기록을 연결한 부분 인수다. 전체 Agent/parent Done 증거 아님.
+- 원문5개161753B·제목104·링크169 및 원Git/반례4개의 이관근거와 동일AGENTS/CLAUDE를 연결했다. 일상검사는 default 이관과 정본규칙을 따른다.
+- Docker144 core/1469 Python실행 및 웹514/516·skip5/build, 실제 PDF3 등록/검색/restart와API/MCP, 현재 Chromium20/20+4/4 수신증·source pin·hash는 [E045 상세](2026-10-06/정이량-E045-INTEGRATION.md)에 있다.
+- 실제 모델47generation/155798tokens·12 원출력, 제한2리뷰와원10리뷰·attempt/actualcall·마지막semantic길이실패를 구분한다. R6 gateway5044토큰 대조는 원응답복원/원ledger수정 아님.
+- [010 의도·수행](../../작업기록/정이량/2026-10-06/정이량-20261006-010-INTEGRATION.md), [문서 허브](../../README.md), [R4](../../pm/integration-followup-20261006.md). 최종공유/통합·메일/Project/Notion은 실제확인 뒤 새종료근거로 연결한다.
 
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.

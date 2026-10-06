@@ -1,16 +1,13 @@
 # 정이량 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
-## 현재 재개 요약 — 정이량-20261006-009-MAIL-FIRST
+## 최신 재개 요약 — 정이량-20261006-010-INTEGRATION
 
-- 종료 공유: 메일first PR174는 mainbca380c 병합·CI4/병합CI2/독립검수·노션본문보존 완료. 새 CORE173은 같은 원자료의 조기 거절 보완을 PM Docker115검사로 확인해 main8f9d83f로 부분 인수했다. 실모델 정상·변경·보류/실collector·전체Done은 남았다.
-
-- 최신 지시: 사용자 지시로 착수 전 실제 관련 메일·선행 작업/협의 점검을 AGENTS/CLAUDE와 협업/기록 규칙에 동일하게 추가했다. 사서함 조회와 Project 메일 안내는 구분한다.
-- 실제 확인: CORE R3 원문 인계, DATA 예약409, WEB 정상run/실collector 대기 메일6건을 읽었다. PR172의 옛 실패 원인 현재화 정정 요청과 DATA 원 예약 담당 확인 요청을 실제 Issue 댓글로 전달했다.
-- 이전 종료: PR169/170/171 병합 및 main531 Project21항목·서비스 ACCEPTED·중앙metadata readback 확인. 작업 상태/담당·jobs/예약/비용·전원OFF 보존. 제품 배포/정상accept 증거는 아니다.
-- 다음: 최신 main을 공유하고 각 팀 AI가 다음 착수 때 자기 메일→Issue/PR/Project→기록을 확인한다. CORE 의미품질·DATA 원문/collector·WEB 동일run 통합·PM 더 큰 모델/평가/컨설팅·제출은 남았다.
-- 사용자: 지금 추가 로그인/결제 불필요.10/7 15시KST 컨설팅 준비. 공식URL은 팀장 확인 보고와 PM 직접 대조를 구분한다.
-- 상세: [작업009](2026-10-06/정이량-20261006-009-MAIL-FIRST.md)·[E044](../../작업근거/정이량/2026-10-06/정이량-E044-MAIL-FIRST.md)·[이전008](2026-10-06/정이량-20261006-008-CLOSEOUT.md).
+- 수동 PM 진행, 자동화 OFF. 원177/176/172과 새178~185를 인수·검수·병합했고 Draft168/140는 보존했다. 실제 head/CI/merge는 [PR 큐](../../pm/pr-intake-queue-20261006.json)를 조회한다.
+- 문서5입구를 정리하고 원문/제목/링크·개인원기록을 보존했다. [문서 허브](../../README.md), [R4 후속](../../pm/integration-followup-20261006.md)를 읽는다.
+- 실제 PDF등록/검색/restart·같은 API/MCP aggregate와 원문·실제 Chromium 동향20/20+4/4을 확인했다. 합성 날짜1/3과 원 날짜unknown null을 구분하며 운영배포/LLM완주 아님.
+- 27B/122B 실제 비교47호출·155798토큰, 선택2리뷰 제한 정상1건과 전체10리뷰 실패를 분리했다. v2는 후보생성길이를 줄였지만 마지막 의미검토16k guard는 남았다. CORE R6 유실은 gateway5044토큰 관측과 응답미수신을 구분해 인계한다.
+- 남은 종료: 고정source 전체 검사·공유PR/CI·Project/중앙OFF metadata·실제 배정메일·노션. 이후 CORE 의미/PM 예산·운영·완주/평가/제출을 이어간다. [010 상세](2026-10-06/정이량-20261006-010-INTEGRATION.md)·[E045](../../작업근거/정이량/2026-10-06/정이량-E045-INTEGRATION.md).
 
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
