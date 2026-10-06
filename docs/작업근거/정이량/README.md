@@ -3,11 +3,11 @@
 <!-- member-log:owner-updates:start -->
 ## 최신 근거 — 정이량-E045-INTEGRATION
 
-- 원PR·새PR178~185 actual head/CI/병합·원 실패/비용/owner기록을 연결한 부분 인수다. 전체 Agent/parent Done 증거 아님.
-- 원문5개161753B·제목104·링크169 및 원Git/반례4개의 이관근거와 동일AGENTS/CLAUDE를 연결했다. 일상검사는 default 이관과 정본규칙을 따른다.
-- Docker144 core/1469 Python실행 및 웹514/516·skip5/build, 실제 PDF3 등록/검색/restart와API/MCP, 현재 Chromium20/20+4/4 수신증·source pin·hash는 [E045 상세](2026-10-06/정이량-E045-INTEGRATION.md)에 있다.
-- 실제 모델53generation/193708tokens·13 원출력, 제한2리뷰와원10리뷰·attempt/actualcall·v3입력해결/남은semantic품질실패를 구분한다. R6 gateway5044토큰 대조는 원응답복원/원ledger수정 아님.
-- [010 의도·수행](../../작업기록/정이량/2026-10-06/정이량-20261006-010-INTEGRATION.md), [문서 허브](../../README.md), [R4](../../pm/integration-followup-20261006.md). 최종공유/통합·메일/Project/Notion은 실제확인 뒤 새종료근거로 연결한다.
+- 고정 원/새 PR head·독립 검수·CI/병합 및190P1 Request changes를 [큐](../../pm/pr-intake-queue-20261006.json)와 실제 GitHub로 연결한다. 원 실패/사용량·원문·다른팀 owner를 보존했다.
+- 5원문161753B·104제목·169링크/anchor·원Git/이관반례4개, 개인8원본/231구간/28세션·동일AGENTS/CLAUDE·CI검사를 확인했다. 이관당시 protected를 향후 정상owner갱신금지로 해석하지 않는다.
+- 고정c5eb92d의 Docker full1490실행/실패0/skip4·웹516통과/skip5·Node4/type/build·계약/하네스/지침/이관 PASS. 실제PDF3등록/검색/restart·API/MCP와Chromium20/20+4/4은 LLM정상완주/실운영배포와 구분한다.
+- 모델13원출력·53actual/193708tokens, v3source428f237·audit8c8de930·원10리뷰/inputsha. 길이해결/남은의미품질hold와 제한2리뷰성공을 구분한다. R6 gateway5044관측은 원응답/원ledger 복원이 아니다.
+- [P1반례](../../../evals/pm-integration/20261006/pr190-independent-blocker.json)·[메일수신증](../../../evals/pm-integration/20261006/followup-notifications.json) 및 [E045 상세](2026-10-06/정이량-E045-INTEGRATION.md)를 읽는다. 최종공유main/CI·Project ACK·OFF/비용보존·노션 재조회는 운영Issue28 이번PM종료보고 및 실제운영수신증으로 대조한다. 부모Done/참가작완성은 아직 아니다.
 
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.

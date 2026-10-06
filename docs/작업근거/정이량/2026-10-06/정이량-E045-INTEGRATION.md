@@ -34,3 +34,11 @@
 - 122B cap-v3의 원10리뷰/설명서 전체로6generation·37910토큰을 추가해 누적13원출력·53actual·193708토큰이다. 실제 semantic21,393자/30,183B까지 응답했고 길이 제한은 해결됐다. 최종 QUALITY_UNCERTAIN/revision_limit2/held0concept이므로 전체 정상 완료는 아직 실패다. 신규 제안 가설을 기존 설명서로 증명하라는 판정, 근거 없는 현재제품 단정, 모든9Gap의 FEATURE001 연결 반례를 CORE에 전달한다. PR192 효과는 아직 미실측이다.
 - R4 CORE/DATA/WEB3배정은 각 Issue11/13/25 댓글과 Project 최근배정/메일 안내에 기록했고 Gmail 발송 결과를 SENT·to/from/subject로 재확인했다. 공개 notification은 sent이며 수신자의 열람/착수는 미확인이다. 주소/원메일은 private에만 둔다. 자동화는 OFF다.
 - 문서 재구성의 실제 공유·최종 검사/중앙 승인 main·Notion 재조회는 후속 종료 기록에 연결한다. CORE 의미 품질→3제품 정상/변경/적절한 보류→같은 정상 run 웹/MCP→독립 평가/제출 순서의 미완료를 유지한다.
+
+## 최종 검수 근거와 운영 확인 위치
+
+[integration-checks](../../../../evals/pm-integration/20261006/integration-checks.json)은 기존source와 c5eb92d의 실제full/gates/web 수신증 hash·Docker경계·source_changed[]·model0을 각각 보존한다. full1490/skip4·웹516/skip5와 이관/계약검사 통과를 의미품질성공과 분리한다. [PR190 독립반례](../../../../evals/pm-integration/20261006/pr190-independent-blocker.json)의SHA1ff08aa2…는 원private와 일치하며 기존1457성공에도 최종accept/보류탈락 반례가 남음을 보여준다.
+
+원13모델출력·실제53generation/193708토큰·v3원10review/source428f237·audit8c8de930…는 원문 그대로다. 192/195의 후속지침 개선효과는 이 이전실행으로입증하지 않는다. 새OCR191/193은동일원14영역/70회과거실행의별도19항목/22행수동검수이며 성능을새측정으로합산하지 않는다. DATA194의독립zeroauth108/15/40과 기존HTTP증거대조는새운영접속성공과다르다.
+
+R4메일3건과 [후속진단메일3건](../../../../evals/pm-integration/20261006/followup-notifications.json)은 발송및SENT/to/from/subject 대조로확인했다. 주소·원메일·privateledger는공개하지않으며열람/착수미확인이다. 최종공유main/CI·Project승인ACK·중앙OFF readback·Notion갱신/재조회는 운영Issue28 이번PM종료보고 및 private/runtime/pm188-integration-final-snapshot-relay-20261006.json의실제수신증에서대조한다. 이근거에없는21작업완료/실운영배포/모델성공/최종제출은추정하지않는다.

@@ -3,11 +3,12 @@
 <!-- member-log:owner-updates:start -->
 ## 최신 재개 요약 — 정이량-20261006-010-INTEGRATION
 
-- 수동 PM 진행, 자동화 OFF. 원177/176/172과 새178~187·189·192를 부분 인수·검수·병합했고(190/191/193은 최신 큐 참조) Draft168/140는 보존했다. 실제 head/CI/merge는 [PR 큐](../../pm/pr-intake-queue-20261006.json)를 조회한다.
-- 문서5입구를 정리하고 원문/제목/링크·개인원기록을 보존했다. [문서 허브](../../README.md), [R4 후속](../../pm/integration-followup-20261006.md)를 읽는다.
-- 실제 PDF등록/검색/restart·같은 API/MCP aggregate와 원문·실제 Chromium 동향20/20+4/4을 확인했다. 합성 날짜1/3과 원 날짜unknown null을 구분하며 운영배포/LLM완주 아님.
-- 27B/122B 실제 비교53호출·193708토큰, 선택2리뷰 제한 정상1건과 전체10리뷰 실패를 분리했다. v3의 실제 의미검토 응답으로 입력 제한은 해결했지만 신규가설/현재사실 혼동으로 품질 보류다. CORE R6 유실은 gateway5044토큰 관측과 응답미수신을 구분해 인계한다.
-- 남은 종료: 고정source 전체 검사·공유PR/CI·Project/중앙OFF metadata·실제 배정메일·노션. 이후 CORE 의미/PM 예산·운영·완주/평가/제출을 이어간다. [010 상세](2026-10-06/정이량-20261006-010-INTEGRATION.md)·[E045](../../작업근거/정이량/2026-10-06/정이량-E045-INTEGRATION.md).
+- 수동 PM 인수·통합·후속 배정, 자동화 OFF. 이번 원/새 PR의 실제 head·검수/CI·병합·190 Request changes·Draft 보존은 [PR 큐](../../pm/pr-intake-queue-20261006.json)와 실제 GitHub를 대조한다. 개인의 개별 검사/코드 인수와 부모 Done은 구분한다.
+- [문서 허브](../../README.md)에 정본·현재/과거·작성 위치를 정리했다. 입구5개 원문161753B·104제목·169링크/anchor와 개인 원기록을 보존하고 AGENTS/CLAUDE·CI를 연결했다. 새 기록은 이름/날짜/ID, 보고 URL은 고정commit의 기존 이름.md 호환 목차다.
+- 실제 PDF3등록/검색/restart·API/MCP 같은 aggregate/원문·Chromium20/20+4/4을 확인했다. 원36날짜미상/PM31+5/DATA9+27을 구분하며 합성언급비율·자료없음 null을 실수요·실운영배포로 확대하지 않는다.
+- 실제27B/122B53호출·193708토큰·13원출력. v3 의미검토 응답으로 입력 제한은 해결했지만 신규가설/현재사실 혼동으로 품질 보류다. 이후192/195 지침 효과는 아직 미실측. CORE 유실5044는 관측사용량이며 원응답 복원·원예약 초기화가 아니다.
+- PR190 uncertain/held가최종completed/accept로변하는 P1을 재현해 CORE정본→DATA반영→WEB설명→PM통합으로 인계했다. R4배정메일3+후속메일3의 SENT/수신주소·발신자·제목은 확인했고 열람/착수는 미확인이다.
+- 남은 개발은 의미품질/3제품정상·변경·적절한보류→정상run웹/MCP·운영/두AI연결→독립평가/측정·발표/영상/ZIP이다. 최종 main/CI·Project ACK·중앙OFF·노션 재조회 결과는 [운영Issue28](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28)의 이번PM종료보고·실제수신증을 읽는다. [010 상세](2026-10-06/정이량-20261006-010-INTEGRATION.md)·[E045](../../작업근거/정이량/2026-10-06/정이량-E045-INTEGRATION.md)·[R4](../../pm/integration-followup-20261006.md).
 
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
