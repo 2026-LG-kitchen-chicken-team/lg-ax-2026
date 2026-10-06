@@ -1,0 +1,104 @@
+[
+  {
+    "id": "F01",
+    "type": "missing_output",
+    "status": "검증 불가",
+    "item": "자동 행·열·병합 셀·모델 머리글·물리량·단위 상속·각주 연결",
+    "evidence": [
+      "evals/data003-live/20261005/ocr-v3/results.json",
+      "evals/data003-live/20261005/ocr-v3/runner-source.py",
+      "processing-path-inventory.json"
+    ],
+    "observed": null,
+    "required": "원 PDF SHA/개정/페이지에 묶인 실제 구조화 처리 출력; 없으면 생산 담당과 인터페이스를 PM이 배정",
+    "owners": [
+      "DATA @ginaginaring",
+      "PM @jeongiryang"
+    ]
+  },
+  {
+    "id": "F02",
+    "type": "confirmed_saved_evaluation_error",
+    "status": "오류",
+    "item": "*1 → ∗1 문자 변경 뒤 ASCII-only 각주 제거 정규식이 번호 1을 본값에 포함",
+    "evidence": [
+      "evals/data003-live/20261005/ocr-v3/runner-source.py:45-58",
+      "evals/data003-live/20261005/ocr-v3/results.json#/results/13",
+      "recognition-review.csv"
+    ],
+    "source_primary_value": [
+      1000
+    ],
+    "saved_observed_values": [
+      1000.0,
+      1.0
+    ],
+    "not_an_OCR_invented_primary_number": true,
+    "historical_strict_score_preserved": "10/11",
+    "required": "별도 수정 작업에서 본값/각주 ID를 구조적으로 분리하고 두 코드포인트를 조건과 함께 취급; 이번 검수는 코드/점수를 수정하지 않음",
+    "owners": [
+      "DATA @ginaginaring"
+    ]
+  },
+  {
+    "id": "F03",
+    "type": "confirmed_saved_character_difference",
+    "status": "오류",
+    "item": "공백 차이 5영역과 각주 기호 코드포인트 차이 1영역",
+    "region_ids": [
+      "OCR-DW-LINE-01",
+      "OCR-DW-TABLE-04",
+      "OCR-MW-LINE-01",
+      "OCR-MW-TABLE-01",
+      "OCR-MW-TABLE-02",
+      "OCR-MW-TABLE-05"
+    ],
+    "required": "기존 문자 오류를 표 구조 실패나 본값 오인식과 혼합하지 말고 원 문자열/코드포인트/필드 유형 보존",
+    "owners": [
+      "DATA @ginaginaring"
+    ]
+  },
+  {
+    "id": "F04",
+    "type": "unconfirmed_binding",
+    "status": "검증 불가",
+    "item": "DUE 두 열의 598/815/567 중복과 병합 공통 셀",
+    "source_pdf_page": "DUE6BGL2E p57",
+    "required": "모델군→제품 타입→행→셀 경로, 상판 제거 조건, rowspan/colspan와 공통 적용 열 범위",
+    "owners": [
+      "DATA @ginaginaring"
+    ]
+  },
+  {
+    "id": "F05",
+    "type": "unconfirmed_binding",
+    "status": "검증 불가",
+    "item": "MW mm는 crop 밖 머리글, 23/25 L와 가용13 L, 1570 W와 Max1000 W의 연결",
+    "source_pdf_page": "MW23FDI p37",
+    "required": "단위 출처 셀/범위와 단위 전파 edge, 별도 물리량, Max.와 scoped *1→본문 연결",
+    "owners": [
+      "DATA @ginaginaring"
+    ]
+  },
+  {
+    "id": "F06",
+    "type": "source_applicability_unconfirmed",
+    "status": "미확인",
+    "item": "T876 유형1/2 및 일부 모델 구성품, MW 간편조리 정확 SKU 적용/전원 분리 후 유지, 외부5 cm 자료의 적용성",
+    "required": "기존 정확 SKU/스티커/기능 적용 근거 또는 별도 외부 원문; 문서·페이지가 다른 *1을 섞지 않기",
+    "owners": [
+      "DATA @ginaginaring",
+      "PM @jeongiryang"
+    ]
+  },
+  {
+    "id": "F07",
+    "type": "historical_input_bytes_unavailable",
+    "status": "미확인",
+    "item": "14개 역사적 crop PNG는 선택한 Git snapshot에 없고 manifest SHA/좌표만 있음",
+    "required": "보유 중인 기존 crop 원파일 또는 불변 보관 위치·SHA; 새 PDFium 비교 이미지가 원 OCR 입력 bytes의 증명은 아님",
+    "owners": [
+      "DATA @ginaginaring"
+    ]
+  }
+]

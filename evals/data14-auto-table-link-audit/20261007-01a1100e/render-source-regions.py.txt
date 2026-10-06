@@ -1,0 +1,65 @@
+"""Read original PDFs and render the historical rectangles for manual review only.
+
+No OCR/model is imported or called. These PDFium reference rasters are new
+review artifacts, not the historical OCR input images or automatic table output.
+"""
+
+import hashlib
+import json
+from pathlib import Path
+
+import pypdfium2
+
+OUT = Path(__file__).resolve().parent
+ROOT = OUT.parents[2]
+INPUTS = ROOT / "evals/data003-ocr-review/20261006-01a10c5c/inputs"
+manifest = json.loads((INPUTS / "crop-manifest.json").read_bytes())
+pdf_names = {
+    "T876MEE1H1": "T876MEE1H1-d00942446318.pdf",
+    "DUE6BGL2E": "DUE6BGL2E-ff60f78ab832.pdf",
+    "MW23FDI": "MW23FDI-3ceec78295d0.pdf",
+}
+(OUT / "region-renders").mkdir(exist_ok=True)
+records = []
+for case in manifest["cases"]:
+    pdf_path = INPUTS / pdf_names[case["model_id"]]
+    pdf_hash = hashlib.sha256(pdf_path.read_bytes()).hexdigest()
+    if pdf_hash != case["source_pdf_sha256"]:
+        raise ValueError("Original PDF hash differs from the historical input manifest")
+    doc = pypdfium2.PdfDocument(str(pdf_path))
+    page = doc[case["page"] - 1]
+    bitmap = page.render(scale=case["dpi"] / 72)
+    raster = bitmap.to_pil()
+    if list(raster.size) != case["raster_size_px"]:
+        raise ValueError("PDF page raster size differs from historical coordinate space")
+    for region in case["regions"]:
+        bbox = region["crop_bbox_px"]
+        if not (0 <= bbox[0] < bbox[2] <= raster.width and 0 <= bbox[1] < bbox[3] <= raster.height):
+            raise ValueError("Historical rectangle outside original PDF page")
+        target = OUT / "region-renders" / (region["id"] + "-manual-reference-300dpi.png")
+        raster.crop(tuple(bbox)).save(target)
+        records.append({
+            "region_id": region["id"],
+            "source_pdf": pdf_path.relative_to(ROOT).as_posix(),
+            "source_pdf_sha256": pdf_hash,
+            "model_id": case["model_id"],
+            "document_version": case["document_version"],
+            "physical_page_1_based": case["page"],
+            "dpi": case["dpi"],
+            "bbox_px_xyxy_top_left": bbox,
+            "raster_size_px": list(raster.size),
+            "reference_raster": target.relative_to(OUT).as_posix(),
+            "reference_raster_sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
+            "historical_crop_sha256": region["crop_sha256"],
+            "historical_crop_bytes_in_selected_git_snapshot": False,
+            "reference_raster_is_historical_input": False,
+            "source_gold": region["gold_text"],
+            "new_ocr_calls": 0,
+            "new_model_calls": 0,
+        })
+    page.close()
+    doc.close()
+(OUT / "region-render-manifest.json").write_bytes(
+    (json.dumps({"purpose": "manual PDF coordinate/phrase comparison only", "renderer": "pypdfium2", "renderer_version": pypdfium2.PYPDFIUM_INFO.version, "regions": records}, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+)
+print(json.dumps({"reference_regions_rendered": len(records), "ocr_calls": 0, "model_calls": 0}))

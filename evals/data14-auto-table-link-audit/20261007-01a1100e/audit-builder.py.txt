@@ -1,0 +1,389 @@
+"""Build a read-only DATA14 audit from saved artifacts and manual PDF observations.
+
+This script imports no repository producer, model or OCR module. Its tables are
+review questions/reference observations, never synthetic automatic predictions.
+Every write is confined to the new, unique directory containing this script.
+"""
+
+import csv
+import hashlib
+import io
+import json
+import re
+import subprocess
+import sys
+import unicodedata
+from pathlib import Path
+
+from pypdf import PdfReader
+
+sys.stdout.reconfigure(encoding="utf-8")
+OUT = Path(__file__).resolve().parent
+ROOT = OUT.parents[2]
+BASE = "9cd2d56be52588764c18c109c9ffca4c104bd48c"
+PREFIX = OUT.relative_to(ROOT).as_posix() + "/"
+SESSION = "20261007-01a1100e"
+OWNER = "신진하 / @ginaginaring"
+P191 = "evals/data003-ocr-review/20261006-01a10c5c"
+P193 = "evals/data003-ocr-review/20261006T111943Z-01a10f51"
+PREP = "evals/data003-compare/20261006-01a10834/prepared"
+RAW = "evals/data003-live/20261005/ocr-v3/results.json"
+RUNNER = "evals/data003-live/20261005/ocr-v3/runner-source.py"
+checks = []
+
+
+def read(path):
+    return json.loads((ROOT / path).read_bytes())
+
+
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def write_text(name, text):
+    target = (OUT / name).resolve()
+    if not target.is_relative_to(OUT):
+        raise ValueError("Audit output escaped unique directory")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(text.replace("\r\n", "\n").encode("utf-8"))
+
+
+def write_json(name, value):
+    write_text(name, json.dumps(value, ensure_ascii=False, indent=2) + "\n")
+
+
+def write_csv(name, rows):
+    stream = io.StringIO(newline="")
+    writer = csv.DictWriter(stream, fieldnames=list(rows[0]), lineterminator="\n")
+    writer.writeheader()
+    for row in rows:
+        writer.writerow({k: json.dumps(v, ensure_ascii=False) if isinstance(v, (dict, list)) else v for k, v in row.items()})
+    write_text(name, stream.getvalue())
+
+
+def csv_rows(path):
+    with (ROOT / path).open(encoding="utf-8-sig", newline="") as stream:
+        return list(csv.DictReader(stream))
+
+
+def check(name, actual, expected):
+    okay = actual == expected
+    checks.append({"check": name, "actual": actual, "expected": expected, "passed": okay})
+    if not okay:
+        write_json("verification-failure.json", checks)
+        raise ValueError(name)
+
+
+def git(*args):
+    return subprocess.check_output(["git", "-c", "core.quotepath=false", "-c", "core.fsmonitor=false", *args], cwd=ROOT).decode("utf-8").strip()
+
+
+def norm(text):
+    return " ".join(unicodedata.normalize("NFC", text).split())
+
+
+def edit_distance(a, b):
+    previous = list(range(len(b) + 1))
+    for i, left in enumerate(a, 1):
+        current = [i]
+        for j, right in enumerate(b, 1):
+            current.append(min(current[-1] + 1, previous[j] + 1, previous[j - 1] + (left != right)))
+        previous = current
+    return previous[-1]
+
+
+pdfs = {
+    "T876MEE1H1": {"path": P191 + "/inputs/T876MEE1H1-d00942446318.pdf", "sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815", "version": "MFL71401557 Rev.00_032526", "pages": [1, 19, 22]},
+    "DUE6BGL2E": {"path": P191 + "/inputs/DUE6BGL2E-ff60f78ab832.pdf", "sha256": "ff60f78ab8326c40b9a3446f11b49531b8f0c823a310ba98366716b633ba63f5", "version": "MFL71959117 Rev.07_030626", "pages": [1, 23, 57]},
+    "MW23FDI": {"path": P191 + "/inputs/MW23FDI-3ceec78295d0.pdf", "sha256": "3ceec78295d02352fd467309bc613cf59c9bf7bce0bae3e9d5de3ad4bae2f7bc", "version": "MFL68822538 Rev.00_120925", "pages": [1, 17, 37]},
+}
+
+# These observations were entered after viewing the 9 PDF page images and the
+# 14 original-coordinate reference images. They are explicitly human references.
+references = []
+
+
+def ref(id_, model, page, row, column, values, units, condition, regions=None, note="", uncertain=""):
+    item = {"reference_id": id_, "model_id_for_review": model, "document_version": pdfs[model]["version"], "source_pdf": pdfs[model]["path"], "source_pdf_sha256": pdfs[model]["sha256"], "physical_page_1_based": page, "source_row_or_section": row, "source_column_or_context": column, "source_values": values, "source_units": units, "source_condition_or_footnote": condition, "related_saved_regions": regions or [], "manual_source_verdict": "일부 일치·적용 미확인" if uncertain else "일치", "applicability_unconfirmed": uncertain or None, "review_note": note, "reference_kind": "manual_original_PDF_observation", "automatic_observed_structure": None, "automatic_verdict": "검증 불가·자동 구조 출력 없음"}
+    references.append(item)
+    return item
+
+
+ref("FR-CLEARANCE-WALL", "T876MEE1H1", 22, "제품과 벽면", "오른쪽 설치 주의 본문", [10], ["cm"], "최소 간격", ["OCR-FR-NUM-01"], "설치장 위쪽 2.5 cm와 다른 위치. 외부 5 cm 자료의 적용성은 이번 PDF만으로 해결되지 않음.")
+ref("FR-CLEARANCE-TOP", "T876MEE1H1", 22, "제품 문 위쪽과 설치장", "오른쪽 설치 주의 본문", [2.5], ["cm"], "최소 간격", ["OCR-FR-NUM-02"])
+ref("FR-TYPE-HEIGHT", "T876MEE1H1", 22, "치수 B", "프리스탠딩 유형1 / 유형2", [1787, 1860], ["mm"], "도면 B와 두 유형 열; 내부 스티커의 제품 치수 참조", uncertain="공용 PDF에는 T876MEE1H1의 유형 선택을 확정할 대응 자료가 없음")
+ref("FR-FOOTNOTE-1", "T876MEE1H1", 22, "구성품", "스패너 타입 A*1 / B*1", [], [], "*1: 이 구성품은 일부 모델에만 있음", note="스냅링에는 이 페이지의 *1 표식이 없음. MW p37 *1과 다른 문서의 각주.", uncertain="정확 T876MEE1H1에 A/B 스패너가 제공되는지는 공용 PDF만으로 미확인")
+ref("DW-MODEL", "DUE6BGL2E", 57, "모델명 / 제품 타입", "오른쪽 DUE6**E,DUE6***E,DUE6****E,DEE6**E", [], [], "빌트인; 왼쪽 DFE6**E/DFE6***E는 프리스탠딩", note="표지·표에 계열명이 있고 DUE6BGL2E는 DUE6****E 패턴에 부합. 패턴 대조는 수동 검토이며 자동 모델 검출 성적이 아님.")
+ref("DW-DIMENSIONS", "DUE6BGL2E", 57, "제품 크기(폭 X 높이 X 깊이)", "오른쪽 빌트인", [598, 815, 567], ["mm", "mm", "mm"], "폭/높이/깊이 순서", ["OCR-DW-TABLE-01"])
+ref("DW-DUPLICATE-DIMENSIONS", "DUE6BGL2E", 57, "제품 크기", "왼쪽 프리스탠딩 두 번째 줄", [598, 815, 567], ["mm", "mm", "mm"], "상판 제거 시; 일반 왼쪽 치수는 598/845/600", ["OCR-DW-TABLE-01"], "같은 숫자만으로 오른쪽 열 선택 성공을 판정할 수 없음.")
+ref("DW-MASS", "DUE6BGL2E", 57, "제품 무게", "오른쪽 빌트인 / 왼쪽 프리스탠딩", [45, 50], ["kg"], "제품 타입별 값", ["OCR-DW-TABLE-02"], "D03 인용은 무게 행 이전에 끝나는 기존 검수의 한계를 보존. 동일 페이지라는 사실은 무게 인용의 근거가 아님.")
+ref("DW-CAPACITY", "DUE6BGL2E", 57, "최대 용량", "두 제품 열에 공통인 병합 셀", [14], ["인용"], "두 모델군 공통", ["OCR-DW-TABLE-03"])
+ref("DW-POWER", "DUE6BGL2E", 57, "소비 전력", "두 제품 열에 공통인 병합 셀", [1600], ["W"], "소비전력", ["OCR-DW-TABLE-04"])
+ref("DW-PRESSURE", "DUE6BGL2E", 57, "수압", "두 제품 열에 공통인 병합 셀", [0.05, 1.0], ["MPa"], "0.05 MPa ~ 1.0 MPa 범위", note="기존 14 OCR 영역에 없는 행. 원문 확인을 새 OCR 인식 성적으로 세지 않음.")
+ref("DW-VOLTAGE", "DUE6BGL2E", 57, "전원", "두 제품 열에 공통인 병합 셀", [220, 60], ["V", "Hz"], "전압과 주파수는 서로 다른 물리량")
+ref("MW-MODEL", "MW23FDI", 37, "모델명", "왼쪽 MWJ23PI/MWJ23EI/MW23FDI", [], [], "오른쪽 MWJ25PI/MWJ25EI", note="MW23FDI는 표와 표지에 직접 기재됨.")
+ref("MW-DIMENSIONS", "MW23FDI", 37, "외형 치수(mm)(폭×높이×깊이)", "왼쪽 MW23 모델군", [476, 272, 369], ["mm"], "오른쪽 깊이는 370; 폭/높이/깊이 순서", ["OCR-MW-TABLE-01"], "mm는 값 crop 밖의 행 머리글. 자동 단위 전파가 관찰된 것은 아님.")
+ref("MW-CAVITY", "MW23FDI", 37, "조리실 치수(mm)(폭×높이×깊이)", "두 제품 열에 공통인 병합 셀", [322, 228, 335], ["mm"], "외형 치수와 다른 행", note="기존 14 OCR 영역에 없는 행.")
+ref("MW-CAPACITY", "MW23FDI", 37, "조리실 용량", "왼쪽 / 오른쪽", [23, 25], ["L"], "모델군별 표기 용량", ["OCR-MW-TABLE-02"])
+ref("MW-USABLE", "MW23FDI", 37, "조리실 용량 괄호 안 가용 용량", "양쪽 열의 해당 셀 내부", [13, 13], ["L"], "가용 용량; 표기 용량 23/25 L와 구분", ["OCR-MW-TABLE-03"], "닫는 괄호는 각주가 아님.")
+ref("MW-CONSUMPTION", "MW23FDI", 37, "정격 소비전력", "두 제품 열에 공통인 병합 셀", [1570], ["W"], "전기 소비전력; 1000 W 고주파 출력과 다른 물리량", ["OCR-MW-TABLE-04"])
+ref("MW-OUTPUT-FOOTNOTE", "MW23FDI", 37, "정격 고주파 출력", "두 제품 열에 공통인 병합 셀", [1000], ["W"], "Max.; 위첨자 *1 → 짧은 시간의 출력이며 조리 시간 경과에 따라 바뀔 수 있음", ["OCR-MW-TABLE-05"], "본값 1000, 단위 W, 각주 ID 1과 조건을 분리해야 함. 1은 원문에도 있는 각주 번호.")
+ref("MW-FREQUENCY", "MW23FDI", 37, "발진 주파수", "두 제품 열에 공통인 병합 셀", [2450], ["MHz"], "주파수")
+ref("MW-TIME", "MW23FDI", 17, "간편조리 시작/선택 버튼", "왼쪽 본문", [30], ["초"], "누를 때마다 30초씩 증가; 오른쪽 시간 설정 단위 설명과 별도 문장", ["OCR-MW-LINE-01"])
+ref("MW-QUICK-POWER", "MW23FDI", 17, "간편 조리 출력 설정", "오른쪽 알아두기", [700, 1000], ["W"], "기본 700 W; 700/1000 W 선택; 이 기능은 모델에 따라 다를 수 있음", uncertain="공용 안내만으로 정확 MW23FDI의 기능 적용과 전원 분리 후 유지까지 확정할 수 없음")
+ref("FR-DIMENSION-DIAGRAM", "T876MEE1H1", 22, "치수 A~H ↔ 도면 문자", "프리스탠딩 유형1 / 유형2", {"A": [914, 914], "B": [1787, 1860], "C": [918, 918], "D": [808, 808], "E": [873, 873], "F": [918, 918], "G": [1293, 1293], "H": [1667, 1667]}, ["mm"], "두 유형을 각각 보존; 특정 SKU 유형은 내부 스티커 확인 전 미확인", note="기존 OCR의 FR 숫자 crop는 이 치수표가 아니라 설치 간격 본문임.")
+ref("MW-VOLTAGE", "MW23FDI", 37, "정격전압", "두 제품 열에 공통인 병합 셀", [220, 60], ["V", "Hz"], "220 V~ 60 Hz; ~는 전압 표기의 문맥이며 음수 부호 아님")
+reference_map = {x["reference_id"]: x for x in references}
+write_json("manual-observations.json", {"reviewer": OWNER, "workspace_date_kst": "2026-10-07", "basis": "manual visual examination of original PDF covers/pages and historical-coordinate rerenders", "pages_viewed": 9, "regions_viewed": 14, "automatic_outputs_created": 0, "references": references})
+
+baseline = read(PREFIX + "protected-baseline.json")
+check("baseline source commit", baseline["source_commit"], BASE)
+check("protected original file count", baseline["original_file_count"], 3148)
+preserved = []
+for old in baseline["files"]:
+    path = ROOT / old["path"]
+    if not path.is_file() or digest(path) != old["sha256"] or path.stat().st_size != old["bytes"]:
+        preserved.append(old["path"])
+check("existing code/data/personal READMEs unchanged by bytes", preserved, [])
+
+raw = read(RAW)
+ledger = read(PREP + "/ocr-error-ledger.json")
+plan = read(PREP + "/ocr-table-review-plan.json")
+crop_manifest = read(P191 + "/inputs/crop-manifest.json")
+review191 = read(P191 + "/review.json")
+review193 = read(P193 + "/review.json")
+regions193 = csv_rows(P193 + "/region-review.csv")
+table193 = csv_rows(P193 + "/table-context-review.csv")
+region_map193 = {row["region_id"]: row for row in regions193}
+region_map191 = {row["region_id"]: row for row in review191["regions"]}
+raw_map = {row["region_id"]: row for row in raw["results"]}
+case_region_map = {region["id"]: (case, region) for case in crop_manifest["cases"] for region in case["regions"]}
+check("historical OCR result bytes copied into PR191", digest(ROOT / RAW), digest(ROOT / (P191 + "/inputs/results.json")))
+for name in ["ocr-error-ledger.json", "ocr-error-ledger.csv", "ocr-table-review-plan.json"]:
+    check("PR191 input copy " + name, digest(ROOT / (PREP + "/" + name)), digest(ROOT / (P191 + "/inputs/" + name)))
+check("archived OCR runner SHA matches saved result", digest(ROOT / RUNNER), raw["script_sha256"])
+check("crop manifest SHA matches saved result", digest(ROOT / (P191 + "/inputs/crop-manifest.json")), raw["crop_manifest_sha256"])
+check("visual review SHA matches saved result", digest(ROOT / (P191 + "/inputs/visual-review.json")), raw["visual_review_sha256"])
+check("saved region count", len(raw_map), 14)
+check("ledger region IDs", sorted(row["region_id"] for row in ledger["rows"]), sorted(raw_map))
+check("PR191 and PR193 region IDs", [sorted(region_map191), sorted(region_map193)], [sorted(raw_map), sorted(raw_map)])
+check("manual historical context counts", [len(review191["table_and_context_checks"]), len(table193)], [19, 22])
+check("plan source checks", len(plan["source_table_checks"]), 3)
+
+# Extract only the native PDF text layer for supplementary character provenance.
+# Visual page/rectangle observations remain the source of table layout conclusions.
+native_pages = {}
+for model, info in pdfs.items():
+    check("original PDF SHA " + model, digest(ROOT / info["path"]), info["sha256"])
+    reader = PdfReader(ROOT / info["path"])
+    info["page_count"] = len(reader.pages)
+    for page in info["pages"]:
+        text = reader.pages[page - 1].extract_text() or ""
+        native_pages[(model, page)] = text
+        write_text(f"native-source-text/{model}-p{page}.txt", text + "\n")
+
+region_renders = read(PREFIX + "region-render-manifest.json")
+check("reference PDF region render count", len(region_renders["regions"]), 14)
+render_map = {x["region_id"]: x for x in region_renders["regions"]}
+recognition = []
+for index, saved in enumerate(raw["results"]):
+    rid = saved["region_id"]
+    case, region = case_region_map[rid]
+    old = next(x for x in ledger["rows"] if x["region_id"] == rid)
+    a, b = region_map191[rid], region_map193[rid]
+    check(rid + " source scope", [saved["source_model_id"], saved["document_version"], saved["page"], saved["crop_sha256"]], [case["model_id"], case["document_version"], case["page"], region["crop_sha256"]])
+    check(rid + " result/ledger/gold text", [old["gold_text"], old["recognized"], a["source_text_transcribed_during_review"], b["source_gold"], b["saved_OCR_raw"]], [saved["gold_text"], saved["recognized"], saved["gold_text"], saved["gold_text"], saved["recognized"]])
+    check(rid + " original rectangle", [old["crop_bbox_px"], json.loads(b["saved_crop_bbox_px_300dpi"]), render_map[rid]["bbox_px_xyxy_top_left"]], [region["crop_bbox_px"]] * 3)
+    check(rid + " gold text SHA", hashlib.sha256(saved["gold_text"].encode()).hexdigest(), region["gold_text_sha256"])
+    check(rid + " repeats", sorted(x["repeat"] for x in saved["attempts"]), [1, 2, 3, 4, 5])
+    check(rid + " saved success/stability", all(x["status"] == "success" and x["recognized"] == saved["recognized"] for x in saved["attempts"]), True)
+    check(rid + " model-column accuracy", saved["model_column_accuracy"], None)
+    distance = edit_distance(norm(saved["gold_text"]), norm(saved["recognized"]))
+    check(rid + " saved edit distance", distance, saved["edit_distance"])
+    check(rid + " exact text verdict", norm(saved["gold_text"]) == norm(saved["recognized"]), saved["normalized_exact_match"])
+    native_count = norm(native_pages[(case["model_id"], case["page"])]).count(norm(saved["gold_text"]))
+    recognition.append({"region_id": rid, "model_id": case["model_id"], "document_version": case["document_version"], "source_pdf_sha256": case["source_pdf_sha256"], "pdf_page_1_based": case["page"], "source_row_or_section": a["source_row_label"], "source_column_or_context_manual": a["manual_source_column_or_region"], "historical_bbox_px_300dpi": region["crop_bbox_px"], "source_gold": saved["gold_text"], "saved_OCR_text": saved["recognized"], "manual_PDF_gold_and_location": "일치", "saved_character_verdict": "일치" if saved["normalized_exact_match"] else "오류", "difference_kind": a["confirmed_difference_kind"], "saved_edit_distance": saved["edit_distance"], "saved_CER": saved["CER"], "saved_numeric_correct": saved["numeric_correct"], "saved_numeric_total": saved["numeric_total"], "saved_strict_field_correct": saved["numeric_field_correct"], "saved_observed_values": saved.get("observed_values"), "saved_explicit_unit_correct": saved["explicit_unit_correct"], "saved_unit_total": saved["unit_total"], "unit_source_manual": b["unit_source"], "saved_manually_assigned_source_column": saved.get("manually_assigned_source_column"), "automatic_link_verdict": "검증 불가·자동 구조 출력 없음", "automatic_row_column_output": None, "automatic_model_column_accuracy": None, "native_text_layer_fragment_occurrences_supplementary": native_count, "saved_result_pointer": "/results/" + str(index), "ledger_pointer": a["ledger_json_pointer"], "original_pdf_reference_render": render_map[rid]["reference_raster"], "historical_crop_SHA_recorded": saved["crop_sha256"], "historical_crop_bytes_verified": False, "new_OCR_calls": 0, "new_model_calls": 0})
+check("historical measured attempts", sum(len(x["attempts"]) for x in raw["results"]), 70)
+check("character exact / differing regions", [sum(x["saved_character_verdict"] == "일치" for x in recognition), sum(x["saved_character_verdict"] == "오류" for x in recognition)], [8, 6])
+check("numeric/strict-field/unit totals", [sum(x["numeric_correct"] or 0 for x in raw["results"]), sum(x["numeric_total"] for x in raw["results"]), sum(x["numeric_field_correct"] is True for x in raw["results"]), sum(x["numeric_total"] > 0 for x in raw["results"]), sum(x["explicit_unit_correct"] or 0 for x in raw["results"]), sum(x["unit_total"] for x in raw["results"])], [15, 15, 10, 11, 12, 12])
+check("PR193 preserves historical summary", review193["historical_statistics_preserved"], raw["summary"])
+write_csv("recognition-review.csv", recognition)
+
+# Each entry is a question about a source relationship, not an inferred output.
+# An empty observed structure cannot be scored as a correct or incorrect link.
+link_rows = []
+dimensions = ["행·절→값", "열·병합 범위→값", "제품 모델·타입→셀/본문", "물리량·숫자→해당 행", "단위·머리글→값", "각주·조건→해당 값/모델"]
+for source in references:
+    expected = [source["source_row_or_section"], source["source_column_or_context"], source["model_id_for_review"] + "; " + source["source_column_or_context"] + "; " + (source["applicability_unconfirmed"] or source["source_condition_or_footnote"]), source["source_values"], source["source_units"], source["source_condition_or_footnote"]]
+    for dimension, value in zip(dimensions, expected):
+        link_rows.append({"link_id": source["reference_id"] + "-L" + str(dimensions.index(dimension) + 1), "reference_id": source["reference_id"], "link_kind": dimension, "model_id_for_review": source["model_id_for_review"], "document_version": source["document_version"], "source_pdf_sha256": source["source_pdf_sha256"], "pdf_page_1_based": source["physical_page_1_based"], "expected_manual_source_reference": value, "manual_reference_verdict": "미확인" if source["applicability_unconfirmed"] and dimension == dimensions[2] else "일치", "manual_uncertainty": source["applicability_unconfirmed"], "observed_automatic_structure": None, "automatic_verdict": "검증 불가", "reason": "원문 구조를 출력한 자동 table/cell/header/footnote 객체가 저장 결과에 없음", "automatic_error": None, "automatic_accuracy": None, "related_saved_regions": source["related_saved_regions"], "new_OCR_calls": 0, "new_model_calls": 0})
+write_csv("link-review.csv", link_rows)
+write_json("link-review.json", {"meaning": "source-specific review questions; not independent OCR accuracy samples", "automatic_structure_observed": None, "automatic_link_accuracy": None, "automatic_error_count": None, "references": len(references), "link_questions": len(link_rows), "links": link_rows})
+
+map191 = {"PLAN-DW-01": ["DW-DIMENSIONS"], "PLAN-MW-01": ["MW-OUTPUT-FOOTNOTE"], "PLAN-MW-02": ["MW-CONSUMPTION"], "CTX-DW-01": ["DW-DUPLICATE-DIMENSIONS"], "CTX-DW-02": ["DW-MASS"], "CTX-DW-03": ["DW-VOLTAGE", "DW-CAPACITY", "DW-POWER"], "CTX-DW-04": ["DW-PRESSURE"], "CTX-MW-01": ["MW-DIMENSIONS"], "CTX-MW-02": ["MW-DIMENSIONS"], "CTX-MW-03": ["MW-CAPACITY", "MW-USABLE"], "CTX-MW-04": ["MW-OUTPUT-FOOTNOTE"], "CTX-MW-05": ["MW-OUTPUT-FOOTNOTE"], "CTX-MW-06": ["MW-VOLTAGE", "MW-FREQUENCY", "MW-CAVITY"], "CTX-MW-07": ["MW-OUTPUT-FOOTNOTE"], "CTX-FR-01": ["FR-DIMENSION-DIAGRAM"], "CTX-FR-02": ["FR-TYPE-HEIGHT"], "CTX-FR-03": ["FR-FOOTNOTE-1"], "CTX-FR-04": ["FR-CLEARANCE-WALL", "FR-CLEARANCE-TOP"], "CTX-FR-05": ["FR-CLEARANCE-WALL"]}
+comparisons = []
+for index, old in enumerate(review191["table_and_context_checks"]):
+    verdict = "미확인" if old["source_status"] == "unverified" else "일치"
+    comparisons.append({"prior_PR": 191, "prior_check_id": old["review_id"], "prior_manual_status": old["source_status"], "source_model_id": old["model_id"], "pdf_page_1_based": old["page"], "prior_reference": old["source_reference"], "new_reference_ids": map191[old["review_id"]], "original_PDF_comparison_verdict": verdict, "unconfirmed_reason": old["notes"] if verdict == "미확인" else None, "automatic_link_verdict": "검증 불가·자동 구조 출력 없음", "automatic_structure_observed": None, "source_artifact": P191 + "/review.json#/table_and_context_checks/" + str(index), "comparison_is_new_model_output": False})
+for index, old in enumerate(table193):
+    fresh = reference_map[old["check_id"]]
+    check("PR193 manual values " + old["check_id"], json.loads(old["source_values"]), fresh["source_values"])
+    check("PR193 has no automatic assignments " + old["check_id"], [old["automatic_table_assignment"], old["automatic_model_column_accuracy"]], ["", ""])
+    comparisons.append({"prior_PR": 193, "prior_check_id": old["check_id"], "prior_manual_status": old["manual_review_status"], "source_model_id": old["model_id"], "pdf_page_1_based": int(old["pdf_page_1_based"]), "prior_reference": old["source_row"] + " / " + old["source_column"] + " / " + old["source_condition_or_footnote"], "new_reference_ids": [old["check_id"]], "original_PDF_comparison_verdict": fresh["manual_source_verdict"], "unconfirmed_reason": fresh["applicability_unconfirmed"], "automatic_link_verdict": "검증 불가·자동 구조 출력 없음", "automatic_structure_observed": None, "source_artifact": P193 + "/table-context-review.csv#data-row-" + str(index + 1), "comparison_is_new_model_output": False})
+check("PR191 compared verdicts", [sum(x["original_PDF_comparison_verdict"] == "일치" for x in comparisons if x["prior_PR"] == 191), sum(x["original_PDF_comparison_verdict"] == "미확인" for x in comparisons if x["prior_PR"] == 191)], [17, 2])
+check("PR193 compared verdicts", [sum(x["original_PDF_comparison_verdict"] == "일치" for x in comparisons if x["prior_PR"] == 193), sum(x["original_PDF_comparison_verdict"] == "일부 일치·적용 미확인" for x in comparisons if x["prior_PR"] == 193)], [19, 3])
+write_csv("manual-reference-review.csv", comparisons)
+
+plan_refs = ["DW-DIMENSIONS", "MW-OUTPUT-FOOTNOTE", "MW-CONSUMPTION"]
+plan_rows = []
+for index, (old, rid) in enumerate(zip(plan["source_table_checks"], plan_refs)):
+    reference = reference_map[rid]
+    check("plan expected values " + rid, old["expected_values"], reference["source_values"])
+    check("plan expected unit " + rid, old["unit"] in reference["source_units"], True)
+    check("plan actual structural result absent " + rid, [old["observed_table_assignment"], old["table_error"]], [None, None])
+    plan_rows.append({"source_plan_pointer": "/source_table_checks/" + str(index), "historical_evidence_id": old["evidence_id"], "new_manual_reference_id": rid, "model_id": old["model_id"], "physical_page_1_based": old["page"], "expected_values": old["expected_values"], "unit": old["unit"], "manual_PDF_verdict": "일치", "expected_condition": reference["source_condition_or_footnote"], "row_link": "검증 불가", "column_link": "검증 불가", "model_link": "검증 불가", "number_link": "검증 불가", "unit_link": "검증 불가", "footnote_condition_link": "검증 불가", "observed_table_assignment": None, "automatic_table_error": None, "reason": "기대값과 crop 문자열만 있으며 자동 구조 출력 없음"})
+write_json("plan-review.json", plan_rows)
+write_csv("plan-review.csv", plan_rows)
+
+structural_fields = ["table_id", "cell_id", "row_index", "column_index", "rowspan", "colspan", "header_path", "footnote_id", "footnote_ref", "footnote_links"]
+
+
+def key_inventory(value):
+    keys = set()
+    if isinstance(value, dict):
+        keys.update(value)
+        for child in value.values():
+            keys.update(key_inventory(child))
+    elif isinstance(value, list):
+        for child in value:
+            keys.update(key_inventory(child))
+    return keys
+
+
+saved_keys = key_inventory(raw)
+check("saved automatic table structure field presence", sorted(set(structural_fields) & saved_keys), [])
+runner_text = (ROOT / RUNNER).read_text(encoding="utf-8")
+producer_paths = [RUNNER, "services/inference/ocr_benchmark.py", "packages/core/src/lgax_core/pdf_text_worker.py", "packages/core/src/lgax_core/documents.py"]
+inventory = {"source_commit": BASE, "method": "saved JSON inspection plus static code read; no production path execution", "saved_result_path": RAW, "actual_saved_result_keys_union": sorted(set().union(*(set(x) for x in raw["results"]))), "actual_saved_attempt_keys_union": sorted(set().union(*(set(a) for r in raw["results"] for a in r["attempts"]))), "model_column_accuracy_all_null": True, "automatic_structure_fields_searched": structural_fields, "automatic_structure_fields_present": [], "saved_manually_assigned_source_column_count": sum("manually_assigned_source_column" in x for x in raw["results"]), "manual_source_column_is_prediction": False, "saved_observed_values_are_untyped_regex_values": True, "paths": [
+    {"path": RUNNER, "lines": [39, 61, 231, 282, 299, 312], "observed_output": "TextRecognition.rec_text / rec_score; 14 fixed manual crops × 5 repeats; input model/version/page/crop SHA copied; regex numbers/units; model_column_accuracy=null", "automatic_row_column_model_unit_footnote_binding": "not output", "scope": "archived historical producer matching saved runner SHA"},
+    {"path": "services/inference/ocr_benchmark.py", "lines": [1, 56, 78], "observed_output": "2 synthetic text lines; recognized / rec_score / CER / timing", "automatic_row_column_model_unit_footnote_binding": "not output", "scope": "smoke code; distinct from saved 70 historical attempts; not run"},
+    {"path": "packages/core/src/lgax_core/pdf_text_worker.py", "lines": [13, 19], "observed_output": "pages[] native text / parser/version / ocr_used=false; no text layer raises an error", "automatic_row_column_model_unit_footnote_binding": "not output", "scope": "fixed-main parser source read; worker not run"},
+    {"path": "packages/core/src/lgax_core/documents.py", "lines": [110, 141], "observed_output": "approved selection excerpt + locator/page/section + plan model/feature IDs + source/character-range SHAs", "automatic_row_column_model_unit_footnote_binding": "not output", "scope": "fixed-main registration source read; registration/API not run"}
+], "repository_search": {"paths": ["packages/core", "apps/api", "services/inference", "scripts"], "pattern": "row_index|column_index|rowspan|colspan|footnote_id|footnote_ref|table_id|cell_id|header_path", "matching_files": [], "meaning": "bounded source-field search only; no assertion about unprovided remote/runtime payloads"}, "automatic_structure_status": "검증 불가·출력 부재", "automatic_accuracy": None, "automatic_error_count": None, "new_OCR_calls": 0, "new_model_calls": 0}
+write_json("processing-path-inventory.json", inventory)
+
+footnote = raw_map["OCR-MW-TABLE-05"]
+check("saved footnote numeric contamination", footnote["observed_values"], [1000.0, 1.0])
+check("saved footnote strict field verdict", footnote["numeric_field_correct"], False)
+check("ASCII footnote removal misses changed OCR glyph", re.sub(r"\*\d+$", "", norm(footnote["recognized"])), "1000 W∗1")
+findings = [
+    {"id": "F01", "type": "missing_output", "status": "검증 불가", "item": "자동 행·열·병합 셀·모델 머리글·물리량·단위 상속·각주 연결", "evidence": [RAW, RUNNER, "processing-path-inventory.json"], "observed": None, "required": "원 PDF SHA/개정/페이지에 묶인 실제 구조화 처리 출력; 없으면 생산 담당과 인터페이스를 PM이 배정", "owners": ["DATA @ginaginaring", "PM @jeongiryang"]},
+    {"id": "F02", "type": "confirmed_saved_evaluation_error", "status": "오류", "item": "*1 → ∗1 문자 변경 뒤 ASCII-only 각주 제거 정규식이 번호 1을 본값에 포함", "evidence": [RUNNER + ":45-58", RAW + "#/results/13", "recognition-review.csv"], "source_primary_value": [1000], "saved_observed_values": [1000.0, 1.0], "not_an_OCR_invented_primary_number": True, "historical_strict_score_preserved": "10/11", "required": "별도 수정 작업에서 본값/각주 ID를 구조적으로 분리하고 두 코드포인트를 조건과 함께 취급; 이번 검수는 코드/점수를 수정하지 않음", "owners": ["DATA @ginaginaring"]},
+    {"id": "F03", "type": "confirmed_saved_character_difference", "status": "오류", "item": "공백 차이 5영역과 각주 기호 코드포인트 차이 1영역", "region_ids": [x["region_id"] for x in recognition if x["saved_character_verdict"] == "오류"], "required": "기존 문자 오류를 표 구조 실패나 본값 오인식과 혼합하지 말고 원 문자열/코드포인트/필드 유형 보존", "owners": ["DATA @ginaginaring"]},
+    {"id": "F04", "type": "unconfirmed_binding", "status": "검증 불가", "item": "DUE 두 열의 598/815/567 중복과 병합 공통 셀", "source_pdf_page": "DUE6BGL2E p57", "required": "모델군→제품 타입→행→셀 경로, 상판 제거 조건, rowspan/colspan와 공통 적용 열 범위", "owners": ["DATA @ginaginaring"]},
+    {"id": "F05", "type": "unconfirmed_binding", "status": "검증 불가", "item": "MW mm는 crop 밖 머리글, 23/25 L와 가용13 L, 1570 W와 Max1000 W의 연결", "source_pdf_page": "MW23FDI p37", "required": "단위 출처 셀/범위와 단위 전파 edge, 별도 물리량, Max.와 scoped *1→본문 연결", "owners": ["DATA @ginaginaring"]},
+    {"id": "F06", "type": "source_applicability_unconfirmed", "status": "미확인", "item": "T876 유형1/2 및 일부 모델 구성품, MW 간편조리 정확 SKU 적용/전원 분리 후 유지, 외부5 cm 자료의 적용성", "required": "기존 정확 SKU/스티커/기능 적용 근거 또는 별도 외부 원문; 문서·페이지가 다른 *1을 섞지 않기", "owners": ["DATA @ginaginaring", "PM @jeongiryang"]},
+    {"id": "F07", "type": "historical_input_bytes_unavailable", "status": "미확인", "item": "14개 역사적 crop PNG는 선택한 Git snapshot에 없고 manifest SHA/좌표만 있음", "required": "보유 중인 기존 crop 원파일 또는 불변 보관 위치·SHA; 새 PDFium 비교 이미지가 원 OCR 입력 bytes의 증명은 아님", "owners": ["DATA @ginaginaring"]},
+]
+write_json("findings.json", findings)
+
+selected_sources = [RAW, RUNNER, PREP + "/ocr-error-ledger.json", PREP + "/ocr-error-ledger.csv", PREP + "/ocr-table-review-plan.json", P191 + "/review.json", P191 + "/region-review.csv", P191 + "/table-context-review.csv", P191 + "/manual-observations.json", P191 + "/inputs/results.json", P191 + "/inputs/crop-manifest.json", P191 + "/inputs/visual-review.json", P191 + "/inputs/ocr-error-ledger.json", P191 + "/inputs/ocr-table-review-plan.json", P193 + "/review.json", P193 + "/region-review.csv", P193 + "/table-context-review.csv", P193 + "/findings.json", P193 + "/source-proof.json", P193 + "/verification.json", P193 + "/preservation-check.json", *producer_paths[1:], *[x["path"] for x in pdfs.values()]]
+source_records = [{"path": path, "sha256": digest(ROOT / path), "bytes": (ROOT / path).stat().st_size, "git_blob": git("rev-parse", BASE + ":" + path)} for path in dict.fromkeys(selected_sources)]
+write_json("source-manifest.json", {"source_commit": BASE, "workspace_date_kst": "2026-10-07", "prior_review_heads": read(PREFIX + "github-sources.json")["prior_reviews"], "original_PDFs": pdfs, "sources": source_records, "historical_OCR_region_count": 14, "historical_OCR_attempts_reused": 70, "new_OCR_calls": 0, "new_model_calls": 0})
+
+stats = raw["summary"]
+write_json("verification.json", {"source_commit": BASE, "review_id": SESSION, "owner": OWNER, "status": "passed_read_only_artifact_consistency_and_preservation", "checks": checks, "original_tracked_files_checked": 3148, "changed_original_files": [], "original_PDFs_checked": 3, "new_reference_page_rasters_viewed": 9, "new_reference_region_rasters_viewed": 14, "saved_regions_compared": 14, "saved_attempts_compared_without_reexecution": 70, "PR191_reference_rows": 19, "PR193_reference_rows": 22, "manual_reference_rows_total_with_prior_ids_retained": 41, "reference_cases_for_link_questions": len(references), "link_review_questions": len(link_rows), "automatic_link_questions_status": "all unverifiable: no structured output", "automatic_link_accuracy": None, "automatic_link_error_count": None, "historical_summary_preserved": stats, "historical_crop_bytes_verified": False, "repo_or_production_tests_run": 0, "new_OCR_calls": 0, "new_model_calls": 0, "issue14_done": False, "PM_approval": "pending"})
+
+
+def esc(value):
+    if isinstance(value, (dict, list)):
+        value = json.dumps(value, ensure_ascii=False)
+    return str(value).replace("|", "\\|").replace("*", "\\*").replace("\n", " ")
+
+
+def md_table(headers, data):
+    return "| " + " | ".join(headers) + " |\n| " + " | ".join(["---"] * len(headers)) + " |\n" + "\n".join("| " + " | ".join(esc(v) for v in row) + " |" for row in data)
+
+
+region_table = md_table(["원문 영역", "PDF p", "원문 gold", "저장 OCR", "문자", "자동 연결"], [[x["region_id"], x["pdf_page_1_based"], x["source_gold"], x["saved_OCR_text"], x["saved_character_verdict"], "검증 불가"] for x in recognition])
+source_table = md_table(["참조 ID", "원본 PDF p", "행/열 → 숫자·단위·조건", "수동 원문 대조", "자동 연결"], [[x["reference_id"], x["model_id_for_review"] + " p" + str(x["physical_page_1_based"]), x["source_row_or_section"] + " / " + x["source_column_or_context"] + " → " + esc(x["source_values"]) + " " + esc(x["source_units"]) + "; " + x["source_condition_or_footnote"], x["manual_source_verdict"], "검증 불가"] for x in references])
+plan_table = md_table(["기존 계획 근거 ID", "연결 검수 참조", "값/단위", "수동 원문", "행·열·모델·숫자·단위·각주 자동 연결"], [[x["historical_evidence_id"], x["new_manual_reference_id"], str(x["expected_values"]) + " " + x["unit"], "일치", "6종 모두 검증 불가"] for x in plan_rows])
+report = f"""# #14 자동 표 연결 검수 — {SESSION}
+
+- 담당: {OWNER}; 작업일: 2026-10-07 KST(사용자 환경 기준).
+- 고정 원문/코드: `{BASE}`. 별도 worktree/branch와 이 새 고유 폴더에만 작성.
+- 기존 코드·자료·개인 README 수정 0; 모델/OCR 신규 실행 0. 원본 PDF를 읽어 새 비교 이미지와 native text층을 만들었다.
+- **자동 연결 결론: 검증 불가.** 저장 OCR은 수동 crop 인식이고, 현재 살펴본 처리 경로에는 실제 행·열·병합 셀·모델 머리글·물리량·단위 상속·각주 연결 구조 출력이 없다. 자동 정확도·오류 건수는 `null`이다.
+- 이 보고는 사용자 요청 범위의 부분 검수 제출이며 #14 전체 완료·PM 승인·새 OCR 성능·운영 통합 성공을 뜻하지 않는다.
+
+## 1. 원본과 기존 결과 대조
+
+원본 PDF 3개 SHA는 기존 manifest와 일치. 표지 개정과 물리 페이지를 포함한 9개 페이지, 기존 300 dpi 좌표의 14개 영역을 직접 보았다. 원본 SHA/페이지/새 렌더 SHA는 [source-manifest](source-manifest.json), [페이지 렌더](pdf-render-manifest.json), [영역 렌더](region-render-manifest.json)에 있다.
+
+원본과 새 비교 이미지: [냉장고 PDF](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/blob/{BASE}/{pdfs['T876MEE1H1']['path']}) · [p22](pdf-renders/T876MEE1H1-p22-180dpi.png), [식기세척기 PDF](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/blob/{BASE}/{pdfs['DUE6BGL2E']['path']}) · [p57](pdf-renders/DUE6BGL2E-p57-180dpi.png), [전자레인지 PDF](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/blob/{BASE}/{pdfs['MW23FDI']['path']}) · [p37](pdf-renders/MW23FDI-p37-180dpi.png).
+
+기존 `results.json`은 PR191의 보관 사본과 bytes가 같고, 보관 runner의 SHA는 `script_sha256`와 같다. `ocr-error-ledger`·`ocr-table-review-plan` 사본도 같다. 14영역·70회는 **재사용**했으며 기존 8/14 exact, 숫자15/15, 엄격필드10/11, crop 안 명시단위12/12, micro CER6.870229%를 수정하지 않았다. 명시단위 점수는 머리글→값 단위 상속을 검사한 수치가 아니다.
+
+| 과거 검수 | 이 검수의 원문 대조 | 남은 적용성 |
+| --- | --- | --- |
+| PR191 19행 | 17 일치 / 2 미확인 | 특정 T876 유형, 외부 5 cm 출처 적용 |
+| PR193 22행 | 19 일치 / 3 일부 일치·적용 미확인 | 특정 T876 유형·구성품, MW 간편조리 정확 SKU 적용/설정 유지 |
+
+41개 기존 행은 PR/검수 ID를 보존해 [manual-reference-review.csv](manual-reference-review.csv)에 각각 연결했다. 원문 값·조건이 맞는 수동 대조와 자동 추출 검증을 별도 열로 표시했다. 동일 사례가 두 PR에 있더라도 새 성능 표본 두 건으로 세지 않았다.
+
+역사적 crop PNG 원파일은 이 Git 스냅샷에 없고 SHA/좌표만 확인할 수 있다. 새 PDFium 영역 렌더는 원문 위치/내용 대조 자료이며 과거 OCR 입력 bytes의 동일성 증명이 아니다. 렌더러 차이로 새 이미지 SHA가 달라져도 원본 변조나 OCR 오류로 분류하지 않는다.
+
+## 2. 저장 OCR 문자 대조 — 14영역
+
+{region_table}
+
+원문 위치/gold는 14영역 모두 수동 확인했다. 공백 차이 5영역과 `*`(U+002A)→`∗`(U+2217) 1영역을 문자 오류로 보존했다. 공백 판정은 source gold/native text층의 문자 기록을 함께 사용하며 그림에서 코드포인트를 추정하지 않는다. 자세한 bbox·개정·SHA·JSON pointer·단위 위치는 [recognition-review.csv](recognition-review.csv)에 있다.
+
+`OCR-MW-TABLE-05`의 **1은 원문 각주 번호**다. 저장 evaluator는 ASCII `*` 뒤 숫자만 제거하므로 OCR의 `∗1`을 제거하지 못하고 `[1000,1]`로 기록했다. 이는 각주/본값 분리 실패이며 OCR이 새 본값 1을 만들어낸 사례로 표현하지 않았다. 기존 점수 10/11은 유지했다.
+
+## 3. 현재 처리 경로의 실제 출력 확인
+
+| 경로 | 확인한 출력/코드 | 자동 표 연결 상태 |
+| --- | --- | --- |
+| 보관 OCR-v3 runner / 실제70회 결과 | `rec_text/rec_score`, 수동 crop, regex 숫자/단위. 모델·개정·페이지는 입력 case에서 복사; 일부 `manually_assigned_source_column`도 수동 지정값 | 구조 출력 없음; `model_column_accuracy=null` |
+| `services/inference/ocr_benchmark.py` | 별도의 합성2문장 smoke 코드; 문자/신뢰도/CER/시간 | 행·열·표 출력 없음; 실행하지 않음 |
+| `pdf_text_worker.py` | PDF native `pages[]`, parser/version, `ocr_used=false`; text층 없으면 오류 | 구조 출력 없음; worker 실행하지 않음 |
+| `documents.py` 등록 경로 | 승인 plan의 excerpt·모델/기능 ID, page/section locator, 원문/문자 범위 SHA | 정확한 인용/범위 보존과 자동 셀 의미 연결은 별개; 등록/API 실행하지 않음 |
+
+파일 SHA·정확한 행 번호·실제 JSON 키 목록은 [processing-path-inventory.json](processing-path-inventory.json)에 있다. 고정 코드의 제한된 구조 필드 검색도 함께 기록했다. 제공되지 않은 운영/외부 runtime 응답까지 출력 부재를 입증했다고 주장하지 않는다.
+
+## 4. 기존 review-plan의 연결별 판정
+
+{plan_table}
+
+숫자 문자열 일치는 값 crop의 성공만 증명한다. 같은 치수가 왼쪽에도 있는 DUE p57, 병합 셀, MW 머리글의 mm, `Max.`와 각주 본문은 자동 출력 없이는 판정할 수 없다. [plan-review.csv](plan-review.csv)의 각 연결 열과 [link-review.csv](link-review.csv)의 {len(references)}참조 × 6종 = {len(link_rows)}개 질문에 기대 원문·관측 `null`·검증 불가·사유를 적었다. 이 질문 수는 자동 성능 분모가 아니다.
+
+## 5. 원문 구조 수동 참조표
+
+{source_table}
+
+원문에서 실제 각주가 없는 항목도 각주/조건의 유무 및 적용 범위를 판단할 자동 객체가 없으므로 자동 판정은 검증 불가다. 정확 SKU 자료가 없는 항목은 원문 값 확인과 적용성 미확인을 함께 남겼다. `*1`은 반드시 PDF SHA/개정/페이지로 범위를 구분한다.
+
+## 6. 결함과 인계
+
+[findings.json](findings.json)에 확정 문자/평가 오류, 출력 부재, 적용성 미확인을 분리했다. [required-outputs.md](required-outputs.md)에 필요한 실제 table/cell/header/footnote 출력과 보관 증빙을 정리했다. DATA 담당 `@ginaginaring`과 PM `@jeongiryang`에게 #14에서 기존 출력 제공 여부와 다음 구현 담당/범위를 요청한다. 이번 검수에서 판단/파서 코드 수정·새 모델 선정·OCR 재실행은 하지 않았다.
+
+검수용 일관성·원파일 보존 확인은 [verification.json](verification.json), 작업 기록은 [work-record.md](work-record.md), 근거 안내는 [evidence.md](evidence.md)를 따른다. 개인 기록 목차 대신 사용자 지정 새 폴더에 상세 기록을 보관했다.
+"""
+write_text("검수표.md", report)
+write_text("README.md", f"""# DATA14 자동 표 연결 검수 — {SESSION}
+
+원본 PDF / 기존 OCR·ledger·plan / PR191·193 대조. 기존 파일 수정과 모델/OCR 재실행 없이 별도 worktree의 이 새 폴더에만 작성했다.
+
+**자동 구조 출력 부재 → 검증 불가 / accuracy·error count null.** 수동 원문 일치와 자동 연결 성공을 구분한다.
+
+- [검수표](검수표.md): 요약·14영역·원문 구조 참조표.
+- [연결별 CSV](link-review.csv): 행·열·모델·숫자·단위·각주/조건 6종, {len(link_rows)}검수 질문.
+- [기존 PR별 원문 대조](manual-reference-review.csv): PR191 19 + PR193 22행을 원 ID로 보존.
+- [문자 대조](recognition-review.csv), [계획 대조](plan-review.csv), [처리 경로](processing-path-inventory.json).
+- [필요 출력](required-outputs.md), [결함](findings.json), [검증·보존](verification.json).
+- [원본 SHA](source-manifest.json), [작업 기록](work-record.md), [근거](evidence.md).
+
+`pdf-renders/`·`region-renders/`는 원 PDF에서 만든 **수동 비교용 렌더**다. 과거 OCR 입력 PNG 또는 자동 표 추출 결과로 사용하지 않는다. 역사적 70회 결과는 재사용했고 새 호출은 0회다. #14 전체 완료와 PM 인수는 남아 있다.
+""")
+print(json.dumps({"original_files_unchanged": 3148, "saved_regions": 14, "saved_attempts_reused": 70, "prior_manual_rows_compared": 41, "link_questions": len(link_rows), "automatic_accuracy": None, "new_OCR_calls": 0, "new_model_calls": 0}, ensure_ascii=False))
