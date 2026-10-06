@@ -1,0 +1,84 @@
+{
+  "request": {
+    "product_group": "fridge",
+    "target_customer": "냉장 식품을 보관하는 사용자",
+    "use_situation": "식품이 남아 있는 선반을 청소할 때",
+    "improvement_task": "보관 식품을 과도하게 옮기지 않고 선반을 청소하는 구조와 사용 흐름 개선",
+    "exclusions": [
+      "자동 세척 하드웨어를 필수 전제로 삼지 않는다"
+    ],
+    "model_ids": [
+      "FRIDGE-A"
+    ],
+    "dataset_version": "0.1.0-manual-quality-r1-development"
+  },
+  "product": {
+    "model_id": "FRIDGE-A",
+    "name": "가상 냉장고 A",
+    "product_group": "fridge",
+    "document_version": "1.0",
+    "source_kind": "synthetic"
+  },
+  "sources": [
+    {
+      "id": "MANUAL-001",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "manual",
+      "source_id": "FRIDGE-A-MANUAL-v1.0",
+      "locator": {
+        "page": 1,
+        "section": "선반 분리"
+      },
+      "text": "선반은 분리하여 세척할 수 있습니다. 선반을 분리하기 전에 위의 식품을 모두 옮겨 주세요.",
+      "feature_ids": [
+        "FEATURE-001"
+      ]
+    },
+    {
+      "id": "REVIEW-EVIDENCE-001",
+      "model_id": "FRIDGE-A",
+      "text": "음료를 쏟으면 선반 위 식품을 모두 옮겨 청소해야 해서 번거로워요.",
+      "source_kind": "synthetic",
+      "source_type": "review",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 2
+      },
+      "feature_ids": []
+    },
+    {
+      "id": "REVIEW-EVIDENCE-002",
+      "model_id": "FRIDGE-A",
+      "text": "선반을 분리할 수 있지만 식품을 꺼내는 동안 둘 곳이 부족해요.",
+      "source_kind": "synthetic",
+      "source_type": "review",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 3
+      },
+      "feature_ids": []
+    }
+  ],
+  "features": [
+    {
+      "id": "FEATURE-001",
+      "model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "name": "선반 분리",
+      "description": "선반은 분리하여 세척할 수 있습니다. 선반을 분리하기 전에 위의 식품을 모두 옮겨 주세요.",
+      "conditions": [
+        "선반 위 식품을 모두 이동"
+      ],
+      "evidence_ids": [
+        "MANUAL-001"
+      ]
+    }
+  ],
+  "revision_count": 0,
+  "max_concepts": 3,
+  "changed_evidence_ids": []
+}
