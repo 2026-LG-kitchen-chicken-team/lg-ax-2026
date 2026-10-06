@@ -1,0 +1,23 @@
+check_id,model_id,pdf_page_1_based,source_row,source_column,source_values,unit,source_condition_or_footnote,related_saved_regions,manual_review_status,finding_or_unconfirmed,automatic_table_assignment,automatic_model_column_accuracy,new_OCR_calls,new_model_calls
+FR-CLEARANCE-WALL,T876MEE1H1,22,제품과 벽면,설치 주의 본문,[10],cm,최소 간격,"[""OCR-FR-NUM-01""]",manual_source_confirmed,설치장 위쪽 2.5 cm와 구분; 외부 5 cm 출처 차이의 최종 처분은 미확인,,,0,0
+FR-CLEARANCE-TOP,T876MEE1H1,22,제품 문 위쪽과 설치장,설치 주의 본문,[2.5],cm,최소 간격,"[""OCR-FR-NUM-02""]",manual_source_confirmed,소수점 유지; 표의 치수(mm)와 단위/대상 구분,,,0,0
+FR-TYPE-HEIGHT,T876MEE1H1,22,B,프리스탠딩 유형1 / 유형2,"[1787, 1860]",mm,도면 B와 두 유형 열,[],source_values_confirmed; exact_SKU_type_unconfirmed,PDF에 정확 SKU와 유형 대응이 없고 내부 스티커 참조 지시가 있어 T876의 유형 선택은 미확인,,,0,0
+FR-FOOTNOTE-1,T876MEE1H1,22,구성품 *1,스패너 타입 A/B,[],,일부 모델에만 있는 구성품,[],source_condition_confirmed; exact_SKU_parts_unconfirmed,전자레인지 p37의 *1과 문서/페이지가 다른 각주. T876 제공 부품 여부 미확인,,,0,0
+DW-MODEL,DUE6BGL2E,57,모델명 / 제품 타입,"DUE6**E,DUE6***E,DUE6****E,DEE6**E 오른쪽",[],,빌트인 / 왼쪽 DFE는 프리스탠딩,[],manual_source_confirmed,DUE6BGL2E는 DUE6****E 패턴에 부합. 정확 SKU 전용 표가 아닌 계열 표,,,0,0
+DW-DIMENSIONS,DUE6BGL2E,57,제품 크기(폭 X 높이 X 깊이),빌트인 오른쪽,"[598, 815, 567]",mm,폭/높이/깊이 순서,"[""OCR-DW-TABLE-01""]",manual_source_confirmed,review-plan D03의 값/단위/열 확인. 자동 열 연결 출력은 없음,,,0,0
+DW-DUPLICATE-DIMENSIONS,DUE6BGL2E,57,제품 크기,프리스탠딩 왼쪽 두 번째 줄,"[598, 815, 567]",mm,상판 제거 시; 일반 왼쪽 치수598/845/600,"[""OCR-DW-TABLE-01""]",manual_source_confirmed,오른쪽과 같은 숫자가 다른 조건으로 존재하므로 문자열 일치만으로 열 선택 불가,,,0,0
+DW-MASS,DUE6BGL2E,57,제품 무게,오른쪽45 / 왼쪽50,"[45, 50]",kg,제품 타입별 값,"[""OCR-DW-TABLE-02""]",manual_source_confirmed,45 kg crop는 오른쪽 위치. 50 kg와 혼동 금지,,,0,0
+DW-CAPACITY,DUE6BGL2E,57,최대 용량,병합 공통 셀,[14],인용,두 모델군 공통,"[""OCR-DW-TABLE-03""]",manual_source_confirmed,병합 셀을 단일 모델 열로 강제하지 않음,,,0,0
+DW-POWER,DUE6BGL2E,57,소비 전력,병합 공통 셀,[1600],W,소비전력,"[""OCR-DW-TABLE-04""]",manual_source_confirmed,원본1600 W와 저장OCR1600W의 공백 차이,,,0,0
+DW-PRESSURE,DUE6BGL2E,57,수압,병합 공통 셀,"[0.05, 1.0]",MPa,범위 ~,[],manual_source_confirmed,소수점/단위/범위를 원본에서 확인. 기존 OCR14영역에서 측정하지 않은 행,,,0,0
+DW-VOLTAGE,DUE6BGL2E,57,전원,병합 공통 셀,"[220, 60]",V / Hz,서로 다른 물리량,[],manual_source_confirmed,원본 확인만 수행; OCR 추가 측정 없음,,,0,0
+MW-MODEL,MW23FDI,37,모델명,MWJ23PI/MWJ23EI/MW23FDI 왼쪽,[],,오른쪽 MWJ25PI/MWJ25EI,[],manual_source_confirmed,정확 MW23FDI 모델명이 표와 표지에 존재,,,0,0
+MW-DIMENSIONS,MW23FDI,37,외형 치수(mm)(폭×높이×깊이),왼쪽,"[476, 272, 369]",mm,오른쪽 깊이370,"[""OCR-MW-TABLE-01""]",manual_source_confirmed,단위는 crop 밖 행 머리글에 있음. 명목 숫자만 읽어 오른쪽 모델과 혼동하면 안 됨,,,0,0
+MW-CAVITY,MW23FDI,37,조리실 치수(mm)(폭×높이×깊이),병합 공통 셀,"[322, 228, 335]",mm,외형 치수와 다른 행,[],manual_source_confirmed,OCR14영역에는 없는 원본 행 확인. 새 OCR 성적으로 집계하지 않음,,,0,0
+MW-CAPACITY,MW23FDI,37,조리실 용량,왼쪽23 / 오른쪽25,"[23, 25]",L,명목 용량,"[""OCR-MW-TABLE-02""]",manual_source_confirmed,왼쪽 명목23 L와 오른쪽25 L을 구분,,,0,0
+MW-USABLE,MW23FDI,37,조리실 용량 괄호,각 열 내부,"[13, 13]",L,가용 용량,"[""OCR-MW-TABLE-03""]",manual_source_confirmed,13 L는 가용 용량이며 닫는 괄호는 각주가 아님,,,0,0
+MW-CONSUMPTION,MW23FDI,37,정격 소비전력,병합 공통 셀,[1570],W,전기 소비전력,"[""OCR-MW-TABLE-04""]",manual_source_confirmed,review-plan M07 확인. Max1000 W 고주파 출력과 물리량이 다름,,,0,0
+MW-OUTPUT-FOOTNOTE,MW23FDI,37,정격 고주파 출력,병합 공통 셀,[1000],W,Max.; *1 짧은 시간의 출력이며 시간 경과에 따라 바뀔 수 있음,"[""OCR-MW-TABLE-05""]",manual_source_confirmed,"review-plan M06 확인. 저장OCR의 ∗1 기호 차이 및 숫자 목록[1000,1]의 각주 번호 분리 필요",,,0,0
+MW-FREQUENCY,MW23FDI,37,발진 주파수,병합 공통 셀,[2450],MHz,주파수,[],manual_source_confirmed,V/Hz/W와 구분. 기존 OCR14영역에서 측정하지 않은 행,,,0,0
+MW-TIME,MW23FDI,17,간편조리 버튼 시간 증가,왼쪽 본문,[30],초,시작/선택 버튼,"[""OCR-MW-LINE-01""]",manual_source_confirmed,오른쪽 시간 설정의30초 단위와 문장/조작이 다름,,,0,0
+MW-QUICK-POWER,MW23FDI,17,간편조리 출력 설정,오른쪽 알아두기,"[700, 1000]",W,모델에 따라 다를 수 있다는 범위 조건,[],source_values_confirmed; exact_function_application_unconfirmed,공용 안내만으로 정확 MW23FDI 적용/전원 분리 후 유지까지 확정하지 않음,,,0,0
