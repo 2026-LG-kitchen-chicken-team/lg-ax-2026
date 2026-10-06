@@ -67,6 +67,13 @@ export function runStatusView(status: RunSnapshot['run']['status']): RunStatusVi
   }
 }
 
+const STAGE_LABELS: Record<string, string> = { plan: '계획', retrieve: '자료 조회', needs: '니즈 구조화', compare: '기능 대조', concepts: '콘셉트 작성', review: '검토·수정', finished: '종료' };
+
+/** Planner-facing name of a stored run stage; an unknown stage is shown as stored rather than hidden. */
+export function stageLabel(stage: string): string {
+  return Object.hasOwn(STAGE_LABELS, stage) ? `${STAGE_LABELS[stage]} 단계` : `${stage} 단계`;
+}
+
 export interface EvidenceSearch { query: string; modelId: string; documentVersion: string | null; items: Evidence[]; total: number; method: string }
 
 export function parseEvidenceSearch(data: Record<string, unknown>): EvidenceSearch {

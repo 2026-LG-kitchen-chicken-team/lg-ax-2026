@@ -25,7 +25,9 @@ test('fixture: request questions → candidate review → corrected rerun → ex
   await expect(page.locator('.request-form .inline-message')).toContainText('확인이 필요한 정보가 있습니다');
   await customer.fill('1인 가구');
   await page.getByRole('button', { name: '요청 규격 검사' }).click();
-  await expect(page.locator('.request-form .inline-message')).toContainText('FIXTURE_ONLY');
+  // The outcome code stays machine-readable (data-code); a non-error code is not shown as a raw chip (WEB-MANUAL-FLOW-R1).
+  await expect(page.locator('.request-form .inline-message')).toHaveAttribute('data-code', 'FIXTURE_ONLY');
+  await expect(page.locator('.request-form .inline-message')).toContainText('요청 규격 확인 완료(전송 안 함)');
 
   // R14/R21: compare candidates and read sources, judgments, assumptions and held items together.
   await openArea(page, '콘셉트 검토');

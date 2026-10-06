@@ -1,7 +1,7 @@
 /** Revision timeline: tells the original request, user condition changes, data changes and Agent-internal revisions apart. */
 import { conceptDetailChanges, FIXTURE_NOTICE, nextRequestRevision, requestChanges } from './planning';
 import type { ConceptDetailChange, DataMode, PlanningRequest, RequestChange, RunSnapshot } from './planning';
-import { runStatusView } from './liveWorkspace';
+import { runStatusView, stageLabel } from './liveWorkspace';
 
 export type RevisionCause = 'original' | 'user_condition_change' | 'data_version_change' | 'unchanged_rerun';
 
@@ -152,7 +152,7 @@ export function RevisionTimeline({ runs, selectedId, original, mode, onSelect }:
         <span className="id">{entry.run_id}</span><strong>요청 회차 {entry.request_revision} · {entry.causes.map(cause => CAUSE_LABEL[cause]).join(' + ')}</strong>
         <small>{entry.previous_run_id ? `← ${entry.previous_run_id}` : '첫 실행(원 요청 기준)'}</small>
         <span className={`run-status ${fixture ? 'fixture' : view.tone}`} data-field="run-status" title={fixture ? FIXTURE_NOTICE : view.detail}>
-          {fixture ? `fixture 예시 · ${entry.status}` : view.label}<small>{entry.status} · {entry.stage}</small>
+          {fixture ? `fixture 예시 · ${entry.status}` : view.label}<small title={`${entry.status} · ${entry.stage}`}>{stageLabel(entry.stage)}</small>
         </span>
       </button>
       <p data-field="internal" className="muted">Agent 내부 수정 {entry.internal_revision.count} / {entry.internal_revision.max}회 (실행 내부 회차이며 사용자 변경이 아님)</p>
