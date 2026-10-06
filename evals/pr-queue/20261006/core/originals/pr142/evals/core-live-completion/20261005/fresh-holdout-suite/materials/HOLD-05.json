@@ -1,0 +1,94 @@
+{
+  "input": {
+    "request": {
+      "product_group": "dishwasher",
+      "target_customer": "해당 주방 가전의 가정 사용자",
+      "use_situation": "자료에 서술된 같은 사용 경험을 검토한다.",
+      "improvement_task": "다른 방에서 남은 세척 시간을 화면으로 확인할 수 있는지 알고 싶지만 설명서를 찾을 수 없다.",
+      "exclusions": [
+        "다른 모델 기능 혼용",
+        "근거 없는 효과 단정"
+      ],
+      "model_ids": [
+        "HOLD-20261005-05-MODEL"
+      ],
+      "dataset_version": "HOLD-20261005-05-frozen-v1.0"
+    },
+    "product": {
+      "model_id": "HOLD-20261005-05-MODEL",
+      "name": "별도 고정 합성 dishwasher",
+      "product_group": "dishwasher",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "HOLD-20261005-05-REVIEW",
+        "model_id": "HOLD-20261005-05-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "HOLD-20261005-05-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "다른 방에서 남은 세척 시간을 화면으로 확인할 수 있는지 알고 싶지만 설명서를 찾을 수 없다.",
+        "feature_ids": []
+      }
+    ],
+    "features": [],
+    "revision_count": 0,
+    "max_concepts": 2,
+    "changed_evidence_ids": []
+  },
+  "dataset": {
+    "manifest": {
+      "dataset_id": "HOLD-20261005-05",
+      "version": "HOLD-20261005-05-frozen-v1.0",
+      "description": "새 고정 합성 자료; 독립 검수 전",
+      "source_kind": "synthetic",
+      "model_count": 1,
+      "review_count": 1,
+      "analysis_implemented": false
+    },
+    "products": [
+      {
+        "model_id": "HOLD-20261005-05-MODEL",
+        "name": "별도 고정 합성 dishwasher",
+        "product_group": "dishwasher",
+        "document_version": "1.0",
+        "source_kind": "synthetic"
+      }
+    ],
+    "reviews": [
+      {
+        "id": "ROW-HOLD-20261005-05-REVIEW",
+        "evidence_id": "HOLD-20261005-05-REVIEW",
+        "model_id": "HOLD-20261005-05-MODEL",
+        "text": "다른 방에서 남은 세척 시간을 화면으로 확인할 수 있는지 알고 싶지만 설명서를 찾을 수 없다.",
+        "source_kind": "synthetic",
+        "document_version": "1.0",
+        "source_id": "HOLD-20261005-05-CSV",
+        "locator": {
+          "row": 2
+        }
+      }
+    ],
+    "evidence": [
+      {
+        "id": "HOLD-20261005-05-REVIEW",
+        "model_id": "HOLD-20261005-05-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "HOLD-20261005-05-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "다른 방에서 남은 세척 시간을 화면으로 확인할 수 있는지 알고 싶지만 설명서를 찾을 수 없다.",
+        "feature_ids": []
+      }
+    ],
+    "features": []
+  }
+}

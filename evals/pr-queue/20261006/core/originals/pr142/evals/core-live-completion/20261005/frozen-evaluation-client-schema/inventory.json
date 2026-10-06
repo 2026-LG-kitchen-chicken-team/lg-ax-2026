@@ -1,0 +1,85 @@
+{
+  "execution_kind": "fixture",
+  "source_kind": "synthetic",
+  "model_calls": 0,
+  "live_results_created": false,
+  "evaluation_complete": false,
+  "cases": [
+    {
+      "case_id": "SEM-01",
+      "category": "normal",
+      "baseline_contract_mode": "client_schema",
+      "data_sha256": "ab773e45ce5920cb8984263641a837b1da465526f6bb2e83cf05f54d824264be",
+      "output_contract_sha256": "f5ebb8b0c466e0c38ff6df19dfee1446db84350d9c4a36478438d0b5aa92b7d5",
+      "input_sha256": "1ed26cd360d1baaa52d5c36a7564eb146daa8114542299cff28e9f59881a5774",
+      "model_input_sha256": "e1ce563fa96bcc03c95c886d933207650cfd13afe0cfa0a91a2f6089c003b515",
+      "baseline_file_sha256": "74aea7f179fb6ddc647bbac9482cb5f285e01e0f1395944f9096b02d5a9acdde",
+      "preflight_violations": []
+    },
+    {
+      "case_id": "SEM-02",
+      "category": "duplicate_feature",
+      "baseline_contract_mode": "client_schema",
+      "data_sha256": "bb1ad1297360701869a4e798d7aa01758a4465c2739dd794a904bbfd1218acdb",
+      "output_contract_sha256": "f5ebb8b0c466e0c38ff6df19dfee1446db84350d9c4a36478438d0b5aa92b7d5",
+      "input_sha256": "d7e855420a7112d35d34f855fdb58322f3a97b467b3aa0c38cb5b35f87da4ace",
+      "model_input_sha256": "def17b90bcb267b2f714e841530de447228246a5520bdbbc188f0b3abf2252bc",
+      "baseline_file_sha256": "0f09a5e5ccc753cb71df56120c2004a3df4198a69f1bf0e6980a57f7e9e08454",
+      "preflight_violations": []
+    },
+    {
+      "case_id": "SEM-03",
+      "category": "model_version_confusion",
+      "baseline_contract_mode": "client_schema",
+      "data_sha256": "710cb50d1d713b102f405c319af805b42c914e2e038a2cfbda15be753863b6e5",
+      "output_contract_sha256": "f5ebb8b0c466e0c38ff6df19dfee1446db84350d9c4a36478438d0b5aa92b7d5",
+      "input_sha256": "906bbf4ee57039c113cf203e7c2a295c60b3e65994fa3880906920bf4946cb4a",
+      "model_input_sha256": "72b864b89ae10c7b6dd73e5e3298013fd6654a79b43b059350e35f05819c25fa",
+      "baseline_file_sha256": "653437adb4842bb19bb03de78cfcbbede93105cbea3a4fa5dd8f99bc5242d66f",
+      "preflight_violations": [
+        {
+          "code": "FEATURE_SCOPE_MISMATCH",
+          "stage": "retrieve"
+        },
+        {
+          "code": "SOURCE_SCOPE_MISMATCH",
+          "stage": "retrieve"
+        }
+      ]
+    },
+    {
+      "case_id": "SEM-04",
+      "category": "conflicting_reviews",
+      "baseline_contract_mode": "client_schema",
+      "data_sha256": "49dc92993a30a0b26d1e0b1d09cc063b9e0b709e735b395a078cb48f75003a7c",
+      "output_contract_sha256": "f5ebb8b0c466e0c38ff6df19dfee1446db84350d9c4a36478438d0b5aa92b7d5",
+      "input_sha256": "2b26c816d13e0e834454cfb4326a19b2d33a0aa1cdcc34883638dddb08d4e9b6",
+      "model_input_sha256": "bdbbe8012851125e941b1b7a70c1d3cb87061618dfaf0b9d0541ceef29cada27",
+      "baseline_file_sha256": "20e89e4252e12a7c75f5a99eb53ffc0f06660daf74167ef5b200147f1e69c5ee",
+      "preflight_violations": []
+    },
+    {
+      "case_id": "SEM-05",
+      "category": "missing_evidence",
+      "baseline_contract_mode": "client_schema",
+      "data_sha256": "a5fc673acde2a2c6386ab04a328c58f8e3b522c0df22d8d37190d49a6de55abb",
+      "output_contract_sha256": "f5ebb8b0c466e0c38ff6df19dfee1446db84350d9c4a36478438d0b5aa92b7d5",
+      "input_sha256": "af67254177bd5ed19ce00eef207e02e98b41f18f2ce9ff663a2c945a75281ded",
+      "model_input_sha256": "0a1b7523e3ace560b435c5cbe9a386771c2239c756de0da70c3b0237432b334b",
+      "baseline_file_sha256": "c7c3691199529e04a2ae3770076ffd92aa63a899aa5232411ad0b0f04fb50552",
+      "preflight_violations": []
+    },
+    {
+      "case_id": "SEM-06",
+      "category": "specification_change",
+      "baseline_contract_mode": "client_schema",
+      "data_sha256": "5e72cbf668d08df2a392f4a38eee2c028e2ebf18efe6037d6c1b6ae399f0c64f",
+      "output_contract_sha256": "f5ebb8b0c466e0c38ff6df19dfee1446db84350d9c4a36478438d0b5aa92b7d5",
+      "input_sha256": "29c634648b945fa120ad770a1dd5bb1115492eb19052bacf872b3a0f10bb7a48",
+      "model_input_sha256": "a8c335f9dfdfd40f02ec6c3af921d43691db313ace4b20ec86dcb7e1edb5fcc1",
+      "baseline_file_sha256": "0989c79a6b9225b6cba7246a776ff9b8338fe9eb5eabdc5f878bccd7bc100a0f",
+      "preflight_violations": []
+    }
+  ],
+  "notice": "Input/contract/store consistency and raw source separation only; no semantic accuracy score."
+}

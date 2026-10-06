@@ -1,0 +1,161 @@
+{
+  "input": {
+    "request": {
+      "product_group": "dishwasher",
+      "target_customer": "해당 주방 가전의 가정 사용자",
+      "use_situation": "자료에 서술된 같은 사용 경험을 검토한다.",
+      "improvement_task": "사용 중인 이 모델에 상단 분사 강도를 세 단계로 바꾸는 기능이 있는지 확인하고 싶다.",
+      "exclusions": [
+        "다른 모델 기능 혼용",
+        "근거 없는 효과 단정"
+      ],
+      "model_ids": [
+        "HOLD-20261005-03-MODEL"
+      ],
+      "dataset_version": "HOLD-20261005-03-frozen-v1.0"
+    },
+    "product": {
+      "model_id": "HOLD-20261005-03-MODEL",
+      "name": "별도 고정 합성 dishwasher",
+      "product_group": "dishwasher",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "HOLD-20261005-03-REVIEW",
+        "model_id": "HOLD-20261005-03-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "HOLD-20261005-03-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "사용 중인 이 모델에 상단 분사 강도를 세 단계로 바꾸는 기능이 있는지 확인하고 싶다.",
+        "feature_ids": []
+      },
+      {
+        "id": "HOLD-20261005-03-MANUAL",
+        "model_id": "HOLD-20261005-03-MODEL-OTHER",
+        "document_version": "9.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "HOLD-20261005-03-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능과 사용 조건"
+        },
+        "text": "다른 모델의 설명서9.0: 상단 분사 강도는 약·중·강 세 단계로 선택할 수 있다.",
+        "feature_ids": [
+          "HOLD-20261005-03-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "HOLD-20261005-03-FEATURE",
+        "model_id": "HOLD-20261005-03-MODEL-OTHER",
+        "document_version": "9.0",
+        "name": "자료에 명시된 현재 기능",
+        "description": "다른 모델의 설명서9.0: 상단 분사 강도는 약·중·강 세 단계로 선택할 수 있다.",
+        "conditions": [
+          "문서에 기재된 사용 조건에 따른다."
+        ],
+        "evidence_ids": [
+          "HOLD-20261005-03-MANUAL"
+        ]
+      }
+    ],
+    "revision_count": 0,
+    "max_concepts": 2,
+    "changed_evidence_ids": []
+  },
+  "dataset": {
+    "manifest": {
+      "dataset_id": "HOLD-20261005-03",
+      "version": "HOLD-20261005-03-frozen-v1.0",
+      "description": "새 고정 합성 자료; 독립 검수 전",
+      "source_kind": "synthetic",
+      "model_count": 2,
+      "review_count": 1,
+      "analysis_implemented": false
+    },
+    "products": [
+      {
+        "model_id": "HOLD-20261005-03-MODEL",
+        "name": "별도 고정 합성 dishwasher",
+        "product_group": "dishwasher",
+        "document_version": "1.0",
+        "source_kind": "synthetic"
+      },
+      {
+        "model_id": "HOLD-20261005-03-MODEL-OTHER",
+        "name": "별도 모델의 자료 제품",
+        "product_group": "dishwasher",
+        "document_version": "9.0",
+        "source_kind": "synthetic"
+      }
+    ],
+    "reviews": [
+      {
+        "id": "ROW-HOLD-20261005-03-REVIEW",
+        "evidence_id": "HOLD-20261005-03-REVIEW",
+        "model_id": "HOLD-20261005-03-MODEL",
+        "text": "사용 중인 이 모델에 상단 분사 강도를 세 단계로 바꾸는 기능이 있는지 확인하고 싶다.",
+        "source_kind": "synthetic",
+        "document_version": "1.0",
+        "source_id": "HOLD-20261005-03-CSV",
+        "locator": {
+          "row": 2
+        }
+      }
+    ],
+    "evidence": [
+      {
+        "id": "HOLD-20261005-03-REVIEW",
+        "model_id": "HOLD-20261005-03-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "HOLD-20261005-03-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "사용 중인 이 모델에 상단 분사 강도를 세 단계로 바꾸는 기능이 있는지 확인하고 싶다.",
+        "feature_ids": []
+      },
+      {
+        "id": "HOLD-20261005-03-MANUAL",
+        "model_id": "HOLD-20261005-03-MODEL-OTHER",
+        "document_version": "9.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "HOLD-20261005-03-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능과 사용 조건"
+        },
+        "text": "다른 모델의 설명서9.0: 상단 분사 강도는 약·중·강 세 단계로 선택할 수 있다.",
+        "feature_ids": [
+          "HOLD-20261005-03-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "HOLD-20261005-03-FEATURE",
+        "model_id": "HOLD-20261005-03-MODEL-OTHER",
+        "document_version": "9.0",
+        "name": "자료에 명시된 현재 기능",
+        "description": "다른 모델의 설명서9.0: 상단 분사 강도는 약·중·강 세 단계로 선택할 수 있다.",
+        "conditions": [
+          "문서에 기재된 사용 조건에 따른다."
+        ],
+        "evidence_ids": [
+          "HOLD-20261005-03-MANUAL"
+        ]
+      }
+    ]
+  }
+}

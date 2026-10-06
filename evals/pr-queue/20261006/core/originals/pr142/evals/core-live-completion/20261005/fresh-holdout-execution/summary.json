@@ -1,0 +1,202 @@
+{
+  "execution_kind": "live_model",
+  "source_kind": "synthetic",
+  "observed_at": "2026-10-05T13:37:20.842205+00:00",
+  "source_sha256": {
+    "packages/core/src/lgax_core/planning_agent.py": "05c53cd9bfe95730de2a70babad52a611443e4e52b8b3949b93fd300f8fcd12e",
+    "packages/core/src/lgax_core/semantic_review.py": "e7fca7081f512af353f6cd8abf7e419f1550f9e5967cb94f9997ec356e76af2f",
+    "packages/core/src/lgax_core/no_candidate_review.py": "45e9dd7b02b05f7ef8f43889c6af9c73fde90d7ff1cab9593d286249340d7d95",
+    "packages/core/src/lgax_core/revision_guard.py": "56734c5dd363016a40e7cd01bd288f30c0fd907f6f888149f0b8e10e1fb01849",
+    "packages/core/src/lgax_core/correction_budget.py": "07201cd20b0144b3401a8601c64447d3aaec0f35c9325c378707ebcb922ea5e9",
+    "packages/core/src/lgax_core/judgement_contract.py": "db7560e7d61e81e8d228b439969d3a28293b0cd219b7560eddea12923a2b2c24",
+    "packages/core/src/lgax_core/model_client.py": "e8b6ec95b9ab30900b65cdf1c954468a637214e81902d92717125d44f05da822",
+    "packages/core/src/lgax_core/skill_runner.py": "9f7d157409431cc8d235e5daeb89ff5d4d8c57e451af959b838c63489c275517",
+    "packages/core/src/lgax_core/store.py": "2dba0b34a62b58f704fc1fc617e9113d7cdb277819cd5b72d3df1849411245fe",
+    "evals/core-semantic/run_comparison.py": "7ef6e720072a569833385ecccb3496146a2788d5f50bde070be4a7693bc397dc"
+  },
+  "semantic_scores": null,
+  "evaluation_complete": false,
+  "cases": [
+    {
+      "case_id": "HOLD-01",
+      "method": "agent",
+      "execution_status": "success",
+      "planning_status": "completed",
+      "measurements": {
+        "latency_ms": 91032.0,
+        "input_tokens": 9921,
+        "output_tokens": 2711,
+        "model_calls": 4,
+        "tool_calls": 3,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "HOLD-01",
+      "method": "single_prompt_baseline",
+      "execution_status": "success",
+      "planning_status": "completed",
+      "measurements": {
+        "latency_ms": 51781.0,
+        "input_tokens": 4042,
+        "output_tokens": 1577,
+        "model_calls": 1,
+        "tool_calls": 0,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "HOLD-02",
+      "method": "agent",
+      "execution_status": "success",
+      "planning_status": "completed",
+      "measurements": {
+        "latency_ms": 47219.0,
+        "input_tokens": 6692,
+        "output_tokens": 1347,
+        "model_calls": 3,
+        "tool_calls": 3,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "HOLD-02",
+      "method": "single_prompt_baseline",
+      "execution_status": "success",
+      "planning_status": "completed",
+      "measurements": {
+        "latency_ms": 32704.0,
+        "input_tokens": 4062,
+        "output_tokens": 948,
+        "model_calls": 1,
+        "tool_calls": 0,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "HOLD-03",
+      "method": "agent",
+      "execution_status": "failure",
+      "planning_status": null,
+      "measurements": {
+        "latency_ms": 0.0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "model_calls": 0,
+        "tool_calls": 0,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "HOLD-03",
+      "method": "single_prompt_baseline",
+      "execution_status": "success",
+      "planning_status": "held",
+      "measurements": {
+        "latency_ms": 32813.0,
+        "input_tokens": 4071,
+        "output_tokens": 954,
+        "model_calls": 1,
+        "tool_calls": 0,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "HOLD-04",
+      "method": "agent",
+      "execution_status": "success",
+      "planning_status": "held",
+      "measurements": {
+        "latency_ms": 18125.0,
+        "input_tokens": 2137,
+        "output_tokens": 520,
+        "model_calls": 1,
+        "tool_calls": 4,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "HOLD-04",
+      "method": "single_prompt_baseline",
+      "execution_status": "success",
+      "planning_status": "completed",
+      "measurements": {
+        "latency_ms": 56406.0,
+        "input_tokens": 4453,
+        "output_tokens": 1713,
+        "model_calls": 1,
+        "tool_calls": 0,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "HOLD-05",
+      "method": "agent",
+      "execution_status": "success",
+      "planning_status": "held",
+      "measurements": {
+        "latency_ms": 23000.0,
+        "input_tokens": 3617,
+        "output_tokens": 644,
+        "model_calls": 2,
+        "tool_calls": 2,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "HOLD-05",
+      "method": "single_prompt_baseline",
+      "execution_status": "success",
+      "planning_status": "completed",
+      "measurements": {
+        "latency_ms": 30766.0,
+        "input_tokens": 3202,
+        "output_tokens": 902,
+        "model_calls": 1,
+        "tool_calls": 0,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "HOLD-06",
+      "method": "agent",
+      "execution_status": "success",
+      "planning_status": "completed",
+      "measurements": {
+        "latency_ms": 43047.0,
+        "input_tokens": 6608,
+        "output_tokens": 1215,
+        "model_calls": 3,
+        "tool_calls": 3,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "HOLD-06",
+      "method": "single_prompt_baseline",
+      "execution_status": "success",
+      "planning_status": "completed",
+      "measurements": {
+        "latency_ms": 50625.0,
+        "input_tokens": 3995,
+        "output_tokens": 1533,
+        "model_calls": 1,
+        "tool_calls": 0,
+        "cost": null,
+        "modification_seconds": null
+      }
+    }
+  ],
+  "notice": "Execution success and planning hold differ from semantic correctness. SEM06 current runs use the same current snapshot; prior execution is a separate experiment. Measurements include every generation request/retry in each current request. Tool count covers bootstrap/get_evidence and scoped revision reads, excluding model calls."
+}

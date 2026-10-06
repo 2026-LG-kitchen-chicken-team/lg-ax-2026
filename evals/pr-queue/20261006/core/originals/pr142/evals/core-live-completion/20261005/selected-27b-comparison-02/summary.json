@@ -1,0 +1,200 @@
+{
+  "execution_kind": "live_model",
+  "source_kind": "synthetic",
+  "observed_at": "2026-10-05T13:00:36.162449+00:00",
+  "source_sha256": {
+    "packages/core/src/lgax_core/planning_agent.py": "bc45b271d762fcd5ed6cb5fa1a8ed91bf2290bd08293b916abc33fdc0f04e1af",
+    "packages/core/src/lgax_core/semantic_review.py": "e7fca7081f512af353f6cd8abf7e419f1550f9e5967cb94f9997ec356e76af2f",
+    "packages/core/src/lgax_core/no_candidate_review.py": "45e9dd7b02b05f7ef8f43889c6af9c73fde90d7ff1cab9593d286249340d7d95",
+    "packages/core/src/lgax_core/revision_guard.py": "56734c5dd363016a40e7cd01bd288f30c0fd907f6f888149f0b8e10e1fb01849",
+    "packages/core/src/lgax_core/correction_budget.py": "07201cd20b0144b3401a8601c64447d3aaec0f35c9325c378707ebcb922ea5e9",
+    "packages/core/src/lgax_core/judgement_contract.py": "db7560e7d61e81e8d228b439969d3a28293b0cd219b7560eddea12923a2b2c24",
+    "packages/core/src/lgax_core/model_client.py": "e8b6ec95b9ab30900b65cdf1c954468a637214e81902d92717125d44f05da822",
+    "evals/core-semantic/run_comparison.py": "05420513d979d8bd6b2a8a401863f85a3a03c99f1459ea2e2735f0c948f06e3a"
+  },
+  "semantic_scores": null,
+  "evaluation_complete": false,
+  "cases": [
+    {
+      "case_id": "SEM-01",
+      "method": "agent",
+      "execution_status": "success",
+      "planning_status": "completed",
+      "measurements": {
+        "latency_ms": 84563.0,
+        "input_tokens": 8841,
+        "output_tokens": 2503,
+        "model_calls": 4,
+        "tool_calls": 3,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "SEM-01",
+      "method": "single_prompt_baseline",
+      "execution_status": "success",
+      "planning_status": "completed",
+      "measurements": {
+        "latency_ms": 48765.0,
+        "input_tokens": 3548,
+        "output_tokens": 1489,
+        "model_calls": 1,
+        "tool_calls": 0,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "SEM-02",
+      "method": "agent",
+      "execution_status": "success",
+      "planning_status": "completed",
+      "measurements": {
+        "latency_ms": 37937.0,
+        "input_tokens": 5868,
+        "output_tokens": 1052,
+        "model_calls": 3,
+        "tool_calls": 3,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "SEM-02",
+      "method": "single_prompt_baseline",
+      "execution_status": "success",
+      "planning_status": "completed",
+      "measurements": {
+        "latency_ms": 24031.0,
+        "input_tokens": 3531,
+        "output_tokens": 677,
+        "model_calls": 1,
+        "tool_calls": 0,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "SEM-03",
+      "method": "agent",
+      "execution_status": "failure",
+      "planning_status": null,
+      "measurements": {
+        "latency_ms": 0.0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "model_calls": 0,
+        "tool_calls": 0,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "SEM-03",
+      "method": "single_prompt_baseline",
+      "execution_status": "success",
+      "planning_status": "completed",
+      "measurements": {
+        "latency_ms": 28094.0,
+        "input_tokens": 3507,
+        "output_tokens": 816,
+        "model_calls": 1,
+        "tool_calls": 0,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "SEM-04",
+      "method": "agent",
+      "execution_status": "success",
+      "planning_status": "held",
+      "measurements": {
+        "latency_ms": 11985.0,
+        "input_tokens": 1899,
+        "output_tokens": 325,
+        "model_calls": 1,
+        "tool_calls": 4,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "SEM-04",
+      "method": "single_prompt_baseline",
+      "execution_status": "success",
+      "planning_status": "held",
+      "measurements": {
+        "latency_ms": 61562.0,
+        "input_tokens": 3878,
+        "output_tokens": 1895,
+        "model_calls": 1,
+        "tool_calls": 0,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "SEM-05",
+      "method": "agent",
+      "execution_status": "success",
+      "planning_status": "held",
+      "measurements": {
+        "latency_ms": 23968.0,
+        "input_tokens": 3333,
+        "output_tokens": 675,
+        "model_calls": 2,
+        "tool_calls": 2,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "SEM-05",
+      "method": "single_prompt_baseline",
+      "execution_status": "success",
+      "planning_status": "held",
+      "measurements": {
+        "latency_ms": 32063.0,
+        "input_tokens": 2953,
+        "output_tokens": 950,
+        "model_calls": 1,
+        "tool_calls": 0,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "SEM-06",
+      "method": "agent",
+      "execution_status": "success",
+      "planning_status": "completed",
+      "measurements": {
+        "latency_ms": 35984.0,
+        "input_tokens": 5809,
+        "output_tokens": 997,
+        "model_calls": 3,
+        "tool_calls": 3,
+        "cost": null,
+        "modification_seconds": null
+      }
+    },
+    {
+      "case_id": "SEM-06",
+      "method": "single_prompt_baseline",
+      "execution_status": "success",
+      "planning_status": "completed",
+      "measurements": {
+        "latency_ms": 29640.0,
+        "input_tokens": 3596,
+        "output_tokens": 855,
+        "model_calls": 1,
+        "tool_calls": 0,
+        "cost": null,
+        "modification_seconds": null
+      }
+    }
+  ],
+  "notice": "Execution success and planning hold differ from semantic correctness. SEM06 current runs use the same current snapshot; prior execution is a separate experiment. Measurements include every generation request/retry in each current request. Tool count covers bootstrap/get_evidence and scoped revision reads, excluding model calls."
+}
