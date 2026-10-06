@@ -180,6 +180,59 @@ describe('comparison table rows and export follow every stored gap and its judge
   });
 });
 
+describe('exports explain the judgement and keep cited and uncited inputs apart (record 034 audit U4)', () => {
+  // Expectations from the raw recordings: reviews the run assessed but no need/gap cites, and duplication rows without a candidate.
+  const facts = (record: PlanningExecution) => {
+    const output = record.output!;
+    const cited = new Set([...output.needs.flatMap(need => need.evidence_ids), ...output.gaps.flatMap(gap => gap.evidence_ids)]);
+    const orphans = [output, record.rejected_output].flatMap(out => out ? out.concept_assessments.filter(item => !out.concepts.some(concept => concept.id === item.concept_id)).map(item => item.concept_id) : []);
+    return { unused: output.review_assessments.map(item => item.evidence_id).filter(id => !cited.has(id)), orphans };
+  };
+
+  it('summary and Markdown carry the review, gap and duplication declarations and the unused reviews', () => {
+    for (const { snapshot } of RUNS) {
+      const record = execution(snapshot);
+      const { unused, orphans } = facts(record);
+      const scoped = runSources(snapshot, [], []);
+      const doc = buildExport('live', snapshot, scoped.features, scoped.evidence, '2026-10-06T10:00:00.000Z', [snapshot]);
+      const judgement = doc.judgement!;
+      if (!judgement.record_valid) throw new Error('expected a valid record');
+      expect(judgement.review_assessments.map(item => item.evidence_id)).toEqual(record.output!.review_assessments.map(item => item.evidence_id));
+      expect(judgement.gap_assessments.map(item => item.gap_id)).toEqual(record.output!.gap_assessments.map(item => item.gap_id));
+      expect(judgement.unused_review_ids).toEqual(unused);
+      expect(judgement.concept_assessments.filter(item => !item.has_candidate).map(item => item.concept_id)).toEqual(orphans);
+      expect(doc.completeness.complete).toBe(true);
+      const markdown = exportMarkdown(doc);
+      expect(markdown).toContain('리뷰 판단(판단 모델의 선언, 독립 검증 아님):');
+      expect(markdown).toContain('기능 대조 판단(판단 모델의 선언):');
+      if (unused.length) expect(markdown).toContain('어느 불편·Gap에도 쓰이지 않은 리뷰:');
+      if (orphans.length) expect(markdown).toContain('이 ID의 후보 본문은 저장되지 않음');
+      expect(markdown).toContain('후보 없음 검토 없음');
+    }
+    expect(facts(execution(RUNS[2].snapshot)).unused).toEqual(['REVIEW-EVIDENCE-006', 'REVIEW-EVIDENCE-009', 'REVIEW-EVIDENCE-010']);
+  });
+
+  it('inputs the judgement never cites are exported apart, and the no-candidate reason is listed once in the core section', () => {
+    for (const { snapshot } of RUNS) {
+      const record = execution(snapshot);
+      const { unused } = facts(record);
+      const scoped = runSources(snapshot, [], []);
+      const doc = buildExport('live', snapshot, scoped.features, scoped.evidence, '2026-10-06T10:00:00.000Z', [snapshot]);
+      for (const id of unused) expect(doc.uncited_input_ids).toContain(id);
+      const markdown = exportMarkdown(doc);
+      const [citedPart, uncitedPart = ''] = markdown.split('## 판단에 인용되지 않은 입력 원문');
+      for (const id of unused) {
+        expect(uncitedPart).toContain(`**${id}**`);
+        expect(citedPart.split('## 인용 근거 원문')[1] ?? '').not.toContain(`**${id}**`);
+      }
+      // Every exported text is still present (nothing dropped by the split).
+      for (const item of doc.evidence) expect(markdown).toContain(`**${item.id}**`);
+      const section = markdown.split('## 콘셉트 후보')[1].split('## 실행 단위 미확인 사항')[0];
+      for (const reason of record.output!.no_candidate_reasons) expect(section).not.toContain(reason);
+    }
+  });
+});
+
 describe('real held / failed runs in the actual React DOM (record 034)', () => {
   let host: HTMLDivElement;
   let root: Root;
@@ -221,6 +274,10 @@ describe('real held / failed runs in the actual React DOM (record 034)', () => {
     expect(host.querySelector('[data-comparison-unaccepted]')).not.toBeNull();
     expect(host.querySelectorAll('.comparison-table [data-field="resolution"]')).toHaveLength(output.gaps.filter(gap => output.gap_assessments.some(item => item.gap_id === gap.id)).length);
     if (output.desired_outcomes.length) expect(host.querySelector('.comparison-table .desired-outcome')?.textContent).toContain('바라는 결과:');
+    // Assessed reviews that no need/gap cites are flagged in the core record panel.
+    const cited = new Set([...output.needs.flatMap(need => need.evidence_ids), ...output.gaps.flatMap(gap => gap.evidence_ids)]);
+    const unused = output.review_assessments.map(item => item.evidence_id).filter(id => !cited.has(id));
+    expect([...host.querySelectorAll('[data-unused-review]')].map(node => node.getAttribute('data-unused-review'))).toEqual(unused);
   });
 
   it.each(RUNS.map(item => [item.row.case, item] as const))('%s: the revision timeline does not call a first run without candidates "the first run\'s candidates"', async (_name, { snapshot }) => {
