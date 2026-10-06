@@ -1,0 +1,264 @@
+{
+  "purpose": "DATA005 candidate calculation checkpoint for #148/#16; no production collector wiring, live API/MCP call, customer dates or actual-demand claim.",
+  "source_integrity": {
+    "dataset_path": "data/demo/dataset.json",
+    "dataset_file_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+    "dataset_canonical_sha256": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03",
+    "dataset_version": "0.1.0",
+    "review_count": 36,
+    "csv_path": "data/research/P2-DATA-002-step1-20261005/reviews-v1.0.csv",
+    "csv_sha256": "3c7560aec2d3fa855590baf097b3514aa348ee40a77037c69ef358b413f488b9",
+    "csv_rows": 36,
+    "csv_columns": [
+      "id",
+      "model_id",
+      "document_version",
+      "source_kind",
+      "source_id",
+      "row",
+      "evidence_id",
+      "text"
+    ],
+    "source_kind": "synthetic",
+    "known_published_dates": 0,
+    "sidecar_path": "data/research/P2-DATA-005-trends-20261006/annotation.candidate.v1.json",
+    "sidecar_annotation_sha256": "3939b5eec99f4637dec60a84802052577711ea8242718d296d0977c466afe5a8"
+  },
+  "empty_original_case": {
+    "filters": {
+      "project_id": "project-data-trends-test",
+      "model_id": "FRIDGE-A",
+      "source_ids": [
+        "REVIEWS-CSV-v1.0"
+      ],
+      "dataset_version": "0.1.0",
+      "start_date": "2026-10-01",
+      "end_date_exclusive": "2026-11-01",
+      "granularity": "month",
+      "topic_ids": [
+        "cleaning"
+      ],
+      "source_kind": "synthetic",
+      "timezone": "Asia/Seoul"
+    },
+    "aggregate_id": "TREND-6ac3c69723ba797b9d3c8a52e2a76f6fc36730f0ff620d0383a517c75a7b4d6f",
+    "counts": {
+      "input_review_count": 36,
+      "excluded_out_of_scope_count": 26,
+      "in_scope_review_count": 10,
+      "excluded_undated_count": 10,
+      "excluded_outside_period_count": 0,
+      "duplicate_count": 0,
+      "eligible_unique_review_count": 0,
+      "unclassified_review_count": 0
+    },
+    "bucket": {
+      "bucket_id": "MONTH-2026-10",
+      "label": "2026년 10월",
+      "period_start": "2026-10-01",
+      "period_end_exclusive": "2026-11-01",
+      "partial_period": false,
+      "total_reviews": 0,
+      "topics": [
+        {
+          "topic_id": "cleaning",
+          "topic_review_count": 0,
+          "ratio": null,
+          "evidence_count": 0,
+          "evidence_ids": [],
+          "evidence_ids_truncated": false
+        }
+      ]
+    },
+    "memberships": {
+      "__all__": [],
+      "cleaning": []
+    },
+    "result_kind": "actual calculation over canonical existing 36-review dataset; FRIDGE-A scope has 10 undated rows"
+  },
+  "normal_synthetic_date_case": {
+    "dataset_version": "synthetic-dated-test.v1",
+    "dataset_sha256": "a39d5b3582a2173804e1de5ca6bc433576217686d486430f52927677f5c25fd0",
+    "annotation_version": "synthetic-dated-test.v1",
+    "annotation_sha256": "c963621d3c9db56199cec79c0d08359927b78ad040e5cf8098144f58e40b3793",
+    "filters": {
+      "project_id": "project-data-trends-test",
+      "model_id": "FRIDGE-A",
+      "source_ids": [
+        "TREND-DATED-SYNTHETIC-v1"
+      ],
+      "dataset_version": "synthetic-dated-test.v1",
+      "start_date": "2026-12-01",
+      "end_date_exclusive": "2027-03-01",
+      "granularity": "season",
+      "topic_ids": [
+        "cleaning",
+        "food_findability",
+        "no_matching_topic"
+      ],
+      "source_kind": "synthetic",
+      "timezone": "Asia/Seoul"
+    },
+    "aggregate_id": "TREND-2c7c28052944d829896b507d39ecf80fbf00bcd589028f7241e2e470bc2699e4",
+    "counts": {
+      "input_review_count": 36,
+      "excluded_out_of_scope_count": 26,
+      "in_scope_review_count": 10,
+      "excluded_undated_count": 6,
+      "excluded_outside_period_count": 2,
+      "duplicate_count": 1,
+      "eligible_unique_review_count": 1,
+      "unclassified_review_count": 0
+    },
+    "bucket": {
+      "bucket_id": "SEASON-2026-WINTER",
+      "label": "2026년 겨울",
+      "period_start": "2026-12-01",
+      "period_end_exclusive": "2027-03-01",
+      "partial_period": false,
+      "total_reviews": 1,
+      "topics": [
+        {
+          "topic_id": "cleaning",
+          "topic_review_count": 1,
+          "ratio": 1.0,
+          "evidence_count": 1,
+          "evidence_ids": [
+            "TREND-EVIDENCE-001"
+          ],
+          "evidence_ids_truncated": false
+        },
+        {
+          "topic_id": "food_findability",
+          "topic_review_count": 0,
+          "ratio": 0.0,
+          "evidence_count": 0,
+          "evidence_ids": [],
+          "evidence_ids_truncated": false
+        },
+        {
+          "topic_id": "no_matching_topic",
+          "topic_review_count": 0,
+          "ratio": 0.0,
+          "evidence_count": 0,
+          "evidence_ids": [],
+          "evidence_ids_truncated": false
+        }
+      ]
+    },
+    "memberships": {
+      "__all__": [
+        "TREND-EVIDENCE-001"
+      ],
+      "cleaning": [
+        "TREND-EVIDENCE-001"
+      ],
+      "food_findability": [],
+      "no_matching_topic": []
+    },
+    "result_kind": "in-memory test-only dated synthetic copy; two UTC timestamps cross into KST winter boundary and deduplicate; dates are invented test values"
+  },
+  "leap_multi_topic_case": {
+    "aggregate_id": "TREND-523fddd1eff74a1f8cfcf0b8d43db22273e3fea021d0510884b06b94dcbe6f93",
+    "filters": {
+      "project_id": "project-data-trends-test",
+      "model_id": "FRIDGE-A",
+      "source_ids": [
+        "TREND-DATED-SYNTHETIC-v1"
+      ],
+      "dataset_version": "synthetic-dated-test.v1",
+      "start_date": "2028-02-01",
+      "end_date_exclusive": "2028-03-01",
+      "granularity": "month",
+      "topic_ids": [
+        "cleaning",
+        "food_findability"
+      ],
+      "source_kind": "synthetic",
+      "timezone": "Asia/Seoul"
+    },
+    "counts": {
+      "input_review_count": 36,
+      "excluded_out_of_scope_count": 26,
+      "in_scope_review_count": 10,
+      "excluded_undated_count": 6,
+      "excluded_outside_period_count": 3,
+      "duplicate_count": 0,
+      "eligible_unique_review_count": 1,
+      "unclassified_review_count": 0
+    },
+    "bucket": {
+      "bucket_id": "MONTH-2028-02",
+      "label": "2028년 2월",
+      "period_start": "2028-02-01",
+      "period_end_exclusive": "2028-03-01",
+      "partial_period": false,
+      "total_reviews": 1,
+      "topics": [
+        {
+          "topic_id": "cleaning",
+          "topic_review_count": 1,
+          "ratio": 1.0,
+          "evidence_count": 1,
+          "evidence_ids": [
+            "TREND-EVIDENCE-003"
+          ],
+          "evidence_ids_truncated": false
+        },
+        {
+          "topic_id": "food_findability",
+          "topic_review_count": 1,
+          "ratio": 1.0,
+          "evidence_count": 1,
+          "evidence_ids": [
+            "TREND-EVIDENCE-003"
+          ],
+          "evidence_ids_truncated": false
+        }
+      ]
+    },
+    "memberships": {
+      "__all__": [
+        "TREND-EVIDENCE-003"
+      ],
+      "cleaning": [
+        "TREND-EVIDENCE-003"
+      ],
+      "food_findability": [
+        "TREND-EVIDENCE-003"
+      ]
+    },
+    "result_kind": "in-memory test-only dated synthetic copy; leap day and same denominator for both topics"
+  },
+  "collector_rejection_cases": [
+    {
+      "case": "wrong source id",
+      "result": "ValueError: source/model/version/text binding mismatch for REVIEW-019"
+    },
+    {
+      "case": "wrong model id",
+      "result": "ValueError: source/model/version/text binding mismatch for REVIEW-019"
+    },
+    {
+      "case": "wrong document version",
+      "result": "ValueError: source/model/version/text binding mismatch for REVIEW-019"
+    },
+    {
+      "case": "same scoped dedup key with different source text",
+      "result": "ValueError: a deduplication key cannot bind different review text"
+    }
+  ],
+  "targeted_verification": {
+    "review_trends": "3 tests passed; common validate_trend_collection passed for empty/winter/leap outputs",
+    "review_import": "10 tests passed including a new NFC/NFD exact-byte/hash round-trip",
+    "document_registration": "10 tests passed",
+    "source_ranges": "10 tests passed",
+    "whole_suite_run": false,
+    "runtime_collector_injection": false,
+    "live_api_or_mcp_call": false
+  },
+  "blockers": [
+    "CORE fixed outputs and exact original source IDs/locations for independent semantic comparison are not available in this public source pack; do not rerun a model batch.",
+    "All canonical demo dates are unknown; dated outputs above are test-only and cannot be used as real trend values."
+  ]
+}
