@@ -1,8 +1,8 @@
 // Record 020: a live qwen3:8b run (evals/web/20261005/p2-web-003-live-model) stored the core's violation code
 // "REVIEW_CONFLICT" as the hold / no-candidate reason, and the web showed the bare code. These tests pin the display
 // mapping against the core's own code list and the stored live runs. No model is called; stored data is not changed.
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { planningExecutionView, reasonText, runSources } from './judgement';
 import { buildExport, exportMarkdown } from './planning';
@@ -15,16 +15,56 @@ const FIRST: RunSnapshot = read(`${LIVE}/stored-run-first.json`);
 const SECOND: RunSnapshot = read(`${LIVE}/stored-run-second.json`);
 const UNREGISTERED = '(설명이 등록되지 않은 검사 코드)';
 
+// Record 027: PR #159 moved the checks out of judgement_contract.py (errors.append in feature_support.py, residual_matrix.py,
+// code dicts in planning_agent.py), so the codes are collected from every core module and from each way the core emits one:
+// flag(...), errors.append(...) and {"code": ...}, including both branches of a conditional expression.
+const CORE = root('packages/core/src/lgax_core');
+const EMIT = [/\bflag\(\s*([^,)]*)/g, /\berrors\.append\(\s*([^,)]*)/g, /"code":\s*([^,}]*)/g];
+const CODE_LITERAL = /"([A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+)"/g;
+// no_candidate_review.py builds "NO_CANDIDATE_" + verdict.upper(); "consistent" is not fed back (황대겸, record 027).
+const BUILT_CODES = ['NO_CANDIDATE_VIOLATION', 'NO_CANDIDATE_UNCERTAIN'];
+// HTTP/argument error codes that never reach hold_reasons / violations.
+const NOT_REASONS = new Set(['INVALID_ORIGIN']);
+
+function pythonFiles(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
+    const path = join(dir, entry.name);
+    if (entry.isDirectory()) return pythonFiles(path);
+    return entry.name.endsWith('.py') ? [path] : [];
+  });
+}
+
+function coreReasonCodes(): string[] {
+  const codes = new Set<string>(BUILT_CODES);
+  for (const file of pythonFiles(CORE)) {
+    const source = readFileSync(file, 'utf-8');
+    for (const pattern of EMIT) {
+      for (const emitted of source.matchAll(pattern)) {
+        for (const literal of emitted[1].matchAll(CODE_LITERAL)) {
+          if (!NOT_REASONS.has(literal[1])) codes.add(literal[1]);
+        }
+      }
+    }
+  }
+  return [...codes].sort();
+}
+
 describe('reasonText: core violation codes used as reasons', () => {
-  it('has a label for every code review_judgement can flag', () => {
-    const source = readFileSync(root('packages/core/src/lgax_core/judgement_contract.py'), 'utf-8');
-    const codes = [...new Set([...source.matchAll(/flag\("([A-Z_]+)"/g)].map(match => match[1]))];
+  it('has a label for every code the core can emit as a violation or reason', () => {
+    const codes = coreReasonCodes();
     expect(codes.length).toBeGreaterThan(40);
+    expect(codes).toEqual(expect.arrayContaining(['REVIEW_CONFLICT', 'GAP_NEED_MISMATCH', 'SEMANTIC_QUESTION', ...BUILT_CODES]));
     for (const code of codes) {
       const text = reasonText(code);
       expect(text, code).not.toContain(UNREGISTERED);
       expect(text, code).toMatch(new RegExp(`^[^A-Z].* \\(${code}\\)$`));
     }
+  });
+
+  it('builds the two no-candidate codes the way the core does', () => {
+    const source = readFileSync(join(CORE, 'no_candidate_review.py'), 'utf-8');
+    expect(source).toContain('"NO_CANDIDATE_" + row["verdict"].upper()');
+    expect(reasonText('NO_CANDIDATE_VIOLATION')).toBe('후보 없음 판단이 원자료와 맞지 않습니다 (NO_CANDIDATE_VIOLATION)');
   });
 
   it('keeps free text unchanged and marks an unknown bare code instead of hiding it', () => {

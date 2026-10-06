@@ -13,6 +13,8 @@ from typing import Any
 from jsonschema import Draft202012Validator
 from lgax_contracts import load_schema
 
+from .concept_lineage import build_quality_context
+
 STAGES = ("plan", "retrieve", "needs", "compare", "concepts", "review")
 MAX_REVISIONS = 2
 
@@ -232,63 +234,9 @@ def review_judgement(payload: Any, output: Any) -> dict:
             flag("COMPLAINT_NOT_EXTRACTED", "needs")
         if {gap["need_id"] for gap in gaps.values()} != set(needs):
             flag("NEED_COMPARISON_MISSING", "compare")
-    for gap in gaps.values():
-        citations(gap, "compare")
-        need = needs.get(gap["need_id"])
-        if not need or gap["model_id"] != scope[0]:
-            flag("GAP_NEED_MISMATCH", "compare")
-        elif not set(need["evidence_ids"]) <= set(gap["evidence_ids"]):
-            flag("GAP_REVIEW_MISSING", "compare")
-        if any(fid not in features for fid in gap["feature_ids"]):
-            flag("GAP_FEATURE_MISSING", "compare")
-        for fid in gap["feature_ids"]:
-            if fid in features and not set(features[fid]["evidence_ids"]) <= set(gap["evidence_ids"]):
-                flag("GAP_MANUAL_MISSING", "compare")
-        assessment = comparisons.get(gap["id"])
-        if not assessment:
-            continue
-        basis, resolution = assessment["support_basis"], assessment["resolution"]
-        support = {"explicit_supported": "supported", "explicit_unsupported": "unsupported",
-                   "unmentioned": "insufficient_evidence", "conflicting": "insufficient_evidence"}[basis]
-        if gap["support_status"] != support:
-            flag("SUPPORT_BASIS_MISMATCH", "compare")
-        if basis == "explicit_supported" and not gap["feature_ids"]:
-            flag("SUPPORTED_WITHOUT_FEATURE", "compare")
-        if basis == "explicit_unsupported" and not any(
-            sources.get(eid, {}).get("source_type") == "manual" for eid in gap["evidence_ids"]
-        ):
-            flag("UNSUPPORTED_WITHOUT_MANUAL", "compare")
-        if (resolution == "remaining" and not gap["remaining_pain"].strip()) or (
-            resolution == "resolved" and gap["remaining_pain"].strip()
-        ):
-            flag("RESOLUTION_PAIN_MISMATCH", "compare")
-        if (basis in ("unmentioned", "conflicting") or resolution == "unknown") and (
-            output["status"] != "held" or not gap["questions"] or not output["hold_reasons"]
-        ):
-            flag("SUPPORT_UNKNOWN", "compare")
-    if len(concepts) > payload["max_concepts"]:
-        flag("CONCEPT_LIMIT", "concepts")
-    for concept in concepts.values():
-        citations(concept, "concepts")
-        if concept["status"] not in ("proposed", "needs_review"):
-            flag("HUMAN_DECISION_REQUIRED", "concepts")
-        for gid in concept["gap_ids"]:
-            gap, assessment = gaps.get(gid), comparisons.get(gid)
-            if not gap or not assessment:
-                flag("CONCEPT_GAP_MISSING", "concepts")
-            elif (assessment["resolution"] != "remaining"
-                  or gap["support_status"] == "insufficient_evidence"):
-                flag("CONCEPT_WITHOUT_CONFIRMED_GAP", "concepts")
-            elif not set(gap["evidence_ids"]) <= set(concept["evidence_ids"]):
-                flag("CONCEPT_GROUNDING_MISSING", "concepts")
-        assessment = duplicates.get(concept["id"])
-        if assessment:
-            if set(assessment["compared_feature_ids"]) != set(features):
-                flag("DUPLICATION_COMPARISON_INCOMPLETE", "concepts")
-            if assessment["duplication"] == "duplicate":
-                flag("DUPLICATE_CONCEPT", "concepts")
-            elif assessment["duplication"] == "uncertain":
-                flag("UNCERTAIN_DUPLICATION", "concepts")
+    for module in build_quality_context(payload, output).values():
+        for violation in module["violations"]:
+            flag(violation["code"], violation["stage"])
     if not concepts and not output["no_candidate_reasons"]:
         flag("ZERO_CANDIDATES_WITHOUT_REASON", "concepts")
     if output["status"] == "completed" and (output["hold_reasons"] or output["unresolved"]):

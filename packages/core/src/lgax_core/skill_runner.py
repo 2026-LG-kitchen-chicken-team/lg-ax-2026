@@ -21,8 +21,8 @@ from uuid import uuid4
 from jsonschema import Draft202012Validator, ValidationError
 from lgax_contracts import CONTRACT_VERSION, load_schema, validate
 
-from .errors import DomainError
 from .document_store import DocumentStore
+from .errors import DomainError
 from .store import DemoStore
 
 SKILL_IDS = ("evidence_lookup", "need_extract", "product_compare", "concept_draft", "review_revision")
@@ -469,7 +469,13 @@ class SkillRuntime:
                     extracted = self._ids(result["needs"], "needs")
                     outcome_ids = [item["need_id"] for item in result["desired_outcomes"]]
                     if len(set(outcome_ids)) != len(outcome_ids) or set(outcome_ids) != set(extracted):
-                        raise DomainError("VALIDATION_FAILED", "각 니즈에 대응하는 희망 결과가 필요합니다.", {})
+                        raise DomainError("VALIDATION_FAILED", "각 니즈에 대응하는 희망 결과가 필요합니다.", {
+                            "expected_need_ids": sorted(extracted),
+                            "missing_need_ids": sorted(set(extracted) - set(outcome_ids)),
+                            "unexpected_need_ids": sorted(set(outcome_ids) - set(extracted)),
+                            "duplicate_need_ids": sorted({nid for nid in outcome_ids if outcome_ids.count(nid) > 1}),
+                            "expected_count": len(extracted), "actual_count": len(outcome_ids),
+                        })
                 if skill_id == "concept_draft" and len(result["concepts"]) > payload.get("max_concepts", 3):
                     raise DomainError("VALIDATION_FAILED", "요청한 콘셉트 상한을 초과했습니다.", {})
                 if (skill_id == "concept_draft" and not result["concepts"]
@@ -478,7 +484,12 @@ class SkillRuntime:
                 if skill_id == "product_compare":
                     expected_needs = {need["id"] for need in payload["needs"]}
                     if {gap["need_id"] for gap in result["gaps"]} != expected_needs:
-                        raise DomainError("VALIDATION_FAILED", "각 입력 니즈의 대조 또는 근거 부족 판단이 필요합니다.", {})
+                        compared_needs = {gap["need_id"] for gap in result["gaps"]}
+                        raise DomainError("VALIDATION_FAILED", "각 입력 니즈의 대조 또는 근거 부족 판단이 필요합니다.", {
+                            "expected_need_ids": sorted(expected_needs),
+                            "missing_need_ids": sorted(expected_needs - compared_needs),
+                            "unexpected_need_ids": sorted(compared_needs - expected_needs),
+                        })
                 if skill_id == "need_extract" and not result["needs"] and not result["unresolved"]:
                     raise DomainError("VALIDATION_FAILED", "니즈를 추출하지 못했다면 이유를 남겨야 합니다.", {})
                 if skill_id == "review_revision":

@@ -94,7 +94,7 @@ function storedDecisionProblems(decision: StoredDecision): string[] {
 
 const VIOLATION_LABELS: Record<string, string> = {
   SOURCE_SCOPE_MISMATCH: '다른 모델·문서 버전의 원문이 섞였습니다',
-  FEATURE_SCOPE_MISMATCH: '다른 모델·문서 버전의 기능이 섞였습니다',
+  FEATURE_SCOPE_MISMATCH: '기능의 제품 모델·문서 버전 또는 합성/실자료 범위가 현재 대상과 다릅니다',
   SOURCE_KIND_MISMATCH: '합성 자료와 실제 자료가 섞였습니다',
   REQUEST_PRODUCT_MISMATCH: '요청 범위 밖의 제품입니다',
   REVIEW_CONFLICT: '리뷰가 서로 상충합니다',
@@ -103,7 +103,7 @@ const VIOLATION_LABELS: Record<string, string> = {
   NON_COMPLAINT_AS_NEED: '불편이 아닌 리뷰를 불편 근거로 썼습니다',
   DUPLICATE_CONCEPT: '후보가 기존 기능과 중복됩니다',
   UNCERTAIN_DUPLICATION: '후보의 기존 기능 중복 여부가 불확실합니다',
-  MISSING_EVIDENCE: '판단에 필요한 인용 근거가 빠졌습니다',
+  MISSING_EVIDENCE: '인용한 근거 ID가 현재 입력 자료에 없습니다',
   OUTPUT_SCOPE_MISMATCH: '출력의 모델·문서 버전이 입력과 다릅니다',
   STALE_INPUT: '이전 입력(바뀌기 전 명세)의 결과입니다',
   UNSUPPORTED_WITHOUT_MANUAL: '설명서 근거 없이 미지원으로 판단했습니다',
@@ -118,18 +118,19 @@ const VIOLATION_LABELS: Record<string, string> = {
   EXCLUSION_UNCERTAIN: '의미 검토: 제외 조건 준수 여부가 불확실합니다',
   QUALITY_VIOLATION: '의미 검토: 기획 품질 기준을 어겼습니다',
   QUALITY_UNCERTAIN: '의미 검토: 기획 품질 기준 충족이 불확실합니다',
-  SEMANTIC_QUESTION: '의미 검토가 확인 질문을 남겼습니다',
+  SEMANTIC_QUESTION: '의미 검토에서 추가 확인이 필요한 질문이 남았습니다',
   INVALID_SEMANTIC_REVIEW: '의미 검토 응답이 규격에 맞지 않습니다',
+  INVALID_NO_CANDIDATE_REVIEW: '후보 없음 검토 응답이 규격에 맞지 않습니다',
   // Remaining review_judgement codes (packages/core judgement_contract.py), first seen raw in a live run (record 020).
   DUPLICATE_ID: '같은 ID가 중복됩니다',
   SOURCE_FEATURE_MISSING: '근거가 없는 기능을 가리킵니다',
   SOURCE_FEATURE_LINK_MISMATCH: '설명서 근거와 기능의 연결이 서로 맞지 않습니다',
-  FEATURE_MANUAL_MISSING: '기능에 설명서 근거가 없습니다',
+  FEATURE_MANUAL_MISSING: '기능을 뒷받침하는 유효한 설명서 근거 또는 연결 관계가 없습니다',
   FEATURE_SOURCE_LINK_MISMATCH: '기능과 설명서 근거의 연결이 서로 맞지 않습니다',
   CHANGED_EVIDENCE_MISSING: '변경된 근거로 지정한 자료가 입력에 없습니다',
   REVISION_COUNT_MISMATCH: '출력의 수정 회차가 입력과 다릅니다',
   DESIRED_OUTCOME_COVERAGE: '불편마다 바라는 결과가 정리되지 않았습니다',
-  ASSESSMENT_COVERAGE: '평가가 빠진 리뷰·대조·후보가 있습니다',
+  ASSESSMENT_COVERAGE: '평가 목록이 실제 평가 대상과 일치하지 않습니다',
   NEED_MODEL_MISMATCH: '불편이 요청과 다른 모델로 기록되었습니다',
   NEED_REVIEW_REQUIRED: '불편의 근거가 리뷰가 아닙니다',
   COMPLAINT_NOT_EXTRACTED: '불편으로 정리되지 않은 불편 리뷰가 있습니다',
@@ -148,6 +149,11 @@ const VIOLATION_LABELS: Record<string, string> = {
   ZERO_CANDIDATES_WITHOUT_REASON: '후보가 없는데 사유가 없습니다',
   COMPLETED_WITH_UNRESOLVED: '보류·미해결 사유가 남았는데 완료로 끝냈습니다',
   INVALID_REVISION_TERMINATION: '수정 횟수를 다 쓰지 않았거나 사유 없이 실패로 끝냈습니다',
+  // PR #159 (CORE manual quality R1) codes; wording confirmed by 황대겸 (record 027).
+  COMPARE_CITATION_OMISSION: '입력에 제공된 연결 기능의 설명서 근거가 기능 대조 결과의 인용에서 빠졌습니다',
+  // no_candidate_review.py builds "NO_CANDIDATE_" + verdict; "consistent" is not fed back, so only these two occur.
+  NO_CANDIDATE_VIOLATION: '후보 없음 판단이 원자료와 맞지 않습니다',
+  NO_CANDIDATE_UNCERTAIN: '후보 없음 판단을 확인할 자료가 부족합니다',
 };
 
 const BARE_CODE = /^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+$/;
