@@ -1,6 +1,12 @@
 # 정이량 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
+## 최신 근거 — 정이량-E048-QUALITY-CLOSEOUT
+
+- [E048](2026-10-07/정이량-E048-QUALITY-CLOSEOUT.md)·[고정 검수근거](../../../evals/pm-integration/20261007/README.md)·[실제 병합 재조회](../../../evals/pm-integration/20261007/merged-pr-readback.json)는 원17후속PR/통합212 실제병합과 모델 정상/변경/근거부족 failed/failed/held를 구분한다. 새15호출/91587토큰의 원응답·입력 SHA를 고정했으며 정상품질/CORE199 효과는 승인하지 않았다.
+- 통합1546+launcher6/웹530+Node4/type/build/HTTP·MCP·화면·집계·브라우저 PASS, 선택 Ruff94건 별도 실패를 보존한다. 부모5/21Done·요구0/31verified·전원OFF·원비용/불명ledger는 그대로다. 최종same-release 실행·공식ACK·노션 실제수신은 운영Issue28 종료증거로 대조한다.
+- 아래 E047/10월6일 항목은 원 checkpoint로 보존한다.
+
 ## 최신 근거 — 정이량-E047-REVIEWED-HISTORY
 
 - [E047](2026-10-07/정이량-E047-REVIEWED-HISTORY.md)·[새 고정 검수근거](../../../evals/pm-integration/20261007/README.md)·[10/7 큐](../../pm/pr-intake-queue-20261007.json)는 PM188 e7bc486 실제병합/공식ACK와 CORE198·DATA190 원P1해소/CORE199·DATA8·WEB6 독립 검수, de09b64 전체1546/웹530·실HTTP/MCP/화면·집계·브라우저 PASS를 구분한다. 원17head ancestry·원424근거 바이트와 owner충돌보존 proof를 연결한다.

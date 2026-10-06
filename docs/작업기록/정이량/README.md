@@ -1,6 +1,14 @@
 # 정이량 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
+## 최신 재개 요약 — 정이량-20261007-003-QUALITY-CLOSEOUT
+
+- PM188 미커밋5개 복구·e7bc486 병합/공식ACK 완료. CORE198→DATA190 원P1 재검수 통과, CORE199·DATA8·WEB6의17후속PR과 원저자 이력을 PR212로 f490fc2 main에 병합했다. Draft140/168도 검수해 보류 사유를 게시했다. Figma 제외·부모Done 보류·전원OFF 유지.
+- 통합 고정코드 전체1546+launcher6, 웹530+Node4/type/build, 실제 HTTP/MCP·화면/내보내기·집계10/브라우저와 필수CI PASS. 추가 선택 Ruff94건은 원 실패로 별도 보존했다.
+- 원10리뷰 실122B3사례는 정상 failed/변경 failed/근거부족 held다. 새15호출·91587토큰이며 정상품질/CORE199 개선효과 승인은 불가하다. 근거 인용 누락과 검토 오판을 원응답 그대로 후속 수정 대상으로 기록했다. 원53/193708·불명비용/실패 기록은 보존했다.
+- [상세003](2026-10-07/정이량-20261007-003-QUALITY-CLOSEOUT.md)·[E048](../../작업근거/정이량/2026-10-07/정이량-E048-QUALITY-CLOSEOUT.md)·[실측품질](../../../evals/pm-integration/20261007/live-three-quality.json). 원 실모델/날짜 동향은 별도DB로 보존하며 같은 운영release·최종Project/중앙OFF/노션 수신은 운영Issue28의 실제 종료증거를 따른다.
+- 아래002/10월6일 항목은 당시 checkpoint로 보존한다. 현재 개발완료5/21·요구사항검증0/31이며 사용자에게는 10/7 15시 컨설팅의 지원API 사용 조건 확인이 남는다.
+
 ## 최신 재개 요약 — 정이량-20261007-002-REVIEWED-HISTORY
 
 - 10/7 사용자 직접 지시로 중단 PM188 미커밋5개를 복구·공유·e7bc486 실제 병합했고 Project21/공식 ACCEPTED/중앙OFF ACK를 확인했다. CORE198→DATA190 원P1 재검수 통과, CORE199·DATA8·WEB6의17후속PR을 원커밋 그대로 새 통합본에 담았다. Draft140/168 보존·Figma 제외·부모Done/31요구검증 보류.
