@@ -21,3 +21,9 @@
 DATA의이번고정3팩원문/날짜/검색소비대조와인계표는작성·실행했다. PR/자기보고/CI/PM인수는실제수신별도로연결한다. PM @jeongiryang은운영팩선택/승인주입·분류승인·#15독립자료처분/검수와작은PR검수, CORE @unknownamed는질문없는보류/기능·문맥의실모델의미/유실근거, WEB @choigilung은새DATA9팩의같은ID/분모/원문/차트·내보내기후속이다. 기존PM31팩화면검증을새DATA9팩으로승계하지않는다.
 
 원45/225행dense/재정렬실측·실고객날짜/수요·독립평가·부모Done은미완료다. 현재사용자의새설치/로그인/모델반복은필요없다. 자동화OFF·원실패/비용/예약·과거기록을보존했다.
+
+## 최종 main/원격변경 실제 반영 — 2026-10-06 20:56 KST
+
+PR189의20:46실제병합 main b67886f를 본인branch f7794f3에 반영했다. 양쪽README owner 밖바이트가같음을확인한뒤최신R4 owner요약만보존해충돌을해결했다. [최종동일3팩검사](../../../../evals/data-integration-r4/20261006/run-final-main-01a1100e/pack-audit.json)108바인딩/15query/40거절과[실HTTP46/PDF3/원문21/재시작](../../../../evals/data-integration-r4/20261006/document-http-main-b67886f.json)이새본인runtime에서전부통과했다. 모델/운영주입0, 이전근거는그대로다.
+
+[최종통합관측](../../../../evals/data-integration-r4/20261006/final-integration-observation.json)은PM188 최신입력과고정2d4입력의바이트동일·PR189 merge/CI·owner충돌범위·문서nav미제공을구분한다. PM188의nav script는현재main에없어exit2였고통과로기록하지않았다. 해당공통문서gate/운영은PM후속이며본인artifact 링크/기록이관은통과했다.

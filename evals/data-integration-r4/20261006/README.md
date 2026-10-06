@@ -2,9 +2,9 @@
 
 배정: [PM DATA-INTEGRATION-R4](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/13#issuecomment-6015348109). 본인 관련메일을 읽은 뒤 공개 PM PR188 고정 입력과 실행 당시 main을 대조했다. 이 표는 검증한 입력과 실행 범위의 인계이며 운영팩 선택을 바꾸지 않는다.
 
-- DATA 코드/원 입력 pin: `087bd534e5b400b05c2963341d07587c1ee70772` (검사 시점 main).
+- DATA 검사 pin: `f7794f343c6c192b24643f2cc9356a8946875e31` (병합 main b67886f 위의 본인 R4 단위).
 - PM 공개 날짜 입력 pin: `2d4ea07e078e99776d534a10f4ed43ab8fec7095` ([PR188](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/188)). 이 원문 pin을 최신 운영 배포 완료로 쓰지 않는다.
-- [108개 원문·ID·모델·버전 바인딩](run-01a1100e-03/review-bindings.json), [15개 query/재계산·재생](run-01a1100e-03/queries.json), [40개 거절](run-01a1100e-03/rejections.json), [실제 검색](run-01a1100e-03/searches.json). 모델 생성0회.
+- [108개 원문·ID·모델·버전 바인딩](run-final-main-01a1100e/review-bindings.json), [15개 query/재계산·재생](run-final-main-01a1100e/queries.json), [40개 거절](run-final-main-01a1100e/rejections.json), [실제 검색](run-final-main-01a1100e/searches.json). 모델 생성0회.
 
 ## 고정 source/version/ID와 10월 결과
 
@@ -18,7 +18,7 @@
 
 ## 동일 조회와 다른 숫자의 이유
 
-공통 조회는 project_id=`data-r4-pack-binding`, model_id=`FRIDGE-A`, 프로젝트에 고정한 document_version=`1.0`, source_kind=`synthetic`, start_date=`2026-10-01`, end_date_exclusive=`2026-11-01`, granularity=`month`, topic_ids=`["cleaning"]`, timezone=`Asia/Seoul`이다. source_ids와dataset_version은 위 표의 해당팩 값을 사용한다. 문서 버전은 TrendQuery에 임의 필드로 보내지 않고 프로젝트 snapshot에서 고정한다. [각각의 완전한 query](run-01a1100e-03/queries.json)에 세팩·기간별 값을 보존했다.
+공통 조회는 project_id=`data-r4-pack-binding`, model_id=`FRIDGE-A`, 프로젝트에 고정한 document_version=`1.0`, source_kind=`synthetic`, start_date=`2026-10-01`, end_date_exclusive=`2026-11-01`, granularity=`month`, topic_ids=`["cleaning"]`, timezone=`Asia/Seoul`이다. source_ids와dataset_version은 위 표의 해당팩 값을 사용한다. 문서 버전은 TrendQuery에 임의 필드로 보내지 않고 프로젝트 snapshot에서 고정한다. [각각의 완전한 query](run-final-main-01a1100e/queries.json)에 세팩·기간별 값을 보존했다.
 
 |팩|10월 원 리뷰 번호 / 현재 Evidence IDs|청소 numerator|의미|
 |---|---|---|---|
@@ -34,14 +34,14 @@
 - PM팩31행: date-schedule.json의 row1~36에 바인딩. 이 파일은 날짜·ID 표이며 리뷰 문장은 dataset/Evidence에 따로 있다. schedule 실제 SHA와 row의 review ID·날짜·정밀도를 대조했다.
 - DATA팩9행: 별도 source.synthetic-dated-demo.v1.json의 section ID에 바인딩. 날짜·정밀도·review ID와 같은 원문 text 및 실제 파일 SHA를 대조했다. 원 날짜 없는CSV를 날짜 근거로 쓰지 않는다.
 - 원candidate7주제 mapping과 새2팩 mapping은 같은 원 리뷰 번호별로 일치했다. 원/DATA의human 분류와 PM의고정 rule 재매핑을 구분하며 후보분류 승인이나 complaint polarity 승인으로 기록하지 않는다.
-- 실제 날짜 source 파일SHA·dataset/annotation raw/canonicalSHA는 [고정 pin JSON](run-01a1100e-03/pack-audit.json)에 있으며 서로 다른 종류의 SHA를 섞지 않는다.
+- 실제 날짜 source 파일SHA·dataset/annotation raw/canonicalSHA는 [고정 pin JSON](run-final-main-01a1100e/pack-audit.json)에 있으며 서로 다른 종류의 SHA를 섞지 않는다.
 
 ## 실제 검사·소비 경계
 
 - 108개 review/Evidence 원문·모델·버전·source 바인딩, 15query(10월/빈기간/겨울/12월/1월) 독립 분모·청소 membership 재계산, 동일 요청 재생과 빈비율null 통과.
 - 같은Evidence 중복의 분모 증가를 방지했고 주제가 다른 중복은 거절했다. 40개거절은 잘못된 모델/버전·원문SHA·ID·출처, 세팩 sidecar/Evidence 교차 입력, 실제날짜 source SHA 교체 등을 포함한다.
 - 각팩 실제 내부BM25 검색은 scope를먼저 적용했고 원문 Evidence만 반환했다. 동일 요청 결과가 같고 잘못된 모델/버전은 명시 거절됐다. 공개 literal_token_count 계약이나실행API를BM25로 바꾸지 않았다. 15query는 개발/입력검증이며 독립 모델평가·고정45/225행 성능비교가 아니다.
-- [실제 loopback HTTP receipt](document-http-main-087bd53.json): 같은main의 원PDF3 등록/검색/원문21/재시작·46HTTP요청을 다시 실행했다. 자체 ephemeral socket·새DB·보존원문 복사본만 사용, 모델/중앙예약0. raw_runtime_receipt_sha256을 보존하고 공개 사본의 환경 경로만 표식으로 바꿨다.
+- [실제 loopback HTTP receipt](document-http-main-b67886f.json): 같은main의 원PDF3 등록/검색/원문21/재시작·46HTTP요청을 다시 실행했다. 자체 ephemeral socket·새DB·보존원문 복사본만 사용, 모델/중앙예약0. raw_runtime_receipt_sha256을 보존하고 공개 사본의 환경 경로만 표식으로 바꿨다.
 - PR183은20:15 PM 부분 인수·병합. 별도 승인계획 바꿔치기 수정은 [PR189](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/189)에 제출했고, 20:44 조회 headc4d1ea9의CI4/4 SUCCESS를확인했다. 후속의 실제 병합/통합은 별도 관측 대상이다.
 
 ## 재현·담당자 인계
@@ -60,3 +60,9 @@ Python3.11과현재core/contracts/API src를PYTHONPATH에 지정한다. 스크�
 |WEB @choigilung|PM31팩의기존1/3화면을DATA9팩의1/4화면검증으로승계할수없음|동일dataset/source IDs/aggregate의버전·분모·제외건수·긍정006원문·차트/내보내기를연결해검사|
 
 동향 자기보고는#16·#148, 원문/검색 자기보고는#13에 각각 연결한다. 실제 운영주입·새DATA팩 브라우저·실고객 시계열·독립품질/부모Done은미완료이며자동화OFF다.
+
+## 최종 main 반영·실제 재확인 — 2026-10-06 20:56 KST
+
+PR189는20:46:11 KST 실제 병합됐다. 그 main b67886f를 반영한 본인 branch f7794f3에서3팩108바인딩·15query·40거절과새socket/DB 실HTTP46·원문21·PDF3·재시작을 다시통과했다. 검색/카탈로그는이전087bd검사와동일했고PDF등록의차이는189승인계획freeze다. 이전03출력과087bd HTTP근거도보존했다. [최종관측/한계](final-integration-observation.json)에 실제시각·merge·code pin과소스동일성을연결했다.
+
+PM188 최신조회head `96ec98c06ed7f74a1a34dd01797794bab15b5b5a`의세날짜입력파일은2d4ea07고정핀과바이트가같았다. PM188 문서허브/nav checker는아직병합main에없어그검사를통과했다고쓰지않는다(파일없음exit2). 새artifact/상세기록의상대링크와기존개인원문이관검사는통과했다. PM이공통문서/운영을통합한뒤해당gate를별도로확인한다.
