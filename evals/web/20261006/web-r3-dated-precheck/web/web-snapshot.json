@@ -1,0 +1,120 @@
+{
+  "kind": "review_trend_snapshot",
+  "export_version": 1,
+  "exported_at": "2026-10-06T11:01:26.184Z",
+  "source": "server",
+  "aggregate_id": "TREND-df97edd623c1350ffb353560f38682537c2b65921a0dd4b746ad5672d5656081",
+  "consistency_problems": [],
+  "aggregate": {
+    "aggregate_id": "TREND-df97edd623c1350ffb353560f38682537c2b65921a0dd4b746ad5672d5656081",
+    "project_id": "project-3b951c86852d4e4796241f004406b5fc",
+    "dataset_version": "synthetic-dated-demo.20261006.v1",
+    "dataset_sha256": "d7740d3b61be29e78a4a4fd4d48a6e549eae3158c37994670493f02d4b33fff0",
+    "annotation_version": "synthetic-dated-demo.20261006.v1",
+    "annotation_sha256": "0f534b263c87eb896146967158bc7dbb630bdd6290fe9471bdc90c274027e64b",
+    "trend_contract_version": "review-trends.v1",
+    "filters": {
+      "project_id": "project-3b951c86852d4e4796241f004406b5fc",
+      "model_id": "FRIDGE-A",
+      "source_ids": [
+        "SYNTH-REVIEWS-DATED-DEMO-v1"
+      ],
+      "dataset_version": "synthetic-dated-demo.20261006.v1",
+      "start_date": "2026-10-01",
+      "end_date_exclusive": "2026-11-01",
+      "source_kind": "synthetic",
+      "granularity": "month",
+      "timezone": "Asia/Seoul",
+      "topic_ids": []
+    },
+    "timezone": "Asia/Seoul",
+    "aggregation_version": "data-review-trends.v1",
+    "classification": {
+      "method": "human",
+      "model_id": null,
+      "revision": null
+    },
+    "topic_taxonomy_version": "kitchen-review-topics-candidate.v1",
+    "dedup_policy_version": "exact-utf8-text-within-source-model-version.v1",
+    "counts": {
+      "input_review_count": 36,
+      "excluded_out_of_scope_count": 26,
+      "in_scope_review_count": 10,
+      "excluded_undated_count": 1,
+      "excluded_outside_period_count": 5,
+      "duplicate_count": 0,
+      "eligible_unique_review_count": 4,
+      "unclassified_review_count": 0
+    },
+    "buckets": [
+      {
+        "bucket_id": "MONTH-2026-10",
+        "label": "2026년 10월",
+        "period_start": "2026-10-01",
+        "period_end_exclusive": "2026-11-01",
+        "partial_period": false,
+        "total_reviews": 4,
+        "topics": [
+          {
+            "topic_id": "cleaning",
+            "topic_review_count": 1,
+            "ratio": 0.25,
+            "evidence_count": 1,
+            "evidence_ids": [
+              "SYNTH-DATED-REVIEW-EVIDENCE-006"
+            ],
+            "evidence_ids_truncated": false
+          },
+          {
+            "topic_id": "food_findability",
+            "topic_review_count": 2,
+            "ratio": 0.5,
+            "evidence_count": 2,
+            "evidence_ids": [
+              "SYNTH-DATED-REVIEW-EVIDENCE-003",
+              "SYNTH-DATED-REVIEW-EVIDENCE-007"
+            ],
+            "evidence_ids_truncated": false
+          },
+          {
+            "topic_id": "manual_guidance",
+            "topic_review_count": 0,
+            "ratio": 0,
+            "evidence_count": 0,
+            "evidence_ids": [],
+            "evidence_ids_truncated": false
+          },
+          {
+            "topic_id": "temporary_storage",
+            "topic_review_count": 1,
+            "ratio": 0.25,
+            "evidence_count": 1,
+            "evidence_ids": [
+              "SYNTH-DATED-REVIEW-EVIDENCE-002"
+            ],
+            "evidence_ids_truncated": false
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      "표본이 적습니다: 2026년 10월 리뷰 4건(20건 미만)."
+    ],
+    "notes": "자료 성격: synthetic. 주제별 수치는 리뷰 주제 등장 비율입니다. 감정·불편 비율이나 판매량·시장 수요를 뜻하지 않습니다. 날짜가 없는 원문은 분모에서 빼고 제외 건수로 보고합니다."
+  },
+  "viewed_evidence": {
+    "bucket_id": "MONTH-2026-10",
+    "topic_id": "cleaning",
+    "total": 1,
+    "evidence_ids": [
+      "SYNTH-DATED-REVIEW-EVIDENCE-006"
+    ]
+  },
+  "notices": [
+    "리뷰 수와 비율은 판매량이나 수요 증가를 뜻하지 않습니다.",
+    "비율은 그 주제를 언급한 리뷰의 비율입니다. 감정·불만 분류가 없어 불만 비율이나 계절 수요를 뜻하지 않습니다.",
+    "주제 분류 kitchen-review-topics-candidate.v1: PM 승인 전 미리보기 분류입니다.",
+    "\"자료 없음\"은 그 구간 리뷰가 없다는 뜻이며 0%와 다릅니다.",
+    "표본 20건 미만은 작은 표본이며 통계적 유의성 판정이 아닙니다."
+  ]
+}
