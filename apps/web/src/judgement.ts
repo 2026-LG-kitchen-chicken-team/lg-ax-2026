@@ -203,6 +203,68 @@ export function violationText(item: { code: string; stage: string; details?: unk
   return `${Object.hasOwn(VIOLATION_LABELS, item.code) ? VIOLATION_LABELS[item.code] : item.code} (${item.code} · ${item.stage} 단계)${detail ? ` · ${detail}` : ''}`;
 }
 
+/** violationText plus the gap/concept IDs the stored check named for that code (none when not recorded). */
+export function targetedViolationText(item: { code: string; stage: string; details?: unknown }, targets: string[]): string {
+  return `${violationText(item)}${targets.length ? ` · 대상 ${targets.join(', ')}` : ''}`;
+}
+
+/**
+ * Read-only facts from a run's stored trace (record 034 audit U3), so the screen and the export can say what each
+ * violation targets, how each candidate's lineage was judged and what every check round decided. Shapes that do not
+ * match are skipped, never guessed; the core's decision stays the source of truth.
+ */
+export interface TraceFacts {
+  /** code → gap/concept IDs from the last quality_context (feature_support / residual_matrix / concept_lineage). */
+  targets: Map<string, string[]>;
+  /** concept_id → lineage valid (linked to a confirmed remaining-pain gap) and its own violation codes. */
+  lineage: Map<string, { valid: boolean; codes: string[] }>;
+  /** Each review_decision in order: the Agent's internal revision rounds, not the planner's request revisions. */
+  rounds: { round: number; revision_count: number; action: string; codes: string[]; repeated: boolean }[];
+}
+
+export function traceFacts(trace: TraceStep[]): TraceFacts {
+  const targets = new Map<string, string[]>();
+  const lineage = new Map<string, { valid: boolean; codes: string[] }>();
+  const quality = [...trace].reverse().find(step => step.operation === 'quality_context' && isObject(step.outputs));
+  const outputs = quality && isObject(quality.outputs) ? quality.outputs : {};
+  for (const part of ['feature_support', 'residual_matrix', 'concept_lineage']) {
+    const section = outputs[part];
+    const violations = isObject(section) && Array.isArray(section.violations) ? section.violations : [];
+    for (const item of violations) {
+      if (!isObject(item) || typeof item.code !== 'string') continue;
+      const target = typeof item.gap_id === 'string' ? item.gap_id : typeof item.concept_id === 'string' ? item.concept_id : null;
+      if (target && !(targets.get(item.code) ?? []).includes(target)) targets.set(item.code, [...(targets.get(item.code) ?? []), target]);
+      if (typeof item.concept_id === 'string') {
+        const entry = lineage.get(item.concept_id) ?? { valid: true, codes: [] };
+        lineage.set(item.concept_id, { ...entry, codes: [...new Set([...entry.codes, item.code])] });
+      }
+    }
+  }
+  const candidates = isObject(outputs.concept_lineage) && Array.isArray(outputs.concept_lineage.candidates) ? outputs.concept_lineage.candidates : [];
+  for (const item of candidates) {
+    if (isObject(item) && typeof item.concept_id === 'string' && typeof item.valid === 'boolean') {
+      lineage.set(item.concept_id, { valid: item.valid, codes: lineage.get(item.concept_id)?.codes ?? [] });
+    }
+  }
+  const rounds: TraceFacts['rounds'] = [];
+  for (const step of trace) {
+    const out = step.operation === 'review_decision' && isObject(step.outputs) ? step.outputs : null;
+    if (!out || typeof out.action !== 'string' || typeof out.revision_count !== 'number' || !Array.isArray(out.violations)) continue;
+    const codes = out.violations.flatMap(item => isObject(item) && typeof item.code === 'string' ? [item.code] : []);
+    const previous = rounds[rounds.length - 1];
+    rounds.push({ round: rounds.length + 1, revision_count: out.revision_count, action: out.action, codes,
+      repeated: Boolean(previous && codes.length && previous.codes.join('|') === codes.join('|')) });
+  }
+  return { targets, lineage, rounds };
+}
+
+/** A stored question that names a check code gets the IDs that code targeted, so the planner knows what to answer about. */
+export function questionWithTargets(question: string, facts: TraceFacts | null): string {
+  if (!facts) return question;
+  const ids = [...new Set((question.match(INLINE_CODE) ?? []).flatMap(code => facts.targets.get(code) ?? []))];
+  return ids.length ? `${question} (대상: ${ids.join(', ')})` : question;
+}
+
 const SEMANTIC = /^(EXCLUSION|QUALITY|SEMANTIC|INVALID_SEMANTIC)_/;
 /**
  * Codes that make the core hold instead of revising (packages/core judgement_contract.py `finish`, "grounding"). Any
@@ -226,16 +288,17 @@ export interface JudgementView {
 }
 
 /** What the planner should read first: the core's decision, not the status the judgement declared about itself. */
-export function judgementView(input: JudgementInput, output: JudgementOutput, decision: JudgementDecision | StoredDecision): JudgementView {
+export function judgementView(input: JudgementInput, output: JudgementOutput, decision: JudgementDecision | StoredDecision, facts: TraceFacts | null = null): JudgementView {
   const scope = `${input.product.model_id}@${input.product.document_version}`;
+  const text = (item: JudgementViolation | StoredDecision['violations'][number]) => targetedViolationText(item, facts?.targets.get(item.code) ?? []);
   const base = {
     action: decision.action, candidates_selectable: decision.action === 'accept',
     declared_status_overridden: !({ accept: ['completed'], hold: ['held'], unresolved: ['failed'], revise: [] } as Record<string, string[]>)[decision.action].includes(output.status),
-    violations: decision.violations.map(violationText), questions: [...output.questions, ...output.gaps.flatMap(gap => gap.questions)],
+    violations: decision.violations.map(text), questions: [...output.questions, ...output.gaps.flatMap(gap => gap.questions)].map(item => questionWithTargets(item, facts)),
     hold_reasons: output.hold_reasons, unresolved: output.unresolved, no_candidate_reasons: output.no_candidate_reasons,
     out_of_scope_sources: input.sources.filter(item => `${item.model_id}@${item.document_version}` !== scope).map(item => `${item.id} (${item.model_id} · 문서 ${item.document_version})`),
-    hold_causes: decision.action === 'hold' ? decision.violations.filter(item => GROUNDING.has(item.code)).map(violationText) : [],
-    unrevised_errors: decision.action === 'hold' ? decision.violations.filter(item => !GROUNDING.has(item.code) && !SEMANTIC.test(item.code)).map(violationText) : [],
+    hold_causes: decision.action === 'hold' ? decision.violations.filter(item => GROUNDING.has(item.code)).map(text) : [],
+    unrevised_errors: decision.action === 'hold' ? decision.violations.filter(item => !GROUNDING.has(item.code) && !SEMANTIC.test(item.code)).map(text) : [],
   };
   switch (decision.action) {
     case 'accept': return { ...base, label: '계약 검사 통과 · 의미 미검증', tone: 'done', detail: ACCEPT_DETAIL };
@@ -284,7 +347,7 @@ export interface ModelCallRecord {
   stage: string; skill_id: string; execution_kind: string; revision_count: number; model_id: string; model_digest: string;
   metadata?: { adapter?: string; elapsed_ms?: number; generation_settings?: Record<string, unknown> };
 }
-export interface TraceStep { stage: string; operation: string; elapsed_ms?: number }
+export interface TraceStep { stage: string; operation: string; elapsed_ms?: number; outputs?: unknown }
 export interface SemanticAssessment {
   concept_id: string; verdict: string; reason: string; candidate_quote: string;
   source_quotes?: { evidence_id: string; quote: string }[]; condition_index?: number; condition?: string; criterion?: string;
@@ -497,7 +560,8 @@ export type ExportJudgement =
     /** Hold only: violations that caused the hold, and judgement errors the hold left unrevised (screen lists the same). */
     hold_causes: string[]; unrevised_errors: string[]; terminal_reason: string | null;
     questions: string[]; hold_reasons: string[]; unresolved: string[]; no_candidate_reasons: string[];
-    rejected_candidates: { id: string; title: string }[]; semantic_reviews: { round: number; action: string; violations: string[] }[];
+    /** Turned-down candidates with their gaps, stored lineage verdict and own violation codes (record 034 audit U3). */
+    rejected_candidates: { id: string; title: string; gap_ids: string[]; lineage_valid: boolean | null; codes: string[] }[]; semantic_reviews: { round: number; action: string; violations: string[] }[];
     semantic_rows: ExportSemanticRow[]; models: string[]; model_calls: number;
     /**
      * The judging model's own declarations (record 034 audit U4): review polarity, gap support/resolution and candidate
@@ -510,6 +574,8 @@ export type ExportJudgement =
     unused_review_ids: string[];
     /** How many no-candidate reviews checked the stated no-candidate reasons (0 = not reviewed). */
     no_candidate_reviews: number;
+    /** Agent-internal check rounds from the trace (not the planner's request revisions); repeated = same codes as the round before. */
+    check_rounds: TraceFacts['rounds'];
   };
 
 /** Reviews the run assessed but no need or gap cites (display only). */
@@ -533,15 +599,17 @@ export function exportJudgement(snapshot: RunSnapshot): ExportJudgement | null {
   const output = execution.output;
   const reviews = execution.semantic_reviews ?? [];
   const unique = (items: string[]) => [...new Set(items)];
+  const facts = traceFacts(execution.trace);
   return {
     record_valid: true, execution_kind: execution.execution_kind, status: execution.status, decision: execution.decision?.action ?? null,
-    violations: (execution.decision?.violations ?? []).map(violationText), record_problems: [...view.problems],
+    violations: (execution.decision?.violations ?? []).map(item => targetedViolationText(item, facts.targets.get(item.code) ?? [])), record_problems: [...view.problems],
     errors: execution.errors.map(item => ({ code: item.code, message: item.message })),
-    ...(output && execution.decision ? (({ hold_causes, unrevised_errors }) => ({ hold_causes, unrevised_errors }))(judgementView(execution.input, output, execution.decision)) : { hold_causes: [], unrevised_errors: [] }),
+    ...(output && execution.decision ? (({ hold_causes, unrevised_errors }) => ({ hold_causes, unrevised_errors }))(judgementView(execution.input, output, execution.decision, facts)) : { hold_causes: [], unrevised_errors: [] }),
     terminal_reason: terminalReason(snapshot),
-    questions: unique([...(output?.questions ?? []), ...(output?.gaps ?? []).flatMap(gap => gap.questions), ...reviews.flatMap(review => review.report.questions)]),
+    questions: unique([...(output?.questions ?? []), ...(output?.gaps ?? []).flatMap(gap => gap.questions), ...reviews.flatMap(review => review.report.questions)]).map(item => questionWithTargets(item, facts)),
     hold_reasons: [...(output?.hold_reasons ?? [])], unresolved: [...(output?.unresolved ?? [])], no_candidate_reasons: [...(output?.no_candidate_reasons ?? [])],
-    rejected_candidates: (execution.rejected_output?.concepts ?? []).map(concept => ({ id: concept.id, title: concept.title })),
+    rejected_candidates: (execution.rejected_output?.concepts ?? []).map(concept => ({ id: concept.id, title: concept.title, gap_ids: [...concept.gap_ids],
+      lineage_valid: facts.lineage.get(concept.id)?.valid ?? null, codes: [...(facts.lineage.get(concept.id)?.codes ?? [])] })),
     semantic_reviews: reviews.map((review, index) => ({ round: index + 1, action: review.decision.action, violations: review.decision.violations.map(violationText) })),
     semantic_rows: reviews.flatMap((review, index) => [...review.report.exclusion_assessments, ...review.report.quality_assessments].map(row => ({
       round: index + 1, concept_id: row.concept_id, target: row.condition !== undefined ? `제외 조건: ${row.condition}` : `기준: ${row.criterion ?? ''}`,
@@ -553,5 +621,6 @@ export function exportJudgement(snapshot: RunSnapshot): ExportJudgement | null {
     concept_assessments: [...conceptAssessments(output, 'output'), ...conceptAssessments(execution.rejected_output, 'rejected_output')],
     unused_review_ids: output ? unusedReviewIds(output) : [],
     no_candidate_reviews: Array.isArray((execution as { no_candidate_reviews?: unknown }).no_candidate_reviews) ? ((execution as { no_candidate_reviews?: unknown[] }).no_candidate_reviews ?? []).length : 0,
+    check_rounds: facts.rounds,
   };
 }

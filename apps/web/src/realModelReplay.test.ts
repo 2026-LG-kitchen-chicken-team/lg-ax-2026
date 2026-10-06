@@ -233,6 +233,71 @@ describe('exports explain the judgement and keep cited and uncited inputs apart 
   });
 });
 
+describe('turned-down candidates, violation targets and check rounds read from the stored trace (R4 U3, record 042)', () => {
+  // Expectations straight from the raw recording's trace, not from traceFacts.
+  type Raw = { operation: string; outputs?: Record<string, { violations?: { code: string; gap_id?: string; concept_id?: string }[]; candidates?: { concept_id: string; valid: boolean }[] }> & { action?: string; violations?: { code: string }[] } };
+  const raw = (record: PlanningExecution) => {
+    const trace = record.trace as unknown as Raw[];
+    const quality = [...trace].reverse().find(step => step.operation === 'quality_context')!.outputs!;
+    const items = ['feature_support', 'residual_matrix', 'concept_lineage'].flatMap(part => quality[part]?.violations ?? []);
+    const decisions = trace.filter(step => step.operation === 'review_decision').map(step => step.outputs!);
+    return { items, candidates: quality.concept_lineage?.candidates ?? [], decisions };
+  };
+
+  it('violations name the gaps/candidates they target; questions with a code get the same IDs', () => {
+    for (const { row, snapshot } of RUNS) {
+      const record = execution(snapshot);
+      const { items } = raw(record);
+      const judgement = exportJudgement(snapshot)!;
+      if (!judgement.record_valid) throw new Error('expected a valid record');
+      for (const violation of record.decision!.violations) {
+        const ids = [...new Set(items.filter(item => item.code === violation.code).map(item => item.gap_id ?? item.concept_id!))];
+        const line = judgement.violations.find(text => text.includes(`(${violation.code} ·`))!;
+        if (ids.length) expect(line, `${row.case} ${violation.code}`).toContain(`대상 ${ids.join(', ')}`);
+        else expect(line).not.toContain('대상 ');
+      }
+    }
+    const enumGuide = exportJudgement(RUNS[0].snapshot)!;
+    if (!enumGuide.record_valid) throw new Error('expected a valid record');
+    expect(enumGuide.violations.find(text => text.includes('(SUPPORT_UNKNOWN ·'))).toContain('대상 GAP-002, GAP-003, GAP-005, GAP-007, GAP-008');
+  });
+
+  it('each turned-down candidate carries its stored lineage verdict and own codes; one without codes is not called rejected on its merits', () => {
+    for (const { snapshot } of HELD) {
+      const record = execution(snapshot);
+      const { items, candidates } = raw(record);
+      const judgement = exportJudgement(snapshot)!;
+      if (!judgement.record_valid) throw new Error('expected a valid record');
+      for (const item of judgement.rejected_candidates) {
+        expect(item.lineage_valid).toBe(candidates.find(candidate => candidate.concept_id === item.id)?.valid ?? null);
+        expect(item.codes).toEqual([...new Set(items.filter(violation => violation.concept_id === item.id).map(violation => violation.code))]);
+      }
+      const markdown = exportMarkdown(buildExport('live', snapshot, [], [], '2026-10-06T10:00:00.000Z', [snapshot]));
+      for (const item of judgement.rejected_candidates) expect(markdown).toContain(item.codes.length ? `${item.id} ${item.title} · 대응 Gap` : '자기 위반 없음, 실행 전체가 끝나 선택 불가');
+    }
+    const enumGuide = exportJudgement(RUNS[0].snapshot)!;
+    if (!enumGuide.record_valid) throw new Error('expected a valid record');
+    expect(enumGuide.rejected_candidates.map(item => [item.id, item.lineage_valid, item.codes])).toEqual([['CONCEPT-001', true, []], ['CONCEPT-002', false, ['CONCEPT_WITHOUT_CONFIRMED_GAP']]]);
+  });
+
+  it('check rounds follow every stored review decision and mark repeats; the 8B runs repeat the same violations to the revision limit', () => {
+    for (const { row, snapshot } of RUNS) {
+      const record = execution(snapshot);
+      const { decisions } = raw(record);
+      const judgement = exportJudgement(snapshot)!;
+      if (!judgement.record_valid) throw new Error('expected a valid record');
+      expect(judgement.check_rounds.map(round => [round.action, round.codes])).toEqual(decisions.map(item => [item.action, item.violations!.map(v => v.code)]));
+      const markdown = exportMarkdown(buildExport('live', snapshot, [], [], '2026-10-06T10:00:00.000Z', [snapshot]));
+      expect(markdown, row.case).toContain('회차별 검사 결과(Agent 내부 수정 회차, 사용자 조건 변경 회차와 다름):');
+    }
+    for (const { snapshot } of FAILED) {
+      const judgement = exportJudgement(snapshot)!;
+      if (!judgement.record_valid) throw new Error('expected a valid record');
+      expect(judgement.check_rounds.map(round => [round.action, round.repeated])).toEqual([['revise', false], ['revise', true], ['unresolved', true]]);
+    }
+  });
+});
+
 describe('real held / failed runs in the actual React DOM (record 034)', () => {
   let host: HTMLDivElement;
   let root: Root;
@@ -278,6 +343,14 @@ describe('real held / failed runs in the actual React DOM (record 034)', () => {
     const cited = new Set([...output.needs.flatMap(need => need.evidence_ids), ...output.gaps.flatMap(gap => gap.evidence_ids)]);
     const unused = output.review_assessments.map(item => item.evidence_id).filter(id => !cited.has(id));
     expect([...host.querySelectorAll('[data-unused-review]')].map(node => node.getAttribute('data-unused-review'))).toEqual(unused);
+    // R4 U3: every rejected candidate states why, rows without a candidate body are listed, and check rounds are shown.
+    const rejectedOutput = execution(snapshot).rejected_output;
+    expect([...host.querySelectorAll('[data-rejected-concept]')].map(node => node.getAttribute('data-rejected-concept'))).toEqual((rejectedOutput?.concepts ?? []).map(concept => concept.id));
+    for (const node of host.querySelectorAll('[data-rejected-concept]')) expect(node.querySelector('[data-field="rejection"]')).not.toBeNull();
+    const orphans = (rejectedOutput?.concept_assessments ?? []).filter(item => !(rejectedOutput?.concepts ?? []).some(concept => concept.id === item.concept_id)).map(item => item.concept_id);
+    expect([...host.querySelectorAll('[data-orphan-assessment]')].map(node => node.getAttribute('data-orphan-assessment'))).toEqual(orphans);
+    expect(host.querySelectorAll('.check-rounds [data-round]').length).toBeGreaterThan(0);
+    if (row.recorded_status === 'failed') expect(host.querySelector('.check-rounds [data-field="terminal"]')?.textContent).toContain('revision_limit');
   });
 
   it.each(RUNS.map(item => [item.row.case, item] as const))('%s: the revision timeline does not call a first run without candidates "the first run\'s candidates"', async (_name, { snapshot }) => {

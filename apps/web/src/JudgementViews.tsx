@@ -1,6 +1,7 @@
 import type { Evidence } from './domain';
-import { executionKindText, judgementView, planningExecutionView, reasonText, unusedReviewIds, violationText } from './judgement';
-import type { JudgementDecision, JudgementInput, JudgementOutput, PlanningExecution, SemanticAssessment, StoredDecision } from './judgement';
+import { executionKindText, judgementView, planningExecutionView, reasonText, traceFacts, unusedReviewIds, violationText } from './judgement';
+import type { JudgementDecision, JudgementInput, JudgementOutput, PlanningExecution, SemanticAssessment, StoredDecision, TraceFacts } from './judgement';
+import { TERMINAL_TEXT } from './planning';
 import type { RunSnapshot } from './planning';
 
 const POLARITY: Record<string, string> = { complaint: '불편', positive: '긍정', conflicting: '상충', irrelevant: '무관', uncertain: '불확실' };
@@ -17,8 +18,8 @@ function TextList({ title, items, empty }: { title: string; items: string[]; emp
  * One core judgement as the planner sees it: the core's review decision first, then the declared assessments it was
  * checked against. Fixture declarations are labelled as such so they never read as model output.
  */
-export function JudgementPanel({ input, output, decision, fixture }: { input: JudgementInput; output: JudgementOutput; decision: JudgementDecision | StoredDecision; fixture: boolean }) {
-  const view = judgementView(input, output, decision);
+export function JudgementPanel({ input, output, decision, fixture, facts = null }: { input: JudgementInput; output: JudgementOutput; decision: JudgementDecision | StoredDecision; fixture: boolean; facts?: TraceFacts | null }) {
+  const view = judgementView(input, output, decision, facts);
   const sources = new Map<string, Evidence>(input.sources.map(item => [item.id, item]));
   const featureName = (id: string) => input.features.find(item => item.id === id)?.name ?? id;
   // Record 034 audit U4 (r2d2): an assessed complaint no need/gap cites was silently dropped by the judgement.
@@ -99,11 +100,35 @@ function DecisionOnly({ decision }: { decision: StoredDecision }) {
 }
 
 /** Candidates the core produced and then turned down; kept for review, never selectable. */
-function RejectedCandidates({ output }: { output: JudgementOutput }) {
-  if (!output.concepts.length) return null;
+function RejectedCandidates({ output, facts = null }: { output: JudgementOutput; facts?: TraceFacts | null }) {
+  // Record 034 audit U3: say why each candidate was turned down. A candidate with no violation of its own is not
+  // "rejected" on its merits; the whole run stopped. Duplication rows whose candidate body was never stored are listed too.
+  const orphans = output.concept_assessments.filter(item => !output.concepts.some(concept => concept.id === item.concept_id));
+  if (!output.concepts.length && !orphans.length) return null;
   return <section className="rejected-output" aria-label="거절된 후보">
-    <h4 className="sub">검사에서 거절된 마지막 후보 <small>{output.concepts.length}개 · 선택·내보내기 대상 아님</small></h4>
-    <ul>{output.concepts.map(concept => <li key={concept.id}><span className="id">{concept.id}</span> {concept.title}<span className="scope-flag"> · 거절됨</span></li>)}</ul>
+    {output.concepts.length ? <><h4 className="sub">검사에서 거절된 마지막 후보 <small>{output.concepts.length}개 · 선택·내보내기 대상 아님</small></h4>
+    <ul>{output.concepts.map(concept => {
+      const lineage = facts?.lineage.get(concept.id);
+      const assessment = output.concept_assessments.find(item => item.concept_id === concept.id);
+      return <li key={concept.id} data-rejected-concept={concept.id}><span className="id">{concept.id}</span> {concept.title}
+        <small> · 대응 Gap {concept.gap_ids.join(', ') || '없음'}{lineage ? ` · ${lineage.valid ? '확인된 불편 Gap에 연결됨' : '확인되지 않은 Gap에 연결됨'}` : ''}{assessment ? ` · ${DUPLICATION[assessment.duplication]} — ${assessment.reason}` : ''}</small>
+        {lineage?.codes.length
+          ? <span className="scope-flag" data-field="rejection"> · 검사 위반: {lineage.codes.map(code => reasonText(code)).join(' / ')}</span>
+          : <span className="scope-flag" data-field="rejection"> · {lineage ? '자기 위반 없음 · 실행 전체가 끝나 선택 불가' : '거절됨(후보별 사유 기록 없음)'}</span>}</li>;
+    })}</ul></> : null}
+    {orphans.length ? <><h4 className="sub">후보 본문 없이 남은 중복 판단 <small>{orphans.length}건 · 평가 목록 불일치(ASSESSMENT_COVERAGE) 대상</small></h4>
+    <ul>{orphans.map(item => <li key={item.concept_id} data-orphan-assessment={item.concept_id}><span className="id">{item.concept_id}</span> {DUPLICATION[item.duplication]}<small> — {item.reason}</small></li>)}</ul></> : null}
+  </section>;
+}
+
+/** Agent-internal check rounds read from the trace: not the planner's request revisions. Repeats are marked. */
+function CheckRounds({ facts, terminal }: { facts: TraceFacts; terminal: string | null }) {
+  if (!facts.rounds.length) return null;
+  return <section className="check-rounds" aria-label="회차별 검사 결과">
+    <h4 className="sub">회차별 검사 결과 <small>Agent 내부 수정 회차 · 사용자 조건 변경 회차와 다름</small></h4>
+    <ol>{facts.rounds.map(round => <li key={round.round} data-round={round.round}>{round.round}회차(내부 수정 {round.revision_count}회 뒤) · {DECISION_LABEL[round.action] ?? round.action}
+      {round.codes.length ? <small> · 위반 {round.codes.join(', ')}</small> : <small> · 위반 없음</small>}{round.repeated ? <span className="scope-flag" data-field="repeated"> · 이전 회차와 같은 위반 반복</span> : null}</li>)}</ol>
+    {terminal ? <p className="muted" data-field="terminal">종료 사유: {TERMINAL_TEXT[terminal] ?? terminal} ({terminal})</p> : null}
   </section>;
 }
 
@@ -116,7 +141,7 @@ function OutputWithoutDecision({ output, status }: { output: JudgementOutput; st
     <TextList title="보류 사유" items={output.hold_reasons} />
     <TextList title="미해결" items={output.unresolved} />
     <TextList title="후보 없음 사유" items={output.no_candidate_reasons} />
-    {output.concepts.length ? <RejectedCandidates output={output} /> : null}
+    <RejectedCandidates output={output} />
   </section>;
 }
 
@@ -140,6 +165,7 @@ export function ExecutionPanel({ snapshot }: { snapshot: RunSnapshot }) {
   // The pill names the record kind; its colour follows how the run ended so a held/failed record never looks successful.
   const accepted = execution.status === 'completed' && execution.decision?.action === 'accept';
   const headTone = execution.execution_kind === 'fixture' ? 'fixture' : accepted ? 'done' : execution.status === 'failed' ? 'error' : 'notice';
+  const facts = traceFacts(execution.trace);
   return <section className="panel planning-panel execution-panel" aria-label="판단 실행 기록">
     <div className="planning-head"><div><p className="eyebrow">CORE RECORD</p><h3>판단 실행 기록 <span className="id">{snapshot.run.id}</span></h3></div><span className={`run-status ${headTone}`}>{executionKindText(execution.execution_kind, view.model_calls)}<small>{STATUS_LABEL[execution.status]} · 내부 수정 {revised}/2</small></span></div>
     <dl className="run-meta">
@@ -156,10 +182,11 @@ export function ExecutionPanel({ snapshot }: { snapshot: RunSnapshot }) {
       <div><dt>제외 조건</dt><dd>{original.exclusions.length ? original.exclusions.join(' / ') : '없음'}</dd></div>
     </dl>
     {execution.output && execution.decision
-      ? <JudgementPanel input={execution.input} output={execution.output} decision={execution.decision} fixture={execution.execution_kind === 'fixture'} />
+      ? <JudgementPanel input={execution.input} output={execution.output} decision={execution.decision} fixture={execution.execution_kind === 'fixture'} facts={facts} />
       : execution.output ? <OutputWithoutDecision output={execution.output} status={execution.status} />
         : <>{execution.decision ? <DecisionOnly decision={execution.decision} /> : null}<p className="muted">판단 출력이 저장되지 않았습니다({STATUS_LABEL[execution.status]}). 위의 오류와 실행 순서를 확인해 주세요.</p></>}
-    {execution.rejected_output ? <RejectedCandidates output={execution.rejected_output} /> : null}
+    {execution.rejected_output ? <RejectedCandidates output={execution.rejected_output} facts={facts} /> : null}
+    <CheckRounds facts={facts} terminal={execution.correction_budget?.terminal_reason ?? null} />
     <SemanticReviews execution={execution} />
     <h4 className="sub">실행 순서 <small>trace {execution.trace.length}단계</small></h4>
     <ol className="events">{execution.trace.map((step, index) => <li key={`${step.stage}-${step.operation}-${index}`}><span className="stage">{step.stage}</span><span>{step.operation}</span>{typeof step.elapsed_ms === 'number' ? <code>{(step.elapsed_ms / 1000).toFixed(1)}s</code> : null}</li>)}</ol>
