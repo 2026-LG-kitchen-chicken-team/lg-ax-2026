@@ -37,7 +37,7 @@ function sameFilters(actual: ReviewTrendFilters, expected: ReviewTrendFilters) {
 }
 
 /**
- * Issue #149: monthly/seasonal complaint ratios with their denominators, empty-period and small-sample marks, the review
+ * Issue #149: monthly/seasonal topic mention ratios with their denominators, empty-period and small-sample marks, the review
  * texts behind a bar, and a hand-off of the chosen bucket to a planning request. Numbers come only from a fixed aggregate
  * (server or labelled synthetic fixture); the panel checks them before drawing and never recomputes them.
  */
@@ -195,8 +195,8 @@ export function ReviewTrendsPanel({ mode, workspace, data, modelId, productGroup
   return <section className="panel trends-panel" aria-label="리뷰 동향">
     <div className="trends-head">
       <img src="/kitchen-evidence-icon.png" width={32} height={32} alt="" className="trends-icon" />
-      <div><p className="eyebrow">REVIEW TRENDS</p><h3>월·계절별 불편 리뷰 동향</h3>
-        <p className="hint">해당 기간의 유효한 고유 리뷰 전체를 분모로 한 비율입니다. 한 리뷰가 여러 주제에 해당할 수 있어 주제별 합은 분모보다 클 수 있습니다. 리뷰 수는 판매량이나 수요 증가를 뜻하지 않습니다.</p></div>
+      <div><p className="eyebrow">REVIEW TRENDS</p><h3>월·계절별 리뷰 주제 언급 비율</h3>
+        <p className="hint">해당 주제를 언급한 리뷰 수를 해당 기간의 유효한 고유 리뷰 전체로 나눈 비율입니다. 불편이나 감정의 비율을 의미하지 않습니다. 한 리뷰가 여러 주제를 언급할 수 있어 주제별 합은 분모보다 클 수 있습니다. 리뷰 수는 판매량이나 수요 증가를 뜻하지 않습니다.</p></div>
     </div>
 
     <div className="trends-controls">

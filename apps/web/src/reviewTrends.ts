@@ -28,7 +28,15 @@ export interface TrendAggregate {
 export const SMALL_SAMPLE = 20;
 
 const TOPIC_LABELS: Record<string, string> = {
-  cleaning: '청소 불편', odor: '냄새', storage: '수납·정리', noise: '소음', cooling: '냉각', loading: '적재', settings: '설정 반복',
+  cleaning: '청소 관련',
+  temporary_storage: '식품 임시보관',
+  food_findability: '식품 위치·찾기',
+  manual_guidance: '설명서·조작 안내',
+  dish_loading_guidance: '식기 배치·적재 안내',
+  rotating_arm_clearance: '회전팔 간섭·간격',
+  heating_preset_management: '가열 설정 저장·재호출',
+  // Existing explicit fixture topics keep their display names; they are not the DATA collector taxonomy.
+  odor: '냄새', storage: '수납·정리', noise: '소음', cooling: '냉각', loading: '적재', settings: '설정 반복',
 };
 export function topicLabel(id: string): string {
   return Object.hasOwn(TOPIC_LABELS, id) ? `${TOPIC_LABELS[id]} (${id})` : id;
