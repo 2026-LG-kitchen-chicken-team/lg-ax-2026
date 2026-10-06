@@ -158,7 +158,7 @@ function ComparisonTable({ snapshot, features, evidence }: { snapshot: RunSnapsh
   const rows = buildComparison(snapshot.output, features, [...evidence.values()]);
   const notes = judgedNotes(snapshot);
   return <div className="table-scroll">
-    {notes && !notes.accepted ? <p className="scope-flag" role="note" data-comparison-unaccepted>코어가 채택하지 않은 실행({runStatusView(snapshot.run.status).label})의 대조입니다. 원문 검토용이며 결론이 아닙니다. '판단'은 현재 기능의 설명서 지원이고, 불편 해소 여부는 따로 표시합니다.</p> : null}
+    {notes && !notes.accepted ? <p className="scope-flag" role="note" data-comparison-unaccepted>코어가 채택하지 않은 실행이거나 저장 기록이 일치하지 않습니다({runStatusView(snapshot.run.status).label}). 원문 검토용이며 결론이 아닙니다. '판단'은 현재 기능의 설명서 지원이고, 불편 해소 여부는 따로 표시합니다.</p> : null}
     <table className="comparison-table">
     <thead><tr><th>모델</th><th>고객 불편</th><th>연결된 기존 기능</th><th>기능 조건</th><th>판단</th><th>남은 불편</th><th>근거</th><th>확인할 질문</th></tr></thead>
     <tbody>{rows.map(row => {

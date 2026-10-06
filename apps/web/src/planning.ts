@@ -464,7 +464,7 @@ ${item}`))),
 }
 
 const STATUS_LABELS: Record<string, string> = {
-  supported: '기존 기능 제공', unsupported: '남은 불편 있음', insufficient_evidence: '근거 부족·보류',
+  supported: '기존 기능 제공', unsupported: '설명서상 미지원', insufficient_evidence: '근거 부족·보류',
   proposed: '제안', needs_review: '검토 필요', accepted: '채택', rejected: '제외',
 };
 
@@ -541,7 +541,7 @@ export function exportMarkdown(doc: ExportDocument): string {
     `- 제품군: ${doc.request.product_group}`, `- 대상 고객: ${doc.request.target_customer}`, `- 사용 상황: ${doc.request.use_situation}`,
     `- 기획 요청: ${doc.request.improvement_task}`, `- 제외 조건: ${doc.request.exclusions.join(', ') || '(없음)'}`, `- 검토 모델: ${doc.request.model_ids.join(', ')}`, '',
     '## 불편·기존 기능 대조표', '',
-    ...(doc.judgement?.record_valid && doc.judgement.decision !== 'accept' ? [`> 코어가 채택하지 않은 실행(${STATUS_TEXT[doc.judgement.status]})의 대조입니다. 원문 검토용이며 결론이 아닙니다. '판단'은 현재 기능의 설명서 지원이고, 불편 해소 여부는 따로 적었습니다.`, ''] : []),
+    ...(doc.judgement?.record_valid && (doc.judgement.decision !== 'accept' || doc.judgement.status !== 'completed' || doc.judgement.violations.length > 0 || doc.judgement.record_problems.length > 0) ? [`> 코어가 채택하지 않은 실행이거나 저장 기록이 일치하지 않습니다(${STATUS_TEXT[doc.judgement.status]}). 원문 검토용이며 결론이 아닙니다. '판단'은 현재 기능의 설명서 지원이고, 불편 해소 여부는 따로 적었습니다.`, ''] : []),
     '| 모델 | 불편 | 연결 기능 | 기능 조건 | 판단 | 남은 불편 | 근거 | 확인할 질문 |', '|---|---|---|---|---|---|---|---|',
     ...doc.comparison.map(row => `| ${cell(row.model_id)} | ${cell(`${row.need_id}${row.gap_id ? `/${row.gap_id}` : ''}: ${row.pain}${row.desired_outcome ? ` → 바라는 결과: ${row.desired_outcome}` : ''}`)} | ${cell(row.feature_ids.join(', ') || '없음')} | ${cell(row.conditions.join(', ') || '없음')} | ${cell(comparisonVerdict(row))} | ${cell(row.remaining_pain || '-')} | ${cell(`${row.evidence_ids.join(', ')}${row.non_complaint_reviews.length ? ` · 불편 근거로 인용했지만 같은 실행이 불편으로 판단하지 않은 리뷰: ${row.non_complaint_reviews.map(item => `${item.evidence_id}(${POLARITY_TEXT[item.polarity] ?? item.polarity})`).join(', ')}` : ''}`)} | ${cell(row.questions.join(' / ') || '-')} |`),
     '', '## 콘셉트 후보', '',

@@ -326,7 +326,7 @@ export function judgedNotes(snapshot: RunSnapshot): JudgedNotes | null {
   if (view.kind !== 'ok' || !view.execution.output) return null;
   const output = view.execution.output;
   return {
-    accepted: view.execution.status === 'completed' && view.execution.decision?.action === 'accept', status: view.execution.status,
+    accepted: acceptedStoredExecution(snapshot, view), status: view.execution.status,
     resolution: new Map(output.gap_assessments.map(item => [item.gap_id, item.resolution])),
     basis: new Map(output.gap_assessments.map(item => [item.gap_id, item.support_basis])),
     desired: new Map(output.desired_outcomes.map(item => [item.need_id, item.desired_outcome])),
