@@ -57,11 +57,22 @@ export function projectName(request: PlanningRequest): string {
 
 export interface RunStatusView { label: string; detail: string; tone: 'done' | 'notice' | 'error' | 'progress' }
 
-export function runStatusView(status: RunSnapshot['run']['status']): RunStatusView {
+/**
+ * A failed run is not always an execution error: the core also ends as failed when both internal revisions were used
+ * and violations remain (correction_budget.terminal_reason "revision_limit", record 034). The reason is read, never guessed.
+ */
+const FAILED_DETAIL: Record<string, string> = {
+  revision_limit: '내부 수정 한도(2회)를 모두 썼지만 검사 위반이 남아 종료했습니다. 실행 오류가 아닙니다. 미해결 항목과 판단 실행 기록을 확인해 주세요.',
+  unresolved: '판단 문제가 해결되지 않은 채 종료했습니다. 실행 오류가 아닙니다. 미해결 항목을 확인해 주세요.',
+  backend_failure: '모델 연결 오류로 실행이 중단됐습니다. 미해결 항목을 확인해 주세요.',
+  policy_changed: '실행 중 수정 정책이 바뀌어 중단했습니다. 미해결 항목을 확인해 주세요.',
+};
+
+export function runStatusView(status: RunSnapshot['run']['status'], terminalReason: string | null = null): RunStatusView {
   switch (status) {
     case 'completed': return { label: '분석 완료', detail: 'Agent 판단이 계약 검사를 통과해 저장된 결과입니다. 제외 조건 준수와 실현 가능성은 기획자가 원문과 함께 검토해야 합니다.', tone: 'done' };
-    case 'held': return { label: '보류', detail: '근거가 부족하거나 확인이 필요해 결과를 보류했습니다.', tone: 'notice' };
-    case 'failed': return { label: '실패', detail: '실행 중 오류가 발생했습니다. 미해결 항목을 확인해 주세요.', tone: 'error' };
+    case 'held': return { label: '보류', detail: '근거 확인이 필요해 결과를 보류했습니다. 함께 발견된 판단 오류가 있으면 판단 실행 기록에서 확인해 주세요.', tone: 'notice' };
+    case 'failed': return { label: '실패', detail: (terminalReason && Object.hasOwn(FAILED_DETAIL, terminalReason) ? FAILED_DETAIL[terminalReason] : null) ?? '실행 중 오류가 발생했습니다. 미해결 항목을 확인해 주세요.', tone: 'error' };
     case 'not_implemented': return { label: '요청만 저장됨', detail: '판단 Agent가 아직 연결되지 않아 분석을 실행하지 않았습니다.', tone: 'notice' };
     default: return { label: '진행 중', detail: '실행이 끝나지 않았습니다.', tone: 'progress' };
   }
