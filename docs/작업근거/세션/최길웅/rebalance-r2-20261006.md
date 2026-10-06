@@ -27,6 +27,7 @@
 | `e2e-fridge/` | FRIDGE-A, `stored-run-first.json` | held. concept_draft 프롬프트 23,300자 > 16,000 → `INVALID_ARGUMENT`(생성 없음). E2E 실패(Generation metadata missing) |
 | `e2e-dishwasher/` | 1회차·조건 교정, 내보내기, 화면 | held(`NO_CANDIDATE_*`) → failed/unresolved(`NON_COMPLAINT_AS_NEED`, 2/2). **flow_completed**, 내보내기 완전, 이전 불변 |
 | `e2e-microwave/` | 1회차·조건 교정 | held(`NO_CANDIDATE_*`) → `MODEL_UNAVAILABLE`(1.2초). E2E 실패 |
+| `e2e-microwave-retry/` | 전자레인지 재시도(같은 프로젝트 이어서) | 1회차 8회 생성 → held(`NO_CANDIDATE_*`, 2/2). 조건 교정은 semantic_review 16,730자 > 16,000 → `INVALID_ARGUMENT`. E2E 실패 |
 | `manual/` | 수동 점검 9개 + 1차 시도 기록 | 9 ok(1차의 판정 기준 오류 2건은 기록 028에 설명) |
 | `manual-first-run/` | 첫 run 화면, 모델 호출 없음 | NO_CANDIDATE 두 코드의 한글 설명과 다음 행동 확인 |
 
@@ -44,10 +45,10 @@
   - 최신 main 웹이 실제 서버·실제 모델의 보류·실패·미해결 run을 성공처럼 보이지 않게 저장·표시·이력화·내보낸다.
   - 새 코어의 후보 없음 코드를 한글 설명과 다음 행동으로 보여 준다.
   - 중복 클릭·조건 중복·새로고침 재조회가 안전하다.
-  - 현재 main 코어에서 FRIDGE-A는 콘셉트 단계 프롬프트 길이 초과로 후보 단계에 갈 수 없다.
+  - 현재 main 코어에서 FRIDGE-A는 concept_draft, MICROWAVE-A 재실행은 semantic_review의 프롬프트 길이 초과(16,000)로 accept 판정에 도달하지 못했다.
 - 지지하지 않음:
   - accept·후보 선택 흐름(실제 정상 run 없음)
   - 판단 품질
-  - 전자레인지 `MODEL_UNAVAILABLE`의 원인(상세 가림, 재시도 안 함)
+  - 전자레인지 첫 `MODEL_UNAVAILABLE`의 정확한 원인(상세 가림). 재시도에서는 재현되지 않았다
   - `INVALID_NO_CANDIDATE_REVIEW`의 실제 화면(이번 run에서 발생 안 함)
   - P2-WEB-003 완료

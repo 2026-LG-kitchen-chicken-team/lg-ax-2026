@@ -92,6 +92,12 @@
   - 근거: `planning_agent.py`에서 no_candidate_review의 VALIDATION_FAILED일 때 이 코드를 낸다.
   - 이번 실제 run들에서는 이 코드가 나오지 않아 실제 화면 확인은 하지 못했다.
 
+### 3-5. 전자레인지 재시도(PR #163 게시 뒤, 같은 서버, `e2e-microwave-retry/`)
+- `MODEL_UNAVAILABLE`은 일시 오류였다.
+- 재시도 1회차 `run-53c5eb69…`(기존 프로젝트의 요청 회차 2): 8회 모두 실제 생성, concept_draft 9,792 / 10,027자. 2회 수정 뒤 held(`NO_CANDIDATE_*`).
+- 조건 교정 `run-2202ca45…`: need_extract → product_compare → concept_draft(10,000자, 생성) → **semantic_review 프롬프트 16,730자 > 16,000** → `INVALID_ARGUMENT`(생성 없음). held, 수정 0회.
+- 결론: 냉장고는 concept_draft, 전자레인지는 semantic_review(accept 직전)에서 **같은 프롬프트 길이 상한**에 막힌다. E2E는 "Generation metadata missing"으로 실패했다(생성 없는 호출 거절).
+
 ## 4. 검사
 - 웹 `npm run test`: 26 files / 441 passed / 5 skipped, safe-ci 4/4.
 - typecheck·build 통과.
@@ -102,7 +108,7 @@
 - 완료(개별 검증, 부분): accept 전 웹 흐름 9개 항목, 세 제품 실제 run 저장·표시·내보내기·이전 불변(식기세척기 E2E 완주), 새 코어 문구 확인, 코어 막힘의 원인 특정.
 - 미완료:
   - 정상 accept run 수신 뒤 후보 선택 → 조건 변경 → 변경 전후·원문·내보내기 검증
-  - 전자레인지 `MODEL_UNAVAILABLE` 재확인
+  - (해결) 전자레인지 `MODEL_UNAVAILABLE`은 재시도에서 일시 오류로 확인. 대신 semantic_review 길이 초과를 새로 발견
   - PM 검수·병합. P2-WEB-003 전체 Done이 아니다.
-- 대기 의존: 황대겸 콘셉트 단계 프롬프트 길이(또는 어댑터 상한) 해결, 독립 대조된 정상 run.
+- 대기 의존: 황대겸 concept_draft·semantic_review 프롬프트 길이(또는 어댑터 상한) 해결, 독립 대조된 정상 run.
 - 다음: PR 게시 → P2-WEB-003 검수 요청 보고 → 시험 서버 종료·개발 서버 재시작.
