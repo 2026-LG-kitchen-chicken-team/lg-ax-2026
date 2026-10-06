@@ -1,0 +1,69 @@
+{
+  "base_commit": "3f88c0aa880a793c54e1c94e519fda4d8c068d3e",
+  "image": "sha256:36ad082dbccf05bc9cff7c4dc5766e9ab7ed8c42198b0b731cf3831c546aaaf0",
+  "boundary": {
+    "network": "none",
+    "uid": 65534,
+    "read_only_source": true,
+    "read_only_root": true,
+    "cap_drop": [
+      "ALL"
+    ],
+    "no_new_privileges": true,
+    "credential_mounts": 0,
+    "socket_mounts": 0
+  },
+  "targeted": {
+    "tests": 73,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "exit_code": 0,
+    "output": "targeted-check.txt",
+    "output_sha256": "6f635825ab773cd0d39e330e7c176b748b2d098dad69c24830e5b19144c543bc",
+    "patterns": [
+      "test_planning_agent.py",
+      "test_skill_runner.py",
+      "test_recorded_stage_alignment.py",
+      "test_recorded_hold_feedback.py",
+      "test_stage_complaint_coverage.py"
+    ]
+  },
+  "preserved_initial_failures": [
+    {
+      "stage": "host_source_copy",
+      "reason": "Windows path length exceeded during frozen source copy; no container/model started",
+      "resolution": "Short workspace snapshot path"
+    },
+    {
+      "stage": "isolated_targeted_check",
+      "tests": 73,
+      "failures": 5,
+      "errors": 0,
+      "exit_code": 1,
+      "reason": "CLI child process lacked PYTHONPATH; ModuleNotFoundError",
+      "resolution": "Export copied package paths to child processes inside zero-auth Docker",
+      "output": "targeted-environment-failure.txt",
+      "output_sha256": "f3f69921f3bc4d2f579166c8c6e90ec5bcae2261d2a217ca4c372272b886444c"
+    }
+  ],
+  "static": {
+    "status": "pass",
+    "exit_code": 0,
+    "output": "static-check.txt",
+    "output_sha256": "5c70aed747c771b7ae9b09bbfe672492b9d3e52b33e675c271313e675528470a",
+    "rules_byte_identical": true,
+    "member_original_files_verified": 8,
+    "member_original_sections": 231,
+    "member_original_session_files": 28,
+    "contracts": "pass",
+    "phase2": "valid",
+    "meaning": "record structure/evidence integrity only"
+  },
+  "new_model_calls": 0,
+  "product_inputs_and_recorded_outputs_unchanged": true,
+  "tested_product_source_sha256": {
+    "packages/core/src/lgax_core/planning_agent.py": "9ae1b03f596052e4b8cce80bdd9149aeadd5aaf1e984e08017f6afcb161e97ef",
+    "skills/need_extract/SKILL.md": "c8bba47e1d7518239c234a499e8a3bc29bee312f62290d24512b7610f80c1716"
+  }
+}
