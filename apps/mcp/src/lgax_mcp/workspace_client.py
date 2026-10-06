@@ -101,3 +101,27 @@ class WorkspaceClient:
 
         if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,99}", value):
             raise DomainError("INVALID_ARGUMENT", "프로젝트/실행 ID 형식을 확인해 주세요.")
+
+    def review_trends(self, filters):
+        validate("ReviewTrendRequest", filters)
+        self._identifier(filters["project_id"])
+        params = {key: value for key, value in filters.items() if key != "project_id"}
+        return self._request("GET", f"/api/workspace/projects/{filters['project_id']}/review-trends",
+                             "WorkspaceReviewTrendResponse", params=params)
+
+    def get_review_trends(self, project_id, aggregate_id):
+        self._identifier(project_id)
+        self._identifier(aggregate_id)
+        return self._request("GET", f"/api/workspace/projects/{project_id}/review-trends/{aggregate_id}",
+                             "WorkspaceReviewTrendResponse")
+
+    def trend_evidence(self, project_id, aggregate_id, bucket_id, topic_id, offset=0, limit=50):
+        payload = {"project_id": project_id, "aggregate_id": aggregate_id, "bucket_id": bucket_id,
+                   "topic_id": topic_id, "offset": offset, "limit": limit}
+        validate("ReviewTrendEvidenceRequest", payload)
+        self._identifier(project_id)
+        self._identifier(aggregate_id)
+        return self._request("GET", f"/api/workspace/projects/{project_id}/review-trends/{aggregate_id}/evidence",
+                             "WorkspaceTrendEvidenceResponse",
+                             params={key: value for key, value in payload.items()
+                                     if key not in {"project_id", "aggregate_id"}})

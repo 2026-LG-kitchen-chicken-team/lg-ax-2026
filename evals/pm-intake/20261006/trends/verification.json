@@ -1,0 +1,190 @@
+{
+  "scope": "PM Issue152 common trend contract/gateway; no production collector",
+  "base_commit": "b477860b2612f51b7e81f37b635c05ba02338bfb",
+  "checks": {
+    "targeted_87": {
+      "source_commit": "b477860b2612f51b7e81f37b635c05ba02338bfb",
+      "worktree_input_sha256": "5d95cda1e66ea20868f4d3fac68cc1c0d18e0e89067075b168605f7ad3981599",
+      "input_files": 2356,
+      "command": [
+        "python",
+        "-c",
+        "import sys,unittest; sys.path.insert(0,\"tests\"); names=[\"test_review_trend_contracts\",\"test_trend_validation\",\"test_workspace_trends\",\"test_workspace_api\",\"test_workspace_store\",\"test_workspace_planning\",\"test_workspace_client_pilot\"]; result=unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromNames(names)); sys.exit(not result.wasSuccessful())"
+      ],
+      "returncode": 0,
+      "stopped_reason": null,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "source_changed": [],
+      "model_calls": 0,
+      "private_receipt_sha256": "d8096bd03dd8d6c6d0584573670446f12678cc070153fdc3e8e5b47c62958590"
+    },
+    "web_433_plus_4_build": {
+      "source_commit": "b477860b2612f51b7e81f37b635c05ba02338bfb",
+      "worktree_input_sha256": "73def8cb0c54be69463f546fde15b8f6c7cb5fa86c8b9a53f67a98b46dc53f83",
+      "input_files": 2355,
+      "command": [
+        "python",
+        "-c",
+        "import subprocess; commands=[[\"npm\",\"ci\",\"--ignore-scripts\",\"--offline\"],[\"npm\",\"test\"],[\"npm\",\"run\",\"build\"]]; [subprocess.run(command,cwd=\"/workspace/apps/web\",check=True) for command in commands]"
+      ],
+      "returncode": 0,
+      "stopped_reason": null,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "source_changed": [],
+      "model_calls": 0,
+      "private_receipt_sha256": "990d8b5e774b1cd731a509eafbe8b0b490510d8389c08c1940e639d1a77e72b8"
+    },
+    "contracts_phase2_history_rules": {
+      "source_commit": "b477860b2612f51b7e81f37b635c05ba02338bfb",
+      "worktree_input_sha256": "eaa6d2858cb47bf7d049049d52b542dde0fa8cc1ae8c529817ad420dba4cbe25",
+      "input_files": 2356,
+      "command": [
+        "python",
+        "-c",
+        "import os,subprocess; subprocess.run([\"git\",\"init\",\"--bare\",\"/artifacts/history.git\"],check=True); subprocess.run([\"git\",\"--git-dir=/artifacts/history.git\",\"fetch\",\"--no-tags\",\"/workspace/.validator-history.bundle\",\"refs/remotes/origin/main:refs/heads/history\"],check=True); os.environ.update(GIT_DIR=\"/artifacts/history.git\",GIT_WORK_TREE=\"/workspace\",GIT_CONFIG_COUNT=\"1\",GIT_CONFIG_KEY_0=\"safe.directory\",GIT_CONFIG_VALUE_0=\"/artifacts/history.git\"); commands=[[\"python\",\"scripts/check_contracts.py\"],[\"python\",\"scripts/phase2.py\",\"validate\"],[\"python\",\"scripts/harness.py\",\"validate\"],[\"python\",\"scripts/sync_agent_rules.py\",\"--check\"]]; [subprocess.run(command,check=True) for command in commands]"
+      ],
+      "returncode": 0,
+      "stopped_reason": null,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "source_changed": [],
+      "model_calls": 0,
+      "private_receipt_sha256": "894fd34983cc8b2523721bb5ea9139aeb13a5c9927bed9852343ba2966f80319"
+    },
+    "lint": {
+      "source_commit": "b477860b2612f51b7e81f37b635c05ba02338bfb",
+      "worktree_input_sha256": "cbaa10cdb87e83709a27d639dcacc52b80047e73e6118ec0f019006ffcd80584",
+      "input_files": 2356,
+      "command": [
+        "python",
+        "-m",
+        "ruff",
+        "check",
+        "--no-cache",
+        "--ignore",
+        "EXE002",
+        "apps/api/src/lgax_api/workspace_server.py",
+        "apps/api/src/lgax_api/workspace_trends.py",
+        "apps/api/src/lgax_api/trend_validation.py",
+        "apps/mcp/src/lgax_mcp/workspace_client.py",
+        "apps/mcp/src/lgax_mcp/workspace_server.py",
+        "tests/test_workspace_trends.py",
+        "tests/test_trend_validation.py",
+        "tests/test_review_trend_contracts.py"
+      ],
+      "returncode": 0,
+      "stopped_reason": null,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "source_changed": [],
+      "model_calls": 0,
+      "private_receipt_sha256": "0188f737ce1c5d8b8e6f5a61dae63eedfb897f19a77e535c4dbb233c93acf960"
+    },
+    "full_1345_skip_3": {
+      "source_commit": "b477860b2612f51b7e81f37b635c05ba02338bfb",
+      "worktree_input_sha256": "cbaa10cdb87e83709a27d639dcacc52b80047e73e6118ec0f019006ffcd80584",
+      "input_files": 2356,
+      "command": [
+        "python",
+        "-c",
+        "import os,sys,subprocess,pathlib; subprocess.run([sys.executable,\"-m\",\"venv\",\"--system-site-packages\",\"/artifacts/test-env\"],check=True); pathlib.Path(\"/artifacts/test-env/lib/python3.11/site-packages/lgax-validator.pth\").write_text(\"/opt/lgax-venv/lib/python3.11/site-packages\\n/workspace/apps/api/src\\n/workspace/apps/mcp/src\\n/workspace/packages/core/src\\n/workspace/packages/contracts/src\\n\"); subprocess.run([\"git\",\"init\",\"/workspace\"],check=True); subprocess.run([\"git\",\"-c\",\"safe.directory=/workspace\",\"fetch\",\"--no-tags\",\"/workspace/.validator-history.bundle\",\"refs/remotes/origin/main:refs/heads/history\"],check=True); os.environ.update(GIT_CONFIG_COUNT=\"1\",GIT_CONFIG_KEY_0=\"safe.directory\",GIT_CONFIG_VALUE_0=\"/workspace\"); os.execv(\"/artifacts/test-env/bin/python\",[\"/artifacts/test-env/bin/python\",\"-m\",\"unittest\",\"discover\",\"-s\",\"tests\",\"-v\"])"
+      ],
+      "returncode": 0,
+      "stopped_reason": null,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "source_changed": [],
+      "model_calls": 0,
+      "private_receipt_sha256": "842fd4e61447d688a935ce2d76ec73b7c22fb9787ac0a463a4f1de3ab731c6f9"
+    }
+  },
+  "full_regression": "1345 tests passed (3 skipped) in zero-auth Docker; actual PR CI is separately observed",
+  "independent_source_review": {
+    "reviewer": "/root/pr_data_triage",
+    "unresolved_blockers": [],
+    "fixed_findings": [
+      "small-sample warning enforcement",
+      "canonical annotation snapshot order"
+    ]
+  },
+  "limits": [
+    "fixtures are synthetic, no source-date approval",
+    "default collector None returns 501",
+    "DATA148 production aggregation and WEB149 graphs pending",
+    "external ChatGPT/Claude private calls unverified",
+    "real planning eight executions complete zero unchanged",
+    "team automation remains OFF"
+  ]
+}
