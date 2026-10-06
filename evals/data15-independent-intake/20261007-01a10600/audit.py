@@ -103,9 +103,14 @@ def main():
         payload=value['input']
         data=value['dataset']
         full_hash=canonical(payload)
+        common_request_keys=set(payload['request']) & set(r['manifest_request'])
         pm_rows.append({'case_id':r['case_id'],'category':r['category'],'material_path':r['path'],
             'material_file_sha256':r['sha256'],'canonical_input_sha256':full_hash,
             'input_vs_manifest_request_equal':canonical(payload['request'])==canonical(r['manifest_request']),
+            'input_request_keys':sorted(payload['request']),
+            'manifest_request_keys':sorted(r['manifest_request']),
+            'shared_request_fields_equal':all(payload['request'][k]==r['manifest_request'][k] for k in common_request_keys),
+            'request_comparison_scope':'Different request containers are recorded; full-object inequality alone is not a semantic error. PM must pin delivery/binding.',
             'source_count':len(payload['sources']),'dataset_file_canonical_sha256':canonical(data),
             'exact_development_input_matches':[f['path'] for f in references if f['kind']=='development' and full_hash in f['input_hashes']],
             'source_kind':data['manifest']['source_kind'],'manifest_declared_independent':pm['independent_from_development'],
@@ -136,7 +141,13 @@ def main():
         'available_public_PM_reference_bundle':'Six declared categories, not evidence of private replacement/independent approval',
         'evaluator_assigned_here':False,'material_disposition_chosen_here':False,
         'model_execution_or_independent_scoring':False})
-    save(o,'source-pins.json',{k:v for k,v in meta.items() if k not in ('archives',)})
+    public_pins={k:v for k,v in meta.items() if k not in ('archives','public_PM_materials')}
+    public_pins['public_PM_materials']=[
+        {**{k:v for k,v in r.items() if k!='manifest_request'},
+         'manifest_request_canonical_sha256':canonical(r['manifest_request'])}
+        for r in meta['public_PM_materials']]
+    public_pins['raw_requests_removed_from_publication_metadata']=True
+    save(o,'source-pins.json',public_pins)
     save(o,'audit-checks.json',{'status':'PASS_for_intake_audit_only','input_schema_checks':8,
         'source_occurrences':16,'archive_entries_checked':sum(len(b['entries']) for b in meta['archives']),
         'archive_entry_byte_mismatches':0,'development_overlap_inputs':dev,'public_overlap_inputs':public,
