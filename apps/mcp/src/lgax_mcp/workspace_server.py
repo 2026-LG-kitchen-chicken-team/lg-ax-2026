@@ -76,6 +76,31 @@ def create_workspace_mcp(client: WorkspaceClient) -> FastMCP:
         """Search evidence using the project's frozen model/document version; reject changed datasets."""
         return call(client.search, project_id, q, model_id, limit)
 
+    @mcp.tool(annotations=read)
+    def review_trends(filters: dict) -> dict:
+        """Read approved dated review counts for one project/model. No dates or sales are inferred.
+
+        The private backend requires a trusted collector. NOT_IMPLEMENTED means
+        there is no trend result; never invent a chart or describe it as analysis.
+        Keep the returned aggregate_id and use trend_evidence for source originals.
+        """
+        return call(client.review_trends, filters)
+
+    @mcp.tool(annotations=read)
+    def get_review_trends(project_id: str, aggregate_id: str) -> dict:
+        """Resume the exact immutable aggregate shared with the web workspace."""
+        return call(client.get_review_trends, project_id, aggregate_id)
+
+    @mcp.tool(annotations=read)
+    def trend_evidence(project_id: str, aggregate_id: str, bucket_id: str, topic_id: str,
+                       offset: int = 0, limit: int = 50) -> dict:
+        """Read only original reviews actually included in a saved bucket/topic.
+
+        Follow next_offset for complete paging; representative IDs can be truncated.
+        Review count is not sales volume, causality or proof of market demand.
+        """
+        return call(client.trend_evidence, project_id, aggregate_id, bucket_id, topic_id, offset, limit)
+
     return mcp
 
 

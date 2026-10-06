@@ -20,6 +20,7 @@ from lgax_core.workspace_planning import EnvPlanningRunner, PlanningRunner
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from .workspace_auth import TokenRegistry
+from .workspace_trends import TrendCollector, WorkspaceTrends
 
 ORIGINS = {"http://127.0.0.1:5173", "http://localhost:5173"}
 
@@ -28,6 +29,7 @@ _ERROR_MESSAGES = {
     "FORBIDDEN": "이 작업을 수행할 권한이 없습니다.",
     "NOT_FOUND": "작업 기록을 찾을 수 없습니다.",
     "INVALID_ARGUMENT": "작업실 입력 값을 확인해 주세요.",
+    "INVALID_INPUT": "동향 조회 조건을 확인해 주세요.",
     "INVALID_MODEL_ID": "제품 모델을 확인해 주세요.",
     "INVALID_DOCUMENT_VERSION": "문서 버전을 확인해 주세요.",
     "INVALID_EVIDENCE_ID": "근거 ID를 확인해 주세요.",
@@ -100,11 +102,14 @@ def error_status(error: DomainError) -> int:
 
 def create_workspace_app(db_path: Path, registry: TokenRegistry, *,
                          planning_runner: PlanningRunner | None = None,
-                         evidence_store: DemoStore | None = None) -> FastAPI:
+                         evidence_store: DemoStore | None = None,
+                         trend_collector: TrendCollector | None = None) -> FastAPI:
     evidence = default_store() if evidence_store is None else evidence_store
     workspace = WorkspaceStore(db_path, evidence_store=evidence, planning_runner=planning_runner)
+    trends = WorkspaceTrends(workspace, trend_collector)
     app = FastAPI(title="LG AX authenticated local workspace", version=CONTRACT_VERSION)
     app.state.workspace = workspace
+    app.state.review_trends = trends
     app.add_middleware(
         CORSMiddleware,
         allow_origins=sorted(ORIGINS),
@@ -268,6 +273,43 @@ def create_workspace_app(db_path: Path, registry: TokenRegistry, *,
                 "contract_version": CONTRACT_VERSION,
             },
         )
+
+    @app.get("/api/workspace/projects/{project_id}/review-trends")
+    def review_trends(
+        request: Request, project_id: str,
+        model_id: str, dataset_version: str, start_date: str, end_date_exclusive: str,
+        source_kind: str, source_ids: Annotated[list[str], Query(min_length=1, max_length=50)],
+        granularity: str = "month", timezone: str = "Asia/Seoul",
+        topic_ids: Annotated[list[str] | None, Query(max_length=50)] = None,
+    ):
+        principal = request.state.principal
+        filters = {"project_id": project_id, "model_id": model_id, "source_ids": source_ids,
+                   "dataset_version": dataset_version, "start_date": start_date,
+                   "end_date_exclusive": end_date_exclusive, "source_kind": source_kind,
+                   "granularity": granularity, "timezone": timezone, "topic_ids": topic_ids or []}
+        return wrap("WorkspaceReviewTrendResponse", {
+            "aggregate": trends.collect(project_id, filters, principal.id, admin=principal.admin),
+            "contract_version": CONTRACT_VERSION,
+        })
+
+    @app.get("/api/workspace/projects/{project_id}/review-trends/{aggregate_id}")
+    def get_review_trends(request: Request, project_id: str, aggregate_id: str):
+        principal = request.state.principal
+        return wrap("WorkspaceReviewTrendResponse", {
+            "aggregate": trends.get(project_id, aggregate_id, principal.id, admin=principal.admin),
+            "contract_version": CONTRACT_VERSION,
+        })
+
+    @app.get("/api/workspace/projects/{project_id}/review-trends/{aggregate_id}/evidence")
+    def trend_evidence(request: Request, project_id: str, aggregate_id: str,
+                       bucket_id: str, topic_id: str,
+                       offset: int = Query(0, ge=0), limit: int = Query(50, ge=1, le=50)):
+        principal = request.state.principal
+        return wrap("WorkspaceTrendEvidenceResponse", {
+            **trends.evidence(project_id, aggregate_id, bucket_id, topic_id, principal.id,
+                              offset=offset, limit=limit, admin=principal.admin),
+            "contract_version": CONTRACT_VERSION,
+        })
 
     return app
 
