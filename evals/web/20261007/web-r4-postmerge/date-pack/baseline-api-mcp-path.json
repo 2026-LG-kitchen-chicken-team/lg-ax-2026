@@ -1,0 +1,112 @@
+{
+  "kind": "review_trend_consumption_path",
+  "observed_at": "2026-10-06T23:19:43.879474+00:00",
+  "server": "http://127.0.0.1:18883",
+  "collector": "main e7bc486 (#188 merged) + R4 web PRs, pm-synthetic-trends.v1 (test servers 18883/18885)",
+  "project_id": "project-da6858f5e0c6405ea0b799ea219ad72e",
+  "filters": {
+    "project_id": "project-da6858f5e0c6405ea0b799ea219ad72e",
+    "model_id": "FRIDGE-A",
+    "source_ids": [
+      "PM-TREND-DEMO-REVIEWS-v1"
+    ],
+    "dataset_version": "pm-synthetic-trends.v1",
+    "start_date": "2026-10-01",
+    "end_date_exclusive": "2026-11-01",
+    "granularity": "month",
+    "topic_ids": [],
+    "source_kind": "synthetic",
+    "timezone": "Asia/Seoul"
+  },
+  "checks": {
+    "api_requery_same_aggregate": true,
+    "api_empty_topic_filter_kept": true,
+    "api_evidence_same_key": true,
+    "api_evidence_in_bucket_ids": true,
+    "api_evidence_document_version": true,
+    "mcp_tools_present": true,
+    "mcp_query_same_id": true,
+    "mcp_saved_identical": true,
+    "mcp_same_dataset_sha256": true,
+    "mcp_evidence_identical": true
+  },
+  "api_evidence_status": 200,
+  "aggregate_id": "TREND-ae0d7d36f6b78bdbbad34e57d1122c394b2e3908618aa1466e8e4e71518ab9c9",
+  "dataset_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+  "counts": {
+    "input_review_count": 36,
+    "excluded_out_of_scope_count": 26,
+    "in_scope_review_count": 10,
+    "excluded_undated_count": 2,
+    "excluded_outside_period_count": 5,
+    "duplicate_count": 0,
+    "eligible_unique_review_count": 3,
+    "unclassified_review_count": 0
+  },
+  "buckets": [
+    {
+      "bucket_id": "MONTH-2026-10",
+      "label": "2026년 10월",
+      "period_start": "2026-10-01",
+      "period_end_exclusive": "2026-11-01",
+      "partial_period": false,
+      "total_reviews": 3,
+      "topics": [
+        {
+          "topic_id": "cleaning",
+          "topic_review_count": 1,
+          "ratio": 0.3333333333333333,
+          "evidence_count": 1,
+          "evidence_ids": [
+            "DEMO-TREND-REVIEW-EVIDENCE-001"
+          ],
+          "evidence_ids_truncated": false
+        },
+        {
+          "topic_id": "food_findability",
+          "topic_review_count": 0,
+          "ratio": 0.0,
+          "evidence_count": 0,
+          "evidence_ids": [],
+          "evidence_ids_truncated": false
+        },
+        {
+          "topic_id": "manual_guidance",
+          "topic_review_count": 1,
+          "ratio": 0.3333333333333333,
+          "evidence_count": 1,
+          "evidence_ids": [
+            "DEMO-TREND-REVIEW-EVIDENCE-004"
+          ],
+          "evidence_ids_truncated": false
+        },
+        {
+          "topic_id": "temporary_storage",
+          "topic_review_count": 1,
+          "ratio": 0.3333333333333333,
+          "evidence_count": 1,
+          "evidence_ids": [
+            "DEMO-TREND-REVIEW-EVIDENCE-002"
+          ],
+          "evidence_ids_truncated": false
+        }
+      ]
+    }
+  ],
+  "evidence_ids": [
+    "DEMO-TREND-REVIEW-EVIDENCE-001"
+  ],
+  "mcp_tools": [
+    "create_workspace_project",
+    "create_workspace_run",
+    "get_review_trends",
+    "get_workspace_project",
+    "get_workspace_run",
+    "list_workspace_projects",
+    "list_workspace_runs",
+    "review_trends",
+    "search_workspace_evidence",
+    "trend_evidence"
+  ],
+  "result": "consumption_path_ok"
+}

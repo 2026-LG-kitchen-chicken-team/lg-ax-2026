@@ -1,0 +1,34 @@
+{
+ "errors_public": [
+  {
+   "code": "VALIDATION_FAILED",
+   "message": "판단 결과 검사를 통과하지 못했습니다.",
+   "details": {
+    "violations": [
+     {
+      "code": "UNCERTAINTY_CONTEXT_MISSING",
+      "evidence_id": "DEV-01-REVIEW",
+      "path": "uncertainty_assessments/0/questions"
+     },
+     {
+      "code": "UNCERTAINTY_SCOPE_MISMATCH"
+     }
+    ],
+    "code": "EMPTY_NEEDS_WITHOUT_JUDGEMENT",
+    "conflicting_paths": [
+     "review_assessments",
+     "result/review_assessments"
+    ],
+    "reason": "schema_mismatch",
+    "evidence_id": "DEV-01-REVIEW",
+    "declared_polarity": "uncertain"
+   }
+  },
+  {
+   "code": "MODEL_UNAVAILABLE",
+   "message": "판단 모델 실행을 완료하지 못했습니다.",
+   "details": {}
+  }
+ ],
+ "note": "HTTP POST/GET public projection on main f490fc2, DiagnosticRunner fixture, no model"
+}
