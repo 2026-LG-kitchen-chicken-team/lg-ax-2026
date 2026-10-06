@@ -45,5 +45,6 @@ PM의 #13 배정 댓글 `6011538542`는 21개 원문 근거의 실제 등록→�
 
 - PR #176을 Ready for review로 전환했다. GitHub에 정이량을 CODEOWNER reviewer로 요청한 이벤트가 생성됐다. PR 설명에서도 Draft 표현을 Ready-for-review 부분 제출로 바로잡았다.
 - 최신 문서 커밋 `a55458d`까지 필요한 CI 4/4 성공을 화면에서 확인했다. 현재 review pending이며 branch가 최신 main보다 뒤처져 있다. merge는 하지 않았다.
-- #16에 18:03 KST 후속 진행·남은 작업 댓글을 추가해 #13/#148 수치, PR/CI/reviewer 상태, 13개 open assignment 검색 결과, #13 session blocker, #16 본문과 최신 R2 배정의 상태 불일치를 태그와 함께 보고했다.
+- #16에 18:03 KST 후속 진행·남은 작업 댓글, #148에 18:05 KST PR/collector 상태 댓글을 추가했다. #13/#148 수치, PR/reviewer 상태, 13개 open assignment 검색 결과, #13 session blocker, #16 본문과 최신 R2 배정의 상태 불일치를 태그와 함께 보고했다.
+- 이 기록을 PR에 올린 새 head `3e42e43`에서 GitHub checks 4개가 다시 실행 중임을 18:05에 확인했다. `a55458d`까지의 4/4 성공 결과와 구분한다.
 - #16 issue body와 checklist는 건드리지 않았다. 본문은 계속 `PM 미채택 확장`, 체크리스트는 미완료로 표시되어 있고, PM의 공식 상태 정리가 필요하다.
