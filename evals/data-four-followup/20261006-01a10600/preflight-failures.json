@@ -15,6 +15,16 @@
       "scope_violation_observed": false,
       "new_model_forward_calls": 0,
       "original_console_failure_preserved_in_chat": true
+    },
+    {
+      "stage": "publisher identity preflight, before push or PR",
+      "reason": "Successful reviewed github_identity helper returns None; host glue incorrectly expected the login string",
+      "correction": "Require configured account ginaginaring, then invoke existing raising-on-mismatch identity validator",
+      "actual_account_validation_passed": true,
+      "authentication_failure": false,
+      "external_publication_before_correction": false,
+      "new_model_forward_calls": 0,
+      "original_console_failure_preserved_in_chat": true
     }
   ]
 }

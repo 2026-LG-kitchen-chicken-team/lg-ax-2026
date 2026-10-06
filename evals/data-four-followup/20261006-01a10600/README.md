@@ -40,7 +40,7 @@ FR-01은 기존 F10 ID가 현재 선반 들어올리기 문장이고 질문은 �
 |결과 확인|별도 network-none container에서 `python -B /workspace/score_retrieval.py`; 모델 가중치 미마운트, 기존 공개개발 gold는 이 단계만|[진단 점수](retrieval-summary.json), [무결성 검사](result-integrity.json):225시도/45그룹/630근거 대조PASS. 독립 평가 아님|
 |날짜·평가 준비|고정Git 원바이트와 PM 공개 pin 읽기, 공개 입력6과 manifest 메타데이터만 대조|[날짜 상태](dated-pack-status.json), [독립 준비 상태](independent-readiness.json). 비공개 답안/리뷰 원문 새읽기·게시 없음|
 
-[준비 실패](preflight-failures.json)는 설치 폴더 untracked 및 Git helper의 status 앞공백 제거로 게시범위검사가 잘못 거절된 2건이다. 설치 폴더만 로컬 ignore 처리했고 경로검사는 파일명 목록으로 수정했다. 실제 영역 위반·새 모델 재실행은 없었다. 원 실패는 보존했으며 실제225시도 실패와 섞지 않았다. `torch_dtype` deprecation 경고는 실행 로그에 보존했으며 실행 실패가 아니다.
+[준비 실패](preflight-failures.json)는 설치 폴더 untracked, Git helper의 status 앞공백 제거, GitHub 신원검사 반환값 해석으로 준비검사가 잘못 거절된 3건이다. 설치 폴더만 로컬 ignore 처리했고 경로검사는 파일명 목록으로 수정했다. GitHub의 정상 신원검사 함수는 반환값 없이 통과하므로 비교식을 제거했다. 실제 영역 위반·계정 불일치·새 모델 재실행은 없었다. 원 실패는 보존했으며 실제225시도 실패와 섞지 않았다. `torch_dtype` deprecation 경고는 실행 로그에 보존했으며 실행 실패가 아니다.
 
 ## PM에게 필요한 결정과 다음 하나
 
@@ -51,3 +51,11 @@ FR-01은 기존 F10 ID가 현재 선반 들어올리기 문장이고 질문은 �
 5. 최신PM R4의 PR190 보류/질문 유실 P1은 CORE11/공통연결 및 WEB25와 별도 조율할 작업이다. 이번 네 자료 작업에서 공통판단 코드를 수정하거나 대신 통합완료라고 하지 않는다.
 
 **다음 작업 하나:** PM이 전달한 승인된 운영 읽기 snapshot/연결로 PR183 인수 version/source ID/model/문서 version/원문 hash를 실제 응답과 대조한다. PM 검수·실제 병합/운영 통합·#12 등 부모 Done은 이번 부분 PR로 처리하지 않는다.
+
+## 게시 전 기존 검사·평가 인계
+
+[기존 검사7개](existing-checks.json)는 고정 snapshot `6744985c1a2d9d49a32fe7a76866c93ac01444c4`에서 별도 인증·네트워크 없는 container로 exit0이다. 계약48정의/가상5모델·36리뷰·요청3 검사, AGENTS/CLAUDE 바이트 일치, 개인 기록 이관의 저장 바이트 보존, phase2 next/003·004·005 packet 읽기를 포함한다. next/packet은 읽기이며 수행·채점·정식 상태 변경이 아니다. Git을 마운트하지 않아 로컬 이관검사의 Git 원commit 결속 검사는 이 명령에서 실행하지 않았고 PR의 실제 CI gate로 분리한다.
+
+[버전 경계](version-boundary.json)는 고정 원문21/질문15/기존BM25 source가 새 artifact commit에도 그대로임을 확인한다. 검색 실행판d728과 결과/검사판674를 구분하며, 다른 코드 버전의 성공을 현재 모델 실행처럼 표시하지 않는다.
+
+CORE가 인계한 의미 기준을 여섯 유형의 [독립 인계 체크표](independent-handoff-checklist.csv)로 연결했다. 특정 사례의 새 정답·점수·가중치가 아니라 검토해야 할 축이며, 미확인 수신자·원문/답안을 대신 채우지 않았다. 비공개 자료는 이번 PR에 포함하지 않는다.

@@ -1,0 +1,198 @@
+{
+  "member": "신진하",
+  "ready": [
+    {
+      "task": {
+        "id": "P2-DATA-001",
+        "owner": "신진하",
+        "title": "세 제품 자료팩·원문·모델·버전 계약 준비",
+        "requirement_ids": [
+          "R03",
+          "R04",
+          "R05",
+          "R06",
+          "R07",
+          "R08",
+          "R13"
+        ],
+        "depends_on": [],
+        "allowed_execution_kinds": [
+          "deterministic",
+          "fixture"
+        ],
+        "actions": [
+          "가상 모델 3~5개·합성 리뷰 30~50개와 세 사례를 준비한다.",
+          "원문 위치·모델·버전·자료 성격과 근거 ID를 검증한다."
+        ],
+        "status": "ready",
+        "scope": "required",
+        "issue_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/12",
+        "branch": null,
+        "individual_evidence": null,
+        "pm_review": null,
+        "merge": null,
+        "integration": null,
+        "completion": null,
+        "block_reason": null,
+        "history": []
+      },
+      "notice": "Packet is an instruction to the current worker, not background execution.",
+      "execution_authorized": true,
+      "adoption_blockers": [],
+      "read_first": [
+        "AGENTS.md",
+        "CLAUDE.md",
+        "docs/작업기록/README.md",
+        "docs/작업기록/신진하/README.md",
+        "docs/작업근거/신진하/README.md"
+      ],
+      "evidence_contract": {
+        "task_id": "P2-DATA-001",
+        "owner": "신진하",
+        "result": "pass",
+        "execution_kind": [
+          "deterministic",
+          "fixture"
+        ],
+        "observations": [
+          "actual result"
+        ],
+        "code_versions": [
+          {
+            "path": "changed source",
+            "sha256": "actual hash"
+          }
+        ],
+        "source_versions": [
+          {
+            "path": "fixed source/contract/input",
+            "sha256": "actual hash"
+          }
+        ],
+        "models": [],
+        "checks": [
+          {
+            "name": "actual command/check",
+            "passed": true,
+            "evidence": {
+              "path": "immutable output",
+              "sha256": "actual hash"
+            }
+          }
+        ],
+        "limitations": [
+          "actual limitation"
+        ]
+      },
+      "next_state_after_finish": "individual_verified; PM review/actual merge/integration still required"
+    },
+    {
+      "task": {
+        "id": "P2-DATA-005",
+        "owner": "신진하",
+        "title": "리뷰 동향 자료·기술 탐색 확장",
+        "requirement_ids": [
+          "R12",
+          "R15"
+        ],
+        "depends_on": [
+          "P2-PM-001"
+        ],
+        "allowed_execution_kinds": [
+          "live_service"
+        ],
+        "actions": [
+          "필수 원 자료 품질 회귀와 독립 근거 대조를 우선하고 날짜/주제 sidecar·결정적 집계기를 병렬 개발한다.",
+          "원36리뷰/8열CSV를 보존하며 합성 날짜를 별도 자료 버전으로 분리한다.",
+          "PM152 TrendCollection의 원문/hash·모델/버전·분모/중복/KST/표본 경고·membership을 실제 검사한다.",
+          "자료 접근·라이선스·인용 조건과 후속 기술/경쟁 탐색 범위를 기록한다."
+        ],
+        "status": "ready",
+        "scope": "proposed_extension",
+        "adoption_required": true,
+        "adoption": {
+          "path": "harness/phase2/runs/pm-rebalance-20261006/P2-DATA-005-adoption.json",
+          "sha256": "be334611de95e5c4b4c75d94fdc7099148ad69abd8c6b1ce363de8170500b1c5"
+        },
+        "issue_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/16",
+        "branch": null,
+        "individual_evidence": null,
+        "pm_review": null,
+        "merge": null,
+        "integration": null,
+        "completion": null,
+        "block_reason": null,
+        "history": [
+          {
+            "at": "2026-10-06T05:07:31+00:00",
+            "action": "PM_rebalance_and_adopt_extension",
+            "status": "ready",
+            "previous_scope": {
+              "title": "기술·경쟁 탐색 확장 타당성 실험",
+              "depends_on": [
+                "P2-DATA-003"
+              ],
+              "allowed_execution_kinds": [
+                "live_model"
+              ],
+              "actions": [
+                "원안 요구 완성을 우선하고 추가 기능의 채택 여부는 PM에게 확인한다.",
+                "자료 접근·라이선스·인용과 적용 조건을 검증한다."
+              ],
+              "status": "pending"
+            }
+          }
+        ]
+      },
+      "notice": "Packet is an instruction to the current worker, not background execution.",
+      "execution_authorized": true,
+      "adoption_blockers": [],
+      "read_first": [
+        "AGENTS.md",
+        "CLAUDE.md",
+        "docs/작업기록/README.md",
+        "docs/작업기록/신진하/README.md",
+        "docs/작업근거/신진하/README.md"
+      ],
+      "evidence_contract": {
+        "task_id": "P2-DATA-005",
+        "owner": "신진하",
+        "result": "pass",
+        "execution_kind": [
+          "live_service"
+        ],
+        "observations": [
+          "actual result"
+        ],
+        "code_versions": [
+          {
+            "path": "changed source",
+            "sha256": "actual hash"
+          }
+        ],
+        "source_versions": [
+          {
+            "path": "fixed source/contract/input",
+            "sha256": "actual hash"
+          }
+        ],
+        "models": [],
+        "checks": [
+          {
+            "name": "actual command/check",
+            "passed": true,
+            "evidence": {
+              "path": "immutable output",
+              "sha256": "actual hash"
+            }
+          }
+        ],
+        "limitations": [
+          "actual limitation"
+        ]
+      },
+      "next_state_after_finish": "individual_verified; PM review/actual merge/integration still required"
+    }
+  ],
+  "note": "No background execution or automatic task completion."
+}
