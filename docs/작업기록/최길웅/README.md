@@ -1,21 +1,23 @@
 # 최길웅 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
-## 최신 재개 요약 (작성자 갱신, 2026-10-06 18:5x KST, 기록 036)
+## 최신 재개 요약 (작성자 갱신, 2026-10-06 19:1x KST, 기록 034)
 
-- 상태: 자동화 OFF, Worker 예약 `LGAX-Worker-choigilung` Disabled. 수동 진행. 기록은 #165 새 규칙(날짜·ID 파일 + 이 구역)을 따른다.
-- **열린 PR 없음(기록 PR 제외).** [#170](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/170)(R3 소비 경로 검증 + 자료 미연결 안내)은 main `c9a724e`에 병합됐다. #158·#163·#164는 PM이 [#169](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/169)로 선택 인수하고 superseded로 닫았다(branch 보존).
-- 막힘(모두 다른 담당 결과 대기; 18:00 R3 막힘 보고 = 기록 033, 원인 정정 = 기록 035):
-  - WEB-005/#27: 동향 collector 부분 구현이 신진하 [PR #176](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/176)(head `bebb54e`)으로 올라왔다. main 미병합이고, PM 기준 실제 운영 연결·자료 날짜·sidecar 승인·검증이 남았다. 실제 collector의 같은 aggregate ID 검증은 그 뒤다.
-    - 사전 확인(기록 036): 내 시험 서버에만 #176 collector와 후보 sidecar를 주입해 R3 두 시험을 돌렸다. API→MCP 10/10, 웹 E2E 통과. 실제 자료는 날짜가 없어 분모 0·날짜 없음 10의 빈 집계이고, 0%로 꾸며지지 않았다. 협의할 것은 세 가지다: 불편 비율 vs 언급 비율 의미 불일치, 주제 이름표, 시연용 날짜 버전.
-  - WEB-003/#25: **WEB 검증용 정상(accept) run이 아직 없다.** 현재 코어 결과는 의미 품질 held/failed다(PM 27B 뜻풀이 held, 8B failed, 모든 단계 생성 수행, 최대 프롬프트 14,446자). 06:08Z의 프롬프트 길이 초과(23,300/16,730자 INVALID_ARGUMENT)는 당시 실패로 보존한다([당시 보고](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25#issuecomment-6010457730)). 이후 PR #169(main `2636999`)가 입력을 보완했다. 내 PC에서 최신 main으로 다시 돌려 보지는 않았다(미확인). [기록 035](2026-10-06/최길웅-20261006-035.md)
+- 상태: 자동화 OFF, Worker 예약 `LGAX-Worker-choigilung` Disabled. 수동 진행. 기록은 #165 새 규칙(날짜·ID 파일 + 이 구역)을 따른다. 작업 전 메일·의존 점검(main `dcbd18e` 규칙)을 한다.
+- 열린 PR(PM 검수 대기):
+  - [#179](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/179) WEB-003: PM 실제 27B held·8B failed 원본 4개를 실제 HTTP→저장→HTTP·MCP로 재생. AI 표시 감사에서 확인된 결함 49건 중 상태 표시 정직성 11건을 수정했다(배지 색, 보류 원인 구분, revision_limit 툴팁, 거절 후보 문구, 이력 문구). [기록 034](2026-10-06/최길웅-20261006-034.md). #178 위에 쌓았다.
+  - [#178](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/178) WEB-005: #176 collector 사전 소비 확인(빈 집계 정직 표시). [기록 036](2026-10-06/최길웅-20261006-036.md)
+  - #172(기록 정정 035)는 main `94fd316`에 병합됐다.
+- 막힘:
+  - WEB-003/#25: WEB 검증용 정상(accept) run이 없다. 코어 결과는 의미 품질 held/failed다. 06:08Z 길이 초과는 당시 실패다([기록 035](2026-10-06/최길웅-20261006-035.md)).
+  - WEB-005/#27: #176 collector가 main 미병합이고 PM 주입 승인 전이다. 실제 자료는 날짜가 없어 빈 집계만 나온다. 협의할 것: 불편 vs 언급 비율, 주제 이름표, 시연용 날짜 버전.
 - 다음:
-  - #148이 나오면 `evals/web/20261006/web-integration-r3`의 두 시험(API→MCP, 웹 E2E)을 실제 collector로 실행한다.
-  - 코어 정상 run이 나오면 같은 run으로 후보 선택 → 조건 변경 → 내보내기를 검증한다.
-  - PM 새 배정이 오면 그것부터 한다.
-  - 진행 중: 기록 034(PM 실제 27B held·8B failed 원본의 웹 재생, 브랜치 `codex/web-real-replay-r3`, PR 전). #176 소비 경로 사전 확인.
-- 실서버 시험 주의: 사용자 서버 18867·18869·5173은 사용자 것이다. 5173을 비워야 하면 사용자에게 cmd 창 종료를 요청한다. 창 제목이 "선택"이면 Esc. 시험 작업 공간은 `Desktop/lgax-wt-live`.
-- 최신 기록 ID: 최길웅-20261006-036. 상세:
+  - 남은 표시 결함 38건(`evals/web/20261006/web-real-replay/display-audit.json`): U2 비교표(GAP 누락·판단 칸·희망 결과) → U4 내보내기 완전성 → U3 거절 사유·위반 대상 → U5 토큰·시간.
+  - 정상 run을 받으면 후보 선택 → 조건 변경 → 내보내기를 검증한다.
+  - PM이 #176 주입을 승인하면 같은 aggregate ID·membership으로 drilldown을 연결한다.
+- 실서버 시험: 사용자 18867·18869·5173은 사용자 것이다. 조회만 하는 시험은 `LGAX_E2E_PORT=5183`의 별도 Vite로 하고, 5173이 꼭 필요할 때만 사용자에게 창 종료를 요청한다. 시험 작업 공간은 `Desktop/lgax-wt-live`, 재생 DB는 `private/workspace-model-study-replay`.
+- 최신 기록 ID: 최길웅-20261006-034(마지막 완료, 17:3x 시작). 상세:
+  - 034 실제 27B held·8B failed 원본 웹 재생·상태 표시 정직성 수정(PR #179): [상세](2026-10-06/최길웅-20261006-034.md)
   - 036 R3 동향 소비 경로 #176 collector 사전 확인: [상세](2026-10-06/최길웅-20261006-036.md)
   - 035 PR #172 PM 검수 정정(막힘 원인 현재화)·착수 전 메일 점검: [상세](2026-10-06/최길웅-20261006-035.md)
   - 033 새 세션 인계·상태 정리·막힘 보고(원인 문구는 035에서 정정): [상세](2026-10-06/최길웅-20261006-033.md)
