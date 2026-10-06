@@ -1,0 +1,83 @@
+{
+  "kind": "review_trend_consumption_path",
+  "observed_at": "2026-10-06T08:04:39.264067+00:00",
+  "server": "http://127.0.0.1:18879",
+  "collector": "tests/test_workspace_trends.py::FixtureCollector (unit fixture, not DATA #148)",
+  "project_id": "project-88979c4b7b604fff9cf8d3e0e41f0c81",
+  "filters": {
+    "project_id": "project-88979c4b7b604fff9cf8d3e0e41f0c81",
+    "model_id": "FRIDGE-A",
+    "source_ids": [
+      "REVIEWS-CSV-v1.0"
+    ],
+    "dataset_version": "0.1.0",
+    "start_date": "2026-10-01",
+    "end_date_exclusive": "2026-11-01",
+    "granularity": "month",
+    "topic_ids": [],
+    "source_kind": "synthetic",
+    "timezone": "Asia/Seoul"
+  },
+  "checks": {
+    "api_requery_same_aggregate": true,
+    "api_empty_topic_filter_kept": true,
+    "api_evidence_same_key": true,
+    "api_evidence_in_bucket_ids": true,
+    "api_evidence_document_version": true,
+    "mcp_tools_present": true,
+    "mcp_query_same_id": true,
+    "mcp_saved_identical": true,
+    "mcp_same_dataset_sha256": true,
+    "mcp_evidence_identical": true
+  },
+  "aggregate_id": "TREND-069f73cc8b40e07533a38f7feea9ac4e25f84ed6430ee22dbf9a311c17ce920e",
+  "dataset_sha256": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03",
+  "counts": {
+    "input_review_count": 36,
+    "excluded_out_of_scope_count": 26,
+    "in_scope_review_count": 10,
+    "excluded_undated_count": 9,
+    "excluded_outside_period_count": 0,
+    "duplicate_count": 0,
+    "eligible_unique_review_count": 1,
+    "unclassified_review_count": 0
+  },
+  "buckets": [
+    {
+      "bucket_id": "MONTH-2026-10",
+      "label": "2026년 10월",
+      "period_start": "2026-10-01",
+      "period_end_exclusive": "2026-11-01",
+      "partial_period": false,
+      "total_reviews": 1,
+      "topics": [
+        {
+          "topic_id": "cleaning",
+          "topic_review_count": 1,
+          "ratio": 1,
+          "evidence_count": 1,
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-001"
+          ],
+          "evidence_ids_truncated": false
+        }
+      ]
+    }
+  ],
+  "evidence_ids": [
+    "REVIEW-EVIDENCE-001"
+  ],
+  "mcp_tools": [
+    "create_workspace_project",
+    "create_workspace_run",
+    "get_review_trends",
+    "get_workspace_project",
+    "get_workspace_run",
+    "list_workspace_projects",
+    "list_workspace_runs",
+    "review_trends",
+    "search_workspace_evidence",
+    "trend_evidence"
+  ],
+  "result": "consumption_path_ok"
+}

@@ -1,12 +1,11 @@
 # 정이량 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
-## 최신 근거 — 정이량-E042-PM-EXECUTION
+## 최신 근거 — 정이량-E043-CLOSEOUT
 
-- [코드/원문 고정·격리 검사·실모델/비용·PR/배정/Sent·한계](2026-10-06/정이량-E042-PM-EXECUTION.md).
-- [해당 지시/AI 해석/실제 수행](../../작업기록/정이량/2026-10-06/정이량-20261006-007-PM-EXECUTION.md).
-- Python1,420·웹482/Node4/빌드와 실제8B/27B의 failed/held를 구분한다. 원 기록 byte/시도/비용을 보존하며 모델 최종 채택·정상 시연·부모Done은 미완료다. 새 큰 후보122B의 공식manifest/자원은 evals/pm-prototype/20261006/model-candidates.json에 연결한다.
-- exactCI/병합/postmerge·운영 공유와 실제 실행 승인/배포는 별도 증거를 따른다. 자동화OFF·Done5/31요구verified0 유지.
+- PR169/170의exacthead·CI·실제병합·독립검수,격리API/MCP10검사·원실패,모델held·큰후보/미실측,실제배정Sent·노션재조회·OFF/metadatapin한계를연결한다.
+- 실collector/정상기획/실수요/전체Done은미완료다. 최신운영수신은Issue28의실응답으로확인한다.
+- [E043상세](2026-10-06/정이량-E043-CLOSEOUT.md)·[작업008](../../작업기록/정이량/2026-10-06/정이량-20261006-008-CLOSEOUT.md)·[E042이전](2026-10-06/정이량-E042-PM-EXECUTION.md).
 
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
