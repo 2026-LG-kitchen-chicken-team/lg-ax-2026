@@ -15,6 +15,7 @@ from typing import Any
 
 from jsonschema import Draft202012Validator
 
+from .concept_lineage import build_quality_context
 from .correction_budget import CorrectionBudget
 from .document_store import DocumentStore
 from .errors import DomainError
@@ -323,6 +324,8 @@ class PlanningAgent:
                            "upstream_assessments": upstream,
                            "skill_input": skill_input, "revision_count": payload["revision_count"],
                            "feedback": feedback}
+                if skill_id == "concept_draft":
+                    context["quality_context"] = build_quality_context(payload, output())
                 instructions = {
                     "need_extract": (
                         "이번 업무는 현재 사용 경험에서 불편과 희망 결과를 추출하는 단계입니다. "
@@ -522,11 +525,15 @@ class PlanningAgent:
                             "next_revision_count": payload["revision_count"] + int(revise),
                             "rerun_from": STAGE[SKILLS[index]] if revise else None,
                             "violations": [{"code": error["code"], "stage": STAGE[SKILLS[index]]}]}
-                retry_feedback = [{**decision["violations"][0], "details": deepcopy(error["details"])}]
+                retry_feedback = [{**decision["violations"][0], "message": error["message"],
+                                   "details": deepcopy(error["details"])}]
                 result["errors"].append(error)
             else:
                 current = output()
                 decision = review_judgement(payload, current)
+                quality_context = build_quality_context(payload, current)
+                event("review", "quality_context", {"input_sha256": input_digest(payload),
+                                                     "output_sha256": input_digest(current)}, quality_context)
                 result["output"] = deepcopy(current)
                 event("review", "review_judgement", {"input_sha256": input_digest(payload)}, decision)
                 citation_feedback = _compare_citation_feedback(payload, current, decision)
@@ -540,18 +547,20 @@ class PlanningAgent:
                     event("review", "compare_citation_retry", {"input_sha256": input_digest(payload)},
                           {"original_decision": original_decision, "decision": deepcopy(decision),
                            "feedback": deepcopy(citation_feedback)})
-                if decision["valid"] and decision["action"] == "accept" and not current["concepts"]:
+                if decision["valid"] and decision["action"] in ("accept", "hold") and not current["concepts"]:
                     context = {"request": payload["request"], "product": payload["product"],
                                "sources": payload["sources"], "features": payload["features"],
                                "judgement": current, "input_sha256": input_digest(payload),
                                "output_sha256": input_digest(current), "feedback": feedback}
+                    context["quality_context"] = quality_context
                     try:
                         report = model_call("review", "no_candidate_review", context,
                                             NO_CANDIDATE_INSTRUCTIONS + json.dumps(
                                                 context, ensure_ascii=False, separators=(",", ":")),
                                             no_candidate_review_schema(payload, current)).data
                         decision = review_no_candidate(payload, current, report)
-                        reviewed_questions = deepcopy(report["questions"])
+                        reviewed_questions = deepcopy(report["questions"] or (
+                            current["questions"] if current["status"] == "held" and decision["action"] == "hold" else []))
                         retry_feedback = no_candidate_feedback(report)
                         result["no_candidate_reviews"].append({"report": deepcopy(report), "decision": deepcopy(decision),
                                                                "reviewed_input": deepcopy(payload),
@@ -567,7 +576,8 @@ class PlanningAgent:
                                     "next_revision_count": payload["revision_count"] + int(revise),
                                     "rerun_from": "needs" if revise else None,
                                     "violations": [{"code": "INVALID_NO_CANDIDATE_REVIEW", "stage": "needs"}]}
-                        retry_feedback = [{**decision["violations"][0], "details": deepcopy(error.details)}]
+                        retry_feedback = [{**decision["violations"][0], "message": error.message,
+                                           "details": deepcopy(error.details)}]
                         event("review", "no_candidate_review_error", context, error.response())
                 if decision["valid"] and decision["action"] == "accept" and current["concepts"]:
                     valid_previous_analysis = True
@@ -579,6 +589,7 @@ class PlanningAgent:
                                "revision_count": payload["revision_count"],
                                "input_sha256": input_digest(payload), "output_sha256": input_digest(current),
                                "skill_input": {"constraints": payload["request"]["exclusions"]}, "feedback": feedback}
+                    context["quality_context"] = quality_context
                     try:
                         report = model_call("review", "semantic_review", context,
                                             INSTRUCTIONS + json.dumps(context, ensure_ascii=False, separators=(",", ":")),
@@ -600,7 +611,8 @@ class PlanningAgent:
                                     "next_revision_count": payload["revision_count"] + int(revise),
                                     "rerun_from": "concepts" if revise else None,
                                     "violations": [{"code": "INVALID_SEMANTIC_REVIEW", "stage": "concepts"}]}
-                        retry_feedback = [{**decision["violations"][0], "details": deepcopy(error.details)}]
+                        retry_feedback = [{**decision["violations"][0], "message": error.message,
+                                           "details": deepcopy(error.details)}]
                         event("review", "semantic_review_error", context, error.response())
             result["decision"] = decision
             event("review", "review_decision", {"input_sha256": input_digest(payload)}, decision)
@@ -672,7 +684,8 @@ class PlanningAgent:
                         # A preflight rejection made no attempt; repeating it would
                         # spin without spending the monotonic model-call budget.
                         return fail(DomainError(error["code"], error["message"], error["details"]))
-                    feedback = [{"code": error["code"], "stage": "review", "details": error["details"]}]
+                    feedback = [{"code": error["code"], "stage": "review", "message": error["message"],
+                                 "details": error["details"]}]
                 continue
             stage = decision["rerun_from"]
             begin = {"plan": 0, "retrieve": 0, "needs": 0, "compare": 1, "concepts": 2, "review": 0}[stage]

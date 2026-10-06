@@ -1,0 +1,97 @@
+{
+  "request": {
+    "product_group": "microwave",
+    "target_customer": "전자레인지로 간편식을 데우는 사용자",
+    "use_situation": "데우기 기능과 설정을 고를 때",
+    "improvement_task": "기존 데우기 기능과 중복되는 후보를 제외하고 반복 조작의 불편을 줄인다",
+    "exclusions": [
+      "설명서에 이미 있는 자동 데우기를 새 기능이라고 제안하지 않는다"
+    ],
+    "model_ids": [
+      "MICROWAVE-A"
+    ],
+    "dataset_version": "0.1.0-manual-quality-r1-development"
+  },
+  "product": {
+    "model_id": "MICROWAVE-A",
+    "name": "가상 전자레인지 A",
+    "product_group": "microwave",
+    "document_version": "1.0",
+    "source_kind": "synthetic"
+  },
+  "sources": [
+    {
+      "id": "MANUAL-005",
+      "model_id": "MICROWAVE-A",
+      "document_version": "1.0",
+      "source_kind": "synthetic",
+      "source_type": "manual",
+      "source_id": "MICROWAVE-A-MANUAL-v1.0",
+      "locator": {
+        "page": 5,
+        "section": "설정 저장과 호출"
+      },
+      "text": "자주 쓰는 시간과 출력 설정을 저장하고 원터치로 호출할 수 있습니다.",
+      "feature_ids": [
+        "FEATURE-005"
+      ]
+    },
+    {
+      "id": "REVIEW-EVIDENCE-034",
+      "model_id": "MICROWAVE-A",
+      "text": "매일 같은 음식을 데우는데 시간과 출력을 다시 입력해요.",
+      "source_kind": "synthetic",
+      "source_type": "review",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 35
+      },
+      "feature_ids": []
+    },
+    {
+      "id": "REVIEW-EVIDENCE-035",
+      "model_id": "MICROWAVE-A",
+      "text": "설정 저장 기능이 있다는 것을 몰랐어요.",
+      "source_kind": "synthetic",
+      "source_type": "review",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 36
+      },
+      "feature_ids": []
+    },
+    {
+      "id": "REVIEW-EVIDENCE-036",
+      "model_id": "MICROWAVE-A",
+      "text": "저장한 설정을 호출하는 버튼을 찾기 어려워요.",
+      "source_kind": "synthetic",
+      "source_type": "review",
+      "document_version": "1.0",
+      "source_id": "REVIEWS-CSV-v1.0",
+      "locator": {
+        "row": 37
+      },
+      "feature_ids": []
+    }
+  ],
+  "features": [
+    {
+      "id": "FEATURE-005",
+      "model_id": "MICROWAVE-A",
+      "document_version": "1.0",
+      "name": "설정 저장과 호출",
+      "description": "자주 쓰는 시간과 출력 설정을 저장하고 원터치로 호출할 수 있습니다.",
+      "conditions": [
+        "저장 기능에 설정 등록"
+      ],
+      "evidence_ids": [
+        "MANUAL-005"
+      ]
+    }
+  ],
+  "revision_count": 0,
+  "max_concepts": 3,
+  "changed_evidence_ids": []
+}

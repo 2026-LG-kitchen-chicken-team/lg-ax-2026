@@ -50,7 +50,9 @@ def stages_for(output):
 def semantic_for(context):
     def row(candidate):
         return {"concept_id": candidate["id"], "verdict": "satisfied", "reason": "테스트가 작성한 검토 선언",
-                "candidate_quote": candidate["title"], "source_quotes": []}
+                "candidate_quote": candidate["title"], "source_quotes": [
+                    {"evidence_id": source["id"], "quote": source["text"]}
+                    for source in context.get("sources", [])]}
     return {"input_sha256": context["input_sha256"], "output_sha256": context["output_sha256"],
             "exclusion_assessments": [{**row(c), "verdict": "compliant", "condition_index": i, "condition": condition}
                                       for c in context["concepts"]
@@ -115,6 +117,74 @@ class PlanningAgentTests(unittest.TestCase):
     def setUp(self):
         self.payload = read("normal.input.json")
         self.output = read("normal.fixture-output.json")
+
+    def test_missing_outcome_retry_carries_need_ids_and_original_message(self):
+        def alter(skill, context, value, _count):
+            if skill == "need_extract" and context["revision_count"] == 0:
+                need = deepcopy(value["result"]["needs"][0])
+                need["id"] = "NEED-002"
+                value["result"]["needs"].append(need)
+            return value
+        agent, transport = self.agent(alter)
+        original = deepcopy(self.payload)
+        result = agent.run(self.payload)
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual(result["input"]["revision_count"], 1)
+        feedback = transport.posts[1]["context"]["feedback"][0]
+        self.assertEqual(feedback["details"]["missing_need_ids"], ["NEED-002"])
+        self.assertEqual(feedback["details"]["expected_count"], 2)
+        self.assertEqual(feedback["message"], "각 니즈에 대응하는 희망 결과가 필요합니다.")
+        self.assertEqual(result["errors"][0]["details"], feedback["details"])
+        self.assertEqual(len(result["model_calls"][0]["generated"]["data"]["result"]["needs"]), 2)
+        self.assertEqual(self.payload, original)
+
+    def test_repeated_missing_outcome_preserves_failed_responses_and_two_corrections(self):
+        def alter(skill, _context, value, _count):
+            if skill == "need_extract":
+                value["result"]["desired_outcomes"] = []
+            return value
+        agent, transport = self.agent(alter)
+        result = agent.run(self.payload)
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(result["input"]["revision_count"], 2)
+        self.assertEqual([row["skill"] for row in transport.posts], ["need_extract"] * 3)
+        self.assertEqual(len(result["errors"]), 3)
+        self.assertTrue(result["correction_budget"]["closed"])
+        for call in result["model_calls"]:
+            self.assertEqual(call["generated"]["data"]["result"]["desired_outcomes"], [])
+        for post in transport.posts[1:]:
+            self.assertEqual(post["context"]["feedback"][0]["details"]["missing_need_ids"],
+                             [self.output["needs"][0]["id"]])
+
+    def test_recorded_microwave_three_needs_one_outcome_keeps_original_and_reports_missing_ids(self):
+        path = ROOT / "evals/pm-intake/20261006/live-quality/original-six/microwave-changed.output.json"
+        original_bytes = path.read_bytes()
+        recorded = json.loads(original_bytes)
+        self.payload = deepcopy(recorded["original_input"])
+        declarations = [call["generated"]["data"] for call in recorded["model_calls"]]
+        self.assertTrue(all(len(value["result"]["needs"]) == 3 and
+                            len(value["result"]["desired_outcomes"]) == 1 for value in declarations))
+
+        def original_response(skill, context, value, count):
+            self.assertEqual(skill, "need_extract")
+            return deepcopy(declarations[count - 1])
+
+        agent, transport = self.agent(original_response)
+        result = agent.run(self.payload)
+        self.assertEqual(result["execution_kind"], "fixture")
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(result["input"]["revision_count"], 2)
+        for index, post in enumerate(transport.posts[1:]):
+            previous = declarations[index]["result"]
+            expected = {row["id"] for row in previous["needs"]}
+            present = {row["need_id"] for row in previous["desired_outcomes"]}
+            feedback = post["context"]["feedback"][0]
+            self.assertEqual(feedback["details"]["missing_need_ids"], sorted(expected - present))
+            self.assertEqual(feedback["details"]["expected_count"], 3)
+            self.assertEqual(feedback["details"]["actual_count"], 1)
+            self.assertEqual(feedback["message"], "각 니즈에 대응하는 희망 결과가 필요합니다.")
+        self.assertEqual(path.read_bytes(), original_bytes)
+        self.assertEqual([call["generated"]["data"] for call in result["model_calls"]], declarations)
 
     def test_need_generation_cannot_cite_manual_as_customer_review(self):
         review_ids = [source["id"] for source in self.payload["sources"] if source["source_type"] == "review"]
@@ -237,6 +307,8 @@ class PlanningAgentTests(unittest.TestCase):
 
     def test_positive_review_can_hold_without_invented_needs_or_concepts(self):
         def positive(skill, context, value, count):
+            if skill != "need_extract":
+                return value
             value["result"].update(needs=[], desired_outcomes=[], unresolved=["긍정 리뷰에서 확정된 불편이 없다"])
             value["review_assessments"][0]["polarity"] = "positive"
             value.update(questions=["불편을 경험한 리뷰가 있나요?"], hold_reasons=["불편 근거 없음"],
@@ -245,12 +317,14 @@ class PlanningAgentTests(unittest.TestCase):
         agent, transport = self.agent(positive)
         result = agent.run(self.payload)
         self.assertEqual(result["status"], "held", result)
-        self.assertEqual(len(transport.posts), 1)
+        self.assertEqual([p["skill"] for p in transport.posts], ["need_extract", "no_candidate_review"])
         self.assertEqual(result["output"]["needs"], [])
         self.assertEqual(result["output"]["concepts"], [])
 
     def test_conflicting_reviews_hold_before_concept_generation(self):
         def conflicting(skill, context, value, count):
+            if skill != "need_extract":
+                return value
             value["review_assessments"][0]["polarity"] = "conflicting"
             value.update(questions=["사용 조건과 상충 원문을 확인할 수 있나요?"], hold_reasons=["상충 리뷰"],
                          no_candidate_reasons=["상충 확인 전 후보 보류"])
@@ -258,7 +332,7 @@ class PlanningAgentTests(unittest.TestCase):
         agent, transport = self.agent(conflicting)
         result = agent.run(self.payload)
         self.assertEqual(result["status"], "held")
-        self.assertEqual(len(transport.posts), 1)
+        self.assertEqual([p["skill"] for p in transport.posts], ["need_extract", "no_candidate_review"])
         self.assertEqual(result["output"]["concepts"], [])
 
     def test_unmentioned_is_insufficient_and_stops_before_concepts(self):
@@ -272,7 +346,8 @@ class PlanningAgentTests(unittest.TestCase):
         agent, transport = self.agent(uncertain)
         result = agent.run(self.payload)
         self.assertEqual(result["status"], "held")
-        self.assertEqual(len(transport.posts), 2)
+        self.assertEqual([p["skill"] for p in transport.posts],
+                         ["need_extract", "product_compare", "no_candidate_review"])
         self.assertEqual(result["output"]["gaps"][0]["support_status"], "insufficient_evidence")
 
     def test_duplicate_correction_reruns_only_concepts_and_binds_new_input_hash(self):

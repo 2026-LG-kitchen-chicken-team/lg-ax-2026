@@ -17,7 +17,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def declaration(payload, output):
     return fixtures.semantic_for({"input_sha256": input_digest(payload), "output_sha256": input_digest(output),
-                                  "request": payload["request"], "concepts": output["concepts"]})
+                                  "request": payload["request"], "concepts": output["concepts"],
+                                  "sources": payload["sources"]})
 
 
 class SemanticReviewTests(unittest.TestCase):
@@ -28,6 +29,88 @@ class SemanticReviewTests(unittest.TestCase):
 
     def review(self):
         return review_semantics(self.payload, self.output, self.report)
+
+    def difference_row(self):
+        return next(row for row in self.report["quality_assessments"]
+                    if row["criterion"] == "difference_from_current_features")
+
+    def test_difference_requires_both_review_and_manual_for_supported_residual_pain(self):
+        row = self.difference_row()
+        citations = deepcopy(row["source_quotes"])
+        for kept in ([], citations[:1], citations[1:]):
+            with self.subTest(citations=kept):
+                row["source_quotes"] = kept
+                with self.assertRaises(DomainError) as caught:
+                    self.review()
+                self.assertEqual(caught.exception.details["reason"], "difference_requires_review_and_manual")
+                self.assertEqual(caught.exception.details["gap_id"], self.output["gaps"][0]["id"])
+        row["source_quotes"] = citations
+        self.assertEqual(self.output["gaps"][0]["support_status"], "supported")
+        self.assertEqual(self.output["gap_assessments"][0]["resolution"], "remaining")
+        self.assertEqual(self.review()["action"], "accept")
+
+    def test_other_model_version_or_source_kind_cannot_ground_difference(self):
+        manual = self.payload["sources"][1]
+        for field in ("model_id", "document_version", "source_kind"):
+            with self.subTest(field=field):
+                original = manual[field]
+                manual[field] = "public" if field == "source_kind" else "other"
+                self.report["input_sha256"] = input_digest(self.payload)
+                with self.assertRaises(DomainError) as caught:
+                    self.review()
+                self.assertEqual(caught.exception.details["reason"], "difference_requires_review_and_manual")
+                manual[field] = original
+
+    def test_unrelated_manual_cannot_substitute_for_own_gap_evidence(self):
+        extra = deepcopy(self.payload["sources"][1])
+        extra["id"] = "UNRELATED-MANUAL"
+        self.payload["sources"].append(extra)
+        self.report["input_sha256"] = input_digest(self.payload)
+        self.difference_row()["source_quotes"][1]["evidence_id"] = extra["id"]
+        with self.assertRaises(DomainError) as caught:
+            self.review()
+        self.assertEqual(caught.exception.details["reason"], "difference_requires_review_and_manual")
+
+    def test_review_from_another_need_cannot_ground_own_gap(self):
+        review = deepcopy(self.payload["sources"][0])
+        review["id"] = "OTHER-NEED-REVIEW"
+        self.payload["sources"].append(review)
+        self.output["gaps"][0]["evidence_ids"][0] = review["id"]
+        self.report = declaration(self.payload, self.output)
+        with self.assertRaises(DomainError) as caught:
+            self.review()
+        self.assertEqual(caught.exception.details["reason"], "difference_requires_review_and_manual")
+
+    def test_each_linked_feature_requires_its_own_manual(self):
+        manual = deepcopy(self.payload["sources"][1])
+        manual["id"] = "SECOND-MANUAL"
+        feature = deepcopy(self.payload["features"][0])
+        feature.update(id="SECOND-FEATURE", evidence_ids=[manual["id"]])
+        self.payload["sources"].append(manual)
+        self.payload["features"].append(feature)
+        self.output["gaps"][0]["feature_ids"].append(feature["id"])
+        self.output["gaps"][0]["evidence_ids"].append(manual["id"])
+        self.report["input_sha256"] = input_digest(self.payload)
+        self.report["output_sha256"] = input_digest(self.output)
+        with self.assertRaises(DomainError) as caught:
+            self.review()
+        self.assertEqual(caught.exception.details["reason"], "difference_requires_linked_feature_manual")
+        self.assertEqual(caught.exception.details["feature_id"], feature["id"])
+        self.difference_row()["source_quotes"].append({"evidence_id": manual["id"], "quote": manual["text"]})
+        self.assertEqual(self.review()["action"], "accept")
+
+    def test_each_gap_requires_its_own_pair_and_genuine_uncertainty_stays_held(self):
+        second = deepcopy(self.output["gaps"][0])
+        second.update(id="SECOND-GAP", evidence_ids=[])
+        self.output["gaps"].append(second)
+        self.output["concepts"][0]["gap_ids"].append(second["id"])
+        self.report["output_sha256"] = input_digest(self.output)
+        with self.assertRaises(DomainError) as caught:
+            self.review()
+        self.assertEqual(caught.exception.details["reason"], "difference_requires_review_and_manual")
+        self.difference_row().update(verdict="uncertain", source_quotes=[], reason="새 기능의 원 근거가 부족하다")
+        self.report["questions"] = ["해당 기능의 같은 모델·버전 설명서가 있나요?"]
+        self.assertEqual(self.review()["action"], "hold")
 
     def test_complete_literal_report_and_adapter_schema_budget(self):
         schema = schema_for_review(self.payload, self.output)
@@ -227,6 +310,21 @@ class SemanticPipelineTests(unittest.TestCase):
         self.addCleanup(case.doCleanups)
         agent, transport = case.agent(alter)
         return case, agent, transport
+
+    def test_missing_difference_evidence_never_exports_candidate_after_two_corrections(self):
+        def alter(skill, _context, value, _count):
+            if skill == "semantic_review":
+                for row in value["quality_assessments"]:
+                    if row["criterion"] == "difference_from_current_features":
+                        row["source_quotes"] = []
+            return value
+        case, agent, _transport = self.fixture(alter)
+        result = agent.run(case.payload)
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(result["input"]["revision_count"], 2)
+        self.assertEqual(result["output"]["concepts"], [])
+        self.assertEqual(result["errors"][-1]["details"]["reason"], "difference_requires_review_and_manual")
+        self.assertTrue(result["correction_budget"]["closed"])
 
     def test_review_is_separate_model_call_with_raw_metadata_and_literal_matrix(self):
         case, agent, transport = self.fixture()
