@@ -1,7 +1,7 @@
 import type { Evidence } from './domain';
-import { executionKindText, judgementView, planningExecutionView, reasonText, traceFacts, unusedReviewIds, violationText } from './judgement';
-import type { JudgementDecision, JudgementInput, JudgementOutput, PlanningExecution, SemanticAssessment, StoredDecision, TraceFacts } from './judgement';
-import { TERMINAL_TEXT } from './planning';
+import { executionKindText, grouped, judgementView, planningExecutionView, reasonText, scopeLines, seconds, tokenText, traceFacts, unusedReviewIds, verificationScope, violationText } from './judgement';
+import type { ExecutionMetrics, JudgementDecision, JudgementInput, JudgementOutput, ModelCallRecord, PlanningExecution, SemanticAssessment, StoredDecision, TraceFacts } from './judgement';
+import { sourceKindLabel, TERMINAL_TEXT } from './planning';
 import type { RunSnapshot } from './planning';
 
 const POLARITY: Record<string, string> = { complaint: '불편', positive: '긍정', conflicting: '상충', irrelevant: '무관', uncertain: '불확실' };
@@ -24,6 +24,8 @@ export function JudgementPanel({ input, output, decision, fixture, facts = null 
   const featureName = (id: string) => input.features.find(item => item.id === id)?.name ?? id;
   // Record 034 audit U4 (r2d2): an assessed complaint no need/gap cites was silently dropped by the judgement.
   const unused = new Set(unusedReviewIds(output));
+  // Record 034 audit U5 (r0d9): the polarity and support rows are what the judging model declared; only the contract was checked.
+  const declared = fixture ? '작성된 fixture 선언' : '판단 모델의 선언 · 의미 미검증';
   return <section className="judgement-panel" aria-label="판단 계약 검사 결과">
     <div className="judgement-head">
       <span className={`run-status ${view.tone}`} title={view.detail}>{view.label}<small>코어 검사 결정 · {decision.action}</small></span>
@@ -36,9 +38,9 @@ export function JudgementPanel({ input, output, decision, fixture, facts = null 
       ? <><TextList title="보류를 일으킨 문제(근거 확인 필요)" items={view.hold_causes} /><TextList title="함께 발견된 판단 오류(보류로 내부 수정하지 않음)" items={view.unrevised_errors} /></>
       : <TextList title="검사에서 발견한 문제" items={view.violations} empty="없음" />}
     <TextList title="다른 모델·문서 버전의 원문" items={view.out_of_scope_sources} />
-    <h4>리뷰 판단{unused.size ? <span className="count" data-field="unused-reviews"> · 어느 불편·Gap에도 쓰이지 않은 리뷰 {unused.size}건</span> : null}</h4>
+    <h4>리뷰 판단 <small>{declared}</small>{unused.size ? <span className="count" data-field="unused-reviews"> · 어느 불편·Gap에도 쓰이지 않은 리뷰 {unused.size}건</span> : null}</h4>
     <ul className="quote-list">{output.review_assessments.map(item => <li key={item.evidence_id}><span className={`status-pill ${item.polarity}`}>{POLARITY[item.polarity]}</span>{sources.get(item.evidence_id) ? <q>{sources.get(item.evidence_id)!.text}</q> : <span className="missing-note">{item.evidence_id} · 원문을 찾을 수 없습니다(자료 누락)</span>}<small>{item.evidence_id} · {item.reason}</small>{unused.has(item.evidence_id) ? <span className="scope-flag" data-unused-review={item.evidence_id}> · 어느 불편·Gap에도 쓰이지 않음</span> : null}</li>)}</ul>
-    <h4>기능 대조</h4>
+    <h4>기능 대조 <small>{declared}</small></h4>
     <ul>{output.gap_assessments.map(item => <li key={item.gap_id}><span className="id">{item.gap_id}</span> {SUPPORT[item.support_basis]} · {RESOLUTION[item.resolution]}<small> — {item.reason}</small></li>)}</ul>
     <h4>후보 <span className="count">{output.concepts.length}개</span></h4>
     {output.concepts.length ? <ul>{output.concepts.map(concept => {
@@ -148,6 +150,35 @@ function OutputWithoutDecision({ output, status }: { output: JudgementOutput; st
 const STATUS_LABEL: Record<string, string> = { completed: '완료', held: '보류', failed: '실패' };
 
 /**
+ * Record 034 audit U5 (r0d9, r2d10, r3d10): what this run did not verify, read from the record. Rule checks passing
+ * only means the contract held; the core decision above still decides the run.
+ */
+function ScopeNotice({ execution }: { execution: PlanningExecution }) {
+  const items = scopeLines(verificationScope(execution), execution.execution_kind);
+  if (!items.length) return null;
+  return <section className="scope-notice" aria-label="검증 범위">
+    <h4 className="sub">검증 범위 <small>이 실행이 확인하지 않은 것</small></h4>
+    <ul>{items.map(item => <li key={item}>{item}</li>)}</ul>
+  </section>;
+}
+
+/** Record 034 audit U5 (r0d10, r0d11): per-call usage and the stored prompt/response, one click away under the same run. */
+function ModelCalls({ calls, metrics }: { calls: ModelCallRecord[]; metrics: ExecutionMetrics }) {
+  if (!calls.length) return null;
+  return <section className="model-calls" aria-label="모델 호출 기록">
+    <h4 className="sub">모델 호출 {calls.length}회 <small>호출별 토큰·시간 · 저장된 프롬프트·원 응답 · 재판단 없음</small></h4>
+    <ol>{calls.map((call, index) => {
+      const item = metrics.calls[index];
+      return <li key={`${call.stage}-${index}`} data-call={index + 1}><details>
+        <summary><span className="stage">{call.stage}</span> {call.skill_id} · 내부 수정 {call.revision_count}회차 · {item.prompt_tokens === null || item.output_tokens === null ? '토큰 미기록' : `입력 ${grouped(item.prompt_tokens)} / 출력 ${grouped(item.output_tokens)} 토큰`} · {seconds(item.elapsed_ms)}</summary>
+        <p className="muted">프롬프트</p>{typeof call.formatted_prompt === 'string' ? <pre>{call.formatted_prompt}</pre> : <p className="muted">저장되지 않음</p>}
+        <p className="muted">원 응답</p>{typeof call.raw_response === 'string' ? <pre>{call.raw_response}</pre> : <p className="muted">저장되지 않음</p>}
+      </details></li>;
+    })}</ol>
+  </section>;
+}
+
+/**
  * The stored core record of one run (output.planning_execution), under the same run ID as the screen above it:
  * original and final input, the core decision with its declarations, trace, model calls and errors. Nothing here is
  * re-judged in the browser; malformed or inconsistent records are shown as such.
@@ -170,8 +201,12 @@ export function ExecutionPanel({ snapshot }: { snapshot: RunSnapshot }) {
     <div className="planning-head"><div><p className="eyebrow">CORE RECORD</p><h3>판단 실행 기록 <span className="id">{snapshot.run.id}</span></h3></div><span className={`run-status ${headTone}`}>{executionKindText(execution.execution_kind, view.model_calls)}<small>{STATUS_LABEL[execution.status]} · 내부 수정 {revised}/2</small></span></div>
     <dl className="run-meta">
       <div><dt>판단 모델</dt><dd>{view.models.length ? view.models.join(', ') : '호출 기록 없음'}</dd></div>
-      <div><dt>모델 호출</dt><dd>{view.model_calls}회{view.elapsed_ms !== null ? ` · ${(view.elapsed_ms / 1000).toFixed(1)}초` : ''}</dd></div>
-      <div><dt>판단한 제품·문서</dt><dd>{execution.input.product.model_id} · 문서 {execution.input.product.document_version} · {execution.input.product.source_kind}</dd></div>
+      <div><dt>모델 호출</dt><dd data-field="model-calls">{view.model_calls}회{view.model_calls ? ` · 모델 시간 ${seconds(view.metrics.model_elapsed_ms)}` : ''}</dd></div>
+      <div><dt>토큰 <small>모델 서버 보고</small></dt><dd data-field="tokens">{tokenText(view.metrics)}</dd></div>
+      <div><dt>전체 실행 시간 <small>조회·검사 포함</small></dt><dd data-field="run-time">{seconds(view.metrics.run_elapsed_ms)}</dd></div>
+      <div><dt>생성 설정</dt><dd data-field="settings">{view.model_calls ? view.metrics.settings.join(' / ') || '미기록' : '호출 없음'}</dd></div>
+      <div><dt>회차</dt><dd data-field="rounds">요청 회차 {snapshot.request_revision}(기획자 조건 변경) · Agent 내부 수정 {execution.correction_budget?.revision_count ?? revised}/{execution.correction_budget?.max_revisions ?? 2}(같은 요청 안 자동 수정)</dd></div>
+      <div><dt>판단한 제품·문서</dt><dd>{execution.input.product.model_id} · 문서 {execution.input.product.document_version} · {sourceKindLabel(execution.input.product.source_kind)}</dd></div>
       <div><dt>입력 원문·기능</dt><dd>{execution.input.sources.length}건 · {execution.input.features.length}개</dd></div>
     </dl>
     {view.problems.length ? <div className="unresolved" role="alert"><strong>저장 기록 불일치</strong><ul>{view.problems.map(item => <li key={item}>{item}</li>)}</ul></div> : null}
@@ -188,7 +223,9 @@ export function ExecutionPanel({ snapshot }: { snapshot: RunSnapshot }) {
     {execution.rejected_output ? <RejectedCandidates output={execution.rejected_output} facts={facts} /> : null}
     <CheckRounds facts={facts} terminal={execution.correction_budget?.terminal_reason ?? null} />
     <SemanticReviews execution={execution} />
-    <h4 className="sub">실행 순서 <small>trace {execution.trace.length}단계</small></h4>
-    <ol className="events">{execution.trace.map((step, index) => <li key={`${step.stage}-${step.operation}-${index}`}><span className="stage">{step.stage}</span><span>{step.operation}</span>{typeof step.elapsed_ms === 'number' ? <code>{(step.elapsed_ms / 1000).toFixed(1)}s</code> : null}</li>)}</ol>
+    <ScopeNotice execution={execution} />
+    <ModelCalls calls={execution.model_calls} metrics={view.metrics} />
+    <h4 className="sub">실행 순서 <small>trace {execution.trace.length}단계 · 시간은 실행 시작부터 누적</small></h4>
+    <ol className="events">{execution.trace.map((step, index) => <li key={`${step.stage}-${step.operation}-${index}`}><span className="stage">{step.stage}</span><span>{step.operation}</span>{typeof step.elapsed_ms === 'number' ? <code title="실행 시작부터 누적">+{(step.elapsed_ms / 1000).toFixed(1)}s</code> : null}</li>)}</ol>
   </section>;
 }
