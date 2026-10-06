@@ -1,0 +1,2145 @@
+{
+  "kind": "pm_dated_pack_scope_matrix",
+  "observed_at": "2026-10-06T23:18:58.004360+00:00",
+  "server": "http://127.0.0.1:18883",
+  "dataset_version": "pm-synthetic-trends.v1",
+  "files_sha256": {
+    "dataset.json": "a2c9c260316c1e8067531e7ba9e42ffec5338363f782092fea0f5cf1449d2b89",
+    "annotation.candidate.json": "101b0560337fbbb61f1b4117e2ef47562aacae458d0db5a044c5e36ae2ea1d79",
+    "date-schedule.json": "7d528dfc50b8e0474b455327852e363d52603fe5fab0270c75dad9f4430d1f70"
+  },
+  "pack_facts": {
+    "reviews": 36,
+    "dated": 31,
+    "undated": 5,
+    "instant_dates": [
+      {
+        "review_id": "DEMO-TREND-REVIEW-009",
+        "published_at": "2026-12-31T15:00:00Z",
+        "kst_day": "2027-01-01"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "model_id": "FRIDGE-A",
+      "granularity": "month",
+      "project_id": "project-71c6418aa91f4e1180c5a8ab78fac138",
+      "aggregate_id": "TREND-38eb9033beee2db4c4884a52a13fe7d0d48f2580d22af91a7779e71f5491a7b6",
+      "filters": {
+        "project_id": "project-71c6418aa91f4e1180c5a8ab78fac138",
+        "model_id": "FRIDGE-A",
+        "source_ids": [
+          "PM-TREND-DEMO-REVIEWS-v1"
+        ],
+        "dataset_version": "pm-synthetic-trends.v1",
+        "start_date": "2026-06-01",
+        "end_date_exclusive": "2027-02-01",
+        "granularity": "month",
+        "topic_ids": [],
+        "source_kind": "synthetic",
+        "timezone": "Asia/Seoul"
+      },
+      "checks": {
+        "counts_equal_independent": true,
+        "buckets_equal_independent": true,
+        "topic_ids_equal_independent": true,
+        "ratios_null_only_when_empty": true,
+        "empty_bucket_warning": true,
+        "api_requery_same": true,
+        "api_evidence_pages_match_dataset": true,
+        "mcp_query_same_id": true,
+        "mcp_saved_identical": true,
+        "mcp_evidence_pages_identical": true
+      },
+      "counts": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 2,
+        "excluded_outside_period_count": 0,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 8,
+        "unclassified_review_count": 0
+      },
+      "dataset_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+      "annotation_sha256": "6a23e26343802dc2b4495e8da1e3efc6ffa9ac03cab3a0ed98bee1abc479093a",
+      "buckets": [
+        {
+          "bucket_id": "MONTH-2026-06",
+          "label": "2026년 6월",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-007"
+              ]
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-07",
+          "label": "2026년 7월",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-008"
+              ]
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-08",
+          "label": "2026년 8월",
+          "partial_period": false,
+          "total_reviews": 0,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-09",
+          "label": "2026년 9월",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-003"
+              ]
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-10",
+          "label": "2026년 10월",
+          "partial_period": false,
+          "total_reviews": 3,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 1,
+              "ratio": 0.3333333333333333,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-001"
+              ]
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 1,
+              "ratio": 0.3333333333333333,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-004"
+              ]
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 1,
+              "ratio": 0.3333333333333333,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-002"
+              ]
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-11",
+          "label": "2026년 11월",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-005"
+              ]
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-12",
+          "label": "2026년 12월",
+          "partial_period": false,
+          "total_reviews": 0,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2027-01",
+          "label": "2027년 1월",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-009"
+              ]
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        }
+      ],
+      "warnings": [
+        "표본이 적습니다: 2026년 6월 리뷰 1건(20건 미만).",
+        "표본이 적습니다: 2026년 7월 리뷰 1건(20건 미만).",
+        "집계 가능한 리뷰가 없습니다: 2026년 8월.",
+        "표본이 적습니다: 2026년 9월 리뷰 1건(20건 미만).",
+        "표본이 적습니다: 2026년 10월 리뷰 3건(20건 미만).",
+        "표본이 적습니다: 2026년 11월 리뷰 1건(20건 미만).",
+        "집계 가능한 리뷰가 없습니다: 2026년 12월.",
+        "표본이 적습니다: 2027년 1월 리뷰 1건(20건 미만).",
+        "합성 자료입니다. 날짜가 있는 경우에도 시연값이며 실제 고객 게시일·판매량·시장 수요의 증거가 아닙니다.",
+        "리뷰별 주제 연결은 합성 시연 후보입니다. 불만률이나 승인된 고객 분류가 아닙니다."
+      ],
+      "evidence_cells_checked": 8,
+      "ok": true
+    },
+    {
+      "model_id": "FRIDGE-A",
+      "granularity": "season",
+      "project_id": "project-71c6418aa91f4e1180c5a8ab78fac138",
+      "aggregate_id": "TREND-6c345a8ece3267e1941d0c9f5892bdf9bf678fc8f5526c49b32e1ba948f78064",
+      "filters": {
+        "project_id": "project-71c6418aa91f4e1180c5a8ab78fac138",
+        "model_id": "FRIDGE-A",
+        "source_ids": [
+          "PM-TREND-DEMO-REVIEWS-v1"
+        ],
+        "dataset_version": "pm-synthetic-trends.v1",
+        "start_date": "2026-06-01",
+        "end_date_exclusive": "2027-03-01",
+        "granularity": "season",
+        "topic_ids": [],
+        "source_kind": "synthetic",
+        "timezone": "Asia/Seoul"
+      },
+      "checks": {
+        "counts_equal_independent": true,
+        "buckets_equal_independent": true,
+        "topic_ids_equal_independent": true,
+        "ratios_null_only_when_empty": true,
+        "empty_bucket_warning": true,
+        "api_requery_same": true,
+        "api_evidence_pages_match_dataset": true,
+        "mcp_query_same_id": true,
+        "mcp_saved_identical": true,
+        "mcp_evidence_pages_identical": true
+      },
+      "counts": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 2,
+        "excluded_outside_period_count": 0,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 8,
+        "unclassified_review_count": 0
+      },
+      "dataset_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+      "annotation_sha256": "6a23e26343802dc2b4495e8da1e3efc6ffa9ac03cab3a0ed98bee1abc479093a",
+      "buckets": [
+        {
+          "bucket_id": "SEASON-2026-SUMMER",
+          "label": "2026년 여름",
+          "partial_period": false,
+          "total_reviews": 2,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 1,
+              "ratio": 0.5,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-008"
+              ]
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 1,
+              "ratio": 0.5,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-007"
+              ]
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "SEASON-2026-AUTUMN",
+          "label": "2026년 가을",
+          "partial_period": false,
+          "total_reviews": 5,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 2,
+              "ratio": 0.4,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-001",
+                "DEMO-TREND-REVIEW-EVIDENCE-005"
+              ]
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 1,
+              "ratio": 0.2,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-003"
+              ]
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 1,
+              "ratio": 0.2,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-004"
+              ]
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 1,
+              "ratio": 0.2,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-002"
+              ]
+            }
+          ]
+        },
+        {
+          "bucket_id": "SEASON-2026-WINTER",
+          "label": "2026년 겨울",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-009"
+              ]
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        }
+      ],
+      "warnings": [
+        "표본이 적습니다: 2026년 여름 리뷰 2건(20건 미만).",
+        "표본이 적습니다: 2026년 가을 리뷰 5건(20건 미만).",
+        "표본이 적습니다: 2026년 겨울 리뷰 1건(20건 미만).",
+        "합성 자료입니다. 날짜가 있는 경우에도 시연값이며 실제 고객 게시일·판매량·시장 수요의 증거가 아닙니다.",
+        "리뷰별 주제 연결은 합성 시연 후보입니다. 불만률이나 승인된 고객 분류가 아닙니다."
+      ],
+      "evidence_cells_checked": 7,
+      "ok": true
+    },
+    {
+      "model_id": "FRIDGE-B",
+      "granularity": "month",
+      "project_id": "project-5ad7f08350f748ba8a34229e9ddb6e99",
+      "aggregate_id": "TREND-e488c1de3407538b8eaa1afada0aefc504b9813ee504ace1a742322b3aa7176c",
+      "filters": {
+        "project_id": "project-5ad7f08350f748ba8a34229e9ddb6e99",
+        "model_id": "FRIDGE-B",
+        "source_ids": [
+          "PM-TREND-DEMO-REVIEWS-v1"
+        ],
+        "dataset_version": "pm-synthetic-trends.v1",
+        "start_date": "2026-06-01",
+        "end_date_exclusive": "2027-02-01",
+        "granularity": "month",
+        "topic_ids": [],
+        "source_kind": "synthetic",
+        "timezone": "Asia/Seoul"
+      },
+      "checks": {
+        "counts_equal_independent": true,
+        "buckets_equal_independent": true,
+        "topic_ids_equal_independent": true,
+        "ratios_null_only_when_empty": true,
+        "empty_bucket_warning": true,
+        "api_requery_same": true,
+        "api_evidence_pages_match_dataset": true,
+        "mcp_query_same_id": true,
+        "mcp_saved_identical": true,
+        "mcp_evidence_pages_identical": true
+      },
+      "counts": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 1,
+        "excluded_outside_period_count": 0,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 9,
+        "unclassified_review_count": 0
+      },
+      "dataset_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+      "annotation_sha256": "6a23e26343802dc2b4495e8da1e3efc6ffa9ac03cab3a0ed98bee1abc479093a",
+      "buckets": [
+        {
+          "bucket_id": "MONTH-2026-06",
+          "label": "2026년 6월",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-014"
+              ]
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-07",
+          "label": "2026년 7월",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-015"
+              ]
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-08",
+          "label": "2026년 8월",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-016"
+              ]
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-09",
+          "label": "2026년 9월",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-017"
+              ]
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-10",
+          "label": "2026년 10월",
+          "partial_period": false,
+          "total_reviews": 2,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 2,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-011",
+                "DEMO-TREND-REVIEW-EVIDENCE-018"
+              ]
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-11",
+          "label": "2026년 11월",
+          "partial_period": false,
+          "total_reviews": 2,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 1,
+              "ratio": 0.5,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-019"
+              ]
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 1,
+              "ratio": 0.5,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-012"
+              ]
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-12",
+          "label": "2026년 12월",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-013"
+              ]
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2027-01",
+          "label": "2027년 1월",
+          "partial_period": false,
+          "total_reviews": 0,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            }
+          ]
+        }
+      ],
+      "warnings": [
+        "표본이 적습니다: 2026년 6월 리뷰 1건(20건 미만).",
+        "표본이 적습니다: 2026년 7월 리뷰 1건(20건 미만).",
+        "표본이 적습니다: 2026년 8월 리뷰 1건(20건 미만).",
+        "표본이 적습니다: 2026년 9월 리뷰 1건(20건 미만).",
+        "표본이 적습니다: 2026년 10월 리뷰 2건(20건 미만).",
+        "표본이 적습니다: 2026년 11월 리뷰 2건(20건 미만).",
+        "표본이 적습니다: 2026년 12월 리뷰 1건(20건 미만).",
+        "집계 가능한 리뷰가 없습니다: 2027년 1월.",
+        "합성 자료입니다. 날짜가 있는 경우에도 시연값이며 실제 고객 게시일·판매량·시장 수요의 증거가 아닙니다.",
+        "리뷰별 주제 연결은 합성 시연 후보입니다. 불만률이나 승인된 고객 분류가 아닙니다."
+      ],
+      "evidence_cells_checked": 8,
+      "ok": true
+    },
+    {
+      "model_id": "FRIDGE-B",
+      "granularity": "season",
+      "project_id": "project-5ad7f08350f748ba8a34229e9ddb6e99",
+      "aggregate_id": "TREND-ec8acb22e5606d0768bf2c5d8b99809197619a0de6f6c9331601856714135e0a",
+      "filters": {
+        "project_id": "project-5ad7f08350f748ba8a34229e9ddb6e99",
+        "model_id": "FRIDGE-B",
+        "source_ids": [
+          "PM-TREND-DEMO-REVIEWS-v1"
+        ],
+        "dataset_version": "pm-synthetic-trends.v1",
+        "start_date": "2026-06-01",
+        "end_date_exclusive": "2027-03-01",
+        "granularity": "season",
+        "topic_ids": [],
+        "source_kind": "synthetic",
+        "timezone": "Asia/Seoul"
+      },
+      "checks": {
+        "counts_equal_independent": true,
+        "buckets_equal_independent": true,
+        "topic_ids_equal_independent": true,
+        "ratios_null_only_when_empty": true,
+        "empty_bucket_warning": true,
+        "api_requery_same": true,
+        "api_evidence_pages_match_dataset": true,
+        "mcp_query_same_id": true,
+        "mcp_saved_identical": true,
+        "mcp_evidence_pages_identical": true
+      },
+      "counts": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 1,
+        "excluded_outside_period_count": 0,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 9,
+        "unclassified_review_count": 0
+      },
+      "dataset_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+      "annotation_sha256": "6a23e26343802dc2b4495e8da1e3efc6ffa9ac03cab3a0ed98bee1abc479093a",
+      "buckets": [
+        {
+          "bucket_id": "SEASON-2026-SUMMER",
+          "label": "2026년 여름",
+          "partial_period": false,
+          "total_reviews": 3,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 2,
+              "ratio": 0.6666666666666666,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-015",
+                "DEMO-TREND-REVIEW-EVIDENCE-016"
+              ]
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 1,
+              "ratio": 0.3333333333333333,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-014"
+              ]
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "SEASON-2026-AUTUMN",
+          "label": "2026년 가을",
+          "partial_period": false,
+          "total_reviews": 5,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 3,
+              "ratio": 0.6,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-011",
+                "DEMO-TREND-REVIEW-EVIDENCE-018",
+                "DEMO-TREND-REVIEW-EVIDENCE-019"
+              ]
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 1,
+              "ratio": 0.2,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-017"
+              ]
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 1,
+              "ratio": 0.2,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-012"
+              ]
+            }
+          ]
+        },
+        {
+          "bucket_id": "SEASON-2026-WINTER",
+          "label": "2026년 겨울",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-013"
+              ]
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        }
+      ],
+      "warnings": [
+        "표본이 적습니다: 2026년 여름 리뷰 3건(20건 미만).",
+        "표본이 적습니다: 2026년 가을 리뷰 5건(20건 미만).",
+        "표본이 적습니다: 2026년 겨울 리뷰 1건(20건 미만).",
+        "합성 자료입니다. 날짜가 있는 경우에도 시연값이며 실제 고객 게시일·판매량·시장 수요의 증거가 아닙니다.",
+        "리뷰별 주제 연결은 합성 시연 후보입니다. 불만률이나 승인된 고객 분류가 아닙니다."
+      ],
+      "evidence_cells_checked": 6,
+      "ok": true
+    },
+    {
+      "model_id": "FRIDGE-C",
+      "granularity": "month",
+      "project_id": "project-055e22eae8434b4cbc5840c768a9b1ca",
+      "aggregate_id": "TREND-b5bd73a68598dfde600f74e6ed8801a6bb439bb5fa10576c2f30a3ac3f84d2d2",
+      "filters": {
+        "project_id": "project-055e22eae8434b4cbc5840c768a9b1ca",
+        "model_id": "FRIDGE-C",
+        "source_ids": [
+          "PM-TREND-DEMO-REVIEWS-v1"
+        ],
+        "dataset_version": "pm-synthetic-trends.v1",
+        "start_date": "2026-06-01",
+        "end_date_exclusive": "2027-02-01",
+        "granularity": "month",
+        "topic_ids": [],
+        "source_kind": "synthetic",
+        "timezone": "Asia/Seoul"
+      },
+      "checks": {
+        "counts_equal_independent": true,
+        "buckets_equal_independent": true,
+        "topic_ids_equal_independent": true,
+        "ratios_null_only_when_empty": true,
+        "empty_bucket_warning": true,
+        "api_requery_same": true,
+        "api_evidence_pages_match_dataset": true,
+        "mcp_query_same_id": true,
+        "mcp_saved_identical": true,
+        "mcp_evidence_pages_identical": true
+      },
+      "counts": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 1,
+        "excluded_outside_period_count": 0,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 9,
+        "unclassified_review_count": 0
+      },
+      "dataset_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+      "annotation_sha256": "6a23e26343802dc2b4495e8da1e3efc6ffa9ac03cab3a0ed98bee1abc479093a",
+      "buckets": [
+        {
+          "bucket_id": "MONTH-2026-06",
+          "label": "2026년 6월",
+          "partial_period": false,
+          "total_reviews": 2,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 2,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-021",
+                "DEMO-TREND-REVIEW-EVIDENCE-028"
+              ]
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-07",
+          "label": "2026년 7월",
+          "partial_period": false,
+          "total_reviews": 2,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 1,
+              "ratio": 0.5,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-029"
+              ]
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 1,
+              "ratio": 0.5,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-022"
+              ]
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-08",
+          "label": "2026년 8월",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-023"
+              ]
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-09",
+          "label": "2026년 9월",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-024"
+              ]
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-10",
+          "label": "2026년 10월",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-025"
+              ]
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-11",
+          "label": "2026년 11월",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-026"
+              ]
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-12",
+          "label": "2026년 12월",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-027"
+              ]
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2027-01",
+          "label": "2027년 1월",
+          "partial_period": false,
+          "total_reviews": 0,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            }
+          ]
+        }
+      ],
+      "warnings": [
+        "표본이 적습니다: 2026년 6월 리뷰 2건(20건 미만).",
+        "표본이 적습니다: 2026년 7월 리뷰 2건(20건 미만).",
+        "표본이 적습니다: 2026년 8월 리뷰 1건(20건 미만).",
+        "표본이 적습니다: 2026년 9월 리뷰 1건(20건 미만).",
+        "표본이 적습니다: 2026년 10월 리뷰 1건(20건 미만).",
+        "표본이 적습니다: 2026년 11월 리뷰 1건(20건 미만).",
+        "표본이 적습니다: 2026년 12월 리뷰 1건(20건 미만).",
+        "집계 가능한 리뷰가 없습니다: 2027년 1월.",
+        "합성 자료입니다. 날짜가 있는 경우에도 시연값이며 실제 고객 게시일·판매량·시장 수요의 증거가 아닙니다.",
+        "리뷰별 주제 연결은 합성 시연 후보입니다. 불만률이나 승인된 고객 분류가 아닙니다."
+      ],
+      "evidence_cells_checked": 8,
+      "ok": true
+    },
+    {
+      "model_id": "FRIDGE-C",
+      "granularity": "season",
+      "project_id": "project-055e22eae8434b4cbc5840c768a9b1ca",
+      "aggregate_id": "TREND-30cc677e0ff66aa2469c4b66249b5c4add599d01be34535696393e2686b0204b",
+      "filters": {
+        "project_id": "project-055e22eae8434b4cbc5840c768a9b1ca",
+        "model_id": "FRIDGE-C",
+        "source_ids": [
+          "PM-TREND-DEMO-REVIEWS-v1"
+        ],
+        "dataset_version": "pm-synthetic-trends.v1",
+        "start_date": "2026-06-01",
+        "end_date_exclusive": "2027-03-01",
+        "granularity": "season",
+        "topic_ids": [],
+        "source_kind": "synthetic",
+        "timezone": "Asia/Seoul"
+      },
+      "checks": {
+        "counts_equal_independent": true,
+        "buckets_equal_independent": true,
+        "topic_ids_equal_independent": true,
+        "ratios_null_only_when_empty": true,
+        "empty_bucket_warning": true,
+        "api_requery_same": true,
+        "api_evidence_pages_match_dataset": true,
+        "mcp_query_same_id": true,
+        "mcp_saved_identical": true,
+        "mcp_evidence_pages_identical": true
+      },
+      "counts": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 26,
+        "in_scope_review_count": 10,
+        "excluded_undated_count": 1,
+        "excluded_outside_period_count": 0,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 9,
+        "unclassified_review_count": 0
+      },
+      "dataset_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+      "annotation_sha256": "6a23e26343802dc2b4495e8da1e3efc6ffa9ac03cab3a0ed98bee1abc479093a",
+      "buckets": [
+        {
+          "bucket_id": "SEASON-2026-SUMMER",
+          "label": "2026년 여름",
+          "partial_period": false,
+          "total_reviews": 5,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 3,
+              "ratio": 0.6,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-021",
+                "DEMO-TREND-REVIEW-EVIDENCE-028",
+                "DEMO-TREND-REVIEW-EVIDENCE-029"
+              ]
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 1,
+              "ratio": 0.2,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-023"
+              ]
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 1,
+              "ratio": 0.2,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-022"
+              ]
+            }
+          ]
+        },
+        {
+          "bucket_id": "SEASON-2026-AUTUMN",
+          "label": "2026년 가을",
+          "partial_period": false,
+          "total_reviews": 3,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 2,
+              "ratio": 0.6666666666666666,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-025",
+                "DEMO-TREND-REVIEW-EVIDENCE-026"
+              ]
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 1,
+              "ratio": 0.3333333333333333,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-024"
+              ]
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "SEASON-2026-WINTER",
+          "label": "2026년 겨울",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "cleaning",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "food_findability",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-027"
+              ]
+            },
+            {
+              "topic_id": "manual_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "temporary_storage",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        }
+      ],
+      "warnings": [
+        "표본이 적습니다: 2026년 여름 리뷰 5건(20건 미만).",
+        "표본이 적습니다: 2026년 가을 리뷰 3건(20건 미만).",
+        "표본이 적습니다: 2026년 겨울 리뷰 1건(20건 미만).",
+        "합성 자료입니다. 날짜가 있는 경우에도 시연값이며 실제 고객 게시일·판매량·시장 수요의 증거가 아닙니다.",
+        "리뷰별 주제 연결은 합성 시연 후보입니다. 불만률이나 승인된 고객 분류가 아닙니다."
+      ],
+      "evidence_cells_checked": 6,
+      "ok": true
+    },
+    {
+      "model_id": "DISHWASHER-A",
+      "granularity": "month",
+      "project_id": "project-effa93403b144df69c1c2628c03927ed",
+      "aggregate_id": "TREND-487e6282303160505a26199d63c3b38780d17f5177ade724eabc0b411fb06617",
+      "filters": {
+        "project_id": "project-effa93403b144df69c1c2628c03927ed",
+        "model_id": "DISHWASHER-A",
+        "source_ids": [
+          "PM-TREND-DEMO-REVIEWS-v1"
+        ],
+        "dataset_version": "pm-synthetic-trends.v1",
+        "start_date": "2026-06-01",
+        "end_date_exclusive": "2027-02-01",
+        "granularity": "month",
+        "topic_ids": [],
+        "source_kind": "synthetic",
+        "timezone": "Asia/Seoul"
+      },
+      "checks": {
+        "counts_equal_independent": true,
+        "buckets_equal_independent": true,
+        "topic_ids_equal_independent": true,
+        "ratios_null_only_when_empty": true,
+        "empty_bucket_warning": true,
+        "api_requery_same": true,
+        "api_evidence_pages_match_dataset": true,
+        "mcp_query_same_id": true,
+        "mcp_saved_identical": true,
+        "mcp_evidence_pages_identical": true
+      },
+      "counts": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 33,
+        "in_scope_review_count": 3,
+        "excluded_undated_count": 0,
+        "excluded_outside_period_count": 0,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 3,
+        "unclassified_review_count": 0
+      },
+      "dataset_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+      "annotation_sha256": "6a23e26343802dc2b4495e8da1e3efc6ffa9ac03cab3a0ed98bee1abc479093a",
+      "buckets": [
+        {
+          "bucket_id": "MONTH-2026-06",
+          "label": "2026년 6월",
+          "partial_period": false,
+          "total_reviews": 0,
+          "topics": [
+            {
+              "topic_id": "dish_loading_guidance",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "rotating_arm_clearance",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-07",
+          "label": "2026년 7월",
+          "partial_period": false,
+          "total_reviews": 0,
+          "topics": [
+            {
+              "topic_id": "dish_loading_guidance",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "rotating_arm_clearance",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-08",
+          "label": "2026년 8월",
+          "partial_period": false,
+          "total_reviews": 0,
+          "topics": [
+            {
+              "topic_id": "dish_loading_guidance",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "rotating_arm_clearance",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-09",
+          "label": "2026년 9월",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "dish_loading_guidance",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-031"
+              ]
+            },
+            {
+              "topic_id": "rotating_arm_clearance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-10",
+          "label": "2026년 10월",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "dish_loading_guidance",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-032"
+              ]
+            },
+            {
+              "topic_id": "rotating_arm_clearance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-11",
+          "label": "2026년 11월",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "dish_loading_guidance",
+              "count": 0,
+              "ratio": 0.0,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "rotating_arm_clearance",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-033"
+              ]
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-12",
+          "label": "2026년 12월",
+          "partial_period": false,
+          "total_reviews": 0,
+          "topics": [
+            {
+              "topic_id": "dish_loading_guidance",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "rotating_arm_clearance",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2027-01",
+          "label": "2027년 1월",
+          "partial_period": false,
+          "total_reviews": 0,
+          "topics": [
+            {
+              "topic_id": "dish_loading_guidance",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "rotating_arm_clearance",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            }
+          ]
+        }
+      ],
+      "warnings": [
+        "집계 가능한 리뷰가 없습니다: 2026년 6월.",
+        "집계 가능한 리뷰가 없습니다: 2026년 7월.",
+        "집계 가능한 리뷰가 없습니다: 2026년 8월.",
+        "표본이 적습니다: 2026년 9월 리뷰 1건(20건 미만).",
+        "표본이 적습니다: 2026년 10월 리뷰 1건(20건 미만).",
+        "표본이 적습니다: 2026년 11월 리뷰 1건(20건 미만).",
+        "집계 가능한 리뷰가 없습니다: 2026년 12월.",
+        "집계 가능한 리뷰가 없습니다: 2027년 1월.",
+        "합성 자료입니다. 날짜가 있는 경우에도 시연값이며 실제 고객 게시일·판매량·시장 수요의 증거가 아닙니다.",
+        "리뷰별 주제 연결은 합성 시연 후보입니다. 불만률이나 승인된 고객 분류가 아닙니다."
+      ],
+      "evidence_cells_checked": 3,
+      "ok": true
+    },
+    {
+      "model_id": "DISHWASHER-A",
+      "granularity": "season",
+      "project_id": "project-effa93403b144df69c1c2628c03927ed",
+      "aggregate_id": "TREND-609f7b13853ccc9c8d382dd989a810ba7a4beb9d6a768a9b39d38e5d81b927b3",
+      "filters": {
+        "project_id": "project-effa93403b144df69c1c2628c03927ed",
+        "model_id": "DISHWASHER-A",
+        "source_ids": [
+          "PM-TREND-DEMO-REVIEWS-v1"
+        ],
+        "dataset_version": "pm-synthetic-trends.v1",
+        "start_date": "2026-06-01",
+        "end_date_exclusive": "2027-03-01",
+        "granularity": "season",
+        "topic_ids": [],
+        "source_kind": "synthetic",
+        "timezone": "Asia/Seoul"
+      },
+      "checks": {
+        "counts_equal_independent": true,
+        "buckets_equal_independent": true,
+        "topic_ids_equal_independent": true,
+        "ratios_null_only_when_empty": true,
+        "empty_bucket_warning": true,
+        "api_requery_same": true,
+        "api_evidence_pages_match_dataset": true,
+        "mcp_query_same_id": true,
+        "mcp_saved_identical": true,
+        "mcp_evidence_pages_identical": true
+      },
+      "counts": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 33,
+        "in_scope_review_count": 3,
+        "excluded_undated_count": 0,
+        "excluded_outside_period_count": 0,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 3,
+        "unclassified_review_count": 0
+      },
+      "dataset_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+      "annotation_sha256": "6a23e26343802dc2b4495e8da1e3efc6ffa9ac03cab3a0ed98bee1abc479093a",
+      "buckets": [
+        {
+          "bucket_id": "SEASON-2026-SUMMER",
+          "label": "2026년 여름",
+          "partial_period": false,
+          "total_reviews": 0,
+          "topics": [
+            {
+              "topic_id": "dish_loading_guidance",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "rotating_arm_clearance",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "SEASON-2026-AUTUMN",
+          "label": "2026년 가을",
+          "partial_period": false,
+          "total_reviews": 3,
+          "topics": [
+            {
+              "topic_id": "dish_loading_guidance",
+              "count": 2,
+              "ratio": 0.6666666666666666,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-031",
+                "DEMO-TREND-REVIEW-EVIDENCE-032"
+              ]
+            },
+            {
+              "topic_id": "rotating_arm_clearance",
+              "count": 1,
+              "ratio": 0.3333333333333333,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-033"
+              ]
+            }
+          ]
+        },
+        {
+          "bucket_id": "SEASON-2026-WINTER",
+          "label": "2026년 겨울",
+          "partial_period": false,
+          "total_reviews": 0,
+          "topics": [
+            {
+              "topic_id": "dish_loading_guidance",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            },
+            {
+              "topic_id": "rotating_arm_clearance",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            }
+          ]
+        }
+      ],
+      "warnings": [
+        "집계 가능한 리뷰가 없습니다: 2026년 여름.",
+        "표본이 적습니다: 2026년 가을 리뷰 3건(20건 미만).",
+        "집계 가능한 리뷰가 없습니다: 2026년 겨울.",
+        "합성 자료입니다. 날짜가 있는 경우에도 시연값이며 실제 고객 게시일·판매량·시장 수요의 증거가 아닙니다.",
+        "리뷰별 주제 연결은 합성 시연 후보입니다. 불만률이나 승인된 고객 분류가 아닙니다."
+      ],
+      "evidence_cells_checked": 2,
+      "ok": true
+    },
+    {
+      "model_id": "MICROWAVE-A",
+      "granularity": "month",
+      "project_id": "project-73b894dc8f704dac843eaa3a44e281b0",
+      "aggregate_id": "TREND-9f68de2f28605d3ee9c442ea710be6223b8d01fd7d07e99b130b6a5697bef443",
+      "filters": {
+        "project_id": "project-73b894dc8f704dac843eaa3a44e281b0",
+        "model_id": "MICROWAVE-A",
+        "source_ids": [
+          "PM-TREND-DEMO-REVIEWS-v1"
+        ],
+        "dataset_version": "pm-synthetic-trends.v1",
+        "start_date": "2026-06-01",
+        "end_date_exclusive": "2027-02-01",
+        "granularity": "month",
+        "topic_ids": [],
+        "source_kind": "synthetic",
+        "timezone": "Asia/Seoul"
+      },
+      "checks": {
+        "counts_equal_independent": true,
+        "buckets_equal_independent": true,
+        "topic_ids_equal_independent": true,
+        "ratios_null_only_when_empty": true,
+        "empty_bucket_warning": true,
+        "api_requery_same": true,
+        "api_evidence_pages_match_dataset": true,
+        "mcp_query_same_id": true,
+        "mcp_saved_identical": true,
+        "mcp_evidence_pages_identical": true
+      },
+      "counts": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 33,
+        "in_scope_review_count": 3,
+        "excluded_undated_count": 1,
+        "excluded_outside_period_count": 0,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 2,
+        "unclassified_review_count": 0
+      },
+      "dataset_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+      "annotation_sha256": "6a23e26343802dc2b4495e8da1e3efc6ffa9ac03cab3a0ed98bee1abc479093a",
+      "buckets": [
+        {
+          "bucket_id": "MONTH-2026-06",
+          "label": "2026년 6월",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "heating_preset_management",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-035"
+              ]
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-07",
+          "label": "2026년 7월",
+          "partial_period": false,
+          "total_reviews": 0,
+          "topics": [
+            {
+              "topic_id": "heating_preset_management",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-08",
+          "label": "2026년 8월",
+          "partial_period": false,
+          "total_reviews": 0,
+          "topics": [
+            {
+              "topic_id": "heating_preset_management",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-09",
+          "label": "2026년 9월",
+          "partial_period": false,
+          "total_reviews": 0,
+          "topics": [
+            {
+              "topic_id": "heating_preset_management",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-10",
+          "label": "2026년 10월",
+          "partial_period": false,
+          "total_reviews": 0,
+          "topics": [
+            {
+              "topic_id": "heating_preset_management",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-11",
+          "label": "2026년 11월",
+          "partial_period": false,
+          "total_reviews": 0,
+          "topics": [
+            {
+              "topic_id": "heating_preset_management",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2026-12",
+          "label": "2026년 12월",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "heating_preset_management",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-034"
+              ]
+            }
+          ]
+        },
+        {
+          "bucket_id": "MONTH-2027-01",
+          "label": "2027년 1월",
+          "partial_period": false,
+          "total_reviews": 0,
+          "topics": [
+            {
+              "topic_id": "heating_preset_management",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            }
+          ]
+        }
+      ],
+      "warnings": [
+        "표본이 적습니다: 2026년 6월 리뷰 1건(20건 미만).",
+        "집계 가능한 리뷰가 없습니다: 2026년 7월.",
+        "집계 가능한 리뷰가 없습니다: 2026년 8월.",
+        "집계 가능한 리뷰가 없습니다: 2026년 9월.",
+        "집계 가능한 리뷰가 없습니다: 2026년 10월.",
+        "집계 가능한 리뷰가 없습니다: 2026년 11월.",
+        "표본이 적습니다: 2026년 12월 리뷰 1건(20건 미만).",
+        "집계 가능한 리뷰가 없습니다: 2027년 1월.",
+        "합성 자료입니다. 날짜가 있는 경우에도 시연값이며 실제 고객 게시일·판매량·시장 수요의 증거가 아닙니다.",
+        "리뷰별 주제 연결은 합성 시연 후보입니다. 불만률이나 승인된 고객 분류가 아닙니다."
+      ],
+      "evidence_cells_checked": 2,
+      "ok": true
+    },
+    {
+      "model_id": "MICROWAVE-A",
+      "granularity": "season",
+      "project_id": "project-73b894dc8f704dac843eaa3a44e281b0",
+      "aggregate_id": "TREND-d3760cdd0f71ff5dad622937b4c37f6628c422672284726e5f66c70826f89bb0",
+      "filters": {
+        "project_id": "project-73b894dc8f704dac843eaa3a44e281b0",
+        "model_id": "MICROWAVE-A",
+        "source_ids": [
+          "PM-TREND-DEMO-REVIEWS-v1"
+        ],
+        "dataset_version": "pm-synthetic-trends.v1",
+        "start_date": "2026-06-01",
+        "end_date_exclusive": "2027-03-01",
+        "granularity": "season",
+        "topic_ids": [],
+        "source_kind": "synthetic",
+        "timezone": "Asia/Seoul"
+      },
+      "checks": {
+        "counts_equal_independent": true,
+        "buckets_equal_independent": true,
+        "topic_ids_equal_independent": true,
+        "ratios_null_only_when_empty": true,
+        "empty_bucket_warning": true,
+        "api_requery_same": true,
+        "api_evidence_pages_match_dataset": true,
+        "mcp_query_same_id": true,
+        "mcp_saved_identical": true,
+        "mcp_evidence_pages_identical": true
+      },
+      "counts": {
+        "input_review_count": 36,
+        "excluded_out_of_scope_count": 33,
+        "in_scope_review_count": 3,
+        "excluded_undated_count": 1,
+        "excluded_outside_period_count": 0,
+        "duplicate_count": 0,
+        "eligible_unique_review_count": 2,
+        "unclassified_review_count": 0
+      },
+      "dataset_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+      "annotation_sha256": "6a23e26343802dc2b4495e8da1e3efc6ffa9ac03cab3a0ed98bee1abc479093a",
+      "buckets": [
+        {
+          "bucket_id": "SEASON-2026-SUMMER",
+          "label": "2026년 여름",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "heating_preset_management",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-035"
+              ]
+            }
+          ]
+        },
+        {
+          "bucket_id": "SEASON-2026-AUTUMN",
+          "label": "2026년 가을",
+          "partial_period": false,
+          "total_reviews": 0,
+          "topics": [
+            {
+              "topic_id": "heating_preset_management",
+              "count": 0,
+              "ratio": null,
+              "evidence_ids": []
+            }
+          ]
+        },
+        {
+          "bucket_id": "SEASON-2026-WINTER",
+          "label": "2026년 겨울",
+          "partial_period": false,
+          "total_reviews": 1,
+          "topics": [
+            {
+              "topic_id": "heating_preset_management",
+              "count": 1,
+              "ratio": 1.0,
+              "evidence_ids": [
+                "DEMO-TREND-REVIEW-EVIDENCE-034"
+              ]
+            }
+          ]
+        }
+      ],
+      "warnings": [
+        "표본이 적습니다: 2026년 여름 리뷰 1건(20건 미만).",
+        "집계 가능한 리뷰가 없습니다: 2026년 가을.",
+        "표본이 적습니다: 2026년 겨울 리뷰 1건(20건 미만).",
+        "합성 자료입니다. 날짜가 있는 경우에도 시연값이며 실제 고객 게시일·판매량·시장 수요의 증거가 아닙니다.",
+        "리뷰별 주제 연결은 합성 시연 후보입니다. 불만률이나 승인된 고객 분류가 아닙니다."
+      ],
+      "evidence_cells_checked": 2,
+      "ok": true
+    }
+  ],
+  "result": "scope_matrix_ok"
+}
