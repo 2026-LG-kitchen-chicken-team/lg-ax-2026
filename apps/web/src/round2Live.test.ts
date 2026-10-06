@@ -9,9 +9,9 @@ import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { exportJudgement, planningExecutionView, rerunBaseNotice, runSources, selectableConcepts, violationText } from './judgement';
+import { exportJudgement, planningExecutionView, reasonText, rerunBaseNotice, runSources, selectableConcepts, violationText } from './judgement';
 import type { PlanningExecution } from './judgement';
-import { ConceptsView, HistoryView } from './PlanningViews';
+import { ConceptsView, HistoryView, outcomeChanges, outcomeOf } from './PlanningViews';
 import type { MeasureControls } from './PlanningViews';
 import { buildExport, contractErrors, exportCompleteness, exportMarkdown, storedExecution } from './planning';
 import type { PlanningRequest, RunSnapshot } from './planning';
@@ -90,6 +90,76 @@ describe('round2 live runs (PM, Qwen3:8B, real API and storage) read as stored',
     expect(exportCompleteness(trimmed, snapshot, scoped.features, scoped.evidence, RUNS).mismatched_fields).toEqual(['원 실행 기록']);
   });
 
+  it.each([['first', FIRST], ['changed', SECOND]] as const)('%s run: the stored reasons and questions are non-empty and outcomeOf reports exactly them', (_name, snapshot) => {
+    const record = execution(snapshot);
+    // Expectations come from the raw fixture, not from outcomeOf/exportJudgement. A fixture that lost them must fail here.
+    const holdReasons = record.output!.hold_reasons;
+    const questions = record.semantic_reviews![0].report.questions;
+    expect(holdReasons.length).toBeGreaterThan(0);
+    expect(questions.length).toBeGreaterThan(0);
+    expect(record.rejected_output!.concepts.length).toBeGreaterThan(0);
+    const outcome = outcomeOf(snapshot);
+    expect(outcome.decision).toBe('hold');
+    for (const reason of holdReasons) expect(outcome.groups.reasons).toContain(reasonText(reason));
+    for (const question of questions) expect(outcome.groups.questions).toContain(question);
+    expect(outcome.groups.rejected).toEqual(record.rejected_output!.concepts.map(item => `${item.id} ${item.title}`));
+    expect(outcome.groups.violations).toEqual(record.decision!.violations.map(violationText));
+  });
+
+  it('dropping the stored reasons or questions from the record is detected', () => {
+    const record = execution(SECOND);
+    const stripped = structuredClone(SECOND);
+    const copy = execution(stripped);
+    copy.output!.hold_reasons = [];
+    copy.output!.unresolved = [];
+    // The core also copies the last semantic review's questions into output.questions (and gaps keep their own), so
+    // all three stored places are cleared; otherwise the record still legitimately shows the question.
+    copy.output!.questions = [];
+    for (const gap of copy.output!.gaps) gap.questions = [];
+    for (const review of copy.semantic_reviews!) review.report.questions = [];
+    const outcome = outcomeOf(stripped);
+    for (const reason of record.output!.hold_reasons) expect(outcome.groups.reasons).not.toContain(reasonText(reason));
+    for (const question of record.semantic_reviews![0].report.questions) expect(outcome.groups.questions).not.toContain(question);
+    // The comparison then reports them as gone from this run instead of silently matching.
+    const rows = outcomeChanges(FIRST, stripped);
+    expect(rows.find(row => row.key === 'questions')!.resolved.length + rows.find(row => row.key === 'reasons')!.resolved.length).toBeGreaterThan(0);
+  });
+
+  it('failed run with no core record falls back to the run\'s own stored unresolved items and gap questions', () => {
+    const failed = structuredClone(FIRST);
+    failed.run.status = 'failed';
+    failed.run.unresolved = ['모델 응답을 받지 못했습니다'];
+    failed.output = {
+      needs: [{ id: 'NEED-X', pain: '손잡이 불편' }],
+      gaps: [{ id: 'GAP-X', need_id: 'NEED-X', support_status: 'insufficient_evidence', feature_ids: [], questions: ['어떤 모델의 손잡이입니까?'] }],
+      no_candidate_reasons: ['근거 부족'],
+    } as unknown as RunSnapshot['output'];
+    const outcome = outcomeOf(failed);
+    expect(outcome.status).toBe('failed');
+    expect(outcome.decision).toBeNull();
+    expect(outcome.groups.questions).toEqual(['어떤 모델의 손잡이입니까?']);
+    expect(outcome.groups.reasons).toEqual(['모델 응답을 받지 못했습니다', '근거 부족']);
+    expect(outcome.groups.violations).toEqual([]);
+    expect(outcome.groups.rejected).toEqual([]);
+  });
+
+  it('run with no stored output at all reports empty groups, not an invented result', () => {
+    const empty = structuredClone(FIRST);
+    empty.output = null;
+    empty.run.unresolved = [];
+    expect(outcomeOf(empty).groups).toEqual({ questions: [], reasons: [], violations: [], rejected: [] });
+  });
+
+  it('invalid core record is reported as record errors and never as a decision', () => {
+    const broken = structuredClone(SECOND);
+    (broken.output as unknown as { planning_execution: unknown }).planning_execution = { status: 'bogus' };
+    const outcome = outcomeOf(broken);
+    expect(outcome.decision).toBeNull();
+    expect(outcome.groups.violations.length).toBeGreaterThan(0);
+    expect(outcome.groups.violations).toContain('/status must be completed, held or failed');
+    expect(outcome.groups.rejected).toEqual([]);
+  });
+
   it('runs without a core record export no original record', () => {
     const plain = structuredClone(FIRST);
     plain.output = { needs: [], gaps: [] };
@@ -132,6 +202,35 @@ describe('round2 live runs in the actual React DOM', () => {
     for (const row of record.semantic_reviews![0].report.exclusion_assessments) expect(text).toContain(row.reason);
     for (const exclusion of snapshot.request.exclusions) expect(text).toContain(exclusion);
     expect(host.querySelectorAll('.concept-card')).toHaveLength(0);
+  });
+
+  it('changed run: held reasons and questions are compared with the first run, both runs untouched', async () => {
+    const before = structuredClone(RUNS);
+    const firstRecord = execution(FIRST);
+    const secondRecord = execution(SECOND);
+    const secondQuestions = secondRecord.semantic_reviews![0].report.questions;
+    expect(secondQuestions.length).toBeGreaterThan(0);
+    await act(async () => root.render(createElement(HistoryView, {
+      mode: 'live', runs: RUNS, selected: SECOND, original: FIRST.request, onSelect: () => {}, ...runSources(SECOND, [], []), onRerun, measure,
+    })));
+    const panel = host.querySelector('[aria-label="이전 실행과 결과 비교"]');
+    expect(panel?.textContent).toContain(`${FIRST.run.id} · held / hold`);
+    expect(panel?.textContent).toContain(`${SECOND.run.id} · held / hold`);
+    expect(panel?.textContent).toContain('이유가 사라졌다고 해서 문제가 해결됐다는 뜻은 아니며');
+    expect(panel?.querySelectorAll('[data-outcome]')).toHaveLength(4);
+    for (const question of secondQuestions) expect(panel?.textContent).toContain(question);
+    for (const reason of secondRecord.output!.hold_reasons) expect(panel?.textContent).toContain(reasonText(reason));
+    // A reason or question held in the first run appears in the panel as kept or as absent from this run; nothing is dropped.
+    for (const reason of firstRecord.output!.hold_reasons) expect(panel?.textContent).toContain(reasonText(reason));
+    expect(RUNS).toEqual(before);
+  });
+
+  it('first run has no earlier run to compare', async () => {
+    await act(async () => root.render(createElement(HistoryView, {
+      mode: 'live', runs: RUNS, selected: FIRST, original: FIRST.request, onSelect: () => {}, ...runSources(FIRST, [], []), onRerun, measure,
+    })));
+    expect(host.querySelector('[aria-label="이전 실행과 결과 비교"]')).toBeNull();
+    expect(host.textContent).toContain('이전 실행이 없어 비교하지 않습니다');
   });
 
   it('changed run: only conditions can be corrected; the new request links to it and stored runs stay unchanged', async () => {

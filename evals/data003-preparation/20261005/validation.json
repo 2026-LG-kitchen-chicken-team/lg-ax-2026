@@ -1,0 +1,790 @@
+{
+  "status": "pass",
+  "task_id": "P2-DATA-003",
+  "scope": "preparation_integrity_not_model_performance",
+  "counts": {
+    "corpus": 27,
+    "queries": 15,
+    "per_model": {
+      "T876MEE1H1": 5,
+      "DUE6BGL2E": 5,
+      "MW23FDI": 5
+    },
+    "supported_queries": 11,
+    "unsupported_queries": 4,
+    "ocr_cases": 6,
+    "retrieval_template_rows": 45,
+    "ocr_template_rows": 12
+  },
+  "checked_at_kst": "2026-10-05T04:13:06.882628+09:00",
+  "runtime": {
+    "python": "3.11.17",
+    "platform": "Windows-10-10.0.26200-SP0"
+  },
+  "command": "python -B -X utf8 scripts/verify_data003_preparation.py --source-directory <existing-originals>",
+  "manifest_sha256": "ff88b9f1f6b8afbd72038db36456f0a4a0b560240214619310288330d5a223a9",
+  "verifier_sha256": "f1de3233bd0bbc9c0b89603c1bacaead4614d03fa1eefd80a8412e991431f15e",
+  "check_count": 188,
+  "checks": [
+    {
+      "check": "preparation status, unchanged formal state and zero model/OCR calls",
+      "passed": true
+    },
+    {
+      "check": "independent evaluation boundaries declared",
+      "passed": true
+    },
+    {
+      "check": "source_versions SHA256: data/research/P2-DATA-001-real-reference-20261004/reference-pack.json",
+      "passed": true
+    },
+    {
+      "check": "source_versions SHA256: data/research/P2-DATA-001-stage123-20261005/mapping.json",
+      "passed": true
+    },
+    {
+      "check": "source_versions SHA256: data/research/P2-DATA-001-stage123-20261005/original-locations.json",
+      "passed": true
+    },
+    {
+      "check": "source_versions SHA256: evals/bootstrap-models/retrieval-results.json",
+      "passed": true
+    },
+    {
+      "check": "source_versions SHA256: evals/bootstrap-models/ocr-results.json",
+      "passed": true
+    },
+    {
+      "check": "source_versions SHA256: scripts/model_benchmark.py",
+      "passed": true
+    },
+    {
+      "check": "source_versions SHA256: services/inference/ocr_benchmark.py",
+      "passed": true
+    },
+    {
+      "check": "source_versions SHA256: data/demo/dataset.json",
+      "passed": true
+    },
+    {
+      "check": "source_versions SHA256: packages/contracts/schemas/lgax.schema.json",
+      "passed": true
+    },
+    {
+      "check": "source_versions SHA256: harness/phase2/tasks/P2-DATA-003.json",
+      "passed": true
+    },
+    {
+      "check": "source_versions SHA256: data/research/P2-DATA-001-stage345-20261005/model-pairs/T876MEE1H1/dataset.json",
+      "passed": true
+    },
+    {
+      "check": "source_versions SHA256: data/research/P2-DATA-001-stage345-20261005/model-pairs/DUE6BGL2E/dataset.json",
+      "passed": true
+    },
+    {
+      "check": "source_versions SHA256: data/research/P2-DATA-001-stage345-20261005/model-pairs/MW23FDI/dataset.json",
+      "passed": true
+    },
+    {
+      "check": "output_versions SHA256: evals/data003-preparation/20261005/corpus.json",
+      "passed": true
+    },
+    {
+      "check": "output_versions SHA256: evals/data003-preparation/20261005/ocr-cases.json",
+      "passed": true
+    },
+    {
+      "check": "output_versions SHA256: evals/data003-preparation/20261005/ocr-results-template.csv",
+      "passed": true
+    },
+    {
+      "check": "output_versions SHA256: evals/data003-preparation/20261005/ocr-results-template.json",
+      "passed": true
+    },
+    {
+      "check": "output_versions SHA256: evals/data003-preparation/20261005/protocol.json",
+      "passed": true
+    },
+    {
+      "check": "output_versions SHA256: evals/data003-preparation/20261005/queries.json",
+      "passed": true
+    },
+    {
+      "check": "output_versions SHA256: evals/data003-preparation/20261005/README.md",
+      "passed": true
+    },
+    {
+      "check": "output_versions SHA256: evals/data003-preparation/20261005/retrieval-results-template.csv",
+      "passed": true
+    },
+    {
+      "check": "output_versions SHA256: evals/data003-preparation/20261005/retrieval-results-template.json",
+      "passed": true
+    },
+    {
+      "check": "output_versions SHA256: evals/data003-preparation/20261005/run-metadata-template.json",
+      "passed": true
+    },
+    {
+      "check": "output_versions SHA256: evals/data003-preparation/20261005/비교조건_측정기준.md",
+      "passed": true
+    },
+    {
+      "check": "output_versions SHA256: evals/data003-preparation/20261005/질문_정답근거표.md",
+      "passed": true
+    },
+    {
+      "check": "generator SHA256",
+      "passed": true
+    },
+    {
+      "check": "source lock excludes private final evaluation inputs",
+      "passed": true
+    },
+    {
+      "check": "three original manual locks",
+      "passed": true
+    },
+    {
+      "check": "original PDF/cache basenames: T876MEE1H1",
+      "passed": true
+    },
+    {
+      "check": "original PDF SHA256: T876MEE1H1",
+      "passed": true
+    },
+    {
+      "check": "original page cache SHA256: T876MEE1H1",
+      "passed": true
+    },
+    {
+      "check": "manual version/hash/page count/URL: T876MEE1H1",
+      "passed": true
+    },
+    {
+      "check": "original PDF/cache basenames: DUE6BGL2E",
+      "passed": true
+    },
+    {
+      "check": "original PDF SHA256: DUE6BGL2E",
+      "passed": true
+    },
+    {
+      "check": "original page cache SHA256: DUE6BGL2E",
+      "passed": true
+    },
+    {
+      "check": "manual version/hash/page count/URL: DUE6BGL2E",
+      "passed": true
+    },
+    {
+      "check": "original PDF/cache basenames: MW23FDI",
+      "passed": true
+    },
+    {
+      "check": "original PDF SHA256: MW23FDI",
+      "passed": true
+    },
+    {
+      "check": "original page cache SHA256: MW23FDI",
+      "passed": true
+    },
+    {
+      "check": "manual version/hash/page count/URL: MW23FDI",
+      "passed": true
+    },
+    {
+      "check": "27 unique manual fact summaries",
+      "passed": true
+    },
+    {
+      "check": "development pack retains products and zero customer reviews",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: D02",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: D02",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: D03",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: D03",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: D04",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: D04",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: D05",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: D05",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: D06",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: D06",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: D09",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: D09",
+      "passed": true
+    },
+    {
+      "check": "existing canonical evidence/document IDs retained: D09",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: D12",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: D12",
+      "passed": true
+    },
+    {
+      "check": "existing canonical evidence/document IDs retained: D12",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: D13",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: D13",
+      "passed": true
+    },
+    {
+      "check": "existing canonical evidence/document IDs retained: D13",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: D14",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: D14",
+      "passed": true
+    },
+    {
+      "check": "existing canonical evidence/document IDs retained: D14",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: D16",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: D16",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: F10",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: F10",
+      "passed": true
+    },
+    {
+      "check": "existing canonical evidence/document IDs retained: F10",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: F11",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: F11",
+      "passed": true
+    },
+    {
+      "check": "existing canonical evidence/document IDs retained: F11",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: F12",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: F12",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: F13",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: F13",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: M02",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: M02",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: M03",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: M03",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: M04",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: M04",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: M06",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: M06",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: M07",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: M07",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: M08",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: M08",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: M11",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: M11",
+      "passed": true
+    },
+    {
+      "check": "existing canonical evidence/document IDs retained: M11",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: M12",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: M12",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: M13",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: M13",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: M14",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: M14",
+      "passed": true
+    },
+    {
+      "check": "existing canonical evidence/document IDs retained: M14",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: M15",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: M15",
+      "passed": true
+    },
+    {
+      "check": "existing canonical evidence/document IDs retained: M15",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: M17",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: M17",
+      "passed": true
+    },
+    {
+      "check": "original fact value/unit/condition/status retained: M18",
+      "passed": true
+    },
+    {
+      "check": "exact manual reference and source type: M18",
+      "passed": true
+    },
+    {
+      "check": "15 unique questions, five per model",
+      "passed": true
+    },
+    {
+      "check": "11 supported and four non-ranking questions",
+      "passed": true
+    },
+    {
+      "check": "question scope and gold references: FR-01",
+      "passed": true
+    },
+    {
+      "check": "gold source provenance: FR-01/T876MEE1H1-MANUAL-F10",
+      "passed": true
+    },
+    {
+      "check": "gold fact order and source count: FR-01",
+      "passed": true
+    },
+    {
+      "check": "question scope and gold references: FR-02",
+      "passed": true
+    },
+    {
+      "check": "gold source provenance: FR-02/T876MEE1H1-MANUAL-F11",
+      "passed": true
+    },
+    {
+      "check": "gold fact order and source count: FR-02",
+      "passed": true
+    },
+    {
+      "check": "question scope and gold references: FR-03",
+      "passed": true
+    },
+    {
+      "check": "gold source provenance: FR-03/DATA003-T876MEE1H1-F12",
+      "passed": true
+    },
+    {
+      "check": "gold source provenance: FR-03/DATA003-T876MEE1H1-F13",
+      "passed": true
+    },
+    {
+      "check": "gold fact order and source count: FR-03",
+      "passed": true
+    },
+    {
+      "check": "question scope and gold references: FR-04",
+      "passed": true
+    },
+    {
+      "check": "gold fact order and source count: FR-04",
+      "passed": true
+    },
+    {
+      "check": "question scope and gold references: FR-05",
+      "passed": true
+    },
+    {
+      "check": "gold fact order and source count: FR-05",
+      "passed": true
+    },
+    {
+      "check": "question scope and gold references: DW-01",
+      "passed": true
+    },
+    {
+      "check": "gold source provenance: DW-01/DUE6BGL2E-MANUAL-D09",
+      "passed": true
+    },
+    {
+      "check": "gold source provenance: DW-01/DUE6BGL2E-MANUAL-D13",
+      "passed": true
+    },
+    {
+      "check": "gold fact order and source count: DW-01",
+      "passed": true
+    },
+    {
+      "check": "question scope and gold references: DW-02",
+      "passed": true
+    },
+    {
+      "check": "gold source provenance: DW-02/DUE6BGL2E-MANUAL-D12",
+      "passed": true
+    },
+    {
+      "check": "gold fact order and source count: DW-02",
+      "passed": true
+    },
+    {
+      "check": "question scope and gold references: DW-03",
+      "passed": true
+    },
+    {
+      "check": "gold source provenance: DW-03/DATA003-DUE6BGL2E-D03",
+      "passed": true
+    },
+    {
+      "check": "gold fact order and source count: DW-03",
+      "passed": true
+    },
+    {
+      "check": "question scope and gold references: DW-04",
+      "passed": true
+    },
+    {
+      "check": "gold source provenance: DW-04/DUE6BGL2E-MANUAL-D14",
+      "passed": true
+    },
+    {
+      "check": "gold fact order and source count: DW-04",
+      "passed": true
+    },
+    {
+      "check": "question scope and gold references: DW-05",
+      "passed": true
+    },
+    {
+      "check": "gold fact order and source count: DW-05",
+      "passed": true
+    },
+    {
+      "check": "question scope and gold references: MW-01",
+      "passed": true
+    },
+    {
+      "check": "gold source provenance: MW-01/MW23FDI-MANUAL-M11",
+      "passed": true
+    },
+    {
+      "check": "gold fact order and source count: MW-01",
+      "passed": true
+    },
+    {
+      "check": "question scope and gold references: MW-02",
+      "passed": true
+    },
+    {
+      "check": "gold source provenance: MW-02/MW23FDI-MANUAL-M14",
+      "passed": true
+    },
+    {
+      "check": "gold fact order and source count: MW-02",
+      "passed": true
+    },
+    {
+      "check": "question scope and gold references: MW-03",
+      "passed": true
+    },
+    {
+      "check": "gold source provenance: MW-03/DATA003-MW23FDI-M06",
+      "passed": true
+    },
+    {
+      "check": "gold source provenance: MW-03/DATA003-MW23FDI-M07",
+      "passed": true
+    },
+    {
+      "check": "gold fact order and source count: MW-03",
+      "passed": true
+    },
+    {
+      "check": "question scope and gold references: MW-04",
+      "passed": true
+    },
+    {
+      "check": "gold source provenance: MW-04/DATA003-MW23FDI-M13",
+      "passed": true
+    },
+    {
+      "check": "gold fact order and source count: MW-04",
+      "passed": true
+    },
+    {
+      "check": "question scope and gold references: MW-05",
+      "passed": true
+    },
+    {
+      "check": "gold fact order and source count: MW-05",
+      "passed": true
+    },
+    {
+      "check": "unresolved prior version is not fabricated",
+      "passed": true
+    },
+    {
+      "check": "foreign evidence is real and forbidden for refrigerator",
+      "passed": true
+    },
+    {
+      "check": "missing input and conditional/unknown responses preserved",
+      "passed": true
+    },
+    {
+      "check": "fixed three retrieval methods and two OCR tracks",
+      "passed": true
+    },
+    {
+      "check": "all model revisions and license records locked",
+      "passed": true
+    },
+    {
+      "check": "same model/version filter, fixed repetitions, no claimed execution",
+      "passed": true
+    },
+    {
+      "check": "six unique OCR cases, three per track",
+      "passed": true
+    },
+    {
+      "check": "OCR page/version and unmeasured crop: OCR-FR-LINE",
+      "passed": true
+    },
+    {
+      "check": "exact OCR excerpt range/hash: OCR-FR-LINE",
+      "passed": true
+    },
+    {
+      "check": "OCR page/version and unmeasured crop: OCR-DW-LINE",
+      "passed": true
+    },
+    {
+      "check": "exact OCR excerpt range/hash: OCR-DW-LINE",
+      "passed": true
+    },
+    {
+      "check": "OCR page/version and unmeasured crop: OCR-MW-LINE",
+      "passed": true
+    },
+    {
+      "check": "exact OCR excerpt range/hash: OCR-MW-LINE",
+      "passed": true
+    },
+    {
+      "check": "OCR page/version and unmeasured crop: OCR-FR-NUM",
+      "passed": true
+    },
+    {
+      "check": "numeric field target grounded: OCR-FR-NUM/벽면 간격",
+      "passed": true
+    },
+    {
+      "check": "numeric field target grounded: OCR-FR-NUM/문 위쪽과 설치장 간격",
+      "passed": true
+    },
+    {
+      "check": "OCR page/version and unmeasured crop: OCR-DW-TABLE",
+      "passed": true
+    },
+    {
+      "check": "numeric field target grounded: OCR-DW-TABLE/빌트인 폭×높이×깊이",
+      "passed": true
+    },
+    {
+      "check": "numeric field target grounded: OCR-DW-TABLE/빌트인 무게",
+      "passed": true
+    },
+    {
+      "check": "numeric field target grounded: OCR-DW-TABLE/최대 용량",
+      "passed": true
+    },
+    {
+      "check": "numeric field target grounded: OCR-DW-TABLE/소비전력",
+      "passed": true
+    },
+    {
+      "check": "OCR page/version and unmeasured crop: OCR-MW-TABLE",
+      "passed": true
+    },
+    {
+      "check": "numeric field target grounded: OCR-MW-TABLE/MW23FDI 외형 폭×높이×깊이",
+      "passed": true
+    },
+    {
+      "check": "numeric field target grounded: OCR-MW-TABLE/조리실 용량",
+      "passed": true
+    },
+    {
+      "check": "numeric field target grounded: OCR-MW-TABLE/가용 용량",
+      "passed": true
+    },
+    {
+      "check": "numeric field target grounded: OCR-MW-TABLE/정격 소비전력",
+      "passed": true
+    },
+    {
+      "check": "numeric field target grounded: OCR-MW-TABLE/최대 고주파 출력",
+      "passed": true
+    },
+    {
+      "check": "retrieval complete unique measurement combinations",
+      "passed": true
+    },
+    {
+      "check": "retrieval all measurements genuinely empty",
+      "passed": true
+    },
+    {
+      "check": "retrieval CSV/JSON exact roundtrip",
+      "passed": true
+    },
+    {
+      "check": "ocr complete unique measurement combinations",
+      "passed": true
+    },
+    {
+      "check": "ocr all measurements genuinely empty",
+      "passed": true
+    },
+    {
+      "check": "ocr CSV/JSON exact roundtrip",
+      "passed": true
+    },
+    {
+      "check": "runtime template contains no invented measurements",
+      "passed": true
+    },
+    {
+      "check": "manifest counts match actual data",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "model_calls": 0,
+  "ocr_calls": 0,
+  "limits": [
+    "Source facts reused with manual locations; semantic gold review remains PM work",
+    "Hash and provenance checks do not prove model accuracy or independent evaluation quality",
+    "Private evaluation answers are not verifier inputs; no system-wide access audit claimed"
+  ]
+}

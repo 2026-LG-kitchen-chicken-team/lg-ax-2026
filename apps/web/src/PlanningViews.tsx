@@ -4,7 +4,10 @@ import { ApiError } from './api';
 import { evidenceLocation } from './domain';
 import type { Evidence } from './domain';
 import { ExecutionPanel } from './JudgementViews';
-import { reasonText, rerunBaseNotice, selectableConcepts } from './judgement';
+import { buildEvidenceTrace, EvidenceTracePanel, subjectFromGap } from './EvidenceTracePanel';
+import { buildRevisionTimeline, isIntermediateRun, RevisionTimeline } from './RevisionTimeline';
+import { ClarificationPanel } from './ClarificationPanel';
+import { exportJudgement, planningExecutionView, reasonText, rerunBaseNotice, selectableConcepts } from './judgement';
 import { runStatusView } from './liveWorkspace';
 import { editSummary, END_RULE, START_RULE } from './measurement';
 import type { EditSummary, ModificationMeasurement } from './measurement';
@@ -191,7 +194,7 @@ function RunPicker({ runs, selected, onSelect }: { runs: RunSnapshot[]; selected
   return <label className="run-picker">실행 기록<select value={selected.run.id} onChange={event => onSelect(event.target.value)}>{runs.map(item => <option key={item.run.id} value={item.run.id}>{item.run.id} · 요청 회차 {item.request_revision} · {item.run.status}</option>)}</select></label>;
 }
 
-interface PlanningProps { mode: DataMode; runs: RunSnapshot[]; selected: RunSnapshot; onSelect: (id: string) => void; features: Feature[]; evidence: Evidence[] }
+interface PlanningProps { mode: DataMode; runs: RunSnapshot[]; selected: RunSnapshot; onSelect: (id: string) => void; features: Feature[]; evidence: Evidence[]; currentEvidence?: Evidence[] }
 
 function RunStatus({ snapshot, mode }: { snapshot: RunSnapshot; mode: DataMode }) {
   const view = runStatusView(snapshot.run.status);
@@ -218,15 +221,20 @@ function CandidateMatrix({ snapshot }: { snapshot: RunSnapshot }) {
 }
 
 /** One place to read a candidate's sources, the judgments behind it, its assumptions and what was held back. */
-function CandidateReview({ snapshot, concept, features, evidence }: { snapshot: RunSnapshot; concept: Concept; features: Feature[]; evidence: Map<string, Evidence> }) {
+function CandidateReview({ snapshot, concept, features, evidence, currentEvidence }: { snapshot: RunSnapshot; concept: Concept; features: Feature[]; evidence: Map<string, Evidence>; currentEvidence?: Evidence[] }) {
   const gaps = (snapshot.output?.gaps ?? []).filter(gap => concept.gap_ids.includes(gap.id));
   const held = heldItems(snapshot);
   const outOfScope = new Set(scopeWarnings(snapshot, features, [...evidence.values()]).filter(item => item.kind === 'evidence').map(item => item.id));
+  const execution = planningExecutionView(snapshot);
+  const judged = execution.kind === 'ok' ? execution.execution.input.sources : [...evidence.values()];
   return <div className="candidate-review">
     <div className="review-col">
       <h4>판단 근거</h4>
       {gaps.length ? gaps.map(gap => {
         const need = snapshot.output!.needs.find(item => item.id === gap.need_id);
+        const version = snapshot.document_versions[gap.model_id];
+        const trace = version ? buildEvidenceTrace({ subject: subjectFromGap(gap, need?.pain ?? gap.id),
+          scope: { model_id: gap.model_id, document_version: version }, features, evidence: currentEvidence ?? judged, judged }) : null;
         return <div key={gap.id} className="judgment">
           <div className="judgment-top"><span className="id">{gap.id} · {gap.model_id}</span><span className={`status-pill ${gap.support_status}`}>{statusLabel(gap.support_status)}</span></div>
           {need ? <p><strong>{need.pain}</strong><small>{need.situation}</small></p> : null}
@@ -236,6 +244,7 @@ function CandidateReview({ snapshot, concept, features, evidence }: { snapshot: 
             {need?.uncertainties.length ? <><dt>상충·불확실</dt><dd>{need.uncertainties.join(' / ')}</dd></> : null}
             {gap.questions.length ? <><dt>확인할 질문</dt><dd>{gap.questions.join(' / ')}</dd></> : null}
           </dl>
+          {trace ? <EvidenceTracePanel trace={trace} currentAvailable={currentEvidence !== undefined} /> : <p className="missing-note" role="alert">{gap.model_id}의 고정 문서 버전이 없어 근거 범위를 확인할 수 없습니다.</p>}
         </div>;
       }) : <p className="muted">이 실행에는 후보와 연결된 판단 기록이 없습니다.</p>}
       <h4>확인할 가정</h4>
@@ -243,7 +252,7 @@ function CandidateReview({ snapshot, concept, features, evidence }: { snapshot: 
     </div>
     <div className="review-col">
       <h4>근거 원문 <span className="count">{concept.evidence_ids.length}건</span></h4>
-      <ul className="quote-list">{concept.evidence_ids.map(id => {
+      <ul className="quote-list" aria-label="후보 인용 원문">{concept.evidence_ids.map(id => {
         const item = evidence.get(id);
         return <li key={id}>{item ? <><q>{item.text}</q><small>{id} · {sourceKindLabel(item.source_kind)} · {item.source_type === 'review' ? '고객 리뷰' : '제품 설명서'} · {item.model_id} · 문서 {item.document_version} · {evidenceLocation(item)}{outOfScope.has(id) ? <span className="scope-flag"> · 검토 범위 밖 문서 버전</span> : null}</small></> : <span className="missing-note">{id} · 원문을 찾을 수 없습니다(자료 누락)</span>}</li>;
       })}</ul>
@@ -260,7 +269,7 @@ function ScopeNotice({ snapshot, features, evidence }: { snapshot: RunSnapshot; 
   return <div className="scope-notice" role="note"><strong>검토 범위 밖 문서 버전 {warnings.length}건</strong><span>이 실행의 고정 문서 버전({Object.entries(snapshot.document_versions).map(([model, version]) => `${model} ${version}`).join(', ')})과 다른 자료입니다. 문서 범위를 바꾸려면 기획자가 결정해야 합니다.</span><ul>{warnings.map(item => <li key={`${item.kind}-${item.id}`}>{scopeWarningText(item)}</li>)}</ul></div>;
 }
 
-export function ConceptsView({ mode, runs, selected, onSelect, features, evidence }: PlanningProps) {
+export function ConceptsView({ mode, runs, selected, onSelect, features, evidence, currentEvidence }: PlanningProps) {
   const evidenceById = new Map(evidence.map(item => [item.id, item]));
   const [reviewId, setReviewId] = useState('');
   const reviewed = selected.run.concepts.find(item => item.id === reviewId) ?? selected.run.concepts[0];
@@ -289,7 +298,7 @@ export function ConceptsView({ mode, runs, selected, onSelect, features, evidenc
       {selected.run.unresolved.length ? <div className="unresolved"><strong>보류·미해결</strong><ul>{selected.run.unresolved.map(item => <li key={item}>{reasonText(item)}</li>)}</ul></div> : null}
     </section>
     {selected.run.concepts.length > 1 ? <section className="panel planning-panel"><div className="planning-head"><div><p className="eyebrow">SIDE BY SIDE</p><h3>후보 비교표</h3></div></div><CandidateMatrix snapshot={selected} /></section> : null}
-    {reviewed ? <section className="panel planning-panel" aria-label="후보 상세 검토"><div className="planning-head"><div><p className="eyebrow">REVIEW</p><h3>{reviewed.title} <span className="count">원문·판단·가정·보류</span></h3></div><span className={`status-pill ${reviewed.status}`}>{statusLabel(reviewed.status)}</span></div><CandidateReview snapshot={selected} concept={reviewed} features={features} evidence={evidenceById} /></section> : null}
+    {reviewed ? <section className="panel planning-panel" aria-label="후보 상세 검토"><div className="planning-head"><div><p className="eyebrow">REVIEW</p><h3>{reviewed.title} <span className="count">원문·판단·가정·보류</span></h3></div><span className={`status-pill ${reviewed.status}`}>{statusLabel(reviewed.status)}</span></div><CandidateReview snapshot={selected} concept={reviewed} features={features} evidence={evidenceById} currentEvidence={mode === 'fixture' ? evidence : currentEvidence} /></section> : null}
   </div>;
 }
 
@@ -425,17 +434,75 @@ function DetailChanges({ previous, selected }: { previous: RunSnapshot | undefin
   </li>)}</ul>;
 }
 
+export interface OutcomeSide { status: string; decision: string | null; groups: Record<'questions' | 'reasons' | 'violations' | 'rejected', string[]> }
+export interface OutcomeRow { key: 'questions' | 'reasons' | 'violations' | 'rejected'; label: string; resolved: string[]; added: string[]; kept: string[] }
+
+/** The stored terminal state of one run: held/failed/unresolved reasons and the questions the Agent still asks. */
+export function outcomeOf(snapshot: RunSnapshot): OutcomeSide {
+  const record = exportJudgement(snapshot);
+  const unique = (items: string[]) => [...new Set(items)];
+  if (record?.record_valid) {
+    return { status: snapshot.run.status, decision: record.decision, groups: {
+      questions: record.questions,
+      reasons: unique([...record.hold_reasons, ...record.unresolved, ...record.no_candidate_reasons, ...record.errors.map(item => `${item.code}: ${item.message}`)].map(reasonText)),
+      violations: record.violations,
+      rejected: record.rejected_candidates.map(item => `${item.id} ${item.title}`),
+    } };
+  }
+  // No usable core record (none stored, or its format is invalid): fall back to what the run itself stored.
+  const held = heldItems(snapshot);
+  return { status: snapshot.run.status, decision: null, groups: {
+    questions: unique(held.flatMap(item => item.questions)),
+    reasons: unique([...snapshot.run.unresolved, ...(snapshot.output?.no_candidate_reasons ?? [])].map(reasonText)),
+    violations: record && !record.record_valid ? record.record_errors : [],
+    rejected: [],
+  } };
+}
+
+/** Before/after of the stored reasons between two runs; both runs stay as stored and nothing is hidden when they match. */
+export function outcomeChanges(previous: RunSnapshot, selected: RunSnapshot): OutcomeRow[] {
+  const before = outcomeOf(previous).groups;
+  const after = outcomeOf(selected).groups;
+  const labels = { questions: '추가 질문', reasons: '보류·미해결 이유', violations: '검사 위반', rejected: '거절된 후보' } as const;
+  return (Object.keys(labels) as OutcomeRow['key'][]).map(key => ({
+    key, label: labels[key],
+    resolved: before[key].filter(item => !after[key].includes(item)),
+    added: after[key].filter(item => !before[key].includes(item)),
+    kept: after[key].filter(item => before[key].includes(item)),
+  }));
+}
+
+/** Held, failed and unresolved results stay comparable with the run they were rerun from. */
+function OutcomeComparison({ previous, selected }: { previous: RunSnapshot | undefined; selected: RunSnapshot }) {
+  if (!previous) return <p className="muted">이전 실행이 없어 비교하지 않습니다. 이 실행이 원 요청 기준입니다.</p>;
+  const rows = outcomeChanges(previous, selected);
+  const side = (snapshot: RunSnapshot) => { const outcome = outcomeOf(snapshot); return `${snapshot.run.id} · ${snapshot.run.status}${outcome.decision ? ` / ${outcome.decision}` : ''}`; };
+  return <div className="outcome-comparison" aria-label="이전 실행과 결과 비교">
+    <p className="hint">{side(previous)} → {side(selected)}. 두 기록은 저장된 그대로 두고 이유와 질문만 대조합니다. 이유가 사라졌다고 해서 문제가 해결됐다는 뜻은 아니며 새 실행의 검사 결과를 따로 확인해야 합니다.</p>
+    <ul className="status-changes">{rows.map(row => <li key={row.key} data-outcome={row.key}>
+      <strong>{row.label}</strong>
+      {row.added.length ? <div className="added"><strong>+ 새로 생김</strong>{row.added.join(' / ')}</div> : null}
+      {row.resolved.length ? <div className="removed"><strong>− 이번 실행에 없음</strong>{row.resolved.join(' / ')}</div> : null}
+      {row.kept.length ? <div><strong>= 그대로 남음</strong>{row.kept.join(' / ')}</div> : null}
+      {!row.added.length && !row.resolved.length && !row.kept.length ? <span className="muted">두 실행 모두 없음</span> : null}
+    </li>)}</ul>
+  </div>;
+}
+
 export function HistoryView({ mode, runs, selected, onSelect, features, evidence, original, onRerun, busy = false, measure }: PlanningProps & { original: PlanningRequest; onRerun: (request: PlanningRequest, edits: EditSummary) => Promise<void>; busy?: boolean; measure: MeasureControls }) {
-  const previous = runs.find(item => item.run.id === selected.previous_run_id);
+  const timeline = buildRevisionTimeline(runs, selected.run.id, original);
+  const entry = timeline.entries.find(item => item.run_id === selected.run.id);
+  const parentEntry = timeline.entries.find(item => item.run_id === selected.previous_run_id);
+  const invalidLink = !entry || entry.link_problems.length > 0 || entry.record_problems.length > 0
+    || !!parentEntry?.record_problems.length;
+  const previous = invalidLink ? undefined : runs.find(item => item.run.id === selected.previous_run_id);
+  const intermediateResult = isIntermediateRun(selected) || !!previous && isIntermediateRun(previous);
   const changes = requestChanges(previous?.request ?? original, selected.request);
 
   return <div className="history-layout">
     <section className="panel planning-panel timeline-panel" aria-label="실행 기록">
-      <p className="eyebrow">RUNS</p><h3>실행 기록</h3>
-      <ol className="timeline">{runs.map(item => <li key={item.run.id}><button type="button" className={item.run.id === selected.run.id ? 'active' : ''} aria-current={item.run.id === selected.run.id ? 'true' : undefined} onClick={() => onSelect(item.run.id)}>
-        <span className="id">{item.run.id}</span><strong>요청 회차 {item.request_revision}</strong>
-        <small>{item.previous_run_id ? `← ${item.previous_run_id}` : '첫 실행'} · {mode === 'fixture' && item.actor_id !== 'local-draft' ? `fixture 예시(${item.run.status})` : runStatusView(item.run.status).label}{item.actor_id === 'local-draft' ? ' · 브라우저 초안' : ` · ${item.client}/${item.actor_id}`}</small>
-      </button></li>)}</ol>
+      <RunPicker runs={runs} selected={selected} onSelect={onSelect} />
+      <RevisionTimeline runs={runs} selectedId={selected.run.id} original={original} mode={mode} onSelect={onSelect} />
       <p className="hint">{mode === 'fixture' ? 'RUN-FX는 계약 fixture 예시이고, 추가한 초안은 새로고침하면 사라집니다.' : '작업실 서버에 저장된 실행 기록입니다. 기록은 수정되지 않고 새 실행으로만 이어집니다.'}</p>
       <MeasurementLog measure={measure} />
     </section>
@@ -450,13 +517,17 @@ export function HistoryView({ mode, runs, selected, onSelect, features, evidence
           <div><dt>기록 시각</dt><dd>{selected.created_at}</dd></div>
         </dl>
         <h4 className="sub">요청 변경</h4>
-        {changes.length ? <table className="change-table"><thead><tr><th>항목</th><th>변경 전</th><th>변경 후</th></tr></thead><tbody>{changes.map(item => <tr key={item.field}><th>{item.label}</th><td>{item.before}</td><td>{item.after}</td></tr>)}</tbody></table> : <p className="muted">이전 기준과 요청이 같습니다.</p>}
+        {invalidLink ? <p className="missing-note" role="alert">이전 실행 연결 또는 회차 기록을 확인할 수 없어 요청·후보·결과의 변경 전후 비교를 보류합니다. 저장된 현재 실행은 아래에서 확인하세요.</p> : changes.length ? <table className="change-table"><thead><tr><th>항목</th><th>변경 전</th><th>변경 후</th></tr></thead><tbody>{changes.map(item => <tr key={item.field}><th>{item.label}</th><td>{item.before}</td><td>{item.after}</td></tr>)}</tbody></table> : <p className="muted">이전 기준과 요청이 같습니다.</p>}
         <h4 className="sub">후보 변화 <small>제목·차별점·상태·요구사항·가정·근거</small></h4>
-        <DetailChanges previous={previous} selected={selected} />
+        {invalidLink ? <p className="muted">후보 비교 보류</p> : intermediateResult ? <p className="muted">아직 실행이 완료되지 않아 후보 변화를 비교하지 않습니다.</p> : <DetailChanges previous={previous} selected={selected} />}
+        <h4 className="sub">보류·실패·질문 비교 <small>이전 실행 대비</small></h4>
+        {invalidLink ? <p className="muted">결과 비교 보류</p> : intermediateResult ? <p className="muted">실행 결과가 확정되지 않아 보류·실패·질문을 비교하지 않습니다.</p> : <OutcomeComparison previous={previous} selected={selected} />}
         {selected.run.events.length ? <><h4 className="sub">판단 순서와 사용한 Skill</h4><ol className="events">{selected.run.events.map((item, index) => <li key={`${item.stage}-${index}`}><span className="stage">{item.stage}</span><span>{item.summary}</span>{item.tool ? <code>{item.tool}</code> : null}</li>)}</ol></> : null}
         {selected.unconfirmed.length ? <div className="unresolved"><strong>미확인 사항</strong><ul>{selected.unconfirmed.map(item => <li key={item}>{item}</li>)}</ul></div> : null}
       </section>
       <ExecutionPanel snapshot={selected} />
+      <ClarificationPanel key={`clarification-${selected.run.id}`} snapshot={selected} mode={mode} busy={busy}
+        onSubmit={request => onRerun(request, { candidates_changed: 0, conditions_added: 0, conditions_removed: 0 })} />
       <RerunPanel key={selected.run.id} mode={mode} selected={selected} original={original} onRerun={onRerun} busy={busy} measure={measure} />
     </div>
   </div>;

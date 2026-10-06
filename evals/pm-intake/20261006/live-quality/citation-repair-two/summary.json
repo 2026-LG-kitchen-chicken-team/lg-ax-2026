@@ -1,0 +1,106 @@
+{
+  "scope": "finite_manual_PM_quality",
+  "cases": [
+    {
+      "case_id": "fridge-normal",
+      "source_commit": "a748b663d9c371f38b12f0e0ab5eb66ab3f4b877",
+      "dataset_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+      "full_git_archive_sha256": "99313347513c82054b1ce2dfe9ac85589d88ae377b74bf7062d501b652a3e1f5",
+      "export_scope": "core/contracts/skills/demo/approved-case-inputs/model-provenance",
+      "input_sha256": "52440224ab725391c2677383b6aab4b5a9a0cdde1b450d76efe74af7b59e9aea",
+      "exit": 0,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "source_unchanged": true,
+      "status": "held",
+      "actual_calls": 4,
+      "tokens": 26025,
+      "usage_unknown": false,
+      "stop": null,
+      "relay_failed": false,
+      "model_id": "qwen3:8b",
+      "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "source_kind": "synthetic",
+      "revision_count": 1,
+      "independent_quality": null,
+      "file": "evals/pm-intake/20261006/live-quality/citation-repair-two/fridge-normal.output.json",
+      "output_sha256": "8ec25bdc5d52b1b36a789403cfaf80c5057851929bf47a01f2f821f5136da3d1",
+      "quality_complete": false
+    },
+    {
+      "case_id": "fridge-changed",
+      "source_commit": "a748b663d9c371f38b12f0e0ab5eb66ab3f4b877",
+      "dataset_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+      "full_git_archive_sha256": "99313347513c82054b1ce2dfe9ac85589d88ae377b74bf7062d501b652a3e1f5",
+      "export_scope": "core/contracts/skills/demo/approved-case-inputs/model-provenance",
+      "input_sha256": "74dd4e2b4dbbbfc4c4cd43c24777e1415c57072d972967e9090e6a9ca2f3d67d",
+      "exit": 0,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "source_unchanged": true,
+      "status": "held",
+      "actual_calls": 4,
+      "tokens": 23535,
+      "usage_unknown": false,
+      "stop": null,
+      "relay_failed": false,
+      "model_id": "qwen3:8b",
+      "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "source_kind": "synthetic",
+      "revision_count": 2,
+      "independent_quality": null,
+      "file": "evals/pm-intake/20261006/live-quality/citation-repair-two/fridge-changed.output.json",
+      "output_sha256": "00be2951d8ad7339ed691a3dabbcb7a5a157c6b782e68ef9ebb663db02c7c40d",
+      "quality_complete": false
+    }
+  ],
+  "automatic_quotas_or_old_jobs_reset": false,
+  "application_requirements_complete": false,
+  "quality_complete": false,
+  "market_or_real_customer_evidence": false,
+  "limitations": [
+    "Source inputs are synthetic; process exit0 is not judgment quality acceptance.",
+    "Actual model and source pins are preserved; original failures/quotas are not reset.",
+    "Independent development-case review is separate from held-out evaluation and a strong LLM baseline."
+  ]
+}

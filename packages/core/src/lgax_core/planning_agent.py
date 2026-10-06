@@ -15,13 +15,20 @@ from typing import Any
 
 from jsonschema import Draft202012Validator
 
+from .correction_budget import CorrectionBudget
+from .document_store import DocumentStore
 from .errors import DomainError
+from .feature_scope import select_feature_scope
 from .judgement_contract import input_digest, review_judgement
 from .judgement_contract import schema_for as judgement_schema
 from .model_client import StructuredModelClient
+from .no_candidate_review import INSTRUCTIONS as NO_CANDIDATE_INSTRUCTIONS
+from .no_candidate_review import no_candidate_feedback, no_candidate_review_schema, review_no_candidate
+from .revision_guard import RevisionSession
 from .semantic_review import INSTRUCTIONS, review_semantics, schema_for_review, semantic_feedback
 from .skill_runner import SkillRuntime
 from .skill_runner import schema_for as skill_schema
+from .source_boundary import SourceBoundary
 from .store import DemoStore
 
 SKILLS = ("need_extract", "product_compare", "concept_draft")
@@ -45,6 +52,11 @@ def generation_schema(skill_id: str, *, review_evidence_ids: list[str] | None = 
     names = (assessment, "questions", "hold_reasons", "no_candidate_reasons")
     properties = {"result": deepcopy(result), **{
         name: deepcopy(contract["properties"][name]) for name in names}}
+    properties["result"]["properties"].get("unresolved", {}).update(description=
+        "판단에 필요한 원 자료의 누락·상충·불명확함만 기록. 이미 확인된 잔여 불편이나 미지원 사실은 이 필드가 아니다.")
+    properties["questions"]["description"] = "현재 단계의 사실 판단에 꼭 필요한 누락 자료 질문. 확인된 잔여 불편의 해결책 요구가 아니다."
+    properties["hold_reasons"]["description"] = "현재 판단을 막는 자료 부족·상충·불명확함. 확인된 잔여 불편은 후보 생성의 근거다."
+    properties["no_candidate_reasons"]["description"] = "충분히 판단한 뒤 신규 후보가 필요 없거나 적절한 후보가 없는 구체 사유. 후보 작성 전에는 빈 배열."
     if skill_id == "need_extract" and review_evidence_ids is not None:
         # Constrain source identity, never the model's polarity or pain judgement.
         assessment_schema = properties["review_assessments"]
@@ -70,9 +82,61 @@ def generation_schema(skill_id: str, *, review_evidence_ids: list[str] | None = 
                 refs(child)
 
     refs(properties)
+    if skill_id == "need_extract" and review_evidence_ids is not None:
+        included["Need"]["properties"]["evidence_ids"]["items"] = {"enum": list(review_evidence_ids)}
     return {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
             "properties": properties, "required": list(properties), "additionalProperties": False,
             "$defs": included}
+
+
+def _compare_citation_feedback(payload: dict, output: dict, decision: dict) -> list[dict] | None:
+    """Retry omitted citations only when the frozen input actually supplies them.
+
+    The grounding review remains unchanged. No citation or support judgement is
+    repaired here; the model must produce a new comparison within the shared
+    correction budget, and that output must pass the ordinary review again.
+    """
+    codes = {item["code"] for item in decision["violations"]}
+    if (decision["action"] != "hold" or not codes
+            or not codes <= {"GAP_MANUAL_MISSING", "UNSUPPORTED_WITHOUT_MANUAL"}):
+        return None
+    assessments = {item["gap_id"]: item for item in output["gap_assessments"]}
+    # Genuine missing or conflicting comparison evidence is still a hold even
+    # when another Gap happens to have a correctable citation omission.
+    if any(item["support_basis"] in ("unmentioned", "conflicting")
+           or item["resolution"] == "unknown" for item in assessments.values()):
+        return None
+    features = {item["id"]: item for item in payload["features"]}
+    sources = {item["id"]: item for item in payload["sources"]}
+    needs = {item["id"]: item for item in output["needs"]}
+    product = payload["product"]
+    feedback = []
+    for gap in output["gaps"]:
+        linked = {eid for fid in gap["feature_ids"] if fid in features
+                  for eid in features[fid]["evidence_ids"]}
+        missing = linked - set(gap["evidence_ids"])
+        unsupported_without_manual = (assessments[gap["id"]]["support_basis"] == "explicit_unsupported"
+                                      and not any(sources.get(eid, {}).get("source_type") == "manual"
+                                                  for eid in gap["evidence_ids"]))
+        if not missing and not unsupported_without_manual:
+            continue
+        if not linked or any(fid not in features for fid in gap["feature_ids"]):
+            return None
+        for eid in linked:
+            source = sources.get(eid)
+            if (source is None or source["source_type"] != "manual" or not source["text"].strip()
+                    or any(source[key] != product[key] for key in
+                           ("model_id", "document_version", "source_kind"))
+                    or any(fid not in source["feature_ids"] for fid in gap["feature_ids"]
+                           if eid in features[fid]["evidence_ids"])):
+                return None
+        feedback.append({"code": "COMPARE_CITATION_OMISSION", "stage": "compare",
+                         "gap_id": gap["id"], "need_id": gap["need_id"],
+                         "required_review_evidence_ids": deepcopy(needs[gap["need_id"]]["evidence_ids"]),
+                         "linked_manual_evidence_ids": sorted(linked),
+                         "instruction": "입력에 있는 원문을 다시 읽고 리뷰와 선택한 기능의 설명서 ID 전체를 인용하세요. "
+                                        "현재 기능의 문서상 지원과 희망 결과에 대한 잔여 불편을 별도로 판단하세요."})
+    return feedback or None
 
 
 class _RecordingAdapter:
@@ -111,9 +175,19 @@ class PlanningAgent:
         payload = deepcopy(original)
         trace: list[dict] = []
         calls: list[dict] = []
+        budget = CorrectionBudget()
+        revision_session: RevisionSession | None = None
+        runtime: SkillRuntime | None = None
         result = {"execution_kind": self.execution_kind, "original_input": deepcopy(original),
                   "input": payload, "output": None, "decision": None, "status": "failed",
-                  "trace": trace, "model_calls": calls, "semantic_reviews": [], "errors": []}
+                  "trace": trace, "model_calls": calls, "semantic_reviews": [], "no_candidate_reviews": [], "errors": []}
+
+        def save_corrections() -> None:
+            result["correction_budget"] = budget.snapshot
+            if revision_session is not None:
+                result["revision_session"] = revision_session.snapshot
+            if runtime is not None:
+                result["skill_trace"] = runtime.trace
 
         def event(stage: str, operation: str, inputs: Any, outputs: Any) -> None:
             trace.append({"stage": stage, "operation": operation, "inputs": deepcopy(inputs),
@@ -121,6 +195,8 @@ class PlanningAgent:
                           "elapsed_ms": round((time.monotonic() - started) * 1000, 3)})
 
         def fail(error: DomainError) -> dict:
+            budget.close(reason="hold" if error.code in ("INVALID_ARGUMENT", "VALIDATION_FAILED")
+                         else "unresolved" if error.code == "INSUFFICIENT_EVIDENCE" else "backend_failure")
             result["errors"].append(error.response()["error"])
             result["status"] = "held" if error.code in ("INVALID_ARGUMENT", "VALIDATION_FAILED") else "failed"
             # A previous correction request is not the decision for this failed
@@ -130,7 +206,8 @@ class PlanningAgent:
             if result["output"] is not None:
                 result["rejected_output"] = deepcopy(result["output"])
                 terminal = result["output"]
-                terminal.update(status=result["status"], concepts=[], concept_assessments=[])
+                terminal.update(input_sha256=input_digest(payload), revision_count=payload["revision_count"],
+                                status=result["status"], concepts=[], concept_assessments=[])
                 terminal["unresolved"] = list(dict.fromkeys(terminal["unresolved"] + [error.message]))
                 terminal["no_candidate_reasons"] = terminal["unresolved"]
                 if result["status"] == "held":
@@ -138,6 +215,7 @@ class PlanningAgent:
                     if not terminal["questions"]:
                         terminal["questions"] = ["의미 검토 오류를 해결한 뒤 다시 실행할 수 있나요?"]
             event("review", "stop", {}, error.response())
+            save_corrections()
             return result
 
         if any(Draft202012Validator(judgement_schema("input")).iter_errors(payload)):
@@ -161,23 +239,37 @@ class PlanningAgent:
         try:
             dataset = self.store.bootstrap()["data"]
             event("retrieve", "bootstrap", {}, {"dataset_sha256": _digest(dataset)})
-            if payload["request"]["dataset_version"] != dataset["manifest"]["version"]:
-                raise DomainError("VALIDATION_FAILED", "입력과 저장소 자료 버전이 다릅니다.", {})
-            products = {p["model_id"]: p for p in dataset["products"]}
-            if products.get(payload["product"]["model_id"]) != payload["product"]:
+            # One judgement handles one explicitly versioned model. The selector
+            # sees only the host-authorized dataset, never a model-chosen scope.
+            model_id = payload["product"]["model_id"]
+            selection_request = {**payload["request"], "model_ids": [model_id]}
+            try:
+                selected = select_feature_scope(selection_request, {
+                    model_id: payload["product"]["document_version"]}, dataset)["inputs"][0]
+            except DomainError as error:
+                raise DomainError("VALIDATION_FAILED", error.message,
+                                  {**error.details, "scope_error_code": error.code}) from None
+            event("retrieve", "select_feature_scope", {
+                "model_id": model_id, "document_version": payload["product"]["document_version"]},
+                {"source_ids": [s["id"] for s in selected["sources"]],
+                 "feature_ids": [f["id"] for f in selected["features"]]})
+            if selected["product"] != payload["product"]:
                 raise DomainError("VALIDATION_FAILED", "제품 원본이 저장소와 다릅니다.", {})
-            features = {f["id"]: f for f in dataset["features"]}
+            features = {f["id"]: f for f in selected["features"]}
             if any(features.get(f["id"]) != f for f in payload["features"]):
                 raise DomainError("VALIDATION_FAILED", "기능 원본이 저장소와 다릅니다.", {})
-            scoped_features = {f["id"] for f in dataset["features"] if (
-                f["model_id"], f["document_version"]) == (
-                    payload["product"]["model_id"], payload["product"]["document_version"])}
-            if {f["id"] for f in payload["features"]} != scoped_features:
+            if {f["id"] for f in payload["features"]} != set(features):
                 raise DomainError("VALIDATION_FAILED", "현재 제품 기능 전체를 비교 문맥에 포함해야 합니다.", {})
+            selected_sources = {s["id"]: s for s in selected["sources"]}
+            if any(selected_sources.get(s["id"]) != s for s in payload["sources"]):
+                raise DomainError("VALIDATION_FAILED", "근거 원문이 저장소와 다릅니다.", {})
+            boundary = SourceBoundary(payload, allowed_tools=("get_evidence", "list_products"))
+            event("retrieve", "list_products", {}, boundary.invoke({"tool": "list_products", "arguments": {}}))
             for item in payload["sources"]:
                 source = self.store.get_evidence(item["id"])
+                frozen = boundary.invoke({"tool": "get_evidence", "arguments": {"evidence_id": item["id"]}})
                 event("retrieve", "get_evidence", {"evidence_id": item["id"]}, source)
-                if source["data"]["evidence"] != item:
+                if source["data"]["evidence"] != frozen["data"]["evidence"]:
                     raise DomainError("VALIDATION_FAILED", "근거 원문이 저장소와 다릅니다.",
                                       {"evidence_id": item["id"]})
         except DomainError as error:
@@ -186,12 +278,21 @@ class PlanningAgent:
         state: dict[str, dict] = {}
         resolved_reasons: list[str] = []
         feedback: list[dict] = []
-        runtime = SkillRuntime(self.store)
+        runtime = SkillRuntime(self.store, request=payload["request"])
         config = self.client.adapter.config
+        revision_session = RevisionSession(self.client, payload, self.store,
+                                           execution_kind=self.execution_kind, budget=budget)
+        revision_session.install(runtime)
 
         def model_call(stage: str, skill_id: str, context: dict, prompt: str, schema: dict):
+            # Raw generate transports use the same host policy as message-aware
+            # callers. Source role markers remain escaped JSON data in the task.
+            boundary = SourceBoundary(payload, allowed_tools=("get_evidence", "list_products"))
+            prompt = boundary.messages()[0]["content"] + "\n" + prompt
             record = {"stage": stage, "skill_id": skill_id, "execution_kind": self.execution_kind,
                       "input_sha256": input_digest(payload), "revision_count": payload["revision_count"],
+                      "source_boundary_sha256": boundary.context_sha256,
+                      "allowed_tools": list(boundary.allowed_tools),
                       "prompt": prompt, "schema": schema, "request_context": deepcopy(context),
                       "model_id": config.model_id, "model_digest": config.expected_digest}
             calls.append(record)
@@ -241,9 +342,17 @@ class PlanningAgent:
                         "upstream_assessments의 desired_outcomes와 리뷰 극성을 참고하고 Need의 의미를 바꾸지 마세요. "
                         "각 입력 Need마다 Gap을 반환하고 gap_assessments에는 결과 Gap의 ID마다 정확히 한 번 판단을 넣으세요. "
                         "Gap은 원 Need의 리뷰 근거와 feature_ids에 연결된 설명서 근거 전체를 인용해야 합니다. "
+                        "출력 전에 각 Gap.evidence_ids가 그 Need.evidence_ids와 선택한 모든 Feature.evidence_ids를 "
+                        "빠짐없이 포함하는지 확인하세요. feature_ids에만 연결하고 설명서 ID 인용을 생략하면 안 됩니다. "
+                        "support_status와 support_basis는 feature_ids로 비교한 현재 기능 자체의 문서상 지원 여부입니다. "
+                        "그 현재 기능이 설명서에 명시되어 있으면, 희망 결과를 완전히 풀지 못해도 supported/explicit_supported입니다. "
+                        "희망 결과를 위한 새로운 해결책이 문서에 없다는 이유로 명시된 현재 기능을 unmentioned로 바꾸지 마세요. "
                         "설명서의 명시적 지원은 explicit_supported/supported입니다. "
                         "기능이 있어도 해당 사용 조건에서 희망 결과가 충족되지 않으면 resolution=remaining과 구체 remaining_pain을 남기세요. "
+                        "support_basis/status의 대응은 explicit_supported/supported, explicit_unsupported/unsupported, "
+                        "unmentioned 또는 conflicting/insufficient_evidence입니다. 지원 사실과 잔여 불편의 존재는 별도로 판단하세요. "
                         "희망 결과가 이미 충족되면 resolution=resolved이며 remaining_pain은 빈 문자열입니다. "
+                        "확인된 잔여 불편은 Gap.remaining_pain과 resolution=remaining에 기록하고 다음 후보 기획의 근거로 사용하세요. "
                         "문서 미언급은 unmentioned/insufficient_evidence이고 unsupported가 아닙니다. "
                         "explicit_unsupported는 명시적 미지원 설명서 근거가 있을 때만 사용하세요. "
                         "상충·미언급·해결 여부 불명은 해당 Gap의 questions와 바깥 questions/hold_reasons로 보류하세요. "
@@ -259,12 +368,17 @@ class PlanningAgent:
                         "현재 설명서에 없는 형태·기능·서비스도 기획 가설로 제안할 수 있습니다.\n"
                         "3. 각 후보의 title과 kind를 정하고 differentiation에는 잔여 불편을 줄이는 작동 방식과 "
                         "현재 기능·사용 조건과 다른 점을, requirements에는 필요한 동작 조건을 구체적으로 적으세요.\n"
+                        "요청하지 않은 효과·에너지·성능 수치를 임의로 추가하거나 자동화라는 이름만으로 "
+                        "작동 원리를 설명한 것으로 대신하지 마세요. 사용자가 어떤 순서로 이용하며 "
+                        "어떤 구조·동작이 잔여 불편을 줄이는지 적으세요.\n"
                         "4. 후보의 gap_ids와 evidence_ids는 해당 Gap과 그 근거 전체에 연결하고, "
                         "입력의 constraints를 반영하여 모든 features와 중복 비교한 concept_assessments를 "
                         "후보마다 한 번씩 작성하며 compared_feature_ids에는 전체 기능 ID를 넣으세요.\n"
                         "5. 고객 문제·기존 기능의 사실은 sources의 ID·모델·문서 버전을 보존하여 인용하고, "
                         "새 가설의 미검증 제조 가능성·용량·안전성·효과는 assumptions/requirements에 후속 검증으로 "
-                        "남기며 status는 proposed 또는 needs_review로 작성하고, result와 바깥의 hold_reasons 및 "
+                        "남기세요. assumptions에는 제안 구조가 실제로 가능한지 검증할 전제를 적고 "
+                        "각 항목을 '후속 검증:'으로 시작하세요. 요청 문구 반복만으로 설계 검증 전제를 대신하지 마세요. "
+                        "status는 proposed 또는 needs_review로 작성하고, result와 바깥의 hold_reasons 및 "
                         "작성한 no_candidate_reasons는 각각 일치시키세요.\n"
                         "6. 충분한 근거로 판단했지만 적절한 신규 후보가 없으면 concepts=[]와 구체적인 "
                         "no_candidate_reasons를 작성하고 questions와 hold_reasons는 빈 배열로 두며, "
@@ -278,6 +392,8 @@ class PlanningAgent:
                     "외부 도구/경로/모델을 요구하지 마세요. 원문·인용 ID·기존 제품 기능·측정 결과를 "
                     "추정으로 꾸며 확인된 사실처럼 제시하지 마세요. 새 해결 후보의 가설은 사실 근거와 구분합니다. "
                     "sources의 source_type을 구분하고 source ID·모델·문서 버전을 그대로 보존하세요. "
+                    "unresolved/questions/hold_reasons는 원 자료의 누락·상충·불명확함 때문에 현재 판단을 할 수 없을 때만 씁니다. "
+                    "확인된 고객 불편이 아직 남아 있거나 원하는 기능이 명시적으로 미지원이라는 사실 자체는 판단 불능이 아닙니다. "
                     "feedback은 이전 출력의 검사 오류입니다. 같은 잘못을 반복하지 말고 요청된 단계에서 고치세요. "
                 )
                 # The concept stage asks for a new planning hypothesis. Keep its
@@ -341,10 +457,24 @@ class PlanningAgent:
                     combined["no_candidate_reasons"] = deepcopy(combined["hold_reasons"])
             return combined
 
+        def install_revision(judgement: dict) -> None:
+            fields = {"need_extract": ("needs", "desired_outcomes", "unresolved"),
+                      "product_compare": ("gaps", "unresolved"),
+                      "concept_draft": ("concepts", "hold_reasons", "no_candidate_reasons")}
+            assessments = {"need_extract": "review_assessments", "product_compare": "gap_assessments",
+                           "concept_draft": "concept_assessments"}
+            for skill_id, keys in fields.items():
+                state[skill_id] = {"result": {key: deepcopy(judgement[key]) for key in keys},
+                                   assessments[skill_id]: deepcopy(judgement[assessments[skill_id]]),
+                                   **{key: deepcopy(judgement[key]) for key in
+                                      ("questions", "hold_reasons", "no_candidate_reasons")}}
+
         begin = 0
         while True:
             failure = None
             retry_feedback = None
+            reviewed_questions = None
+            valid_previous_analysis = False
             for i in range(begin, len(SKILLS)):
                 skill_id = SKILLS[i]
                 common = {"model_id": payload["product"]["model_id"],
@@ -399,17 +529,62 @@ class PlanningAgent:
                 decision = review_judgement(payload, current)
                 result["output"] = deepcopy(current)
                 event("review", "review_judgement", {"input_sha256": input_digest(payload)}, decision)
-                if decision["valid"] and decision["action"] == "accept" and current["concepts"]:
+                citation_feedback = _compare_citation_feedback(payload, current, decision)
+                if citation_feedback is not None:
+                    original_decision = deepcopy(decision)
+                    revise = payload["revision_count"] < 2
+                    decision = {**decision, "action": "revise" if revise else "unresolved",
+                                "next_revision_count": payload["revision_count"] + int(revise),
+                                "rerun_from": "compare" if revise else None}
+                    retry_feedback = citation_feedback
+                    event("review", "compare_citation_retry", {"input_sha256": input_digest(payload)},
+                          {"original_decision": original_decision, "decision": deepcopy(decision),
+                           "feedback": deepcopy(citation_feedback)})
+                if decision["valid"] and decision["action"] == "accept" and not current["concepts"]:
                     context = {"request": payload["request"], "product": payload["product"],
                                "sources": payload["sources"], "features": payload["features"],
-                               "concepts": current["concepts"], "revision_count": payload["revision_count"],
+                               "judgement": current, "input_sha256": input_digest(payload),
+                               "output_sha256": input_digest(current), "feedback": feedback}
+                    try:
+                        report = model_call("review", "no_candidate_review", context,
+                                            NO_CANDIDATE_INSTRUCTIONS + json.dumps(
+                                                context, ensure_ascii=False, separators=(",", ":")),
+                                            no_candidate_review_schema(payload, current)).data
+                        decision = review_no_candidate(payload, current, report)
+                        reviewed_questions = deepcopy(report["questions"])
+                        retry_feedback = no_candidate_feedback(report)
+                        result["no_candidate_reviews"].append({"report": deepcopy(report), "decision": deepcopy(decision),
+                                                               "reviewed_input": deepcopy(payload),
+                                                               "reviewed_output": deepcopy(current)})
+                        event("review", "no_candidate_review", context, {"report": report, "decision": decision})
+                    except DomainError as error:
+                        if error.code != "VALIDATION_FAILED":
+                            return fail(error)
+                        result["errors"].append(error.response()["error"])
+                        revise = payload["revision_count"] < 2
+                        decision = {"valid": False, "action": "revise" if revise else "unresolved",
+                                    "revision_count": payload["revision_count"],
+                                    "next_revision_count": payload["revision_count"] + int(revise),
+                                    "rerun_from": "needs" if revise else None,
+                                    "violations": [{"code": "INVALID_NO_CANDIDATE_REVIEW", "stage": "needs"}]}
+                        retry_feedback = [{**decision["violations"][0], "details": deepcopy(error.details)}]
+                        event("review", "no_candidate_review_error", context, error.response())
+                if decision["valid"] and decision["action"] == "accept" and current["concepts"]:
+                    valid_previous_analysis = True
+                    context = {"request": payload["request"], "product": payload["product"],
+                               "sources": payload["sources"], "features": payload["features"],
+                               **{key: deepcopy(current[key]) for key in (
+                                   "needs", "desired_outcomes", "gaps", "review_assessments", "gap_assessments")},
+                               "concepts": current["concepts"], "concept_assessments": current["concept_assessments"],
+                               "revision_count": payload["revision_count"],
                                "input_sha256": input_digest(payload), "output_sha256": input_digest(current),
                                "skill_input": {"constraints": payload["request"]["exclusions"]}, "feedback": feedback}
                     try:
                         report = model_call("review", "semantic_review", context,
                                             INSTRUCTIONS + json.dumps(context, ensure_ascii=False, separators=(",", ":")),
-                                            schema_for_review(payload, current)).data
+                                            schema_for_review(payload, current, literal_choices=True)).data
                         decision = review_semantics(payload, current, report)
+                        reviewed_questions = deepcopy(report["questions"])
                         retry_feedback = semantic_feedback(report)
                         result["semantic_reviews"].append({"report": deepcopy(report), "decision": deepcopy(decision),
                                                            "reviewed_input": deepcopy(payload),
@@ -439,8 +614,8 @@ class PlanningAgent:
                 if result["status"] != "completed" and result["output"] is not None:
                     result["rejected_output"] = deepcopy(result["output"])
                     terminal = result["output"]
-                    if result["semantic_reviews"]:
-                        terminal["questions"] = deepcopy(result["semantic_reviews"][-1]["report"]["questions"])
+                    if reviewed_questions is not None:
+                        terminal["questions"] = reviewed_questions
                     terminal["status"] = result["status"]
                     terminal["concepts"], terminal["concept_assessments"] = [], []
                     reasons = [item["code"] for item in decision["violations"]]
@@ -454,14 +629,60 @@ class PlanningAgent:
                     if not terminal["no_candidate_reasons"]:
                         terminal["no_candidate_reasons"] = terminal["unresolved"] or terminal["hold_reasons"]
                 result["input"] = deepcopy(payload)
+                budget.close(reason="completed" if result["status"] == "completed" else
+                             "hold" if result["status"] == "held" else "unresolved")
+                save_corrections()
                 return result
+            feedback = deepcopy(decision["violations"] if retry_feedback is None else retry_feedback)
+            if valid_previous_analysis:
+                # One installed session shares every earlier stage retry. Failed
+                # completions spend a claim too; they never recreate the session.
+                revision_session.bind_previous_judgement(current)
+                args = {"model_id": payload["product"]["model_id"],
+                        "document_version": payload["product"]["document_version"],
+                        **{key: deepcopy(current[key]) for key in ("needs", "gaps", "concepts")},
+                        "changed_evidence_ids": deepcopy(payload["changed_evidence_ids"])}
+                while True:
+                    args["revision_count"] = budget.snapshot["revision_count"]
+                    args["violations"] = [json.dumps(item, ensure_ascii=False, separators=(",", ":"))
+                                          for item in feedback]
+                    previous_audit_count = len(revision_session.snapshot["audit"])
+                    response = runtime.execute("review_revision", args)
+                    snapshot = revision_session.snapshot
+                    payload["revision_count"] = budget.snapshot["revision_count"]
+                    result["input"] = deepcopy(payload)
+                    for record in snapshot["audit"][previous_audit_count:]:
+                        calls.append({**record, "stage": "review", "skill_id": "review_revision",
+                                      "input_sha256": record["context_sha256"],
+                                      "model_id": config.model_id, "model_digest": config.expected_digest})
+                    event("review", "review_revision", args, response)
+                    save_corrections()
+                    if response["ok"]:
+                        install_revision(snapshot["judgement"])
+                        begin = len(SKILLS)
+                        break
+                    error = response["error"]
+                    if error["code"] not in ("VALIDATION_FAILED", "INVALID_EVIDENCE_ID"):
+                        return fail(DomainError(error["code"], error["message"], error["details"]))
+                    result["errors"].append(error)
+                    if budget.snapshot["closed"]:
+                        return fail(DomainError("INSUFFICIENT_EVIDENCE", "최대 수정 회차에도 유효한 결과가 없습니다.",
+                                                {"reason": "revision_limit"}))
+                    if len(snapshot["audit"]) == previous_audit_count:
+                        # A preflight rejection made no attempt; repeating it would
+                        # spin without spending the monotonic model-call budget.
+                        return fail(DomainError(error["code"], error["message"], error["details"]))
+                    feedback = [{"code": error["code"], "stage": "review", "details": error["details"]}]
+                continue
             stage = decision["rerun_from"]
             begin = {"plan": 0, "retrieve": 0, "needs": 0, "compare": 1, "concepts": 2, "review": 0}[stage]
             for key in SKILLS[begin:]:
                 state.pop(key, None)
-            payload["revision_count"] += 1
+            resolved_reasons = []
+            payload["revision_count"] = budget.claim(expected_revision_count=payload["revision_count"],
+                                                      operation="stage_retry")
             result["input"] = deepcopy(payload)
-            feedback = deepcopy(decision["violations"] if retry_feedback is None else retry_feedback)
+            save_corrections()
             event("review", "revise", {"rerun_from": stage}, {"revision_count": payload["revision_count"]})
 
 
@@ -479,7 +700,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         payload = json.loads(args.input.read_text("utf-8-sig"))
         dataset = json.loads(args.dataset.read_text("utf-8-sig")) if args.dataset else None
-        store = DemoStore(dataset)
+        store = (DocumentStore(dataset) if isinstance(dataset, dict)
+                 and dataset.get("artifact_kind") == "document_dataset" else DemoStore(dataset))
         with StructuredModelClient.from_env() as client:
             result = PlanningAgent(client, store).run(payload)
         args.output.parent.mkdir(parents=True, exist_ok=True)

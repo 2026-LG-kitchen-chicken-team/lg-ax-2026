@@ -120,7 +120,7 @@ test('real planning server: browser-initiated run → same run ID review → dow
     await openArea(page, '수정 이력');
     const rerun = page.getByRole('form', { name: '후보·조건 선택 후 재실행' });
     const groups = rerun.getByRole('radiogroup');
-    const before = await page.locator('.timeline li').count();
+    const before = await page.locator('.timeline > li').count();
     if (await groups.count()) {
       proof.rerun_kind = 'candidate_exclude';
       await groups.first().getByText('제외').click();
@@ -131,8 +131,8 @@ test('real planning server: browser-initiated run → same run ID review → dow
       await rerun.getByRole('button', { name: '조건 추가' }).click();
     }
     await rerun.getByRole('button', { name: '다시 실행 요청' }).click();
-    await expect(page.locator('.timeline li')).toHaveCount(before + 1, { timeout: stepTimeout });
-    const secondId = (await page.locator('.timeline li').last().textContent())!.match(/run-[0-9a-f]+/)![0];
+    await expect(page.locator('.timeline > li')).toHaveCount(before + 1, { timeout: stepTimeout });
+    const secondId = (await page.locator('.timeline > li').last().textContent())!.match(/run-[0-9a-f]+/)![0];
     const second = await fetchRun(secondId);
     proof.second = summary(second);
     if (requireGeneration) proof.second_verified_model_calls = requireLiveModelProof(second.output?.planning_execution, expectedModelId, expectedModelDigest);

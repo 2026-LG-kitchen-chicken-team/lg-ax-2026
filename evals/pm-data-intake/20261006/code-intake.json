@@ -1,0 +1,56 @@
+{
+  "base_commit": "02f9a643e92c4665f2f0f71a5690f9ed6ed28930",
+  "source_heads": {
+    "133": "f66af0195a9a0708159859ae55e6f1cb1fef3c1a",
+    "138": "69df5624e56be8546cd8cb438a2643e02c45034e"
+  },
+  "code_files": [
+    {
+      "path": "packages/core/src/lgax_core/document_store.py",
+      "sha256": "cbf5fc44dc7339e12f40fb0813833561d5984df40c0fe29ba16b9b66ce3c6bc5"
+    },
+    {
+      "path": "packages/core/src/lgax_core/review_import.py",
+      "sha256": "2e80bb767fe4e4e2e094d64c064a00385f84ffba54c54f039dc9e725a2e50f20"
+    },
+    {
+      "path": "packages/core/src/lgax_core/source_ranges.py",
+      "sha256": "a6a46e4868e9f8a88de86f5c6bd6b3b7672d89a3ee13ceb77d4e7c165b7e9687"
+    },
+    {
+      "path": "tests/test_document_store_snapshot.py",
+      "sha256": "212f23f258759b1f9d295a2be405f44063ccab58a1a7b1841cc458ffd56a9b5d"
+    },
+    {
+      "path": "tests/test_review_import.py",
+      "sha256": "8fedff9dfec0b82fc4658436d875bc198145783d62ae4dd41b5bb63a0a7d3004"
+    },
+    {
+      "path": "tests/test_source_ranges.py",
+      "sha256": "e38ac8b4e75c44f1458998f362180a87084e5cfa64fe4dce306769e8c23d7a48"
+    }
+  ],
+  "changes": "Owner-provided snapshot detachment fix and bounded new CSV import/exact source range modules; no shared contracts or judgment changes.",
+  "checks": {
+    "data_focused_tests": 26,
+    "data_focused_result": "PASS",
+    "full_repository_attempt": {
+      "tests": 1210,
+      "errors": 4,
+      "skipped": 3,
+      "limitations": [
+        "read-only exported workspace refuses three repository-location fixture writes",
+        "MCP stdio child closed in exported image"
+      ],
+      "data_tests_passed": true
+    },
+    "approved_image": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+    "network": "none",
+    "auth_mounted": false,
+    "source_unchanged": true,
+    "model_calls": 0
+  },
+  "live_queue_or_budget_changed": false,
+  "original_attempts_and_owner_records_preserved": true,
+  "completion_scope": "Functional DATA modules only, not full DATA Epic acceptance or product semantic quality."
+}

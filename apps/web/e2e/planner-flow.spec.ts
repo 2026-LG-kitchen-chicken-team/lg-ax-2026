@@ -33,7 +33,8 @@ test('fixture: request questions → candidate review → corrected rerun → ex
   await page.getByRole('button', { name: '원문·판단 함께 보기' }).nth(1).click();
   const review = page.getByRole('region', { name: '후보 상세 검토' });
   await expect(review).toContainText('청소 전 식품 이동 범위 안내');
-  await expect(review.locator('.quote-list')).toContainText('선반 분리 방법이 설명서 어디 있는지 모르겠어요.');
+  // The separate trace panel also quotes evidence; assert the candidate's own source list.
+  await expect(review.getByRole('list', { name: '후보 인용 원문' })).toContainText('선반 분리 방법이 설명서 어디 있는지 모르겠어요.');
   await expect(review.locator('.held-list')).toContainText('GAP-FX-002');
 
   // R27: the export carries every cited source and its own completeness check.
@@ -116,11 +117,11 @@ test('live: connect, save a request, rerun with a corrected condition on the rea
   await expect(page.locator('.request-form .inline-message')).toContainText('요청 저장 완료 · 분석 결과 아님');
 
   await openArea(page, '수정 이력');
-  const before = await page.locator('.timeline li').count();
+  const before = await page.locator('.timeline > li').count();
   const rerun = page.getByRole('form', { name: '후보·조건 선택 후 재실행' });
   await rerun.getByLabel('추가 조건').fill(`E2E 조건 ${Date.now()}`);
   await rerun.getByRole('button', { name: '조건 추가' }).click();
   await rerun.getByRole('button', { name: '다시 실행 요청' }).click();
-  await expect(page.locator('.timeline li')).toHaveCount(before + 1);
-  await expect(page.locator('.timeline li').last()).toContainText('요청만 저장됨');
+  await expect(page.locator('.timeline > li')).toHaveCount(before + 1);
+  await expect(page.locator('.timeline > li').last()).toContainText('요청만 저장됨');
 });

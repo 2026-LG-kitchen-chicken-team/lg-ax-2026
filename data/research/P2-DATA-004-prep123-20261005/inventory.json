@@ -1,0 +1,64 @@
+{
+  "task_id": "P2-DATA-004",
+  "checked_at_kst": "2026-10-05T06:31:55+09:00",
+  "reuse": [
+    {
+      "source": "data/demo",
+      "use": "Development exclusion pool only; 5 models/36 reviews/42 evidence"
+    },
+    {
+      "source": "private/evaluation/DATA001-20261005-contract-review",
+      "use": "Frozen six-type inputs and exact schema reuse; answers/candidate outputs excluded"
+    },
+    {
+      "source": "data/research/P2-DATA-001-real-reference-20261004/reference-pack.json",
+      "use": "Historical reference catalog: 3 models/60 facts/2 unresolved differences/7 gaps; no live refresh or actual product version pair"
+    },
+    {
+      "source": "data/research/P2-DATA-002-step5-20261005/runs/verified/completion-review.json",
+      "use": "Fixed-input retrieval handoff only; 220 checks/122 HTTP requests are prior work, not this run; formal dependency not released"
+    }
+  ],
+  "historical_reference_conflicts": [
+    {
+      "id": "C01",
+      "model_id": "T876MEE1H1",
+      "field": "wall_clearance",
+      "status": "unresolved_scope_difference",
+      "resolution": null,
+      "source_ids": [
+        "F-M",
+        "F-S"
+      ],
+      "observed_at": [
+        "2026-10-04T18:27:50+09:00",
+        "2026-10-04T18:27:50+09:00"
+      ]
+    },
+    {
+      "id": "C02",
+      "model_id": "MW23FDI",
+      "field": "release_month",
+      "status": "unresolved_value_conflict",
+      "resolution": null,
+      "source_ids": [
+        "M-P",
+        "M-SSG"
+      ],
+      "observed_at": [
+        "2026-10-04T18:27:50+09:00",
+        "2026-10-04T18:27:50+09:00"
+      ]
+    }
+  ],
+  "missing": [
+    "Stage4 expected responses/gold source approval",
+    "Stage5 semantic quality/independence review",
+    "Stage6 actual retrieval/Agent and specification-change rerun",
+    "PM adoption of frozen contract and private input pack",
+    "Formal DATA002 dependency release, PM merge/integration"
+  ],
+  "official_state": "P2-DATA-004 pending, unchanged",
+  "new_real_customer_reviews": 0,
+  "real_product_version_history_available": false
+}

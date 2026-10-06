@@ -1,0 +1,8 @@
+{
+  "passed": false,
+  "stage": "git PR74 version read before PDF download",
+  "exception": "CalledProcessError exit128",
+  "reason": "Sandbox-created checkout is owned by CodexSandboxOffline; escalated process runs as user. Git dubious ownership check rejected the repository.",
+  "pdfs_downloaded": 0,
+  "correction": "Use per-command safe.directory for this explicitly created worktree; no global Git setting change. Next execution uses new pdf-run2 directory."
+}

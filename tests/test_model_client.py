@@ -60,7 +60,8 @@ class Backend:
                 })
             self.assert_path(request, "/api/tags")
             return json_response({"models": [{"name": name, "digest": digest} for name in self.models]})
-        self.assert_path(request, "/generate" if self.kind == "lab" else "/api/generate")
+        self.assert_path(request, "/generate" if self.kind == "lab" else
+                         "/api/chat" if self.kind == "chat" else "/api/generate")
         value = {"model": self.model, "response": self.response, "done": self.done,
                  "prompt_eval_count": 31, "eval_count": 7,
                  "total_duration_ns" if self.kind == "lab" else "total_duration": 1000000}
@@ -68,6 +69,9 @@ class Backend:
             value["verified_model_digest"] = self.output_digest
         else:
             value["done_reason"] = self.done_reason
+        if self.kind == "chat":
+            value["message"] = {"role": "assistant", "content": value.pop("response"),
+                                "thinking": "모의 추론: 최종 JSON과 별도"}
         return json_response(value)
 
     @staticmethod
@@ -130,6 +134,73 @@ class ModelClientTests(unittest.TestCase):
             with self.subTest(kwargs=kwargs), self.assertRaises(DomainError) as error:
                 self.client(**kwargs)
             self.assertEqual(error.exception.details["reason"], "invalid_generation_budget")
+
+    def test_thinking_sampling_is_sent_and_recorded_without_changing_defaults(self):
+        client, backend = self.client(thinking=True, temperature=0.6, top_p=0.95, top_k=20, min_p=0)
+        result = client.generate("인사", SCHEMA, MODEL)
+        payload = json.loads(backend.requests[1].content)
+        self.assertTrue(payload["think"])
+        self.assertEqual(payload["options"], {"temperature": 0.6, "seed": 42, "num_ctx": 4096,
+                                              "num_predict": 256, "top_p": 0.95, "top_k": 20, "min_p": 0})
+        self.assertEqual(result.metadata["generation_settings"], payload["options"])
+        copied = client.adapter.config.ollama_options()
+        copied["temperature"] = 2
+        self.assertEqual(client.adapter.config.temperature, 0.6)
+
+    def test_chat_thinking_and_final_content_are_separate_with_same_schema_and_pins(self):
+        client, backend = self.client(Backend("chat"), api_mode="chat", thinking=True, temperature=0.6)
+        result = client.generate("한국어로 인사", SCHEMA, MODEL)
+        body = json.loads(backend.requests[1].content)
+        self.assertNotIn("prompt", body)
+        self.assertEqual(body["messages"][0]["role"], "user")
+        self.assertIn("한국어로 인사", body["messages"][0]["content"])
+        self.assertTrue(body["think"])
+        self.assertEqual(body["format"], SCHEMA)
+        self.assertEqual(result.data, {"message": "한국어 응답"})
+        self.assertEqual(result.metadata["transport_api"], "/api/chat")
+        self.assertEqual([r.url.path for r in backend.requests], ["/api/tags", "/api/chat", "/api/tags"])
+
+    def test_empty_chat_content_never_substitutes_thinking_or_falls_back(self):
+        client, backend = self.client(Backend("chat", response=""), api_mode="chat", thinking=True)
+        self.assert_failure(client, "invalid_json", "VALIDATION_FAILED")
+        self.assertEqual(sum(r.method == "POST" for r in backend.requests), 1)
+
+    def test_unsupported_chat_mode_and_fixed_lab_are_rejected(self):
+        for mode in (None, "other", [], {}):
+            with self.subTest(mode=mode), self.assertRaises(DomainError):
+                self.client(api_mode=mode)
+        client, backend = self.client(Backend("lab"), api_mode="chat")
+        self.assert_failure(client, "lab_api_is_fixed", "INVALID_ARGUMENT")
+        self.assertTrue(all(r.method == "GET" for r in backend.requests))
+
+    def test_invalid_sampling_is_rejected_before_transport(self):
+        for kwargs in ({"temperature": True}, {"temperature": float("nan")}, {"temperature": 2.1},
+                       {"temperature": -1}, {"temperature": None}, {"top_p": 0}, {"top_p": 1.1},
+                       {"top_p": float("inf")}, {"top_k": True}, {"top_k": 20.0}, {"top_k": -1},
+                       {"min_p": -0.1}, {"min_p": "0"}):
+            with self.subTest(kwargs=kwargs), self.assertRaises(DomainError) as error:
+                self.client(**kwargs)
+            self.assertEqual(error.exception.details["reason"], "invalid_sampling_setting")
+
+    def test_lab_rejects_sampling_overrides_before_generation(self):
+        for kwargs in ({"temperature": 0.6}, {"top_p": 0.95}, {"top_k": 20}, {"min_p": 0}):
+            with self.subTest(kwargs=kwargs):
+                client, backend = self.client(Backend("lab"), **kwargs)
+                self.assert_failure(client, "lab_sampling_is_fixed", "INVALID_ARGUMENT")
+                self.assertTrue(all(request.method == "GET" for request in backend.requests))
+
+    def test_sampling_environment_preserves_explicit_settings_and_rejects_malformed(self):
+        values = {"LGAX_MODEL_ADAPTER": "ollama", "LGAX_MODEL_ENDPOINT": "http://127.0.0.1:18864",
+                  "LGAX_MODEL_ID": MODEL, "LGAX_MODEL_DIGEST": DIGEST,
+                  "LGAX_MODEL_TEMPERATURE": "0.6", "LGAX_MODEL_TOP_P": "0.95",
+                  "LGAX_MODEL_TOP_K": "20", "LGAX_MODEL_MIN_P": "0"}
+        with StructuredModelClient.from_env(values) as client:
+            self.assertEqual(client.adapter.config.ollama_options()["top_k"], 20)
+            self.assertEqual(client.adapter.config.temperature, 0.6)
+        for key, value in (("LGAX_MODEL_TOP_K", "20.0"), ("LGAX_MODEL_TOP_P", "nan"),
+                           ("LGAX_MODEL_TEMPERATURE", "")):
+            with self.subTest(key=key), self.assertRaises(DomainError):
+                StructuredModelClient.from_env({**values, key: value})
 
     def test_fixed_lab_does_not_silently_ignore_requested_budget(self):
         client, backend = self.client(Backend("lab"), max_output_tokens=1024, context_tokens=8192)

@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "kind": "actual_isolated_integrated_python_validation",
+  "source_commit": "aad053c4b8661be4683cad48eeeef63ca7c42984",
+  "source_archive_sha256": "cbd54ee306353428472be86bd3c526201e32e9c7575612036da51cb1ef74a575",
+  "private_summary_sha256": "995ed2738094a94a07404c4d9444c9f527d0edb35d684dba835ef08992a6f24e",
+  "all_pass": true,
+  "source_changed": [],
+  "model_calls": 0,
+  "boundary": {
+    "backend": "docker",
+    "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+    "role": "validator",
+    "uid": 1000,
+    "readonly_root": true,
+    "caps_dropped": true,
+    "no_new_privileges": true,
+    "network": "none",
+    "mount_targets": [
+      "/artifacts",
+      "/workspace"
+    ],
+    "publisher_credentials_mounted": false,
+    "ai_profile_mounted": false
+  },
+  "checks": [
+    {
+      "name": "python_unittest",
+      "returncode": 0,
+      "log_sha256": "b5b3080d5d30cd45b7ac5613ab8ddcc01fa20aa20894c1df527b7c582822e3f5"
+    },
+    {
+      "name": "agent_rules_identical",
+      "returncode": 0,
+      "log_sha256": "56b21f915cb5a695479359f4ca6063582b0b9bcbdaee1869782a2a805a2a82cd"
+    },
+    {
+      "name": "contracts",
+      "returncode": 0,
+      "log_sha256": "6eeefba1598ed16cffaa688f144376cf5a072af5ec2d72e621cc6d504a38502e"
+    },
+    {
+      "name": "phase2_integrity",
+      "returncode": 0,
+      "log_sha256": "513ceac05d2694c95767b5e14a41edc7664eeb902b0bf91c1265be72d440ac6a"
+    },
+    {
+      "name": "mcp_stdio_transport",
+      "returncode": 0,
+      "log_sha256": "fbbe6acd27c6f2c01756a9aefb8c4212d8d70a01a2d95c75c5a1794c55710092"
+    }
+  ],
+  "python_tests": {
+    "total": 1294,
+    "skipped": 3,
+    "failures": 0,
+    "errors": 0
+  },
+  "history_mode": "object-only bundle; fresh guest Git; no host config/hooks/credentials",
+  "temporary_guest_safe_directory": "/workspace only",
+  "application_requirements_complete": false,
+  "quality_complete": false
+}

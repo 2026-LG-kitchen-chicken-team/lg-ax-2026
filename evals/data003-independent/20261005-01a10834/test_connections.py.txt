@@ -1,0 +1,290 @@
+"""Development-only ASGI and consumer binding cases. No real model/PDF registration."""
+import copy
+import hashlib
+import json
+import secrets
+import unittest
+from pathlib import Path
+
+from fastapi.testclient import TestClient
+from jsonschema.exceptions import ValidationError
+from lgax_contracts import validate
+from lgax_core.document_store import DocumentStore
+from lgax_core.documents_server import create_app
+from lgax_core.errors import DomainError
+
+ROOT = Path(__file__).resolve().parents[1]
+META = ROOT / "independent-fixture-inputs"
+MODELS = ["T876MEE1H1", "DUE6BGL2E", "MW23FDI"]
+
+
+def reject_scope(model, revision):
+    if not model:
+        raise ValueError("request_model")
+    if not revision:
+        raise ValueError("request_document_version")
+
+
+def bind(row, model, revision, kind, *, wanted_id=None, metadata=None, original_sha=None):
+    reject_scope(model, revision)
+    validate("Evidence", row)
+    if row["model_id"] != model:
+        raise ValueError("foreign_model")
+    if row["document_version"] != revision:
+        raise ValueError("wrong_revision")
+    if row["source_kind"] != kind:
+        raise ValueError("source_kind_mismatch")
+    if wanted_id is not None and row["id"] != wanted_id:
+        raise ValueError("wrong_evidence_id")
+    page = row["locator"].get("page")
+    if type(page) is not int or page < 1:
+        raise ValueError("manual_page_required")
+    if metadata is not None:
+        if (row["source_id"] != metadata["document_id"]
+                or revision != metadata["document_version"]
+                or model != metadata["product"]["model_id"]
+                or kind != metadata["source_kind"]):
+            raise ValueError("document_binding")
+        if original_sha is None or metadata["sha256"] != original_sha:
+            raise ValueError("original_hash_binding")
+        if page > metadata["page_count"]:
+            raise ValueError("page_out_of_range")
+        origins = [o for o in metadata["origins"] if o["evidence_id"] == row["id"]]
+        if len(origins) != 1:
+            raise ValueError("unique_origin_required")
+        origin = origins[0]
+        if (origin["page"] != page or origin["document_version"] != revision
+                or origin["source_kind"] != kind or origin["sha256"] != original_sha):
+            raise ValueError("origin_binding")
+        if origin["text_sha256"] != hashlib.sha256(row["text"].encode("utf-8")).hexdigest():
+            raise ValueError("raw_quote_hash")
+        start, end = origin["start_char"], origin["end_char"]
+        if type(start) is not int or type(end) is not int or start < 0 or end - start != len(row["text"]):
+            raise ValueError("unicode_character_range")
+    return copy.deepcopy(row)
+
+
+def single(body):
+    validate("EvidenceResponse", body)
+    return body["data"]["evidence"]
+
+
+def search_rows(body, model, revision):
+    reject_scope(model, revision)
+    validate("EvidenceSearchResponse", body)
+    data = body["data"]
+    if data["model_id"] != model or data["document_version"] != revision:
+        raise ValueError("unscoped_response")
+    return [bind(row, model, revision, "public") for row in data["items"]]
+
+
+class RepoFixture:
+    def __init__(self, dataset, metadata=None):
+        self.reader = DocumentStore(dataset)
+        self.records = metadata or {}
+
+    def store(self):
+        return self.reader
+
+    def metadata(self, did):
+        if did not in self.records:
+            raise DomainError("INVALID_DOCUMENT_ID", "fixture document missing", {})
+        return copy.deepcopy(self.records[did])
+
+
+class ConnectionCases(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        combined = {"artifact_kind": "document_dataset", "dataset_version": "fixture-public-catalogue",
+                    "products": [], "reviews": [], "features": [], "evidence": []}
+        for model in MODELS:
+            path = ROOT / "data/research/P2-DATA-001-stage45-citations-20261005/model-pairs" / model / "dataset.json"
+            data = json.loads(path.read_text(encoding="utf-8"))
+            for key in ["products", "reviews", "features", "evidence"]:
+                combined[key].extend(data[key])
+        cls.dataset = combined
+        cls.products = {p["model_id"]: p for p in combined["products"]}
+        cls.rows = {e["id"]: e for e in combined["evidence"]}
+        cls.token = secrets.token_urlsafe(40)  # Synthetic runtime token, never persisted.
+        cls.client = TestClient(create_app(RepoFixture(combined), cls.token))
+        cls.headers = {"Authorization": "Bearer " + cls.token}
+        quote = "이 기능은 모델에 따라 다를 수 있습니다.\n700 W 또는 1000 W"
+        text = "앞줄\n" + quote + "\n끝줄"
+        cls.fixture_sha = hashlib.sha256(text.encode("utf-8")).hexdigest()
+        cls.fixture_row = {"id": "FIXTURE-E1", "model_id": "FIXTURE-M1",
+                           "document_version": "DEV-FIXTURE-1", "source_kind": "synthetic",
+                           "source_type": "manual", "source_id": "FIXTURE-D1",
+                           "locator": {"page": 2, "section": "closed synthetic source"},
+                           "text": quote, "feature_ids": []}
+        cls.fixture_meta = {"document_id": "FIXTURE-D1", "sha256": cls.fixture_sha,
+                            "document_version": "DEV-FIXTURE-1", "source_kind": "synthetic",
+                            "product": {"model_id": "FIXTURE-M1"}, "page_count": 2,
+                            "origins": [{"evidence_id": "FIXTURE-E1", "sha256": cls.fixture_sha,
+                                         "document_version": "DEV-FIXTURE-1", "source_kind": "synthetic",
+                                         "page": 2, "start_char": 3, "end_char": 3 + len(quote),
+                                         "text_sha256": hashlib.sha256(quote.encode("utf-8")).hexdigest()}]}
+        cls.queries = json.loads((META / "queries.json").read_text(encoding="utf-8"))
+        cls.proposals = json.loads((META / "missing-evidence-proposal.json").read_text(encoding="utf-8"))
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.client.close()
+
+    def get_row(self, eid):
+        response = self.client.get("/api/evidence/" + eid, headers=self.headers)
+        self.assertEqual(response.status_code, 200)
+        return single(response.json())
+
+    def fixture_bind(self, row=None, metadata=None, kind="synthetic"):
+        return bind(row or self.fixture_row, "FIXTURE-M1", "DEV-FIXTURE-1", kind,
+                    wanted_id="FIXTURE-E1", metadata=metadata or self.fixture_meta,
+                    original_sha=self.fixture_sha)
+
+    def test_C01_registered_fifteen_preserve_fields(self):
+        self.assertEqual(len(self.rows), 15)
+        for eid, expected in self.rows.items():
+            with self.subTest(evidence_id=eid):
+                actual = self.get_row(eid)
+                self.assertEqual(actual, expected)
+                self.assertEqual(bind(actual, actual["model_id"], actual["document_version"], "public",
+                                      wanted_id=eid), expected)
+
+    def test_C02_scoped_search_for_three_products(self):
+        for model, q in zip(MODELS, ["선반", "식기", "W"]):
+            revision = self.products[model]["document_version"]
+            response = self.client.get("/api/evidence/search",
+                                       params={"q": q, "model_id": model, "document_version": revision},
+                                       headers=self.headers)
+            self.assertEqual(response.status_code, 200)
+            rows = search_rows(response.json(), model, revision)
+            self.assertTrue(rows)
+
+    def test_C03_coverage_gaps_retained(self):
+        gaps = {q["id"] for q in self.queries if q["relevant_evidence_ids"]
+                and not set(q["relevant_evidence_ids"]) <= set(self.rows)}
+        self.assertEqual(gaps, {"FR-03", "DW-03", "MW-03", "MW-04"})
+
+    def test_C04_unknown_revision_has_no_fallback(self):
+        response = self.client.get("/api/evidence/search",
+                                   params={"q": "선반", "model_id": MODELS[0], "document_version": "DEV-UNKNOWN"},
+                                   headers=self.headers)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["error"]["code"], "INVALID_DOCUMENT_VERSION")
+
+    def test_C05_dataset_version_is_not_manual_revision(self):
+        response = self.client.get("/api/evidence/search",
+                                   params={"q": "선반", "model_id": MODELS[0],
+                                           "document_version": "lg-manual-scope-20261005.2"},
+                                   headers=self.headers)
+        self.assertEqual(response.status_code, 400)
+
+    def test_C06_unidentified_revision_requests_input(self):
+        with self.assertRaisesRegex(ValueError, "request_document_version"):
+            reject_scope(MODELS[0], None)
+
+    def test_C07_foreign_id_read_requires_consumer_rejection(self):
+        row = self.get_row("DUE6BGL2E-MANUAL-D09")
+        with self.assertRaisesRegex(ValueError, "foreign_model"):
+            bind(row, MODELS[0], self.products[MODELS[0]]["document_version"], "public")
+
+    def test_C08_unscoped_search_is_not_accepted_by_consumer(self):
+        response = self.client.get("/api/evidence/search", params={"q": "조절"}, headers=self.headers)
+        self.assertEqual(response.status_code, 200)
+        with self.assertRaisesRegex(ValueError, "request_model"):
+            search_rows(response.json(), None, None)
+
+    def test_C09_source_kind_not_relabelled(self):
+        with self.assertRaisesRegex(ValueError, "source_kind_mismatch"):
+            self.fixture_bind(kind="public")
+
+    def test_C10_manual_page_range_required(self):
+        row = copy.deepcopy(self.fixture_row)
+        row["locator"] = {"row": 1}
+        with self.assertRaisesRegex(ValueError, "manual_page_required"):
+            self.fixture_bind(row=row)
+        metadata = copy.deepcopy(self.fixture_meta)
+        metadata["page_count"] = 1
+        with self.assertRaisesRegex(ValueError, "page_out_of_range"):
+            self.fixture_bind(metadata=metadata)
+
+    def test_C11_document_identity_must_match(self):
+        metadata = copy.deepcopy(self.fixture_meta)
+        metadata["document_id"] = "FIXTURE-OTHER"
+        with self.assertRaisesRegex(ValueError, "document_binding"):
+            self.fixture_bind(metadata=metadata)
+
+    def test_C12_raw_quote_hash_rejects_changed_text(self):
+        row = copy.deepcopy(self.fixture_row)
+        row["text"] += " "
+        with self.assertRaisesRegex(ValueError, "raw_quote_hash"):
+            self.fixture_bind(row=row)
+
+    def test_C13_character_offsets_not_utf8_bytes(self):
+        self.assertEqual(self.fixture_bind(), self.fixture_row)
+        metadata = copy.deepcopy(self.fixture_meta)
+        metadata["origins"][0]["end_char"] = 3 + len(self.fixture_row["text"].encode("utf-8"))
+        with self.assertRaisesRegex(ValueError, "unicode_character_range"):
+            self.fixture_bind(metadata=metadata)
+
+    def test_C14_lexical_subset_is_not_full_catalogue(self):
+        model = MODELS[1]
+        response = self.client.get("/api/evidence/search",
+                                   params={"q": "식기", "model_id": model,
+                                           "document_version": self.products[model]["document_version"], "limit": 1},
+                                   headers=self.headers).json()
+        self.assertGreater(response["data"]["total"], len(response["data"]["items"]))
+        full_ids = {e["id"] for e in self.dataset["evidence"] if e["model_id"] == model}
+        self.assertNotEqual({e["id"] for e in response["data"]["items"]}, full_ids)
+
+    def test_C15_zero_results_does_not_prove_unsupported(self):
+        response = self.client.get("/api/evidence/search",
+                                   params={"q": "ZXQ_NOMATCH_FIXTURE", "model_id": MODELS[0],
+                                           "document_version": self.products[MODELS[0]]["document_version"]},
+                                   headers=self.headers)
+        body = response.json()
+        self.assertEqual(body["data"]["items"], [])
+        self.assertNotIn("supported", body["data"])
+        self.assertNotIn("unsupported", body["data"])
+
+    def test_C16_conditional_text_retained_without_sku_claim(self):
+        result = self.fixture_bind()
+        self.assertIn("모델에 따라 다를 수", result["text"])
+        self.assertNotIn("exact_sku", result)
+
+    def test_C17_current_api_method_not_claimed_as_bge(self):
+        model = MODELS[0]
+        body = self.client.get("/api/evidence/search",
+                               params={"q": "선반", "model_id": model,
+                                       "document_version": self.products[model]["document_version"]},
+                               headers=self.headers).json()
+        self.assertEqual(body["data"]["search_method"], "literal_token_count")
+        changed = copy.deepcopy(body)
+        changed["data"]["search_method"] = "bge_m3"
+        with self.assertRaises(ValidationError):
+            validate("EvidenceSearchResponse", changed)
+
+    def test_C18_four_no_gold_expectations_not_measured(self):
+        no_gold = {q["id"]: q["expected_response"] for q in self.queries if not q["relevant_evidence_ids"]}
+        self.assertEqual(set(no_gold), {"FR-04", "FR-05", "DW-05", "MW-05"})
+        self.assertEqual(no_gold["FR-04"], "request_document_version")
+        self.assertEqual(no_gold["MW-05"], "not_confirmed")
+
+    def test_C19_wrong_returned_evidence_id_rejected(self):
+        row = self.get_row("MW23FDI-MANUAL-M11")
+        with self.assertRaisesRegex(ValueError, "wrong_evidence_id"):
+            bind(row, MODELS[2], row["document_version"], "public", wanted_id="FIXTURE-WANTED")
+
+    def test_C20_proposed_coverage_not_claimed_as_registration_or_performance(self):
+        self.assertEqual(self.proposals["status"], "proposed_not_registered")
+        proposed = self.proposals["selections"]
+        self.assertEqual(len(proposed), 6)
+        extended = set(self.rows) | {p["evidence_id"] for p in proposed}
+        supported = [q for q in self.queries if q["relevant_evidence_ids"]]
+        self.assertEqual(sum(set(q["relevant_evidence_ids"]) <= extended for q in supported), 11)
+        self.assertFalse(self.proposals["registration_executed"])
+        self.assertFalse(self.proposals["retrieval_performance_measured"])
+
+
+if __name__ == "__main__":
+    unittest.main()
+

@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/workspace/evals/pm-intake/20261006/replay_workspace.py", line 303, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/workspace/evals/pm-intake/20261006/replay_workspace.py", line 295, in main
+    result = replay(args)
+             ^^^^^^^^^^^^
+  File "/workspace/evals/pm-intake/20261006/replay_workspace.py", line 173, in replay
+    store, runner = DemoStore(dataset), RecordedRunner(records, pins)
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/evals/pm-intake/20261006/replay_workspace.py", line 65, in __init__
+    require(digest == pins[case_id]["input_sha256"], f"Recorded input hash mismatch: {case_id}")
+  File "/workspace/evals/pm-intake/20261006/replay_workspace.py", line 43, in require
+    raise AssertionError(label)
+AssertionError: Recorded input hash mismatch: fridge-normal

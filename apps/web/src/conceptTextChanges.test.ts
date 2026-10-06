@@ -19,7 +19,8 @@ const LONG_KOREAN = `${'오염된 구획만 따로 꺼내 세척하고 나머지
 /** A linked follow-up run whose only difference is the supplied edit of the first candidate. */
 function followUp(edit: Partial<Concept>): RunSnapshot {
   const concepts = first.run.concepts.map(item => item.id === target.id ? { ...item, ...edit } : item);
-  return { ...first, run: { ...first.run, id: 'RUN-TEXT-2', status: 'completed', concepts }, previous_run_id: first.run.id, request_revision: first.request_revision + 1 };
+  // A changed output with the same request does not advance the server's user request revision.
+  return { ...first, run: { ...first.run, id: 'RUN-TEXT-2', status: 'completed', concepts }, previous_run_id: first.run.id, request_revision: first.request_revision };
 }
 function withTarget(snapshot: RunSnapshot, id: string, edit: Partial<Concept>): RunSnapshot {
   return { ...snapshot, run: { ...snapshot.run, id, concepts: snapshot.run.concepts.map(item => item.id === target.id ? { ...item, ...edit } : item) } };

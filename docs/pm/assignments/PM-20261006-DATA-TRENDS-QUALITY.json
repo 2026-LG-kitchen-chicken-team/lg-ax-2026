@@ -1,0 +1,25 @@
+{
+  "assignment_id": "PM-20261006-DATA-TRENDS-QUALITY",
+  "task_id": "P2-DATA-005",
+  "purpose": "[리뷰 동향 DATA] 날짜·주제·중복을 보존한 리뷰 동향 집계",
+  "instructions": [
+    "PM 통합 PR을 인수한 최신 main과 docs/pm/review-trends-20261006.md를 읽고 날짜/원문/제품 범위를 확인한다. 기존 공개 설명서3팩·합성 리뷰36건은 성격을 보존한다.",
+    "review_trends.py와 test_review_trends.py에 기간·주제 결정적 집계/원문 드릴다운을 구현한다. 날짜 없는 리뷰는 날짜를 만들지 말고 excluded_undated_count로 기록한다.",
+    "원본해시/source_id/review_id/model_id/문서버전·중복 제거·분모/분자·겨울 연도·빈구간·분류 버전을 공통 초안에 맞추고 PM에게 계약 변경을 요청한다.",
+    "구체 배정 Issue: https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/148. 기존 부모 전체완료를 주장하지 않는다."
+  ],
+  "acceptance": [
+    "날짜누락/중복/분모0/겨울跨年/다주제 회귀 통과",
+    "각 bucket의 evidence_ids가 실제 유효 원문과 연결",
+    "샘플/실자료·집계/시장효과 증거 분리"
+  ],
+  "next_action": "PM 통합 최신 main에서 전용 작업 공간을 만들고 필수 품질/자료 인수와 충돌하지 않는 준비 단위를 시작한다.",
+  "source": "2026-10-06 사용자: 남은 작업 분배·실제 품질·월별 계절별 리뷰 동향 검토 후 배정",
+  "requirement_ids": [
+    "R12",
+    "R15"
+  ],
+  "pm_account": "jeongiryang",
+  "recipient_account": "ginaginaring",
+  "assignment_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/16#issuecomment-6005051478"
+}

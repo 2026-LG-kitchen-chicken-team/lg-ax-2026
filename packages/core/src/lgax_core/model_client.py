@@ -126,10 +126,29 @@ class ModelConfig:
     max_output_tokens: int = 256
     context_tokens: int = 4096
     thinking: bool = False
+    temperature: float = 0.0
+    top_p: float | None = None
+    top_k: int | None = None
+    min_p: float | None = None
+    api_mode: str = "generate"
 
     def __post_init__(self) -> None:
         if not isinstance(self.thinking, bool):
             raise _fail("INVALID_ARGUMENT", "invalid_thinking_setting")
+        if not isinstance(self.api_mode, str) or self.api_mode not in {"generate", "chat"}:
+            raise _fail("INVALID_ARGUMENT", "invalid_api_mode")
+        for name, value, lower, upper in (
+            ("temperature", self.temperature, 0, 2),
+            ("top_p", self.top_p, 0, 1), ("min_p", self.min_p, 0, 1),
+        ):
+            if value is None and name != "temperature":
+                continue
+            if (isinstance(value, bool) or not isinstance(value, (int, float))
+                    or not math.isfinite(value) or not lower <= value <= upper
+                    or (name == "top_p" and value == 0)):
+                raise _fail("INVALID_ARGUMENT", "invalid_sampling_setting")
+        if (self.top_k is not None and (type(self.top_k) is not int or not 0 <= self.top_k <= 1000)):
+            raise _fail("INVALID_ARGUMENT", "invalid_sampling_setting")
         try:
             parsed = urlsplit(self.endpoint)
             address = ipaddress.ip_address(parsed.hostname or "")
@@ -167,6 +186,15 @@ class ModelConfig:
                 or self.max_output_tokens > self.context_tokens - 512):
             raise _fail("INVALID_ARGUMENT", "invalid_generation_budget")
         object.__setattr__(self, "endpoint", self.endpoint.rstrip("/"))
+
+    def ollama_options(self) -> dict[str, Any]:
+        options: dict[str, Any] = {"temperature": self.temperature, "seed": 42,
+                                   "num_ctx": self.context_tokens, "num_predict": self.max_output_tokens}
+        for name in ("top_p", "top_k", "min_p"):
+            value = getattr(self, name)
+            if value is not None:
+                options[name] = value
+        return options
 
 
 @dataclass(frozen=True, slots=True)
@@ -270,11 +298,12 @@ class _ModelAdapter:
             "constraint_mode": "native_schema_and_local_validation" if self.backend_schema_enforced
             else "prompt_and_local_validation",
             "elapsed_ms": round((self._clock() - started) * 1000, 3),
-            "generation_settings": {"temperature": 0, "num_ctx": self.config.context_tokens,
-                                    "num_predict": self.config.max_output_tokens,
-                                    "seed": 42 if self.adapter_name == "ollama" else None},
+            "generation_settings": self.config.ollama_options() if self.adapter_name == "ollama" else {
+                "temperature": 0, "num_ctx": self.config.context_tokens,
+                "num_predict": self.config.max_output_tokens, "seed": None},
             "done_reason": output.get("done_reason") if isinstance(output.get("done_reason"), str) else None,
             "thinking_enabled": self.config.thinking,
+            "transport_api": "/api/" + self.config.api_mode if self.adapter_name == "ollama" else "/generate",
             **before,
         }
         for name in ("prompt_eval_count", "eval_count"):
@@ -312,15 +341,20 @@ class LabModelAdapter(_ModelAdapter):
         return {"service_source_sha256": source}
 
     def _generate(self, prompt: str, schema: dict[str, Any], deadline: float) -> dict[str, Any]:
+        if self.config.api_mode != "generate":
+            raise _fail("INVALID_ARGUMENT", "lab_api_is_fixed")
         if self.config.thinking:
             raise _fail("INVALID_ARGUMENT", "lab_thinking_is_fixed_off")
+        if (self.config.temperature != 0 or any(getattr(self.config, name) is not None
+                                              for name in ("top_p", "top_k", "min_p"))):
+            raise _fail("INVALID_ARGUMENT", "lab_sampling_is_fixed")
         if (self.config.max_output_tokens, self.config.context_tokens) != (256, 4096):
             raise _fail("INVALID_ARGUMENT", "lab_generation_budget_is_fixed")
         return self._request("POST", "/generate", deadline, {"prompt": prompt})
 
 
 class OllamaAdapter(_ModelAdapter):
-    """Direct private Ollama /api/generate uses native JSON Schema format."""
+    """Explicit private Ollama generate/chat calls with native JSON Schema format."""
 
     adapter_name = "ollama"
     backend_schema_enforced = True
@@ -338,13 +372,25 @@ class OllamaAdapter(_ModelAdapter):
         return {}
 
     def _generate(self, prompt: str, schema: dict[str, Any], deadline: float) -> dict[str, Any]:
-        return self._request("POST", "/api/generate", deadline, {
-            "model": self.config.model_id, "prompt": prompt, "format": schema,
+        body = {
+            "model": self.config.model_id, "format": schema,
             "stream": False, "think": self.config.thinking,
-            "options": {"temperature": 0, "seed": 42, "num_ctx": self.config.context_tokens,
-                        "num_predict": self.config.max_output_tokens},
+            "options": self.config.ollama_options(),
             "keep_alive": "5m",
-        })
+        }
+        if self.config.api_mode == "chat":
+            body["messages"] = [{"role": "user", "content": prompt}]
+        else:
+            body["prompt"] = prompt
+        response = self._request("POST", "/api/" + self.config.api_mode, deadline, body)
+        if self.config.api_mode == "chat":
+            message = response.get("message")
+            if not isinstance(message, dict) or not isinstance(message.get("content"), str):
+                raise _fail("MODEL_UNAVAILABLE", "invalid_transport_response")
+            # Only final content is validated as JSON. Thinking is retained in
+            # the transport body, never substituted for a missing final answer.
+            return {**response, "response": message["content"]}
+        return response
 
 
 class StructuredModelClient:
@@ -368,10 +414,16 @@ class StructuredModelClient:
             thinking_setting = values.get("LGAX_MODEL_THINK", "false")
             if thinking_setting not in {"true", "false"}:
                 raise ValueError("invalid thinking setting")
+            sampling = {"temperature": float(values.get("LGAX_MODEL_TEMPERATURE", "0"))}
+            for name, parser in (("top_p", float), ("top_k", int), ("min_p", float)):
+                key = "LGAX_MODEL_" + name.upper()
+                if key in values:
+                    sampling[name] = parser(values[key])
         except (ValueError, TypeError):
             raise _fail("INVALID_ARGUMENT", "invalid_model_environment") from None
         config = ModelConfig(values[names[1]], values[names[2]], values[names[3]], timeout, limit,
-                             output_tokens, context_tokens, thinking=thinking_setting == "true")
+                             output_tokens, context_tokens, thinking=thinking_setting == "true",
+                             api_mode=values.get("LGAX_MODEL_API_MODE", "generate"), **sampling)
         return cls((LabModelAdapter if kind == "lab" else OllamaAdapter)(config))
 
     def close(self) -> None:
@@ -407,6 +459,7 @@ class StructuredModelClient:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--adapter", choices=["lab", "ollama"], required=True)
+    parser.add_argument("--api-mode", choices=["generate", "chat"], default="generate")
     parser.add_argument("--endpoint", required=True)
     parser.add_argument("--model", required=True)
     parser.add_argument("--digest", required=True)
@@ -421,7 +474,8 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         config = ModelConfig(args.endpoint, args.model, args.digest, args.timeout,
-                             max_output_tokens=args.max_output_tokens, context_tokens=args.context_tokens)
+                             max_output_tokens=args.max_output_tokens, context_tokens=args.context_tokens,
+                             api_mode=args.api_mode)
         if args.prompt_file.stat().st_size > 64000 or args.schema_file.stat().st_size > _SCHEMA_BYTES_LIMIT:
             raise _fail("INVALID_ARGUMENT", "input_file_too_large")
         prompt = args.prompt_file.read_text("utf-8")

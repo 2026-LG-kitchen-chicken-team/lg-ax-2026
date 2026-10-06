@@ -1,0 +1,603 @@
+{
+  "artifact_kind": "actual_model_rejected_comparison_replay",
+  "source_commit": "37f7e3fd0e76eff8115941e7d456ffdf6424d0d4",
+  "original_output_sha256": "547a637b3d6278a7a0831fad0b7cdf01f3e0733c9d5f56458c8a761491f0ecd1",
+  "model_id": "qwen3:8b",
+  "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+  "execution_kind": "live_model",
+  "scenario_source_kind": "synthetic",
+  "original_input": {
+    "request": {
+      "product_group": "fridge",
+      "target_customer": "냉장 식품을 보관하는 사용자",
+      "use_situation": "식품이 남아 있는 선반을 청소할 때",
+      "improvement_task": "보관 식품을 과도하게 옮기지 않고 선반을 청소하는 구조와 사용 흐름 개선",
+      "exclusions": [],
+      "model_ids": [
+        "FRIDGE-A"
+      ],
+      "dataset_version": "0.1.0"
+    },
+    "product": {
+      "model_id": "FRIDGE-A",
+      "name": "가상 냉장고 A",
+      "product_group": "fridge",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "MANUAL-001",
+        "model_id": "FRIDGE-A",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "FRIDGE-A-MANUAL-v1.0",
+        "locator": {
+          "page": 1,
+          "section": "선반 분리"
+        },
+        "text": "선반은 분리하여 세척할 수 있습니다. 선반을 분리하기 전에 위의 식품을 모두 옮겨 주세요.",
+        "feature_ids": [
+          "FEATURE-001"
+        ]
+      },
+      {
+        "id": "REVIEW-EVIDENCE-001",
+        "model_id": "FRIDGE-A",
+        "text": "음료를 쏟으면 선반 위 식품을 모두 옮겨 청소해야 해서 번거로워요.",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "document_version": "1.0",
+        "source_id": "REVIEWS-CSV-v1.0",
+        "locator": {
+          "row": 2
+        },
+        "feature_ids": []
+      },
+      {
+        "id": "REVIEW-EVIDENCE-002",
+        "model_id": "FRIDGE-A",
+        "text": "선반을 분리할 수 있지만 식품을 꺼내는 동안 둘 곳이 부족해요.",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "document_version": "1.0",
+        "source_id": "REVIEWS-CSV-v1.0",
+        "locator": {
+          "row": 3
+        },
+        "feature_ids": []
+      },
+      {
+        "id": "REVIEW-EVIDENCE-003",
+        "model_id": "FRIDGE-A",
+        "text": "수납 구역을 정리할 때 안쪽 식품을 찾기 어려워요.",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "document_version": "1.0",
+        "source_id": "REVIEWS-CSV-v1.0",
+        "locator": {
+          "row": 4
+        },
+        "feature_ids": []
+      },
+      {
+        "id": "REVIEW-EVIDENCE-004",
+        "model_id": "FRIDGE-A",
+        "text": "선반 분리 방법이 설명서 어디 있는지 모르겠어요.",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "document_version": "1.0",
+        "source_id": "REVIEWS-CSV-v1.0",
+        "locator": {
+          "row": 5
+        },
+        "feature_ids": []
+      },
+      {
+        "id": "REVIEW-EVIDENCE-005",
+        "model_id": "FRIDGE-A",
+        "text": "바구니가 있어서 정리는 편하지만 세척할 때 내용물을 모두 꺼내야 해요.",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "document_version": "1.0",
+        "source_id": "REVIEWS-CSV-v1.0",
+        "locator": {
+          "row": 6
+        },
+        "feature_ids": []
+      },
+      {
+        "id": "REVIEW-EVIDENCE-006",
+        "model_id": "FRIDGE-A",
+        "text": "나는 선반을 쉽게 꺼내서 청소하고 있어서 크게 불편하지 않아요.",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "document_version": "1.0",
+        "source_id": "REVIEWS-CSV-v1.0",
+        "locator": {
+          "row": 7
+        },
+        "feature_ids": []
+      },
+      {
+        "id": "REVIEW-EVIDENCE-007",
+        "model_id": "FRIDGE-A",
+        "text": "가족이 냉장고 정리 표시를 다르게 이해해서 같은 식품을 다시 찾아요.",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "document_version": "1.0",
+        "source_id": "REVIEWS-CSV-v1.0",
+        "locator": {
+          "row": 8
+        },
+        "feature_ids": []
+      },
+      {
+        "id": "REVIEW-EVIDENCE-008",
+        "model_id": "FRIDGE-A",
+        "text": "우유를 흘린 구역만 빠르게 청소하고 싶어요.",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "document_version": "1.0",
+        "source_id": "REVIEWS-CSV-v1.0",
+        "locator": {
+          "row": 9
+        },
+        "feature_ids": []
+      },
+      {
+        "id": "REVIEW-EVIDENCE-009",
+        "model_id": "FRIDGE-A",
+        "text": "냉장고 안 식품이 많으면 청소를 미루게 돼요.",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "document_version": "1.0",
+        "source_id": "REVIEWS-CSV-v1.0",
+        "locator": {
+          "row": 10
+        },
+        "feature_ids": []
+      },
+      {
+        "id": "REVIEW-EVIDENCE-010",
+        "model_id": "FRIDGE-A",
+        "text": "선반 높이를 바꾸는 동안 식품 임시 보관 공간이 필요해요.",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "document_version": "1.0",
+        "source_id": "REVIEWS-CSV-v1.0",
+        "locator": {
+          "row": 11
+        },
+        "feature_ids": []
+      }
+    ],
+    "features": [
+      {
+        "id": "FEATURE-001",
+        "model_id": "FRIDGE-A",
+        "document_version": "1.0",
+        "name": "선반 분리",
+        "description": "선반은 분리하여 세척할 수 있습니다. 선반을 분리하기 전에 위의 식품을 모두 옮겨 주세요.",
+        "conditions": [
+          "선반 위 식품을 모두 이동"
+        ],
+        "evidence_ids": [
+          "MANUAL-001"
+        ]
+      }
+    ],
+    "revision_count": 0,
+    "max_concepts": 3,
+    "changed_evidence_ids": []
+  },
+  "stage_outputs": {
+    "need_extract": {
+      "hold_reasons": [],
+      "no_candidate_reasons": [],
+      "questions": [],
+      "result": {
+        "desired_outcomes": [
+          {
+            "desired_outcome": "선반을 분리할 때 위의 식품을 옮기지 않고도 청소할 수 있도록 구조 개선",
+            "need_id": "Need-001"
+          },
+          {
+            "desired_outcome": "선반 분리 시 식품을 꺼내는 동안 둘 곳이 부족한 문제 해결",
+            "need_id": "Need-002"
+          },
+          {
+            "desired_outcome": "수납 구역 정리 시 안쪽 식품을 쉽게 찾을 수 있도록 개선",
+            "need_id": "Need-003"
+          },
+          {
+            "desired_outcome": "선반 분리 방법을 쉽게 파악할 수 있도록 정보 제공",
+            "need_id": "Need-004"
+          },
+          {
+            "desired_outcome": "바구니가 있는 구조에서 세척 시 내용물을 모두 꺼내는 번거로움 제거",
+            "need_id": "Need-005"
+          },
+          {
+            "desired_outcome": "선반 높이 조절 시 임시 보관 공간 제공",
+            "need_id": "Need-006"
+          },
+          {
+            "desired_outcome": "우유를 흘린 구역만 빠르게 청소할 수 있도록 구조 개선",
+            "need_id": "Need-007"
+          },
+          {
+            "desired_outcome": "냉장고 안 식품이 많을 때도 청소를 미루지 않고 바로 처리할 수 있도록 개선",
+            "need_id": "Need-008"
+          }
+        ],
+        "needs": [
+          {
+            "evidence_ids": [
+              "REVIEW-EVIDENCE-001"
+            ],
+            "id": "Need-001",
+            "model_id": "FRIDGE-A",
+            "pain": "음료를 쏟으면 선반 위 식품을 모두 옮겨 청소해야 해서 번거로워요.",
+            "situation": "식품이 남아 있는 선반을 청소할 때",
+            "uncertainties": []
+          },
+          {
+            "evidence_ids": [
+              "REVIEW-EVIDENCE-002"
+            ],
+            "id": "Need-002",
+            "model_id": "FRIDGE-A",
+            "pain": "선반을 분리할 수 있지만 식품을 꺼내는 동안 둘 곳이 부족해요.",
+            "situation": "식품이 남아 있는 선반을 청반할 때",
+            "uncertainties": []
+          },
+          {
+            "evidence_ids": [
+              "REVIEW-EVIDENCE-003"
+            ],
+            "id": "Need-003",
+            "model_id": "FRIDGE-A",
+            "pain": "수납 구역을 정리할 때 안쪽 식품을 찾기 어려워요.",
+            "situation": "식품이 남아 있는 선반을 청소할 때",
+            "uncertainties": []
+          },
+          {
+            "evidence_ids": [
+              "REVIEW-EVIDENCE-004"
+            ],
+            "id": "Need-004",
+            "model_id": "FRIDGE-A",
+            "pain": "선반 분리 방법이 설명서 어디 있는지 모르겠어요.",
+            "situation": "식품이 남아 있는 선반을 청소할 때",
+            "uncertainties": []
+          },
+          {
+            "evidence_ids": [
+              "REVIEW-EVIDENCE-005"
+            ],
+            "id": "Need-005",
+            "model_id": "FRIDGE-A",
+            "pain": "바구니가 있어서 정리는 편하지만 세척할 때 내용물을 모두 꺼내야 해요.",
+            "situation": "식품이 남아 있는 선반을 청소할 때",
+            "uncertainties": []
+          },
+          {
+            "evidence_ids": [
+              "REVIEW-EVIDENCE-010"
+            ],
+            "id": "Need-006",
+            "model_id": "FRIDGE-A",
+            "pain": "선반 높이를 바꾸는 동안 식품 임시 보관 공간이 필요해요.",
+            "situation": "식품이 남아 있는 선반을 청소할 때",
+            "uncertainties": []
+          },
+          {
+            "evidence_ids": [
+              "REVIEW-EVIDENCE-008"
+            ],
+            "id": "Need-007",
+            "model_id": "FRIDGE-A",
+            "pain": "우유를 흘린 구역만 빠르게 청소하고 싶어요.",
+            "situation": "식품이 남아 있는 선반을 청소할 때",
+            "uncertainties": []
+          },
+          {
+            "evidence_ids": [
+              "REVIEW-EVIDENCE-009"
+            ],
+            "id": "Need-008",
+            "model_id": "FRIDGE-A",
+            "pain": "냉장고 안 식품이 많으면 청소를 미루게 돼요.",
+            "situation": "식품이 남아 있는 선반을 청소할 때",
+            "uncertainties": []
+          }
+        ],
+        "unresolved": []
+      },
+      "review_assessments": [
+        {
+          "evidence_id": "REVIEW-EVIDENCE-001",
+          "polarity": "complaint",
+          "reason": "음료를 쏟으면 선반 위 식품을 모두 옮겨 청소해야 해서 번거로워요."
+        },
+        {
+          "evidence_id": "REVIEW-EVIDENCE-002",
+          "polarity": "complaint",
+          "reason": "선반을 분리할 수 있지만 식품을 꺼내는 동안 둘 곳이 부족해요."
+        },
+        {
+          "evidence_id": "REVIEW-EVIDENCE-003",
+          "polarity": "complaint",
+          "reason": "수납 구역을 정리할 때 안쪽 식품을 찾기 어려워요."
+        },
+        {
+          "evidence_id": "REVIEW-EVIDENCE-004",
+          "polarity": "complaint",
+          "reason": "선반 분리 방법이 설명서 어디 있는지 모르겠어요."
+        },
+        {
+          "evidence_id": "REVIEW-EVIDENCE-005",
+          "polarity": "complaint",
+          "reason": "바구니가 있어서 정리는 편하지만 세척할 때 내용물을 모두 꺼내야 해요."
+        },
+        {
+          "evidence_id": "REVIEW-EVIDENCE-006",
+          "polarity": "positive",
+          "reason": "나는 선반을 쉽게 꺼내서 청소하고 있어서 크게 불편하지 않아요."
+        },
+        {
+          "evidence_id": "REVIEW-EVIDENCE-007",
+          "polarity": "conflicting",
+          "reason": "가족이 냉장고 정리 표시를 다르게 이해해서 같은 식품을 다시 찾아요."
+        },
+        {
+          "evidence_id": "REVIEW-EVIDENCE-008",
+          "polarity": "complaint",
+          "reason": "우유를 흘린 구역만 빠르게 청소하고 싶어요."
+        },
+        {
+          "evidence_id": "REVIEW-EVIDENCE-009",
+          "polarity": "complaint",
+          "reason": "냉장고 안 식품이 많으면 청소를 미루게 돼요."
+        },
+        {
+          "evidence_id": "REVIEW-EVIDENCE-010",
+          "polarity": "complaint",
+          "reason": "선반 높이를 바꾸는 동안 식품 임시 보관 공간이 필요해요."
+        }
+      ]
+    },
+    "product_compare": {
+      "gap_assessments": [
+        {
+          "gap_id": "Gap-001",
+          "reason": "선반을 분리할 때 위의 식품을 옮기지 않고도 청소할 수 있도록 구조 개선이 필요합니다.",
+          "resolution": "remaining",
+          "support_basis": "explicit_unsupported"
+        },
+        {
+          "gap_id": "Gap-002",
+          "reason": "선반 분리 시 식품을 꺼내는 동안 둘 곳이 부족한 문제 해결이 필요합니다.",
+          "resolution": "remaining",
+          "support_basis": "explicit_unsupported"
+        },
+        {
+          "gap_id": "Gap-003",
+          "reason": "수납 구역 정리 시 안쪽 식품을 쉽게 찾을 수 있도록 개선이 필요합니다.",
+          "resolution": "remaining",
+          "support_basis": "explicit_unsupported"
+        },
+        {
+          "gap_id": "Gap-004",
+          "reason": "선반 분리 방법을 쉽게 파악할 수 있도록 정보 제공이 필요합니다.",
+          "resolution": "remaining",
+          "support_basis": "explicit_unsupported"
+        },
+        {
+          "gap_id": "Gap-005",
+          "reason": "바구니가 있는 구조에서 세척 시 내용물을 모두 꺼내는 번거로움 제거가 필요합니다.",
+          "resolution": "remaining",
+          "support_basis": "explicit_unsupported"
+        },
+        {
+          "gap_id": "Gap-006",
+          "reason": "선반 높이 조절 시 임시 보관 공간 제공이 필요합니다.",
+          "resolution": "remaining",
+          "support_basis": "explicit_unsupported"
+        },
+        {
+          "gap_id": "Gap-007",
+          "reason": "우유를 흘린 구역만 빠르게 청소할 수 있도록 구조 개선이 필요합니다.",
+          "resolution": "remaining",
+          "support_basis": "explicit_unsupported"
+        },
+        {
+          "gap_id": "Gap-008",
+          "reason": "냉장고 안 식품이 많을 때도 청소를 미루지 않고 바로 처리할 수 있도록 개선이 필요합니다.",
+          "resolution": "remaining",
+          "support_basis": "explicit_unsupported"
+        }
+      ],
+      "hold_reasons": [
+        "선반 분리 방법이 설명서에 명시되어 있지 않아 위치 파악이 어렵습니다."
+      ],
+      "no_candidate_reasons": [],
+      "questions": [
+        "선반 분리 시 위의 식품을 옮기지 않고도 청소할 수 있는 구조가 설명서에 명시되어 있나요?",
+        "선반 분리 시 식품을 꺼내는 동안 둘 곳이 부족한 문제에 대한 해결 방법이 설명서에 명시되어 있나요?",
+        "수납 구역 정리 시 안쪽 식품을 쉽게 찾을 수 있도록 개선 방법이 설명서에 명시되어 있나요?",
+        "선반 분리 방법을 쉽게 파악할 수 있도록 정보 제공 방법이 설명서에 명시되어 있나요?",
+        "바구니가 있는 구조에서 세척 시 내용물을 모두 꺼내는 번거로움 제거 방법이 설명서에 명시되어 있나요?",
+        "선반 높이 조절 시 임시 보관 공간 제공 방법이 설명서에 명시되어 있나요?",
+        "우유를 흘린 구역만 빠르게 청소할 수 있도록 구조 개선 방법이 설명서에 명시되어 있나요?",
+        "냉장고 안 식품이 많을 때도 청소를 미루지 않고 바로 처리할 수 있도록 개선 방법이 설명서에 명시되어 있나요?"
+      ],
+      "result": {
+        "gaps": [
+          {
+            "evidence_ids": [
+              "REVIEW-EVIDENCE-001"
+            ],
+            "feature_ids": [
+              "FEATURE-001"
+            ],
+            "id": "Gap-001",
+            "model_id": "FRIDGE-A",
+            "need_id": "Need-001",
+            "questions": [
+              "선반 분리 시 위의 식품을 옮기지 않고도 청소할 수 있는 구조가 설명서에 명시되어 있나요?"
+            ],
+            "remaining_pain": "음료를 쏟으면 선반 위 식품을 모두 옮겨 청소해야 해서 번거로워요.",
+            "support_status": "unsupported"
+          },
+          {
+            "evidence_ids": [
+              "REVIEW-EVIDENCE-002"
+            ],
+            "feature_ids": [
+              "FEATURE-001"
+            ],
+            "id": "Gap-002",
+            "model_id": "FRIDGE-A",
+            "need_id": "Need-002",
+            "questions": [
+              "선반 분리 시 식품을 꺼내는 동안 둘 곳이 부족한 문제에 대한 해결 방법이 설명서에 명시되어 있나요?"
+            ],
+            "remaining_pain": "선반을 분리할 수 있지만 식품을 꺼내는 동안 둘 곳이 부족해요.",
+            "support_status": "unsupported"
+          },
+          {
+            "evidence_ids": [
+              "REVIEW-EVIDENCE-003"
+            ],
+            "feature_ids": [
+              "FEATURE-001"
+            ],
+            "id": "Gap-003",
+            "model_id": "FRIDGE-A",
+            "need_id": "Need-003",
+            "questions": [
+              "수납 구역 정리 시 안쪽 식품을 쉽게 찾을 수 있도록 개선 방법이 설명서에 명시되어 있나요?"
+            ],
+            "remaining_pain": "수납 구역을 정리할 때 안쪽 식품을 찾기 어려워요.",
+            "support_status": "unsupported"
+          },
+          {
+            "evidence_ids": [
+              "REVIEW-EVIDENCE-004"
+            ],
+            "feature_ids": [
+              "FEATURE-001"
+            ],
+            "id": "Gap-004",
+            "model_id": "FRIDGE-A",
+            "need_id": "Need-004",
+            "questions": [
+              "선반 분리 방법을 쉽게 파악할 수 있도록 정보 제공 방법이 설명서에 명시되어 있나요?"
+            ],
+            "remaining_pain": "선반 분리 방법이 설명서 어디 있는지 모르겠어요.",
+            "support_status": "unsupported"
+          },
+          {
+            "evidence_ids": [
+              "REVIEW-EVIDENCE-005"
+            ],
+            "feature_ids": [
+              "FEATURE-001"
+            ],
+            "id": "Gap-005",
+            "model_id": "FRIDGE-A",
+            "need_id": "Need-005",
+            "questions": [
+              "바구니가 있는 구조에서 세척 시 내용물을 모두 꺼내는 번거로움 제거 방법이 설명서에 명시되어 있나요?"
+            ],
+            "remaining_pain": "바구니가 있어서 정리는 편하지만 세척할 때 내용물을 모두 꺼내야 해요.",
+            "support_status": "unsupported"
+          },
+          {
+            "evidence_ids": [
+              "REVIEW-EVIDENCE-010"
+            ],
+            "feature_ids": [
+              "FEATURE-001"
+            ],
+            "id": "Gap-006",
+            "model_id": "FRIDGE-A",
+            "need_id": "Need-006",
+            "questions": [
+              "선반 높이 조절 시 임시 보관 공간 제공 방법이 설명서에 명시되어 있나요?"
+            ],
+            "remaining_pain": "선반 높이를 바꾸는 동안 식품 임시 보관 공간이 필요해요.",
+            "support_status": "unsupported"
+          },
+          {
+            "evidence_ids": [
+              "REVIEW-EVIDENCE-008"
+            ],
+            "feature_ids": [
+              "FEATURE-001"
+            ],
+            "id": "Gap-007",
+            "model_id": "FRIDGE-A",
+            "need_id": "Need-007",
+            "questions": [
+              "우유를 흘린 구역만 빠르게 청소할 수 있도록 구조 개선 방법이 설명서에 명시되어 있나요?"
+            ],
+            "remaining_pain": "우유를 흘린 구역만 빠르게 청소하고 싶어요.",
+            "support_status": "unsupported"
+          },
+          {
+            "evidence_ids": [
+              "REVIEW-EVIDENCE-009"
+            ],
+            "feature_ids": [
+              "FEATURE-001"
+            ],
+            "id": "Gap-008",
+            "model_id": "FRIDGE-A",
+            "need_id": "Need-008",
+            "questions": [
+              "냉장고 안 식품이 많을 때도 청소를 미루지 않고 바로 처리할 수 있도록 개선 방법이 설명서에 명시되어 있나요?"
+            ],
+            "remaining_pain": "냉장고 안 식품이 많으면 청소를 미루게 돼요.",
+            "support_status": "unsupported"
+          }
+        ],
+        "unresolved": [
+          "선반 분리 방법이 설명서에 명시되어 있지 않아 위치 파악이 어렵습니다."
+        ]
+      }
+    }
+  },
+  "observed_decision": {
+    "valid": false,
+    "action": "hold",
+    "revision_count": 0,
+    "next_revision_count": 0,
+    "rerun_from": null,
+    "violations": [
+      {
+        "code": "GAP_MANUAL_MISSING",
+        "stage": "compare"
+      },
+      {
+        "code": "UNSUPPORTED_WITHOUT_MANUAL",
+        "stage": "compare"
+      }
+    ]
+  },
+  "observed_correction_budget": {
+    "revision_count": 0,
+    "max_revisions": 2,
+    "closed": true,
+    "terminal_reason": "hold",
+    "attempts": []
+  },
+  "limits": [
+    "This records a failed actual model run on synthetic inputs, not measured customer demand or a corrected quality verdict.",
+    "Replaying recorded completions in tests uses MockTransport; it makes no live model call.",
+    "A structurally valid fabricated held decision can bypass semantic review; follow-up work is required outside this bounded citation-retry fix."
+  ]
+}

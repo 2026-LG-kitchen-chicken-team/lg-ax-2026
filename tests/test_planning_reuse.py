@@ -3,7 +3,6 @@ import unittest
 from copy import deepcopy
 
 import httpx
-
 import test_planning_agent as fixtures
 from lgax_core.judgement_contract import input_digest
 from lgax_core.model_client import ModelConfig, OllamaAdapter, StructuredModelClient
@@ -62,12 +61,18 @@ class PlanningReuseTests(unittest.TestCase):
             self.assertTrue(first["rejected_output"]["concepts"])
             self.assertEqual([c["skill_id"] for c in first["model_calls"]], [
                 "need_extract", "product_compare", "concept_draft", "concept_draft",
-                "semantic_review", "concept_draft", "semantic_review"])
+                "semantic_review", "review_revision", "semantic_review"])
             self.assertEqual([c["revision_count"] for c in first["model_calls"]], [0, 0, 0, 1, 1, 2, 2])
             self.assertEqual(first["model_calls"][2]["raw_response"], '{"result":')
             self.assertEqual(first["model_calls"][2]["error"]["code"], "VALIDATION_FAILED")
             self.assertEqual(len(first["semantic_reviews"]), 2)
-            self.assertEqual(sum(e["operation"] == "revise" for e in first["trace"]), 2)
+            self.assertEqual(sum(e["operation"] == "revise" for e in first["trace"]), 1)
+            self.assertEqual(sum(e["operation"] == "review_revision" for e in first["trace"]), 1)
+            self.assertEqual(first["correction_budget"]["attempts"], [
+                {"operation": "stage_retry", "revision_count": 1},
+                {"operation": "review_revision", "revision_count": 2}])
+            self.assertTrue(first["correction_budget"]["closed"])
+            self.assertEqual(len(first["revision_session"]["audit"]), 1)
             frozen_first = deepcopy(first)
 
             # Reuse the caller's mutable input and the exact same agent/client.
@@ -105,7 +110,10 @@ class PlanningReuseTests(unittest.TestCase):
             for call in result["model_calls"]:
                 self.assertEqual(call["execution_kind"], "fixture")
                 self.assertEqual(call["model_digest"], fixtures.DIGEST)
-                self.assertEqual(call["request_context"]["request"], snapshot["request"])
+                request_context = call["request_context"]
+                if call["skill_id"] == "review_revision":
+                    request_context = request_context["context"]
+                self.assertEqual(request_context["request"], snapshot["request"])
         for result, snapshot in ((second, second_original), (third, third_original)):
             expected_skills = (["need_extract"] if result is third and hold_at == "need_extract"
                                else ["need_extract", "product_compare", "concept_draft", "semantic_review"])

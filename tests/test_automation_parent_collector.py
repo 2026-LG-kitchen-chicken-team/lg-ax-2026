@@ -34,6 +34,9 @@ class GitFixtureBroker:
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(json.dumps(value), encoding="utf-8")
         self._command(["init", "-q"])
+        # Detached Git maintenance must not outlive this temporary fixture.
+        self._command(["config", "gc.auto", "0"])
+        self._command(["config", "maintenance.auto", "false"])
         self._command(["config", "user.name", "Test fixture"])
         self._command(["config", "user.email", "fixture@example.invalid"])
         self._command(["remote", "add", "origin", f"https://github.com/{REPO}.git"])
@@ -54,7 +57,8 @@ class GitFixtureBroker:
         self.executor = SimpleNamespace(config=SimpleNamespace(image="sha256:" + "a" * 64))
 
     def _command(self, args):
-        result = subprocess.run(["git", *args], cwd=self.repo, capture_output=True, check=True)
+        result = subprocess.run(["git", "-c", "gc.auto=0", "-c", "maintenance.auto=false", *args],
+                                cwd=self.repo, capture_output=True, check=True)
         return result.stdout
 
     def _git(self, args, *, binary=False):

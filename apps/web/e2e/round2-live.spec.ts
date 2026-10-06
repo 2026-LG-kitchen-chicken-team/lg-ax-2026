@@ -92,8 +92,8 @@ test('round2 held runs: record under the same run ID → JSON/Markdown files wit
   await rerun.getByLabel('추가 조건').fill('분리형 선반 구조만 검토');
   await rerun.getByRole('button', { name: '조건 추가' }).click();
   await rerun.getByRole('button', { name: '다시 실행 요청' }).click();
-  await expect(page.locator('.timeline li')).toHaveCount(3);
-  await expect(page.locator('.timeline li').last()).toContainText('요청만 저장됨');
+  await expect(page.locator('.timeline > li')).toHaveCount(3);
+  await expect(page.locator('.timeline > li').last()).toContainText('요청만 저장됨');
   expect(posted).toHaveLength(1);
   expect(posted[0].previous_run_id).toBe(SECOND.run.id);
   expect((posted[0].request as { exclusions: string[] }).exclusions).toEqual([...SECOND.request.exclusions, '분리형 선반 구조만 검토']);
