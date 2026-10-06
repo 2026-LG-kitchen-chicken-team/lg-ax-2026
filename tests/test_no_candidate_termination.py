@@ -82,9 +82,12 @@ class NoCandidateTerminationTests(unittest.TestCase):
         case, agent, transport = self.fixture(missing)
         result = agent.run(case.payload)
         self.assertEqual(result["status"], "held")
-        self.assertEqual(len(transport.posts), 2)
+        self.assertEqual([row["skill"] for row in transport.posts],
+                         ["need_extract", "product_compare", "no_candidate_review"])
+        self.assertEqual(result["no_candidate_reviews"][0]["decision"]["action"], "hold")
         self.assertEqual(result["output"]["concepts"], [])
         self.assertTrue(result["output"]["hold_reasons"])
+        self.assertEqual(result["output"]["questions"], ["추가 명세가 있나요?"])
         self.assertEqual(result["input"]["revision_count"], 0)
 
     def test_conflicting_duplicate_reason_representations_are_rejected(self):
