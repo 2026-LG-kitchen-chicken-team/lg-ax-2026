@@ -1,5 +1,5 @@
 import type { Evidence } from './domain';
-import { executionKindText, judgementView, planningExecutionView, reasonText, violationText } from './judgement';
+import { executionKindText, judgementView, planningExecutionView, reasonText, unusedReviewIds, violationText } from './judgement';
 import type { JudgementDecision, JudgementInput, JudgementOutput, PlanningExecution, SemanticAssessment, StoredDecision } from './judgement';
 import type { RunSnapshot } from './planning';
 
@@ -21,6 +21,8 @@ export function JudgementPanel({ input, output, decision, fixture }: { input: Ju
   const view = judgementView(input, output, decision);
   const sources = new Map<string, Evidence>(input.sources.map(item => [item.id, item]));
   const featureName = (id: string) => input.features.find(item => item.id === id)?.name ?? id;
+  // Record 034 audit U4 (r2d2): an assessed complaint no need/gap cites was silently dropped by the judgement.
+  const unused = new Set(unusedReviewIds(output));
   return <section className="judgement-panel" aria-label="판단 계약 검사 결과">
     <div className="judgement-head">
       <span className={`run-status ${view.tone}`} title={view.detail}>{view.label}<small>코어 검사 결정 · {decision.action}</small></span>
@@ -33,8 +35,8 @@ export function JudgementPanel({ input, output, decision, fixture }: { input: Ju
       ? <><TextList title="보류를 일으킨 문제(근거 확인 필요)" items={view.hold_causes} /><TextList title="함께 발견된 판단 오류(보류로 내부 수정하지 않음)" items={view.unrevised_errors} /></>
       : <TextList title="검사에서 발견한 문제" items={view.violations} empty="없음" />}
     <TextList title="다른 모델·문서 버전의 원문" items={view.out_of_scope_sources} />
-    <h4>리뷰 판단</h4>
-    <ul className="quote-list">{output.review_assessments.map(item => <li key={item.evidence_id}><span className={`status-pill ${item.polarity}`}>{POLARITY[item.polarity]}</span>{sources.get(item.evidence_id) ? <q>{sources.get(item.evidence_id)!.text}</q> : <span className="missing-note">{item.evidence_id} · 원문을 찾을 수 없습니다(자료 누락)</span>}<small>{item.evidence_id} · {item.reason}</small></li>)}</ul>
+    <h4>리뷰 판단{unused.size ? <span className="count" data-field="unused-reviews"> · 어느 불편·Gap에도 쓰이지 않은 리뷰 {unused.size}건</span> : null}</h4>
+    <ul className="quote-list">{output.review_assessments.map(item => <li key={item.evidence_id}><span className={`status-pill ${item.polarity}`}>{POLARITY[item.polarity]}</span>{sources.get(item.evidence_id) ? <q>{sources.get(item.evidence_id)!.text}</q> : <span className="missing-note">{item.evidence_id} · 원문을 찾을 수 없습니다(자료 누락)</span>}<small>{item.evidence_id} · {item.reason}</small>{unused.has(item.evidence_id) ? <span className="scope-flag" data-unused-review={item.evidence_id}> · 어느 불편·Gap에도 쓰이지 않음</span> : null}</li>)}</ul>
     <h4>기능 대조</h4>
     <ul>{output.gap_assessments.map(item => <li key={item.gap_id}><span className="id">{item.gap_id}</span> {SUPPORT[item.support_basis]} · {RESOLUTION[item.resolution]}<small> — {item.reason}</small></li>)}</ul>
     <h4>후보 <span className="count">{output.concepts.length}개</span></h4>

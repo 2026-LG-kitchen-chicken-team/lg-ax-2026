@@ -499,7 +499,31 @@ export type ExportJudgement =
     questions: string[]; hold_reasons: string[]; unresolved: string[]; no_candidate_reasons: string[];
     rejected_candidates: { id: string; title: string }[]; semantic_reviews: { round: number; action: string; violations: string[] }[];
     semantic_rows: ExportSemanticRow[]; models: string[]; model_calls: number;
+    /**
+     * The judging model's own declarations (record 034 audit U4): review polarity, gap support/resolution and candidate
+     * duplication, including duplication rows left without a candidate. Declarations, not an independent check.
+     */
+    review_assessments: { evidence_id: string; polarity: string; reason: string }[];
+    gap_assessments: { gap_id: string; support_basis: string; resolution: string; reason: string }[];
+    concept_assessments: { concept_id: string; duplication: string; reason: string; from: 'output' | 'rejected_output'; has_candidate: boolean }[];
+    /** Assessed reviews no need or gap cites; a complaint among them was dropped by the judgement. */
+    unused_review_ids: string[];
+    /** How many no-candidate reviews checked the stated no-candidate reasons (0 = not reviewed). */
+    no_candidate_reviews: number;
   };
+
+/** Reviews the run assessed but no need or gap cites (display only). */
+export function unusedReviewIds(output: JudgementOutput): string[] {
+  const cited = new Set([...output.needs.flatMap(need => need.evidence_ids), ...output.gaps.flatMap(gap => gap.evidence_ids)]);
+  return output.review_assessments.map(item => item.evidence_id).filter(id => !cited.has(id));
+}
+
+function conceptAssessments(output: JudgementOutput | null | undefined, from: 'output' | 'rejected_output') {
+  return (output?.concept_assessments ?? []).map(item => ({
+    concept_id: item.concept_id, duplication: item.duplication, reason: item.reason, from,
+    has_candidate: (output?.concepts ?? []).some(concept => concept.id === item.concept_id),
+  }));
+}
 
 export function exportJudgement(snapshot: RunSnapshot): ExportJudgement | null {
   const view = planningExecutionView(snapshot);
@@ -524,5 +548,10 @@ export function exportJudgement(snapshot: RunSnapshot): ExportJudgement | null {
       verdict: row.verdict, candidate_quote: row.candidate_quote, reason: row.reason,
     }))),
     models: [...view.models], model_calls: view.model_calls,
+    review_assessments: (output?.review_assessments ?? []).map(item => ({ evidence_id: item.evidence_id, polarity: item.polarity, reason: item.reason })),
+    gap_assessments: (output?.gap_assessments ?? []).map(item => ({ gap_id: item.gap_id, support_basis: item.support_basis, resolution: item.resolution, reason: item.reason })),
+    concept_assessments: [...conceptAssessments(output, 'output'), ...conceptAssessments(execution.rejected_output, 'rejected_output')],
+    unused_review_ids: output ? unusedReviewIds(output) : [],
+    no_candidate_reviews: Array.isArray((execution as { no_candidate_reviews?: unknown }).no_candidate_reviews) ? ((execution as { no_candidate_reviews?: unknown[] }).no_candidate_reviews ?? []).length : 0,
   };
 }
