@@ -5,8 +5,10 @@ import { evidenceLocation } from './domain';
 import { FIXTURE_TREND_NOTICE, FIXTURE_TRENDS, fixtureTrendEvidence } from './fixtures/reviewTrends.fixture';
 import type { LiveWorkspace } from './liveWorkspace';
 import type { DataMode, PlanningRequest } from './planning';
+import { download } from './PlanningViews';
 import {
   aggregateProblems, buildTrendFilters, percentText, planningTrendNote, SMALL_SAMPLE, topicLabel, topicsOf, trendCells,
+  trendSnapshotExport, trendSnapshotMarkdown,
 } from './reviewTrends';
 import type { TrendAggregate, TrendCell } from './reviewTrends';
 import type { ReviewTrendFilters, TrendEvidenceData } from './workspace';
@@ -118,6 +120,19 @@ export function ReviewTrendsPanel({ mode, workspace, data, modelId, onUseInPlann
     } finally { if (generation === drillGeneration.current) setPendingKey(null); }
   }
 
+  function exportSnapshot(format: 'json' | 'md') {
+    if (!aggregate) return;
+    // Only a finished page of exactly the selected aggregate/bucket/topic is recorded as viewed evidence.
+    const viewed = shownPage && cell && pendingKey === null
+      ? { bucket_id: shownPage.bucket_id, topic_id: shownPage.topic_id, total: shownPage.total, evidence_ids: shownPage.evidence.map(item => String(item.id)) }
+      : null;
+    const doc = trendSnapshotExport(aggregate, { fixture: source === 'fixture', exportedAt: new Date().toISOString(), viewed });
+    const base = `review-trend-${aggregate.filters.model_id}-${aggregate.aggregate_id.slice(0, 18)}`;
+    if (format === 'json') download(`${base}.json`, 'application/json', `${JSON.stringify(doc, null, 2)}
+`);
+    else download(`${base}.md`, 'text/markdown', trendSnapshotMarkdown(doc));
+  }
+
   const counts = aggregate?.counts;
   return <section className="panel trends-panel" aria-label="리뷰 동향">
     <div className="trends-head">
@@ -171,6 +186,11 @@ export function ReviewTrendsPanel({ mode, workspace, data, modelId, onUseInPlann
           <span className="trend-label">{item.bucket.label}{item.bucket.partial_period ? <small>부분 구간</small> : null}</span>
           <span className="trend-n">{item.count}/{item.total}건{item.small ? <small>작은 표본</small> : null}</span>
         </button>)}
+      </div>
+      <div className="export-actions trend-export" aria-label="집계 스냅샷 내보내기">
+        <span className="hint">집계 스냅샷 내보내기{source === 'fixture' ? ' (합성 fixture로 표시됨)' : ''}</span>
+        <button type="button" className="secondary-button" onClick={() => exportSnapshot('json')}>JSON</button>
+        <button type="button" className="secondary-button" onClick={() => exportSnapshot('md')}>문서(Markdown)</button>
       </div>
       <p className="hint">막대는 비율, 아래 숫자는 주제 리뷰 수/분모입니다. "자료 없음"은 그 기간 리뷰가 없다는 뜻이고 0%와 다릅니다. 표본 {SMALL_SAMPLE}건 미만은 작은 표본으로 표시하며, 통계적 유의성 판정이 아닙니다. 집계 ID {aggregate.aggregate_id}</p>
 

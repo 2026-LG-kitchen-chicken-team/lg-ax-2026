@@ -139,3 +139,58 @@ export function planningTrendNote(aggregate: TrendAggregate, cell: TrendCell, ev
   const more = evidenceIds.length > ids.length ? ` 외 ${evidenceIds.length - ids.length}건` : '';
   return `[리뷰 동향 근거 · ${aggregate.aggregate_id} · ${aggregate.filters.model_id} · ${cell.bucket.label}${cell.bucket.partial_period ? '(부분 구간)' : ''} · ${topicLabel(cell.topic?.topic_id ?? '')} ${cell.count}/${cell.total}건(${percentText(cell.ratio)})${cell.small ? ' · 작은 표본' : ''} · 근거 ${ids.join(', ')}${more}${fixture ? ' · 합성 fixture' : ''} · 리뷰 수는 판매량·수요 증가를 뜻하지 않음]`;
 }
+
+/** One drill-down page the planner actually opened, kept with its exact aggregate/bucket/topic key. */
+export interface TrendViewedEvidence { bucket_id: string; topic_id: string; total: number; evidence_ids: string[] }
+
+/**
+ * review-trends-20261006.md "집계 스냅샷 내보내기": the aggregate exactly as received (never recomputed or edited), what
+ * the planner opened, and where it came from. A fixture snapshot says so; it is not a real collector result.
+ */
+export interface TrendSnapshotExport {
+  kind: 'review_trend_snapshot'; export_version: 1; exported_at: string;
+  source: 'synthetic_fixture' | 'server'; aggregate_id: string; consistency_problems: string[];
+  aggregate: TrendAggregate; viewed_evidence: TrendViewedEvidence | null; notices: string[];
+}
+
+export function trendSnapshotExport(aggregate: TrendAggregate, input: { fixture: boolean; exportedAt: string; viewed: TrendViewedEvidence | null }): TrendSnapshotExport {
+  return {
+    kind: 'review_trend_snapshot', export_version: 1, exported_at: input.exportedAt,
+    source: input.fixture ? 'synthetic_fixture' : 'server', aggregate_id: aggregate.aggregate_id,
+    consistency_problems: aggregateProblems(aggregate), aggregate: structuredClone(aggregate),
+    viewed_evidence: input.viewed ? structuredClone(input.viewed) : null,
+    notices: [
+      ...(input.fixture ? ['합성 fixture 집계입니다. 실제 collector 결과나 고객 수요의 증거가 아닙니다.'] : []),
+      '리뷰 수와 비율은 판매량이나 수요 증가를 뜻하지 않습니다.',
+      '"자료 없음"은 그 구간 리뷰가 없다는 뜻이며 0%와 다릅니다.',
+      `표본 ${SMALL_SAMPLE}건 미만은 작은 표본이며 통계적 유의성 판정이 아닙니다.`,
+    ],
+  };
+}
+
+const cellText = (cell: TrendCell) => cell.state === 'empty' ? '자료 없음' : `${cell.count}/${cell.total}건 (${percentText(cell.ratio)})${cell.small ? ' · 작은 표본' : ''}`;
+const mdCell = (value: string) => value.replace(/\|/g, '\|').replace(/\r?\n/g, ' ');
+
+export function trendSnapshotMarkdown(doc: TrendSnapshotExport): string {
+  const a = doc.aggregate;
+  const c = a.counts;
+  const topics = topicsOf(a);
+  const lines = [
+    `# 리뷰 동향 집계 스냅샷 · ${a.filters.model_id}`, '',
+    `- 집계 ID: \`${doc.aggregate_id}\``,
+    `- 출처: ${doc.source === 'synthetic_fixture' ? '합성 fixture(실제 집계 아님)' : '작업실 서버 고정 집계'} · 내보낸 시각 ${doc.exported_at}`,
+    `- 기간: ${a.filters.start_date} ~ ${a.filters.end_date_exclusive}(미포함) · ${a.filters.granularity === 'season' ? '계절별' : a.filters.granularity === 'year' ? '연도별' : '월별'} · 시간대 ${a.filters.timezone}`,
+    `- 자료: ${a.dataset_version}${typeof a.dataset_sha256 === 'string' ? ` · sha256 ${a.dataset_sha256}` : ''} · ${a.filters.source_kind}`,
+    `- 분모(유효 고유 리뷰) ${c.eligible_unique_review_count}건 · 날짜 없음 제외 ${c.excluded_undated_count}건 · 기간 밖 제외 ${c.excluded_outside_period_count}건 · 중복 제외 ${c.duplicate_count}건 · 범위 밖 ${c.excluded_out_of_scope_count}건 · 미분류 ${c.unclassified_review_count}건(분모 포함)`,
+    '', `| 구간 | ${topics.map(id => mdCell(topicLabel(id))).join(' | ')} |`, `|---|${topics.map(() => '---').join('|')}|`,
+    ...a.buckets.map((bucket, index) => `| ${mdCell(bucket.label)}${bucket.partial_period ? ' (부분 구간)' : ''} | ${topics.map(id => cellText(trendCells(a, id)[index])).join(' | ')} |`),
+    '',
+  ];
+  if (doc.consistency_problems.length) lines.push('## 숫자 불일치(그래프를 그리지 않은 집계)', ...doc.consistency_problems.map(item => `- ${item}`), '');
+  if (doc.viewed_evidence) {
+    const v = doc.viewed_evidence;
+    lines.push('## 열어 본 원문', `- ${v.bucket_id} · ${topicLabel(v.topic_id)} · ${v.total}건 중 ${v.evidence_ids.length}건`, `- 근거 ID: ${v.evidence_ids.join(', ')}`, '');
+  }
+  lines.push('## 읽을 때 주의', ...[...doc.notices, ...a.warnings].map(item => `- ${item}`), '');
+  return lines.join('\n');
+}
