@@ -237,6 +237,13 @@ describe('review trends drill-down accepts only the latest matching evidence (PM
     expect(onUse).not.toHaveBeenCalled();
   });
 
+  it('without product data (no model) says the data is not connected instead of "fixture not ready"', async () => {
+    await act(async () => root.render(createElement(ReviewTrendsPanel, { mode: 'fixture', workspace: liveWorkspace(0, vi.fn(), 'disconnected'), data: undefined, modelId: '', onUseInPlanning: onUse })));
+    expect(host.querySelector('[data-model-scope="no-data"]')?.textContent).toContain('제품 자료가 아직 연결되지 않아');
+    expect(host.textContent).not.toContain('fixture는 준비되지 않았습니다');
+    expect(host.querySelectorAll('.trend-bar')).toHaveLength(0);
+  });
+
   it('has two value buckets with different evidence to compare', () => {
     expect(A && B).toBeTruthy();
     expect(ids(page(A.cell.bucket.bucket_id))).not.toEqual(ids(page(B.cell.bucket.bucket_id)));

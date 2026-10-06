@@ -216,7 +216,9 @@ export function ReviewTrendsPanel({ mode, workspace, data, modelId, productGroup
     </div>
 
     {source === 'fixture' ? <p className="fixture-note" role="note">{FIXTURE_TREND_NOTICE} 기간: {aggregate?.filters.start_date} ~ {aggregate?.filters.end_date_exclusive}(미포함), 시간대 Asia/Seoul.</p> : null}
-    {source === 'fixture' && !fixtureMatchesModel ? <p className="inline-message notice" role="status">선택한 모델의 합성 동향 fixture는 준비되지 않았습니다. 다른 모델의 근거를 대신 표시하지 않습니다.</p> : null}
+    {/* No model at all means the product data is not loaded yet (e.g. common API down), not a missing fixture. */}
+    {!modelId ? <p className="inline-message notice" role="status" data-model-scope="no-data">제품 자료가 아직 연결되지 않아 검토 모델이 없습니다. 공통 API 연결 상태를 확인한 뒤 다시 열어 주세요.</p>
+      : source === 'fixture' && !fixtureMatchesModel ? <p className="inline-message notice" role="status">선택한 모델의 합성 동향 fixture는 준비되지 않았습니다. 다른 모델의 근거를 대신 표시하지 않습니다.</p> : null}
     {source === 'live' && liveReady && !modelInProject ? <p className="inline-message notice" role="status" data-model-scope="invalid">선택한 모델은 현재 프로젝트의 검토 범위가 아닙니다. 이 모델을 포함한 프로젝트를 선택하거나 새 프로젝트를 만들어 주세요.</p> : null}
     {currentLiveError ? <div className={`inline-message ${currentLiveError.code === 'NOT_IMPLEMENTED' ? 'notice' : 'error'}`} role="status" data-code={currentLiveError.code}><strong>{currentLiveError.code === 'NOT_IMPLEMENTED' ? '실제 동향 집계 미연결' : '동향을 조회하지 못했습니다'}</strong><p>{currentLiveError.message}</p><code>{currentLiveError.code}</code></div> : null}
     {source === 'fixture' && granularity === 'year' ? <p className="muted">연도별 fixture는 준비하지 않았습니다.</p> : null}
