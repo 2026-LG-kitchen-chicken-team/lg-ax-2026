@@ -1,0 +1,342 @@
+"""Offline data audit. Reads inert Git/local records, writes only a new result folder."""
+import csv, hashlib, json, re, subprocess, sys
+from datetime import datetime, timezone, timedelta
+from pathlib import Path
+sys.stdout.reconfigure(encoding="utf-8")
+CONTROL=Path(__file__).resolve().parent
+WORK=Path("C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data-operation-audit-20261007T002145-01a10f51")
+ROOT=Path("C:\\Users\\user\\Documents\\ChatGPT\\LG공모전")
+MAIN="9cd2d56be52588764c18c109c9ffca4c104bd48c"
+OUT=WORK/"evals/data-operation-audit/20261007T002145-01a10f51"
+OBS=json.loads((CONTROL/"github-source-observation.json").read_text("utf-8"))
+INPUTS=CONTROL/"inputs"
+CHECKS=[]
+def digest(raw):return hashlib.sha256(raw).hexdigest()
+def canonical(value):return json.dumps(value,ensure_ascii=False,sort_keys=True,separators=(",",":"),allow_nan=False).encode()
+def safe_check_value(value):
+    if isinstance(value,(dict,list)):
+        return {"value_kind":type(value).__name__,"item_count":len(value),"canonical_json_sha256":digest(canonical(value))}
+    if isinstance(value,str) and len(value)>600:
+        return {"value_kind":"string","character_count":len(value),"utf8_sha256":digest(value.encode())}
+    return value
+def check(name,expected,actual,scope="fixed_artifact"):
+    status="match" if expected==actual else "mismatch"
+    CHECKS.append({"id":name,"scope":scope,"expected":safe_check_value(expected),"actual":safe_check_value(actual),"status":status})
+    return status
+def js(label,name,part=None):
+    files=list((INPUTS/label).rglob(name))
+    if part:files=[p for p in files if part in str(p).replace("\\","/")]
+    if len(files)!=1:raise ValueError((label,name,part,len(files)))
+    return json.loads(files[0].read_text("utf-8-sig"))
+def rawgit(path,ref=MAIN):
+    return subprocess.run(["git","show",ref+":"+path],cwd=WORK,capture_output=True,check=True).stdout
+def pointer(value,path):
+    for p in path.strip("/").split("/"):
+        p=p.replace("~1","/").replace("~0","~")
+        value=value[int(p)] if isinstance(value,list) else value[p]
+    return value
+def write(name,value):
+    (OUT/name).write_text(json.dumps(value,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+def table(name,rows):
+    fields=list(dict.fromkeys(k for r in rows for k in r))
+    with (OUT/name).open("w",encoding="utf-8-sig",newline="") as f:
+        writer=csv.DictWriter(f,fieldnames=fields);writer.writeheader()
+        writer.writerows({k:json.dumps(v,ensure_ascii=False,sort_keys=True) if isinstance(v,(dict,list)) else v for k,v in r.items()} for r in rows)
+def annotation_hash(value):
+    v=json.loads(json.dumps(value))
+    v.pop("annotation_sha256",None)
+    for row in v["rows"]:row["topic_ids"]=sorted(row["topic_ids"])
+    v["rows"]=sorted(v["rows"],key=lambda r:canonical(r).decode())
+    return digest(canonical(v))
+OUT.mkdir(parents=True,exist_ok=True)
+observed=datetime.now(timezone.utc).isoformat()
+tracked=subprocess.run(["git","ls-tree","-r","--name-only","-z",MAIN],cwd=WORK,capture_output=True,check=True).stdout.decode().strip("\0").split("\0")
+before={p:digest((WORK/p).read_bytes()) for p in tracked}
+(CONTROL/"original-tracked-byte-hashes.json").write_text(json.dumps(before,ensure_ascii=False,sort_keys=True),encoding="utf-8")
+source_manifest=json.loads((CONTROL/"input-manifest.json").read_text("utf-8"))
+for item in source_manifest:
+    path=INPUTS/item["label"]/item["path"]
+    check("input:"+item["label"]+":"+item["path"],item["sha256"],digest(path.read_bytes()))
+inventory=js("pr196","expected-inventory.json")
+fixed_files=[]
+for row in inventory["source_files"]:
+    raw=(INPUTS/"fixed-main"/row["path"]).read_bytes()
+    actual_blob=hashlib.sha1(b"blob "+str(len(raw)).encode()+b"\0"+raw).hexdigest()
+    status=check("main-file:"+row["path"],row["reference_file_bytes_sha256"],digest(raw))
+    check("main-Git-blob:"+row["path"],row["reference_git_blob"],actual_blob)
+    fixed_files.append({"path":row["path"],"main_commit":MAIN,"reference_commit":row["reference_commit"],
+        "sha256":digest(raw),"git_blob":actual_blob,"comparison_status":status})
+record_rows=[]
+datasets={}
+for pool in inventory["pools"]:
+    path=pool["reference_path"]
+    ds=json.loads((INPUTS/"fixed-main"/path).read_text("utf-8-sig"));datasets[pool["pool_id"]]=ds
+    version=ds.get("dataset_version",ds.get("manifest",{}).get("version"))
+    check("dataset-canonical:"+pool["pool_id"],pool["canonical_json_sha256"],digest(canonical(ds)))
+    products={p.get("model_id",p.get("id")):p for p in ds["products"]}
+    for r in pool["records"]:
+        source=pointer(ds,r["reference_json_pointer"])
+        actual={"record_id":source["id"],"model_id":source["model_id"],"source_id":source["source_id"],
+            "source_kind":source["source_kind"],"document_version":source["document_version"],"locator":source["locator"],
+            "source_type":source.get("source_type","review"),"text_utf8_sha256":digest(source["text"].encode()),"dataset_version":version}
+        matches=[check("record:"+r["pool_id"]+":"+r["record_id"]+":"+k,r[k],v) for k,v in actual.items()]
+        if r["record_type"]=="reviews":matches.append(check("review-evidence:"+r["record_id"],r["linked_evidence_id"],source["evidence_id"]))
+        record_rows.append({"pool":r["pool_id"],"record_type":r["record_type"],**actual,
+            "fixed_record_status":"match" if all(s=="match" for s in matches) else "mismatch",
+            "fixed_dataset_hash_domain":pool["canonical_hash_domain"],
+            "public_operation_status":"unconfirmed","workspace_operation_status":"unconfirmed",
+            "operation_text_sha256":None,"operation_response_received":False,
+            "note":"원 근거 판본을 유지; 제품 기본 판본과 다름" if r.get("record_version_equals_product_default") is False else ""})
+pdf_rows=[]
+pdfs=list((WORK/"data/sources/lg-manuals-20261005").glob("*.pdf"))
+for row in inventory["original_documents"]:
+    found=[p for p in pdfs if digest(p.read_bytes())==row["declared_original_pdf_bytes_sha256"]]
+    status=check("original-pdf:"+row["model_id"],1,len(found),"local_preserved_original")
+    pdf_rows.append({"model_id":row["model_id"],"document_version":row["document_version"],
+        "original_pdf_sha256":row["declared_original_pdf_bytes_sha256"],"status":status,
+        "path":str(found[0].relative_to(WORK)).replace("\\","/") if found else None,"visual_or_OCR_rerun":False})
+packmeta=js("pr194","pack-audit.json","run-final")
+packs={}
+pack_rows=[]
+for p in packmeta["packs"]:
+    ds=js("pack-"+p["name"],Path(p["dataset_path"]).name)
+    an=js("pack-"+p["name"],Path(p["annotation_path"]).name)
+    check("pack-dataset:"+p["name"],p["dataset_canonical_sha256"],digest(canonical(ds)))
+    check("pack-annotation:"+p["name"],p["annotation_canonical_sha256"],annotation_hash(an))
+    packs[p["name"]]={"dataset":ds,"annotation":an,"meta":p}
+    pack_rows.append({"pack":p["name"],"dataset_version":p["dataset_version"],"dataset_sha256":digest(canonical(ds)),
+        "annotation_sha256":annotation_hash(an),"source_ids":p["source_ids"],
+        "dated_total":sum(r["published_at"] is not None for r in an["rows"]),
+        "unknown_total":sum(r["published_at"] is None for r in an["rows"]),
+        "date_provenance":"구성 날짜" if p["name"]!="original" else "원 날짜 미상"})
+    for key,expected_key in (("dataset_path","dataset_bytes_sha256"),("annotation_path","annotation_bytes_sha256"),("date_source_path","date_source_bytes_sha256")):
+        if p.get(key):
+            path=INPUTS/("pack-"+p["name"])/p[key]
+            check("pack-bytes:"+p["name"]+":"+key,p[expected_key],digest(path.read_bytes()))
+# Recalculate the captured 15 queries directly from fixed rows; no API/collector code runs.
+KST=timezone(timedelta(hours=9))
+def day(value):
+    if value is None:return None
+    if len(value)==10:return value
+    return datetime.fromisoformat(value.replace("Z","+00:00")).astimezone(KST).date().isoformat()
+def scope_rows(pack,filters):
+    allrows=pack["annotation"]["rows"]
+    return [r for r in allrows if r["model_id"]==filters["model_id"] and
+        r["source_kind"]==filters["source_kind"] and r["source_id"] in filters["source_ids"]]
+def recalc(pack,filters,buckets,label):
+    scoped=scope_rows(pack,filters)
+    dated=[r for r in scoped if day(r["published_at"]) is not None]
+    eligible=[r for r in dated if filters["start_date"]<=day(r["published_at"])<filters["end_date_exclusive"]]
+    seen=set();unique=[]
+    for r in eligible:
+        if r["dedup_key"] not in seen:seen.add(r["dedup_key"]);unique.append(r)
+    counts={"input_review_count":len(pack["annotation"]["rows"]),"excluded_out_of_scope_count":len(pack["annotation"]["rows"])-len(scoped),
+        "in_scope_review_count":len(scoped),"excluded_undated_count":len(scoped)-len(dated),
+        "excluded_outside_period_count":len(dated)-len(eligible),"duplicate_count":len(eligible)-len(unique),
+        "eligible_unique_review_count":len(unique),"unclassified_review_count":sum(r["classification_status"]!="classified" for r in unique)}
+    results=[]
+    for bucket in buckets:
+        rows=[r for r in unique if bucket["period_start"]<=day(r["published_at"])<bucket["period_end_exclusive"]]
+        check(label+":"+bucket["bucket_id"]+":denominator",len(rows),bucket["total_reviews"])
+        for topic in bucket["topics"]:
+            ids=sorted(r["evidence_id"] for r in rows if topic["topic_id"] in r["topic_ids"])
+            ratio=len(ids)/len(rows) if rows else None
+            states=[check(label+":"+bucket["bucket_id"]+":"+topic["topic_id"]+":"+k,e,v) for k,e,v in
+                (("numerator",len(ids),topic["topic_review_count"]),("ratio",ratio,topic["ratio"]),
+                 ("evidence_ids",ids,sorted(topic["evidence_ids"])))]
+            results.append({"label":label,"bucket":bucket["bucket_id"],"topic":topic["topic_id"],"denominator":len(rows),
+                "numerator":len(ids),"ratio":ratio,"evidence_ids":ids,"recorded_response_status":"match" if all(s=="match" for s in states) else "mismatch",
+                "production_status":"unconfirmed"})
+    return counts,results
+queries=js("pr194","queries.json","run-final")
+trend_rows=[]
+for q in queries:
+    agg=q["aggregate"];label=q["pack"]+":"+q["period"]
+    counts,rows=recalc(packs[q["pack"]],q["query"],agg["buckets"],label)
+    for k,v in counts.items():check("query-count:"+label+":"+k,v,agg["counts"][k])
+    for r in rows:r.update({"dataset_version":agg["dataset_version"],"source_ids":q["query"]["source_ids"],**counts})
+    trend_rows+=rows
+bindings=js("pr194","review-bindings.json","run-final")
+for r in bindings:
+    ds=packs[r["pack"]]["dataset"];review=next(x for x in ds["reviews"] if x["id"]==r["review_id"])
+    for key in ("model_id","source_id","document_version","locator","evidence_id"):
+        check("binding:"+r["pack"]+":"+r["review_id"]+":"+key,r[key],review[key])
+    check("binding-text:"+r["pack"]+":"+r["review_id"],r["text_sha256"],digest(review["text"].encode()))
+web_api=js("pr186","api-mcp-path.json");web_leg=js("pr186","web-leg-proof.json");web_export=js("pr186","web-snapshot.json")
+webagg=web_export["aggregate"]
+for name,value in (("WEB",web_leg["web_aggregate_id"]),("MCP",web_leg["mcp_aggregate_id"]),("JSON",web_leg["export"]["json_aggregate_id"]),("export",web_export["aggregate_id"])):
+    check("web-aggregate-id:"+name,web_api["aggregate_id"],value,"WEB_test_handoff")
+for key in ("dataset_version","dataset_sha256","annotation_sha256"):
+    expected=packs["data"]["meta"]["dataset_version"] if key=="dataset_version" else packs["data"]["meta"][key.replace("_sha256","_canonical_sha256")]
+    check("web-pack:"+key,expected,webagg[key],"WEB_test_handoff")
+web_counts,web_rows=recalc(packs["data"],webagg["filters"],webagg["buckets"],"WEB-DATA9")
+for k,v in web_counts.items():check("web-count:"+k,v,webagg["counts"][k],"WEB_test_handoff");check("API-count:"+k,v,web_api["counts"][k],"WEB_test_handoff")
+clean=[r for r in web_rows if r["topic"]=="cleaning"][0]
+check("web-cleaning-evidence",clean["evidence_ids"],web_leg["web_evidence_ids"],"WEB_test_handoff")
+check("web-export-viewed-evidence",clean["evidence_ids"],web_export["viewed_evidence"]["evidence_ids"],"WEB_test_handoff")
+for name,value in (("markdown_id",web_leg["export"]["markdown_has_id"]),("planning_id",web_leg["planning_note_has_id"])):
+    check("web-handoff:"+name,True,value,"WEB_test_handoff")
+web_report={"scope":"WEB PR186 test-only handoff consumed; no new browser execution or production claim",
+    "project_id":webagg["project_id"],"aggregate_id":webagg["aggregate_id"],"dataset_version":webagg["dataset_version"],
+    "dataset_sha256":webagg["dataset_sha256"],"annotation_sha256":webagg["annotation_sha256"],"counts":web_counts,
+    "cleaning":clean,"fixture_note_shown_reported":web_leg["fixture_note_shown"],"notices":web_export["notices"],
+    "source_kind":"synthetic","candidate_topic_approval":"pending","production_public_workspace_same_pack":"unconfirmed"}
+# Previous scope contains public LG review excerpts; approved main manual-only scope still has zero reviews.
+proof=js("preserved-registry","source-proof.json")
+review_checks=[]
+for sample in proof["samples"]:
+    model=sample["model_id"];csvpath=INPUTS/"preserved-registry"/(model+".csv")
+    rows=list(csv.DictReader(csvpath.read_text("utf-8-sig").splitlines()))
+    r=rows[0]
+    status=check("preserved-review-excerpt:"+model,sample["text_sha256"],digest(r["text"].encode()),"preserved_previous_run")
+    review_checks.append({"model_id":model,"review_id":r["id"],"evidence_id":r["evidence_id"],"source_id":r["source_id"],
+        "source_kind":r["source_kind"],"document_version":r["document_version"],"locator":{"row":int(r["row"])},
+        "text_sha256":digest(r["text"].encode()),"status":status,"provider_review_id":sample["provider_review_id"],
+        "id_kind":sample["review_id_kind"],"excerpt_only":True,"publisher_model":sample["publisher_model"],
+        "original_body_sha256_declared":sample["original_body_sha256"],"source_html_sha256_declared":sample["source_html_sha256"],
+        "original_HTML_rechecked_this_task":False,"buyer_identity_verified":False,"production_acceptance":"unconfirmed"})
+def cited(value):
+    result=set()
+    if isinstance(value,dict):
+        for k,v in value.items():
+            if k=="evidence_id" and isinstance(v,str):result.add(v)
+            elif k=="evidence_ids" and isinstance(v,list):result.update(v)
+            else:result.update(cited(v))
+    elif isinstance(value,list):
+        for v in value:result.update(cited(v))
+    return result
+r06rows=[];case_rows=[];reproduction=[]
+old_manifest=js("preserved-metadata","run-manifest.json")
+old_commands=js("preserved-metadata","commands.json")
+old_summary=js("preserved-metadata","execution-summary.json")
+old_replay_summary=js("preserved-metadata","replay-summary.json")
+frozen=INPUTS/"preserved-frozen"
+old_dataset=json.loads((frozen/old_manifest["dataset"]).read_text("utf-8"))
+old_evidence={r["id"]:r for r in old_dataset["evidence"]}
+check("historical-runner",old_commands["frozen_replay_runner_sha256"],digest((frozen/"scripts/verify_data001_r06_r08_replay.py").read_bytes()),"preserved_previous_run")
+for path,expected in old_manifest["source_sha256"].items():
+    check("historical-code:"+path,expected,digest((frozen/path).read_bytes()),"preserved_previous_run")
+check("historical-dataset",old_manifest["dataset_sha256"],digest((frozen/old_manifest["dataset"]).read_bytes()),"preserved_previous_run")
+for c in old_manifest["cases"]:
+    check("historical-input-file:"+c["case_id"],c["input_sha256"],digest((frozen/c["input"]).read_bytes()),"preserved_previous_run")
+    live=js("preserved-live","result.json",c["case_id"]+"/")
+    replay=js("preserved-replay","result.json",c["case_id"]+"/")
+    original=js("preserved-replay","original-result.json",c["case_id"]+"/")
+    snapshot=js("preserved-live","raw-snapshot.json",c["case_id"]+"/")
+    exe=live["execution"];output=exe["output"];sources={s.get("evidence_id",s.get("id")):s for s in exe["original_input"]["sources"]}
+    model=exe["original_input"]["product"]["model_id"]
+    check("historical-original-result:"+c["case_id"],live,original,"preserved_previous_run")
+    check("historical-raw-snapshot:"+c["case_id"],snapshot,live["snapshot"],"preserved_previous_run")
+    check("historical-input-digest:"+c["case_id"],digest(canonical(exe["original_input"])),live["input_digest"],"preserved_previous_run")
+    for key in ("input_digest",):check("replay:"+c["case_id"]+":"+key,live[key],replay[key],"recorded_replay")
+    for key in ("status","output"):
+        check("replay:"+c["case_id"]+":"+key,exe[key],replay["execution"][key],"recorded_replay")
+    ids=cited(output) if output else set()
+    check("output-evidence-scope:"+c["case_id"],True,ids.issubset(sources),"preserved_previous_run")
+    if output:
+        check("output-model:"+c["case_id"],model,output["model_id"],"preserved_previous_run")
+        check("output-version:"+c["case_id"],exe["input"]["product"]["document_version"],output["document_version"],"preserved_previous_run")
+        check("output-current-input:"+c["case_id"],digest(canonical(exe["input"])),output["input_sha256"],"preserved_previous_run")
+    for eid,s in sources.items():
+        master=old_evidence[eid]
+        for field in ("source_id","source_kind","source_type","document_version","locator","text"):
+            expected=digest(master[field].encode()) if field=="text" else master[field]
+            actual=digest(s[field].encode()) if field=="text" else s[field]
+            check("historical-source:"+c["case_id"]+":"+eid+":"+field,expected,actual,"preserved_previous_run")
+        check("historical-source-model:"+c["case_id"]+":"+eid,model,master["model_id"],"preserved_previous_run")
+        r06rows.append({"case_id":c["case_id"],"model_id":model,"evidence_id":eid,"source_id":s["source_id"],
+            "source_kind":s["source_kind"],"source_type":s["source_type"],"document_version":s["document_version"],"locator":s["locator"],
+            "text_sha256":digest(s["text"].encode()),"referenced_by_output":eid in ids,
+            "output_present":output is not None,"scope":"preserved_previous_run","current_main_output_status":"unconfirmed"})
+    decision=exe.get("decision") or {}
+    oldcase=next(r for r in old_summary["cases"] if r["case_id"]==c["case_id"])
+    case_rows.append({"case_id":c["case_id"],"model_id":model,"scope":"preserved_previous_run",
+        "review_count":sum(s["source_type"]=="review" for s in sources.values()),"status":exe["status"],
+        "output_present":output is not None,"output_cited_evidence_count":len(ids),"source_count":len(sources),
+        "decision_action":decision.get("action"),"decision_valid":decision.get("valid"),
+        "violation_codes":[v["code"] for v in decision.get("violations",[])],
+        "questions_count":len(output.get("questions",[])) if output else None,
+        "hold_reasons_count":len(output.get("hold_reasons",[])) if output else None,
+        "r06_status":"identity_only_match" if output else "output_unconfirmed",
+        "r07_recorded_replay":replay.get("r07"),"r08_prior_acceptance":oldcase["r08_acceptance"],
+        "current_PR190_quality_acceptance":"unconfirmed","new_model_calls":0})
+    reproduction.append({"case_id":c["case_id"],"code_commit":old_manifest["code_commit"],
+        "input_file_sha256":c["input_sha256"],"input_digest":live["input_digest"],
+        "live_result_sha256":digest((INPUTS/"preserved-live"/c["case_id"]/"result.json").read_bytes()),
+        "replay_result_sha256":digest((INPUTS/"preserved-replay"/c["case_id"]/"result.json").read_bytes()),
+        "output_digest":digest(canonical(output)) if output else None,
+        "fixed_image":old_commands["fixed_image"],"model":old_commands["live_model"],"model_digest":old_commands["model_digest"],
+        "settings":old_commands["settings"],"thinking":old_commands["thinking"],
+        "recorded_replay_checks":replay.get("r07"),"new_replay_execution":False,
+        "hardcoding_assertion_scope":"original recorded requests keyed to input; prior negative-input rejection receipt consumed; no new model determinism/quality proof"})
+    receipt=next(r for r in old_replay_summary["cases"] if r["case_id"]==c["case_id"])
+    check("recorded-live-file:"+c["case_id"],receipt["original_result_sha256"],reproduction[-1]["live_result_sha256"],"recorded_replay")
+    check("recorded-replay-file:"+c["case_id"],receipt["result_sha256"],reproduction[-1]["replay_result_sha256"],"recorded_replay")
+    transport=ROOT/"publication/data001-r06-r08-20261006-01a10f51/offline-replay-final"/c["case_id"]/"recorded-transport.json"
+    transport_sha=digest(transport.read_bytes())
+    check("recorded-transport-file:"+c["case_id"],receipt["raw_response_journal_sha256"],transport_sha,"recorded_replay")
+    reproduction[-1]["recorded_transport_sha256"]=transport_sha
+matrix=js("pr190","comparison-matrix.json")
+current_scopes=[{"scope_id":s["scope_id"],"model_id":s["product"]["model_id"],"dataset_version":s["dataset_version"],
+    "review_count":s["review_count"],"source_count":len(s["source_links"]),"fixed_output_status":s["final_check_status"],
+    "fixed_output_present":s["fixed_output_for_new_code"] is not None} for s in matrix["scopes"]]
+operation_history=[]
+for label,name,rowskey in (("pr196","query-evidence.json","requests"),("pr200","runtime-get-results.json","requests"),("pr190","ops-requery.json","rows")):
+    data=js(label,name)
+    for r in data[rowskey]:
+        operation_history.append({"source_pr":int(label[2:]),"observed_at":r.get("at",r.get("observed_at")),
+            "scope":r.get("scope",r.get("label")),"method":r["method"],"http_status":r.get("http_status",r.get("status")),
+            "error_type":r.get("error_type",r.get("reason",r.get("error"))),"data_comparison":"unconfirmed",
+            "credential_sent":r.get("token_sent",r.get("credential_sent",r.get("authorization_sent",False)))})
+requirements=[
+ {"id":"R06","historical_scope":"2 outputs preserve identity; missing microwave final output","current_main_or_PR190":"unconfirmed","production":"unconfirmed"},
+ {"id":"R07","historical_scope":"4 recorded replay receipts/input-output-status comparisons consumed; no new replay executed","current_main_or_PR190":"unconfirmed","production":"unconfirmed"},
+ {"id":"R08","historical_scope":"fridge failed / dishwasher held / microwave failed; no accepted 3-product finish","current_main_or_PR190":"unconfirmed","production":"unconfirmed"}]
+needed={"owner":"PM operation handoff; DATA consumes approved records",
+ "operation_response":{"required":["observed_at","deployed_commit","approved_pack_name","dataset_version","dataset_sha256","dataset_hash_domain","source_ids",
+    "allowed_model_ids","allowed_evidence_ids","document_versions","raw_text_or_UTF8_text_sha256","visibility_scope"],
+    "separate_public_and_workspace":True,"compare_common_approved_visibility_only":True,"token_in_PR_or_issue":False},
+ "trend_response":{"required":["project_id","aggregate_id","dataset_version","dataset_sha256","annotation_sha256","filters","counts",
+    "buckets","evidence_ids","same_scope_evidence_page"],"aggregate_ID_from_actual_project":True},
+ "three_product_results":{"required":["code_commit","runner/input/dataset/schema_hashes","model_revision_and_settings","run_id",
+    "status","final_output_or_held_error","original_input","current_revision_input","decision","questions","hold_reasons","unresolved",
+    "source_metadata_and_locators","recorded_request_response_hashes"],"fixed_PR190_handoff_missing":True},
+ "review_scope":{"approved_main_manual_pack_reviews":0,"preserved_LG_page_excerpt_count":3,
+    "preserved_excerpts_are_not_current_operation_or_PM_acceptance":True,"synthetic_36_are_development_examples":True}}
+write("source-observation.json",{"observed_utc":OBS["observed_utc"],"main_commit":MAIN,"PRs":[
+ {"number":n,"head":OBS["raw"]["pulls/"+str(n)]["head"]["sha"],"state":OBS["raw"]["pulls/"+str(n)]["state"],
+  "merged":OBS["raw"]["pulls/"+str(n)]["merged"],"url":OBS["raw"]["pulls/"+str(n)]["html_url"],"checks":OBS["checks"][str(n)]}
+ for n in (190,194,196,200,186,198)],"project_observation":json.loads((CONTROL/"project-read-observation.json").read_text("utf-8")),
+ "authority_links":[
+ "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/196#issuecomment-6018482979",
+ "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/186#issuecomment-6015386941",
+ "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/190#issuecomment-6018577599"]})
+write("fixed-source-audit.json",{"files":fixed_files,"records":len(record_rows),"original_PDFs":pdf_rows,"packs":pack_rows,"raw_text_published":False})
+table("operation-record-comparison.csv",record_rows);table("trend-comparison.csv",trend_rows);table("final-output-source-comparison.csv",r06rows)
+write("WEB-handoff-comparison.json",web_report)
+write("three-product-output-audit.json",{"historical_cases":case_rows,"current_PR190_scopes":current_scopes,"requirements":requirements,
+    "preserved_review_provenance":review_checks,"approved_main_reviews":len(datasets["official-lg-manuals"]["reviews"])})
+write("reproduction-evidence.json",{"cases":reproduction,"recorded_commands_scope":"historical only; not executed in this task",
+    "runner_sha256":old_commands["frozen_replay_runner_sha256"],"new_model_calls":0,"new_OCR_calls":0,"new_repository_code_execution":0})
+write("operation-handoff-needed.json",needed)
+write("operation-history-consumed.json",{"previous_observations":operation_history,"observations_are_not_current_live_server_state":True,
+    "new_operation_HTTP_requests":0,"approved_operation_snapshot_found":False,
+    "rationale":"No new approved endpoint/viewer/snapshot after prior failed probes; consume preserved observations, no inference of OFF or mismatch."})
+write("input-pins.json",source_manifest)
+after={p:digest((WORK/p).read_bytes()) for p in tracked}
+changed=[p for p in tracked if before[p]!=after[p]]
+write("preservation.json",{"tracked_files_checked":len(tracked),"changed_original_paths":changed,"existing_personal_READMEs_changed":False,
+    "original_code_data_retained":not changed,"new_folder":str(OUT.relative_to(WORK)).replace("\\","/")})
+mismatches=[c for c in CHECKS if c["status"]=="mismatch"]
+write("comparison-checks.json",{"count":len(CHECKS),"match_count":len(CHECKS)-len(mismatches),"mismatches":mismatches,"checks":CHECKS,
+    "checks_are_static_data_comparisons_not_model_tests_or_operation_acceptance":True})
+summary={"created_utc":observed,"fixed_records_checked":len(record_rows),"fixed_file_count":len(fixed_files),
+ "recorded_queries_recalculated":len(queries),"recorded_review_bindings_checked":len(bindings),"trend_rows":len(trend_rows),
+ "historical_cases":case_rows,"static_comparison_count":len(CHECKS),"mismatches":len(mismatches),
+ "preservation_changed":changed,"new_product_model_calls":0,"new_OCR_calls":0,"new_operation_HTTP_requests":0,
+ "new_browser_runs":0,"new_model_test_suite_runs":0,"raw_private_prompts_or_completions_published":False,
+ "production_match":"unconfirmed","public_workspace_same_scope":"unconfirmed","issue12_done":False}
+write("summary.json",summary)
+print(json.dumps({"output":str(OUT),"summary":{k:v for k,v in summary.items() if k!="historical_cases"},
+    "historical_cases":[{k:c[k] for k in ("case_id","status","output_present","r08_prior_acceptance")} for c in case_rows],
+    "mismatch_preview":mismatches[:12]},ensure_ascii=False))
