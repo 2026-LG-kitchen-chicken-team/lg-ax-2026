@@ -37,6 +37,7 @@ def model_context(context: dict) -> dict:
         "concept_lineage": {
             "candidates": [{"concept_id": row["concept_id"],
                             "gap_ids": [link["gap_id"] for link in row["links"]],
+                            "links": row["links"],
                             "numeric_mentions": row["numeric_mentions"], "valid": row["valid"]}
                            for row in lineage["candidates"]],
             "violations": lineage["violations"],
