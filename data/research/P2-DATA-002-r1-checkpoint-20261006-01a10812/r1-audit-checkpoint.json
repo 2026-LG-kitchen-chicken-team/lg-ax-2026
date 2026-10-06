@@ -1,0 +1,153 @@
+{
+  "at_kst": "2026-10-06T12:00:35.197971+09:00",
+  "owner": "ginaginaring",
+  "task_id": "P2-DATA-002",
+  "PM_assignment": "PM-20261006-DATA-MANUAL-VALIDATION-R1",
+  "user_scope": "자료 처리·연결 검증만. 기존 구현 재사용, source ID 교체·NFC/NFD·API 전체흐름·오류·출력보존·#14 인수자료. 판단코어/웹/공통API/Schema/MCP 변경 금지. 새 게시·PR은 사전 확인.",
+  "frozen_main": "b477860b2612f51b7e81f37b635c05ba02338bfb",
+  "same_product_code_as_PM_96c6d949": true,
+  "reuse_code": [
+    {
+      "path": "packages/core/src/lgax_core/review_import.py",
+      "sha256": "545e77aa15b112d4ad67838c026f8915d2c6a367cd70b65273cbdfee2aec245c"
+    },
+    {
+      "path": "packages/core/src/lgax_core/source_ranges.py",
+      "sha256": "30c823f83bc2fd7c568f4fd4e9f6ce74fe0b79e029829d74409419f5b48b6758"
+    },
+    {
+      "path": "packages/core/src/lgax_core/document_store.py",
+      "sha256": "cbf5fc44dc7339e12f40fb0813833561d5984df40c0fe29ba16b9b66ce3c6bc5"
+    },
+    {
+      "path": "packages/core/src/lgax_core/documents.py",
+      "sha256": "6b66ead753aa9bec0890a4ad55d22345ef36852b0045c781ed25f46825b3577c"
+    },
+    {
+      "path": "packages/core/src/lgax_core/documents_server.py",
+      "sha256": "eee20d2afbbe1fa2c720ac7440f9c3348964a4e0ac42160731ddedafbbbc5d99"
+    },
+    {
+      "path": "packages/core/src/lgax_core/review_csv.py",
+      "sha256": "d0ea7093c8bdffcca4bdc4bb17669f62d27f603fefe7d99df6b8d15e0d3a8612"
+    },
+    {
+      "path": "packages/core/src/lgax_core/review_csv_server.py",
+      "sha256": "29cb31906c1c6d24803803f55365c235dc9f6be2bdc058bf15e3fa33aa65db1e"
+    }
+  ],
+  "existing_regression_suites": [
+    "tests/test_review_import.py",
+    "tests/test_source_ranges.py",
+    "tests/test_document_store_snapshot.py"
+  ],
+  "source_swap_guards_already_implemented": true,
+  "actual_SOURCE_MISMATCH_tests_this_session": 0,
+  "NFC_NFD_execution_checks_this_session": 0,
+  "new_API_requests_this_session": 0,
+  "new_repository_tests_this_session": 0,
+  "Worker_scheduled_task_disabled": true,
+  "global_and_own_automation_off": true,
+  "automatic_failed_or_pending_jobs_not_modified": true,
+  "reservation": {
+    "own_mode_changed_to_off": false,
+    "global_mode_observed": "off",
+    "own_enabled": false,
+    "reservation_status": 409,
+    "reservation_result": {
+      "error": "manual work conflicts with an existing running/orphaned owner"
+    },
+    "request": {
+      "reservation_id": "manual-data002-validation-r1-20261006-01a10812",
+      "allowed_paths": [
+        "data/research/P2-DATA-002-manual-validation-20261006-01a10812/",
+        "docs/작업기록/세션/신진하/data002-manual-validation-20261006-01a10812.md",
+        "docs/작업근거/세션/신진하/data002-manual-validation-20261006-01a10812.md"
+      ],
+      "shared_resources": [
+        "docker-local-ginaginaring-data-validation",
+        "document-store-ginaginaring-validation"
+      ],
+      "ttl_seconds": 3600
+    },
+    "own_active_reservations": [
+      {
+        "id": "manual-data001-fridge-only-20261006",
+        "owner": "ginaginaring",
+        "expires": 1791257248.4593406,
+        "status": "active"
+      }
+    ],
+    "automatic_jobs_not_edited": true
+  },
+  "output_preservation_findings": {
+    "proposal_targets_all_absent_in_main": [
+      {
+        "path": "scripts/prepare_data003_benchmark.py",
+        "present_in_main": false,
+        "HTTP_status": 404
+      },
+      {
+        "path": "scripts/verify_data003_preparation.py",
+        "present_in_main": false,
+        "HTTP_status": 404
+      },
+      {
+        "path": "scripts/verify_data003_followup.py",
+        "present_in_main": false,
+        "HTTP_status": 404
+      },
+      {
+        "path": "scripts/summarize_data003_live.py",
+        "present_in_main": false,
+        "HTTP_status": 404
+      }
+    ],
+    "new_connection_must_stay_in_data_processing_consumer": true,
+    "common_API_contract_or_Schema_changes_not_permitted": true,
+    "old_scores_and_failure_records_preserved": true
+  },
+  "handoff_after_execution_fields": [
+    "registration_id",
+    "source_id",
+    "model_id",
+    "document_version",
+    "source_kind",
+    "original_sha256",
+    "original_text_sha256",
+    "locator_page_row_paragraph_span",
+    "approved_source_commit",
+    "runtime_image_id",
+    "raw_original_private_locator",
+    "canonical_metadata_file_SHA256"
+  ],
+  "new_publication_authorized": false,
+  "current_blocker": "#12의 manual-data001-fridge-only-20261006 예약이active라 같은계정예약409. 기존예약해제/경로우회/다른계정사용없음. 조율메시지는사용자승인대기.",
+  "next_after_clear": [
+    "중앙 예약 확보",
+    "고정 소스·별도 DB·출력·세션·인증없는 Docker 준비",
+    "기존 회귀와 source swap/NFC·NFD 제어입력 검증",
+    "승인 원본의 실제 기존 API 등록/파싱/저장/검색/원문/재시작 및 오류/원자성 검증",
+    "허용된 자료 결과 출력 소비경로의 보존 제안 연결·기존 결과 덮어쓰기 거절",
+    "실측 등록/근거/버전/위치 고정 인수물과 실패/남은 연결 기록"
+  ],
+  "last_checked_at_kst": "2026-10-06T12:07:41.239697+09:00",
+  "current_active_reservations": [
+    {
+      "id": "manual-data001-fridge-only-20261006",
+      "owner": "ginaginaring",
+      "expires": 1791259217.1662283,
+      "status": "active"
+    }
+  ],
+  "user_instruction_original": "#13에서 신진하 담당 자료 처리와 연결 검증만 이어가자.\n1. 정이량의 최신 DATA-MANUAL-VALIDATION-R1과 현재 main을 확인해.\n2. 기존 CSV 가져오기·문서 처리·원문 범위·원본 보호 코드를 재사용해. 같은 기능을 새로 만들지 마.\n3. 두 제품의 source ID를 바꾸면 SOURCE_MISMATCH로 거부되고 기존 자료가 그대로인지 검사해.\n4. 한글 NFC/NFD의 원문·바이트·해시가 임의 정규화 없이 보존되는지 검사해.\n5. 승인된 자료로 등록→파싱→저장→모델/버전별 검색→원문 조회→재시작 보존을 검증해.\n6. 모델·버전 혼입, 잘못된 원문 범위, 중복, 누락, 빈 결과를 검사해.\n7. 출력 보존 제안 중 미적용 부분은 PM이 지정한 자료 처리 영역에서만 연결해. 기존 출력 덮어쓰기 거부도 확인해.\n8. 기존 API를 호출해서 검증하되 공통 API 경로·응답 계약·Schema·MCP는 바꾸지 마. 변경이 필요하면 필요한 사항만 정리해.\n9. 판단 코어와 웹 화면은 수정하지 마.\n10. #14가 재사용할 등록 결과·근거 목록·버전·원문 위치를 고정해서 전달할 자료를 만들어.\n#12의 자료 보완과 #14의 검색 비교를 중복하지 마.\n별도 DB·출력 경로·세션 기록을 사용하고 예약 충돌은 우회하지 마.\n완료·실패·남은 연결을 구분해서 알려주고, 새 게시·PR은 나한테 확인해.",
+  "status": "blocked_before_actual_validation_by_existing_same_owner_reservation",
+  "messages_to_other_threads_sent": 0,
+  "new_GitHub_posts": 0,
+  "new_PRs": 0,
+  "coordination_authorization": "pending optional user question; elapsed time not authorization",
+  "remaining_API_connection_findings": [
+    "review_import 신규 입력 모듈은 존재하지만 기존 review_csv 전송 API는36개 승인된 동일내용만 검증하는 별도범위다. 신규 입력API 소비연결을 완료라고 표시하지 않는다",
+    "PR141 보존 대상 scripts4개는 현재 main에 없다. 임의로 공통 scripts/API/Schema를 바꾸거나 #14 도구를 중복 생성하지 않는다. 허용 자료 결과 소비경로에 적용할 부분과 PM 결정이 필요한 원 대상 경로를 구분한다"
+  ]
+}

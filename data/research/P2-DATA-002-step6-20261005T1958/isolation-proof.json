@@ -1,0 +1,32 @@
+{
+  "docker_cli_exit": 1,
+  "container_exit": 1,
+  "stdout": "{\"checks\": {\"non_root_1000\": true, \"readonly_allowed_canary_visible\": true, \"no_git_or_publisher_auth\": true, \"no_publisher_or_AI_environment\": true, \"workspace_readonly\": true, \"root_readonly\": true, \"artifacts_write_allowed\": true, \"pypdf_installed\": false, \"fastapi_installed\": true, \"httpx_installed\": true}, \"pass\": false, \"model_calls\": 0, \"repository_tests\": 0}\n",
+  "stderr": "",
+  "image": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+  "user": "1000:1000",
+  "network": "none",
+  "read_only_root": true,
+  "mounts": [
+    {
+      "source": "C:\\Users\\user\\LGAX-execution\\data002-stage6-20261005-01a10812\\artifacts",
+      "destination": "/artifacts",
+      "rw": true
+    },
+    {
+      "source": "C:\\Users\\user\\LGAX-execution\\data002-stage6-20261005-01a10812\\workspace",
+      "destination": "/workspace",
+      "rw": false
+    }
+  ],
+  "cap_drop": [
+    "ALL"
+  ],
+  "security_opt": [
+    "no-new-privileges"
+  ],
+  "memory": 1073741824,
+  "NanoCPUs": 2000000000,
+  "pids_limit": 128,
+  "container_stopped": true
+}

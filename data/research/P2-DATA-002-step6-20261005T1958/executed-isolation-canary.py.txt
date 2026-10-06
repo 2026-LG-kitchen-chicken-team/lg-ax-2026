@@ -1,0 +1,26 @@
+import importlib.util
+import json
+import os
+from pathlib import Path
+
+checks = {}
+checks['non_root_1000'] = os.getuid() == 1000 and os.getgid() == 1000
+checks['readonly_allowed_canary_visible'] = Path('/workspace/allowed-canary.txt').read_text() == 'visible readonly canary'
+checks['no_git_or_publisher_auth'] = not any(Path(p).exists() for p in ['/workspace/.git', '/workspace/private', '/agent-auth', '/publisher-canary', '/var/run/docker.sock'])
+checks['no_publisher_or_AI_environment'] = not any(k in os.environ for k in ['GH_TOKEN', 'GITHUB_TOKEN', 'OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'CODEX_HOME', 'CLAUDE_CONFIG_DIR'])
+for name, path in [('workspace_readonly', '/workspace/disallowed-canary-write'), ('root_readonly', '/etc/disallowed-canary-write')]:
+    try:
+        Path(path).write_text('must fail')
+        checks[name] = False
+    except OSError:
+        checks[name] = True
+allowed = Path('/artifacts/allowed-canary-write')
+allowed.write_text('allowed artifacts')
+checks['artifacts_write_allowed'] = allowed.read_text() == 'allowed artifacts'
+checks['pypdf_installed'] = importlib.util.find_spec('pypdf') is not None
+checks['fastapi_installed'] = importlib.util.find_spec('fastapi') is not None
+checks['httpx_installed'] = importlib.util.find_spec('httpx') is not None
+result = {'checks': checks, 'pass': all(checks.values()), 'model_calls': 0, 'repository_tests': 0}
+Path('/artifacts/isolation-canary.json').write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps(result))
+raise SystemExit(0 if result['pass'] else 1)
