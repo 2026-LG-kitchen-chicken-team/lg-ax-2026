@@ -1,0 +1,48 @@
+
+Running 1 test using 1 worker
+
+  x  1 e2e\rebalance-manual-check.spec.ts:18:1 › rebalance manual checks on stored live runs (42.9s)
+
+
+  1) e2e\rebalance-manual-check.spec.ts:18:1 › rebalance manual checks on stored live runs ─────────
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  -  1
+    + Received  + 13
+
+    - Array []
+    + Array [
+    +   Object {
+    +     "flow": "triple click save",
+    +     "observed": Object {
+    +       "heading": "요청 저장 · 판단 실패",
+    +       "message": "요청 저장 · 판단 실패기존 프로젝트의 변경 요청으로 저장했습니다(이전 실행 run-63ab7bf825a94a03ab8b23946b6393bc). 실행 run-77dd3b80d61c494ba406e9d360be02ce · 요청 회차 2 · 실패: 실행 중 오류가 발생했습니다. 미해결 항목을 확인해 주세요.SAVED_FAILED",
+    +       "posts": Array [
+    +         "/api/workspace/projects/project-79fb7d9154e443de8b9d888decbf79c7/runs",
+    +       ],
+    +     },
+    +     "result": "fail",
+    +   },
+    + ]
+
+      125 |     }
+      126 |   }
+    > 127 |   expect(checks.filter(item => item.result === 'fail')).toEqual([]);
+          |                                                         ^
+      128 | });
+      129 |
+        at C:\Users\rlfdn\Desktop\lgax-wt-live\apps\web\e2e\rebalance-manual-check.spec.ts:127:57
+
+    Error Context: test-results\rebalance-manual-check-reb-af01a--checks-on-stored-live-runs\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\rebalance-manual-check-reb-af01a--checks-on-stored-live-runs\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\rebalance-manual-check-reb-af01a--checks-on-stored-live-runs\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    e2e\rebalance-manual-check.spec.ts:18:1 › rebalance manual checks on stored live runs ──────────

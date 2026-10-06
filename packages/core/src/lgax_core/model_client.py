@@ -441,11 +441,23 @@ class StructuredModelClient:
         if not isinstance(prompt, str) or not prompt.strip():
             raise _fail("INVALID_ARGUMENT", "empty_prompt")
         validator, encoded_schema, schema_digest = _schema_validator(schema)
-        formatted = (
-            "요청에 답하는 JSON 값 하나만 출력하세요. 설명·마크다운·코드 펜스를 출력하지 마세요. "
-            "출력은 아래 JSON Schema를 충족해야 합니다.\n"
-            f"JSON Schema:\n{encoded_schema}\n\n요청:\n{prompt}"
-        )
+        native_schema = getattr(self.adapter, "backend_schema_enforced", False) is True
+        if native_schema:
+            # The full schema is already sent as the native format constraint.
+            # Retain the caller's complete task/evidence, without a second copy
+            # of the schema in the text prompt. Unknown wrappers stay on the
+            # conservative embedded-schema path until they forward this flag.
+            formatted = (
+                "요청에 답하는 JSON 값 하나만 출력하세요. 설명·마크다운·코드 펜스를 출력하지 마세요. "
+                "출력은 요청의 native JSON Schema 형식 제약을 충족해야 합니다.\n\n"
+                f"요청:\n{prompt}"
+            )
+        else:
+            formatted = (
+                "요청에 답하는 JSON 값 하나만 출력하세요. 설명·마크다운·코드 펜스를 출력하지 마세요. "
+                "출력은 아래 JSON Schema를 충족해야 합니다.\n"
+                f"JSON Schema:\n{encoded_schema}\n\n요청:\n{prompt}"
+            )
         if len(formatted) > self.adapter.max_prompt_characters:
             raise _fail("INVALID_ARGUMENT", "prompt_too_large", maximum=self.adapter.max_prompt_characters)
         output = self.adapter.generate(formatted, schema)
@@ -453,6 +465,7 @@ class StructuredModelClient:
         return StructuredModelResult(data, {
             **output["metadata"], "schema_sha256": schema_digest,
             "response_format": response_format, "locally_validated": True,
+            "schema_prompt_embedded": not native_schema,
         })
 
 
