@@ -1,0 +1,54 @@
+{
+  "execution_status": "not_executed; manual row crops cannot score table extraction",
+  "new_detection_or_layout_model_selected": false,
+  "raw_character_numeric_unit_errors": "ocr-error-ledger.json",
+  "source_table_checks": [
+    {
+      "model_id": "DUE6BGL2E",
+      "page": 57,
+      "evidence_id": "DATA003-DUE6BGL2E-D03",
+      "expected_header": "DUE6**E/DUE6***E/DUE6****E/DEE6**E built-in right column",
+      "expected_values": [
+        598,
+        815,
+        567
+      ],
+      "unit": "mm",
+      "condition": "same values also appear for freestanding with top removed; retain column/type header",
+      "observed_table_assignment": null,
+      "table_error": null
+    },
+    {
+      "model_id": "MW23FDI",
+      "page": 37,
+      "evidence_id": "DATA003-MW23FDI-M06",
+      "expected_values": [
+        1000
+      ],
+      "unit": "W",
+      "condition": "Max. and *1 short-time output footnote; not constant output",
+      "observed_table_assignment": null,
+      "table_error": null
+    },
+    {
+      "model_id": "MW23FDI",
+      "page": 37,
+      "evidence_id": "DATA003-MW23FDI-M07",
+      "expected_values": [
+        1570
+      ],
+      "unit": "W",
+      "condition": "rated electrical consumption distinct from microwave output",
+      "observed_table_assignment": null,
+      "table_error": null
+    }
+  ],
+  "record_on_receipt": [
+    "source model/header and document revision",
+    "row/column/header/value binding",
+    "decimal/minus/multiplication symbols/footnote/unit omissions",
+    "wrong table column or physical quantity",
+    "expected vs actual text and hashes; unmeasured field remains null"
+  ],
+  "no_duplicate_70_attempt_run_planned": true
+}
