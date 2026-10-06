@@ -2,11 +2,11 @@
 
 <!-- member-log:owner-updates:start -->
 ## 작성자의 최신 재개 요약
-- 최신 기록 ID / 한국시간 / 현재 목표: `신진하-20261006-DATA-OWNER-FOLLOWUP-01a1100e` · 2026-10-06 19:53 KST · 최신 PM 배정과 본인 #111~#114/#148 후속을 구현·검사했고 부분 PR·정식 보고를 게시한다.
-- 실제 완료 범위 / 미완료·막힘 / 다음 행동과 담당: PR176은19:09 main에 실제 병합됐고 PR167도 병합 확인했다. 이번 새 결과는 공개PDF3·근거21의 실제HTTP46요청/재시작/거부, 카탈로그·한국어BM25·동일 입력 비교·새CSV/PDF 및 원본검증을 유지하는 workspace 주입, R4 고정3건의 원문·해시 대조, 별도 구성 날짜36건의 비어 있지 않은 API/MCP 원문·재시작이다. 집중85검사/계약·기록보존 모두통과, 새 모델 호출0. 원36리뷰/CSV8열/날짜unknown은 보존했다. PM @jeongiryang 코드 검수·BM25 방법명/dated demo/taxonomy 승인·운영 반영·#15 독립자료 처분/검수자/비공개 수신경로, CORE @unknownamed 질문 없는 보류와 문맥 수정, WEB @choigilung 새날짜7표시명·차트/원문/내보내기 검증이 남았다. 실제 검색225행 모델비교·실고객 시계열·부모 Done은 미완료다. 이전409의 소유 세션 최종 확인은 중앙OFF/로컬검사 성공과 구분한다.
-- 상세 작업기록: [고유 기록ID](2026-10-06/신진하-20261006-DATA-OWNER-FOLLOWUP-01a1100e.md)
-- 관련 근거: [실제 실행·검사](../../작업근거/신진하/2026-10-06/신진하-E-DATA-OWNER-FOLLOWUP-01a1100e.md)
-- [새 부분 PR183·PM 검수 요청](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/183). open/non-draft·PM reviewer 요청을 확인했고 최초 head342cfb3의CI4개는 실행 중이다. 검토 요청/수신은 승인·병합·전체Done이 아니다.
+- 최신 기록 ID / 한국시간 / 현재 목표: `신진하-20261006-DATA-INTEGRATION-R4-01a1100e` · 2026-10-06 20:48 KST · PM DATA-INTEGRATION-R4의3팩원문/날짜/검색 바인딩·인계.
+- 실제 완료 범위 / 미완료·막힘 / 다음 행동과 담당: 원36/CSV8열 보존, 108원문·ID/모델/버전 연결, 15query독립재계산/재생·40거절, 최신검사main087bd에서PDF3/근거21/실HTTP46·재시작PASS. 원날짜미상/PM31날짜/DATA9날짜는각source/version/IDs로유지;청소1/3과1/4는원문membership가다름. PM 운영/분류/독립자료 승인, CORE 의미/보류, WEB 새DATA9팩화면·내보내기가남음. 부모Done/실고객수요아님.
+- 상세 작업기록: [R4 고유 기록ID](2026-10-06/신진하-20261006-DATA-INTEGRATION-R4-01a1100e.md)
+- 관련 근거: [3팩 고정값·실행·담당 인계](../../../evals/data-integration-r4/20261006/README.md)
+- 선행 실제상태: PR183은20:15 PM부분인수·병합. 별도원문승인계획보호[PR189](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/189)는20:44조회headc4d1ea9 CI4/4SUCCESS;이번R4단위의CI/PM검수/보고접수와구분.
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
 
