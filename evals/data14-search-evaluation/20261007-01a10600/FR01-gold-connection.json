@@ -1,0 +1,121 @@
+{
+  "query_id": "FR-01",
+  "query": "냉장실 선반을 분리하기 전에 무엇부터 치워야 해?",
+  "alternatives": [
+    {
+      "id": "T876MEE1H1-MANUAL-F10",
+      "model_id": "T876MEE1H1",
+      "document_version": "MFL71401557 Rev.00_032526",
+      "text_utf8_sha256": "3847de096be4045fb94f5f36008eed30f240b34e659cd0e99176392802194643",
+      "locator": {
+        "page": 19,
+        "section": "선반 분리"
+      },
+      "source_url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=OKSVlmUDzoQqSyeRo6kwiw",
+      "original_position_pin": {
+        "evidence_id": "T876MEE1H1-MANUAL-F10",
+        "url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=OKSVlmUDzoQqSyeRo6kwiw",
+        "checked_at": "2026-10-05T01:35:17+09:00",
+        "sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815",
+        "page": 19,
+        "start_char": 7,
+        "end_char": 48,
+        "text_sha256": "3847de096be4045fb94f5f36008eed30f240b34e659cd0e99176392802194643",
+        "document_version": "MFL71401557 Rev.00_032526",
+        "source_kind": "public",
+        "original_text_exact": true
+      },
+      "approval_status": "not_received",
+      "meaning_in_reference": "lift/remove shelf procedure"
+    },
+    {
+      "id": "T876MEE1H1-MANUAL-F10-FOOD",
+      "model_id": "T876MEE1H1",
+      "document_version": "MFL71401557 Rev.00_032526",
+      "text_utf8_sha256": "11212c8d4c0a986100451a8693f76ddc93b5a6de5b5b0ee2ecd502bb5cd48a5b",
+      "locator": {
+        "page": 19,
+        "section": "유리 선반·식품 제거"
+      },
+      "source_url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=OKSVlmUDzoQqSyeRo6kwiw",
+      "original_position_pin": {
+        "evidence_id": "T876MEE1H1-MANUAL-F10-FOOD",
+        "url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=OKSVlmUDzoQqSyeRo6kwiw",
+        "checked_at": "2026-10-05T01:35:17+09:00",
+        "sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815",
+        "page": 19,
+        "start_char": 217,
+        "end_char": 285,
+        "text_sha256": "11212c8d4c0a986100451a8693f76ddc93b5a6de5b5b0ee2ecd502bb5cd48a5b",
+        "document_version": "MFL71401557 Rev.00_032526",
+        "source_kind": "public",
+        "original_text_exact": true
+      },
+      "approval_status": "not_received",
+      "meaning_in_reference": "remove food before removing shelf"
+    }
+  ],
+  "methods": [
+    {
+      "method": "bm25_filtered",
+      "unchanged_top3": [
+        "T876MEE1H1-MANUAL-F10-P18",
+        "T876MEE1H1-MANUAL-F08",
+        "T876MEE1H1-MANUAL-F10-FOOD"
+      ],
+      "existing_legacy_gold_diagnostic": {
+        "hit_at_1": 0,
+        "recall_at_3": 0.0,
+        "mrr_at_3": 0.0
+      },
+      "existing_unapproved_candidate_diagnostic": {
+        "hit_at_1": 0,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 0.3333333333333333
+      },
+      "new_primary_score": null
+    },
+    {
+      "method": "bge_m3_filtered",
+      "unchanged_top3": [
+        "T876MEE1H1-MANUAL-F11",
+        "T876MEE1H1-MANUAL-F10-FOOD",
+        "T876MEE1H1-MANUAL-F10-P18"
+      ],
+      "existing_legacy_gold_diagnostic": {
+        "hit_at_1": 0,
+        "recall_at_3": 0.0,
+        "mrr_at_3": 0.0
+      },
+      "existing_unapproved_candidate_diagnostic": {
+        "hit_at_1": 0,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 0.5
+      },
+      "new_primary_score": null
+    },
+    {
+      "method": "bge_m3_filtered_reranker",
+      "unchanged_top3": [
+        "T876MEE1H1-MANUAL-F11",
+        "T876MEE1H1-MANUAL-F10-FOOD",
+        "T876MEE1H1-MANUAL-F10-P18"
+      ],
+      "existing_legacy_gold_diagnostic": {
+        "hit_at_1": 0,
+        "recall_at_3": 0.0,
+        "mrr_at_3": 0.0
+      },
+      "existing_unapproved_candidate_diagnostic": {
+        "hit_at_1": 0,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 0.5
+      },
+      "new_primary_score": null
+    }
+  ],
+  "gold_changed": false,
+  "primary_blocker": "Legacy ID exists but its registered quote describes shelf removal, not food clearance. New relevant ID approval is missing.",
+  "existing_scorer_constraint": "PR200 score_retrieval.py asserts 10 certified queries and writes primary_11 as null; an approved mapping alone does not alter that fixed scorer.",
+  "no_future_approval_inferred": true
+}
