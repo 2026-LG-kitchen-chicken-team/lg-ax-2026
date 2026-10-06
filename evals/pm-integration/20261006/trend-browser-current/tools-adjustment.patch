@@ -1,0 +1,47 @@
+--- historical/browser_runner.py
++++ current/browser_runner.py
+@@ -111,7 +111,7 @@
+         # Keep the root writable for Vite caches; executable dependencies remain on the image overlay.
+         for entry in (dependency / "node_modules").iterdir():
+             (modules / entry.name).symlink_to(entry, target_is_directory=entry.is_dir())
+-        supplemental = root / "evals/pm-integration/20261006/trend-browser/tools/supplemental.spec.ts"
++        supplemental = root / "evals/pm-integration/20261006/trend-browser-current/tools/supplemental.spec.ts"
+         shutil.copyfile(supplemental, web / "e2e/pm-trend-browser-proof.spec.ts")
+         environment = temporary / "python-env"
+         venv.EnvBuilder(with_pip=False, system_site_packages=True, symlinks=True).create(environment)
+--- historical/supplemental.spec.ts
++++ current/supplemental.spec.ts
+@@ -31,8 +31,8 @@
+     await page.getByRole('button', { name: '동향 조회' }).click();
+     const panel = page.locator('.trends-panel');
+     await expect(panel).toContainText(`집계 ID ${path.aggregate_id}`);
+-    await expect(panel).toContainText('리뷰 주제 언급 비율');
+-    await expect(panel).toContainText('불편이나 감정의 비율을 의미하지 않습니다');
++    await expect(panel).toContainText('리뷰 주제 언급 동향');
++    await expect(panel).toContainText('비율은 그 주제를 언급한 리뷰의 비율입니다. 감정·불만 분류가 없어 불만 비율이나 계절 수요를 뜻하지 않습니다.');
+     await expect(panel.locator('.trends-controls select')).toHaveValue('cleaning');
+     for (const warning of path.api_aggregate.warnings) await expect(page.locator('.trend-warnings')).toContainText(warning);
+     expect(await page.locator('.fixture-note').count()).toBe(0);
+@@ -78,17 +78,21 @@
+       expect(snapshot.aggregate).toEqual(path.api_aggregate);
+       expect(snapshot.source).toBe('server');
+       expect(snapshot.consistency_problems).toEqual([]);
++      expect(snapshot.notices).toContain('비율은 그 주제를 언급한 리뷰의 비율입니다. 감정·불만 분류가 없어 불만 비율이나 계절 수요를 뜻하지 않습니다.');
++      expect(snapshot.notices).toContain('주제 분류 kitchen-review-topics-candidate.v1: PM 승인 전 미리보기 분류입니다.');
+       expect(snapshot.viewed_evidence).toEqual({ bucket_id: 'MONTH-2026-10', topic_id: 'cleaning', total: 1, evidence_ids: path.evidence_ids });
+       const [mdDownload] = await Promise.all([page.waitForEvent('download'), page.locator('.trend-export').getByRole('button', { name: '문서(Markdown)' }).click()]);
+       const markdown = readFileSync((await mdDownload.path())!, 'utf8');
+       for (const value of [path.aggregate_id, path.dataset_sha256, path.api_aggregate.dataset_version, 'FRIDGE-A', '2026-10-01', '2026-11-01', 'synthetic', '1/3건 (33.3%)', 'MONTH-2026-10', path.evidence_ids[0], ...path.api_aggregate.warnings]) expect(markdown).toContain(value);
++      expect(markdown).toContain('비율은 그 주제를 언급한 리뷰의 비율입니다. 감정·불만 분류가 없어 불만 비율이나 계절 수요를 뜻하지 않습니다.');
++      expect(markdown).toContain('주제 분류 kitchen-review-topics-candidate.v1: PM 승인 전 미리보기 분류입니다.');
+       writeFileSync(join(out, 'pm-snapshot.json'), jsonText);
+       writeFileSync(join(out, 'pm-snapshot.md'), markdown);
+       files.push('pm-snapshot.json', 'pm-snapshot.md');
+       await page.getByRole('button', { name: '이 구간을 기획 요청에 추가' }).click();
+       const task = page.locator('textarea').first();
+       const value = await task.inputValue();
+-      for (const expectedValue of [path.aggregate_id, 'FRIDGE-A', '청소 관련 (cleaning)', '1/3건(33.3%)', '작은 표본', path.evidence_ids[0], '판매량·수요 증가를 뜻하지 않음']) expect(value).toContain(expectedValue);
++      for (const expectedValue of [path.aggregate_id, 'FRIDGE-A', '청소 (cleaning)', '1/3건(33.3%)', '작은 표본', path.evidence_ids[0], '판매량·수요 증가를 뜻하지 않음']) expect(value).toContain(expectedValue);
+       expect(value).not.toContain(expected[0].text);
+       proof.planning_input = value;
+       proof.planning_handoff_executed = true;

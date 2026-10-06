@@ -1,0 +1,286 @@
+{
+  "artifact_kind": "pm_data_runtime_validation",
+  "recorded_date": "2026-10-06",
+  "source_scope": {
+    "export_base_commit": "7745a0c352628227dbbdbc3389614e460ab49ec2",
+    "export_includes_uncommitted_implementation": true,
+    "export_source_sha256": "ea663ef1af5270d1c493ce60e1325fc7b2b86831df402bd8c17280a7c8e4e399",
+    "export_file_count": 2903,
+    "latest_main_incorporated": "fdb0ea2667c80ead07b38fbcf5ca58df292bc7e9",
+    "tested_runtime_files_match_final_worktree": true,
+    "areas": {
+      "api": {
+        "files": {
+          "apps/api/src/lgax_api/server.py": "d752c53101769473e51aa72164c7c22e16f9d56a82798fa98fbb637e5ebcd96a",
+          "apps/api/src/lgax_api/workspace_server.py": "0e3c5a8d77974f52892c183c9492b7a977c2bf316c5852f7c8de8fec05390bc3",
+          "apps/api/src/lgax_api/trend_configuration.py": "f961c6ccf0824460249d45bfb3103633aa1617f5b8657b853087e0cab21f63c6"
+        },
+        "sha256": "3014ca4050f525e56fb1c8b211dbd0948fefc5fe71a1c288dac68adde3989088",
+        "algorithm": "SHA256 of UTF8 json.dumps(path->raw_file_sha256,sort_keys=True)"
+      },
+      "mcp": {
+        "files": {
+          "apps/mcp/src/lgax_mcp/workspace_server.py": "0d4d2b20aee904e93b6b62b39a81a1a266b104cce7d6ebcc836d22fd0ec7923a"
+        },
+        "sha256": "89b1ab543eec02e277d1b4e6ef1b7980de11e1f94cb30bb5dd32520d9686a8d1",
+        "algorithm": "SHA256 of UTF8 json.dumps(path->raw_file_sha256,sort_keys=True)"
+      },
+      "tests": {
+        "files": {
+          "tests/test_workspace_trend_runtime.py": "64bd7273ad80de56f05986745ece83cf16fa4ac10e5da756afb5e20edbae386d"
+        },
+        "sha256": "19b090a52e684e1664b0524f0db93d4a80407506ae1b187f922ddb8e9b2d9b2c",
+        "algorithm": "SHA256 of UTF8 json.dumps(path->raw_file_sha256,sort_keys=True)"
+      },
+      "dated_pack_json": {
+        "files": {
+          "data/demo/review-trends-dated/dataset.json": "a2c9c260316c1e8067531e7ba9e42ffec5338363f782092fea0f5cf1449d2b89",
+          "data/demo/review-trends-dated/annotation.candidate.json": "101b0560337fbbb61f1b4117e2ef47562aacae458d0db5a044c5e36ae2ea1d79",
+          "data/demo/review-trends-dated/date-schedule.json": "7d528dfc50b8e0474b455327852e363d52603fe5fab0270c75dad9f4430d1f70"
+        },
+        "sha256": "96eab5708e327ac9e47ef8a9f48a0d344d9cacb3b783b395b0232e3169ac4adc",
+        "algorithm": "SHA256 of UTF8 json.dumps(path->raw_file_sha256,sort_keys=True)"
+      }
+    },
+    "post_execution_changes": "WEB178/main merge and README/proof documentation only; tested implementation + JSON fixtures unchanged."
+  },
+  "boundary": {
+    "uid": "1000:1000",
+    "network": "none",
+    "root_read_only": true,
+    "workspace_read_only": true,
+    "capabilities": "drop_all",
+    "no_new_privileges": true,
+    "mount_count": 2,
+    "auth_profile_mounted": false,
+    "controller_mounted": false
+  },
+  "image": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+  "model_calls": 0,
+  "host_product_execution": false,
+  "host_product_import": false,
+  "source_changed": [],
+  "dependencies": {
+    "package": "pypdf",
+    "supplied_version": "6.10.0",
+    "license": "BSD-3-Clause",
+    "dependency_manifest_sha256": "65e4881e39b34e4a78345638e5d559b510ed0cb9313b74e33c3995f7b7de547f",
+    "dependency_source_sha256": "ddbae0e262583691a59f5223d7470aaa84835d7139a6f872f60bcb7cce2c0234",
+    "file_count": 62,
+    "record_hashes_verified": true,
+    "host_imported": false,
+    "repository_dependency_or_docker_image_modified": false,
+    "purpose": "Actual external PDF worker inside zero-auth Docker only. Default image lacks pypdf; optional test explicitly skips if unavailable."
+  },
+  "executions": {
+    "targeted": {
+      "execution_folder_id": "pm-data-integration-b7a12ee97aa74228ae3ab12d15fe9d8e",
+      "log_file": "executor.log",
+      "log_sha256": "e6b6fe0a84550118406d683a9110c990caabb87cc66d7f34757b5997a34f3f8e",
+      "receipt_file": "receipt.json",
+      "receipt_sha256": "112af9f5e15e3da87cc5eae7578f19f21728698af779398ffa26d6b0b2c2b2da",
+      "source_sha256": "ea663ef1af5270d1c493ce60e1325fc7b2b86831df402bd8c17280a7c8e4e399",
+      "test_count": 8,
+      "passed": 8,
+      "errors": 0,
+      "failures": 0,
+      "returncode": 0,
+      "elapsed_seconds": 21.469000000040978,
+      "note": null
+    },
+    "regression": {
+      "execution_folder_id": "pm-data-integration-b7a12ee97aa74228ae3ab12d15fe9d8e",
+      "log_file": "regression.log",
+      "log_sha256": "f4bbddb54b280e118548a1cf0a26206445c611d2a328bf7289ca0d4a48bedbcb",
+      "receipt_file": "regression-receipt.json",
+      "receipt_sha256": "a9cb8b24474f2bb9908461e96fb150794aba3fd5a0d8f3b39713534b9f07c45e",
+      "source_sha256": "ea663ef1af5270d1c493ce60e1325fc7b2b86831df402bd8c17280a7c8e4e399",
+      "test_count": 84,
+      "passed": 83,
+      "errors": 1,
+      "failures": 0,
+      "returncode": 1,
+      "elapsed_seconds": 29.343000000109896,
+      "note": "Legacy public stdio child cannot resolve current source: SDK default environment drops PYTHONPATH."
+    },
+    "regression_env_diagnostic": {
+      "execution_folder_id": "pm-data-integration-b7a12ee97aa74228ae3ab12d15fe9d8e",
+      "log_file": "regression-corrected.log",
+      "log_sha256": "74db24ffa2a1f4f6ab8fc030053b5edc3bb20ff978018488730abf3f72902bcc",
+      "receipt_file": "regression-corrected-receipt.json",
+      "receipt_sha256": "ced9674f1fc0e32c7df64d39489fc73e3afacdfcceffcb32b1785ed834488d31",
+      "source_sha256": "ea663ef1af5270d1c493ce60e1325fc7b2b86831df402bd8c17280a7c8e4e399",
+      "test_count": 84,
+      "passed": 83,
+      "errors": 1,
+      "failures": 0,
+      "returncode": 1,
+      "elapsed_seconds": 35.311999999918044,
+      "note": "Adding guest parent PYTHONPATH alone does not change the SDK child environment allowlist."
+    },
+    "public_mcp_installed_rerun": {
+      "execution_folder_id": "pm-data-integration-b7a12ee97aa74228ae3ab12d15fe9d8e",
+      "log_file": "public-mcp-guest-installed.log",
+      "log_sha256": "ed6feac3375321bd350212ead35a0eb1d9e8276ccc82b836f059c7852eab9a5e",
+      "receipt_file": "public-mcp-guest-installed-receipt.json",
+      "receipt_sha256": "cb3127b728e17a9537dd65172b465c64859b0fa123b935515fafc1ee23ec2f24",
+      "source_sha256": "ea663ef1af5270d1c493ce60e1325fc7b2b86831df402bd8c17280a7c8e4e399",
+      "test_count": 1,
+      "passed": 1,
+      "errors": 0,
+      "failures": 0,
+      "returncode": 0,
+      "elapsed_seconds": 6.015999999828637,
+      "note": "Normal guest venv/system_site_packages/symlinks and .pth for current source + image packages + supplied pypdf; SDK unmodified."
+    }
+  },
+  "prior_failures": {
+    "initial_expectation_errors": {
+      "execution_folder_id": "pm-data-integration-c5e5a9410a634a9b9989310f639de997",
+      "log_file": "executor.log",
+      "log_sha256": "772e4a2dc6ef8a5488faa7900d498d1213bc7c7d68ce4750ab553271b7e26185",
+      "receipt_file": null,
+      "receipt_sha256": null,
+      "source_sha256": "19f1dbce4343d81cd0c1b2e43af6a911b6523d76a4f3cba255d60b805f847247",
+      "test_count": 7,
+      "passed": 5,
+      "errors": 0,
+      "failures": 2,
+      "returncode": 1,
+      "elapsed_seconds": null,
+      "note": "Test expected 2 cleaning mentions in October, but REVIEW-002 is temporary_storage, so actual1 is correct. Pagination moved to year scope; dataset/annotation/date files unchanged. Host receipt serialization then failed on incorrect duration_seconds field; raw log/input preserved."
+    },
+    "missing_external_parser": {
+      "execution_folder_id": "pm-data-integration-2122c862ec5c4c2c96fad57f8e53b2db",
+      "log_file": "executor.log",
+      "log_sha256": "58b92ea706f8d90abb2c2111f0b4dabaf978de4f0137681ec462eb44366c93d2",
+      "receipt_file": "receipt.json",
+      "receipt_sha256": "e75ae3b347c36b6b5a8c85d3884236f106f91a051d046a38f5f7c49bf5ea4bee",
+      "source_sha256": "6e696b5b99d33a291fd2d91497b543d2ba7143ac967f4e8caddf1fbefc2f5276",
+      "test_count": 8,
+      "passed": 7,
+      "errors": 0,
+      "failures": 1,
+      "returncode": 1,
+      "elapsed_seconds": 9.375,
+      "note": "Exact image lacks pypdf. Real worker ModuleNotFoundError confirmed in pdf-environment.log; no OCR/parser/source replacement."
+    },
+    "parser_environment_log_sha256": "725fcdf162ac465915bce87272d1a0d1274132b76b52a82c4cf02c37cf585b71",
+    "allowlist_diagnostic": {
+      "execution_folder_id": "pm-data-integration-b7a12ee97aa74228ae3ab12d15fe9d8e",
+      "log_file": "public-mcp-env-fixed.log",
+      "log_sha256": "b4a93500132545e4a5d841c6d6ffb240ec33cd4c2282787dd16d070efa1ab28d",
+      "receipt_file": "public-mcp-env-fixed-receipt.json",
+      "receipt_sha256": "be18df89693e2e16b3e3f17a88128a45ce4ddc3ab328688e07c56e63fb797083",
+      "source_sha256": "ea663ef1af5270d1c493ce60e1325fc7b2b86831df402bd8c17280a7c8e4e399",
+      "test_count": 1,
+      "passed": 1,
+      "errors": 0,
+      "failures": 0,
+      "returncode": 0,
+      "elapsed_seconds": 5.905999999959022,
+      "note": "Guest SDK PYTHONPATH allowlist temporarily extended for diagnosis only; not the final default stdio proof."
+    },
+    "guest_setup_failures": [
+      {
+        "log": "public-mcp-guest-venv.log",
+        "sha256": "3cc0e310d4c0352784f320d8b0f93776ca9cb11c29627bc7463723354f60cccc",
+        "condition": "Copied venv binary cannot execute on noexec /tmp; no product test ran."
+      },
+      {
+        "log": "public-mcp-guest-venv-symlink.log",
+        "sha256": "fd785e89e833c719b8f67eaf8cd02d21c7610dbd4436a6f5339c2d95c587029a",
+        "condition": "Base /usr/local inherited site lacks SDK; image /opt venv packages must be explicit in .pth."
+      }
+    ]
+  },
+  "original_data_preserved": {
+    "raw_file_sha256": {
+      "data/demo/dataset.json": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+      "data/research/P2-DATA-002-step1-20261005/reviews-v1.0.csv": "3c7560aec2d3fa855590baf097b3514aa348ee40a77037c69ef358b413f488b9",
+      "data/research/P2-DATA-005-trends-20261006/annotation.candidate.v1.json": "0b3d75727a6c5c33379672494bbed6e0e729f80b441c23197889ea275d801117"
+    },
+    "csv_review_count": 36,
+    "csv_column_count": 8,
+    "candidate_published_at_null_count": 36,
+    "date_precision": "unknown",
+    "date_provenance": null
+  },
+  "dated_pack": {
+    "dataset_version": "pm-synthetic-trends.v1",
+    "annotation_version": "pm-synthetic-demo-candidate.v1",
+    "topic_taxonomy_version": "kitchen-review-topics-candidate.v1",
+    "review_count": 36,
+    "new_id_prefix": "DEMO-TREND-",
+    "source_id": "PM-TREND-DEMO-REVIEWS-v1",
+    "assigned_demo_date_count": 31,
+    "unknown_date_count": 5,
+    "date_schedule_raw_sha256": "7d528dfc50b8e0474b455327852e363d52603fe5fab0270c75dad9f4430d1f70",
+    "date_provenance_hash_and_row_bindings_checked": true,
+    "fridge_october_2026": {
+      "eligible_unique_review_count": 3,
+      "cleaning_mention_count": 1
+    },
+    "meaning": "Assigned synthetic dates and topic mentions only; original null dates remain unchanged. Not customer complaint/sentiment/demand/seasonality measurements."
+  },
+  "actual_paths_checked": [
+    "ephemeral loopback authenticated HTTP via WorkspaceClient(client_kind=web): not a browser UI",
+    "real MCP SDK stdio review_trends/get_review_trends/trend_evidence: same aggregate ID/results/original evidence",
+    "401 unauthorized and403 other owner, readonly/idempotent tool annotations, no-store, request fields cannot select sidecar/approve candidate",
+    "stored aggregate and paginated exact original evidence survive restart with changed live dataset/no collector; new collection fails409",
+    "server-side startup raw SHA/canonical dataset/annotation/full review binding and candidate synthetic preview checks"
+  ],
+  "pdf_registration": {
+    "mock_parser": false,
+    "ocr_used": false,
+    "repository": "new isolated Docker temporary document repository; not live deployment",
+    "upload_http_authorized_count": 3,
+    "upload_http_unauthorized_401_count": 3,
+    "reopened_model_version_source_filtered_search_count": 3,
+    "original_pdf_bytes_preserved_on_upload_and_restart": true,
+    "public_demo_rejects_document_store": true,
+    "plan_path": "data/document_plans/lg-three-models-20261005.json",
+    "plan_raw_sha256": "6ec5d5ffa457ba87b9d982e9b22920f2e2b2466ec41afba3273c9584f7d491be",
+    "documents": [
+      {
+        "document_id": "T876MEE1H1-manual-d00942446318",
+        "model_id": "T876MEE1H1",
+        "document_version": "MFL71401557 Rev.00_032526",
+        "raw_pdf_sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815",
+        "selected_evidence_count": 6
+      },
+      {
+        "document_id": "DUE6BGL2E-manual-ff60f78ab832",
+        "model_id": "DUE6BGL2E",
+        "document_version": "MFL71959117 Rev.07_030626",
+        "raw_pdf_sha256": "ff60f78ab8326c40b9a3446f11b49531b8f0c823a310ba98366716b633ba63f5",
+        "selected_evidence_count": 6
+      },
+      {
+        "document_id": "MW23FDI-manual-3ceec78295d0",
+        "model_id": "MW23FDI",
+        "document_version": "MFL68822538 Rev.00_120925",
+        "raw_pdf_sha256": "3ceec78295d02352fd467309bc613cf59c9bf7bce0bae3e9d5de3ad4bae2f7bc",
+        "selected_evidence_count": 3
+      }
+    ]
+  },
+  "independent_static_review": {
+    "reviewer": "CORE audit agent",
+    "blockers": 0,
+    "host_product_import_execution_or_mutation": false,
+    "note": "Candidate marker uses a version-name convention, not semantic approval. README clarified fixed candidate preview rather than approved taxonomy."
+  },
+  "unsupported_claims": [
+    "84 tests passed together: regression had83PASS+1environment error; failed1 passed separately under normal guest install.",
+    "Entire project Done/full test suite/production or deployed server/registry completion",
+    "Browser UI or ChatGPT/Claude account connector discovery/calls",
+    "Live LLM judgement/model acceptance/performance/token savings",
+    "Actual customer publication dates/complaint polarity/demand/topic-classification accuracy approval"
+  ],
+  "remaining": [
+    "PM final merged exact-head integration/full/web/CI checks",
+    "PM live deployment and server selection of pinned synthetic pack if authorized",
+    "Final semantic approval of review topic mapping and future real-data date provenance"
+  ]
+}

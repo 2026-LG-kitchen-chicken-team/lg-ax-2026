@@ -14,6 +14,13 @@ class PlanningQualityIntegrationTests(unittest.TestCase):
         self.helper.setUp()
         self.addCleanup(self.helper.doCleanups)
 
+    def annotation_rows(self, module, columns):
+        """Read the reversible prompt projection while retaining meaning checks."""
+        self.assertNotIn("rows", module, "v2 prompt annotations use column tables")
+        self.assertEqual(module["columns"], list(columns))
+        self.assertTrue(module["values"], "the quality annotations must reach the model")
+        return [dict(zip(columns, row, strict=True)) for row in module["values"]]
+
     def test_support_residual_lineage_reach_generation_review_and_exact_trace(self):
         agent, transport = self.helper.agent()
         result = agent.run(self.helper.payload)
@@ -21,9 +28,15 @@ class PlanningQualityIntegrationTests(unittest.TestCase):
         for post in transport.posts:
             if post["skill"] in ("concept_draft", "semantic_review"):
                 quality = post["context"]["quality_context"]
-                self.assertEqual(quality["feature_support"]["rows"][0]["support_status"], "supported")
-                self.assertTrue(quality["residual_matrix"]["rows"][0]["candidate_eligible"])
-                self.assertEqual(quality["residual_matrix"]["rows"][0]["resolution"], "remaining")
+                self.assertEqual(quality["representation"], "derived_annotations_column_table_v2")
+                support = self.annotation_rows(quality["feature_support"],
+                                               ("gap_id", "support_basis", "support_status", "valid"))
+                residual = self.annotation_rows(quality["residual_matrix"],
+                                                ("gap_id", "resolution", "candidate_eligible",
+                                                 "requires_confirmation", "valid"))
+                self.assertEqual(support[0]["support_status"], "supported")
+                self.assertTrue(residual[0]["candidate_eligible"])
+                self.assertEqual(residual[0]["resolution"], "remaining")
                 self.assertFalse(quality["concept_lineage"]["semantic_accuracy_verified"])
         semantic = next(row for row in transport.posts if row["skill"] == "semantic_review")
         link = semantic["context"]["quality_context"]["concept_lineage"]["candidates"][0]["links"][0]

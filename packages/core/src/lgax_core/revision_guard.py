@@ -125,6 +125,7 @@ class _CompletionRecorder:
         self.adapter, self.record = adapter, record
         self.config, self.max_prompt_characters = adapter.config, adapter.max_prompt_characters
         self.backend_schema_enforced = getattr(adapter, "backend_schema_enforced", False)
+        self.prompt_budget = getattr(adapter, "prompt_budget", None)
 
     def generate(self, prompt: str, schema: dict) -> dict:
         self.record["formatted_prompt"] = prompt

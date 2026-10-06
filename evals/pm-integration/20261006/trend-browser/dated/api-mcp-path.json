@@ -1,0 +1,184 @@
+{
+  "kind": "pm_review_trend_consumption_path",
+  "result": "consumption_path_ok",
+  "collector": "DATA collector via PM production CLI, pinned synthetic candidate preview",
+  "mode": "dated",
+  "project_id": "project-cc8b7eb5043248d28e5f5947d8fc07c0",
+  "aggregate_id": "TREND-8ba1d63cddac708a84944c263b2581cbb886e14bf91bad29b01e6fde6ca41c3b",
+  "dataset_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+  "filters": {
+    "project_id": "project-cc8b7eb5043248d28e5f5947d8fc07c0",
+    "model_id": "FRIDGE-A",
+    "source_ids": [
+      "PM-TREND-DEMO-REVIEWS-v1"
+    ],
+    "dataset_version": "pm-synthetic-trends.v1",
+    "start_date": "2026-10-01",
+    "end_date_exclusive": "2026-11-01",
+    "granularity": "month",
+    "topic_ids": [],
+    "source_kind": "synthetic",
+    "timezone": "Asia/Seoul"
+  },
+  "evidence_ids": [
+    "DEMO-TREND-REVIEW-EVIDENCE-001"
+  ],
+  "counts": {
+    "input_review_count": 36,
+    "excluded_out_of_scope_count": 26,
+    "in_scope_review_count": 10,
+    "excluded_undated_count": 2,
+    "excluded_outside_period_count": 5,
+    "duplicate_count": 0,
+    "eligible_unique_review_count": 3,
+    "unclassified_review_count": 0
+  },
+  "checks": {
+    "api_requery_same_aggregate": true,
+    "api_empty_topic_filter_kept": true,
+    "api_evidence_same_key": true,
+    "api_evidence_in_bucket_ids": true,
+    "api_evidence_document_version": true,
+    "mcp_tools_present": true,
+    "mcp_query_same_id": true,
+    "mcp_saved_identical": true,
+    "mcp_same_dataset_sha256": true,
+    "mcp_evidence_identical": true
+  },
+  "api_aggregate": {
+    "aggregate_id": "TREND-8ba1d63cddac708a84944c263b2581cbb886e14bf91bad29b01e6fde6ca41c3b",
+    "project_id": "project-cc8b7eb5043248d28e5f5947d8fc07c0",
+    "dataset_version": "pm-synthetic-trends.v1",
+    "dataset_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+    "annotation_version": "pm-synthetic-demo-candidate.v1",
+    "annotation_sha256": "6a23e26343802dc2b4495e8da1e3efc6ffa9ac03cab3a0ed98bee1abc479093a",
+    "trend_contract_version": "review-trends.v1",
+    "filters": {
+      "project_id": "project-cc8b7eb5043248d28e5f5947d8fc07c0",
+      "model_id": "FRIDGE-A",
+      "source_ids": [
+        "PM-TREND-DEMO-REVIEWS-v1"
+      ],
+      "dataset_version": "pm-synthetic-trends.v1",
+      "start_date": "2026-10-01",
+      "end_date_exclusive": "2026-11-01",
+      "source_kind": "synthetic",
+      "granularity": "month",
+      "timezone": "Asia/Seoul",
+      "topic_ids": []
+    },
+    "timezone": "Asia/Seoul",
+    "aggregation_version": "data-review-trends.v1",
+    "classification": {
+      "method": "rule",
+      "model_id": null,
+      "revision": null
+    },
+    "topic_taxonomy_version": "kitchen-review-topics-candidate.v1",
+    "dedup_policy_version": "exact-utf8-text-within-source-model-version.v1",
+    "counts": {
+      "input_review_count": 36,
+      "excluded_out_of_scope_count": 26,
+      "in_scope_review_count": 10,
+      "excluded_undated_count": 2,
+      "excluded_outside_period_count": 5,
+      "duplicate_count": 0,
+      "eligible_unique_review_count": 3,
+      "unclassified_review_count": 0
+    },
+    "buckets": [
+      {
+        "bucket_id": "MONTH-2026-10",
+        "label": "2026년 10월",
+        "period_start": "2026-10-01",
+        "period_end_exclusive": "2026-11-01",
+        "partial_period": false,
+        "total_reviews": 3,
+        "topics": [
+          {
+            "topic_id": "cleaning",
+            "topic_review_count": 1,
+            "ratio": 0.3333333333333333,
+            "evidence_count": 1,
+            "evidence_ids": [
+              "DEMO-TREND-REVIEW-EVIDENCE-001"
+            ],
+            "evidence_ids_truncated": false
+          },
+          {
+            "topic_id": "food_findability",
+            "topic_review_count": 0,
+            "ratio": 0.0,
+            "evidence_count": 0,
+            "evidence_ids": [],
+            "evidence_ids_truncated": false
+          },
+          {
+            "topic_id": "manual_guidance",
+            "topic_review_count": 1,
+            "ratio": 0.3333333333333333,
+            "evidence_count": 1,
+            "evidence_ids": [
+              "DEMO-TREND-REVIEW-EVIDENCE-004"
+            ],
+            "evidence_ids_truncated": false
+          },
+          {
+            "topic_id": "temporary_storage",
+            "topic_review_count": 1,
+            "ratio": 0.3333333333333333,
+            "evidence_count": 1,
+            "evidence_ids": [
+              "DEMO-TREND-REVIEW-EVIDENCE-002"
+            ],
+            "evidence_ids_truncated": false
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      "표본이 적습니다: 2026년 10월 리뷰 3건(20건 미만).",
+      "합성 자료입니다. 날짜가 있는 경우에도 시연값이며 실제 고객 게시일·판매량·시장 수요의 증거가 아닙니다.",
+      "리뷰별 주제 연결은 합성 시연 후보입니다. 불만률이나 승인된 고객 분류가 아닙니다."
+    ],
+    "notes": "자료 성격: synthetic. 주제별 수치는 리뷰 주제 등장 비율입니다. 감정·불편 비율이나 판매량·시장 수요를 뜻하지 않습니다. 날짜가 없는 원문은 분모에서 빼고 제외 건수로 보고합니다."
+  },
+  "api_evidence": {
+    "project_id": "project-cc8b7eb5043248d28e5f5947d8fc07c0",
+    "aggregate_id": "TREND-8ba1d63cddac708a84944c263b2581cbb886e14bf91bad29b01e6fde6ca41c3b",
+    "bucket_id": "MONTH-2026-10",
+    "topic_id": "cleaning",
+    "offset": 0,
+    "limit": 50,
+    "total": 1,
+    "next_offset": null,
+    "evidence": [
+      {
+        "document_version": "1.0",
+        "feature_ids": [],
+        "id": "DEMO-TREND-REVIEW-EVIDENCE-001",
+        "locator": {
+          "row": 1
+        },
+        "model_id": "FRIDGE-A",
+        "source_id": "PM-TREND-DEMO-REVIEWS-v1",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "text": "음료를 쏟으면 선반 위 식품을 모두 옮겨 청소해야 해서 번거로워요."
+      }
+    ],
+    "contract_version": "0.1.0"
+  },
+  "mcp_tools": [
+    "create_workspace_project",
+    "create_workspace_run",
+    "get_review_trends",
+    "get_workspace_project",
+    "get_workspace_run",
+    "list_workspace_projects",
+    "list_workspace_runs",
+    "review_trends",
+    "search_workspace_evidence",
+    "trend_evidence"
+  ]
+}

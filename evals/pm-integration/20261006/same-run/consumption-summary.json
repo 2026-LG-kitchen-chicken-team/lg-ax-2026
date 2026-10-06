@@ -1,0 +1,70 @@
+{
+  "kind": "pinned_historical_run_consumption",
+  "status": "pass",
+  "replay_only": true,
+  "new_model_calls": 0,
+  "quality_asserted": false,
+  "normal_changed_hold_matrix_complete": false,
+  "manifest_sha256": "d5ae52a2eedfbd59c3b297943a8fd7e68a2193347220eea86d98ff1c68b1cba3",
+  "dataset_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+  "cases": [
+    {
+      "case_id": "27b-enum-guide-fridge-normal-recording",
+      "run_id": "run-1e5e40281cd6462ea6dc703976d62d80",
+      "project_id": "project-b0186dbd8c6a4c659eda78cbebd4b072",
+      "status": "held",
+      "visible_candidates": 0,
+      "original_output_sha256": "8f8e71ed278fa9890f3055a6ce46de45264ebc6e7762925ff3abf45fac121a50",
+      "original_source_commit": "ccbbe080ecabfe3812bb8f415a426dab62fb57fc",
+      "historical_model_calls": 3,
+      "new_model_calls": 0
+    },
+    {
+      "case_id": "8b-bounded12-fridge-normal-recording",
+      "run_id": "run-e3c9e67c1302475f8f5f9efb5b292e4d",
+      "project_id": "project-6068ad0bd2154580958e415f2791c952",
+      "status": "failed",
+      "visible_candidates": 0,
+      "original_output_sha256": "91bbb9aa695d298b80b0e10c1f0abc5e643ca0f6790ec1194f5303c7230747d6",
+      "original_source_commit": "45fe0f23afb9c68e115088cef9e10cd122d181f1",
+      "historical_model_calls": 9,
+      "new_model_calls": 0
+    },
+    {
+      "case_id": "8b-bounded12-microwave-normal-recording",
+      "run_id": "run-ef510188160b451e927260e6d0f97583",
+      "project_id": "project-146c819068d24f6a957093fbebbe05d9",
+      "status": "failed",
+      "visible_candidates": 0,
+      "original_output_sha256": "a0483657fef00979717bfa8b27ec0710c2314e748780e2d97e83043a188bea01",
+      "original_source_commit": "45fe0f23afb9c68e115088cef9e10cd122d181f1",
+      "historical_model_calls": 9,
+      "new_model_calls": 0
+    }
+  ],
+  "checks": {
+    "actual_isolated_http": true,
+    "temporary_sqlite": true,
+    "original_input_and_execution_preserved": true,
+    "same_http_mcp_ids_and_snapshots": true,
+    "reads_preserve_saved_records": true,
+    "guest_minted_credential_only": true
+  },
+  "mcp_tools": [
+    "create_workspace_project",
+    "create_workspace_run",
+    "get_review_trends",
+    "get_workspace_project",
+    "get_workspace_run",
+    "list_workspace_projects",
+    "list_workspace_runs",
+    "review_trends",
+    "search_workspace_evidence",
+    "trend_evidence"
+  ],
+  "limitations": [
+    "Historical recordings were replayed; no new model ran.",
+    "No browser or production endpoint was exercised by this probe.",
+    "No normal/changed/appropriate-hold semantic quality gate is satisfied."
+  ]
+}

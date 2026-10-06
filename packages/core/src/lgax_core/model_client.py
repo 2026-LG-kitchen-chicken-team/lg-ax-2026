@@ -153,12 +153,68 @@ def _schema_field_guide(schema: dict[str, Any]) -> tuple[str, tuple[str, ...]]:
             if isinstance(child, dict):
                 pending.append(child)
     fields = tuple(name for name in _SCHEMA_FIELD_GUIDES if name in found)
+    # Stage control arrays must be described even when the provider receives
+    # the schema natively. Never derive instructions from schema annotations.
+    properties = schema.get("properties", {})
+    result = properties.get("result", {}) if isinstance(properties, dict) else {}
+    result_properties = result.get("properties", {}) if isinstance(result, dict) else {}
+    array_fields = {
+        "unresolved": result_properties.get("unresolved") if isinstance(result_properties, dict) else None,
+        **{name: properties.get(name) if isinstance(properties, dict) else None
+           for name in ("questions", "hold_reasons", "no_candidate_reasons")},
+    }
+    stage_control = (
+        isinstance(result_properties, dict)
+        and bool(set(result_properties) & {"needs", "gaps", "concepts"})
+        and all(isinstance(definition, dict) and definition.get("type") == "array"
+                and isinstance(definition.get("items"), dict)
+                and definition["items"].get("type") == "string"
+                for definition in array_fields.values())
+    )
+    if stage_control:
+        fields += tuple(array_fields)
+    quality = properties.get("quality_assessments", {}) if isinstance(properties, dict) else {}
+    quality_items = quality.get("items", {}) if isinstance(quality, dict) else {}
+    quality_properties = quality_items.get("properties", {}) if isinstance(quality_items, dict) else {}
+    criterion = quality_properties.get("criterion", {}) if isinstance(quality_properties, dict) else {}
+    semantic_citations = (
+        isinstance(quality, dict) and quality.get("type") == "array"
+        and isinstance(criterion, dict)
+        and criterion.get("enum") == ["mechanism", "difference_from_current_features",
+                                      "unverified_assumptions", "unsupported_factual_claims"]
+        and {"source_quotes", "candidate_quote", "concept_id", "verdict"} <= set(quality_properties)
+    )
+    if semantic_citations:
+        fields += ("difference_source_quotes",)
     if not fields:
         return "", fields
     lines = ["판정값 안내: 값과 reason의 의미를 일치시키고 제공된 원문으로 판단하세요."]
     if found & {"support_status", "support_basis", "resolution"}:
         lines.append("기능 지원은 선택한 현재 기능의 문서상 지원이며, 고객 희망 결과의 해결 여부와 별개입니다.")
-    lines.extend(_SCHEMA_FIELD_GUIDES[name][1] for name in fields)
+        lines.append("features나 설명서가 비어 있거나 기능이 미언급이면 기능 부재의 증거가 아닙니다. "
+                     "unmentioned/conflicting은 insufficient_evidence로 판단하고 현재 기능·사용 조건을 확인할 구체 질문을 남기세요.")
+    lines.extend(_SCHEMA_FIELD_GUIDES[name][1] for name in fields if name in _SCHEMA_FIELD_GUIDES)
+    if stage_control:
+        lines.extend((
+            "unresolved: 원문에서 확인할 수 없어 현재 판단을 막는 사실을 문장으로 적습니다. "
+            "Need ID·필드명·작업 대기 목록이나 확인된 불편을 적는 곳이 아닙니다. 불명 사실이 없으면 [].",
+            "questions: 그 불명 사실을 확인할 구체 질문입니다. 판단을 보류할 때는 무엇을 확인할지 묻습니다.",
+            "hold_reasons: 현재 판단을 막는 자료 누락·상충의 이유입니다. "
+            "불편이 남아 있다는 이유만으로 보류하지 않습니다. 판단 가능하면 [].",
+            "no_candidate_reasons: 판단 후 후보가 없거나 필요 없을 때의 이유입니다. "
+            "후보 작성 전에는 []. 필요한 자료가 실제 없을 때는 보류·질문을 유지하세요.",
+        ))
+    if semantic_citations:
+        lines.append(
+            "difference_from_current_features를 satisfied로 판단하는 같은 quality_assessments 항목의 "
+            "source_quotes 안에 각 연결 Gap의 고객 리뷰 최소 1개와 같은 모델·버전 설명서를 함께 원문 인용하세요. "
+            "각 연결 Feature의 설명서도 인용하세요. mechanism 등 다른 항목의 리뷰 인용으로 대신 충족하지 않습니다. "
+            "원문에 없는 기능 부재를 사실로 단정하지 말고, 자료가 없으면 uncertain과 구체 확인 질문을 남기세요."
+        )
+    if "duplication" in found and isinstance(result_properties, dict) and "concepts" in result_properties:
+        fields += ("candidate_gap_gate",)
+        lines.append("현재 quality_context의 residual_matrix에서 valid와 candidate_eligible가 모두 true인 "
+                     "Gap만 후보에 연결하세요. 확인 불가 Gap은 후보로 해결했다고 단정하지 않습니다.")
     return "\n".join(lines) + "\n\n", fields
 
 
@@ -264,6 +320,15 @@ class ModelConfig:
             if value is not None:
                 options[name] = value
         return options
+
+
+@dataclass(frozen=True, slots=True)
+class _OllamaPromptBudget:
+    """Forwardable request-size policy, not a token-capacity or permission proof."""
+
+    config: ModelConfig
+    max_characters: int = 24000
+    max_utf8_bytes: int = 45000
 
 
 @dataclass(frozen=True, slots=True)
@@ -428,6 +493,14 @@ class OllamaAdapter(_ModelAdapter):
     adapter_name = "ollama"
     backend_schema_enforced = True
 
+    @property
+    def prompt_budget(self) -> _OllamaPromptBudget | None:
+        # ModelConfig validates the explicit context/output settings. This
+        # larger transport envelope does not assert that tokenization will fit.
+        if type(self.config) is ModelConfig and self.config.context_tokens >= 16384:
+            return _OllamaPromptBudget(self.config)
+        return None
+
     def _verify_pin(self, deadline: float) -> dict[str, Any]:
         tags = self._request("GET", "/api/tags", deadline)
         models = tags.get("models")
@@ -528,8 +601,25 @@ class StructuredModelClient:
                 "출력은 아래 JSON Schema를 충족해야 합니다.\n"
                 f"JSON Schema:\n{encoded_schema}\n\n{guide}요청:\n{prompt}"
             )
-        if len(formatted) > self.adapter.max_prompt_characters:
-            raise _fail("INVALID_ARGUMENT", "prompt_too_large", maximum=self.adapter.max_prompt_characters)
+        # A validated Ollama budget may be forwarded by the two completion
+        # recorders. A context value or native-schema flag alone cannot expand
+        # an unknown adapter's envelope, and Lab retains its existing 5k cap.
+        max_characters = min(self.adapter.max_prompt_characters, 16000)
+        max_utf8_bytes = None
+        budget = getattr(self.adapter, "prompt_budget", None)
+        if (type(budget) is _OllamaPromptBudget
+                and type(self.adapter.config) is ModelConfig
+                and budget.config is self.adapter.config
+                and self.adapter.config.context_tokens >= 16384
+                and native_schema
+                and type(budget.max_characters) is int and budget.max_characters == 24000
+                and type(budget.max_utf8_bytes) is int and budget.max_utf8_bytes == 45000):
+            max_characters, max_utf8_bytes = budget.max_characters, budget.max_utf8_bytes
+        if len(formatted) > max_characters:
+            raise _fail("INVALID_ARGUMENT", "prompt_too_large", maximum=max_characters)
+        if max_utf8_bytes is not None and len(formatted.encode("utf-8")) > max_utf8_bytes:
+            raise _fail("INVALID_ARGUMENT", "prompt_too_large", maximum=max_characters,
+                        maximum_utf8_bytes=max_utf8_bytes, limit="utf8_bytes")
         output = self.adapter.generate(formatted, schema)
         data, response_format = _model_json(output["response"], validator)
         return StructuredModelResult(data, {
@@ -537,7 +627,11 @@ class StructuredModelClient:
             "response_format": response_format, "locally_validated": True,
             "schema_prompt_embedded": not native_schema,
             "schema_field_guide": {
-                "version": "enum_meanings_v1", "fields": list(guide_fields),
+                "version": ("enum_and_lineage_meanings_v4" if "candidate_gap_gate" in guide_fields
+                            else "enum_and_citation_meanings_v3" if "difference_source_quotes" in guide_fields
+                            else "enum_and_hold_meanings_v2" if "unresolved" in guide_fields
+                            else "enum_meanings_v1"),
+                "fields": list(guide_fields),
                 "characters": len(guide), "utf8_bytes": len(guide.encode("utf-8")),
                 "sha256": sha256(guide.encode("utf-8")).hexdigest(),
             },

@@ -32,6 +32,9 @@ class SubmissionPackageTests(unittest.TestCase):
         self.repo = Path(self.temporary.name) / "repo"
         self.repo.mkdir()
         self.git("init", "-q")
+        # No detached Git maintenance may race TemporaryDirectory cleanup.
+        self.git("config", "gc.auto", "0")
+        self.git("config", "maintenance.auto", "false")
         self.git("config", "user.name", "Synthetic fixture")
         self.git("config", "user.email", "fixture@example.invalid")
         self.files = {name: b"synthetic public fixture\n" for name in REQUIRED_FILES}
