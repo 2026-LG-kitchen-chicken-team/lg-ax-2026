@@ -1,0 +1,78 @@
+{
+  "audit_id": "P2-DATA-002-fixed-output-audit-20261006",
+  "checked_at": "2026-10-06",
+  "source_commit": "45fe0f23afb9c68e115088cef9e10cd122d181f1",
+  "fixed_output_commit": "9c7188a29138f43b377c2cac763ab954bc802330",
+  "comparison_report": "result-comparison.md",
+  "source_manifest": {
+    "path": "evals/pm-prototype/20261006/finite-model-study/source-manifest.json",
+    "sha256": "d35f1741ab6cfcb197344439bfef791c9516bccbb22f7e44c40e6c5c4be9f1b0"
+  },
+  "dataset": {
+    "path": "data/demo/dataset.json",
+    "version": "0.1.0",
+    "kind": "synthetic",
+    "file_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+    "canonical_sha256": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03",
+    "review_count": 36
+  },
+  "review_csv": {
+    "path": "data/research/P2-DATA-002-step1-20261005/reviews-v1.0.csv",
+    "rows": 36,
+    "columns": 8,
+    "file_sha256": "3c7560aec2d3fa855590baf097b3514aa348ee40a77037c69ef358b413f488b9"
+  },
+  "compared_fields": [
+    "id/evidence_id",
+    "source_type",
+    "model_id",
+    "document_version",
+    "source_kind",
+    "source_id",
+    "locator",
+    "UTF-8 source text"
+  ],
+  "outputs": [
+    {
+      "path": "evals/pm-prototype/20261006/finite-model-study/8b-bounded12/fridge-normal.json",
+      "sha256": "91bbb9aa695d298b80b0e10c1f0abc5e643ca0f6790ec1194f5303c7230747d6",
+      "model_id": "qwen3:8b",
+      "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "product_model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_match_count": "11/11",
+      "status": "failed",
+      "actual_calls": 9,
+      "revision_count": 2,
+      "independent_quality": null
+    },
+    {
+      "path": "evals/pm-prototype/20261006/finite-model-study/8b-bounded12/microwave-normal.json",
+      "sha256": "a0483657fef00979717bfa8b27ec0710c2314e748780e2d97e83043a188bea01",
+      "model_id": "qwen3:8b",
+      "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+      "product_model_id": "MICROWAVE-A",
+      "document_version": "1.0",
+      "source_match_count": "4/4",
+      "status": "failed",
+      "actual_calls": 9,
+      "revision_count": 2,
+      "independent_quality": null
+    },
+    {
+      "path": "evals/pm-prototype/20261006/finite-model-study/27b-bounded12/fridge-normal.json",
+      "sha256": "009c0bb2df3caeaf3c60b130fb5cbd7ea98b020dc17695d4e2a9a92a80b87803",
+      "model_id": "qwen3.5:27b-q4_K_M",
+      "model_digest": "64ae5b1d651fb2709d5928ccb8dcfb4bb2cc9c2c8001ac34497e36a6cf905b59",
+      "product_model_id": "FRIDGE-A",
+      "document_version": "1.0",
+      "source_match_count": "11/11",
+      "status": "held",
+      "actual_calls": 3,
+      "revision_count": 0,
+      "independent_quality": null
+    }
+  ],
+  "new_model_calls": 0,
+  "interpretation": "Source identities match the fixed synthetic dataset. The report flags semantic citation/polarity/feature-support defects and does not assert real-product accuracy, independent pass, or parent completion."
+}
