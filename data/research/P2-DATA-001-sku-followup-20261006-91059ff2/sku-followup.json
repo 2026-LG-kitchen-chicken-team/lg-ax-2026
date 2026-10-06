@@ -1,0 +1,403 @@
+{
+  "artifact_kind": "manual_sku_followup_evidence_addendum",
+  "artifact_version": "20261006-91059ff2",
+  "checked_at_kst": "2026-10-06T21:22:37.008845+09:00",
+  "base_main_commit": "f2768a728129f570aa203f00a2b20da8095ce3b8",
+  "original_pr": 187,
+  "original_pr_head": "e57074636745a191d30b9fafe3d46532e20c2aed",
+  "original_source_git_blob": "0837f2e3ed829dc4617a542e1394a5ec877bd7bd",
+  "original_source_sha256": "1ce5686678e645f533a5576b8019681beef92e44b8af1ff6649d2e7803d34d9d",
+  "original_source_file": "data/research/P2-DATA-001-sku-application-20261006/sku-application.json",
+  "scope_ids": [
+    "SKU-F03",
+    "SKU-F04",
+    "SKU-M01",
+    "SKU-M02"
+  ],
+  "counts": {
+    "confirmed": 1,
+    "conflict": 0,
+    "unconfirmed": 3
+  },
+  "facts": [
+    {
+      "prior_id": "SKU-F03",
+      "model_id": "T876MEE1H1",
+      "feature": "신선플러스 트레이의 선반 아래 걸이 제공",
+      "followup_status": "unconfirmed",
+      "application_value": null,
+      "confirmed_subfacts": [
+        "정확 모델 제품 설명은 선반 아래/야채실 상단 부착 활용을 안내하고 전용 스펙은 신선플러스 트레이 O다.",
+        "AGM30160701의 공식 호환 목록은 T876MEE1H1 (GC-M31FFCYE)을 명시한다.",
+        "MJS65351401의 공식 정확 모델 검색은0건이며 교체 안내는 모델별 걸이 미제공 가능성을 명시한다."
+      ],
+      "inference": "야채 트레이 호환·장착 안내와 냉장고 출고 걸이 동봉은 다른 사실이다. MJS65351401의 일반 안내를 이 SKU의 걸이 제공 근거로 사용하지 않는다.",
+      "conflict_status": "none_established",
+      "unconfirmed": [
+        "냉장고 출고 시 선반 아래 걸이/홀더가 기본 제공되는지",
+        "이 SKU의 정확한 홀더 부품번호·구성품/BOM 매핑"
+      ],
+      "next_question": "T876MEE1H1.CKOR의 출고 구성표 또는 부품도에서 신선플러스 트레이 홀더/걸이의 부품번호와 기본 제공 여부를 확인할 수 있는가?",
+      "source_ids": [
+        "F-P-current",
+        "F-TRAY-AGM30160701",
+        "F-TRAY-MJS65351401",
+        "F-M-original"
+      ],
+      "source_chain_inference": false,
+      "physical_device_tested": false,
+      "customer_pain_resolved": null,
+      "id": "FOLLOWUP-SKU-F03-91059ff2",
+      "prior_application_status": "unconfirmed",
+      "review_basis": "official documents and explicit service-model list; no appliance operation",
+      "data_pack_updated": false,
+      "model_calls": 0,
+      "source_refs": [
+        {
+          "source_id": "F-P-current",
+          "url": "https://www.lge.co.kr/product/refrigerators/t876mee1h1?modelId=MD10758826&pdpType=PURCHASE",
+          "document_version": "unversioned@2026-10-06",
+          "checked_at_kst": "2026-10-06T20:50:02.0101455+09:00"
+        },
+        {
+          "source_id": "F-TRAY-AGM30160701",
+          "url": "https://www.lge.co.kr/care-accessories/upper-lower-refrigeration/agm30160701",
+          "document_version": "unversioned@2026-10-06",
+          "checked_at_kst": "2026-10-06T20:50:06.4886142+09:00"
+        },
+        {
+          "source_id": "F-TRAY-MJS65351401",
+          "url": "https://www.lge.co.kr/care-accessories/upper-lower-refrigeration/mjs65351401",
+          "document_version": "unversioned@2026-10-06",
+          "checked_at_kst": "2026-10-06T21:07:22.0716964+09:00"
+        },
+        {
+          "source_id": "F-M-original",
+          "url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=OKSVlmUDzoQqSyeRo6kwiw",
+          "document_version": "MFL71401557 Rev.00_032526",
+          "checked_at_kst": "2026-10-06T21:22:37.008845+09:00"
+        }
+      ]
+    },
+    {
+      "prior_id": "SKU-F04",
+      "model_id": "T876MEE1H1",
+      "feature": "얼음 분리 손잡이형 아이스 메이커",
+      "followup_status": "unconfirmed",
+      "application_value": null,
+      "confirmed_subfacts": [
+        "AEQ73110506 공식 호환 검색에서 T876MEE1H1.CKOR (GC-M31FFCYE.AEEGKRB) 1건을 확인했다.",
+        "AEQ73110506의 공식 측면 이미지2 및 교체 안내에서 얼음 분리 손잡이와 저장통 구조를 확인했다.",
+        "AAP73693011의 공식 호환 목록도 같은 서비스 모델을 명시한다. 이 부품의 형상은 별도 시각 판정하지 않았다."
+      ],
+      "inference": "손잡이형 제빙 부품의 호환성은 새로 확인했다. 별매/교체 부품 호환만으로 냉장고의 기본 출고 구성에 그 부품이 포함된다고 단정하지 않는다. 정확 모델 스펙의 '아이스 트레이' 분류도 회전 손잡이/저장통 동봉 여부를 확정하지 않는다.",
+      "conflict_status": "none_established",
+      "unconfirmed": [
+        "기본 출고 아이스메이커 부품번호",
+        "회전식 손잡이와 저장통의 기본 포함 여부",
+        "서비스 모델 .CKOR 외 다른 제조 파생형에 대한 동일 구성"
+      ],
+      "next_question": "T876MEE1H1.CKOR (GC-M31FFCYE.AEEGKRB)의 기본 제빙 구성품 목록에 AEQ73110506 또는 해당 손잡이/저장통 조립품이 포함되는가?",
+      "source_ids": [
+        "F-ICE-AEQ73110506",
+        "F-ICE-AAP73693011",
+        "F-P-current",
+        "F-M-original"
+      ],
+      "source_chain_inference": false,
+      "physical_device_tested": false,
+      "customer_pain_resolved": null,
+      "id": "FOLLOWUP-SKU-F04-91059ff2",
+      "prior_application_status": "unconfirmed",
+      "review_basis": "official documents and explicit service-model list; no appliance operation",
+      "data_pack_updated": false,
+      "model_calls": 0,
+      "source_refs": [
+        {
+          "source_id": "F-ICE-AEQ73110506",
+          "url": "https://www.lge.co.kr/care-accessories/upper-lower-refrigeration/aeq73110506",
+          "document_version": "unversioned@2026-10-06",
+          "checked_at_kst": "2026-10-06T20:53:00.4017988+09:00"
+        },
+        {
+          "source_id": "F-ICE-AAP73693011",
+          "url": "https://www.lge.co.kr/care-accessories/upper-lower-refrigeration/aap73693011",
+          "document_version": "unversioned@2026-10-06",
+          "checked_at_kst": "2026-10-06T20:53:02.3056894+09:00"
+        },
+        {
+          "source_id": "F-P-current",
+          "url": "https://www.lge.co.kr/product/refrigerators/t876mee1h1?modelId=MD10758826&pdpType=PURCHASE",
+          "document_version": "unversioned@2026-10-06",
+          "checked_at_kst": "2026-10-06T20:50:02.0101455+09:00"
+        },
+        {
+          "source_id": "F-M-original",
+          "url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=OKSVlmUDzoQqSyeRo6kwiw",
+          "document_version": "MFL71401557 Rev.00_032526",
+          "checked_at_kst": "2026-10-06T21:22:37.008845+09:00"
+        }
+      ]
+    },
+    {
+      "prior_id": "SKU-M01",
+      "model_id": "MW23FDI",
+      "feature": "간편조리 출력 700/1000W 사전 설정",
+      "followup_status": "confirmed",
+      "application_value": {
+        "default_watts": 700,
+        "preset_choices_watts": [
+          700,
+          1000
+        ],
+        "power_disconnect_persistence": null
+      },
+      "confirmed_subfacts": [
+        "정확 모델 MW23FDI의 제품 상세 사용 주의가 간편조리 기본700W와 설정 변경 시 설명서의 간편조리 안내 참조를 명시한다.",
+        "공식 설명서 MFL68822538 Rev.00_120925의 표지에 MW23FDI가 있고 p17에700/1000W 사전 설정 절차가 있다."
+      ],
+      "inference": "모델 페이지의 명시적 설정 변경 안내와 모델명이 기재된 공식 설명서를 연계한 문서상 적용 확인이다. 공용 설명서의 모델 차이 문구는 유지한다. 실제 조작 성공을 측정한 결과가 아니며 현재 PDP 정적 HTML에서 기존 PDF의 fileId 연결까지 직접 확인한 것은 아니다.",
+      "conflict_status": "none_established",
+      "unconfirmed": [
+        "전원 플러그를 분리한 뒤 사전 설정 값의 유지 여부",
+        "실기기 조작/표시 동작",
+        "현재 PDP 동적 설명서 다운로드와 기존 PDF fileId의 직접 동일성"
+      ],
+      "next_question": "필요 시 LG의 정확 모델별 설정 유지 안내에서 전원 분리 후 보존 여부를 확인한다. 이 조사에서는 실기기를 조작하지 않는다.",
+      "source_ids": [
+        "M-P-current",
+        "M-M-original"
+      ],
+      "source_chain_inference": true,
+      "physical_device_tested": false,
+      "customer_pain_resolved": null,
+      "id": "FOLLOWUP-SKU-M01-91059ff2",
+      "prior_application_status": "unconfirmed",
+      "review_basis": "official documents and explicit service-model list; no appliance operation",
+      "data_pack_updated": false,
+      "model_calls": 0,
+      "source_refs": [
+        {
+          "source_id": "M-P-current",
+          "url": "https://www.lge.co.kr/product/microwaves-and-ovens/mw23fdi?modelId=MD10738847&pdpType=PURCHASE",
+          "document_version": "unversioned@2026-10-06",
+          "checked_at_kst": "2026-10-06T20:50:05.0779435+09:00"
+        },
+        {
+          "source_id": "M-M-original",
+          "url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=uTblKnUavHksC4PsafxKeQ",
+          "document_version": "MFL68822538 Rev.00_120925",
+          "checked_at_kst": "2026-10-06T21:22:37.008845+09:00"
+        }
+      ]
+    },
+    {
+      "prior_id": "SKU-M02",
+      "model_id": "MW23FDI",
+      "feature": "사용자 시간·출력 조합 저장/호출",
+      "followup_status": "unconfirmed",
+      "application_value": null,
+      "confirmed_subfacts": [
+        "검토한40쪽 설명서 문자층의 '기억' 4건은 지정 음식별 자동데우기·자동요리·발효·냉동식품 조리시간의 사전 기억 문맥이다.",
+        "정확 모델의 수동 출력5단계와 간편조리2개 출력 사전 설정은 사용자 시간/출력 조합 저장·재호출의 명시 근거가 아니다."
+      ],
+      "inference": "제품 상세·공식 설명서의 검토 범위에서 사용자가 만든 시간/출력 조합을 저장하고 재호출하는 기능의 직접 근거를 찾지 못했다. 키워드 부재를 미지원 판정으로 바꾸지 않으며 문자층 검색을 완전한 기능 부재 증명으로 쓰지 않는다.",
+      "conflict_status": "none_established",
+      "unconfirmed": [
+        "사용자 정의 시간·출력 조합의 저장 기능",
+        "저장한 사용자 조합의 재호출 절차·버튼",
+        "저장 슬롯·전원 해제 후 보존"
+      ],
+      "next_question": "MW23FDI 모델명을 명시한 사용 안내에서 사용자 조합 저장/재호출 절차 또는 명시적 미지원 표기가 있는가?",
+      "source_ids": [
+        "M-P-current",
+        "M-M-original"
+      ],
+      "source_chain_inference": false,
+      "physical_device_tested": false,
+      "customer_pain_resolved": null,
+      "id": "FOLLOWUP-SKU-M02-91059ff2",
+      "prior_application_status": "unconfirmed",
+      "review_basis": "official documents and explicit service-model list; no appliance operation",
+      "data_pack_updated": false,
+      "model_calls": 0,
+      "source_refs": [
+        {
+          "source_id": "M-P-current",
+          "url": "https://www.lge.co.kr/product/microwaves-and-ovens/mw23fdi?modelId=MD10738847&pdpType=PURCHASE",
+          "document_version": "unversioned@2026-10-06",
+          "checked_at_kst": "2026-10-06T20:50:05.0779435+09:00"
+        },
+        {
+          "source_id": "M-M-original",
+          "url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=uTblKnUavHksC4PsafxKeQ",
+          "document_version": "MFL68822538 Rev.00_120925",
+          "checked_at_kst": "2026-10-06T21:22:37.008845+09:00"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "F-P-current",
+      "url": "https://www.lge.co.kr/product/refrigerators/t876mee1h1?modelId=MD10758826&pdpType=PURCHASE",
+      "source_kind": "public",
+      "source_type": "official_product",
+      "checked_at_kst": "2026-10-06T20:50:02.0101455+09:00",
+      "document_version": "unversioned@2026-10-06",
+      "raw_html_sha256": "375c4e831567a89c9632727cfebb02210dae5aa2ab2e9aa724610c48f23d1e65",
+      "raw_html_bytes": 1750130,
+      "locator": "정확 SKU의 제조사 설명/스펙; 연출 이미지·AI 요약·다른 모델 시험/범용 FAQ는 SKU 출고 근거로 쓰지 않음",
+      "quotes": [
+        "신선플러스 트레이",
+        "아이스 트레이"
+      ],
+      "full_html_published": false
+    },
+    {
+      "id": "M-P-current",
+      "url": "https://www.lge.co.kr/product/microwaves-and-ovens/mw23fdi?modelId=MD10738847&pdpType=PURCHASE",
+      "source_kind": "public",
+      "source_type": "official_product",
+      "checked_at_kst": "2026-10-06T20:50:05.0779435+09:00",
+      "document_version": "unversioned@2026-10-06",
+      "raw_html_sha256": "37edb1b66a871ebf03a8372e0a647da1ccaadf06b0331b2b0dfeca1458fdb943",
+      "raw_html_bytes": 1279105,
+      "locator": "정확 SKU 제품 상세의 사용 주의; 일반 FAQ의 요리시간 기억 설명과 분리",
+      "quotes": [
+        "간편 조리 출력은 기본적으로 700W로 설정되어 있으며"
+      ],
+      "full_html_published": false
+    },
+    {
+      "id": "F-TRAY-AGM30160701",
+      "url": "https://www.lge.co.kr/care-accessories/upper-lower-refrigeration/agm30160701",
+      "source_kind": "public",
+      "source_type": "official_service_part",
+      "checked_at_kst": "2026-10-06T20:50:06.4886142+09:00",
+      "document_version": "unversioned@2026-10-06",
+      "raw_html_sha256": "a7ca38cbb82fab2c0da5725369b09eb7ee2350277dc1ec4db9cd917fb5cc69b1",
+      "raw_html_bytes": 545575,
+      "locator": "공식 별매 야채 트레이 구성/장착 및 사용 가능 모델; 냉장고 출고 기본 홀더 제공의 증거 아님",
+      "quotes": [
+        "T876MEE1H1 (GC-M31FFCYE)",
+        "신선플러스 트레이 홀더"
+      ],
+      "full_html_published": false
+    },
+    {
+      "id": "F-ICE-AEQ73110506",
+      "url": "https://www.lge.co.kr/care-accessories/upper-lower-refrigeration/aeq73110506",
+      "source_kind": "public",
+      "source_type": "official_service_part",
+      "checked_at_kst": "2026-10-06T20:53:00.4017988+09:00",
+      "document_version": "unversioned@2026-10-06",
+      "raw_html_sha256": "d30835bf0abce05670e051d75f41b048496dc9777d01bcc8f86395544e02814b",
+      "raw_html_bytes": 536698,
+      "locator": "공식 교체 부품, 회전 손잡이·저장통 구조와 서비스 모델 호환표; 냉장고 기본 동봉의 증거 아님",
+      "quotes": [
+        "T876MEE1H1.CKOR (GC-M31FFCYE.AEEGKRB)",
+        "얼음 분리 손잡이"
+      ],
+      "full_html_published": false
+    },
+    {
+      "id": "F-ICE-AAP73693011",
+      "url": "https://www.lge.co.kr/care-accessories/upper-lower-refrigeration/aap73693011",
+      "source_kind": "public",
+      "source_type": "official_service_part",
+      "checked_at_kst": "2026-10-06T20:53:02.3056894+09:00",
+      "document_version": "unversioned@2026-10-06",
+      "raw_html_sha256": "050f241029231f8b5a98b68f654d00973e2ccd277fa72820939de5e7e72050e3",
+      "raw_html_bytes": 537399,
+      "locator": "공식 교체 부품과 서비스 모델 호환표; 형상 미판정·냉장고 기본 동봉 미확인",
+      "quotes": [
+        "T876MEE1H1.CKOR (GC-M31FFCYE.AEEGKRB)"
+      ],
+      "full_html_published": false
+    },
+    {
+      "id": "F-TRAY-MJS65351401",
+      "url": "https://www.lge.co.kr/care-accessories/upper-lower-refrigeration/mjs65351401",
+      "source_kind": "public",
+      "source_type": "official_service_part",
+      "checked_at_kst": "2026-10-06T21:07:22.0716964+09:00",
+      "document_version": "unversioned@2026-10-06",
+      "raw_html_sha256": "58440a243cbd34da5002b2ee8faa354053ea2d4b73b96ae10b9b0c3e1770bbc0",
+      "raw_html_bytes": 536748,
+      "locator": "일반 교체 안내는 있으나 현재 정확 SKU 검색0건; 해당 모델 걸이 제공의 지지 근거에서 제외",
+      "quotes": [
+        "모델에 따라 선반 아래 걸이가 제공되지 않을 수 있습니다"
+      ],
+      "full_html_published": false
+    },
+    {
+      "id": "F-M-original",
+      "url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=OKSVlmUDzoQqSyeRo6kwiw",
+      "source_kind": "public",
+      "source_type": "official_manual",
+      "model_id": "T876MEE1H1",
+      "document_version": "MFL71401557 Rev.00_032526",
+      "file_sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815",
+      "locator": "공용 설명서 p18의 선택 부품 조건; SKU 적용을 독립 확정하지 않음",
+      "reviewed_pages": [
+        18
+      ],
+      "quotes": [
+        "모델에 따라 선반 아래 걸이가 제공되지 않을 수"
+      ],
+      "native_text_extraction_ocr": false,
+      "manual_source_mapping": "Preserved PR187 official-source mapping; MW23FDI model and revision visually checked on same-SHA cover",
+      "repository_pdf_path": "data/sources/lg-manuals-20261005/T876MEE1H1-d00942446318.pdf",
+      "checked_at_kst": "2026-10-06T21:22:37.008845+09:00"
+    },
+    {
+      "id": "M-M-original",
+      "url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=uTblKnUavHksC4PsafxKeQ",
+      "source_kind": "public",
+      "source_type": "official_manual",
+      "model_id": "MW23FDI",
+      "document_version": "MFL68822538 Rev.00_120925",
+      "file_sha256": "3ceec78295d02352fd467309bc613cf59c9bf7bce0bae3e9d5de3ad4bae2f7bc",
+      "locator": "정확 모델이 표지에 기재된 공용 설명서; p17 모델별 차이 조건 유지, 자동메뉴 기억과 사용자 저장을 구분",
+      "reviewed_pages": [
+        1,
+        13,
+        14,
+        17,
+        18,
+        19,
+        21,
+        22,
+        25,
+        28
+      ],
+      "quotes": [
+        "간편 조리 출력은 700 W, 1000 W 2가지로 설정할 수"
+      ],
+      "native_text_extraction_ocr": false,
+      "manual_source_mapping": "Preserved PR187 official-source mapping; MW23FDI model and revision visually checked on same-SHA cover",
+      "repository_pdf_path": "data/sources/lg-manuals-20261005/MW23FDI-3ceec78295d0.pdf",
+      "checked_at_kst": "2026-10-06T21:22:37.008845+09:00"
+    }
+  ],
+  "status_meaning": {
+    "confirmed": "문서상 적용 확인; 연계 추론은 표시하고 실기기 검증과 구분",
+    "conflict": "같은 모델·조건의 동일 주장이 공식 자료에서 모순됨",
+    "unconfirmed": "자료 부족 또는 출고 구성/동작 미확인; 미지원으로 단정하지 않음"
+  },
+  "no_same_scope_official_conflict_established": true,
+  "model_calls": 0,
+  "ocr_calls": 0,
+  "physical_device_operations": 0,
+  "existing_files_modified": false,
+  "dataset_registered_or_updated": false,
+  "issue12_done": false,
+  "limitations": [
+    "부품 호환성과 냉장고 출고 기본 제공은 별도다. .CKOR 서비스 모델 조건을 보존.",
+    "M01은 정확 SKU의 제조사 사용 주의와 해당 모델 기재 설명서를 연계한 문서상 판단이다. 현재 PDP 정적HTML에서 동일PDF fileId를 직접 찾지 못했다.",
+    "M01 전원 분리 후 보존과 M02 사용자 정의 조합 저장/재호출은 미확인.",
+    "문자층 전체검색은 기능 부재의 완전 증명이나 OCR 성능 측정이 아니다.",
+    "웹 도구의 직접 열기 오류는 원시HTTP와 브라우저 확인으로 대체; 검색 결과만으로 판정하지 않음"
+  ]
+}
