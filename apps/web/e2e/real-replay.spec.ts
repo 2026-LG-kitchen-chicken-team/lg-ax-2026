@@ -1,5 +1,5 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 
@@ -11,7 +11,7 @@ const tokenFile = process.env.LGAX_E2E_REPLAY_TOKEN_FILE;
 const summaryFile = process.env.LGAX_E2E_REPLAY_SUMMARY;
 const proofDir = process.env.LGAX_E2E_REPLAY_PROOF_DIR;
 
-interface Row { case: string; project_id: string; run_id: string; recorded_status: 'held' | 'failed' }
+interface Row { case: string; project_id: string; run_id: string; recorded_status: 'held' | 'failed'; envelope: string }
 
 async function openArea(page: Page, label: string) {
   await page.getByRole('navigation', { name: '기획 작업 영역' }).getByRole('button', { name: label }).click();
@@ -31,6 +31,9 @@ test('real held/failed runs from the workspace server never read as accepted or 
     await expect(page.locator('.workspace-state')).toContainText('연결됨');
     for (const row of rows) {
       await page.getByRole('combobox', { name: '프로젝트' }).selectOption(row.project_id);
+      // R4 (record 041): the review model follows the selected project's own request scope (not the default FRIDGE-A).
+      const envelope = JSON.parse(readFileSync(join(dirname(summaryFile!), row.envelope), 'utf8')) as { request: { model_ids: string[] } };
+      await expect(page.locator('#product-model')).toHaveValue(envelope.request.model_ids[0]);
       await openArea(page, '콘셉트 검토');
       const record = page.getByRole('region', { name: '판단 실행 기록' });
       await expect(record).toContainText(row.run_id);
