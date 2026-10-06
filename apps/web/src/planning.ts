@@ -491,9 +491,9 @@ export function comparisonVerdict(row: Pick<ExportDocument['comparison'][number]
   ].filter(Boolean).join(' · ');
 }
 
-// correction_budget.terminal_reason (packages/core correction_budget.py); a failed run at revision_limit is not an execution error.
+// The budget closes before the final correction runs. revision_limit can coexist with a connection/other execution error.
 const TERMINAL_TEXT: Record<string, string> = {
-  revision_limit: '내부 수정 한도 도달(검사 위반이 남음, 실행 오류 아님)', hold: '보류로 종료(내부 수정 없음)', unresolved: '미해결 종료',
+  revision_limit: '내부 수정 한도 도달(구체적인 종료 경과는 실행 기록 확인)', hold: '보류로 종료(내부 수정 없음)', unresolved: '미해결 종료',
   backend_failure: '모델 연결 오류로 중단', policy_changed: '수정 정책 변경으로 중단', completed: '완료',
 };
 

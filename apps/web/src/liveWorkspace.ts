@@ -58,12 +58,12 @@ export function projectName(request: PlanningRequest): string {
 export interface RunStatusView { label: string; detail: string; tone: 'done' | 'notice' | 'error' | 'progress' }
 
 /**
- * A failed run is not always an execution error: the core also ends as failed when both internal revisions were used
- * and violations remain (correction_budget.terminal_reason "revision_limit", record 034). The reason is read, never guessed.
+ * The correction budget closes as soon as the last revision is claimed. Its reason may remain "revision_limit" even
+ * if that final attempt later fails to connect, so the budget alone does not establish the execution failure's cause.
  */
 const FAILED_DETAIL: Record<string, string> = {
-  revision_limit: '내부 수정 한도(2회)를 모두 썼지만 검사 위반이 남아 종료했습니다. 실행 오류가 아닙니다. 미해결 항목과 판단 실행 기록을 확인해 주세요.',
-  unresolved: '판단 문제가 해결되지 않은 채 종료했습니다. 실행 오류가 아닙니다. 미해결 항목을 확인해 주세요.',
+  revision_limit: '내부 수정 한도(2회)에 도달한 상태에서 실행이 종료됐습니다. 구체적인 실패 사유는 미해결 항목과 판단 실행 기록에서 확인해 주세요.',
+  unresolved: '문제가 해결되지 않은 채 종료했습니다. 구체적인 실패 사유는 미해결 항목과 판단 실행 기록에서 확인해 주세요.',
   backend_failure: '모델 연결 오류로 실행이 중단됐습니다. 미해결 항목을 확인해 주세요.',
   policy_changed: '실행 중 수정 정책이 바뀌어 중단했습니다. 미해결 항목을 확인해 주세요.',
 };
