@@ -3,6 +3,8 @@
 <!-- member-log:owner-updates:start -->
 ## 최신 근거 — 정이량-E044-MAIL-FIRST
 
+- 종료 보완: PR174의 실제병합/CI/노션·PR173 exacthead CI4/독립blocker0/PM zero-auth115검사·rawreceipt/log SHA와 부분인수한계를E044 및공개수신증에추가했다. 자동화OFF·기존원문과다른담당상태보존.
+
 - 기존 지침에는 Project 메일안내/PM 발송만 있고 매번 실제 mail-first 의무가 없었다. 새 두 지침의 전체 동일성과 시작 순서·의존 협의·조회 실패/권한 경계를 연결한다.
 - 실제 LG 메일6건 및 Issue/PR 대조: CORE 인계·DATA 예약충돌·WEB 정상/collector 대기. PR172 기록 정확성 정정 요청과 DATA 원 예약 담당 확인 댓글을 게시했다. 메일 발송/상태변경·새 모델 실행0.
 - main531의 Project21·ACCEPTED·중앙metadata 수신은 실제 확인했다. 전원OFF와 원jobs/잠금/비용 보존이며 제품배포/품질/전체Done은 미완료다.
