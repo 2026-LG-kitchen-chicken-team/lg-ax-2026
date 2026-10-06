@@ -37,3 +37,15 @@ python -B -X utf8 data/research/DATA-owner-followup-20261006-01a1100e/run_checks
 ## 게시 수신증
 
 [PR183](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/183) 실제 생성·open/non-draft 확인, assignee ginaginaring·reviewer jeongiryang 요청. 최초 구현 head `342cfb32a881b04a3fb729e0945438458eb516e7`. 19:53 KST CI4개 실행 중, PM 인수·병합·정식 보고 접수는 별도다. 코드 85회귀와 과거 기록 보존의 실제 통과를 PR의 CI/부모 Done으로 확대하지 않는다.
+
+## 인계 수신·승인계획 보호 추가
+
+[실제 GitHub 수신증 목록](../../../../data/research/DATA-owner-followup-20261006-01a1100e/github-report-receipts.json)에5부모보고·7담당인계·#16접수를 연결했다. [모델/문서개정 외부 변경 회귀](../../../../data/research/DATA-owner-followup-20261006-01a1100e/plan-freeze-regression.json)는 수정 전 등록메타의CALLER-CHANGED-MODEL/caller-changed-edition을 재현했고, 현재는 원 승인 T876MEE1H1/Rev.00_032526을 보존한다. [수정 후85검사와무결성](../../../../data/research/DATA-owner-followup-20261006-01a1100e/checks-plan-freeze/checks.json) 모두exit0, 새모델0. 과거 checks-final과실행 실패는 지우지 않았다. CI4/4 SUCCESS는 d5b3ee7에 대한 관측이며 새 코드 수정/기록 commit의 CI·PM 승인은 별도다.
+
+## PR183 실제 병합·승인계획 보호 후속 — 2026-10-06 20:31 KST
+
+PR183은 PM jeongiryang이 20:15:21 KST에 실제 병합했다(merge a3452a29180f7996a06ca141d9c416a31513587c, head8fbe6ded37f7e515ce66c24d3dc8558f8281a9fc CI4/4 SUCCESS). [PM 부분 인수](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/183#issuecomment-6014972996)는 원36/8열·날짜미상 보존과 원문 검증/원자등록/검색scope를 인정했으며, 부모Done·운영주입·실모델 품질 승인이 아니다. 앞선 미병합/검수대기 문장은 당시 관측으로 보존한다.
+
+마지막 승인계획 보호 commit0968c2e의 push는 PM이 같은 branch에 최신main을 반영한 뒤 non-fast-forward로 거절됐다. 강제push 없이 병합 사실을 확인하고, 최신main3f88c0a에서 별도 codex/data-approved-plan-freeze-20261006 branch에 동일 수정만cherry-pick했다. CORE184/R6는 실제1차응답·후속응답유실을 보존한 진행 근거이며 DATA의 R4 원문 대조를 새R6 의미검증으로 대신하지 않는다.
+
+이 최신main 위에서도 [집중85회귀·5무결성](../../../../data/research/DATA-owner-followup-20261006-01a1100e/checks-followup-main/checks.json)이 전부exit0이다. [병합/후속관측](../../../../data/research/DATA-owner-followup-20261006-01a1100e/post-merge-followup.json)에 원격변경·새branch·새검사 범위를 보존했다. 후속 승인계획 수정은 별도PR/CI/PM 검수 대상으로 게시하며 기존183 병합에 포함됐다고 보고하지 않는다.
