@@ -8,14 +8,14 @@ import { buildEvidenceTrace, EvidenceTracePanel, subjectFromGap } from './Eviden
 import { buildRevisionTimeline, isIntermediateRun, RevisionTimeline } from './RevisionTimeline';
 import { ClarificationPanel } from './ClarificationPanel';
 import { PendingJudgement } from './PendingJudgement';
-import { exportJudgement, planningExecutionView, reasonText, rejectedCandidateCount, rerunBaseNotice, selectableConcepts, terminalReason } from './judgement';
+import { exportJudgement, judgedNotes, planningExecutionView, reasonText, rejectedCandidateCount, rerunBaseNotice, selectableConcepts, terminalReason } from './judgement';
 import { runStatusView, stageLabel } from './liveWorkspace';
 import { editSummary, END_RULE, START_RULE } from './measurement';
 import type { EditSummary, ModificationMeasurement } from './measurement';
 import type { ErrorView, EvidenceSearch, LiveWorkspace } from './liveWorkspace';
 import {
   buildComparison, buildExport, buildRerunRequest, candidateChoicesFor, conceptDetailChanges, exportMarkdown, FIXTURE_NOTICE, heldItems,
-  nextRequestRevision, requestChanges, scopeWarnings, scopeWarningText, splitConditions, statusLabel,
+  nextRequestRevision, POLARITY_TEXT, requestChanges, RESOLUTION_TEXT, rowNotes, scopeWarnings, scopeWarningText, splitConditions, statusLabel,
 } from './planning';
 import type { CandidateChoice, Concept, ConceptTextChange, DataMode, Feature, MissingQuestion, PlanningRequest, RequestChange, RunSnapshot } from './planning';
 import { ArrowIcon, SearchIcon } from './icons';
@@ -156,18 +156,27 @@ export function RequestInsights({ questions, changes, revision, mode }: { questi
 function ComparisonTable({ snapshot, features, evidence }: { snapshot: RunSnapshot; features: Feature[]; evidence: Map<string, Evidence> }) {
   if (!snapshot.output) return <p className="muted pad">이 실행에는 대조 결과가 없습니다. {runStatusView(snapshot.run.status, terminalReason(snapshot)).detail}</p>;
   const rows = buildComparison(snapshot.output, features, [...evidence.values()]);
-  return <div className="table-scroll"><table className="comparison-table">
+  const notes = judgedNotes(snapshot);
+  return <div className="table-scroll">
+    {notes && !notes.accepted ? <p className="scope-flag" role="note" data-comparison-unaccepted>코어가 채택하지 않은 실행({runStatusView(snapshot.run.status).label})의 대조입니다. 원문 검토용이며 결론이 아닙니다. '판단'은 현재 기능의 설명서 지원이고, 불편 해소 여부는 따로 표시합니다.</p> : null}
+    <table className="comparison-table">
     <thead><tr><th>모델</th><th>고객 불편</th><th>연결된 기존 기능</th><th>기능 조건</th><th>판단</th><th>남은 불편</th><th>근거</th><th>확인할 질문</th></tr></thead>
-    <tbody>{rows.map(row => <tr key={row.need.id}>
+    <tbody>{rows.map(row => {
+      const note = rowNotes(row, notes);
+      return <tr key={`${row.need.id}-${row.gap?.id ?? 'none'}`} data-gap-id={row.gap?.id ?? ''}>
       <td className="model-cell">{row.need.model_id}</td>
-      <td><span className="id">{row.need.id}</span><strong>{row.need.pain}</strong><small>{row.need.situation}</small></td>
+      <td><span className="id">{row.need.id}{row.gap ? ` · ${row.gap.id}` : ''}</span><strong>{row.need.pain}</strong><small>{row.need.situation}</small>{note.desired_outcome ? <small className="desired-outcome">바라는 결과: {note.desired_outcome}</small> : null}</td>
       <td>{row.features.length ? row.features.map(item => <span key={item.id} className="feature-chip" title={item.description}>{item.name}<small>{item.id} · 문서 {item.document_version}</small></span>) : <span className="muted">없음</span>}</td>
       <td>{row.conditions.length ? row.conditions.join(', ') : <span className="muted">없음</span>}</td>
-      <td><span className={`status-pill ${row.gap?.support_status ?? 'none'}`}>{statusLabel(row.gap?.support_status ?? null)}</span></td>
+      <td><span className={`status-pill ${row.gap?.support_status ?? 'none'}`}>{statusLabel(row.gap?.support_status ?? null)}</span>
+        {note.resolution ? <span className={`status-pill resolution-${note.resolution}`} data-field="resolution">{RESOLUTION_TEXT[note.resolution] ?? note.resolution}</span> : null}
+        {note.basis_mismatch ? <span className="scope-flag" data-field="basis-mismatch"> · 선언과 설명서 근거 불일치</span> : null}</td>
       <td>{row.gap?.remaining_pain || <span className="muted">-</span>}</td>
-      <td><Refs ids={row.evidence.map(item => item.id)} evidence={evidence} />{row.missingIds.length ? <span className="missing-note">누락: {row.missingIds.join(', ')}</span> : null}</td>
+      <td><Refs ids={row.evidence.map(item => item.id)} evidence={evidence} />{row.missingIds.length ? <span className="missing-note">누락: {row.missingIds.join(', ')}</span> : null}
+        {note.non_complaint_reviews.length ? <span className="scope-flag" data-field="non-complaint">불편 근거로 인용했지만 같은 실행이 불편으로 판단하지 않은 리뷰: {note.non_complaint_reviews.map(item => `${item.evidence_id}(${POLARITY_TEXT[item.polarity] ?? item.polarity})`).join(', ')}</span> : null}</td>
       <td>{[...row.need.uncertainties, ...(row.gap?.questions ?? [])].map(text => <p key={text} className="question">{text}</p>)}</td>
-    </tr>)}</tbody>
+    </tr>;
+    })}</tbody>
   </table></div>;
 }
 

@@ -5,8 +5,8 @@ import { ApiError } from './api';
 import { evidenceLocation } from './domain';
 import type { Evidence, ProductGroup } from './domain';
 // judgement.ts also imports from this module; neither uses the other at module load, so the cycle is safe.
-import { executionKindText, exportJudgement, reasonText } from './judgement';
-import type { ExportJudgement } from './judgement';
+import { executionKindText, exportJudgement, judgedNotes, reasonText, SUPPORT_FROM_BASIS } from './judgement';
+import type { ExportJudgement, JudgedNotes } from './judgement';
 
 export type DataMode = 'live' | 'fixture';
 
@@ -119,18 +119,22 @@ export interface ComparisonRow {
 export function buildComparison(output: RunOutput, features: Feature[], evidence: Evidence[]): ComparisonRow[] {
   const featureById = new Map(features.map(item => [item.id, item]));
   const evidenceById = new Map(evidence.map(item => [item.id, item]));
-  return output.needs.map(need => {
-    const gap = output.gaps.find(item => item.need_id === need.id);
-    const featureIds = gap?.feature_ids ?? [];
-    const evidenceIds = [...new Set([...need.evidence_ids, ...(gap?.evidence_ids ?? [])])];
-    const rowFeatures = featureIds.flatMap(id => featureById.get(id) ?? []);
-    return {
-      need, gap,
-      features: rowFeatures,
-      conditions: [...new Set(rowFeatures.flatMap(item => item.conditions))],
-      evidence: evidenceIds.flatMap(id => evidenceById.get(id) ?? []),
-      missingIds: [...featureIds.filter(id => !featureById.has(id)), ...evidenceIds.filter(id => !evidenceById.has(id))],
-    };
+  // One row per gap (record 034: a need with three gaps used to show only the first, so GAP-002/003 vanished from the
+  // table and the export). A need without any gap keeps one row with no gap.
+  return output.needs.flatMap(need => {
+    const gaps = output.gaps.filter(item => item.need_id === need.id);
+    return (gaps.length ? gaps : [undefined]).map(gap => {
+      const featureIds = gap?.feature_ids ?? [];
+      const evidenceIds = [...new Set([...need.evidence_ids, ...(gap?.evidence_ids ?? [])])];
+      const rowFeatures = featureIds.flatMap(id => featureById.get(id) ?? []);
+      return {
+        need, gap,
+        features: rowFeatures,
+        conditions: [...new Set(rowFeatures.flatMap(item => item.conditions))],
+        evidence: evidenceIds.flatMap(id => evidenceById.get(id) ?? []),
+        missingIds: [...featureIds.filter(id => !featureById.has(id)), ...evidenceIds.filter(id => !evidenceById.has(id))],
+      };
+    });
   });
 }
 
@@ -295,7 +299,11 @@ export function conceptChanges(before: RunSnapshot | undefined, after: RunSnapsh
 export interface ExportDocument {
   meta: { mode: DataMode; notice: string; generated_at: string; run_id: string; previous_run_id: string | null; run_status: Run['status']; request_revision: number; dataset_version: string; dataset_sha256: string; document_versions: Record<string, string> };
   request: PlanningRequest;
-  comparison: { model_id: string; need_id: string; situation: string; pain: string; feature_ids: string[]; conditions: string[]; support_status: Gap['support_status'] | null; remaining_pain: string; evidence_ids: string[]; questions: string[]; missing_ids: string[] }[];
+  comparison: {
+    model_id: string; need_id: string; gap_id: string | null; situation: string; pain: string; feature_ids: string[]; conditions: string[]; support_status: Gap['support_status'] | null; remaining_pain: string; evidence_ids: string[]; questions: string[]; missing_ids: string[];
+    /** From the run's stored core record (null without one): resolution/basis per gap, desired outcome per need, and the cited reviews the same run did not judge a complaint. */
+    resolution: string | null; support_basis: string | null; basis_mismatch: boolean; desired_outcome: string | null; non_complaint_reviews: { evidence_id: string; polarity: string }[];
+  }[];
   concepts: Concept[];
   no_candidate_reasons?: string[];
   requirements: { concept_id: string; requirement: string }[];
@@ -315,16 +323,31 @@ export interface ExportDocument {
   completeness: ExportCompleteness;
 }
 
-export interface ExportCompleteness { complete: boolean; missing_evidence: string[]; missing_concepts: string[]; missing_requirements: string[]; missing_assumptions: string[]; missing_unresolved: string[]; missing_held: string[]; missing_scope_warnings: string[]; mismatched_fields: string[] }
+export interface ExportCompleteness { complete: boolean; missing_evidence: string[]; missing_concepts: string[]; missing_requirements: string[]; missing_assumptions: string[]; missing_unresolved: string[]; missing_held: string[]; missing_scope_warnings: string[]; missing_gaps: string[]; mismatched_fields: string[] }
 
 export const FIXTURE_NOTICE = '계약 fixture(모의) 예시입니다. Agent 출력이나 서버 응답이 아니며 실제 수요·성능을 입증하지 않습니다.';
 export const LIVE_NOTICE = '실제 서버 응답에서 내보낸 기록입니다.';
 
-function exportComparison(output: RunOutput, features: Feature[], evidence: Evidence[]): ExportDocument['comparison'] {
+/** Stored judgement facts for one comparison row; empty when the run has no readable core record. */
+export function rowNotes(row: ComparisonRow, notes: JudgedNotes | null) {
+  const basis = row.gap && notes ? notes.basis.get(row.gap.id) ?? null : null;
+  return {
+    resolution: row.gap && notes ? notes.resolution.get(row.gap.id) ?? null : null, support_basis: basis,
+    // The declared status disagrees with what its manual basis allows (core SUPPORT_BASIS_MISMATCH).
+    basis_mismatch: Boolean(basis && row.gap && SUPPORT_FROM_BASIS[basis] !== row.gap.support_status),
+    desired_outcome: notes?.desired.get(row.need.id) ?? null,
+    non_complaint_reviews: notes ? row.need.evidence_ids.flatMap(id => {
+      const polarity = notes.polarity.get(id);
+      return polarity && polarity !== 'complaint' && polarity !== 'conflicting' ? [{ evidence_id: id, polarity }] : [];
+    }) : [],
+  };
+}
+
+function exportComparison(output: RunOutput, features: Feature[], evidence: Evidence[], notes: JudgedNotes | null): ExportDocument['comparison'] {
   return buildComparison(output, features, evidence).map(row => ({
-    model_id: row.need.model_id, need_id: row.need.id, situation: row.need.situation, pain: row.need.pain, feature_ids: row.gap?.feature_ids ?? [], conditions: row.conditions,
+    model_id: row.need.model_id, need_id: row.need.id, gap_id: row.gap?.id ?? null, situation: row.need.situation, pain: row.need.pain, feature_ids: row.gap?.feature_ids ?? [], conditions: row.conditions,
     support_status: row.gap?.support_status ?? null, remaining_pain: row.gap?.remaining_pain ?? '', evidence_ids: row.evidence.map(item => item.id),
-    questions: [...row.need.uncertainties, ...(row.gap?.questions ?? [])], missing_ids: row.missingIds,
+    questions: [...row.need.uncertainties, ...(row.gap?.questions ?? [])], missing_ids: row.missingIds, ...rowNotes(row, notes),
   }));
 }
 
@@ -354,7 +377,7 @@ export function buildExport(mode: DataMode, snapshot: RunSnapshot, features: Fea
       dataset_version: snapshot.run.dataset_version, dataset_sha256: snapshot.dataset_sha256, document_versions: { ...snapshot.document_versions },
     },
     request: structuredClone(snapshot.request),
-    comparison: structuredClone(exportComparison(output, features, evidence)),
+    comparison: structuredClone(exportComparison(output, features, evidence, judgedNotes(snapshot))),
     concepts: structuredClone(snapshot.run.concepts),
     no_candidate_reasons: [...(output.no_candidate_reasons ?? [])],
     requirements: snapshot.run.concepts.flatMap(concept => concept.requirements.map(requirement => ({ concept_id: concept.id, requirement }))),
@@ -374,7 +397,7 @@ export function buildExport(mode: DataMode, snapshot: RunSnapshot, features: Fea
         ? exportEvidence(item)
         : { id, model_id: '', document_version: '', source_type: '', source_kind: '', source_id: '', location: '자료 누락', text: '원문을 찾을 수 없습니다.' };
     }),
-    completeness: { complete: false, missing_evidence: [], missing_concepts: [], missing_requirements: [], missing_assumptions: [], missing_unresolved: [], missing_held: [], missing_scope_warnings: [], mismatched_fields: [] },
+    completeness: { complete: false, missing_evidence: [], missing_concepts: [], missing_requirements: [], missing_assumptions: [], missing_unresolved: [], missing_held: [], missing_scope_warnings: [], missing_gaps: [], mismatched_fields: [] },
   };
   doc.completeness = exportCompleteness(doc, snapshot, features, evidence, runs);
   return doc;
@@ -412,7 +435,7 @@ ${item.requirement}`));
   const actualMeta = { run_id: doc.meta.run_id, previous_run_id: doc.meta.previous_run_id, run_status: doc.meta.run_status, request_revision: doc.meta.request_revision, dataset_version: doc.meta.dataset_version, dataset_sha256: doc.meta.dataset_sha256, document_versions: doc.meta.document_versions };
   const fields: [string, unknown, unknown][] = [
     ['실행·자료 버전', actualMeta, expectedMeta], ['기획 요청', doc.request, snapshot.request],
-    ['불편·기능 대조표', doc.comparison, exportComparison(output, features, evidence)],
+    ['불편·기능 대조표', doc.comparison, exportComparison(output, features, evidence, judgedNotes(snapshot))],
     ['콘셉트 후보', doc.concepts, snapshot.run.concepts],
     ['후보 없음 사유', doc.no_candidate_reasons ?? [], output.no_candidate_reasons ?? []], ['요구사항', doc.requirements, expectedRequirements],
     ['가정·미확인', doc.assumptions, expectedAssumptions], ['미해결', doc.unresolved, snapshot.run.unresolved],
@@ -430,6 +453,8 @@ ${item}`))),
     missing_unresolved: snapshot.run.unresolved.filter(item => !doc.unresolved.includes(item)),
     missing_held: expectedHeld.filter(item => !doc.held.some(held => canonical(held) === canonical(item))).map(item => item.id ?? item.text),
     missing_scope_warnings: expectedScope.filter(item => !(doc.scope_warnings ?? []).some(warning => canonical(warning) === canonical(item))).map(item => item.id),
+    // Every stored gap must reach the export, including one whose need is missing from the output.
+    missing_gaps: output.gaps.filter(gap => !doc.comparison.some(row => row.gap_id === gap.id)).map(gap => gap.id),
     mismatched_fields: [
       ...fields.filter(([, actual, expected]) => canonical(actual) !== canonical(expected)).map(([label]) => label),
       ...doc.comparison.filter(row => row.missing_ids.length).map(row => `대조표 연결 자료 누락: ${row.need_id} (${row.missing_ids.join(', ')})`),
@@ -453,6 +478,19 @@ function cell(text: string): string {
 
 const DECISION_TEXT: Record<string, string> = { accept: '계약 검사 통과(의미 검증 아님)', hold: '보류', revise: '수정 중', unresolved: '미해결 종료' };
 const STATUS_TEXT: Record<string, string> = { completed: '완료', held: '보류', failed: '실패' };
+export const RESOLUTION_TEXT: Record<string, string> = { resolved: '불편 해소', remaining: '불편 남음', unknown: '해소 여부 알 수 없음' };
+export const POLARITY_TEXT: Record<string, string> = { complaint: '불편', positive: '긍정', conflicting: '상충', irrelevant: '무관', uncertain: '불확실' };
+const BASIS_TEXT: Record<string, string> = { explicit_supported: '설명서에 지원 명시', explicit_unsupported: '설명서에 미지원 명시', unmentioned: '설명서 미언급', conflicting: '설명서 상충' };
+
+/** The 판단 cell: current-feature support, then whether the pain was resolved, then a declared/basis mismatch. */
+export function comparisonVerdict(row: Pick<ExportDocument['comparison'][number], 'support_status' | 'resolution' | 'support_basis' | 'basis_mismatch'>): string {
+  return [
+    statusLabel(row.support_status),
+    row.resolution ? RESOLUTION_TEXT[row.resolution] ?? row.resolution : null,
+    row.basis_mismatch && row.support_basis ? `선언과 설명서 근거(${BASIS_TEXT[row.support_basis] ?? row.support_basis}) 불일치` : null,
+  ].filter(Boolean).join(' · ');
+}
+
 // correction_budget.terminal_reason (packages/core correction_budget.py); a failed run at revision_limit is not an execution error.
 const TERMINAL_TEXT: Record<string, string> = {
   revision_limit: '내부 수정 한도 도달(검사 위반이 남음, 실행 오류 아님)', hold: '보류로 종료(내부 수정 없음)', unresolved: '미해결 종료',
@@ -503,8 +541,9 @@ export function exportMarkdown(doc: ExportDocument): string {
     `- 제품군: ${doc.request.product_group}`, `- 대상 고객: ${doc.request.target_customer}`, `- 사용 상황: ${doc.request.use_situation}`,
     `- 기획 요청: ${doc.request.improvement_task}`, `- 제외 조건: ${doc.request.exclusions.join(', ') || '(없음)'}`, `- 검토 모델: ${doc.request.model_ids.join(', ')}`, '',
     '## 불편·기존 기능 대조표', '',
+    ...(doc.judgement?.record_valid && doc.judgement.decision !== 'accept' ? [`> 코어가 채택하지 않은 실행(${STATUS_TEXT[doc.judgement.status]})의 대조입니다. 원문 검토용이며 결론이 아닙니다. '판단'은 현재 기능의 설명서 지원이고, 불편 해소 여부는 따로 적었습니다.`, ''] : []),
     '| 모델 | 불편 | 연결 기능 | 기능 조건 | 판단 | 남은 불편 | 근거 | 확인할 질문 |', '|---|---|---|---|---|---|---|---|',
-    ...doc.comparison.map(row => `| ${cell(row.model_id)} | ${cell(`${row.need_id}: ${row.pain}`)} | ${cell(row.feature_ids.join(', ') || '없음')} | ${cell(row.conditions.join(', ') || '없음')} | ${cell(statusLabel(row.support_status))} | ${cell(row.remaining_pain || '-')} | ${cell(row.evidence_ids.join(', '))} | ${cell(row.questions.join(' / ') || '-')} |`),
+    ...doc.comparison.map(row => `| ${cell(row.model_id)} | ${cell(`${row.need_id}${row.gap_id ? `/${row.gap_id}` : ''}: ${row.pain}${row.desired_outcome ? ` → 바라는 결과: ${row.desired_outcome}` : ''}`)} | ${cell(row.feature_ids.join(', ') || '없음')} | ${cell(row.conditions.join(', ') || '없음')} | ${cell(comparisonVerdict(row))} | ${cell(row.remaining_pain || '-')} | ${cell(`${row.evidence_ids.join(', ')}${row.non_complaint_reviews.length ? ` · 불편 근거로 인용했지만 같은 실행이 불편으로 판단하지 않은 리뷰: ${row.non_complaint_reviews.map(item => `${item.evidence_id}(${POLARITY_TEXT[item.polarity] ?? item.polarity})`).join(', ')}` : ''}`)} | ${cell(row.questions.join(' / ') || '-')} |`),
     '', '## 콘셉트 후보', '',
   ];
   const rejected = doc.judgement?.record_valid ? doc.judgement.rejected_candidates : [];
