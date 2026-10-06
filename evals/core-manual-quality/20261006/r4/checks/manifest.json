@@ -1,0 +1,124 @@
+{
+  "record_id": "CORE-R4-01a10729",
+  "base_commit": "8f9d83fc7641ceaea7631c166137379645574ea8",
+  "source_sha256": {
+    "evals/core-manual-quality/20261006/r4/execution-manifest.json": "4758f251d1c90d2d01a437d357b4abfc4c8bfa73c18ab74ae1c4ebab9110a959",
+    "evals/core-manual-quality/20261006/r4/gateway-usage.json": "609bb6ce6ed6dd1023f390de48c4121754e7c7730539cfe6821c3e6f2493d7cc",
+    "evals/core-manual-quality/20261006/r4/results/fridge-changed.json": "2f19e0a0c00343231f3a03f1d388349532caf99d1f9783e7b00acbca37b23121",
+    "evals/core-manual-quality/20261006/r4/results/fridge-missing-manual.json": "b3a128e8fb49fbb3d4cdfdb778e3ae526f7ba2480150583c91edad97dd409862",
+    "evals/core-manual-quality/20261006/r4/results/fridge-normal.json": "4cf82fb2fe7f6c25750107c8f52388e276e4e5baa9661ba71f0670a5b58a8d26",
+    "evals/core-manual-quality/20261006/r4/run_three_cases.py": "47b80c3caa24dc915a59103b60273bc807ab0d7140bfbfc93c56dd64f46d2895",
+    "packages/core/src/lgax_core/planning_agent.py": "5e41905d5861dfc2b2e6a935b5e4873387999729fa9329d6271af02871f29d10",
+    "tests/test_recorded_hold_feedback.py": "e265525368c8ed8f1b1d65c6946e16b03f9be9d39e5cb338bb1e465795bbb2ea"
+  },
+  "full_regression": {
+    "tests_run": 1428,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3,
+    "live_generations": 0,
+    "receipt_id": "r4-full-175959",
+    "raw_log_sha256": "24639c23b058baaa4531ef4566970aaec948445ebb7c607f44cddb8291e4dcf3",
+    "source_unchanged": true,
+    "scope": "All1428 incl.2 new tests /3 recorded failure subcases",
+    "skip_reasons": [
+      "Windows bind path normalization fixture",
+      "explicit reviewed Docker image required for real proof",
+      "Windows Docker source alias fixture"
+    ]
+  },
+  "static": {
+    "receipt_id": "r4-static-175959",
+    "raw_log_sha256": "533b19be88df058ac7e69cad20eaf263d88bb96e8839896899df1fc505bb402e",
+    "exit_code": 0,
+    "agent_rules_bytes": "match",
+    "historical_member_logs": "verified",
+    "harness": "pass",
+    "contracts": "pass",
+    "phase2": "pass",
+    "inference_bootstrap_hashes": "pass",
+    "fixed_input_sha": "pass3",
+    "mcp_stdio_fixture_calls": 5,
+    "ruff_changed_python": "pass",
+    "live_generations": 0
+  },
+  "execution": {
+    "image": "sha256:36ad082dbccf05bc9cff7c4dc5766e9ab7ed8c42198b0b731cf3831c546aaaf0",
+    "network": "none",
+    "uid": 65534,
+    "read_only_source": true,
+    "host_credentials_mounted": false,
+    "execution_copy": "separate writable in-container tmpfs; read-only host snapshot unchanged"
+  },
+  "baseline": {
+    "tests_run": 2,
+    "recorded_subcase_errors": 3,
+    "reason": "Existing correction feedback lacks details; real question hold unchanged",
+    "production_exception_claimed": false,
+    "live_generations": 0
+  },
+  "attempt_history": [
+    {
+      "receipt_id": "r4-baseline-175447",
+      "exit_code": 1,
+      "phase": "baseline",
+      "tests": {
+        "tests_run": 2,
+        "failures": 0,
+        "errors": 3,
+        "skipped": 0,
+        "live_generations": 0
+      },
+      "raw_log_sha256": "51d38db9f216df72cd44b4ef4ff1e4a868559b05824c8c63fb02aa484d85fe69"
+    },
+    {
+      "receipt_id": "r4-full-175627",
+      "exit_code": 0,
+      "phase": "full",
+      "tests": {
+        "tests_run": 1428,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 3,
+        "live_generations": 0
+      },
+      "raw_log_sha256": "8150e110f8264f52deeb41588fddc760d2944096513218043e19f676bc0abf0b"
+    },
+    {
+      "receipt_id": "r4-full-175959",
+      "exit_code": 0,
+      "phase": "full",
+      "tests": {
+        "tests_run": 1428,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 3,
+        "live_generations": 0
+      },
+      "raw_log_sha256": "24639c23b058baaa4531ef4566970aaec948445ebb7c607f44cddb8291e4dcf3"
+    },
+    {
+      "receipt_id": "r4-static-175909",
+      "exit_code": 1,
+      "phase": "static",
+      "tests": null,
+      "raw_log_sha256": "bc9cbdc5ccda9d1d23bb91a9d75efb72230b552c0865cc04e8a80a0120dd4e5f"
+    },
+    {
+      "receipt_id": "r4-static-175959",
+      "exit_code": 0,
+      "phase": "static",
+      "tests": null,
+      "raw_log_sha256": "533b19be88df058ac7e69cad20eaf263d88bb96e8839896899df1fc505bb402e"
+    }
+  ],
+  "feedback_patch_live_reverified": false,
+  "not_completed": [
+    "normal/changed candidate accept",
+    "appropriate missing-manual hold",
+    "same actual run WEB/MCP user flow",
+    "independent quality review",
+    "deferred original same27B regression",
+    "PM final acceptance and parent Done"
+  ]
+}
