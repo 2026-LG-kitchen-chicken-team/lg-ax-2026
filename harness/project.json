@@ -410,6 +410,14 @@
       "checked_at": "2026-10-03",
       "supports": "발표자료·시연 영상·소스코드 ZIP, 기본 배점 20/20/10/30/20, SKILL.md 필수, 실제 과정 시연, 바이브 코딩 허용",
       "limitations": "사용자 제공 주최 측 안내, 발행일 미표시. 제출 시각·경로·용량·영상 길이·발표 분량 변경·가산점 세부 미기재"
+    },
+    {
+      "id": "S_LLM_API_20261006",
+      "title": "10/6 팀별 LLM API 키 지원 예정 문자",
+      "locator": "docs/LLM_API지원_2026-10-06.md",
+      "checked_at": "2026-10-06",
+      "supports": "사용자 제공 14:34 문자: LLM API 비용 지급 대신 팀별 API 키 발급 예정",
+      "limitations": "키 수령·공급사·모델·한도·기간·지원 API 의무/로컬 병행 조건 미확인; 문자 발송 시스템 독립 검증 없음"
     }
   ],
   "candidates": [
@@ -1414,7 +1422,7 @@
       "next_action": "변경 공지 발생 시 갱신",
       "evidence": {
         "path": "docs/대회요건.md",
-        "sha256": "2c36070c4791f14157b6b92cec3f9fc86635bd6c846ed9a690198d4460f2ad2f"
+        "sha256": "5719bdafa3470846fe89fcd801e97e5a2a6669fd44c0545b4ad6ee994035191d"
       }
     },
     {
@@ -2004,26 +2012,45 @@
     "purpose": "preserve_user_intent_interpretation_actual_work_evidence_and_resume_context_between_team_AI_agents",
     "status": "instruction_and_document_framework_verified",
     "pm": "정이량",
+    "storage_layout": {
+      "effective_date": "2026-10-06",
+      "manual_entry_pattern": "docs/{작업기록|작업근거}/{성명}/{YYYY-MM-DD}/{고유기록ID}.md",
+      "resume_entrypoint": "docs/{작업기록|작업근거}/{성명}/README.md",
+      "migration_manifest": "docs/작업기록/이관/20261006/manifest.json",
+      "legacy_report_entrypoint": "docs/{작업기록|작업근거}/{성명}.md",
+      "immutable_automation_sessions": "docs/{작업기록|작업근거}/세션/{성명}/{jobID}.md",
+      "automation_writer_migrated": false,
+      "verification_command": "python scripts/migrate_member_logs.py --verify",
+      "historical_rule_hashes_are_snapshot_metadata": true
+    },
     "member_files": [
       {
         "member": "정이량",
-        "work_log": "docs/작업기록/정이량.md",
-        "evidence_log": "docs/작업근거/정이량.md"
+        "work_log": "docs/작업기록/정이량/README.md",
+        "evidence_log": "docs/작업근거/정이량/README.md",
+        "compatibility_work_log": "docs/작업기록/정이량.md",
+        "compatibility_evidence_log": "docs/작업근거/정이량.md"
       },
       {
         "member": "황대겸",
-        "work_log": "docs/작업기록/황대겸.md",
-        "evidence_log": "docs/작업근거/황대겸.md"
+        "work_log": "docs/작업기록/황대겸/README.md",
+        "evidence_log": "docs/작업근거/황대겸/README.md",
+        "compatibility_work_log": "docs/작업기록/황대겸.md",
+        "compatibility_evidence_log": "docs/작업근거/황대겸.md"
       },
       {
         "member": "신진하",
-        "work_log": "docs/작업기록/신진하.md",
-        "evidence_log": "docs/작업근거/신진하.md"
+        "work_log": "docs/작업기록/신진하/README.md",
+        "evidence_log": "docs/작업근거/신진하/README.md",
+        "compatibility_work_log": "docs/작업기록/신진하.md",
+        "compatibility_evidence_log": "docs/작업근거/신진하.md"
       },
       {
         "member": "최길웅",
-        "work_log": "docs/작업기록/최길웅.md",
-        "evidence_log": "docs/작업근거/최길웅.md"
+        "work_log": "docs/작업기록/최길웅/README.md",
+        "evidence_log": "docs/작업근거/최길웅/README.md",
+        "compatibility_work_log": "docs/작업기록/최길웅.md",
+        "compatibility_evidence_log": "docs/작업근거/최길웅.md"
       }
     ],
     "guide_evidence": {
@@ -2092,5 +2119,34 @@
     "application_requirements_verified": 0,
     "notion_synced": true,
     "notion_verified_at": "2026-10-04"
+  },
+  "llm_api_support_notice": {
+    "source_id": "S_LLM_API_20261006",
+    "guide": "docs/LLM_API지원_2026-10-06.md",
+    "checked_at": "2026-10-06",
+    "status": "team_key_issuance_planned",
+    "key_received": null,
+    "provider": null,
+    "model": null,
+    "usage_limit": null,
+    "valid_until": null,
+    "mandatory_use": null,
+    "local_model_policy": "not_prohibited_in_reviewed_sources_pending_organizer_confirmation",
+    "runtime_changed": false,
+    "model_calls": 0,
+    "notion_sync": "verified",
+    "notion_verified_at": "2026-10-06T14:49:00+09:00",
+    "reported_credit_equivalent_krw": 100000,
+    "credit_amount_source": "user_report_20261006",
+    "credit_amount_verified_from_screenshot_or_key": false,
+    "development_demo_evaluation_allowed_scope": null,
+    "coding_tool_api_spend_allowed": null,
+    "previous_requirements_evidence": {
+      "path": "evals/pm-notices/20261006/requirements-before-api-notice.md",
+      "sha256": "2c36070c4791f14157b6b92cec3f9fc86635bd6c846ed9a690198d4460f2ad2f",
+      "original_path": "docs/대회요건.md",
+      "base_commit": "e0f3baa700b037872e8e3b5b7e906c3a28528faf"
+    },
+    "reviewed_requirements_sha256": "5719bdafa3470846fe89fcd801e97e5a2a6669fd44c0545b4ad6ee994035191d"
   }
 }

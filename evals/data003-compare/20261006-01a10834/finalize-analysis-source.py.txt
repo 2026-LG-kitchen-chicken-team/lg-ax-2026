@@ -1,0 +1,142 @@
+"""Additional arithmetic checks and local handoff artifacts; no repository imports."""
+import csv
+import hashlib
+import json
+import math
+import re
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+OUT = Path(__file__).resolve().parent
+ROOT = OUT.parent.parent
+PREP = OUT / "prepared"
+OLD = ROOT / ".worktrees/data003-preparation"
+
+
+def read(path):
+    return json.loads(path.read_text("utf-8-sig"))
+
+
+def save(name, data):
+    with (PREP / name).open("x", encoding="utf-8", newline="\n") as handle:
+        json.dump(data, handle, ensure_ascii=False, indent=2)
+        handle.write("\n")
+
+
+def csvwrite(name, rows):
+    with (PREP / name).open("x", encoding="utf-8-sig", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+queries = {q["id"]: q for q in read(OLD / "evals/data003-preparation/20261005/queries.json")}
+results = read(OLD / "evals/data003-live/20261005/retrieval-v1/results.json")
+checks = []
+for row in results["results"]:
+    gold = set(queries[row["query_id"]]["relevant_evidence_ids"])
+    for attempt in row["latency_attempts"]:
+        if not gold:
+            continue
+        ids = [e["id"] for e in attempt.get("ranking", [])[:3]]
+        values = {"hit_at_1": int(bool(ids) and ids[0] in gold),
+                  "recall_at_3": len(gold.intersection(ids)) / len(gold),
+                  "mrr_at_3": next((1 / (i + 1) for i, eid in enumerate(ids) if eid in gold), 0)}
+        checks.extend({"name": f'{row["method"]}:{row["query_id"]}:{attempt["repeat"]}:{k}',
+                       "pass": math.isclose(v, row[k], abs_tol=1e-10)} for k, v in values.items())
+
+ledger = read(PREP / "ocr-error-ledger.json")
+numeric_rechecks = []
+for row in ledger["rows"]:
+    if not row["field_target"]:
+        continue
+    text = " ".join(row["recognized"].split())
+    if "*" in row["gold_text"]:
+        text = re.sub(r"\*\d+$", "", text)
+    observed = [float(n) for n in re.findall(r"(?<![\w.])-?\d+(?:\.\d+)?", text)]
+    value = row["field_target"]["value"]
+    target = value if isinstance(value, list) else [value]
+    correct = sum(i < len(observed) and observed[i] == n for i, n in enumerate(target))
+    units = re.findall(r"[A-Za-z]+|인용", text)
+    unit_correct = min(sum(u == row["field_target"]["unit"] for u in units), row["unit_total"]) if row["unit_total"] else None
+    checks.extend([{"name": row["region_id"] + ":numeric_value", "pass": correct == row["numeric_correct"]},
+                   {"name": row["region_id"] + ":strict_numeric_field", "pass": (observed == target) == row["strict_numeric_field_correct"]},
+                   {"name": row["region_id"] + ":explicit_unit", "pass": unit_correct == row["explicit_unit_correct"]}])
+    numeric_rechecks.append({"region_id": row["region_id"], "source_gold": row["gold_text"], "recognized": row["recognized"],
+        "target_values": target, "parsed_values": observed, "parsed_units": units, "base_numeric_correct": correct,
+        "strict_numeric_field_correct": observed == target, "explicit_unit_correct": unit_correct,
+        "footnote_error": "ASCII *1 recognized as Unicode ∗1, so strict parser retains an extra 1" if row["region_id"] == "OCR-MW-TABLE-05" else None})
+assert all(c["pass"] for c in checks)
+save("independent-arithmetic-checks.json", {"kind": "saved ranking/typed-field recalculation, not independent Agent evaluation",
+    "checks": checks, "pass_count": len(checks), "new_model_calls": 0, "new_OCR_calls": 0,
+    "numeric_fields": numeric_rechecks})
+
+manifest = read(PREP / "corpus-manifest.json")
+rows = []
+for e in manifest["evidence"]:
+    original = e["original"]
+    rows.append({"evidence_id": e["id"], "model_id": e["model_id"], "document_version": e["document_version"],
+        "source_id": e["source_id"], "source_kind": e["source_kind"], "source_type": e["source_type"],
+        "page": original["page"], "start_char": original["start_char"], "end_char": original["end_char"],
+        "original_pdf_sha256": e["source_pdf_sha256"], "raw_text_sha256": e["raw_text_sha256"], "raw_text": e["text"]})
+csvwrite("current-corpus-lineage.csv", rows)
+save("13-handoff-contract.json", {"purpose": "read-only comparison intake; no registration/code/API/schema changes",
+    "expected_version": manifest["dataset_version"], "expected_evidence_count": 21,
+    "manifest_sha256": hashlib.sha256((PREP / "corpus-manifest.json").read_bytes()).hexdigest(),
+    "required_artifacts": ["fixed code commit", "actual registration/parse/store receipt and dataset export",
+        "model/revision-scoped search raw responses including search_method", "all 21 ID get_evidence raw responses",
+        "original PDF SHA256 and page/Unicode end-exclusive span/text hash", "restart persistence receipt"],
+    "comparison_fields": ["id", "model_id", "document_version", "source_kind", "source_type", "source_id", "locator", "text"],
+    "checks": ["exact exported scope/ID/text/hash equality; no alias substitution or normalization",
+        "changed export becomes a separately versioned comparison input, never overwrites this preparation",
+        "literal_token_count API timings are separate from BM25/BGE/reranker timings",
+        "zero results does not establish unsupported product functionality"],
+    "received": False, "actual_API_registration_run_by_14": False, "all_current_expected_rows": rows})
+
+save("ocr-table-review-plan.json", {"execution_status": "not_executed; manual row crops cannot score table extraction",
+    "new_detection_or_layout_model_selected": False,
+    "raw_character_numeric_unit_errors": "ocr-error-ledger.json",
+    "source_table_checks": [
+        {"model_id": "DUE6BGL2E", "page": 57, "evidence_id": "DATA003-DUE6BGL2E-D03",
+         "expected_header": "DUE6**E/DUE6***E/DUE6****E/DEE6**E built-in right column",
+         "expected_values": [598, 815, 567], "unit": "mm",
+         "condition": "same values also appear for freestanding with top removed; retain column/type header",
+         "observed_table_assignment": None, "table_error": None},
+        {"model_id": "MW23FDI", "page": 37, "evidence_id": "DATA003-MW23FDI-M06",
+         "expected_values": [1000], "unit": "W", "condition": "Max. and *1 short-time output footnote; not constant output",
+         "observed_table_assignment": None, "table_error": None},
+        {"model_id": "MW23FDI", "page": 37, "evidence_id": "DATA003-MW23FDI-M07",
+         "expected_values": [1570], "unit": "W", "condition": "rated electrical consumption distinct from microwave output",
+         "observed_table_assignment": None, "table_error": None}],
+    "record_on_receipt": ["source model/header and document revision", "row/column/header/value binding",
+        "decimal/minus/multiplication symbols/footnote/unit omissions", "wrong table column or physical quantity",
+        "expected vs actual text and hashes; unmeasured field remains null"],
+    "no_duplicate_70_attempt_run_planned": True})
+
+tree = {v["path"] for v in read(OUT / "github/tree.json")["tree"] if v["type"] == "blob"}
+source = read(OUT / "main-reference/evals/pm-data-intake/20261006/source-intake.json")
+patch = read(OLD / "evals/data003-independent/20261005-01a10834/proposed-source.json")
+save("PR-intake-scope.json", {"checked_main": read(OUT / "snapshot.json")["current_main"],
+    "PR131": {"closed": True, "merged": False, "head": read(OUT / "github/pr131.json")["head"]["sha"],
+        "benchmark_artifacts_same_main_blobs": 61, "other_14_development_review_files": "archived/source-PR reference; not used as independent evaluation",
+        "PM_decision": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/131#issuecomment-6007678212"},
+    "PR141": {"closed": True, "merged": False, "head": read(OUT / "github/pr141.json")["head"]["sha"],
+        "six_evidence": "confirmed in current PM dataset; not registered again",
+        "preservation_consumer": "manual follow-up assigned to #13, not modified by #14",
+        "PM_decision": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/141#issuecomment-6007674449"},
+    "source_intake_entries_for_131_141": [x for x in source["imported"] if x.get("source_pr") in [131, 141]],
+    "source_intake_exclusions": source["excluded"], "whole_PR_merge_or_parent_Done_claimed": False})
+
+save("session-status.json", {"current_at_kst": datetime.now(timezone(timedelta(hours=9))).isoformat(),
+    "completed": ["PM/main/PR intake read-only check", "75-artifact byte preservation", "225 search/70 OCR recalculation",
+        "27-summary versus 21-quote comparison and full lineage", "six PM-accepted evidence confirmation",
+        "15 same-question inputs and 225-row new measurement template", "OCR character/number/unit error ledger and unmeasured table review plan"],
+    "pending": ["13 actual fixed registration/export/API/original/restart handoff",
+        "FR-01 gold mapping PM decision", "approved isolated model runtime and reservation",
+        "new same-corpus search execution and tokenizer length check", "actual table extraction output measurement", "PM intake"],
+    "not_performed": ["new model/OCR call", "document registration", "preservation code changes", "judgment core/web/API/schema edits",
+        "server deployment/model service/automation/auth changes", "independent final evaluation", "push/Issue/PR/message posting"],
+    "latest_13_observation": "11:50 KST: #13 reports 409 reservation conflict with #12; runtime handoff not yet available",
+    "publication": "local only; latest user requires confirmation before new posting/PR"})
+print(json.dumps({"additional_arithmetic_checks": len(checks), "all_pass": True, "historical_measurement_count": "225 + 70",
+    "new_model_calls": 0, "handoff_contract_ready": True}, ensure_ascii=False))

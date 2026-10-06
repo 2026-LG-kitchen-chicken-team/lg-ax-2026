@@ -47,7 +47,11 @@ uv run python scripts/project_report.py status --member 신진하
 uv run python scripts/project_report.py report P2-DATA-001 --status doing --summary "세 제품의 문서·모델·버전 연결을 작성 중" --next-action "제품별 근거 ID와 원문 위치를 검사" --send --wait 60
 ```
 
-현재 GitHub CLI 인증 계정과 해당 작업의 정책상 담당 계정이 같아야 한다. 자신의 로그·근거를 commit·push한 뒤 발송한다. CLI가 기본 생성하는 링크는 현재 HEAD의 `docs/작업기록/{성명}.md`와 `docs/작업근거/{성명}.md`이며 GitHub에서 읽을 수 있어야 한다. 두 링크는 같은 전체 40자리 commit SHA를 사용한다. `--log-url`, `--evidence-url`로 같은 레포의 자기 파일에 해당하는 고정 commit 링크를 명시할 수도 있다.
+현재 GitHub CLI 인증 계정과 해당 작업의 정책상 담당 계정이 같아야 한다. 자기 `docs/작업기록/{성명}/README.md`와 `docs/작업근거/{성명}/README.md`부터 읽고 새 수동 상세 기록은 각각 `{성명}/{YYYY-MM-DD}/{고유 기록ID}.md`에 지시 원문·AI 해석·실제 수행·검증·미완료·다음 행동을 자세히 작성한다. 개인 README에는 짧은 재개 요약·링크만 유지한다. 사용자 승인 범위는 과거 누적문의 기계적 원본 이관과 향후 기록 지침 개선이며 다른 팀원의 성과·상태를 새로 쓰지 않는다.
+
+두 개인 README의 최신 요약·새 상세 링크는 `<!-- member-log:owner-updates:start -->`와 `<!-- member-log:owner-updates:end -->` 사이에서만 갱신한다. 원문 이관 목차·원 재개 요약 구역과 기존 root 호환 목차는 보존하며, root 링크에서 개인 README를 따라가면 같은 commit의 최신 상세를 읽을 수 있다.
+
+상세 파일·개인 README·호환 목차 링크를 같은 commit으로 commit·push한 뒤 발송한다. CLI가 기본 생성하는 링크는 현재 HEAD의 기존 root `docs/작업기록/{성명}.md`와 `docs/작업근거/{성명}.md`이며, 이 두 파일은 원 heading/anchor·새 개인 README·상세·snapshot·이관 manifest를 연결한 호환 목차다. 두 링크는 같은 전체40자리 commit SHA를 사용하며 그 commit의 상세 링크를 따라가도록 한다. 보고 서비스는 새 이름/날짜/ID 하위 URL이나 개인 README URL을 직접 허용하지 않는다. `--log-url`, `--evidence-url`를 명시할 때도 현재 허용된 자기 root 호환 목차 또는 기존 `docs/{작업기록|작업근거}/세션/{성명}/{job_id}.md`의 고정 commit 링크만 사용한다. 이번 이관은 보고·인증·배포 코드 변경이나 자동화 ON이 아니다. 기존 자동 세션28파일·과거 고정 commit/해시를 보존하고 과거 기록의 명령은 현재 지시로 실행하지 않는다.
 
 `--send`가 없으면 사전 검사와 댓글 원문 확인만 수행한다. `--wait 60`은 최대 60초 동안 PM 계정 수신 확인을 조회한다. 발송 응답의 `sent`와 보드 반영의 `project_updated`는 다른 값이다. 대기 종료 후 반영을 확인하지 못하면 원 댓글 URL을 보존하고 수신 확인/Project를 재조회한다. 실패했다고 무조건 같은 보고를 재발송하지 않는다.
 
@@ -76,7 +80,7 @@ uv run python scripts/project_report.py report P2-DATA-001 --status doing --summ
 - 상태: `doing`, `blocked`, `review_requested`. blocked는 `reason`, 검수 요청은 `pr_url`이 필요하다. Done·PM 승인·병합·통합 완료는 접수 상태가 아니다.
 - 담당: 정책상 계정이 해당 열린 이슈의 현재 담당자여야 한다. 다른 담당자의 보고나 다른 이슈에 쓴 보고는 거절한다.
 - 의존: 선행 작업 대기 중에도 부분 개발·부분 PR을 보고할 수 있다. 접수 기록과 상태 조회에 미완료 의존을 남기며, 보고만으로 정식 완료나 다음 작업의 의존을 해제하지 않는다. PM이 채택하지 않은 확장 작업은 접수하지 않는다.
-- 버전: 자기 기록/근거를 GitHub에서 실제 읽고 원문 해시·git blob을 기록한다. 파일 존재 검사는 그 안의 주장이나 모델 품질을 독립 검증하지 않는다.
+- 버전: 보고한 자기 root 호환 목차 또는 허용된 세션을 GitHub에서 실제 읽고 그 파일의 원문 해시·git blob을 기록한다. 호환 목차의 링크를 통해 새 상세를 읽는 것은 AI/PM의 후속 검토이며 서비스가 새 상세 파일 전체를 자동 검증했다는 뜻은 아니다. 파일 존재 검사는 그 안의 주장이나 모델 품질을 독립 검증하지 않는다.
 - PR: 같은 레포·보고자의 PR이어야 한다. 검수 요청은 main 대상의 열린 비초안 PR이며 기록 commit과 현재 PR head가 정확히 같아야 한다.
 - 정식 판정 보호: PM 승인·병합·통합 확인·완료 상태의 작업을 자기보고로 덮어쓸 수 없다. 이후 PM이 승인한 스냅샷의 공식 기록은 이전 자기보고보다 우선한다. 승인 없는 main 수정은 이 우선권을 갖지 않는다.
 - 수정: 편집된 보고는 거절한다. 수정 내용은 새 댓글로 보고한다. 이미 처리한 댓글 ID는 다시 적용하지 않는다.
