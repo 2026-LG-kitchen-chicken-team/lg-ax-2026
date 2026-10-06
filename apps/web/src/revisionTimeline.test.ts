@@ -5,7 +5,7 @@ import type { Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { buildRevisionTimeline, RevisionTimeline } from './RevisionTimeline';
 import { FIXTURE_ORIGINAL_REQUEST, FIXTURE_RUNS } from './fixtures/planning.fixture';
-import type { RunSnapshot } from './planning';
+import type { DataMode, RunSnapshot } from './planning';
 
 const [first, second] = FIXTURE_RUNS;
 const original = FIXTURE_ORIGINAL_REQUEST;
@@ -130,20 +130,44 @@ describe('RevisionTimeline renders in the DOM', () => {
     host.remove();
     vi.unstubAllGlobals();
   });
-  const mount = (runs: RunSnapshot[], selectedId: string, onSelect = vi.fn()) =>
-    act(async () => root.render(createElement(RevisionTimeline, { runs, selectedId, original, mode: 'fixture', onSelect })));
+  const mount = (runs: RunSnapshot[], selectedId: string, onSelect = vi.fn(), mode: DataMode = 'fixture') =>
+    act(async () => root.render(createElement(RevisionTimeline, { runs, selectedId, original, mode, onSelect })));
 
   it('shows causes, data versions and internal revisions per round', async () => {
     const third = dataChanged();
     await mount([first, second, third], third.run.id);
     expect(host.textContent).toContain('합성 예시 · 실제 Agent 실행 결과가 아닙니다');
     const items = [...host.querySelectorAll<HTMLElement>('li[data-run-id]')];
+    expect(host.querySelectorAll('.timeline > li')).toHaveLength(3);
+    // Data/candidate details contain their own list items; they are not runs.
+    expect(host.querySelectorAll('.timeline li').length).toBeGreaterThan(3);
     expect(items.map(item => item.dataset.causes)).toEqual(['original', 'user_condition_change', 'data_version_change']);
     expect(items[2].querySelector('[data-field="internal"]')?.textContent).toContain('2 / 2회');
     expect(items[2].querySelector('[data-field="data-version"]')?.textContent).toContain('FRIDGE-A 2.0');
     expect(items[2].querySelector('[data-field="data-changes"]')?.textContent).toContain('FRIDGE-A 문서 1.0 → 2.0');
     expect(items[1].querySelector('[data-field="request-changes"]')?.textContent).toContain('문서 2.0 부분 분리 트레이와 같은 기능 제외');
     expect(host.querySelector('[data-held]')).toBeNull();
+  });
+  it.each([
+    ['completed', '분석 완료'], ['held', '보류'], ['failed', '실패'],
+    ['not_implemented', '요청만 저장됨'], ['pending', '진행 중'], ['running', '진행 중'],
+  ] as const)('shows saved %s status and its stage on the run row', async (status, label) => {
+    const saved: RunSnapshot = { ...first, run: { ...first.run, status, concepts: [] } };
+    await mount([saved], saved.run.id, vi.fn(), 'api');
+    const shown = host.querySelector('[data-field="run-status"]');
+    expect(shown?.textContent).toContain(label);
+    expect(shown?.textContent).toContain(`${status} · ${saved.run.stage}`);
+    expect(shown?.textContent).not.toContain('fixture 예시');
+  });
+  it('marks hand-written fixture status as an example, but marks an unexecuted local draft as request-only', async () => {
+    await mount([first], first.run.id);
+    expect(host.querySelector('[data-field="run-status"]')?.textContent).toContain(`fixture 예시 · ${first.run.status}`);
+    const draft: RunSnapshot = { ...second, run: { ...second.run, id: 'RUN-DRAFT-STATUS', status: 'not_implemented', concepts: [] },
+      actor_id: 'local-draft', previous_run_id: second.run.id, created_at: '2026-10-04T08:20:00.000000Z' };
+    await mount([first, second, draft], draft.run.id);
+    const row = host.querySelector('[data-run-id="RUN-DRAFT-STATUS"] [data-field="run-status"]');
+    expect(row?.textContent).toContain('요청만 저장됨');
+    expect(row?.textContent).not.toContain('fixture 예시');
   });
   it('shows a held notice instead of a comparison for a broken link, and selection calls back', async () => {
     const orphan = { ...second, previous_run_id: 'RUN-NOPE' };

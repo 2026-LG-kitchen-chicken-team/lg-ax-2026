@@ -1,6 +1,7 @@
 /** Revision timeline: tells the original request, user condition changes, data changes and Agent-internal revisions apart. */
-import { conceptDetailChanges, nextRequestRevision, requestChanges } from './planning';
+import { conceptDetailChanges, FIXTURE_NOTICE, nextRequestRevision, requestChanges } from './planning';
 import type { ConceptDetailChange, DataMode, PlanningRequest, RequestChange, RunSnapshot } from './planning';
+import { runStatusView } from './liveWorkspace';
 
 export type RevisionCause = 'original' | 'user_condition_change' | 'data_version_change' | 'unchanged_rerun';
 
@@ -14,6 +15,9 @@ export interface RevisionEntry {
   run_id: string;
   previous_run_id: string | null;
   request_revision: number;
+  status: RunSnapshot['run']['status'];
+  stage: RunSnapshot['run']['stage'];
+  local_draft: boolean;
   causes: RevisionCause[];
   request_changes: RequestChange[];
   /** null when there is no earlier run to compare with (first run); the baseline is then the original request only. */
@@ -118,6 +122,7 @@ export function buildRevisionTimeline(runs: RunSnapshot[], selectedId: string, o
       && (parent === null || !isIntermediateRun(parent) && parent.run.status !== 'not_implemented' && !recordProblems(parent).length);
     return {
       run_id: snapshot.run.id, previous_run_id: snapshot.previous_run_id, request_revision: snapshot.request_revision, causes,
+      status: snapshot.run.status, stage: snapshot.run.stage, local_draft: snapshot.actor_id === 'local-draft',
       request_changes: requestDiff, data_changes: data,
       internal_revision: { count: snapshot.run.revision_count, max: snapshot.run.max_revisions },
       dataset_version: snapshot.run.dataset_version, dataset_sha256: snapshot.dataset_sha256, document_versions: { ...snapshot.document_versions },
@@ -139,10 +144,16 @@ export function RevisionTimeline({ runs, selectedId, original, mode, onSelect }:
     <p className="eyebrow">REVISIONS</p><h3>수정 이력</h3>
     <p className="hint">{mode === 'fixture' ? '화면 확인용 합성 예시 · 실제 Agent 실행 결과가 아닙니다.' : '서버에 저장된 실행 기록 · 자료 성격은 각 실행의 근거 원문에서 확인하세요.'}</p>
     {problems.length ? <div className="unresolved" role="alert" data-held="true"><strong>연결 보류</strong><ul>{problems.map(item => <li key={item}>{item}</li>)}</ul></div> : null}
-    <ol className="timeline">{entries.map(entry => <li key={entry.run_id} data-run-id={entry.run_id} data-causes={entry.causes.join(' ')} aria-current={entry.run_id === selectedId ? 'true' : undefined}>
+    <ol className="timeline">{entries.map(entry => {
+      const view = runStatusView(entry.status);
+      const fixture = mode === 'fixture' && !entry.local_draft;
+      return <li key={entry.run_id} data-run-id={entry.run_id} data-causes={entry.causes.join(' ')} aria-current={entry.run_id === selectedId ? 'true' : undefined}>
       <button type="button" className={entry.run_id === selectedId ? 'active' : ''} aria-current={entry.run_id === selectedId ? 'true' : undefined} onClick={() => onSelect?.(entry.run_id)}>
         <span className="id">{entry.run_id}</span><strong>요청 회차 {entry.request_revision} · {entry.causes.map(cause => CAUSE_LABEL[cause]).join(' + ')}</strong>
         <small>{entry.previous_run_id ? `← ${entry.previous_run_id}` : '첫 실행(원 요청 기준)'}</small>
+        <span className={`run-status ${fixture ? 'fixture' : view.tone}`} data-field="run-status" title={fixture ? FIXTURE_NOTICE : view.detail}>
+          {fixture ? `fixture 예시 · ${entry.status}` : view.label}<small>{entry.status} · {entry.stage}</small>
+        </span>
       </button>
       <p data-field="internal" className="muted">Agent 내부 수정 {entry.internal_revision.count} / {entry.internal_revision.max}회 (실행 내부 회차이며 사용자 변경이 아님)</p>
       <p data-field="data-version" className="muted">사용한 자료: {entry.dataset_version} · sha256 {entry.dataset_sha256} · 문서 {versions(entry.document_versions)}</p>
@@ -158,6 +169,7 @@ export function RevisionTimeline({ runs, selectedId, original, mode, onSelect }:
         : entry.concept_changes.length
           ? <ul data-field="candidates">{entry.concept_changes.map(change => <li key={change.id} data-concept-id={change.id}><span className="id">{change.id}</span>{change.title} · {change.status[0] ?? '없음'} → {change.status[1] ?? '없음'}{change.text.title ? ` · 제목 "${change.text.title.before}" → "${change.text.title.after}"` : ''}{change.text.differentiation ? ` · 차별점 변경` : ''}</li>)}</ul>
           : <p className="muted" data-field="candidates">{entry.previous_run_id ? '이전 실행 대비 후보 변화가 없습니다.' : '첫 실행의 후보입니다.'}</p>}
-    </li>)}</ol>
+    </li>;
+    })}</ol>
   </section>;
 }

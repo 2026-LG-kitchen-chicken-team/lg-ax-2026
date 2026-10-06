@@ -116,11 +116,11 @@ test('live: connect, save a request, rerun with a corrected condition on the rea
   await expect(page.locator('.request-form .inline-message')).toContainText('요청 저장 완료 · 분석 결과 아님');
 
   await openArea(page, '수정 이력');
-  const before = await page.locator('.timeline li').count();
+  const before = await page.locator('.timeline > li').count();
   const rerun = page.getByRole('form', { name: '후보·조건 선택 후 재실행' });
   await rerun.getByLabel('추가 조건').fill(`E2E 조건 ${Date.now()}`);
   await rerun.getByRole('button', { name: '조건 추가' }).click();
   await rerun.getByRole('button', { name: '다시 실행 요청' }).click();
-  await expect(page.locator('.timeline li')).toHaveCount(before + 1);
-  await expect(page.locator('.timeline li').last()).toContainText('요청만 저장됨');
+  await expect(page.locator('.timeline > li')).toHaveCount(before + 1);
+  await expect(page.locator('.timeline > li').last()).toContainText('요청만 저장됨');
 });
