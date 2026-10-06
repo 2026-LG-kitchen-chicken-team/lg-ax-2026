@@ -308,6 +308,32 @@ export interface PlanningExecution {
   correction_budget?: { revision_count: number; max_revisions: number; closed: boolean; terminal_reason: string | null; attempts?: unknown[] };
 }
 
+/** packages/core feature_support.py SUPPORT: the support_status a gap's manual basis allows. */
+export const SUPPORT_FROM_BASIS: Record<string, string> = { explicit_supported: 'supported', explicit_unsupported: 'unsupported', unmentioned: 'insufficient_evidence', conflicting: 'insufficient_evidence' };
+
+/**
+ * Stored judgement facts shown next to each comparison row (record 034 audit U2). "supported" only means the current
+ * feature is documented — the core prompt says so even when the desired outcome is not met — so the resolution, the
+ * desired outcome and the review polarity are read from the same run's record. Display only; nothing is re-judged.
+ */
+export interface JudgedNotes {
+  accepted: boolean; status: PlanningExecution['status'];
+  resolution: Map<string, string>; basis: Map<string, string>; desired: Map<string, string>; polarity: Map<string, string>;
+}
+
+export function judgedNotes(snapshot: RunSnapshot): JudgedNotes | null {
+  const view = planningExecutionView(snapshot);
+  if (view.kind !== 'ok' || !view.execution.output) return null;
+  const output = view.execution.output;
+  return {
+    accepted: acceptedStoredExecution(snapshot, view), status: view.execution.status,
+    resolution: new Map(output.gap_assessments.map(item => [item.gap_id, item.resolution])),
+    basis: new Map(output.gap_assessments.map(item => [item.gap_id, item.support_basis])),
+    desired: new Map(output.desired_outcomes.map(item => [item.need_id, item.desired_outcome])),
+    polarity: new Map(output.review_assessments.map(item => [item.evidence_id, item.polarity])),
+  };
+}
+
 /** How many candidates the model produced that the core turned down (rejected_output); never selectable. */
 export function rejectedCandidateCount(snapshot: RunSnapshot): number {
   const execution = (snapshot.output as { planning_execution?: { rejected_output?: { concepts?: unknown } } } | null)?.planning_execution;

@@ -16,7 +16,7 @@ import type { PlanningExecution } from './judgement';
 import { runStatusView } from './liveWorkspace';
 import { ConceptsView, HistoryView } from './PlanningViews';
 import type { MeasureControls } from './PlanningViews';
-import { buildExport, contractErrors, exportMarkdown } from './planning';
+import { buildComparison, buildExport, contractErrors, exportCompleteness, exportMarkdown } from './planning';
 import type { PlanningRequest, RunSnapshot } from './planning';
 
 const ROOT = resolve(process.cwd(), '../..');
@@ -132,6 +132,54 @@ describe('real 27B held / 8B failed runs replayed from the workspace HTTP API (r
   });
 });
 
+describe('comparison table rows and export follow every stored gap and its judged facts (record 034 audit U2)', () => {
+  it('one row per gap: the microwave need with three gaps keeps all of them, and a dropped gap is caught', () => {
+    for (const { snapshot } of RUNS) {
+      const record = execution(snapshot);
+      const scoped = runSources(snapshot, [], []);
+      const rows = buildComparison(snapshot.output!, scoped.features, scoped.evidence);
+      expect(rows.map(row => row.gap?.id).sort()).toEqual(record.output!.gaps.map(gap => gap.id).sort());
+      const doc = buildExport('live', snapshot, scoped.features, scoped.evidence, '2026-10-06T10:00:00.000Z', [snapshot]);
+      expect(doc.comparison.map(row => row.gap_id).sort()).toEqual(record.output!.gaps.map(gap => gap.id).sort());
+      expect(doc.completeness.missing_gaps).toEqual([]);
+      const dropped = { ...doc, comparison: doc.comparison.slice(1) };
+      expect(exportCompleteness(dropped, snapshot, scoped.features, scoped.evidence, [snapshot]).missing_gaps).toEqual([doc.comparison[0].gap_id]);
+    }
+    const microwave = execution(RUNS[3].snapshot).output!;
+    const needOne = microwave.gaps.filter(gap => gap.need_id === microwave.needs[0].id).map(gap => gap.id);
+    expect(needOne.length).toBeGreaterThan(1);
+    const markdown = exportMarkdown(buildExport('live', RUNS[3].snapshot, [], [], '2026-10-06T10:00:00.000Z', [RUNS[3].snapshot]));
+    for (const id of needOne) expect(markdown).toContain(`${microwave.needs[0].id}/${id}:`);
+  });
+
+  it('each row carries the stored resolution, basis mismatch, desired outcome and non-complaint citations', () => {
+    for (const { snapshot } of RUNS) {
+      const output = execution(snapshot).output!;
+      const scoped = runSources(snapshot, [], []);
+      const doc = buildExport('live', snapshot, scoped.features, scoped.evidence, '2026-10-06T10:00:00.000Z', [snapshot]);
+      for (const row of doc.comparison) {
+        const assessment = output.gap_assessments.find(item => item.gap_id === row.gap_id);
+        expect(row.resolution).toBe(assessment?.resolution ?? null);
+        expect(row.desired_outcome).toBe(output.desired_outcomes.find(item => item.need_id === row.need_id)?.desired_outcome ?? null);
+        const need = output.needs.find(item => item.id === row.need_id)!;
+        const expectedFlags = need.evidence_ids.filter(id => { const p = output.review_assessments.find(item => item.evidence_id === id)?.polarity; return p !== undefined && p !== 'complaint' && p !== 'conflicting'; });
+        expect(row.non_complaint_reviews.map(item => item.evidence_id)).toEqual(expectedFlags);
+      }
+      const markdown = exportMarkdown(doc);
+      expect(markdown).toContain('코어가 채택하지 않은 실행');
+      if (output.gap_assessments.some(item => item.resolution === 'remaining')) expect(markdown).toContain('불편 남음');
+    }
+    // NON_COMPLAINT_AS_NEED runs: some cited review was judged non-complaint by the same run; SUPPORT_BASIS_MISMATCH: a declared status differs from its basis.
+    for (const { row, snapshot } of RUNS) {
+      const codes = execution(snapshot).decision!.violations.map(item => item.code);
+      const scoped = runSources(snapshot, [], []);
+      const doc = buildExport('live', snapshot, scoped.features, scoped.evidence, '2026-10-06T10:00:00.000Z', [snapshot]);
+      expect(doc.comparison.some(item => item.non_complaint_reviews.length > 0), row.case).toBe(codes.includes('NON_COMPLAINT_AS_NEED'));
+      if (codes.includes('SUPPORT_BASIS_MISMATCH')) expect(doc.comparison.some(item => item.basis_mismatch), row.case).toBe(true);
+    }
+  });
+});
+
 describe('real held / failed runs in the actual React DOM (record 034)', () => {
   let host: HTMLDivElement;
   let root: Root;
@@ -167,6 +215,12 @@ describe('real held / failed runs in the actual React DOM (record 034)', () => {
       expect(host.textContent).toContain('생성된 후보가 없습니다.');
     }
     if (row.recorded_status === 'failed') for (const item of host.querySelectorAll('.run-status[title]')) expect(item.getAttribute('title')).not.toContain('실행 중 오류');
+    // Comparison table: one row per stored gap, the not-accepted note, and the stored resolution next to the support label.
+    const output = execution(snapshot).output!;
+    expect([...host.querySelectorAll('.comparison-table tbody tr')].map(tr => tr.getAttribute('data-gap-id')).sort()).toEqual(output.gaps.map(gap => gap.id).sort());
+    expect(host.querySelector('[data-comparison-unaccepted]')).not.toBeNull();
+    expect(host.querySelectorAll('.comparison-table [data-field="resolution"]')).toHaveLength(output.gaps.filter(gap => output.gap_assessments.some(item => item.gap_id === gap.id)).length);
+    if (output.desired_outcomes.length) expect(host.querySelector('.comparison-table .desired-outcome')?.textContent).toContain('바라는 결과:');
   });
 
   it.each(RUNS.map(item => [item.row.case, item] as const))('%s: the revision timeline does not call a first run without candidates "the first run\'s candidates"', async (_name, { snapshot }) => {
