@@ -1,14 +1,16 @@
 # 정이량 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
-## 현재 재개 요약 — 정이량-20261006-008-CLOSEOUT
+## 현재 재개 요약 — 정이량-20261006-009-MAIL-FIRST
 
-- 현재: PR169/main2636999·PR170/mainc9a724e 검수·실제 병합. 입력/뜻풀이·웹 동향과 단위collector 소비 경로를 부분 인수했다. R3세 배정·Project·세메일Sent·노션요약 갱신.
-- 검증:169 병합CI2/격리gatePASS,170 최종headCI4/독립blocker0. PM HTTP/MCP10/10 재실행은unitfixture·모델0이며실collector/정상accept의증거가아니다.
-- 모델:8B는빠른기준선,27B뜻풀이후에도held.122B-A10B는다음큰품질후보이며설치/한국어실측전이다. 기능지원/불편해소혼동반례는CORE에게전달했다.
-- 다음:CORE의미품질→DATA실자료/collector→WEB같은run·집계통합,PM큰모델/독립평가·컨설팅/제출. 중앙metadata실수신/배포pin은Issue28종료응답으로구분한다. 자동화OFF·Done5/31verified0유지.
-- 사용자:추가로그인/결제없음.10/7 15시KST컨설팅참석·API/로컬병행/제출세부확인. URL은팀장메일확인요청상태.
-- 상세:[작업008](2026-10-06/정이량-20261006-008-CLOSEOUT.md),[E043](../../작업근거/정이량/2026-10-06/정이량-E043-CLOSEOUT.md),[이전007](2026-10-06/정이량-20261006-007-PM-EXECUTION.md).
+- 종료 공유: 메일first PR174는 mainbca380c 병합·CI4/병합CI2/독립검수·노션본문보존 완료. 새 CORE173은 같은 원자료의 조기 거절 보완을 PM Docker115검사로 확인해 main8f9d83f로 부분 인수했다. 실모델 정상·변경·보류/실collector·전체Done은 남았다.
+
+- 최신 지시: 사용자 지시로 착수 전 실제 관련 메일·선행 작업/협의 점검을 AGENTS/CLAUDE와 협업/기록 규칙에 동일하게 추가했다. 사서함 조회와 Project 메일 안내는 구분한다.
+- 실제 확인: CORE R3 원문 인계, DATA 예약409, WEB 정상run/실collector 대기 메일6건을 읽었다. PR172의 옛 실패 원인 현재화 정정 요청과 DATA 원 예약 담당 확인 요청을 실제 Issue 댓글로 전달했다.
+- 이전 종료: PR169/170/171 병합 및 main531 Project21항목·서비스 ACCEPTED·중앙metadata readback 확인. 작업 상태/담당·jobs/예약/비용·전원OFF 보존. 제품 배포/정상accept 증거는 아니다.
+- 다음: 최신 main을 공유하고 각 팀 AI가 다음 착수 때 자기 메일→Issue/PR/Project→기록을 확인한다. CORE 의미품질·DATA 원문/collector·WEB 동일run 통합·PM 더 큰 모델/평가/컨설팅·제출은 남았다.
+- 사용자: 지금 추가 로그인/결제 불필요.10/7 15시KST 컨설팅 준비. 공식URL은 팀장 확인 보고와 PM 직접 대조를 구분한다.
+- 상세: [작업009](2026-10-06/정이량-20261006-009-MAIL-FIRST.md)·[E044](../../작업근거/정이량/2026-10-06/정이량-E044-MAIL-FIRST.md)·[이전008](2026-10-06/정이량-20261006-008-CLOSEOUT.md).
 
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.

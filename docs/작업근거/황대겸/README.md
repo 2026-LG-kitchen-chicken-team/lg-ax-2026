@@ -1,6 +1,8 @@
 # 황대겸 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-06 CORE-R4-01a10729: PR173 main8f9d83f 병합 후 고정8B3건 실제9호출, 모두 failed/수정2. 원 비용·원 응답 보존과 보류 feedback 보완.
+- [새 상세](2026-10-06/CORE-R4-01a10729.md) · [실제 원 결과](../../../evals/core-manual-quality/20261006/r4/README.md). 후보 accept/적절한 hold·WEB/MCP·독립 품질과 PM Done은 남아 있다.
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
 

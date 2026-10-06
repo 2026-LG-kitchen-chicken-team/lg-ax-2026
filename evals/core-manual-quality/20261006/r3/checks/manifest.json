@@ -1,0 +1,254 @@
+{
+  "record_id": "CORE-R3-01a10729",
+  "recorded_at": "2026-10-06T17:21:20.168613+09:00",
+  "base_commit": "2636999be65012dbced6990628f9d65c40ac9fbc",
+  "checked_state": "working changes on base; exact runtime/input SHA256 below",
+  "source_sha256": {
+    "packages/core/src/lgax_core/planning_agent.py": "968b89c33b1e24c98f652b0e8406723e90b936810e55fa21699185574b67719b",
+    "packages/core/src/lgax_core/stage_alignment.py": "f0b86d7c4a2693c2ded8ef78ade3314a9d10ff05e554ca424c3e6dacc1ec2d07",
+    "tests/test_recorded_stage_alignment.py": "cc3d095f4c4e749f7715b81ad796b6aa3bb0f9d77e2a8c1358b62b8149f171eb",
+    "skills/need_extract/SKILL.md": "a1af463a8b8ebb85fd18944cae0557203444881d740a8e4d71ba583e54e55b2e",
+    "skills/product_compare/SKILL.md": "b34836bf9ba4100bfab8e6a127d79a41de56fc094b5ea52c4bbc08ce916c9259",
+    "skills/concept_draft/SKILL.md": "77dc45ede646dbb8eb5cd52293d672c733c946142703dff770247750e607cd17",
+    "evals/core-manual-quality/20261006/r2/validate_inputs.py": "a9ea646aba279500381f2d7894dde495f280e7633d8b0916bdb434e36a9b6d09",
+    "evals/core-manual-quality/20261006/checks-ci-followup/core-regression.txt": "cd391e935e2015d900cdde51ca91f0d529d85fc6fac69cf2ee348368597ef195",
+    "evals/core-manual-quality/20261006/checks-ci-followup/manifest.json": "eadc53855718749332085e050c74cc7eb584ad6b3c941435c9f0253372dfdb26",
+    "evals/core-manual-quality/20261006/checks-ci-followup/static-checks.txt": "b4a5b8493ab9a6f62c3de6be86ac26f13d5a14f0876600d09820ab3732e2aee7",
+    "evals/core-manual-quality/20261006/checks/core-regression.txt": "ffada7610b4758a6a7ec51172157d99191b9093f98e3041153c7b0b59eca5017",
+    "evals/core-manual-quality/20261006/checks/manifest.json": "242f148339e6edb345135bf5c07526109596c076011b00cb64b4ab19bd0c7386",
+    "evals/core-manual-quality/20261006/checks/static-checks.txt": "b4a5b8493ab9a6f62c3de6be86ac26f13d5a14f0876600d09820ab3732e2aee7",
+    "evals/core-manual-quality/20261006/development/cases/dishwasher-changed.input.json": "16b78847fb2d9db0ecb99e93b8bd2e1dfb5a5d8e27e78efe9e4324dd9d0049a2",
+    "evals/core-manual-quality/20261006/development/cases/dishwasher-normal.input.json": "84ca689b10ab72b9f79ed7293e2e8c8c3aae1bf1f875102c2beaed444d834302",
+    "evals/core-manual-quality/20261006/development/cases/fridge-changed.input.json": "4d6611488d64788b8c212d5ce1c2ebeffaac5562b464182e9f1738220331055e",
+    "evals/core-manual-quality/20261006/development/cases/fridge-normal.input.json": "d07e0e18ccf9b12bbed92fc71205bec7e38fb5094a91b902ef3d22b56dc11f91",
+    "evals/core-manual-quality/20261006/development/cases/microwave-changed.input.json": "9dfc0f0eb7b5097e189014290c5bb97e1ab81a5ca4cbfc493b05ccfa3fa324bd",
+    "evals/core-manual-quality/20261006/development/cases/microwave-normal.input.json": "bf6d0c06c1d5e2cf477fe531305856857e08bad86f398823c2930da4c6dfa91a",
+    "evals/core-manual-quality/20261006/development/provenance.json": "fec771f38c0574750e6ca2586f2662c6645f74a9399fbb3a4c9f6b7a4aded615",
+    "evals/core-manual-quality/20261006/development/synthetic.dataset.json": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+    "evals/core-manual-quality/20261006/development/validate_inputs.py": "c484be8f8a83afce2df3605e3228c0b94739d56624771d6237ef32102168c669",
+    "evals/core-manual-quality/20261006/r2/input-provenance.json": "24870442e57b732143d55b0a27bdcc910fdb5bb878e989ac611547118a9be5fc",
+    "evals/core-manual-quality/20261006/r2/inputs/fridge-changed.input.json": "4d6611488d64788b8c212d5ce1c2ebeffaac5562b464182e9f1738220331055e",
+    "evals/core-manual-quality/20261006/r2/inputs/fridge-missing-manual.input.json": "74892c19dcbbfbdf120987e224bb9617975162bcadc37c2792b9ca0c82c545d8",
+    "evals/core-manual-quality/20261006/r2/inputs/fridge-normal.input.json": "d07e0e18ccf9b12bbed92fc71205bec7e38fb5094a91b902ef3d22b56dc11f91",
+    "evals/core-manual-quality/20261006/r2/inputs/missing-manual.dataset.json": "3e5896bc363d93dbfe5d6bb049a550fb1cd204209264b9ef0e078f7d8f2dfcd9",
+    "evals/core-manual-quality/20261006/r2/inputs/synthetic.dataset.json": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+    "evals/core-manual-quality/20261006/r3/source-handoff.json": "575360021d94bc7555670482995fb13f8356bec8ae5c656810873784cadd8d9f"
+  },
+  "execution": {
+    "image": "sha256:36ad082dbccf05bc9cff7c4dc5766e9ab7ed8c42198b0b731cf3831c546aaaf0",
+    "network": "none",
+    "uid": 65534,
+    "read_only_source": true,
+    "host_credentials_mounted": false,
+    "execution_copy": "separate writable in-container tmpfs; read-only host snapshot unchanged",
+    "package_paths": "plain path-only .pth for MCP stdio child; no auth/config"
+  },
+  "full_regression": {
+    "receipt_id": "r3-full-171402",
+    "at": "2026-10-06T17:14:02.520600+09:00",
+    "exit_code": 0,
+    "tests_run": 1426,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3,
+    "raw_log_sha256": "551cbda23f58de86d0a818c0550bfaa0c3ca808f1c22e58868bfb5ccba6d1157",
+    "source_unchanged": true,
+    "skip_reasons": [
+      "Windows bind path normalization fixture",
+      "explicit reviewed Docker image required for real proof",
+      "Windows Docker source alias fixture"
+    ],
+    "scope": "all discovered tests, including six new recorded-stage regressions",
+    "live_generations": 0
+  },
+  "static": {
+    "receipt_id": "r3-static-171402",
+    "at": "2026-10-06T17:14:02.534294+09:00",
+    "exit_code": 0,
+    "source_unchanged": true,
+    "raw_log_sha256": "533b19be88df058ac7e69cad20eaf263d88bb96e8839896899df1fc505bb402e",
+    "commands": [
+      "scripts/sync_agent_rules.py --check",
+      "scripts/migrate_member_logs.py --verify",
+      "scripts/harness.py validate",
+      "scripts/check_contracts.py",
+      "scripts/phase2.py validate",
+      "services/inference/build_manifest.py --check",
+      "evals/core-manual-quality/20261006/r2/validate_inputs.py",
+      "scripts/smoke_mcp.py --transport stdio",
+      "ruff check --config pyproject.toml <three changed Python files>"
+    ],
+    "prepared_inputs_validated": 3,
+    "mcp_stdio_tool_calls": 5,
+    "live_generations": 0
+  },
+  "baseline": {
+    "receipt_id": "r3-baseline-170548",
+    "tests_run": 5,
+    "failures": 5,
+    "errors": 1,
+    "meaning": "new early rejection/detail expectations fail against unchanged main; one error is expected absent detail key, not a production exception",
+    "recorded_bad_need_sequences": "nine mock POST requests per original 8B sequence on baseline; three on updated code, with raw responses preserved",
+    "not_a_model_call_or_token_saving_measurement": true
+  },
+  "attempt_history": [
+    {
+      "receipt_id": "r3-baseline-170207",
+      "at": "2026-10-06T17:02:07.737965+09:00",
+      "phase": "baseline",
+      "exit_code": 125,
+      "raw_log_sha256": "dba2309d85676b33bb9360fcfe492d440c9a8475dc3f887e8e778193dda1ceda",
+      "tests": null,
+      "raw_receipt_and_log": "preserved privately; no replacement of original failures"
+    },
+    {
+      "receipt_id": "r3-baseline-170316",
+      "at": "2026-10-06T17:03:16.464726+09:00",
+      "phase": "baseline",
+      "exit_code": 1,
+      "raw_log_sha256": "273b3a112009578702c7368753885ed394d552ba42c5d74e17366aaf2656a6f2",
+      "tests": {
+        "tests_run": 3,
+        "failures": 3,
+        "errors": 1,
+        "skipped": 0,
+        "live_generations": 0
+      },
+      "raw_receipt_and_log": "preserved privately; no replacement of original failures"
+    },
+    {
+      "receipt_id": "r3-baseline-170548",
+      "at": "2026-10-06T17:05:48.817700+09:00",
+      "phase": "baseline",
+      "exit_code": 1,
+      "raw_log_sha256": "64e072fd7dbed8e8c57d19a3ccaf9f0141b3b8a86a7ecc6483f33166ad1b16f1",
+      "tests": {
+        "tests_run": 5,
+        "failures": 5,
+        "errors": 1,
+        "skipped": 0,
+        "live_generations": 0
+      },
+      "raw_receipt_and_log": "preserved privately; no replacement of original failures"
+    },
+    {
+      "receipt_id": "r3-full-170641",
+      "at": "2026-10-06T17:06:41.378285+09:00",
+      "phase": "full",
+      "exit_code": 1,
+      "raw_log_sha256": "f707caada20026f2a7242447a3c306e76dec79d8a771a63e1ffe6a6352bd81ab",
+      "tests": {
+        "tests_run": 1425,
+        "failures": 1,
+        "errors": 2,
+        "skipped": 3,
+        "live_generations": 0
+      },
+      "raw_receipt_and_log": "preserved privately; no replacement of original failures"
+    },
+    {
+      "receipt_id": "r3-full-171127",
+      "at": "2026-10-06T17:11:27.305597+09:00",
+      "phase": "full",
+      "exit_code": 1,
+      "raw_log_sha256": "09346047bbf1a5615e7d7295b6e028b9377e29737b0814408c15b6fe6da70d33",
+      "tests": {
+        "tests_run": 1426,
+        "failures": 0,
+        "errors": 1,
+        "skipped": 3,
+        "live_generations": 0
+      },
+      "raw_receipt_and_log": "preserved privately; no replacement of original failures"
+    },
+    {
+      "receipt_id": "r3-full-171402",
+      "at": "2026-10-06T17:14:02.520600+09:00",
+      "phase": "full",
+      "exit_code": 0,
+      "raw_log_sha256": "551cbda23f58de86d0a818c0550bfaa0c3ca808f1c22e58868bfb5ccba6d1157",
+      "tests": {
+        "tests_run": 1426,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 3,
+        "live_generations": 0
+      },
+      "raw_receipt_and_log": "preserved privately; no replacement of original failures"
+    },
+    {
+      "receipt_id": "r3-static-170641",
+      "at": "2026-10-06T17:06:41.628070+09:00",
+      "phase": "static",
+      "exit_code": 0,
+      "raw_log_sha256": "56b21f915cb5a695479359f4ca6063582b0b9bcbdaee1869782a2a805a2a82cd",
+      "tests": null,
+      "raw_receipt_and_log": "preserved privately; no replacement of original failures"
+    },
+    {
+      "receipt_id": "r3-static-170938",
+      "at": "2026-10-06T17:09:38.583590+09:00",
+      "phase": "static",
+      "exit_code": 1,
+      "raw_log_sha256": "5ac744bfb08c7669f94030d9a41d995c2cdc66c669f0150dd76380ed6df75830",
+      "tests": null,
+      "raw_receipt_and_log": "preserved privately; no replacement of original failures"
+    },
+    {
+      "receipt_id": "r3-static-171127",
+      "at": "2026-10-06T17:11:27.305597+09:00",
+      "phase": "static",
+      "exit_code": 1,
+      "raw_log_sha256": "2961d7050f78da9332ec095b34dc22e2e34480322c01b533fb5ce40272283937",
+      "tests": null,
+      "raw_receipt_and_log": "preserved privately; no replacement of original failures"
+    },
+    {
+      "receipt_id": "r3-static-171402",
+      "at": "2026-10-06T17:14:02.534294+09:00",
+      "phase": "static",
+      "exit_code": 0,
+      "raw_log_sha256": "533b19be88df058ac7e69cad20eaf263d88bb96e8839896899df1fc505bb402e",
+      "tests": null,
+      "raw_receipt_and_log": "preserved privately; no replacement of original failures"
+    },
+    {
+      "receipt_id": "r3-targeted-170549",
+      "at": "2026-10-06T17:05:49.021486+09:00",
+      "phase": "targeted",
+      "exit_code": 1,
+      "raw_log_sha256": "2f6600e0c3541c4a6a75c23d4bc93267b48f773ca8e949b961e246a25f70268c",
+      "tests": {
+        "tests_run": 283,
+        "failures": 6,
+        "errors": 0,
+        "skipped": 0,
+        "live_generations": 0
+      },
+      "raw_receipt_and_log": "preserved privately; no replacement of original failures"
+    }
+  ],
+  "limits": {
+    "central_remaining_and_token_stop": "undetermined by explicit human instruction",
+    "shared_corrections_max": 2
+  },
+  "not_completed": [
+    "normal/changed/appropriate-hold live model three-case verification",
+    "same execution WEB/MCP user flow",
+    "independent semantic quality review",
+    "deferred original same27B one-case regression",
+    "PM approval, merge, integration and parent Done"
+  ],
+  "new_live_generations": 0,
+  "repeated_six_case_independent_grading": 0,
+  "publication_integration_base": "531e2be9186a2d1b7089b2b773b3c5e3f8ca53f3",
+  "integration_note": "Fast-forwarded accepted WEB/PM docs commits after full runtime tests; checked CORE/Skill/tests/inputs remain byte-identical. Final exact PR head CI must be read separately.",
+  "post_document_static": {
+    "receipt_id": "r3-static-172132",
+    "at": "2026-10-06T17:21:32.912417+09:00",
+    "exit_code": 0,
+    "raw_log_sha256": "533b19be88df058ac7e69cad20eaf263d88bb96e8839896899df1fc505bb402e",
+    "source_unchanged": true,
+    "scope": "owner README/detail updates and public manifest included; before latest accepted WEB/PM docs fast-forward"
+  }
+}

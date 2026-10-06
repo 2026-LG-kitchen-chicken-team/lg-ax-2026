@@ -1,0 +1,65 @@
+{
+  "base_commit": "9a26af9b5f0c562783bd2160532ea24cb0b1b469",
+  "execution_source_candidate": "c2c9eaa98864598d2fcec901861a78b9fecabea8",
+  "execution_source_status": "PM169 published CI-passing candidate; not merged or PM intake claimed",
+  "assignment_id": "PM-20261006-CORE-REBALANCE-R2",
+  "max_batch_runs": 3,
+  "max_batch_generations": 24,
+  "settings": {
+    "temperature": 0,
+    "seed": 42,
+    "num_ctx": 16384,
+    "num_predict": 8192
+  },
+  "model": "qwen3:8b",
+  "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+  "central_remaining_and_token_cap": null,
+  "human_disposition": "Undetermined; explicitly continue finite assigned work",
+  "normal_changed_bytes_preserved": true,
+  "missing_manual_transformation": {
+    "origin_input_sha256": "d07e0e18ccf9b12bbed92fc71205bec7e38fb5094a91b902ef3d22b56dc11f91",
+    "origin_dataset_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+    "removed_source_ids": [
+      "MANUAL-001"
+    ],
+    "removed_feature_ids": [
+      "FEATURE-001"
+    ],
+    "changed_request_fields": [
+      "dataset_version"
+    ],
+    "new_source_text_created": false,
+    "review_originals_preserved": true,
+    "expected_model_answer_embedded": false
+  },
+  "independent_evaluation_answers_used": false,
+  "cases": [
+    {
+      "case_id": "fridge-normal",
+      "input": "inputs/fridge-normal.input.json",
+      "input_sha256": "d07e0e18ccf9b12bbed92fc71205bec7e38fb5094a91b902ef3d22b56dc11f91",
+      "dataset": "inputs/synthetic.dataset.json",
+      "dataset_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+      "development_only": true,
+      "actual_model_run": false
+    },
+    {
+      "case_id": "fridge-changed",
+      "input": "inputs/fridge-changed.input.json",
+      "input_sha256": "4d6611488d64788b8c212d5ce1c2ebeffaac5562b464182e9f1738220331055e",
+      "dataset": "inputs/synthetic.dataset.json",
+      "dataset_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+      "development_only": true,
+      "actual_model_run": false
+    },
+    {
+      "case_id": "fridge-missing-manual",
+      "input": "inputs/fridge-missing-manual.input.json",
+      "input_sha256": "74892c19dcbbfbdf120987e224bb9617975162bcadc37c2792b9ca0c82c545d8",
+      "dataset": "inputs/missing-manual.dataset.json",
+      "dataset_sha256": "3e5896bc363d93dbfe5d6bb049a550fb1cd204209264b9ef0e078f7d8f2dfcd9",
+      "development_only": true,
+      "actual_model_run": false
+    }
+  ]
+}
