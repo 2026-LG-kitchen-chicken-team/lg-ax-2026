@@ -1,0 +1,83 @@
+{
+  "core_base": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+  "tested_product_source_sha256": {
+    "packages/core/src/lgax_core/planning_agent.py": "46af016e5022ea519c4f377a008d920388d6d7471e2961fab6ff6f7af099ca04",
+    "packages/core/src/lgax_core/stage_metadata.py": "9d27c4c599f499adf5a7add23f45d054e5424f45523dc17755942656ceff58cd",
+    "tests/test_stage_metadata.py": "b654f58b1c6c477ea4acc84815b4b4d93a873f54812839b3781deaf171810593"
+  },
+  "baseline": {
+    "tests": 6,
+    "failures": 4,
+    "errors": 1,
+    "skipped": 0,
+    "live_model_calls": 0,
+    "exit_code": 1,
+    "pm_counterexample_actual": "completed/accept before fix",
+    "expected_failure": true
+  },
+  "targeted_initial": {
+    "tests": 130,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "live_model_calls": 0,
+    "exit_code": 0,
+    "note": "before replacing a diagnostic label with existing VALIDATION_FAILED; final full suite covers same tests"
+  },
+  "full": {
+    "tests": 1475,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3,
+    "live_model_calls": 0,
+    "exit_code": 0,
+    "test_file_sha256": "69fb2cbddde797c152c860f1ab49703d9112e97657fae3ed03f710d215dd2b86",
+    "test_only_lint_change_after_full": [
+      "import order",
+      "unused tuple variable renamed; no assertions changed"
+    ]
+  },
+  "data190_temporary_composition": {
+    "tests": 130,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "live_model_calls": 0,
+    "exit_code": 1,
+    "blocking_test": "test_conflicting_need_keeps_existing_question_hold_policy",
+    "owner": "DATA; frozen PR190 rejects conflicting Need",
+    "p1_metadata_tests": "passed",
+    "status": "integration blocked; not overall pass"
+  },
+  "boundary": {
+    "image": "sha256:36ad082dbccf05bc9cff7c4dc5766e9ab7ed8c42198b0b731cf3831c546aaaf0",
+    "network": "none",
+    "uid": 65534,
+    "readonly_root": true,
+    "readonly_source": true,
+    "credential_mounts": 0,
+    "socket_mounts": 0
+  },
+  "new_model_calls": 0,
+  "independent_six_case_regrade": 0,
+  "pm_quality_done": false,
+  "targeted_final": {
+    "tests": 130,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "exit_code": 0,
+    "new_model_calls": 0,
+    "output_sha256": "8ae5e8c1a12c788dc81fb2fd1c9b95d92fb50d48fc647fd5f86430333707088c"
+  },
+  "static": {
+    "status": "pass",
+    "output": "static-check.txt",
+    "sha256": "fd57078667b63fcb175ab837d1b315d720439cc21ac233c8afb7ea26204f0122",
+    "ruff": "pass",
+    "canonical_contracts": "pass",
+    "phase2": "valid",
+    "immutable_member_sections": 231,
+    "immutable_member_sessions": 28
+  }
+}
