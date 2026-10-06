@@ -1,0 +1,699 @@
+{
+  "kind": "bounded_manual_actual_model_comparison",
+  "date_kst": "2026-10-06",
+  "cases": [
+    {
+      "case_id": "fridge-normal",
+      "source_commit": "fc1d9e3ca53865c3db49b04c3a470d4563bd412f",
+      "dataset_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+      "input_sha256": "52440224ab725391c2677383b6aab4b5a9a0cdde1b450d76efe74af7b59e9aea",
+      "full_git_archive_sha256": "8e232e4a633c0070d616f0576fe8ec2addcb26c321163845b5badbd1fdb31676",
+      "status": "held",
+      "actual_calls": 3,
+      "tokens": 16050,
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "revision_count": 0,
+      "model_id": "qwen3.5:27b-q4_K_M",
+      "model_digest": "64ae5b1d651fb2709d5928ccb8dcfb4bb2cc9c2c8001ac34497e36a6cf905b59",
+      "source_unchanged": true,
+      "group": "27b-full",
+      "path": "evals/pm-integration/20261006/model-quality/27b-full/fridge-normal.output.json",
+      "output_sha256": "e4c2143386fb5cc4e58f825030b99a4d5af7be46967dfa062a5982fabe7df448",
+      "output_bytes": 492238,
+      "source_kind": "synthetic",
+      "scope": "full_original_10_reviews",
+      "source_selection_by": "PM Codex, not direct user review selection or automatic retrieval",
+      "original_private_summary_sha256": "dac6f85a1813cd5e93b59f58a0c03b8ff3a31ad3cdefd29113cc863fe09412d2",
+      "original_relay_sha256": "621d85b08615e7409a1e187b84cb5b4f2960e868ef922d9150adc4f71c33af77",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "quality": {
+        "verdict": "not_passed",
+        "limits": [
+          "contract status is not independent semantic quality"
+        ]
+      }
+    },
+    {
+      "case_id": "fridge-normal",
+      "source_commit": "9c3a9374aa4e78cbd64b9cc2549affe73afbdc1f",
+      "dataset_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+      "input_sha256": "b7f51a9a137acdc150bee2509c3ce57808c5e7ecf4ccfacc506a30d182782706",
+      "full_git_archive_sha256": "eb48e033981d677c807637e33508fe0b5557a5560d430f91fe8be380100bb503",
+      "status": "failed",
+      "actual_calls": 8,
+      "tokens": 25156,
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "revision_count": 2,
+      "model_id": "qwen3.5:122b-a10b-q4_K_M",
+      "model_digest": "8b9d11d807c57feb1e2ecb0d6cbf40334c37dcc3523bed5540af4f927f112a37",
+      "source_unchanged": true,
+      "group": "122b-focus-initial",
+      "path": "evals/pm-integration/20261006/model-quality/122b-focus-initial/fridge-normal.output.json",
+      "output_sha256": "0f2ae22a8388faaf892eb45de5def63f118df7f4dc731831c419271cecab196b",
+      "output_bytes": 827675,
+      "source_kind": "synthetic",
+      "scope": "pm_selected_2_review_development_subset",
+      "source_selection_by": "PM Codex, not direct user review selection or automatic retrieval",
+      "original_private_summary_sha256": "c66f4ad548f68d4e22f89093815b87a2682d7b3a229ea0c0049f4476e1e84a00",
+      "original_relay_sha256": "34f752c11bdb0ac83982c2de11c39301df30065c770e33a5fd9ddaab9b3040e9",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "quality": {
+        "verdict": "not_passed",
+        "limits": [
+          "contract status is not independent semantic quality"
+        ]
+      }
+    },
+    {
+      "case_id": "fridge-changed",
+      "source_commit": "9c3a9374aa4e78cbd64b9cc2549affe73afbdc1f",
+      "dataset_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+      "input_sha256": "6423ff93d13b4df4a064bbdcfb14a26a57194a13ec42cf42fda64d72acf438a3",
+      "full_git_archive_sha256": "eb48e033981d677c807637e33508fe0b5557a5560d430f91fe8be380100bb503",
+      "status": "completed",
+      "actual_calls": 6,
+      "tokens": 23690,
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "revision_count": 1,
+      "model_id": "qwen3.5:122b-a10b-q4_K_M",
+      "model_digest": "8b9d11d807c57feb1e2ecb0d6cbf40334c37dcc3523bed5540af4f927f112a37",
+      "source_unchanged": true,
+      "group": "122b-focus-initial",
+      "path": "evals/pm-integration/20261006/model-quality/122b-focus-initial/fridge-changed.output.json",
+      "output_sha256": "5c3b8cbb135d1ab02e526aa6c4dc89498b5c65489f0f4d5b2885f54cc400d187",
+      "output_bytes": 750894,
+      "source_kind": "synthetic",
+      "scope": "pm_selected_2_review_development_subset",
+      "source_selection_by": "PM Codex, not direct user review selection or automatic retrieval",
+      "original_private_summary_sha256": "c66f4ad548f68d4e22f89093815b87a2682d7b3a229ea0c0049f4476e1e84a00",
+      "original_relay_sha256": "4b8e5caca856909b12cde8e4c45bb5d6f49d9626d0c7948505c10a90908660cf",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "quality": {
+        "verdict": "not_passed",
+        "limits": [
+          "contract status is not independent semantic quality"
+        ]
+      }
+    },
+    {
+      "case_id": "fridge-missing-manual",
+      "source_commit": "9c3a9374aa4e78cbd64b9cc2549affe73afbdc1f",
+      "dataset_sha256": "3e5896bc363d93dbfe5d6bb049a550fb1cd204209264b9ef0e078f7d8f2dfcd9",
+      "input_sha256": "b99ae568bf0cdc12190f8f247f8f72e1b1a7fdb81ac44a1d1503edd417a3ce97",
+      "full_git_archive_sha256": "eb48e033981d677c807637e33508fe0b5557a5560d430f91fe8be380100bb503",
+      "status": "held",
+      "actual_calls": 3,
+      "tokens": 6818,
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "revision_count": 0,
+      "model_id": "qwen3.5:122b-a10b-q4_K_M",
+      "model_digest": "8b9d11d807c57feb1e2ecb0d6cbf40334c37dcc3523bed5540af4f927f112a37",
+      "source_unchanged": true,
+      "group": "122b-focus-initial",
+      "path": "evals/pm-integration/20261006/model-quality/122b-focus-initial/fridge-missing-manual.output.json",
+      "output_sha256": "dc9036bbd16466c07a1a15fad388d8c36a4269ca5010f419d1497d38888feeaf",
+      "output_bytes": 199276,
+      "source_kind": "synthetic",
+      "scope": "pm_selected_2_review_development_subset",
+      "source_selection_by": "PM Codex, not direct user review selection or automatic retrieval",
+      "original_private_summary_sha256": "c66f4ad548f68d4e22f89093815b87a2682d7b3a229ea0c0049f4476e1e84a00",
+      "original_relay_sha256": "e4937e37fbe79927b0eb14d134040f0437e52b04cb41c88fed21787dbd8e34d2",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "quality": {
+        "verdict": "not_passed",
+        "limits": [
+          "contract status is not independent semantic quality"
+        ]
+      }
+    },
+    {
+      "case_id": "fridge-normal",
+      "source_commit": "0078975ef4579008eb7c5921541122a8f569ce3a",
+      "dataset_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+      "input_sha256": "b7f51a9a137acdc150bee2509c3ce57808c5e7ecf4ccfacc506a30d182782706",
+      "full_git_archive_sha256": "822ff6eb687f4da3788e1774f46382374c673840f7516e5c0e848183a93b07a5",
+      "status": "failed",
+      "actual_calls": 3,
+      "tokens": 5844,
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "revision_count": 2,
+      "model_id": "qwen3.5:122b-a10b-q4_K_M",
+      "model_digest": "8b9d11d807c57feb1e2ecb0d6cbf40334c37dcc3523bed5540af4f927f112a37",
+      "source_unchanged": true,
+      "group": "122b-focus-thinking",
+      "path": "evals/pm-integration/20261006/model-quality/122b-focus-thinking/fridge-normal.output.json",
+      "output_sha256": "23d1005940f8443036d97b85844fbf1bb9c5c73b255d4349191a0e9b2d491f5f",
+      "output_bytes": 127776,
+      "source_kind": "synthetic",
+      "scope": "pm_selected_2_review_development_subset",
+      "source_selection_by": "PM Codex, not direct user review selection or automatic retrieval",
+      "original_private_summary_sha256": "d20faf971b2dedadb2ec97d350f00f2260be74e2c2ec6137ec87555ed8d3646a",
+      "original_relay_sha256": "b1a0b687df65c67e52ecde1a972f60dde56dece64525c3245b4fbcf450483eb3",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "quality": {
+        "verdict": "not_passed",
+        "limits": [
+          "contract status is not independent semantic quality"
+        ]
+      }
+    },
+    {
+      "case_id": "fridge-changed",
+      "source_commit": "0078975ef4579008eb7c5921541122a8f569ce3a",
+      "dataset_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+      "input_sha256": "6423ff93d13b4df4a064bbdcfb14a26a57194a13ec42cf42fda64d72acf438a3",
+      "full_git_archive_sha256": "822ff6eb687f4da3788e1774f46382374c673840f7516e5c0e848183a93b07a5",
+      "status": "failed",
+      "actual_calls": 3,
+      "tokens": 5846,
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "revision_count": 2,
+      "model_id": "qwen3.5:122b-a10b-q4_K_M",
+      "model_digest": "8b9d11d807c57feb1e2ecb0d6cbf40334c37dcc3523bed5540af4f927f112a37",
+      "source_unchanged": true,
+      "group": "122b-focus-thinking",
+      "path": "evals/pm-integration/20261006/model-quality/122b-focus-thinking/fridge-changed.output.json",
+      "output_sha256": "89788ae2552c736f30ece8bf49e77547be4121a1d711cd23127866e6e391a994",
+      "output_bytes": 129057,
+      "source_kind": "synthetic",
+      "scope": "pm_selected_2_review_development_subset",
+      "source_selection_by": "PM Codex, not direct user review selection or automatic retrieval",
+      "original_private_summary_sha256": "d20faf971b2dedadb2ec97d350f00f2260be74e2c2ec6137ec87555ed8d3646a",
+      "original_relay_sha256": "3bbb40da50a1987d92f903a9f5f436a9bdcd2f8f73b8e204d45b56d319c8fb2a",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "quality": {
+        "verdict": "not_passed",
+        "limits": [
+          "contract status is not independent semantic quality"
+        ]
+      }
+    },
+    {
+      "case_id": "fridge-missing-manual",
+      "source_commit": "0078975ef4579008eb7c5921541122a8f569ce3a",
+      "dataset_sha256": "3e5896bc363d93dbfe5d6bb049a550fb1cd204209264b9ef0e078f7d8f2dfcd9",
+      "input_sha256": "b99ae568bf0cdc12190f8f247f8f72e1b1a7fdb81ac44a1d1503edd417a3ce97",
+      "full_git_archive_sha256": "822ff6eb687f4da3788e1774f46382374c673840f7516e5c0e848183a93b07a5",
+      "status": "failed",
+      "actual_calls": 3,
+      "tokens": 5339,
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "revision_count": 2,
+      "model_id": "qwen3.5:122b-a10b-q4_K_M",
+      "model_digest": "8b9d11d807c57feb1e2ecb0d6cbf40334c37dcc3523bed5540af4f927f112a37",
+      "source_unchanged": true,
+      "group": "122b-focus-thinking",
+      "path": "evals/pm-integration/20261006/model-quality/122b-focus-thinking/fridge-missing-manual.output.json",
+      "output_sha256": "88c339a2645f3da8114baa0bad62f17f7fca568c8cafeffa88371fbaf48d6e5e",
+      "output_bytes": 110007,
+      "source_kind": "synthetic",
+      "scope": "pm_selected_2_review_development_subset",
+      "source_selection_by": "PM Codex, not direct user review selection or automatic retrieval",
+      "original_private_summary_sha256": "d20faf971b2dedadb2ec97d350f00f2260be74e2c2ec6137ec87555ed8d3646a",
+      "original_relay_sha256": "96a510e8c681c5e5f78496b36ff7522f9c939a4a54f033f56b9a2c5527db6d5e",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "quality": {
+        "verdict": "not_passed",
+        "limits": [
+          "contract status is not independent semantic quality"
+        ]
+      }
+    },
+    {
+      "case_id": "fridge-normal",
+      "source_commit": "d5f6676e8007eecacbbb6f01b4a8f0358c2582a0",
+      "dataset_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+      "input_sha256": "b7f51a9a137acdc150bee2509c3ce57808c5e7ecf4ccfacc506a30d182782706",
+      "full_git_archive_sha256": "666000ac0a4340fda3d6ed3d67c70d50114e0d01087983b548a3e4f0287238d7",
+      "status": "completed",
+      "actual_calls": 4,
+      "tokens": 10677,
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "revision_count": 0,
+      "model_id": "qwen3.5:122b-a10b-q4_K_M",
+      "model_digest": "8b9d11d807c57feb1e2ecb0d6cbf40334c37dcc3523bed5540af4f927f112a37",
+      "source_unchanged": true,
+      "group": "122b-focus-guided",
+      "path": "evals/pm-integration/20261006/model-quality/122b-focus-guided/fridge-normal.output.json",
+      "output_sha256": "2237b7554b5c628a8f0e43c5ed2c3d166a0aa6425af45f70f00b45c53576649e",
+      "output_bytes": 301633,
+      "source_kind": "synthetic",
+      "scope": "pm_selected_2_review_development_subset",
+      "source_selection_by": "PM Codex, not direct user review selection or automatic retrieval",
+      "original_private_summary_sha256": "04bf35126db48efc9cdcb355a3f95c71b65d16b86c89d3ad611626b1e510d632",
+      "original_relay_sha256": "7d712f468b539c4a9f2c21542833814cdad564a37f977858feff9f518a890f40",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "quality": {
+        "verdict": "limited_development_success",
+        "limits": [
+          "kind=service but hardware product proposal",
+          "physical feasibility unverified",
+          "current workspace builds full original source scope"
+        ]
+      }
+    },
+    {
+      "case_id": "fridge-changed",
+      "source_commit": "d5f6676e8007eecacbbb6f01b4a8f0358c2582a0",
+      "dataset_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+      "input_sha256": "6423ff93d13b4df4a064bbdcfb14a26a57194a13ec42cf42fda64d72acf438a3",
+      "full_git_archive_sha256": "666000ac0a4340fda3d6ed3d67c70d50114e0d01087983b548a3e4f0287238d7",
+      "status": "held",
+      "actual_calls": 3,
+      "tokens": 7302,
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "revision_count": 0,
+      "model_id": "qwen3.5:122b-a10b-q4_K_M",
+      "model_digest": "8b9d11d807c57feb1e2ecb0d6cbf40334c37dcc3523bed5540af4f927f112a37",
+      "source_unchanged": true,
+      "group": "122b-focus-guided",
+      "path": "evals/pm-integration/20261006/model-quality/122b-focus-guided/fridge-changed.output.json",
+      "output_sha256": "307fc4a3af6ce7e07fbecf01adbc70654970821462e5e92d04da09bc7e1c0260",
+      "output_bytes": 221878,
+      "source_kind": "synthetic",
+      "scope": "pm_selected_2_review_development_subset",
+      "source_selection_by": "PM Codex, not direct user review selection or automatic retrieval",
+      "original_private_summary_sha256": "04bf35126db48efc9cdcb355a3f95c71b65d16b86c89d3ad611626b1e510d632",
+      "original_relay_sha256": "5d19d2f96afe1061d67f8f1ac428d68b7d479a47a1eb3002b8e1a4e652599a90",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "quality": {
+        "verdict": "not_passed",
+        "limits": [
+          "contract status is not independent semantic quality"
+        ]
+      }
+    },
+    {
+      "case_id": "fridge-missing-manual",
+      "source_commit": "d5f6676e8007eecacbbb6f01b4a8f0358c2582a0",
+      "dataset_sha256": "3e5896bc363d93dbfe5d6bb049a550fb1cd204209264b9ef0e078f7d8f2dfcd9",
+      "input_sha256": "b99ae568bf0cdc12190f8f247f8f72e1b1a7fdb81ac44a1d1503edd417a3ce97",
+      "full_git_archive_sha256": "666000ac0a4340fda3d6ed3d67c70d50114e0d01087983b548a3e4f0287238d7",
+      "status": "held",
+      "actual_calls": 3,
+      "tokens": 7048,
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "revision_count": 0,
+      "model_id": "qwen3.5:122b-a10b-q4_K_M",
+      "model_digest": "8b9d11d807c57feb1e2ecb0d6cbf40334c37dcc3523bed5540af4f927f112a37",
+      "source_unchanged": true,
+      "group": "122b-focus-guided",
+      "path": "evals/pm-integration/20261006/model-quality/122b-focus-guided/fridge-missing-manual.output.json",
+      "output_sha256": "78df4b65c0fb4d5b25cf774cf4f2bf7486549c41e7657dde34021f63412d1f7f",
+      "output_bytes": 205408,
+      "source_kind": "synthetic",
+      "scope": "pm_selected_2_review_development_subset",
+      "source_selection_by": "PM Codex, not direct user review selection or automatic retrieval",
+      "original_private_summary_sha256": "04bf35126db48efc9cdcb355a3f95c71b65d16b86c89d3ad611626b1e510d632",
+      "original_relay_sha256": "72a7d0070ef2f1045953f050318937d89d7065caada076d67bc7a9274a86611a",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "quality": {
+        "verdict": "hold_path_partial",
+        "limits": [
+          "appropriate unknown and specific questions; review-only no-candidate reason still declares undocumented current functionality"
+        ]
+      }
+    },
+    {
+      "case_id": "fridge-normal",
+      "source_commit": "3debda72d123289197ed1fa23b32b9ef3aedeb51",
+      "dataset_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+      "input_sha256": "d07e0e18ccf9b12bbed92fc71205bec7e38fb5094a91b902ef3d22b56dc11f91",
+      "full_git_archive_sha256": "f418a181def7e3ea784daa129fe7f3107a7191ed87bb0ed4ba6d263034eee99c",
+      "status": "held",
+      "actual_calls": 3,
+      "tokens": 14631,
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "revision_count": 1,
+      "model_id": "qwen3.5:122b-a10b-q4_K_M",
+      "model_digest": "8b9d11d807c57feb1e2ecb0d6cbf40334c37dcc3523bed5540af4f927f112a37",
+      "source_unchanged": true,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "group": "122b-full-guided",
+      "recorded_client_attempts": 4,
+      "upstream_model_generations": 3,
+      "path": "evals/pm-integration/20261006/model-quality/122b-full-guided/fridge-normal.output.json",
+      "output_sha256": "ad5387cf5a660297260d81cea1f644fcceced10c3592e619840885c768f70871",
+      "output_bytes": 468551,
+      "source_kind": "synthetic",
+      "scope": "full_original_10_reviews",
+      "source_selection_by": "original full R2 input, no review selection",
+      "original_private_summary_sha256": "3f43f22d29f0faf2836e7523745b804c3fb72507ffae919aaada488ab1cb844f",
+      "original_relay_sha256": "e3771e5e2917cd66e98677884145820a5961f282356c9ce255711d48b83daab4",
+      "quality": {
+        "verdict": "not_passed",
+        "limits": [
+          "full-source normal held; exact independent cause recorded in follow-up"
+        ]
+      }
+    },
+    {
+      "case_id": "fridge-normal",
+      "source_commit": "79f31a912d307c4e8653b38dbb6fa7612e8a5443",
+      "dataset_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+      "input_sha256": "d07e0e18ccf9b12bbed92fc71205bec7e38fb5094a91b902ef3d22b56dc11f91",
+      "full_git_archive_sha256": "c388fa6476b65721d4afb4cfbe9f745d71678936f42d9e60ac26bdfab414c0a4",
+      "status": "held",
+      "actual_calls": 5,
+      "tokens": 27397,
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "revision_count": 2,
+      "model_id": "qwen3.5:122b-a10b-q4_K_M",
+      "model_digest": "8b9d11d807c57feb1e2ecb0d6cbf40334c37dcc3523bed5540af4f927f112a37",
+      "source_unchanged": true,
+      "group": "122b-full-columns-v2",
+      "path": "evals/pm-integration/20261006/model-quality/122b-full-columns-v2/fridge-normal.output.json",
+      "output_sha256": "1cc749eb413ba3397159a84fa6404ccece59102038a25282657baeeb73844e38",
+      "output_bytes": 985257,
+      "source_kind": "synthetic",
+      "scope": "full_original_10_reviews",
+      "source_selection_by": "Original full source scope, no review removal",
+      "original_private_summary_sha256": "5968b987ce8bfe7cb51270fa6d10cb25eeb3be67492e297c0d050eaf9b2df197",
+      "original_relay_sha256": "660f9950c30ea5fb36941ec1a28d9ced992a61feffe9cdd6487b06e4beac6b97",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "recorded_client_attempts": 6,
+      "quality": {
+        "verdict": "execution_budget_error_not_appropriate_data_hold",
+        "limits": [
+          "Concept generation guard passed with lossless annotation table; final semantic_review still rejected above16000 before upstream dispatch. Five actual generations and six client attempts are different."
+        ]
+      }
+    },
+    {
+      "case_id": "fridge-normal",
+      "source_commit": "428f237bb7bddc021aa7f9c09d97fda825615fb2",
+      "dataset_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+      "input_sha256": "d07e0e18ccf9b12bbed92fc71205bec7e38fb5094a91b902ef3d22b56dc11f91",
+      "full_git_archive_sha256": "1a23cc7c1e5922322d9f80d70c0980ee0538e220718a734e2553e3b14840ed8c",
+      "status": "held",
+      "actual_calls": 6,
+      "tokens": 37910,
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "revision_count": 2,
+      "model_id": "qwen3.5:122b-a10b-q4_K_M",
+      "model_digest": "8b9d11d807c57feb1e2ecb0d6cbf40334c37dcc3523bed5540af4f927f112a37",
+      "source_unchanged": true,
+      "group": "122b-full-cap-v3",
+      "path": "evals/pm-integration/20261006/model-quality/122b-full-cap-v3/fridge-normal.output.json",
+      "output_sha256": "dc0eb5afbeda7baff5133ae639e4b31a362a4877a002e4db40b27fbd93e4960e",
+      "output_bytes": 1167347,
+      "source_kind": "synthetic",
+      "scope": "full_original_10_reviews",
+      "source_selection_by": "Original full input, no review removal",
+      "original_private_summary_sha256": "6e5b3009d99692f9005344344f4de4063e333a8e3b61b9805057cbcf9ddad02a",
+      "original_relay_sha256": "b390c6a28ba59d039d7f2920b9ee1241679b683e6b1efd57dfdb9b38e938a8af",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "recorded_client_attempts": 6,
+      "quality": {
+        "verdict": "semantic_quality_hold_not_appropriate_data_hold",
+        "normal_accept_verified": false,
+        "limits": [
+          "Actual semantic review reached upstream response; prompt transport limit fixed.",
+          "Proposed new mechanism was incorrectly required to appear in existing manual; unsupported current-product claims were marked satisfied.",
+          "Nine unrelated gaps matched FEATURE001; wish008 treated as observed complaint; shared revision limit2 preserved."
+        ],
+        "independent_audit_path": "evals/pm-integration/20261006/model-quality/122b-full-cap-v3/independent-audit.json",
+        "independent_audit_sha256": "8c8de9307b7135b2933dfea2eae0ac9a5b2565556cac0d2a25e5bcd883d20f8a"
+      }
+    }
+  ],
+  "fresh_actual_model_calls": 53,
+  "tokens": 193708,
+  "original_outputs_rewritten": false,
+  "automatic_jobs_or_quotas_reset": false,
+  "automation_mode": "OFF",
+  "requirements_verified_added": 0,
+  "participant_project_complete": false,
+  "label_correction": "Private helper used explicit_user_selected in focus metadata. Correct interpretation is PM-selected development subset; original bytes/hashes are preserved.",
+  "transport_preflight_failure": {
+    "source_commit": "79f31a912d307c4e8653b38dbb6fa7612e8a5443",
+    "scope": "GET tags only; SSH forward absent",
+    "relay_sha256": "b5ead08d4947f1a4757644223f1918edc38ecd00c2dac833abd914b1b198e876",
+    "summary_sha256": "1a2f937dda346ad341c4bf182b99e62957cbfdb586135d83f8e581272dc6eed6",
+    "generation_requests": 0,
+    "actual_model_calls": 0,
+    "tokens": 0,
+    "original_failure_preserved": true,
+    "new_run_requires_verified_forward": true
+  }
+}

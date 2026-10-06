@@ -1,16 +1,14 @@
 # 정이량 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
-## 현재 재개 요약 — 정이량-20261006-009-MAIL-FIRST
+## 최신 재개 요약 — 정이량-20261006-010-INTEGRATION
 
-- 종료 공유: 메일first PR174는 mainbca380c 병합·CI4/병합CI2/독립검수·노션본문보존 완료. 새 CORE173은 같은 원자료의 조기 거절 보완을 PM Docker115검사로 확인해 main8f9d83f로 부분 인수했다. 실모델 정상·변경·보류/실collector·전체Done은 남았다.
-
-- 최신 지시: 사용자 지시로 착수 전 실제 관련 메일·선행 작업/협의 점검을 AGENTS/CLAUDE와 협업/기록 규칙에 동일하게 추가했다. 사서함 조회와 Project 메일 안내는 구분한다.
-- 실제 확인: CORE R3 원문 인계, DATA 예약409, WEB 정상run/실collector 대기 메일6건을 읽었다. PR172의 옛 실패 원인 현재화 정정 요청과 DATA 원 예약 담당 확인 요청을 실제 Issue 댓글로 전달했다.
-- 이전 종료: PR169/170/171 병합 및 main531 Project21항목·서비스 ACCEPTED·중앙metadata readback 확인. 작업 상태/담당·jobs/예약/비용·전원OFF 보존. 제품 배포/정상accept 증거는 아니다.
-- 다음: 최신 main을 공유하고 각 팀 AI가 다음 착수 때 자기 메일→Issue/PR/Project→기록을 확인한다. CORE 의미품질·DATA 원문/collector·WEB 동일run 통합·PM 더 큰 모델/평가/컨설팅·제출은 남았다.
-- 사용자: 지금 추가 로그인/결제 불필요.10/7 15시KST 컨설팅 준비. 공식URL은 팀장 확인 보고와 PM 직접 대조를 구분한다.
-- 상세: [작업009](2026-10-06/정이량-20261006-009-MAIL-FIRST.md)·[E044](../../작업근거/정이량/2026-10-06/정이량-E044-MAIL-FIRST.md)·[이전008](2026-10-06/정이량-20261006-008-CLOSEOUT.md).
+- 수동 PM 인수·통합·후속 배정, 자동화 OFF. 이번 원/새 PR의 실제 head·검수/CI·병합·190 Request changes·Draft 보존은 [PR 큐](../../pm/pr-intake-queue-20261006.json)와 실제 GitHub를 대조한다. 개인의 개별 검사/코드 인수와 부모 Done은 구분한다.
+- [문서 허브](../../README.md)에 정본·현재/과거·작성 위치를 정리했다. 입구5개 원문161753B·104제목·169링크/anchor와 개인 원기록을 보존하고 AGENTS/CLAUDE·CI를 연결했다. 새 기록은 이름/날짜/ID, 보고 URL은 고정commit의 기존 이름.md 호환 목차다.
+- 실제 PDF3등록/검색/restart·API/MCP 같은 aggregate/원문·Chromium20/20+4/4을 확인했다. 원36날짜미상/PM31+5/DATA9+27을 구분하며 합성언급비율·자료없음 null을 실수요·실운영배포로 확대하지 않는다.
+- 실제27B/122B53호출·193708토큰·13원출력. v3 의미검토 응답으로 입력 제한은 해결했지만 신규가설/현재사실 혼동으로 품질 보류다. 이후192/195 지침 효과는 아직 미실측. CORE 유실5044는 관측사용량이며 원응답 복원·원예약 초기화가 아니다.
+- PR190 uncertain/held가최종completed/accept로변하는 P1을 재현해 CORE정본→DATA반영→WEB설명→PM통합으로 인계했다. R4배정메일3+후속메일3의 SENT/수신주소·발신자·제목은 확인했고 열람/착수는 미확인이다.
+- 남은 개발은 의미품질/3제품정상·변경·적절한보류→정상run웹/MCP·운영/두AI연결→독립평가/측정·발표/영상/ZIP이다. 최종 main/CI·Project ACK·중앙OFF·노션 재조회 결과는 [운영Issue28](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28)의 이번PM종료보고·실제수신증을 읽는다. [010 상세](2026-10-06/정이량-20261006-010-INTEGRATION.md)·[E045](../../작업근거/정이량/2026-10-06/정이량-E045-INTEGRATION.md)·[R4](../../pm/integration-followup-20261006.md).
 
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.

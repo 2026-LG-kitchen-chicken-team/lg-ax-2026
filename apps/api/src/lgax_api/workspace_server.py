@@ -1,7 +1,6 @@
 """Authenticated loopback workspace API; separate from the public evidence demo."""
 
 import argparse
-import json
 from copy import deepcopy
 from pathlib import Path
 from typing import Annotated
@@ -20,6 +19,7 @@ from lgax_core.workspace_planning import EnvPlanningRunner, PlanningRunner
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from .workspace_auth import TokenRegistry
+from .trend_configuration import load_trend_runtime
 from .workspace_trends import TrendCollector, WorkspaceTrends
 
 ORIGINS = {"http://127.0.0.1:5173", "http://localhost:5173"}
@@ -319,15 +319,26 @@ def main():
     parser.add_argument("--db", type=Path, required=True)
     parser.add_argument("--credentials", type=Path, required=True)
     parser.add_argument("--dataset", type=Path, help="Trusted server-side synthetic dataset; never a request field.")
+    parser.add_argument("--trend-metadata", type=Path,
+                        help="Explicit server-side sidecar file; never an HTTP/MCP upload or request field.")
+    parser.add_argument("--trend-metadata-sha256",
+                        help="Exact SHA256 of the sidecar file bytes, distinct from annotation_sha256.")
+    parser.add_argument("--allow-candidate-trend-metadata", action="store_true",
+                        help="Preview pinned synthetic topic candidates only; does not approve customer data.")
     parser.add_argument("--enable-planning", action="store_true",
                         help="Explicitly allow configured model calls when an authorized run is submitted.")
     parser.add_argument("--host", choices=["127.0.0.1"], default="127.0.0.1")
     parser.add_argument("--port", type=int, default=18869)
     args = parser.parse_args()
+    try:
+        runtime = load_trend_runtime(dataset_path=args.dataset, metadata_path=args.trend_metadata,
+                                     metadata_sha256=args.trend_metadata_sha256,
+                                     allow_candidate=args.allow_candidate_trend_metadata)
+    except (OSError, UnicodeError, ValueError, ValidationError):
+        parser.error("Invalid server-side dataset/sidecar configuration; verify hashes and candidate preview scope.")
     uvicorn.run(
         create_workspace_app(args.db, TokenRegistry.from_file(args.credentials),
-                             evidence_store=DemoStore(json.loads(args.dataset.read_text("utf-8-sig")))
-                             if args.dataset else None,
+                             evidence_store=runtime.evidence_store, trend_collector=runtime.collector,
                              planning_runner=EnvPlanningRunner() if args.enable_planning else None),
         host=args.host,
         port=args.port,

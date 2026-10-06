@@ -47,12 +47,14 @@ with StructuredModelClient(LabModelAdapter(config)) as client:
 | 형식 유도 | 공통 JSON·스키마 지시를 prompt에 포함 | 같은 지시와 native JSON Schema 제약 |
 | 결과 검증 | 엄격 JSON 파싱 + 로컬 Draft 2020-12 검증 | 같은 로컬 검증 |
 | `backend_schema_enforced` | `false` | `true` |
-| 전체 전달 prompt 제한 | 5,000자 | 16,000자 |
+| 전체 전달 prompt 제한 | 5,000자 | 기본16,000자; 검증된 context16,384 이상은24,000자·UTF-8 45,000바이트 동시 제한 |
 | 생성 설정 | Qwen3:8b·temperature 0·context 4096·출력 최대 256토큰 고정, seed 미지정 | temperature 0·seed 42 고정, context/출력 상한 설정 가능(기본 4096/256) |
 
 Lab 서버는 `services/inference/server.py`의 현재 계약을 그대로 사용한다. 스키마 필드를 API에 보내지 않으며 `max_output_tokens=256`, `context_tokens=4096` 외의 조합은 `INVALID_ARGUMENT`/`lab_generation_budget_is_fixed`로 거절한다. 설정을 받아 놓고 고정값으로 실행하지 않는다. 직접 Ollama는 `ModelConfig(max_output_tokens=..., context_tokens=...)`로 출력 상한과 문맥 길이를 지정할 수 있다.
 
 두 경로의 기본 출력 상한은 256토큰이다. 긴 결과가 필요한 직접 Ollama 호출은 충분한 상한을 명시한다. 출력 상한은 32~8192, 문맥 길이는 1024~32768의 정수이고 `max_output_tokens <= context_tokens - 512`여야 한다. 이 설정 검사는 최소 512토큰의 여유만 요구하며, 전체 prompt·schema가 실제 문맥에 들어가는지나 모델의 지원 문맥·GPU 메모리를 보장하지 않는다. 문자 수 제한 역시 토큰 수나 실제 문맥 적합성을 보장하지 않는다.
+
+10/6 전체 리뷰의 실제 의미 검토 요청이 기존16,000자 상한에서 생성 전 거절된 근거를 보존하고, 큰 context의 입력 전송 예산을 별도로 보완했다. 실제 `OllamaAdapter`의 검증된 `ModelConfig`·native schema·동일 설정 객체에 연결된 예산만 확장하고 두 실행 recorder가 이를 전달한다. 낮은 context·다른 backend·예산을 증명하지 않은 wrapper는 기존 제한을 유지한다. formatter와 필드 안내까지 포함한 실제 입력을 문자와 UTF-8바이트 양쪽으로 검사하며 중앙 relay의45,000바이트·출력/비용·수정2회 제한은 바꾸지 않는다. 이는 입력을 더 전달할 수 있다는 규격이며 토큰 적합성·모델 정확성 보장이 아니다. 원실패 fixture와 반례는 `tests/test_model_prompt_limits.py`, 실제 후속 결과는 [실모델 비교 근거](../../evals/pm-integration/20261006/model-quality/README.md)를 따른다.
 
 ## 입력·실패·정보 보호
 

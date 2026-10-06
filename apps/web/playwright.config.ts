@@ -24,7 +24,7 @@ export default defineConfig({
   webServer: {
     command: port === '5173' ? 'npm run dev' : `npx vite --host 127.0.0.1 --port ${port} --strictPort`,
     url: `http://127.0.0.1:${port}`,
-    reuseExistingServer: true,
+    reuseExistingServer: port === '5173',
     timeout: 60_000,
   },
 });

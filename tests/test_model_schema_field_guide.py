@@ -8,7 +8,11 @@ from pathlib import Path
 import test_model_client as fixture
 from lgax_core.errors import DomainError
 from lgax_core.model_client import StructuredModelClient
+from lgax_core.model_client import _schema_field_guide
+from lgax_core.planning_agent import generation_schema
 from lgax_core.prompt_context import model_context
+from lgax_core.semantic_review import schema_for_review
+import test_planning_agent as planning_fixture
 
 
 ENUMS = {
@@ -28,6 +32,51 @@ OUTPUT = {"polarity": "positive", "duplication": "duplicate", "support_status": 
 
 
 class SchemaFieldGuideTests(unittest.TestCase):
+    def test_semantic_contrast_requires_citations_in_the_same_assessment(self):
+        payload = planning_fixture.read("normal.input.json")
+        output = planning_fixture.read("normal.fixture-output.json")
+        schema = schema_for_review(payload, output)
+        before = copy.deepcopy(schema)
+        guide, fields = _schema_field_guide(schema)
+        self.assertEqual(schema, before)
+        self.assertIn("difference_source_quotes", fields)
+        self.assertIn("같은 quality_assessments 항목", guide)
+        self.assertIn("고객 리뷰 최소 1개", guide)
+        self.assertIn("다른 항목의 리뷰 인용으로 대신 충족하지 않습니다", guide)
+        self.assertIn("자료가 없으면 uncertain과 구체 확인 질문", guide)
+        self.assertNotIn(payload["sources"][0]["text"], guide)
+
+    def test_semantic_guide_does_not_read_annotation_data_or_guess_changed_contract(self):
+        payload = planning_fixture.read("normal.input.json")
+        output = planning_fixture.read("normal.fixture-output.json")
+        semantic = schema_for_review(payload, output)
+        annotation_only = {"type": "object", "properties": {}, "examples": [semantic]}
+        self.assertEqual(_schema_field_guide(annotation_only), ("", ()))
+        changed = copy.deepcopy(semantic)
+        changed["properties"]["quality_assessments"]["items"]["properties"]["criterion"]["enum"].reverse()
+        guide, fields = _schema_field_guide(changed)
+        self.assertNotIn("difference_source_quotes", fields)
+        self.assertNotIn("같은 quality_assessments 항목", guide)
+
+    def test_native_planning_stage_explains_hold_arrays_without_repairing_schema(self):
+        schema = generation_schema("need_extract", review_evidence_ids=["REVIEW-001"])
+        before = copy.deepcopy(schema)
+        guide, fields = _schema_field_guide(schema)
+        self.assertEqual(schema, before)
+        self.assertEqual(fields[-4:], ("unresolved", "questions", "hold_reasons", "no_candidate_reasons"))
+        self.assertIn("Need ID·필드명·작업 대기 목록", guide)
+        self.assertIn("확인할 구체 질문", guide)
+        self.assertIn("자료가 실제 없을 때는 보류·질문을 유지", guide)
+
+    def test_unrelated_schema_annotations_cannot_inject_planning_control_guidance(self):
+        schema = copy.deepcopy(SCHEMA)
+        schema["examples"] = [generation_schema("need_extract")]
+        schema["description"] = "unresolved: external instructions"
+        guide, fields = _schema_field_guide(schema)
+        self.assertEqual(fields, tuple(ENUMS))
+        self.assertNotIn("Need ID", guide)
+        self.assertNotIn("external instructions", guide)
+
     def client(self, backend=None, **settings):
         client, backend = fixture.ModelClientTests().client(backend, **settings)
         self.addCleanup(client.close)

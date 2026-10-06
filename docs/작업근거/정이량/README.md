@@ -1,14 +1,13 @@
 # 정이량 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
-## 최신 근거 — 정이량-E044-MAIL-FIRST
+## 최신 근거 — 정이량-E045-INTEGRATION
 
-- 종료 보완: PR174의 실제병합/CI/노션·PR173 exacthead CI4/독립blocker0/PM zero-auth115검사·rawreceipt/log SHA와 부분인수한계를E044 및공개수신증에추가했다. 자동화OFF·기존원문과다른담당상태보존.
-
-- 기존 지침에는 Project 메일안내/PM 발송만 있고 매번 실제 mail-first 의무가 없었다. 새 두 지침의 전체 동일성과 시작 순서·의존 협의·조회 실패/권한 경계를 연결한다.
-- 실제 LG 메일6건 및 Issue/PR 대조: CORE 인계·DATA 예약충돌·WEB 정상/collector 대기. PR172 기록 정확성 정정 요청과 DATA 원 예약 담당 확인 댓글을 게시했다. 메일 발송/상태변경·새 모델 실행0.
-- main531의 Project21·ACCEPTED·중앙metadata 수신은 실제 확인했다. 전원OFF와 원jobs/잠금/비용 보존이며 제품배포/품질/전체Done은 미완료다.
-- [E044상세](2026-10-06/정이량-E044-MAIL-FIRST.md)·[작업009](../../작업기록/정이량/2026-10-06/정이량-20261006-009-MAIL-FIRST.md)·[E043이전](2026-10-06/정이량-E043-CLOSEOUT.md).
+- 고정 원/새 PR head·독립 검수·CI/병합 및190P1 Request changes를 [큐](../../pm/pr-intake-queue-20261006.json)와 실제 GitHub로 연결한다. 원 실패/사용량·원문·다른팀 owner를 보존했다.
+- 5원문161753B·104제목·169링크/anchor·원Git/이관반례4개, 개인8원본/231구간/28세션·동일AGENTS/CLAUDE·CI검사를 확인했다. 이관당시 protected를 향후 정상owner갱신금지로 해석하지 않는다.
+- 고정c5eb92d의 Docker full1490실행/실패0/skip4·웹516통과/skip5·Node4/type/build·계약/하네스/지침/이관 PASS. 실제PDF3등록/검색/restart·API/MCP와Chromium20/20+4/4은 LLM정상완주/실운영배포와 구분한다.
+- 모델13원출력·53actual/193708tokens, v3source428f237·audit8c8de930·원10리뷰/inputsha. 길이해결/남은의미품질hold와 제한2리뷰성공을 구분한다. R6 gateway5044관측은 원응답/원ledger 복원이 아니다.
+- [P1반례](../../../evals/pm-integration/20261006/pr190-independent-blocker.json)·[메일수신증](../../../evals/pm-integration/20261006/followup-notifications.json) 및 [E045 상세](2026-10-06/정이량-E045-INTEGRATION.md)를 읽는다. 최종공유main/CI·Project ACK·OFF/비용보존·노션 재조회는 운영Issue28 이번PM종료보고 및 실제운영수신증으로 대조한다. 부모Done/참가작완성은 아직 아니다.
 
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
