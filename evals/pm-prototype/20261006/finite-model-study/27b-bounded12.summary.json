@@ -1,0 +1,51 @@
+{
+  "scope": "finite_manual_PM_quality",
+  "cases": [
+    {
+      "case_id": "fridge-normal",
+      "source_commit": "45fe0f23afb9c68e115088cef9e10cd122d181f1",
+      "dataset_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+      "full_git_archive_sha256": "b818ccce60e51282e7700915afef6d10185554f05fafef29522cdc90db5912ad",
+      "export_scope": "core/contracts/skills/demo/approved-case-inputs/model-provenance",
+      "input_sha256": "52440224ab725391c2677383b6aab4b5a9a0cdde1b450d76efe74af7b59e9aea",
+      "exit": 0,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "source_unchanged": true,
+      "status": "held",
+      "actual_calls": 3,
+      "tokens": 13284,
+      "usage_unknown": false,
+      "stop": null,
+      "relay_failed": false,
+      "model_id": "qwen3.5:27b-q4_K_M",
+      "model_digest": "64ae5b1d651fb2709d5928ccb8dcfb4bb2cc9c2c8001ac34497e36a6cf905b59",
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "source_kind": "synthetic",
+      "revision_count": 0,
+      "independent_quality": null,
+      "file": "27b-bounded12/fridge-normal.json"
+    }
+  ],
+  "automatic_quotas_or_old_jobs_reset": false,
+  "application_requirements_complete": false
+}

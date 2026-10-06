@@ -1,0 +1,30 @@
+{
+  "assignment_id": "PM-20261006-WEB-INTEGRATION-R3",
+  "task_id": "P2-WEB-005",
+  "purpose": "동향 그래프·원문·기획·내보내기의 실제 데이터 연결",
+  "instructions": [
+    "자동화 OFF·수동 개인 branch/worktree 유지. PR169는 PR158/164의 scope/늦은 응답/문서개정 검수 보완과 JSON·Markdown 내보내기를 통합한 PM PR이다. 검수·병합 후 최신 main을 받으며 그 전에는 PM 통합 영역과 중복 편집하지 않는다.",
+    "제품/모델/프로젝트/자료버전/기간/로그인 변경 직후 이전 집계를 숨기고 늦은 aggregate·원문 응답을 거부하는 현재 회귀를 확인한다. 빈 topic_ids 필터도 정확히 대조하고 범위 밖 모델을 첫 모델로 대체하지 않는다.",
+    "다음은 DATA collector148/API152의 실제 같은 aggregate ID→월·계절 숫자/분모→원문 드릴다운→기획 입력→JSON/Markdown 내보내기다. 웹과 MCP의 ID·자료hash·문서버전이 같아야 한다. 실서버501은 성공 숫자나 fixture로 대체하지 않는다.",
+    "CORE 실제 정상 결과가 확보되면 WEB003/#25의 후보 선택→기획 완료와 조건변경·보류/오류 흐름을 확인한다. 현8B failed·27B held를 accept로 표시하지 않는다. PM model_client·판단 코드의 변경은 중복하지 않는다.",
+    "동향 부분 결과는 P2-WEB-005/#27·149로 보고한다. pending을 WEB003으로 대신 Done 처리하지 않는다. 실제 core 정상 경로/collector 통합 대기는 해당 의존으로 남긴다.",
+    "새 날짜/고유ID 개인 기록·근거에 지시 원문·AI 해석·수행·검사·미완료·다음 행동을 상세히 남긴다. 기존 PR의 추가 새 변경은 원 head를 보존해 작은 새 PR로 제출하고 최신 main과 대응시킨다."
+  ],
+  "acceptance": [
+    "현재 main의 scope/역순응답/원문개정/내보내기 검사를 통과하고 작은 diff와 실제 화면 근거를 제출한다.",
+    "실제 집계 숫자·분모·원문·기획·내보내기와 MCP의 동일 aggregate ID를 대조한다. 미연결은 구체 의존으로 남긴다.",
+    "실제 모델 정상 결과가 확보된 후 같은 run의 후보 선택/변경/보류를 검증한다. fixture 성공을 모델 품질 증거로 쓰지 않는다."
+  ],
+  "next_action": "PR169 병합된 최신 main을 받은 뒤 Scope UI 회귀부터 확인하고 collector148의 소비 경로를 준비한다.",
+  "deadline": "내부 목표10/6 18:00 KST 부분 산출물 또는 구체 막힘 보고",
+  "source": "2026-10-06 사용자 PM 남은 작업 전체 진행·월/계절 동향 활용 및 PR 검수; 정이량007/E042",
+  "requirement_ids": [
+    "R15",
+    "R21",
+    "R22",
+    "R25"
+  ],
+  "pm_account": "jeongiryang",
+  "recipient_account": "choigilung",
+  "assignment_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/27#issuecomment-6011555462"
+}

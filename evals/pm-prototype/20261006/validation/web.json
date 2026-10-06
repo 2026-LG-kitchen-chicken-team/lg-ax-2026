@@ -1,0 +1,33 @@
+{
+  "phase": "web",
+  "source_commit": "d35f03513d4a8b2080a2c0f4edaebfbceb48f653",
+  "worktree_input_sha256": "9b2ab4a5e0312e22c989d33d1aac5835ce3f72f18101d43ebd48c1e3a017ebb4",
+  "input_files": 2766,
+  "command": [
+    "python",
+    "-c",
+    "import subprocess; commands=[[\"npm\",\"ci\",\"--ignore-scripts\",\"--offline\"],[\"npm\",\"test\"],[\"npm\",\"run\",\"build\"]]; [subprocess.run(command,cwd=\"/workspace/apps/web\",check=True) for command in commands]"
+  ],
+  "returncode": 0,
+  "stopped_reason": null,
+  "boundary": {
+    "backend": "docker",
+    "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+    "role": "validator",
+    "uid": 1000,
+    "readonly_root": true,
+    "caps_dropped": true,
+    "no_new_privileges": true,
+    "network": "none",
+    "mount_targets": [
+      "/artifacts",
+      "/workspace"
+    ],
+    "publisher_credentials_mounted": false,
+    "ai_profile_mounted": false
+  },
+  "source_changed": [],
+  "model_calls": 0,
+  "source_manifest_sha256": "2f3f0ad730b169b2f74176516f9bc969d13eb07a2b06686244df6fe43acf559f",
+  "executor_log_sha256": "6fa77e8114f7955fbe0aa217e1ea41ffae51bb07dc7ba81d5d48b55cc485b5d2"
+}
