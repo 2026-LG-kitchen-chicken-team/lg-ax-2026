@@ -1,8 +1,8 @@
 # 황대겸 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
-- 2026-10-06 CORE-INTEGRATION-R4-01a10729-01: 원10리뷰/제한2리뷰/길이guard 의미 반례 감사와 R6 원ledger↔PM 완료metadata 대조. 추가5044로 관측49277토큰, 원응답유실·11/24시도 보존.
-- [새 상세](2026-10-06/CORE-INTEGRATION-R4-01a10729-01.md) · [원문 대조/추가 관측/검사](../../../evals/core-manual-quality/20261006/integration-r4-audit/README.md). 실제 기능 관련성·후보kind 지침 보완, 신규 모델0·후속효과 미검증. PR192 CI4/4·보고수신은 별도이며 PM 고정배치/의미품질·부모Done이 남았다.
+- 2026-10-06 CORE-SEMANTIC-GROUNDING-01a10729-01: PM full-cap-v3의 새 가설 설명서 요구/현재 제품 단정 반례 대조와 실제 검토 지침 보완. INSTRUCTIONS 외 AST 동일, 새모델0·후속효과 미검증.
+- [상세](2026-10-06/CORE-SEMANTIC-GROUNDING-01a10729-01.md) · [원 반례·검사](../../../evals/core-manual-quality/20261006/semantic-grounding/README.md). PR198 CI4/4·보고수신 완료는 별도, DATA conflicting1/WEB·실모델 품질/PM 인수·부모Done 남음.
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
 

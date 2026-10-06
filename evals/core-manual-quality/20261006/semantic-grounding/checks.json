@@ -1,0 +1,57 @@
+{
+  "targeted": {
+    "status": "pass",
+    "exit_code": 0,
+    "output": "targeted-check.txt",
+    "sha256": "057419896bb04ecdd141a9b55a99a159ce695ccded1df3834a840851a91a2334",
+    "tests": 78,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "scope": [
+      "test_planning_agent.py",
+      "test_recorded_stage_alignment.py",
+      "test_recorded_hold_feedback.py",
+      "test_concept_lineage.py",
+      "test_semantic_review.py"
+    ],
+    "expected_negative_cli_cases": [
+      "missing_model_environment",
+      "output_must_not_overwrite_input"
+    ]
+  },
+  "static": {
+    "status": "pass",
+    "exit_code": 0,
+    "output": "static-check.txt",
+    "sha256": "fd57078667b63fcb175ab837d1b315d720439cc21ac233c8afb7ea26204f0122",
+    "ruff": "pass",
+    "rule_documents_byte_equal": true,
+    "immutable_member_source_files": 8,
+    "immutable_member_sections": 231,
+    "immutable_member_sessions": 28,
+    "canonical_contracts": "pass",
+    "phase2": "valid"
+  },
+  "base": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+  "source_sha256": {
+    "packages/core/src/lgax_core/semantic_review.py": "762a8456d2546fd70672c9ce790fa1d4be05d430b4c4d23f000fa0192f7edb24"
+  },
+  "instructions_only_ast_verified": true,
+  "criteria_schema_validator_gate_changed": false,
+  "docker": {
+    "image": "sha256:36ad082dbccf05bc9cff7c4dc5766e9ab7ed8c42198b0b731cf3831c546aaaf0",
+    "network": "none",
+    "uid": 65534,
+    "source_read_only": true,
+    "credential_mounts": 0,
+    "socket_mounts": 0
+  },
+  "new_model_calls": 0,
+  "original_six_case_regrade": 0,
+  "post_change_live_quality_result": null,
+  "recorded_pm_raw_sha256": "dc0eb5afbeda7baff5133ae639e4b31a362a4877a002e4db40b27fbd93e4960e",
+  "pm_quality_approval": false,
+  "integration_done": false,
+  "parent_done": false
+}
