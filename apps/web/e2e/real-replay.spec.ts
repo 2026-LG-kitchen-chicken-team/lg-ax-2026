@@ -11,7 +11,7 @@ const tokenFile = process.env.LGAX_E2E_REPLAY_TOKEN_FILE;
 const summaryFile = process.env.LGAX_E2E_REPLAY_SUMMARY;
 const proofDir = process.env.LGAX_E2E_REPLAY_PROOF_DIR;
 
-interface Row { case: string; project_id: string; run_id: string; recorded_status: 'held' | 'failed'; historical_model_calls: number }
+interface Row { case: string; project_id: string; run_id: string; recorded_status: 'held' | 'failed' }
 
 async function openArea(page: Page, label: string) {
   await page.getByRole('navigation', { name: '기획 작업 영역' }).getByRole('button', { name: label }).click();
@@ -54,7 +54,7 @@ test('real held/failed runs from the workspace server never read as accepted or 
       expect(usage.tokens).toMatch(/^입력 [\d,]+ · 출력 [\d,]+ · 합 [\d,]+$/);
       expect(usage.rounds).toContain('Agent 내부 수정');
       await expect(record.getByRole('region', { name: '검증 범위' })).toContainText('의미 정확성 미검증');
-      await expect(record.getByRole('region', { name: '모델 호출 기록' }).locator('[data-call]')).toHaveCount(row.historical_model_calls);
+      await expect(record.getByRole('region', { name: '모델 호출 기록' }).locator('[data-call]')).toHaveCount((row as Row & { historical_model_calls: number }).historical_model_calls);
       const shot = `${row.case.replace('/', '--')}.png`;
       if (proofDir) { mkdirSync(proofDir, { recursive: true }); await page.screenshot({ path: join(proofDir, shot), fullPage: true }); }
       await openArea(page, '수정 이력');
