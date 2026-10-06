@@ -24,6 +24,7 @@ jobs:
       - name: Shared instructions and project records
         run: |
           uv run python scripts/sync_agent_rules.py --check
+          python scripts/migrate_member_logs.py --verify
           uv run python scripts/harness.py validate
           uv run python scripts/phase2.py validate
       - name: Regression, phase2 integrity and contract tests
