@@ -1,0 +1,60 @@
+.............................FFFF..............F.........................
+======================================================================
+FAIL: test_cli_all_skills_trace_and_existing_file_preservation (test_skill_runner.SkillRuntimeTests.test_cli_all_skills_trace_and_existing_file_preservation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/lgax-r7/tests/test_skill_runner.py", line 421, in test_cli_all_skills_trace_and_existing_file_preservation
+    self.assertEqual(result.returncode, 0 if skill == "evidence_lookup" else 2, result.stderr)
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "/tmp/lgax-r7/skills/evidence_lookup/scripts/run.py", line 3, in <module>
+    from lgax_core.skill_runner import cli_main
+ModuleNotFoundError: No module named 'lgax_core'
+
+
+======================================================================
+FAIL: test_cli_cannot_overwrite_its_input_source (test_skill_runner.SkillRuntimeTests.test_cli_cannot_overwrite_its_input_source)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/lgax-r7/tests/test_skill_runner.py", line 254, in test_cli_cannot_overwrite_its_input_source
+    self.assertEqual(process.returncode, 2)
+AssertionError: 1 != 2
+
+======================================================================
+FAIL: test_cli_parse_failure_has_no_invented_execution (test_skill_runner.SkillRuntimeTests.test_cli_parse_failure_has_no_invented_execution)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/lgax-r7/tests/test_skill_runner.py", line 438, in test_cli_parse_failure_has_no_invented_execution
+    self.assertEqual(result.returncode, 2)
+AssertionError: 1 != 2
+
+======================================================================
+FAIL: test_cli_surrogate_retains_execution_record_not_read_error (test_skill_runner.SkillRuntimeTests.test_cli_surrogate_retains_execution_record_not_read_error)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/lgax-r7/tests/test_skill_runner.py", line 398, in test_cli_surrogate_retains_execution_record_not_read_error
+    self.assertEqual(process.returncode, 2, process.stderr)
+AssertionError: 1 != 2 : Traceback (most recent call last):
+  File "/tmp/lgax-r7/skills/evidence_lookup/scripts/run.py", line 3, in <module>
+    from lgax_core.skill_runner import cli_main
+ModuleNotFoundError: No module named 'lgax_core'
+
+
+======================================================================
+FAIL: test_repeatable_cli_writes_success_and_explicit_unimplemented_error (test_skill_runner.SkillRuntimeTests.test_repeatable_cli_writes_success_and_explicit_unimplemented_error)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/lgax-r7/tests/test_skill_runner.py", line 240, in test_repeatable_cli_writes_success_and_explicit_unimplemented_error
+    self.assertEqual(result.returncode, expected_code, result.stderr)
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "/tmp/lgax-r7/skills/evidence_lookup/scripts/run.py", line 3, in <module>
+    from lgax_core.skill_runner import cli_main
+ModuleNotFoundError: No module named 'lgax_core'
+
+
+----------------------------------------------------------------------
+Ran 73 tests in 4.779s
+
+FAILED (failures=5)
+{"ok": false, "error": {"code": "INVALID_ARGUMENT", "message": "모델 호출 설정·입력·스키마가 유효하지 않습니다.", "details": {"reason": "missing_model_environment"}}}
+{"ok": false, "reason": "output_must_not_overwrite_input"}
+{"tests": 73, "failures": 5, "errors": 0, "skipped": 0, "live_model_calls": 0}

@@ -1,0 +1,15 @@
+{
+  "test": "tests.test_upload_query_integration.UploadQueryIntegrationTests.test_pdf_new_selection_source_range_catalog_and_query",
+  "before_fix_exit_code": 1,
+  "fixture_pdf_and_mock_extraction": true,
+  "before_fix_observed_model": "CALLER-CHANGED-MODEL",
+  "before_fix_observed_version": "caller-changed-edition",
+  "expected_model": "T876MEE1H1",
+  "expected_version": "MFL71401557 Rev.00_032526",
+  "cause": "specs indexed caller plan references instead of frozen approved scope",
+  "fix": "deepcopy before validation; index/hash only self.plan",
+  "after_fix_checks": "checks-plan-freeze/checks.json",
+  "test_count": 85,
+  "all_passed": true,
+  "model_calls": 0
+}
