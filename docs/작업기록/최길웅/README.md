@@ -1,7 +1,7 @@
 # 최길웅 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
-## 최신 재개 요약 (작성자 갱신, 2026-10-07 03:xx KST, 기록 044)
+## 최신 재개 요약 (작성자 갱신, 2026-10-07 03:2x KST, 기록 045)
 
 - 현재 배정: **PM-20261006-WEB-INTEGRATION-R4**([#25 원문](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25#issuecomment-6015359201), 메일 11:35Z). 기한은 10/7 15:00 KST 컨설팅 전 검토본이고, PM 내부 목표는 10/7 12:00이다.
 - 상태: 자동화 OFF, 수동 진행. 작업 전 메일·의존 점검 규칙을 따른다.
@@ -10,17 +10,19 @@
   - [#201](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/201): 선택 프로젝트의 제품군·검토 모델 범위(전자레인지에 FRIDGE-A가 남던 문제). [기록 041](2026-10-06/최길웅-20261006-041.md)
   - [#202](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/202): U3 거절 후보 사유·위반 대상·회차별 반복·코드 질문 대상. [기록 042](2026-10-06/최길웅-20261006-042.md)
   - [#208](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/208): U5 모델 호출·토큰(미기록≠0)·모델 시간과 전체 실행 시간 분리·요청 회차와 내부 수정 구분·검증 범위·호출별 원문. #202 위에 쌓아서 **#202 다음에 병합**한다. [기록 043](2026-10-07/최길웅-20261007-043.md)
-  - [#209](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/209): PM 날짜팩(#188 head `6153c23`, 시험 서버) 웹 검증. 5모델×월/계절 10집계와 52칸을 원 파일 독립 재계산·MCP와 대조했다. 웹은 4범위의 모든 막대·원문·JSON·Markdown·기획 입력이 같았고, KST 경계(009→2027-01)와 빈 구간 '자료 없음'도 맞았다. 기준 경로(FRIDGE-A 10월 1/3)도 통과했다. 웹 코드 변경 없이 #208 위에 쌓았다(**#208 다음**). [기록 044](2026-10-07/최길웅-20261007-044.md)
+  - [#209](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/209): PM 날짜팩(#188 head `6153c23`, 시험 서버) 웹 검증. 5모델×월/계절 10집계와 52칸을 원 파일 독립 재계산·MCP와 대조했다. 웹은 4범위의 모든 막대·원문·JSON·Markdown·기획 입력이 같았고, KST 경계(009→2027-01)와 빈 구간 '자료 없음'도 맞았다. 기준 경로(FRIDGE-A 10월 1/3)도 통과했다. 웹 코드 변경 없이 #208 위에 쌓았다(**#208 다음**). 첫 head의 web CI 실패(spec 타입)는 `a74195b`에서 고쳤다. [기록 044](2026-10-07/최길웅-20261007-044.md)
+  - [#210](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/210): PR190의 오류 7개 코드는 `VALIDATION_FAILED`의 details에만 있어 웹에 보이지 않았다. 오류 아래 세부 검사 코드·리뷰 ID·위치를 화면·JSON·Markdown에 표시한다(설명은 #190 병합 뒤 한국어로 보임). #209 위에 쌓았다(**#209 다음**). [기록 045](2026-10-07/최길웅-20261007-045.md)
 - R4 남은 일(순서):
   1. (완료, PM 검수 대기) U5 — 기록 043.
   2. (시험 서버 검증 완료, #27 보고) PM 날짜팩 — 기록 044. #188이 병합·운영 주입되면 운영 설정으로 다시 확인한다.
-  3. PR190 신규 오류 7개 한국어 설명: DATA190 새 head `28e4431`에 이미 들어 있고 CORE도 맞다고 확인했다(#16·#12 댓글, 10/6 23:3x KST). PM 재검수·병합 뒤 웹에서 hold/질문/미상 정보와 설명 표시를 확인한다.
+  3. PR190 신규 오류 7개 설명: 표시 경로는 #210으로 해결했다(기록 045). #190 병합 뒤 실제 run 기록으로 hold/질문/미상 정보와 설명 표시를 다시 확인한다.
   4. 정상 full-scope run을 PM에게 받으면 같은 run으로 후보 선택→조건 변경→내보내기/MCP를 검증한다.
 - PM 결정 대기: 공개 API와 작업실의 dataset 버전·source 범위를 정렬하는 방식(PM이 운영 설정으로 맞춘다고 회신함).
 - 시험 요령:
   - 조회만 하는 화면 시험은 `LGAX_E2E_PORT=5183`의 별도 Vite로 하고, `LGAX_WORKSPACE_PROXY`·`LGAX_PUBLIC_API_PROXY`로 시험 서버를 가리킨다. 사용자 5173·18867·18869는 건드리지 않는다.
   - 재생 DB `private/workspace-model-study-replay`를 쓰는 읽기 전용 서버: `uv run --no-sync python -X utf8 -m lgax_api.workspace_server --db private/workspace-model-study-replay/workspace.sqlite --credentials private/workspace-model-study-replay/credentials.json --port 18879`(작업 공간 `Desktop/lgax-wt-live`).
-- 최신 기록 ID: 최길웅-20261007-044. 상세:
+- 최신 기록 ID: 최길웅-20261007-045. 상세:
+  - 045 R4 오류 세부 검사 코드 표시(PR190 설명 노출, [#210](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/210)): [상세](2026-10-07/최길웅-20261007-045.md)
   - 044 R4 PM 날짜팩 같은 집계·모든 모델/월·계절 웹 검증([#209](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/209)): [상세](2026-10-07/최길웅-20261007-044.md)
   - 043 R4 U5 모델 호출·토큰·시간·검증 범위([#208](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/208)): [상세](2026-10-07/최길웅-20261007-043.md)
   - 042 R4 U3 거절 후보 사유·위반 대상·회차(PR #202): [상세](2026-10-06/최길웅-20261006-042.md)

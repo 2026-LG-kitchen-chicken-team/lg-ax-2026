@@ -226,7 +226,11 @@ export interface TraceFacts {
   /** concept_id → lineage valid (linked to a confirmed remaining-pain gap) and its own violation codes. */
   lineage: Map<string, { valid: boolean; codes: string[] }>;
   /** Each review_decision in order: the Agent's internal revision rounds, not the planner's request revisions. */
-  rounds: { round: number; revision_count: number; action: string; codes: string[]; repeated: boolean }[];
+  /**
+   * details: the failed stage step stored right before this decision ({ok: false, error}), read with errorDetails/
+   * errorNotes — e.g. VALIDATION_FAILED from need_extract carries UNCERTAINTY_CONTEXT_MISSING (record 049).
+   */
+  rounds: { round: number; revision_count: number; action: string; codes: string[]; details: string[]; repeated: boolean }[];
 }
 
 export function traceFacts(trace: TraceStep[]): TraceFacts {
@@ -254,13 +258,23 @@ export function traceFacts(trace: TraceStep[]): TraceFacts {
     }
   }
   const rounds: TraceFacts['rounds'] = [];
+  let failed: string[] = [];
   for (const step of trace) {
-    const out = step.operation === 'review_decision' && isObject(step.outputs) ? step.outputs : null;
+    if (step.operation !== 'review_decision') {
+      if (isObject(step.outputs) && step.outputs.ok === false && isObject(step.outputs.error)) {
+        const error = step.outputs.error as { code?: string; details?: unknown };
+        failed = [...errorDetails(error).map(errorDetailText), ...errorNotes(error)];
+      }
+      continue;
+    }
+    const out = isObject(step.outputs) ? step.outputs : null;
     if (!out || typeof out.action !== 'string' || typeof out.revision_count !== 'number' || !Array.isArray(out.violations)) continue;
     const codes = out.violations.flatMap(item => isObject(item) && typeof item.code === 'string' ? [item.code] : []);
     const previous = rounds[rounds.length - 1];
-    rounds.push({ round: rounds.length + 1, revision_count: out.revision_count, action: out.action, codes,
-      repeated: Boolean(previous && codes.length && previous.codes.join('|') === codes.join('|')) });
+    const key = (item: { codes: string[]; details: string[] }) => [...item.codes, ...item.details].join('|');
+    rounds.push({ round: rounds.length + 1, revision_count: out.revision_count, action: out.action, codes, details: failed,
+      repeated: Boolean(previous && codes.length && key(previous) === key({ codes, details: failed })) });
+    failed = [];
   }
   return { targets, lineage, rounds };
 }
@@ -369,10 +383,54 @@ export interface SemanticReview {
   /** Exact immutable originals of this review attempt, when retained by the core. */
   reviewed_input?: JudgementInput; reviewed_output?: JudgementOutput;
 }
+/** One check the core reported inside an error's details: the specific code, and which review/field it points at. */
+export interface ErrorDetail { code: string; evidence_id: string | null; path: string | null }
+
+/**
+ * The specific check codes inside an error (R4, PR #190): need_extract puts REVIEW_ and UNCERTAINTY_ codes in
+ * details.violations and EMPTY_NEEDS_WITHOUT_JUDGEMENT in details.code, while the error itself is only VALIDATION_FAILED.
+ * Read as stored; malformed entries are skipped, never guessed.
+ */
+export function errorDetails(error: { code?: string; details?: unknown }): ErrorDetail[] {
+  const details = error.details;
+  if (!details || typeof details !== 'object') return [];
+  const text = (value: unknown) => typeof value === 'string' && value ? value : null;
+  const entry = (item: unknown): ErrorDetail[] => {
+    if (!item || typeof item !== 'object') return [];
+    const record = item as Record<string, unknown>;
+    const code = text(record.code);
+    // A detail repeating the error's own code (PR #190 metadata conflict: violations [{code: VALIDATION_FAILED}]) adds nothing.
+    return code && BARE_CODE.test(code) && code !== error.code ? [{ code, evidence_id: text(record.evidence_id), path: text(record.path) }] : [];
+  };
+  const record = details as Record<string, unknown>;
+  return [...(Array.isArray(record.violations) ? record.violations.flatMap(entry) : []), ...entry({ code: record.code })];
+}
+
+/**
+ * Other stored facts of an error that say where to look (record 049, real PR #190 core records): the two conflicting
+ * declaration paths, the stated reason (e.g. schema_mismatch) and a review named at the top of the details.
+ */
+export function errorNotes(error: { details?: unknown }): string[] {
+  const details = error.details;
+  if (!details || typeof details !== 'object') return [];
+  const record = details as Record<string, unknown>;
+  const notes: string[] = [];
+  const paths = Array.isArray(record.conflicting_paths) ? record.conflicting_paths.filter((item): item is string => typeof item === 'string') : [];
+  if (paths.length) notes.push(`서로 다른 두 선언: ${paths.join(' ↔ ')}`);
+  if (typeof record.reason === 'string' && record.reason) notes.push(`사유: ${record.reason}`);
+  if (typeof record.evidence_id === 'string' && record.evidence_id) notes.push(`리뷰 ${record.evidence_id}${typeof record.declared_polarity === 'string' ? `(선언 극성 ${record.declared_polarity})` : ''}`);
+  return notes;
+}
+
+export function errorDetailText(item: ErrorDetail): string {
+  return [reasonText(item.code), item.evidence_id ? `리뷰 ${item.evidence_id}` : '', item.path ? `위치 ${item.path}` : ''].filter(Boolean).join(' · ');
+}
+
 export interface PlanningExecution {
   execution_kind: 'fixture' | 'live_model'; status: 'completed' | 'held' | 'failed';
   original_input: JudgementInput; input: JudgementInput; output: JudgementOutput | null; decision: StoredDecision | null;
-  trace: TraceStep[]; model_calls: ModelCallRecord[]; errors: { code: string; message: string }[];
+  /** details: the core's structured error details (e.g. need_extract VALIDATION_FAILED → details.violations, PR #190). */
+  trace: TraceStep[]; model_calls: ModelCallRecord[]; errors: { code: string; message: string; details?: unknown }[];
   /** The checked output the core turned down; the terminal output keeps no candidates. */
   rejected_output?: JudgementOutput;
   semantic_reviews?: SemanticReview[];
@@ -663,7 +721,7 @@ export type ExportJudgement =
   | { record_valid: false; record_errors: string[] }
   | {
     record_valid: true; execution_kind: PlanningExecution['execution_kind']; status: PlanningExecution['status'];
-    decision: StoredDecision['action'] | null; violations: string[]; record_problems: string[]; errors: { code: string; message: string }[];
+    decision: StoredDecision['action'] | null; violations: string[]; record_problems: string[]; errors: { code: string; message: string; details: ErrorDetail[]; notes: string[] }[];
     /** Hold only: violations that caused the hold, and judgement errors the hold left unrevised (screen lists the same). */
     hold_causes: string[]; unrevised_errors: string[]; terminal_reason: string | null;
     questions: string[]; hold_reasons: string[]; unresolved: string[]; no_candidate_reasons: string[];
@@ -714,7 +772,7 @@ export function exportJudgement(snapshot: RunSnapshot): ExportJudgement | null {
   return {
     record_valid: true, execution_kind: execution.execution_kind, status: execution.status, decision: execution.decision?.action ?? null,
     violations: (execution.decision?.violations ?? []).map(item => targetedViolationText(item, facts.targets.get(item.code) ?? [])), record_problems: [...view.problems],
-    errors: execution.errors.map(item => ({ code: item.code, message: item.message })),
+    errors: execution.errors.map(item => ({ code: item.code, message: item.message, details: errorDetails(item), notes: errorNotes(item) })),
     ...(output && execution.decision ? (({ hold_causes, unrevised_errors }) => ({ hold_causes, unrevised_errors }))(judgementView(execution.input, output, execution.decision, facts)) : { hold_causes: [], unrevised_errors: [] }),
     terminal_reason: terminalReason(snapshot),
     questions: unique([...(output?.questions ?? []), ...(output?.gaps ?? []).flatMap(gap => gap.questions), ...reviews.flatMap(review => review.report.questions)]).map(item => questionWithTargets(item, facts)),

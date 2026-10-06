@@ -11,10 +11,11 @@ import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { executionMetrics, exportJudgement, judgementView, planningExecutionView, rejectedCandidateCount, rerunBaseNotice, runSources, selectableConcepts, terminalReason, tokenText, verificationScope } from './judgement';
+import { errorDetails, errorDetailText, errorNotes, executionMetrics, traceFacts, exportJudgement, judgementView, planningExecutionView, rejectedCandidateCount, rerunBaseNotice, runSources, selectableConcepts, terminalReason, tokenText, verificationScope } from './judgement';
 import type { PlanningExecution } from './judgement';
 import { runStatusView } from './liveWorkspace';
 import { ConceptsView, HistoryView } from './PlanningViews';
+import { reasonText } from './judgement';
 import type { MeasureControls } from './PlanningViews';
 import { buildComparison, buildExport, contractErrors, exportCompleteness, exportMarkdown } from './planning';
 import type { PlanningRequest, RunSnapshot } from './planning';
@@ -358,6 +359,92 @@ describe('model usage, run time and verification scope read from the stored reco
   });
 });
 
+describe('specific check codes inside an error are shown, not only VALIDATION_FAILED (R4, PR #190 error details, record 045)', () => {
+  // Exact shapes PR #190 head 28e4431 raises: need_extraction.py VALIDATION_FAILED with details.violations, and
+  // skill_runner.py with details.code. One malformed entry must be skipped, never guessed.
+  const ERRORS = [
+    { code: 'VALIDATION_FAILED', message: '리뷰 판단 사유·미확인 정보·확인 질문을 보완해야 합니다.', details: { stage: 'need_extract', violations: [
+      { code: 'UNCERTAINTY_FIELD_MISSING', evidence_id: 'REVIEW-EVIDENCE-002', path: 'uncertainty_assessments/0/questions', field: 'questions' },
+      { code: 'NON_COMPLAINT_AS_NEED', evidence_id: 'REVIEW-EVIDENCE-001', need_id: 'NEED-001', declared_polarity: 'positive' },
+      { code: 'REVIEW_ASSESSMENT_COVERAGE', expected_review_evidence_ids: ['REVIEW-EVIDENCE-001'], actual_review_evidence_ids: [] },
+      { code: 'not a code' }, 5,
+    ], expected_review_evidence_ids: ['REVIEW-EVIDENCE-001', 'REVIEW-EVIDENCE-002'] } },
+    { code: 'VALIDATION_FAILED', message: '니즈를 추출하지 못했다면 이유를 남겨야 합니다.', details: { stage: 'need_extract', code: 'EMPTY_NEEDS_WITHOUT_JUDGEMENT', expected_review_evidence_ids: [] } },
+    { code: 'INVALID_EVIDENCE_ID', message: '근거 ID가 입력에 없습니다.' },
+  ];
+  const withErrors = () => {
+    const snapshot = structuredClone(FAILED[0].snapshot);
+    execution(snapshot).errors = structuredClone(ERRORS);
+    return snapshot;
+  };
+
+  it('reads the codes, review IDs and paths as stored; malformed entries and errors without details give nothing', () => {
+    expect(errorDetails(ERRORS[0])).toEqual([
+      { code: 'UNCERTAINTY_FIELD_MISSING', evidence_id: 'REVIEW-EVIDENCE-002', path: 'uncertainty_assessments/0/questions' },
+      { code: 'NON_COMPLAINT_AS_NEED', evidence_id: 'REVIEW-EVIDENCE-001', path: null },
+      { code: 'REVIEW_ASSESSMENT_COVERAGE', evidence_id: null, path: null },
+    ]);
+    expect(errorDetails(ERRORS[1])).toEqual([{ code: 'EMPTY_NEEDS_WITHOUT_JUDGEMENT', evidence_id: null, path: null }]);
+    expect(errorDetails(ERRORS[2])).toEqual([]);
+    expect(errorDetailText(errorDetails(ERRORS[0])[0])).toBe(`${reasonText('UNCERTAINTY_FIELD_MISSING')} · 리뷰 REVIEW-EVIDENCE-002 · 위치 uncertainty_assessments/0/questions`);
+    expect(reasonText('NON_COMPLAINT_AS_NEED')).not.toContain('설명이 등록되지 않은');
+  });
+
+  it('JSON summary and Markdown carry the same details; the record stays valid', () => {
+    const snapshot = withErrors();
+    expect(planningExecutionView(snapshot).kind).toBe('ok');
+    const judgement = exportJudgement(snapshot)!;
+    if (!judgement.record_valid) throw new Error('invalid');
+    expect(judgement.errors.map(item => item.details.map(detail => detail.code))).toEqual([
+      ['UNCERTAINTY_FIELD_MISSING', 'NON_COMPLAINT_AS_NEED', 'REVIEW_ASSESSMENT_COVERAGE'], ['EMPTY_NEEDS_WITHOUT_JUDGEMENT'], []]);
+    const markdown = exportMarkdown(buildExport('live', snapshot, [], [], '2026-10-06T10:00:00.000Z', [snapshot]));
+    expect(markdown).toContain(`- VALIDATION_FAILED: 리뷰 판단 사유·미확인 정보·확인 질문을 보완해야 합니다. — 세부 검사: ${errorDetailText(errorDetails(ERRORS[0])[0])} / `);
+    expect(markdown).toContain(`- VALIDATION_FAILED: 니즈를 추출하지 못했다면 이유를 남겨야 합니다. — 세부 검사: ${reasonText('EMPTY_NEEDS_WITHOUT_JUDGEMENT')}`);
+    expect(markdown).toContain('- INVALID_EVIDENCE_ID: 근거 ID가 입력에 없습니다.\n');
+  });
+});
+
+describe('error details of real PR #190 head core records (fixture transport, no model; record 049)', () => {
+  // First error of each record produced by PR #190 head 28e4431's PlanningAgent with its own test transport; long
+  // free-text policy/instruction fields dropped. Code and paths are byte-for-byte the core's.
+  const REAL = {"failed-context-missing": {"code": "VALIDATION_FAILED", "message": "리뷰 판단 사유·미확인 정보·확인 질문을 보완해야 합니다.", "details": {"stage": "need_extract", "violations": [{"code": "UNCERTAINTY_CONTEXT_MISSING", "evidence_id": "DEV-01-REVIEW", "required_fields": ["reason", "missing_information", "questions"]}], "expected_review_evidence_ids": ["DEV-01-REVIEW"]}}, "failed-p1-polarity": {"code": "VALIDATION_FAILED", "message": "단계 판단 메타데이터의 두 표현이 다릅니다.", "details": {"violations": [{"code": "VALIDATION_FAILED", "stage": "needs"}], "conflicting_paths": ["review_assessments", "result/review_assessments"]}}, "failed-scope-mismatch": {"code": "VALIDATION_FAILED", "message": "미확인 정보와 리뷰 판단의 근거 ID·극성이 다릅니다.", "details": {"violations": [{"code": "VALIDATION_FAILED", "stage": "needs"}], "evidence_id": "DEV-01-REVIEW", "declared_polarity": "uncertain"}}, "failed-field-missing": {"code": "VALIDATION_FAILED", "message": "모델 출력이 JSON 형식 또는 요청한 스키마를 충족하지 않습니다.", "details": {"reason": "schema_mismatch"}}};
+  it('shows the specific code, the conflicting declarations and the stated reason; never the parent code again', () => {
+    expect(errorDetails(REAL['failed-context-missing']).map(errorDetailText)).toEqual([`${reasonText('UNCERTAINTY_CONTEXT_MISSING')} · 리뷰 DEV-01-REVIEW`]);
+    expect(errorNotes(REAL['failed-context-missing'])).toEqual([]);
+    expect(errorDetails(REAL['failed-p1-polarity'])).toEqual([]);
+    expect(errorNotes(REAL['failed-p1-polarity'])).toEqual(['서로 다른 두 선언: review_assessments ↔ result/review_assessments']);
+    expect(errorDetails(REAL['failed-scope-mismatch'])).toEqual([]);
+    expect(errorNotes(REAL['failed-scope-mismatch'])).toEqual(['리뷰 DEV-01-REVIEW(선언 극성 uncertain)']);
+    expect(errorNotes(REAL['failed-field-missing'])).toEqual(['사유: schema_mismatch']);
+  });
+  it('each check round carries the failed stage error stored right before its decision', () => {
+    const decision = (revision: number, action: string) => ({ stage: 'review', operation: 'review_decision',
+      outputs: { valid: false, action, revision_count: revision, violations: [{ code: 'VALIDATION_FAILED', stage: 'needs' }] } });
+    const failed = (error: unknown) => ({ stage: 'needs', operation: 'need_extract', outputs: { ok: false, error } });
+    // Same order as the real failed-context-missing record: failed need_extract → review_decision, three times; the last round differs.
+    const facts = traceFacts([failed(REAL['failed-context-missing']), decision(0, 'revise'), failed(REAL['failed-context-missing']), decision(1, 'revise'),
+      failed(REAL['failed-p1-polarity']), decision(2, 'unresolved')]);
+    expect(facts.rounds.map(round => [round.codes, round.details, round.repeated])).toEqual([
+      [['VALIDATION_FAILED'], [`${reasonText('UNCERTAINTY_CONTEXT_MISSING')} · 리뷰 DEV-01-REVIEW`], false],
+      [['VALIDATION_FAILED'], [`${reasonText('UNCERTAINTY_CONTEXT_MISSING')} · 리뷰 DEV-01-REVIEW`], true],
+      [['VALIDATION_FAILED'], ['서로 다른 두 선언: review_assessments ↔ result/review_assessments'], false],
+    ]);
+    // A decision with no failed stage before it (the stored 8B runs) keeps no details.
+    expect(traceFacts(execution(FAILED[0].snapshot).trace).rounds.every(round => round.details.length === 0)).toBe(true);
+  });
+
+  it('the export carries the same notes', () => {
+    const snapshot = structuredClone(FAILED[0].snapshot);
+    execution(snapshot).errors = structuredClone(Object.values(REAL));
+    const judgement = exportJudgement(snapshot)!;
+    if (!judgement.record_valid) throw new Error('invalid');
+    expect(judgement.errors.map(item => item.notes)).toEqual(Object.values(REAL).map(errorNotes));
+    const markdown = exportMarkdown(buildExport('live', snapshot, [], [], '2026-10-06T10:00:00.000Z', [snapshot]));
+    expect(markdown).toContain('- VALIDATION_FAILED: 단계 판단 메타데이터의 두 표현이 다릅니다. — 서로 다른 두 선언: review_assessments ↔ result/review_assessments');
+    expect(markdown).not.toContain('세부 검사: 모델 응답이 단계 규격에 맞지 않습니다');
+  });
+});
+
 describe('real held / failed runs in the actual React DOM (record 034)', () => {
   let host: HTMLDivElement;
   let root: Root;
@@ -422,6 +509,19 @@ describe('real held / failed runs in the actual React DOM (record 034)', () => {
     expect(panel.querySelectorAll('[aria-label="모델 호출 기록"] [data-call]')).toHaveLength(metrics.calls.length);
     expect(panel.querySelector('[aria-label="모델 호출 기록"] pre')?.textContent).toBe(execution(snapshot).model_calls[0].formatted_prompt);
     expect(panel.textContent).toContain('시간은 실행 시작부터 누적');
+  });
+
+  it('error details are listed under each stored error with the review ID and field path (R4, PR #190)', async () => {
+    const snapshot = structuredClone(FAILED[0].snapshot);
+    execution(snapshot).errors = [{ code: 'VALIDATION_FAILED', message: '리뷰 판단 사유·미확인 정보·확인 질문을 보완해야 합니다.', details: { stage: 'need_extract', violations: [
+      { code: 'UNCERTAINTY_FIELD_MISSING', evidence_id: 'REVIEW-EVIDENCE-002', path: 'uncertainty_assessments/0/questions', field: 'questions' },
+      { code: 'NON_COMPLAINT_AS_NEED', evidence_id: 'REVIEW-EVIDENCE-001', need_id: 'NEED-001', declared_polarity: 'positive' }] } },
+    { code: 'INVALID_EVIDENCE_ID', message: '근거 ID가 입력에 없습니다.' }];
+    await act(async () => root.render(createElement(ConceptsView, { mode: 'live', runs: [snapshot], selected: snapshot, onSelect: () => {}, ...runSources(snapshot, [], []) })));
+    const items = [...host.querySelectorAll('[data-error-details="0"] li')].map(node => node.textContent);
+    expect(items).toEqual(errorDetails(execution(snapshot).errors[0]).map(errorDetailText));
+    expect(items[0]).toContain('리뷰 REVIEW-EVIDENCE-002 · 위치 uncertainty_assessments/0/questions');
+    expect(host.querySelector('[data-error-details="1"]')).toBeNull();
   });
 
   it.each(RUNS.map(item => [item.row.case, item] as const))('%s: the revision timeline does not call a first run without candidates "the first run\'s candidates"', async (_name, { snapshot }) => {
