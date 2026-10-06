@@ -26,6 +26,7 @@
 - 교정: 생성호환 목차 끝의 빈줄이 git diff --check에 걸려 index EOF만singleLF로 고치고 8index/manifest receipt만 재생성했다. snapshot/body/session은 변경하지 않았으며 CLI --verify는 다시 통과했다. 최초고정 metadatahelper는 검토pin이현재bootstrap/packet문구변경과달라 실행을거절했다; pin을낮추거나 자동재배포하지 않고 원Git의검토된metadata코드로 JSON검증 및 원격CI를 확인한다.
 - 개인 README: 정이량만 이번 실제작업 요약/링크를 작성했다. 나머지6개 README는 원재개요약을 그대로 연결하고 미래작성용 빈marker쌍만 기계 추가했다. 다른팀원 현재성과/의도 대필0이다.
 - 독립 검수: 원8Gitblob/231역변환/28세션·목록/495heading/128본문·세션링크/1,071목차·안내링크·README예외block/동일지침을 새 migrationmodule import없이 별도 검사해 blocker0이다.
+- 이관 전 PR 경계: PR158/164에는 기존 최길웅 root누적 문서 변경이 있고 PR163은 기존허용세션 경로를 사용한다. 새구조 적용 뒤 옛 누적파일로 호환목차를 덮어쓰지 않고 원PR/head·추가구간을 보존해 새상세에 연결하도록 공통지침에 인수절차를 추가했다. 이 task에서 세 PR의 제품내용을 검수·병합하거나 아직합치지않은추가기록을 원manifest의 이미이관된범위로 바꾸지 않았다.
 
 - 연결 근거: 정이량-E041-LOG-MIGRATION.
 - 다음 구체 행동: 실제 PR/main CI와 원격 공유·노션 결과를 고정 Issue28 checkpoint에 남긴다. 팀 AI는 최신 main을 받아 자기 개인 README부터 읽고 새 작업별 상세 파일과 요약링크를 작성한다. 이 이관을 위해 추가 로그인·API키·개인결제는 필요하지 않다.
