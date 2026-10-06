@@ -1,26 +1,31 @@
 {
   "id": "P2-WEB-005",
   "owner": "최길웅",
-  "title": "형태·사용성 시각 기획 확장 타당성 실험",
+  "title": "리뷰 동향·사용성 시각 기획 확장",
   "requirement_ids": [
     "R15",
     "R21"
   ],
   "depends_on": [
-    "P2-WEB-003"
+    "P2-WEB-002"
   ],
   "allowed_execution_kinds": [
-    "live_model",
-    "live_service"
+    "live_service",
+    "live_client"
   ],
   "actions": [
-    "확장 채택 전 계산 가능한 조건과 전문가 검토 사항을 분리한다.",
-    "물리 성능·제조 가능성을 시각자료로 입증했다고 주장하지 않는다."
+    "원문/구간/주제/자료/로그인 변경과 역순 응답을 검증하고 잘못된 근거의 기획 연결을 차단한다.",
+    "웹/API/MCP의 동일 aggregate_id와 실제 원문 조회·표본/분모·snapshot 내보내기를 검증한다.",
+    "필수 WEB003 정상 시연과 동향 부분 구현을 구분하며 실제 collector 없으면501을 표시한다.",
+    "시각자료를 실제 시장효과·물리 성능·제조 가능성의 입증으로 사용하지 않는다."
   ],
-  "status": "pending",
+  "status": "ready",
   "scope": "proposed_extension",
   "adoption_required": true,
-  "adoption": null,
+  "adoption": {
+    "path": "harness/phase2/runs/pm-rebalance-20261006/P2-WEB-005-adoption.json",
+    "sha256": "e123fcd73ae1814fcf7dcfa1173c21279ed5fd465d71e42c1beb036dbd6b6b8d"
+  },
   "issue_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/27",
   "branch": null,
   "individual_evidence": null,
@@ -29,5 +34,26 @@
   "integration": null,
   "completion": null,
   "block_reason": null,
-  "history": []
+  "history": [
+    {
+      "at": "2026-10-06T05:07:31+00:00",
+      "action": "PM_rebalance_and_adopt_extension",
+      "status": "ready",
+      "previous_scope": {
+        "title": "형태·사용성 시각 기획 확장 타당성 실험",
+        "depends_on": [
+          "P2-WEB-003"
+        ],
+        "allowed_execution_kinds": [
+          "live_model",
+          "live_service"
+        ],
+        "actions": [
+          "확장 채택 전 계산 가능한 조건과 전문가 검토 사항을 분리한다.",
+          "물리 성능·제조 가능성을 시각자료로 입증했다고 주장하지 않는다."
+        ],
+        "status": "pending"
+      }
+    }
+  ]
 }
