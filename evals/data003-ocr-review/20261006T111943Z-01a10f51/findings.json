@@ -1,0 +1,115 @@
+{
+  "confirmed_saved_text_differences": [
+    {
+      "region_id": "OCR-DW-LINE-01",
+      "gold": "높이를 3단계로 조절",
+      "saved_OCR": "높이를3단계로 조절",
+      "differences": [
+        {
+          "operation": "delete",
+          "gold": " ",
+          "recognized": ""
+        }
+      ]
+    },
+    {
+      "region_id": "OCR-DW-TABLE-04",
+      "gold": "1600 W",
+      "saved_OCR": "1600W",
+      "differences": [
+        {
+          "operation": "delete",
+          "gold": " ",
+          "recognized": ""
+        }
+      ]
+    },
+    {
+      "region_id": "OCR-MW-LINE-01",
+      "gold": "버튼을 누를 때마다 30초씩",
+      "saved_OCR": "버튼을 누를 때마다30초씩",
+      "differences": [
+        {
+          "operation": "delete",
+          "gold": " ",
+          "recognized": ""
+        }
+      ]
+    },
+    {
+      "region_id": "OCR-MW-TABLE-01",
+      "gold": "476 × 272 × 369",
+      "saved_OCR": "476×272×369",
+      "differences": [
+        {
+          "operation": "delete",
+          "gold": " ",
+          "recognized": ""
+        },
+        {
+          "operation": "delete",
+          "gold": " ",
+          "recognized": ""
+        },
+        {
+          "operation": "delete",
+          "gold": " ",
+          "recognized": ""
+        },
+        {
+          "operation": "delete",
+          "gold": " ",
+          "recognized": ""
+        }
+      ]
+    },
+    {
+      "region_id": "OCR-MW-TABLE-02",
+      "gold": "23 L",
+      "saved_OCR": "23L",
+      "differences": [
+        {
+          "operation": "delete",
+          "gold": " ",
+          "recognized": ""
+        }
+      ]
+    },
+    {
+      "region_id": "OCR-MW-TABLE-05",
+      "gold": "1000 W*1",
+      "saved_OCR": "1000 W∗1",
+      "differences": [
+        {
+          "operation": "replace",
+          "gold": "*",
+          "recognized": "∗"
+        }
+      ]
+    }
+  ],
+  "confirmed_field_parsing_limitation": {
+    "region_id": "OCR-MW-TABLE-05",
+    "saved_observed_values": [
+      1000.0,
+      1.0
+    ],
+    "physical_output_value": 1000,
+    "unit": "W",
+    "auxiliary_footnote_number": 1,
+    "historical_strict_numeric_field_correct_preserved": false,
+    "interpretation": "숫자 추출 목록에 각주 번호1이 포함됨. 수치1000과 각주 링크*1을 분리해서 소비해야 함"
+  },
+  "binding_risks": [
+    "DUE 빌트인과 상판 제거 프리스탠딩의 동일 치수",
+    "MW 외형369/370 및 명목23/25 L 열 구분",
+    "가용13 L/명목23 L 구분",
+    "소비1570 W/출력Max1000 W 구분",
+    "머리글 mm 단위 상속",
+    "병합 공통 셀의 모델 범위 유지",
+    "각주 *1 문서/페이지 범위와 시간 조건 유지",
+    "같은 페이지 evidence 후보와 실제 인용 원문의 차이"
+  ],
+  "automatic_row_column_error_measurement": null,
+  "new_OCR_execution": false
+}
