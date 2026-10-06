@@ -1,7 +1,7 @@
 # 최길웅 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
-## 최신 재개 요약 (작성자 갱신, 2026-10-07 05:4x KST, 기록 048)
+## 최신 재개 요약 (작성자 갱신, 2026-10-07 06:0x KST, 기록 049)
 
 - 현재 배정: **PM-20261006-WEB-INTEGRATION-R4**([#25 원문](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25#issuecomment-6015359201), 메일 11:35Z). 기한은 10/7 15:00 KST 컨설팅 전 검토본이고, PM 내부 목표는 10/7 12:00이다.
 - 상태: 자동화 OFF, 수동 진행. 작업 전 메일·의존 점검 규칙을 따른다.
@@ -23,8 +23,10 @@
 - 시험 요령:
   - 조회만 하는 화면 시험은 `LGAX_E2E_PORT=5183`의 별도 Vite로 하고, `LGAX_WORKSPACE_PROXY`·`LGAX_PUBLIC_API_PROXY`로 시험 서버를 가리킨다. 사용자 5173·18867·18869는 건드리지 않는다.
   - 재생 DB `private/workspace-model-study-replay`를 쓰는 읽기 전용 서버: `uv run --no-sync python -X utf8 -m lgax_api.workspace_server --db private/workspace-model-study-replay/workspace.sqlite --credentials private/workspace-model-study-replay/credentials.json --port 18879`(작업 공간 `Desktop/lgax-wt-live`).
+- PR190 head 실제 코어 기록(fixture, 모델 0)으로 #210 사전 검증: UNCERTAINTY_CONTEXT_MISSING은 한국어로 표시된다. 상위와 같은 VALIDATION_FAILED 반복을 제거하고, 상충 경로·사유·리뷰 표시를 추가했다(#210 `a59fb3e`, #211에 merge). [기록 049](2026-10-07/최길웅-20261007-049.md)
 - 컨설팅(10/7 15:00) 웹 설명 브리핑·시연 순서·한계·예상 질문: [기록 048](2026-10-07/최길웅-20261007-048.md)
-- 최신 기록 ID: 최길웅-20261007-048. 상세:
+- 최신 기록 ID: 최길웅-20261007-049. 상세:
+  - 049 PR190 실제 코어 기록으로 오류 세부 표시 보완(#210): [상세](2026-10-07/최길웅-20261007-049.md)
   - 048 컨설팅용 웹 흐름 브리핑: [상세](2026-10-07/최길웅-20261007-048.md)
   - 047 R4 PR 병합 미리보기·#201 충돌 수정: [상세](2026-10-07/최길웅-20261007-047.md)
   - 046 R4 기획 요청 화면 배치(원 요청 열·모델 카드, [#211](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/211)): [상세](2026-10-07/최길웅-20261007-046.md)
