@@ -158,6 +158,7 @@ export function ReviewTrendsPanel({ mode, workspace, data, modelId, onUseInPlann
         <div><dt>범위 밖(다른 모델·자료)</dt><dd>{counts!.excluded_out_of_scope_count}건</dd></div>
         <div><dt>미분류(분모에 포함)</dt><dd>{counts!.unclassified_review_count}건</dd></div>
       </dl>
+      {counts!.eligible_unique_review_count === 0 ? <p className="inline-message notice" role="status" data-denominator="zero">이 기간·범위에는 비율을 계산할 유효 리뷰가 없습니다(분모 0건). 모든 구간을 "자료 없음"으로 표시하며 0%가 아닙니다. 제외된 리뷰 수를 확인해 기간이나 자료를 바꿔 보세요.</p> : null}
       {aggregate.warnings.length ? <ul className="trend-warnings">{aggregate.warnings.map(item => <li key={item}>{item}</li>)}</ul> : null}
 
       <div className="trend-chart" role="group" aria-label={`${topicLabel(activeTopic)} ${GRANULARITY_LABEL[aggregate.filters.granularity]} 비율`}>

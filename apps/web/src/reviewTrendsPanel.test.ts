@@ -11,7 +11,8 @@ import type { BootstrapData } from './domain';
 import { FIXTURE_TREND_MONTH, fixtureTrendEvidence } from './fixtures/reviewTrends.fixture';
 import type { LiveWorkspace } from './liveWorkspace';
 import { ReviewTrendsPanel } from './ReviewTrendsPanel';
-import { topicsOf, trendCells } from './reviewTrends';
+import { aggregateProblems, topicsOf, trendCells } from './reviewTrends';
+import type { TrendAggregate } from './reviewTrends';
 import type { TrendEvidenceData } from './workspace';
 
 const AGGREGATE = FIXTURE_TREND_MONTH;
@@ -23,6 +24,15 @@ const [A, B] = VALUE;
 const page = (bucketId: string, offset = 0, limit = 50) => fixtureTrendEvidence(AGGREGATE, bucketId, TOPIC, offset, limit);
 const ids = (data: TrendEvidenceData) => data.evidence.map(item => String(item.id));
 
+// Assignment check "분모0": every in-scope review is undated, so the whole period has no denominator.
+const ZERO: TrendAggregate = {
+  ...AGGREGATE, aggregate_id: `TREND-${'z'.repeat(64)}`,
+  counts: { ...AGGREGATE.counts, in_scope_review_count: 10, input_review_count: 10 + AGGREGATE.counts.excluded_out_of_scope_count,
+    excluded_undated_count: 10, excluded_outside_period_count: 0, duplicate_count: 0, eligible_unique_review_count: 0, unclassified_review_count: 0 },
+  buckets: AGGREGATE.buckets.map(bucket => ({ ...bucket, total_reviews: 0,
+    topics: bucket.topics.map(topic => ({ ...topic, topic_review_count: 0, ratio: null, evidence_count: 0, evidence_ids: [], evidence_ids_truncated: false })) })),
+};
+
 function deferred<T>() {
   let resolve!: (value: T) => void; let reject!: (error: unknown) => void;
   const promise = new Promise<T>((ok, fail) => { resolve = ok; reject = fail; });
@@ -30,11 +40,11 @@ function deferred<T>() {
 }
 
 const DATA = { evidence: [{ id: 'R-1', model_id: MODEL, source_type: 'review', source_id: AGGREGATE.filters.source_ids[0], source_kind: 'synthetic' }] } as unknown as BootstrapData;
-function liveWorkspace(scopeVersion: number, trendEvidence: LiveWorkspace['trendEvidence'], connection: LiveWorkspace['connection'] = 'connected'): LiveWorkspace {
+function liveWorkspace(scopeVersion: number, trendEvidence: LiveWorkspace['trendEvidence'], connection: LiveWorkspace['connection'] = 'connected', aggregate: TrendAggregate = AGGREGATE): LiveWorkspace {
   return {
     connection, scopeVersion,
     project: { project: { id: 'PROJECT-TREND-FIXTURE', request: { model_ids: [MODEL], dataset_version: AGGREGATE.filters.dataset_version } } },
-    reviewTrends: vi.fn().mockResolvedValue({ aggregate: AGGREGATE }),
+    reviewTrends: vi.fn().mockResolvedValue({ aggregate }),
     trendEvidence,
   } as unknown as LiveWorkspace;
 }
@@ -140,6 +150,24 @@ describe('review trends drill-down accepts only the latest matching evidence (PM
     expect(host.querySelectorAll<HTMLInputElement>('input[name="trend-source"]')[1].disabled).toBe(true);
     expect(host.querySelector('.fixture-note')).not.toBeNull();
     expect(onUse).not.toHaveBeenCalled();
+  });
+
+  it('a zero denominator draws every bucket as no data (never 0% or NaN) and says why', async () => {
+    expect(aggregateProblems(ZERO)).toEqual([]);
+    const evidence = vi.fn();
+    await render(liveWorkspace(0, evidence, 'connected', ZERO));
+    await act(async () => host.querySelectorAll<HTMLInputElement>('input[name="trend-source"]')[1].click());
+    await act(async () => { host.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })); });
+    const bars = [...host.querySelectorAll<HTMLButtonElement>('.trend-bar')];
+    expect(bars).toHaveLength(ZERO.buckets.length);
+    expect(bars.every(bar => bar.classList.contains('empty') && bar.textContent!.includes('자료 없음'))).toBe(true);
+    expect(host.querySelector('.trend-chart')!.textContent).not.toMatch(/NaN|Infinity|%/);
+    expect(host.querySelector('[data-denominator="zero"]')?.textContent).toContain('분모 0건');
+    expect(host.querySelector('.trend-counts')!.textContent).toContain('날짜 없음 제외10건');
+    await click(0);
+    expect(host.querySelector('.trend-drilldown')!.textContent).toContain('유효한 리뷰가 없습니다');
+    expect(evidence).not.toHaveBeenCalled();
+    expect(addButton()).toBeUndefined();
   });
 
   it('locks "add to planning" while more evidence of the same bucket is loading', async () => {
