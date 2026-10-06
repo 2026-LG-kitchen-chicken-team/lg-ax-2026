@@ -36,6 +36,18 @@ describe('PM integrated planner screens', () => {
     expect(host.querySelector('[aria-label="추가 질문에 답변"]')).not.toBeNull();
     expect(host.querySelector('[aria-label="이전 실행과 결과 비교"]')).not.toBeNull();
   });
+  it('keeps the selected candidate original citation list distinct from judgment trace quotations', async () => {
+    await act(async () => root.render(createElement(App)));
+    await click('계약 fixture'); await click('콘셉트 검토');
+    const inspect = [...host.querySelectorAll<HTMLButtonElement>('button')].filter(item => item.textContent?.includes('원문·판단 함께 보기'));
+    await act(async () => inspect[1].click());
+    const review = host.querySelector('[aria-label="후보 상세 검토"]')!;
+    expect(review.querySelectorAll('.quote-list')).toHaveLength(2);
+    const cited = review.querySelectorAll('.review-col > .quote-list');
+    expect(cited).toHaveLength(1);
+    expect(cited[0].textContent).toContain('선반 분리 방법이 설명서 어디 있는지 모르겠어요.');
+    expect(review.querySelector('[aria-label="근거 추적"] .quote-list')).not.toBeNull();
+  });
   it('a cross-project parent cannot leak its candidate or question into comparisons', () => {
     const foreign = structuredClone(FIXTURE_RUNS[0]);
     foreign.run.project_id = 'UNRELATED-PROJECT';
