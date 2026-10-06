@@ -2,11 +2,11 @@
 
 <!-- member-log:owner-updates:start -->
 ## 작성자의 최신 재개 요약
-- 최신 기록 ID / 한국시간 / 현재 목표: `신진하-E-DATA-INTEGRATION-R4-01a1100e` · 2026-10-06 20:56 KST · PM DATA-INTEGRATION-R4의3팩원문/날짜/검색 대조·후속제출.
-- 실제 완료 범위 / 미완료·막힘 / 다음 행동과 담당: 원36/CSV8열 보존, 108원문·ID/모델/버전 연결, 15query독립재계산/재생·40거절, 최신검사main087bd에서PDF3/근거21/실HTTP46·재시작PASS. 원날짜미상/PM31날짜/DATA9날짜는각source/version/IDs로유지;청소1/3과1/4는원문membership가다름. PM 운영/분류/독립자료 승인, CORE 의미/보류, WEB 새DATA9팩화면·내보내기가남음. 부모Done/실고객수요아님.
-- 상세 작업근거: [R4 고유 기록ID](2026-10-06/신진하-E-DATA-INTEGRATION-R4-01a1100e.md)
-- 관련 근거: [3팩 고정값·실행·담당 인계](../../../evals/data-integration-r4/20261006/README.md)
-- 선행 실제상태: PR183·PR189 실제병합 확인. 최신main b67886f 위R4단위에서108바인딩/15query/40거절·실HTTP46/PDF3/근거21/재시작PASS. PM188날짜3파일은고정핀과같음; 공통문서nav는PM188미병합으로미제공. 이번R4의새PR/CI/PM 인수·운영은별도.
+- 최신 기록 ID / 한국시간 / 목표: `신진하-E-DATA190-CORE198-INTEGRATION-01a1100e` · 2026-10-06 22:40 KST · PR190/CORE198 DATA 소비 정합·web 오류7·실측225 인수/독립검수·운영 조회.
+- 완료/미완료: CORE198 고정policy를소비해conflicting 예외와실제schema4회귀/한국어7설명추가, Docker71핵심검사PASS. 전체Python/web 최종재검사중. PR200 실제225실측의원문21/질의15/모델·원문SHA/10개진단metrics 독립audit PASS(모델추가0). 승인운영3GET재조회는로컬오류2/외부502로미확인. PM운영읽기인계·FR01gold·PR190 검수/CI·CORE실모델 의미품질이남음. 부모Done 아님.
+- 상세 기록: [이번 날짜·기록ID](2026-10-06/신진하-E-DATA190-CORE198-INTEGRATION-01a1100e.md)
+- 관련 근거: [190/198 실행 인계](../../../evals/data190-core198-integration/20261006-01a1100e/handoff.json)
+- 최종검사: 2026-10-06 23:16 KST DockerPython1498/skip3·reason registry5/safe-ci4/빌드·Ruff/계약/지침PASS. PR190 고정원반례/보류정보전파를CORE198와통합. local전체web timeout은보존하고새head CI/PM검수를기다림. [검사원로그](../../../evals/data190-core198-integration/20261006-01a1100e/checks.json)
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
 

@@ -135,7 +135,9 @@ def validate_judgement(result, review_ids):
             if not isinstance(evidence_ids, list) or not all(isinstance(eid, str) for eid in evidence_ids):
                 continue  # Structural validation owns malformed Need fields.
             for eid in evidence_ids:
-                if eid in declared and declared[eid] != "complaint":
+                # CORE's existing judgement contract permits a conflicting
+                # review as Need evidence while retaining its question/hold.
+                if eid in declared and declared[eid] not in ("complaint", "conflicting"):
                     issues.append(
                         {
                             "code": "NON_COMPLAINT_AS_NEED",

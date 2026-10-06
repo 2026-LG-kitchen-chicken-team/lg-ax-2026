@@ -99,6 +99,13 @@ const VIOLATION_LABELS: Record<string, string> = {
   REQUEST_PRODUCT_MISMATCH: '요청 범위 밖의 제품입니다',
   REVIEW_CONFLICT: '리뷰가 서로 상충합니다',
   REVIEW_UNCERTAIN: '불편인지 불확실한 리뷰를 근거로 썼습니다',
+  REVIEW_SCOPE_MISMATCH: '리뷰 판단의 근거 ID가 현재 입력 리뷰 범위에 없습니다',
+  REVIEW_REASON_MISSING: '리뷰의 불편 여부를 판단한 사유가 없습니다',
+  REVIEW_ASSESSMENT_COVERAGE: '현재 입력 리뷰별 판단이 누락되었거나 중복되었습니다',
+  UNCERTAINTY_CONTEXT_MISSING: '불확실하거나 상충하는 리뷰에서 확인할 정보와 질문이 빠졌습니다',
+  UNCERTAINTY_SCOPE_MISMATCH: '미확인 정보가 해당 리뷰 판단과 연결되지 않거나 중복되었습니다',
+  UNCERTAINTY_FIELD_MISSING: '미확인 사유, 필요한 정보, 확인 질문 중 필수 항목이 없거나 비어 있습니다',
+  EMPTY_NEEDS_WITHOUT_JUDGEMENT: '불편 목록이 비어 있지만 리뷰별 판단 사유나 확인할 정보가 없습니다',
   NO_REVIEW_EVIDENCE: '불편을 뒷받침하는 리뷰가 없습니다',
   // The flag means the run's own review assessment did not call the cited review a complaint/conflict (record 034:
   // real 8B runs labelled explicit complaints "positive"), so the label credits that mismatch instead of asserting it.
