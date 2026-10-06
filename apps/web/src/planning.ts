@@ -453,6 +453,11 @@ function cell(text: string): string {
 
 const DECISION_TEXT: Record<string, string> = { accept: '계약 검사 통과(의미 검증 아님)', hold: '보류', revise: '수정 중', unresolved: '미해결 종료' };
 const STATUS_TEXT: Record<string, string> = { completed: '완료', held: '보류', failed: '실패' };
+// The budget closes before the final correction runs. revision_limit can coexist with a connection/other execution error.
+const TERMINAL_TEXT: Record<string, string> = {
+  revision_limit: '내부 수정 한도 도달(구체적인 종료 경과는 실행 기록 확인)', hold: '보류로 종료(내부 수정 없음)', unresolved: '미해결 종료',
+  backend_failure: '모델 연결 오류로 중단', policy_changed: '수정 정책 변경으로 중단', completed: '완료',
+};
 
 /** The run's stored planning_execution, copied as is (null when the run has none). */
 export function storedExecution(snapshot: RunSnapshot): unknown {
@@ -469,8 +474,11 @@ function judgementMarkdown(judgement: ExportJudgement | null): string[] {
   return [
     '## 판단 실행 기록', '',
     `- 실행 종류: ${executionKindText(judgement.execution_kind, judgement.model_calls)} · 종료 상태: ${STATUS_TEXT[judgement.status]} · 코어 결정: ${judgement.decision ? DECISION_TEXT[judgement.decision] ?? judgement.decision : '없음'}`,
-    `- 모델: ${judgement.models.join(', ') || '호출 기록 없음'} · 호출 ${judgement.model_calls}회`, RAW_NOTE, '',
-    ...list('검사에서 발견한 문제', judgement.violations),
+    `- 모델: ${judgement.models.join(', ') || '호출 기록 없음'} · 호출 ${judgement.model_calls}회`,
+    ...(judgement.terminal_reason ? [`- 종료 사유: ${TERMINAL_TEXT[judgement.terminal_reason] ?? judgement.terminal_reason} (\`${judgement.terminal_reason}\`)`] : []), RAW_NOTE, '',
+    ...(judgement.unrevised_errors.length && judgement.hold_causes.length
+      ? [...list('보류를 일으킨 문제(근거 확인 필요)', judgement.hold_causes), ...list('함께 발견된 판단 오류(보류로 내부 수정하지 않음)', judgement.unrevised_errors)]
+      : list('검사에서 발견한 문제', judgement.violations)),
     ...(judgement.record_problems.length ? list('저장 기록 불일치', judgement.record_problems) : []),
     ...(judgement.errors.length ? list('실행 오류', judgement.errors.map(item => `${item.code}: ${item.message}`)) : []),
     ...list('확인할 질문', judgement.questions.map(reasonText)), ...list('보류 사유', judgement.hold_reasons.map(reasonText)),
@@ -499,7 +507,11 @@ export function exportMarkdown(doc: ExportDocument): string {
     ...doc.comparison.map(row => `| ${cell(row.model_id)} | ${cell(`${row.need_id}: ${row.pain}`)} | ${cell(row.feature_ids.join(', ') || '없음')} | ${cell(row.conditions.join(', ') || '없음')} | ${cell(statusLabel(row.support_status))} | ${cell(row.remaining_pain || '-')} | ${cell(row.evidence_ids.join(', '))} | ${cell(row.questions.join(' / ') || '-')} |`),
     '', '## 콘셉트 후보', '',
   ];
-  if (!doc.concepts.length) lines.push('생성된 콘셉트가 없습니다.', '');
+  const rejected = doc.judgement?.record_valid ? doc.judgement.rejected_candidates : [];
+  // Record 034: "none generated" is wrong when the model generated candidates that the core check turned down.
+  if (!doc.concepts.length) lines.push(rejected.length
+    ? `채택된 콘셉트가 없습니다. 모델이 만든 후보 ${rejected.length}개(${rejected.map(item => item.id).join(', ')})는 코어 검사에서 거절되어 선택 대상이 아닙니다(아래 '판단 실행 기록'의 거절 후보 참조).`
+    : '생성된 콘셉트가 없습니다.', '');
   if (doc.no_candidate_reasons?.length) lines.push('후보 없음 사유:', ...doc.no_candidate_reasons.map(item => `- ${reasonText(item)}`), '');
   for (const concept of doc.concepts) {
     lines.push(`### ${concept.id} — ${concept.title} (${statusLabel(concept.status)})`, '', `- 유형: ${concept.kind} · 대응 간극: ${concept.gap_ids.join(', ')}`, `- 차별점: ${concept.differentiation}`, `- 근거: ${concept.evidence_ids.join(', ')}`, '', '요구사항:', ...concept.requirements.map(item => `- ${item}`), '', '확인할 가정:', ...(concept.assumptions.length ? concept.assumptions.map(item => `- ${item}`) : ['- 없음']), '');

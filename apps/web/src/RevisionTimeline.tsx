@@ -2,6 +2,7 @@
 import { conceptDetailChanges, FIXTURE_NOTICE, nextRequestRevision, requestChanges } from './planning';
 import type { ConceptDetailChange, DataMode, PlanningRequest, RequestChange, RunSnapshot } from './planning';
 import { runStatusView, stageLabel } from './liveWorkspace';
+import { rejectedCandidateCount, terminalReason } from './judgement';
 
 export type RevisionCause = 'original' | 'user_condition_change' | 'data_version_change' | 'unchanged_rerun';
 
@@ -31,6 +32,10 @@ export interface RevisionEntry {
   concept_changes: ConceptDetailChange[] | null;
   link_problems: string[];
   record_problems: string[];
+  /** Why the run stopped (core correction budget), so a failed run at the revision limit isn't read as an execution error. */
+  terminal_reason: string | null;
+  /** Candidates the model produced that the core check turned down (never selectable); 0 when none were stored. */
+  rejected_candidates: number;
 }
 
 export interface RevisionTimelineResult { entries: RevisionEntry[]; problems: string[] }
@@ -128,6 +133,7 @@ export function buildRevisionTimeline(runs: RunSnapshot[], selectedId: string, o
       dataset_version: snapshot.run.dataset_version, dataset_sha256: snapshot.dataset_sha256, document_versions: { ...snapshot.document_versions },
       concept_changes: comparable ? conceptDetailChanges(parent ?? undefined, snapshot) : null,
       link_problems: linkProblems, record_problems: currentProblems,
+      terminal_reason: terminalReason(snapshot), rejected_candidates: rejectedCandidateCount(snapshot),
     };
   });
   return { entries, problems: [...problems, ...entries.flatMap(entry => entry.link_problems.map(text => `${entry.run_id}: ${text}`))] };
@@ -145,7 +151,7 @@ export function RevisionTimeline({ runs, selectedId, original, mode, onSelect }:
     <p className="hint">{mode === 'fixture' ? '화면 확인용 합성 예시 · 실제 Agent 실행 결과가 아닙니다.' : '서버에 저장된 실행 기록 · 자료 성격은 각 실행의 근거 원문에서 확인하세요.'}</p>
     {problems.length ? <div className="unresolved" role="alert" data-held="true"><strong>연결 보류</strong><ul>{problems.map(item => <li key={item}>{item}</li>)}</ul></div> : null}
     <ol className="timeline">{entries.map(entry => {
-      const view = runStatusView(entry.status);
+      const view = runStatusView(entry.status, entry.terminal_reason);
       const fixture = mode === 'fixture' && !entry.local_draft;
       return <li key={entry.run_id} data-run-id={entry.run_id} data-causes={entry.causes.join(' ')} aria-current={entry.run_id === selectedId ? 'true' : undefined}>
       <button type="button" className={entry.run_id === selectedId ? 'active' : ''} aria-current={entry.run_id === selectedId ? 'true' : undefined} onClick={() => onSelect?.(entry.run_id)}>
@@ -168,7 +174,8 @@ export function RevisionTimeline({ runs, selectedId, original, mode, onSelect }:
         ? <p className="muted" data-field="candidates" data-held="true">{entry.link_problems.length || entry.record_problems.length ? '연결 또는 기록을 확인할 수 없어 이전 후보와의 비교를 보류했습니다.' : '비교 가능한 Agent 결과가 없는 실행이라 후보 비교가 없습니다.'}</p>
         : entry.concept_changes.length
           ? <ul data-field="candidates">{entry.concept_changes.map(change => <li key={change.id} data-concept-id={change.id}><span className="id">{change.id}</span>{change.title} · {change.status[0] ?? '없음'} → {change.status[1] ?? '없음'}{change.text.title ? ` · 제목 "${change.text.title.before}" → "${change.text.title.after}"` : ''}{change.text.differentiation ? ` · 차별점 변경` : ''}</li>)}</ul>
-          : <p className="muted" data-field="candidates">{entry.previous_run_id ? '이전 실행 대비 후보 변화가 없습니다.' : '첫 실행의 후보입니다.'}</p>}
+          // A first run lists each of its candidates as a change, so an empty list here means it kept none.
+          : <p className="muted" data-field="candidates">{entry.previous_run_id ? '이전 실행 대비 후보 변화가 없습니다.' : `첫 실행에서 채택된 후보가 없습니다(${view.label}${entry.rejected_candidates ? ` · 검사에서 거절된 후보 ${entry.rejected_candidates}개` : ''}).`}</p>}
     </li>;
     })}</ol>
   </section>;

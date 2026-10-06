@@ -8,7 +8,7 @@ import { buildEvidenceTrace, EvidenceTracePanel, subjectFromGap } from './Eviden
 import { buildRevisionTimeline, isIntermediateRun, RevisionTimeline } from './RevisionTimeline';
 import { ClarificationPanel } from './ClarificationPanel';
 import { PendingJudgement } from './PendingJudgement';
-import { exportJudgement, planningExecutionView, reasonText, rerunBaseNotice, selectableConcepts } from './judgement';
+import { exportJudgement, planningExecutionView, reasonText, rejectedCandidateCount, rerunBaseNotice, selectableConcepts, terminalReason } from './judgement';
 import { runStatusView, stageLabel } from './liveWorkspace';
 import { editSummary, END_RULE, START_RULE } from './measurement';
 import type { EditSummary, ModificationMeasurement } from './measurement';
@@ -154,7 +154,7 @@ export function RequestInsights({ questions, changes, revision, mode }: { questi
 }
 
 function ComparisonTable({ snapshot, features, evidence }: { snapshot: RunSnapshot; features: Feature[]; evidence: Map<string, Evidence> }) {
-  if (!snapshot.output) return <p className="muted pad">이 실행에는 대조 결과가 없습니다. {runStatusView(snapshot.run.status).detail}</p>;
+  if (!snapshot.output) return <p className="muted pad">이 실행에는 대조 결과가 없습니다. {runStatusView(snapshot.run.status, terminalReason(snapshot)).detail}</p>;
   const rows = buildComparison(snapshot.output, features, [...evidence.values()]);
   return <div className="table-scroll"><table className="comparison-table">
     <thead><tr><th>모델</th><th>고객 불편</th><th>연결된 기존 기능</th><th>기능 조건</th><th>판단</th><th>남은 불편</th><th>근거</th><th>확인할 질문</th></tr></thead>
@@ -197,8 +197,19 @@ function RunPicker({ runs, selected, onSelect }: { runs: RunSnapshot[]; selected
 
 interface PlanningProps { mode: DataMode; runs: RunSnapshot[]; selected: RunSnapshot; onSelect: (id: string) => void; features: Feature[]; evidence: Evidence[]; currentEvidence?: Evidence[] }
 
+/**
+ * "No candidates" must not read as "the model made none" when it did and the core turned them down (record 034: the
+ * real 27B held runs generated 2–3 candidates). The rejected ones stay in the core record panel, never selectable.
+ */
+function noCandidateText(snapshot: RunSnapshot): string {
+  const rejected = rejectedCandidateCount(snapshot);
+  if (!rejected) return '생성된 후보가 없습니다.';
+  const ended = snapshot.run.status === 'held' || snapshot.run.status === 'failed' ? `${runStatusView(snapshot.run.status).label}로 끝나` : '채택되지 않아';
+  return `채택된 후보가 없습니다. 모델이 만든 후보 ${rejected}개는 코어 검사 결과 ${ended} 선택 대상에서 뺐습니다. 아래 판단 실행 기록의 '검사에서 거절된 마지막 후보'에서 확인하세요.`;
+}
+
 function RunStatus({ snapshot, mode }: { snapshot: RunSnapshot; mode: DataMode }) {
-  const view = runStatusView(snapshot.run.status);
+  const view = runStatusView(snapshot.run.status, terminalReason(snapshot));
   // Fixture runs are hand-written examples, so their status must not read as an Agent result.
   const fixture = mode === 'fixture' && snapshot.actor_id !== 'local-draft';
   return <span className={`run-status ${fixture ? 'fixture' : view.tone}`} title={fixture ? FIXTURE_NOTICE : view.detail}>{fixture ? `fixture 예시 · ${snapshot.run.status}` : view.label}<small title={`${snapshot.run.status} · ${snapshot.run.stage}`}>{stageLabel(snapshot.run.stage)}</small></span>;
@@ -295,7 +306,7 @@ export function ConceptsView({ mode, runs, selected, onSelect, features, evidenc
           <dt>근거 원문</dt><dd><Refs ids={concept.evidence_ids} evidence={evidenceById} /></dd>
         </dl>
         <button type="button" className={`review-button ${reviewed?.id === concept.id ? 'active' : ''}`} aria-pressed={reviewed?.id === concept.id} onClick={() => setReviewId(concept.id)}>원문·판단 함께 보기</button>
-      </article>)}</div> : <p className="muted pad">{selected.run.status === 'not_implemented' ? '이 실행은 요청만 기록된 초안입니다. Agent가 연결되지 않아 후보를 만들지 않았습니다.' : '생성된 후보가 없습니다.'}</p>}
+      </article>)}</div> : <p className="muted pad">{selected.run.status === 'not_implemented' ? '이 실행은 요청만 기록된 초안입니다. Agent가 연결되지 않아 후보를 만들지 않았습니다.' : noCandidateText(selected)}</p>}
       {selected.run.unresolved.length ? <div className="unresolved"><strong>보류·미해결</strong><ul>{selected.run.unresolved.map(item => <li key={item}>{reasonText(item)}</li>)}</ul></div> : null}
     </section>
     {selected.run.concepts.length > 1 ? <section className="panel planning-panel"><div className="planning-head"><div><p className="eyebrow">SIDE BY SIDE</p><h3>후보 비교표</h3></div></div><CandidateMatrix snapshot={selected} /></section> : null}
