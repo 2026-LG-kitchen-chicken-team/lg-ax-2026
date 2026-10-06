@@ -1,0 +1,1587 @@
+{
+  "tested_main": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+  "actual_receipts": [
+    {
+      "pack": "original",
+      "cases": [
+        {
+          "period": "october",
+          "filters": {
+            "project_id": "project-fd5f2eecc7ab4087bbb7a24ebd1b8615",
+            "model_id": "FRIDGE-A",
+            "source_ids": [
+              "REVIEWS-CSV-v1.0"
+            ],
+            "dataset_version": "0.1.0",
+            "start_date": "2026-10-01",
+            "end_date_exclusive": "2026-11-01",
+            "granularity": "month",
+            "topic_ids": [
+              "cleaning"
+            ],
+            "source_kind": "synthetic",
+            "timezone": "Asia/Seoul"
+          },
+          "aggregate": {
+            "aggregate_id": "TREND-1b8a6b0b69eee07383c48f05db0a4eeb1abe71df3472b7093ad12e41e0348fb9",
+            "project_id": "project-fd5f2eecc7ab4087bbb7a24ebd1b8615",
+            "dataset_version": "0.1.0",
+            "dataset_sha256": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03",
+            "annotation_version": "candidate-2026-10-06-v1",
+            "annotation_sha256": "3939b5eec99f4637dec60a84802052577711ea8242718d296d0977c466afe5a8",
+            "trend_contract_version": "review-trends.v1",
+            "filters": {
+              "project_id": "project-fd5f2eecc7ab4087bbb7a24ebd1b8615",
+              "model_id": "FRIDGE-A",
+              "source_ids": [
+                "REVIEWS-CSV-v1.0"
+              ],
+              "dataset_version": "0.1.0",
+              "start_date": "2026-10-01",
+              "end_date_exclusive": "2026-11-01",
+              "source_kind": "synthetic",
+              "granularity": "month",
+              "timezone": "Asia/Seoul",
+              "topic_ids": [
+                "cleaning"
+              ]
+            },
+            "timezone": "Asia/Seoul",
+            "aggregation_version": "data-review-trends.v1",
+            "classification": {
+              "method": "human",
+              "model_id": null,
+              "revision": null
+            },
+            "topic_taxonomy_version": "kitchen-review-topics-candidate.v1",
+            "dedup_policy_version": "exact-utf8-text-within-source-model-version.v1",
+            "counts": {
+              "input_review_count": 36,
+              "excluded_out_of_scope_count": 26,
+              "in_scope_review_count": 10,
+              "excluded_undated_count": 10,
+              "excluded_outside_period_count": 0,
+              "duplicate_count": 0,
+              "eligible_unique_review_count": 0,
+              "unclassified_review_count": 0
+            },
+            "buckets": [
+              {
+                "bucket_id": "MONTH-2026-10",
+                "label": "2026년 10월",
+                "period_start": "2026-10-01",
+                "period_end_exclusive": "2026-11-01",
+                "partial_period": false,
+                "total_reviews": 0,
+                "topics": [
+                  {
+                    "topic_id": "cleaning",
+                    "topic_review_count": 0,
+                    "ratio": null,
+                    "evidence_count": 0,
+                    "evidence_ids": [],
+                    "evidence_ids_truncated": false
+                  }
+                ]
+              }
+            ],
+            "warnings": [
+              "집계 가능한 리뷰가 없습니다: 2026년 10월."
+            ],
+            "notes": "자료 성격: synthetic. 주제별 수치는 리뷰 주제 등장 비율입니다. 감정·불편 비율이나 판매량·시장 수요를 뜻하지 않습니다. 날짜가 없는 원문은 분모에서 빼고 제외 건수로 보고합니다."
+          },
+          "denominator": 0,
+          "cleaning_numerator": 0,
+          "cleaning_ratio": null,
+          "evidence_ids": [],
+          "source_text_sha256": {},
+          "api_mcp_exact_same": true,
+          "same_query_same_snapshot": true,
+          "restart_exact_same": true
+        },
+        {
+          "period": "empty",
+          "filters": {
+            "project_id": "project-fd5f2eecc7ab4087bbb7a24ebd1b8615",
+            "model_id": "FRIDGE-A",
+            "source_ids": [
+              "REVIEWS-CSV-v1.0"
+            ],
+            "dataset_version": "0.1.0",
+            "start_date": "2030-05-01",
+            "end_date_exclusive": "2030-06-01",
+            "granularity": "month",
+            "topic_ids": [
+              "cleaning"
+            ],
+            "source_kind": "synthetic",
+            "timezone": "Asia/Seoul"
+          },
+          "aggregate": {
+            "aggregate_id": "TREND-adbce11f55bf6189aea3626e7647350acc4d97896e25f55c41cd02e0ba11c16c",
+            "project_id": "project-fd5f2eecc7ab4087bbb7a24ebd1b8615",
+            "dataset_version": "0.1.0",
+            "dataset_sha256": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03",
+            "annotation_version": "candidate-2026-10-06-v1",
+            "annotation_sha256": "3939b5eec99f4637dec60a84802052577711ea8242718d296d0977c466afe5a8",
+            "trend_contract_version": "review-trends.v1",
+            "filters": {
+              "project_id": "project-fd5f2eecc7ab4087bbb7a24ebd1b8615",
+              "model_id": "FRIDGE-A",
+              "source_ids": [
+                "REVIEWS-CSV-v1.0"
+              ],
+              "dataset_version": "0.1.0",
+              "start_date": "2030-05-01",
+              "end_date_exclusive": "2030-06-01",
+              "source_kind": "synthetic",
+              "granularity": "month",
+              "timezone": "Asia/Seoul",
+              "topic_ids": [
+                "cleaning"
+              ]
+            },
+            "timezone": "Asia/Seoul",
+            "aggregation_version": "data-review-trends.v1",
+            "classification": {
+              "method": "human",
+              "model_id": null,
+              "revision": null
+            },
+            "topic_taxonomy_version": "kitchen-review-topics-candidate.v1",
+            "dedup_policy_version": "exact-utf8-text-within-source-model-version.v1",
+            "counts": {
+              "input_review_count": 36,
+              "excluded_out_of_scope_count": 26,
+              "in_scope_review_count": 10,
+              "excluded_undated_count": 10,
+              "excluded_outside_period_count": 0,
+              "duplicate_count": 0,
+              "eligible_unique_review_count": 0,
+              "unclassified_review_count": 0
+            },
+            "buckets": [
+              {
+                "bucket_id": "MONTH-2030-05",
+                "label": "2030년 5월",
+                "period_start": "2030-05-01",
+                "period_end_exclusive": "2030-06-01",
+                "partial_period": false,
+                "total_reviews": 0,
+                "topics": [
+                  {
+                    "topic_id": "cleaning",
+                    "topic_review_count": 0,
+                    "ratio": null,
+                    "evidence_count": 0,
+                    "evidence_ids": [],
+                    "evidence_ids_truncated": false
+                  }
+                ]
+              }
+            ],
+            "warnings": [
+              "집계 가능한 리뷰가 없습니다: 2030년 5월."
+            ],
+            "notes": "자료 성격: synthetic. 주제별 수치는 리뷰 주제 등장 비율입니다. 감정·불편 비율이나 판매량·시장 수요를 뜻하지 않습니다. 날짜가 없는 원문은 분모에서 빼고 제외 건수로 보고합니다."
+          },
+          "denominator": 0,
+          "cleaning_numerator": 0,
+          "cleaning_ratio": null,
+          "evidence_ids": [],
+          "source_text_sha256": {},
+          "api_mcp_exact_same": true,
+          "same_query_same_snapshot": true,
+          "restart_exact_same": true
+        },
+        {
+          "period": "winter",
+          "filters": {
+            "project_id": "project-fd5f2eecc7ab4087bbb7a24ebd1b8615",
+            "model_id": "FRIDGE-A",
+            "source_ids": [
+              "REVIEWS-CSV-v1.0"
+            ],
+            "dataset_version": "0.1.0",
+            "start_date": "2026-12-01",
+            "end_date_exclusive": "2027-03-01",
+            "granularity": "season",
+            "topic_ids": [
+              "cleaning"
+            ],
+            "source_kind": "synthetic",
+            "timezone": "Asia/Seoul"
+          },
+          "aggregate": {
+            "aggregate_id": "TREND-107200bfe3c816987656fe6ad5d25f783618bc3648eafba95027c3f94f1bc148",
+            "project_id": "project-fd5f2eecc7ab4087bbb7a24ebd1b8615",
+            "dataset_version": "0.1.0",
+            "dataset_sha256": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03",
+            "annotation_version": "candidate-2026-10-06-v1",
+            "annotation_sha256": "3939b5eec99f4637dec60a84802052577711ea8242718d296d0977c466afe5a8",
+            "trend_contract_version": "review-trends.v1",
+            "filters": {
+              "project_id": "project-fd5f2eecc7ab4087bbb7a24ebd1b8615",
+              "model_id": "FRIDGE-A",
+              "source_ids": [
+                "REVIEWS-CSV-v1.0"
+              ],
+              "dataset_version": "0.1.0",
+              "start_date": "2026-12-01",
+              "end_date_exclusive": "2027-03-01",
+              "source_kind": "synthetic",
+              "granularity": "season",
+              "timezone": "Asia/Seoul",
+              "topic_ids": [
+                "cleaning"
+              ]
+            },
+            "timezone": "Asia/Seoul",
+            "aggregation_version": "data-review-trends.v1",
+            "classification": {
+              "method": "human",
+              "model_id": null,
+              "revision": null
+            },
+            "topic_taxonomy_version": "kitchen-review-topics-candidate.v1",
+            "dedup_policy_version": "exact-utf8-text-within-source-model-version.v1",
+            "counts": {
+              "input_review_count": 36,
+              "excluded_out_of_scope_count": 26,
+              "in_scope_review_count": 10,
+              "excluded_undated_count": 10,
+              "excluded_outside_period_count": 0,
+              "duplicate_count": 0,
+              "eligible_unique_review_count": 0,
+              "unclassified_review_count": 0
+            },
+            "buckets": [
+              {
+                "bucket_id": "SEASON-2026-WINTER",
+                "label": "2026년 겨울",
+                "period_start": "2026-12-01",
+                "period_end_exclusive": "2027-03-01",
+                "partial_period": false,
+                "total_reviews": 0,
+                "topics": [
+                  {
+                    "topic_id": "cleaning",
+                    "topic_review_count": 0,
+                    "ratio": null,
+                    "evidence_count": 0,
+                    "evidence_ids": [],
+                    "evidence_ids_truncated": false
+                  }
+                ]
+              }
+            ],
+            "warnings": [
+              "집계 가능한 리뷰가 없습니다: 2026년 겨울."
+            ],
+            "notes": "자료 성격: synthetic. 주제별 수치는 리뷰 주제 등장 비율입니다. 감정·불편 비율이나 판매량·시장 수요를 뜻하지 않습니다. 날짜가 없는 원문은 분모에서 빼고 제외 건수로 보고합니다."
+          },
+          "denominator": 0,
+          "cleaning_numerator": 0,
+          "cleaning_ratio": null,
+          "evidence_ids": [],
+          "source_text_sha256": {},
+          "api_mcp_exact_same": true,
+          "same_query_same_snapshot": true,
+          "restart_exact_same": true
+        },
+        {
+          "period": "december",
+          "filters": {
+            "project_id": "project-fd5f2eecc7ab4087bbb7a24ebd1b8615",
+            "model_id": "FRIDGE-A",
+            "source_ids": [
+              "REVIEWS-CSV-v1.0"
+            ],
+            "dataset_version": "0.1.0",
+            "start_date": "2026-12-01",
+            "end_date_exclusive": "2027-01-01",
+            "granularity": "month",
+            "topic_ids": [
+              "cleaning"
+            ],
+            "source_kind": "synthetic",
+            "timezone": "Asia/Seoul"
+          },
+          "aggregate": {
+            "aggregate_id": "TREND-d51b7a2a0935fdd4c61e2af969518ec614ef2bb19b1f590982345c4ca44bd603",
+            "project_id": "project-fd5f2eecc7ab4087bbb7a24ebd1b8615",
+            "dataset_version": "0.1.0",
+            "dataset_sha256": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03",
+            "annotation_version": "candidate-2026-10-06-v1",
+            "annotation_sha256": "3939b5eec99f4637dec60a84802052577711ea8242718d296d0977c466afe5a8",
+            "trend_contract_version": "review-trends.v1",
+            "filters": {
+              "project_id": "project-fd5f2eecc7ab4087bbb7a24ebd1b8615",
+              "model_id": "FRIDGE-A",
+              "source_ids": [
+                "REVIEWS-CSV-v1.0"
+              ],
+              "dataset_version": "0.1.0",
+              "start_date": "2026-12-01",
+              "end_date_exclusive": "2027-01-01",
+              "source_kind": "synthetic",
+              "granularity": "month",
+              "timezone": "Asia/Seoul",
+              "topic_ids": [
+                "cleaning"
+              ]
+            },
+            "timezone": "Asia/Seoul",
+            "aggregation_version": "data-review-trends.v1",
+            "classification": {
+              "method": "human",
+              "model_id": null,
+              "revision": null
+            },
+            "topic_taxonomy_version": "kitchen-review-topics-candidate.v1",
+            "dedup_policy_version": "exact-utf8-text-within-source-model-version.v1",
+            "counts": {
+              "input_review_count": 36,
+              "excluded_out_of_scope_count": 26,
+              "in_scope_review_count": 10,
+              "excluded_undated_count": 10,
+              "excluded_outside_period_count": 0,
+              "duplicate_count": 0,
+              "eligible_unique_review_count": 0,
+              "unclassified_review_count": 0
+            },
+            "buckets": [
+              {
+                "bucket_id": "MONTH-2026-12",
+                "label": "2026년 12월",
+                "period_start": "2026-12-01",
+                "period_end_exclusive": "2027-01-01",
+                "partial_period": false,
+                "total_reviews": 0,
+                "topics": [
+                  {
+                    "topic_id": "cleaning",
+                    "topic_review_count": 0,
+                    "ratio": null,
+                    "evidence_count": 0,
+                    "evidence_ids": [],
+                    "evidence_ids_truncated": false
+                  }
+                ]
+              }
+            ],
+            "warnings": [
+              "집계 가능한 리뷰가 없습니다: 2026년 12월."
+            ],
+            "notes": "자료 성격: synthetic. 주제별 수치는 리뷰 주제 등장 비율입니다. 감정·불편 비율이나 판매량·시장 수요를 뜻하지 않습니다. 날짜가 없는 원문은 분모에서 빼고 제외 건수로 보고합니다."
+          },
+          "denominator": 0,
+          "cleaning_numerator": 0,
+          "cleaning_ratio": null,
+          "evidence_ids": [],
+          "source_text_sha256": {},
+          "api_mcp_exact_same": true,
+          "same_query_same_snapshot": true,
+          "restart_exact_same": true
+        },
+        {
+          "period": "january",
+          "filters": {
+            "project_id": "project-fd5f2eecc7ab4087bbb7a24ebd1b8615",
+            "model_id": "FRIDGE-A",
+            "source_ids": [
+              "REVIEWS-CSV-v1.0"
+            ],
+            "dataset_version": "0.1.0",
+            "start_date": "2027-01-01",
+            "end_date_exclusive": "2027-02-01",
+            "granularity": "month",
+            "topic_ids": [
+              "cleaning"
+            ],
+            "source_kind": "synthetic",
+            "timezone": "Asia/Seoul"
+          },
+          "aggregate": {
+            "aggregate_id": "TREND-2755496110529339304c10f5bb48ff5646144b979ac1a89304a017cd4559c0f5",
+            "project_id": "project-fd5f2eecc7ab4087bbb7a24ebd1b8615",
+            "dataset_version": "0.1.0",
+            "dataset_sha256": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03",
+            "annotation_version": "candidate-2026-10-06-v1",
+            "annotation_sha256": "3939b5eec99f4637dec60a84802052577711ea8242718d296d0977c466afe5a8",
+            "trend_contract_version": "review-trends.v1",
+            "filters": {
+              "project_id": "project-fd5f2eecc7ab4087bbb7a24ebd1b8615",
+              "model_id": "FRIDGE-A",
+              "source_ids": [
+                "REVIEWS-CSV-v1.0"
+              ],
+              "dataset_version": "0.1.0",
+              "start_date": "2027-01-01",
+              "end_date_exclusive": "2027-02-01",
+              "source_kind": "synthetic",
+              "granularity": "month",
+              "timezone": "Asia/Seoul",
+              "topic_ids": [
+                "cleaning"
+              ]
+            },
+            "timezone": "Asia/Seoul",
+            "aggregation_version": "data-review-trends.v1",
+            "classification": {
+              "method": "human",
+              "model_id": null,
+              "revision": null
+            },
+            "topic_taxonomy_version": "kitchen-review-topics-candidate.v1",
+            "dedup_policy_version": "exact-utf8-text-within-source-model-version.v1",
+            "counts": {
+              "input_review_count": 36,
+              "excluded_out_of_scope_count": 26,
+              "in_scope_review_count": 10,
+              "excluded_undated_count": 10,
+              "excluded_outside_period_count": 0,
+              "duplicate_count": 0,
+              "eligible_unique_review_count": 0,
+              "unclassified_review_count": 0
+            },
+            "buckets": [
+              {
+                "bucket_id": "MONTH-2027-01",
+                "label": "2027년 1월",
+                "period_start": "2027-01-01",
+                "period_end_exclusive": "2027-02-01",
+                "partial_period": false,
+                "total_reviews": 0,
+                "topics": [
+                  {
+                    "topic_id": "cleaning",
+                    "topic_review_count": 0,
+                    "ratio": null,
+                    "evidence_count": 0,
+                    "evidence_ids": [],
+                    "evidence_ids_truncated": false
+                  }
+                ]
+              }
+            ],
+            "warnings": [
+              "집계 가능한 리뷰가 없습니다: 2027년 1월."
+            ],
+            "notes": "자료 성격: synthetic. 주제별 수치는 리뷰 주제 등장 비율입니다. 감정·불편 비율이나 판매량·시장 수요를 뜻하지 않습니다. 날짜가 없는 원문은 분모에서 빼고 제외 건수로 보고합니다."
+          },
+          "denominator": 0,
+          "cleaning_numerator": 0,
+          "cleaning_ratio": null,
+          "evidence_ids": [],
+          "source_text_sha256": {},
+          "api_mcp_exact_same": true,
+          "same_query_same_snapshot": true,
+          "restart_exact_same": true
+        }
+      ],
+      "counters": {
+        "HTTP": 25,
+        "queries": 5,
+        "MCP_tool_calls": 15,
+        "original_pages": 5,
+        "rejections": 4
+      },
+      "source_kind": "synthetic",
+      "taxonomy_status": "candidate-preview",
+      "injection": "temporary_owned_server_only",
+      "production_injected": false,
+      "new_model_calls": 0,
+      "host_auth_mounted": false
+    },
+    {
+      "pack": "pm",
+      "cases": [
+        {
+          "period": "october",
+          "filters": {
+            "project_id": "project-e837181cf3b348be857eb15240e9f43b",
+            "model_id": "FRIDGE-A",
+            "source_ids": [
+              "PM-TREND-DEMO-REVIEWS-v1"
+            ],
+            "dataset_version": "pm-synthetic-trends.v1",
+            "start_date": "2026-10-01",
+            "end_date_exclusive": "2026-11-01",
+            "granularity": "month",
+            "topic_ids": [
+              "cleaning"
+            ],
+            "source_kind": "synthetic",
+            "timezone": "Asia/Seoul"
+          },
+          "aggregate": {
+            "aggregate_id": "TREND-162ed8d87f9a34f6e376252995b39d1e3b6bfd976f587bf97b9640f558df3ef1",
+            "project_id": "project-e837181cf3b348be857eb15240e9f43b",
+            "dataset_version": "pm-synthetic-trends.v1",
+            "dataset_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+            "annotation_version": "pm-synthetic-demo-candidate.v1",
+            "annotation_sha256": "6a23e26343802dc2b4495e8da1e3efc6ffa9ac03cab3a0ed98bee1abc479093a",
+            "trend_contract_version": "review-trends.v1",
+            "filters": {
+              "project_id": "project-e837181cf3b348be857eb15240e9f43b",
+              "model_id": "FRIDGE-A",
+              "source_ids": [
+                "PM-TREND-DEMO-REVIEWS-v1"
+              ],
+              "dataset_version": "pm-synthetic-trends.v1",
+              "start_date": "2026-10-01",
+              "end_date_exclusive": "2026-11-01",
+              "source_kind": "synthetic",
+              "granularity": "month",
+              "timezone": "Asia/Seoul",
+              "topic_ids": [
+                "cleaning"
+              ]
+            },
+            "timezone": "Asia/Seoul",
+            "aggregation_version": "data-review-trends.v1",
+            "classification": {
+              "method": "rule",
+              "model_id": null,
+              "revision": null
+            },
+            "topic_taxonomy_version": "kitchen-review-topics-candidate.v1",
+            "dedup_policy_version": "exact-utf8-text-within-source-model-version.v1",
+            "counts": {
+              "input_review_count": 36,
+              "excluded_out_of_scope_count": 26,
+              "in_scope_review_count": 10,
+              "excluded_undated_count": 2,
+              "excluded_outside_period_count": 5,
+              "duplicate_count": 0,
+              "eligible_unique_review_count": 3,
+              "unclassified_review_count": 0
+            },
+            "buckets": [
+              {
+                "bucket_id": "MONTH-2026-10",
+                "label": "2026년 10월",
+                "period_start": "2026-10-01",
+                "period_end_exclusive": "2026-11-01",
+                "partial_period": false,
+                "total_reviews": 3,
+                "topics": [
+                  {
+                    "topic_id": "cleaning",
+                    "topic_review_count": 1,
+                    "ratio": 0.3333333333333333,
+                    "evidence_count": 1,
+                    "evidence_ids": [
+                      "DEMO-TREND-REVIEW-EVIDENCE-001"
+                    ],
+                    "evidence_ids_truncated": false
+                  }
+                ]
+              }
+            ],
+            "warnings": [
+              "표본이 적습니다: 2026년 10월 리뷰 3건(20건 미만)."
+            ],
+            "notes": "자료 성격: synthetic. 주제별 수치는 리뷰 주제 등장 비율입니다. 감정·불편 비율이나 판매량·시장 수요를 뜻하지 않습니다. 날짜가 없는 원문은 분모에서 빼고 제외 건수로 보고합니다."
+          },
+          "denominator": 3,
+          "cleaning_numerator": 1,
+          "cleaning_ratio": 0.3333333333333333,
+          "evidence_ids": [
+            "DEMO-TREND-REVIEW-EVIDENCE-001"
+          ],
+          "source_text_sha256": {
+            "DEMO-TREND-REVIEW-EVIDENCE-001": "5cdc254e52b348ae5aba5f2af5b4228ece07acd6d9c4081dc008b818dd4142c3"
+          },
+          "api_mcp_exact_same": true,
+          "same_query_same_snapshot": true,
+          "restart_exact_same": true
+        },
+        {
+          "period": "empty",
+          "filters": {
+            "project_id": "project-e837181cf3b348be857eb15240e9f43b",
+            "model_id": "FRIDGE-A",
+            "source_ids": [
+              "PM-TREND-DEMO-REVIEWS-v1"
+            ],
+            "dataset_version": "pm-synthetic-trends.v1",
+            "start_date": "2030-05-01",
+            "end_date_exclusive": "2030-06-01",
+            "granularity": "month",
+            "topic_ids": [
+              "cleaning"
+            ],
+            "source_kind": "synthetic",
+            "timezone": "Asia/Seoul"
+          },
+          "aggregate": {
+            "aggregate_id": "TREND-27e206b9833257fa597c473a13170686ced6f275b6df4dc52aa11b4e0fb4e99a",
+            "project_id": "project-e837181cf3b348be857eb15240e9f43b",
+            "dataset_version": "pm-synthetic-trends.v1",
+            "dataset_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+            "annotation_version": "pm-synthetic-demo-candidate.v1",
+            "annotation_sha256": "6a23e26343802dc2b4495e8da1e3efc6ffa9ac03cab3a0ed98bee1abc479093a",
+            "trend_contract_version": "review-trends.v1",
+            "filters": {
+              "project_id": "project-e837181cf3b348be857eb15240e9f43b",
+              "model_id": "FRIDGE-A",
+              "source_ids": [
+                "PM-TREND-DEMO-REVIEWS-v1"
+              ],
+              "dataset_version": "pm-synthetic-trends.v1",
+              "start_date": "2030-05-01",
+              "end_date_exclusive": "2030-06-01",
+              "source_kind": "synthetic",
+              "granularity": "month",
+              "timezone": "Asia/Seoul",
+              "topic_ids": [
+                "cleaning"
+              ]
+            },
+            "timezone": "Asia/Seoul",
+            "aggregation_version": "data-review-trends.v1",
+            "classification": {
+              "method": "rule",
+              "model_id": null,
+              "revision": null
+            },
+            "topic_taxonomy_version": "kitchen-review-topics-candidate.v1",
+            "dedup_policy_version": "exact-utf8-text-within-source-model-version.v1",
+            "counts": {
+              "input_review_count": 36,
+              "excluded_out_of_scope_count": 26,
+              "in_scope_review_count": 10,
+              "excluded_undated_count": 2,
+              "excluded_outside_period_count": 8,
+              "duplicate_count": 0,
+              "eligible_unique_review_count": 0,
+              "unclassified_review_count": 0
+            },
+            "buckets": [
+              {
+                "bucket_id": "MONTH-2030-05",
+                "label": "2030년 5월",
+                "period_start": "2030-05-01",
+                "period_end_exclusive": "2030-06-01",
+                "partial_period": false,
+                "total_reviews": 0,
+                "topics": [
+                  {
+                    "topic_id": "cleaning",
+                    "topic_review_count": 0,
+                    "ratio": null,
+                    "evidence_count": 0,
+                    "evidence_ids": [],
+                    "evidence_ids_truncated": false
+                  }
+                ]
+              }
+            ],
+            "warnings": [
+              "집계 가능한 리뷰가 없습니다: 2030년 5월."
+            ],
+            "notes": "자료 성격: synthetic. 주제별 수치는 리뷰 주제 등장 비율입니다. 감정·불편 비율이나 판매량·시장 수요를 뜻하지 않습니다. 날짜가 없는 원문은 분모에서 빼고 제외 건수로 보고합니다."
+          },
+          "denominator": 0,
+          "cleaning_numerator": 0,
+          "cleaning_ratio": null,
+          "evidence_ids": [],
+          "source_text_sha256": {},
+          "api_mcp_exact_same": true,
+          "same_query_same_snapshot": true,
+          "restart_exact_same": true
+        },
+        {
+          "period": "winter",
+          "filters": {
+            "project_id": "project-e837181cf3b348be857eb15240e9f43b",
+            "model_id": "FRIDGE-A",
+            "source_ids": [
+              "PM-TREND-DEMO-REVIEWS-v1"
+            ],
+            "dataset_version": "pm-synthetic-trends.v1",
+            "start_date": "2026-12-01",
+            "end_date_exclusive": "2027-03-01",
+            "granularity": "season",
+            "topic_ids": [
+              "cleaning"
+            ],
+            "source_kind": "synthetic",
+            "timezone": "Asia/Seoul"
+          },
+          "aggregate": {
+            "aggregate_id": "TREND-16f8c1eb256fbbf697aee3306bb08d16da8071b23b4c8935ad6fc28edd1ab6a9",
+            "project_id": "project-e837181cf3b348be857eb15240e9f43b",
+            "dataset_version": "pm-synthetic-trends.v1",
+            "dataset_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+            "annotation_version": "pm-synthetic-demo-candidate.v1",
+            "annotation_sha256": "6a23e26343802dc2b4495e8da1e3efc6ffa9ac03cab3a0ed98bee1abc479093a",
+            "trend_contract_version": "review-trends.v1",
+            "filters": {
+              "project_id": "project-e837181cf3b348be857eb15240e9f43b",
+              "model_id": "FRIDGE-A",
+              "source_ids": [
+                "PM-TREND-DEMO-REVIEWS-v1"
+              ],
+              "dataset_version": "pm-synthetic-trends.v1",
+              "start_date": "2026-12-01",
+              "end_date_exclusive": "2027-03-01",
+              "source_kind": "synthetic",
+              "granularity": "season",
+              "timezone": "Asia/Seoul",
+              "topic_ids": [
+                "cleaning"
+              ]
+            },
+            "timezone": "Asia/Seoul",
+            "aggregation_version": "data-review-trends.v1",
+            "classification": {
+              "method": "rule",
+              "model_id": null,
+              "revision": null
+            },
+            "topic_taxonomy_version": "kitchen-review-topics-candidate.v1",
+            "dedup_policy_version": "exact-utf8-text-within-source-model-version.v1",
+            "counts": {
+              "input_review_count": 36,
+              "excluded_out_of_scope_count": 26,
+              "in_scope_review_count": 10,
+              "excluded_undated_count": 2,
+              "excluded_outside_period_count": 7,
+              "duplicate_count": 0,
+              "eligible_unique_review_count": 1,
+              "unclassified_review_count": 0
+            },
+            "buckets": [
+              {
+                "bucket_id": "SEASON-2026-WINTER",
+                "label": "2026년 겨울",
+                "period_start": "2026-12-01",
+                "period_end_exclusive": "2027-03-01",
+                "partial_period": false,
+                "total_reviews": 1,
+                "topics": [
+                  {
+                    "topic_id": "cleaning",
+                    "topic_review_count": 1,
+                    "ratio": 1.0,
+                    "evidence_count": 1,
+                    "evidence_ids": [
+                      "DEMO-TREND-REVIEW-EVIDENCE-009"
+                    ],
+                    "evidence_ids_truncated": false
+                  }
+                ]
+              }
+            ],
+            "warnings": [
+              "표본이 적습니다: 2026년 겨울 리뷰 1건(20건 미만)."
+            ],
+            "notes": "자료 성격: synthetic. 주제별 수치는 리뷰 주제 등장 비율입니다. 감정·불편 비율이나 판매량·시장 수요를 뜻하지 않습니다. 날짜가 없는 원문은 분모에서 빼고 제외 건수로 보고합니다."
+          },
+          "denominator": 1,
+          "cleaning_numerator": 1,
+          "cleaning_ratio": 1.0,
+          "evidence_ids": [
+            "DEMO-TREND-REVIEW-EVIDENCE-009"
+          ],
+          "source_text_sha256": {
+            "DEMO-TREND-REVIEW-EVIDENCE-009": "f7932ae8872a7bd0bb2c2795de4c68a4ee67da4652fdaedc3546c9d202a9a7f4"
+          },
+          "api_mcp_exact_same": true,
+          "same_query_same_snapshot": true,
+          "restart_exact_same": true
+        },
+        {
+          "period": "december",
+          "filters": {
+            "project_id": "project-e837181cf3b348be857eb15240e9f43b",
+            "model_id": "FRIDGE-A",
+            "source_ids": [
+              "PM-TREND-DEMO-REVIEWS-v1"
+            ],
+            "dataset_version": "pm-synthetic-trends.v1",
+            "start_date": "2026-12-01",
+            "end_date_exclusive": "2027-01-01",
+            "granularity": "month",
+            "topic_ids": [
+              "cleaning"
+            ],
+            "source_kind": "synthetic",
+            "timezone": "Asia/Seoul"
+          },
+          "aggregate": {
+            "aggregate_id": "TREND-f3c16406156f193588d2b23af366c22c4e248d1980143f9c227d4adeb2088ac2",
+            "project_id": "project-e837181cf3b348be857eb15240e9f43b",
+            "dataset_version": "pm-synthetic-trends.v1",
+            "dataset_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+            "annotation_version": "pm-synthetic-demo-candidate.v1",
+            "annotation_sha256": "6a23e26343802dc2b4495e8da1e3efc6ffa9ac03cab3a0ed98bee1abc479093a",
+            "trend_contract_version": "review-trends.v1",
+            "filters": {
+              "project_id": "project-e837181cf3b348be857eb15240e9f43b",
+              "model_id": "FRIDGE-A",
+              "source_ids": [
+                "PM-TREND-DEMO-REVIEWS-v1"
+              ],
+              "dataset_version": "pm-synthetic-trends.v1",
+              "start_date": "2026-12-01",
+              "end_date_exclusive": "2027-01-01",
+              "source_kind": "synthetic",
+              "granularity": "month",
+              "timezone": "Asia/Seoul",
+              "topic_ids": [
+                "cleaning"
+              ]
+            },
+            "timezone": "Asia/Seoul",
+            "aggregation_version": "data-review-trends.v1",
+            "classification": {
+              "method": "rule",
+              "model_id": null,
+              "revision": null
+            },
+            "topic_taxonomy_version": "kitchen-review-topics-candidate.v1",
+            "dedup_policy_version": "exact-utf8-text-within-source-model-version.v1",
+            "counts": {
+              "input_review_count": 36,
+              "excluded_out_of_scope_count": 26,
+              "in_scope_review_count": 10,
+              "excluded_undated_count": 2,
+              "excluded_outside_period_count": 8,
+              "duplicate_count": 0,
+              "eligible_unique_review_count": 0,
+              "unclassified_review_count": 0
+            },
+            "buckets": [
+              {
+                "bucket_id": "MONTH-2026-12",
+                "label": "2026년 12월",
+                "period_start": "2026-12-01",
+                "period_end_exclusive": "2027-01-01",
+                "partial_period": false,
+                "total_reviews": 0,
+                "topics": [
+                  {
+                    "topic_id": "cleaning",
+                    "topic_review_count": 0,
+                    "ratio": null,
+                    "evidence_count": 0,
+                    "evidence_ids": [],
+                    "evidence_ids_truncated": false
+                  }
+                ]
+              }
+            ],
+            "warnings": [
+              "집계 가능한 리뷰가 없습니다: 2026년 12월."
+            ],
+            "notes": "자료 성격: synthetic. 주제별 수치는 리뷰 주제 등장 비율입니다. 감정·불편 비율이나 판매량·시장 수요를 뜻하지 않습니다. 날짜가 없는 원문은 분모에서 빼고 제외 건수로 보고합니다."
+          },
+          "denominator": 0,
+          "cleaning_numerator": 0,
+          "cleaning_ratio": null,
+          "evidence_ids": [],
+          "source_text_sha256": {},
+          "api_mcp_exact_same": true,
+          "same_query_same_snapshot": true,
+          "restart_exact_same": true
+        },
+        {
+          "period": "january",
+          "filters": {
+            "project_id": "project-e837181cf3b348be857eb15240e9f43b",
+            "model_id": "FRIDGE-A",
+            "source_ids": [
+              "PM-TREND-DEMO-REVIEWS-v1"
+            ],
+            "dataset_version": "pm-synthetic-trends.v1",
+            "start_date": "2027-01-01",
+            "end_date_exclusive": "2027-02-01",
+            "granularity": "month",
+            "topic_ids": [
+              "cleaning"
+            ],
+            "source_kind": "synthetic",
+            "timezone": "Asia/Seoul"
+          },
+          "aggregate": {
+            "aggregate_id": "TREND-68022f679d70676b2680a373a5d76798bc8b361632d2ef6b57a345648089c116",
+            "project_id": "project-e837181cf3b348be857eb15240e9f43b",
+            "dataset_version": "pm-synthetic-trends.v1",
+            "dataset_sha256": "6c8767513709f2a4a745c6dd8e43061af1be541887f8cd2bca1ab4a40db187f1",
+            "annotation_version": "pm-synthetic-demo-candidate.v1",
+            "annotation_sha256": "6a23e26343802dc2b4495e8da1e3efc6ffa9ac03cab3a0ed98bee1abc479093a",
+            "trend_contract_version": "review-trends.v1",
+            "filters": {
+              "project_id": "project-e837181cf3b348be857eb15240e9f43b",
+              "model_id": "FRIDGE-A",
+              "source_ids": [
+                "PM-TREND-DEMO-REVIEWS-v1"
+              ],
+              "dataset_version": "pm-synthetic-trends.v1",
+              "start_date": "2027-01-01",
+              "end_date_exclusive": "2027-02-01",
+              "source_kind": "synthetic",
+              "granularity": "month",
+              "timezone": "Asia/Seoul",
+              "topic_ids": [
+                "cleaning"
+              ]
+            },
+            "timezone": "Asia/Seoul",
+            "aggregation_version": "data-review-trends.v1",
+            "classification": {
+              "method": "rule",
+              "model_id": null,
+              "revision": null
+            },
+            "topic_taxonomy_version": "kitchen-review-topics-candidate.v1",
+            "dedup_policy_version": "exact-utf8-text-within-source-model-version.v1",
+            "counts": {
+              "input_review_count": 36,
+              "excluded_out_of_scope_count": 26,
+              "in_scope_review_count": 10,
+              "excluded_undated_count": 2,
+              "excluded_outside_period_count": 7,
+              "duplicate_count": 0,
+              "eligible_unique_review_count": 1,
+              "unclassified_review_count": 0
+            },
+            "buckets": [
+              {
+                "bucket_id": "MONTH-2027-01",
+                "label": "2027년 1월",
+                "period_start": "2027-01-01",
+                "period_end_exclusive": "2027-02-01",
+                "partial_period": false,
+                "total_reviews": 1,
+                "topics": [
+                  {
+                    "topic_id": "cleaning",
+                    "topic_review_count": 1,
+                    "ratio": 1.0,
+                    "evidence_count": 1,
+                    "evidence_ids": [
+                      "DEMO-TREND-REVIEW-EVIDENCE-009"
+                    ],
+                    "evidence_ids_truncated": false
+                  }
+                ]
+              }
+            ],
+            "warnings": [
+              "표본이 적습니다: 2027년 1월 리뷰 1건(20건 미만)."
+            ],
+            "notes": "자료 성격: synthetic. 주제별 수치는 리뷰 주제 등장 비율입니다. 감정·불편 비율이나 판매량·시장 수요를 뜻하지 않습니다. 날짜가 없는 원문은 분모에서 빼고 제외 건수로 보고합니다."
+          },
+          "denominator": 1,
+          "cleaning_numerator": 1,
+          "cleaning_ratio": 1.0,
+          "evidence_ids": [
+            "DEMO-TREND-REVIEW-EVIDENCE-009"
+          ],
+          "source_text_sha256": {
+            "DEMO-TREND-REVIEW-EVIDENCE-009": "f7932ae8872a7bd0bb2c2795de4c68a4ee67da4652fdaedc3546c9d202a9a7f4"
+          },
+          "api_mcp_exact_same": true,
+          "same_query_same_snapshot": true,
+          "restart_exact_same": true
+        }
+      ],
+      "counters": {
+        "HTTP": 25,
+        "queries": 5,
+        "MCP_tool_calls": 15,
+        "original_pages": 5,
+        "rejections": 4
+      },
+      "source_kind": "synthetic",
+      "taxonomy_status": "candidate-preview",
+      "injection": "temporary_owned_server_only",
+      "production_injected": false,
+      "new_model_calls": 0,
+      "host_auth_mounted": false
+    },
+    {
+      "pack": "data",
+      "cases": [
+        {
+          "period": "october",
+          "filters": {
+            "project_id": "project-c614ef15fc204feaaf5e60e3e4b14a70",
+            "model_id": "FRIDGE-A",
+            "source_ids": [
+              "SYNTH-REVIEWS-DATED-DEMO-v1"
+            ],
+            "dataset_version": "synthetic-dated-demo.20261006.v1",
+            "start_date": "2026-10-01",
+            "end_date_exclusive": "2026-11-01",
+            "granularity": "month",
+            "topic_ids": [
+              "cleaning"
+            ],
+            "source_kind": "synthetic",
+            "timezone": "Asia/Seoul"
+          },
+          "aggregate": {
+            "aggregate_id": "TREND-c7ff9f8377b89085a83adc55296f9e7b9bc3206780e839ce8f29ecc651a63162",
+            "project_id": "project-c614ef15fc204feaaf5e60e3e4b14a70",
+            "dataset_version": "synthetic-dated-demo.20261006.v1",
+            "dataset_sha256": "d7740d3b61be29e78a4a4fd4d48a6e549eae3158c37994670493f02d4b33fff0",
+            "annotation_version": "synthetic-dated-demo.20261006.v1",
+            "annotation_sha256": "0f534b263c87eb896146967158bc7dbb630bdd6290fe9471bdc90c274027e64b",
+            "trend_contract_version": "review-trends.v1",
+            "filters": {
+              "project_id": "project-c614ef15fc204feaaf5e60e3e4b14a70",
+              "model_id": "FRIDGE-A",
+              "source_ids": [
+                "SYNTH-REVIEWS-DATED-DEMO-v1"
+              ],
+              "dataset_version": "synthetic-dated-demo.20261006.v1",
+              "start_date": "2026-10-01",
+              "end_date_exclusive": "2026-11-01",
+              "source_kind": "synthetic",
+              "granularity": "month",
+              "timezone": "Asia/Seoul",
+              "topic_ids": [
+                "cleaning"
+              ]
+            },
+            "timezone": "Asia/Seoul",
+            "aggregation_version": "data-review-trends.v1",
+            "classification": {
+              "method": "human",
+              "model_id": null,
+              "revision": null
+            },
+            "topic_taxonomy_version": "kitchen-review-topics-candidate.v1",
+            "dedup_policy_version": "exact-utf8-text-within-source-model-version.v1",
+            "counts": {
+              "input_review_count": 36,
+              "excluded_out_of_scope_count": 26,
+              "in_scope_review_count": 10,
+              "excluded_undated_count": 1,
+              "excluded_outside_period_count": 5,
+              "duplicate_count": 0,
+              "eligible_unique_review_count": 4,
+              "unclassified_review_count": 0
+            },
+            "buckets": [
+              {
+                "bucket_id": "MONTH-2026-10",
+                "label": "2026년 10월",
+                "period_start": "2026-10-01",
+                "period_end_exclusive": "2026-11-01",
+                "partial_period": false,
+                "total_reviews": 4,
+                "topics": [
+                  {
+                    "topic_id": "cleaning",
+                    "topic_review_count": 1,
+                    "ratio": 0.25,
+                    "evidence_count": 1,
+                    "evidence_ids": [
+                      "SYNTH-DATED-REVIEW-EVIDENCE-006"
+                    ],
+                    "evidence_ids_truncated": false
+                  }
+                ]
+              }
+            ],
+            "warnings": [
+              "표본이 적습니다: 2026년 10월 리뷰 4건(20건 미만)."
+            ],
+            "notes": "자료 성격: synthetic. 주제별 수치는 리뷰 주제 등장 비율입니다. 감정·불편 비율이나 판매량·시장 수요를 뜻하지 않습니다. 날짜가 없는 원문은 분모에서 빼고 제외 건수로 보고합니다."
+          },
+          "denominator": 4,
+          "cleaning_numerator": 1,
+          "cleaning_ratio": 0.25,
+          "evidence_ids": [
+            "SYNTH-DATED-REVIEW-EVIDENCE-006"
+          ],
+          "source_text_sha256": {
+            "SYNTH-DATED-REVIEW-EVIDENCE-006": "8dcbc36c8d51613be586180e2606b954e3d8efc996bf401ebf871e70a92a33f1"
+          },
+          "api_mcp_exact_same": true,
+          "same_query_same_snapshot": true,
+          "restart_exact_same": true
+        },
+        {
+          "period": "empty",
+          "filters": {
+            "project_id": "project-c614ef15fc204feaaf5e60e3e4b14a70",
+            "model_id": "FRIDGE-A",
+            "source_ids": [
+              "SYNTH-REVIEWS-DATED-DEMO-v1"
+            ],
+            "dataset_version": "synthetic-dated-demo.20261006.v1",
+            "start_date": "2030-05-01",
+            "end_date_exclusive": "2030-06-01",
+            "granularity": "month",
+            "topic_ids": [
+              "cleaning"
+            ],
+            "source_kind": "synthetic",
+            "timezone": "Asia/Seoul"
+          },
+          "aggregate": {
+            "aggregate_id": "TREND-e5a288c87aa422506b2c5fe0b6d7569292e9acd0a90ab8f4d429408a3b6ea04e",
+            "project_id": "project-c614ef15fc204feaaf5e60e3e4b14a70",
+            "dataset_version": "synthetic-dated-demo.20261006.v1",
+            "dataset_sha256": "d7740d3b61be29e78a4a4fd4d48a6e549eae3158c37994670493f02d4b33fff0",
+            "annotation_version": "synthetic-dated-demo.20261006.v1",
+            "annotation_sha256": "0f534b263c87eb896146967158bc7dbb630bdd6290fe9471bdc90c274027e64b",
+            "trend_contract_version": "review-trends.v1",
+            "filters": {
+              "project_id": "project-c614ef15fc204feaaf5e60e3e4b14a70",
+              "model_id": "FRIDGE-A",
+              "source_ids": [
+                "SYNTH-REVIEWS-DATED-DEMO-v1"
+              ],
+              "dataset_version": "synthetic-dated-demo.20261006.v1",
+              "start_date": "2030-05-01",
+              "end_date_exclusive": "2030-06-01",
+              "source_kind": "synthetic",
+              "granularity": "month",
+              "timezone": "Asia/Seoul",
+              "topic_ids": [
+                "cleaning"
+              ]
+            },
+            "timezone": "Asia/Seoul",
+            "aggregation_version": "data-review-trends.v1",
+            "classification": {
+              "method": "human",
+              "model_id": null,
+              "revision": null
+            },
+            "topic_taxonomy_version": "kitchen-review-topics-candidate.v1",
+            "dedup_policy_version": "exact-utf8-text-within-source-model-version.v1",
+            "counts": {
+              "input_review_count": 36,
+              "excluded_out_of_scope_count": 26,
+              "in_scope_review_count": 10,
+              "excluded_undated_count": 1,
+              "excluded_outside_period_count": 9,
+              "duplicate_count": 0,
+              "eligible_unique_review_count": 0,
+              "unclassified_review_count": 0
+            },
+            "buckets": [
+              {
+                "bucket_id": "MONTH-2030-05",
+                "label": "2030년 5월",
+                "period_start": "2030-05-01",
+                "period_end_exclusive": "2030-06-01",
+                "partial_period": false,
+                "total_reviews": 0,
+                "topics": [
+                  {
+                    "topic_id": "cleaning",
+                    "topic_review_count": 0,
+                    "ratio": null,
+                    "evidence_count": 0,
+                    "evidence_ids": [],
+                    "evidence_ids_truncated": false
+                  }
+                ]
+              }
+            ],
+            "warnings": [
+              "집계 가능한 리뷰가 없습니다: 2030년 5월."
+            ],
+            "notes": "자료 성격: synthetic. 주제별 수치는 리뷰 주제 등장 비율입니다. 감정·불편 비율이나 판매량·시장 수요를 뜻하지 않습니다. 날짜가 없는 원문은 분모에서 빼고 제외 건수로 보고합니다."
+          },
+          "denominator": 0,
+          "cleaning_numerator": 0,
+          "cleaning_ratio": null,
+          "evidence_ids": [],
+          "source_text_sha256": {},
+          "api_mcp_exact_same": true,
+          "same_query_same_snapshot": true,
+          "restart_exact_same": true
+        },
+        {
+          "period": "winter",
+          "filters": {
+            "project_id": "project-c614ef15fc204feaaf5e60e3e4b14a70",
+            "model_id": "FRIDGE-A",
+            "source_ids": [
+              "SYNTH-REVIEWS-DATED-DEMO-v1"
+            ],
+            "dataset_version": "synthetic-dated-demo.20261006.v1",
+            "start_date": "2026-12-01",
+            "end_date_exclusive": "2027-03-01",
+            "granularity": "season",
+            "topic_ids": [
+              "cleaning"
+            ],
+            "source_kind": "synthetic",
+            "timezone": "Asia/Seoul"
+          },
+          "aggregate": {
+            "aggregate_id": "TREND-46bccad13637d7664e7e05596f9b307d5dee3a035d7bd6cf51632a082c6e215f",
+            "project_id": "project-c614ef15fc204feaaf5e60e3e4b14a70",
+            "dataset_version": "synthetic-dated-demo.20261006.v1",
+            "dataset_sha256": "d7740d3b61be29e78a4a4fd4d48a6e549eae3158c37994670493f02d4b33fff0",
+            "annotation_version": "synthetic-dated-demo.20261006.v1",
+            "annotation_sha256": "0f534b263c87eb896146967158bc7dbb630bdd6290fe9471bdc90c274027e64b",
+            "trend_contract_version": "review-trends.v1",
+            "filters": {
+              "project_id": "project-c614ef15fc204feaaf5e60e3e4b14a70",
+              "model_id": "FRIDGE-A",
+              "source_ids": [
+                "SYNTH-REVIEWS-DATED-DEMO-v1"
+              ],
+              "dataset_version": "synthetic-dated-demo.20261006.v1",
+              "start_date": "2026-12-01",
+              "end_date_exclusive": "2027-03-01",
+              "source_kind": "synthetic",
+              "granularity": "season",
+              "timezone": "Asia/Seoul",
+              "topic_ids": [
+                "cleaning"
+              ]
+            },
+            "timezone": "Asia/Seoul",
+            "aggregation_version": "data-review-trends.v1",
+            "classification": {
+              "method": "human",
+              "model_id": null,
+              "revision": null
+            },
+            "topic_taxonomy_version": "kitchen-review-topics-candidate.v1",
+            "dedup_policy_version": "exact-utf8-text-within-source-model-version.v1",
+            "counts": {
+              "input_review_count": 36,
+              "excluded_out_of_scope_count": 26,
+              "in_scope_review_count": 10,
+              "excluded_undated_count": 1,
+              "excluded_outside_period_count": 7,
+              "duplicate_count": 0,
+              "eligible_unique_review_count": 2,
+              "unclassified_review_count": 0
+            },
+            "buckets": [
+              {
+                "bucket_id": "SEASON-2026-WINTER",
+                "label": "2026년 겨울",
+                "period_start": "2026-12-01",
+                "period_end_exclusive": "2027-03-01",
+                "partial_period": false,
+                "total_reviews": 2,
+                "topics": [
+                  {
+                    "topic_id": "cleaning",
+                    "topic_review_count": 1,
+                    "ratio": 0.5,
+                    "evidence_count": 1,
+                    "evidence_ids": [
+                      "SYNTH-DATED-REVIEW-EVIDENCE-009"
+                    ],
+                    "evidence_ids_truncated": false
+                  }
+                ]
+              }
+            ],
+            "warnings": [
+              "표본이 적습니다: 2026년 겨울 리뷰 2건(20건 미만)."
+            ],
+            "notes": "자료 성격: synthetic. 주제별 수치는 리뷰 주제 등장 비율입니다. 감정·불편 비율이나 판매량·시장 수요를 뜻하지 않습니다. 날짜가 없는 원문은 분모에서 빼고 제외 건수로 보고합니다."
+          },
+          "denominator": 2,
+          "cleaning_numerator": 1,
+          "cleaning_ratio": 0.5,
+          "evidence_ids": [
+            "SYNTH-DATED-REVIEW-EVIDENCE-009"
+          ],
+          "source_text_sha256": {
+            "SYNTH-DATED-REVIEW-EVIDENCE-009": "f7932ae8872a7bd0bb2c2795de4c68a4ee67da4652fdaedc3546c9d202a9a7f4"
+          },
+          "api_mcp_exact_same": true,
+          "same_query_same_snapshot": true,
+          "restart_exact_same": true
+        },
+        {
+          "period": "december",
+          "filters": {
+            "project_id": "project-c614ef15fc204feaaf5e60e3e4b14a70",
+            "model_id": "FRIDGE-A",
+            "source_ids": [
+              "SYNTH-REVIEWS-DATED-DEMO-v1"
+            ],
+            "dataset_version": "synthetic-dated-demo.20261006.v1",
+            "start_date": "2026-12-01",
+            "end_date_exclusive": "2027-01-01",
+            "granularity": "month",
+            "topic_ids": [
+              "cleaning"
+            ],
+            "source_kind": "synthetic",
+            "timezone": "Asia/Seoul"
+          },
+          "aggregate": {
+            "aggregate_id": "TREND-ec33dd00c9f95cd7ff0a5b0d75e3e772e2dbe16c78aae62857bc914b7c35b8ff",
+            "project_id": "project-c614ef15fc204feaaf5e60e3e4b14a70",
+            "dataset_version": "synthetic-dated-demo.20261006.v1",
+            "dataset_sha256": "d7740d3b61be29e78a4a4fd4d48a6e549eae3158c37994670493f02d4b33fff0",
+            "annotation_version": "synthetic-dated-demo.20261006.v1",
+            "annotation_sha256": "0f534b263c87eb896146967158bc7dbb630bdd6290fe9471bdc90c274027e64b",
+            "trend_contract_version": "review-trends.v1",
+            "filters": {
+              "project_id": "project-c614ef15fc204feaaf5e60e3e4b14a70",
+              "model_id": "FRIDGE-A",
+              "source_ids": [
+                "SYNTH-REVIEWS-DATED-DEMO-v1"
+              ],
+              "dataset_version": "synthetic-dated-demo.20261006.v1",
+              "start_date": "2026-12-01",
+              "end_date_exclusive": "2027-01-01",
+              "source_kind": "synthetic",
+              "granularity": "month",
+              "timezone": "Asia/Seoul",
+              "topic_ids": [
+                "cleaning"
+              ]
+            },
+            "timezone": "Asia/Seoul",
+            "aggregation_version": "data-review-trends.v1",
+            "classification": {
+              "method": "human",
+              "model_id": null,
+              "revision": null
+            },
+            "topic_taxonomy_version": "kitchen-review-topics-candidate.v1",
+            "dedup_policy_version": "exact-utf8-text-within-source-model-version.v1",
+            "counts": {
+              "input_review_count": 36,
+              "excluded_out_of_scope_count": 26,
+              "in_scope_review_count": 10,
+              "excluded_undated_count": 1,
+              "excluded_outside_period_count": 8,
+              "duplicate_count": 0,
+              "eligible_unique_review_count": 1,
+              "unclassified_review_count": 0
+            },
+            "buckets": [
+              {
+                "bucket_id": "MONTH-2026-12",
+                "label": "2026년 12월",
+                "period_start": "2026-12-01",
+                "period_end_exclusive": "2027-01-01",
+                "partial_period": false,
+                "total_reviews": 1,
+                "topics": [
+                  {
+                    "topic_id": "cleaning",
+                    "topic_review_count": 1,
+                    "ratio": 1.0,
+                    "evidence_count": 1,
+                    "evidence_ids": [
+                      "SYNTH-DATED-REVIEW-EVIDENCE-009"
+                    ],
+                    "evidence_ids_truncated": false
+                  }
+                ]
+              }
+            ],
+            "warnings": [
+              "표본이 적습니다: 2026년 12월 리뷰 1건(20건 미만)."
+            ],
+            "notes": "자료 성격: synthetic. 주제별 수치는 리뷰 주제 등장 비율입니다. 감정·불편 비율이나 판매량·시장 수요를 뜻하지 않습니다. 날짜가 없는 원문은 분모에서 빼고 제외 건수로 보고합니다."
+          },
+          "denominator": 1,
+          "cleaning_numerator": 1,
+          "cleaning_ratio": 1.0,
+          "evidence_ids": [
+            "SYNTH-DATED-REVIEW-EVIDENCE-009"
+          ],
+          "source_text_sha256": {
+            "SYNTH-DATED-REVIEW-EVIDENCE-009": "f7932ae8872a7bd0bb2c2795de4c68a4ee67da4652fdaedc3546c9d202a9a7f4"
+          },
+          "api_mcp_exact_same": true,
+          "same_query_same_snapshot": true,
+          "restart_exact_same": true
+        },
+        {
+          "period": "january",
+          "filters": {
+            "project_id": "project-c614ef15fc204feaaf5e60e3e4b14a70",
+            "model_id": "FRIDGE-A",
+            "source_ids": [
+              "SYNTH-REVIEWS-DATED-DEMO-v1"
+            ],
+            "dataset_version": "synthetic-dated-demo.20261006.v1",
+            "start_date": "2027-01-01",
+            "end_date_exclusive": "2027-02-01",
+            "granularity": "month",
+            "topic_ids": [
+              "cleaning"
+            ],
+            "source_kind": "synthetic",
+            "timezone": "Asia/Seoul"
+          },
+          "aggregate": {
+            "aggregate_id": "TREND-809a3345dde43068a49598e9bdbdecbef1d77d7188cb433025daa0b139544d0f",
+            "project_id": "project-c614ef15fc204feaaf5e60e3e4b14a70",
+            "dataset_version": "synthetic-dated-demo.20261006.v1",
+            "dataset_sha256": "d7740d3b61be29e78a4a4fd4d48a6e549eae3158c37994670493f02d4b33fff0",
+            "annotation_version": "synthetic-dated-demo.20261006.v1",
+            "annotation_sha256": "0f534b263c87eb896146967158bc7dbb630bdd6290fe9471bdc90c274027e64b",
+            "trend_contract_version": "review-trends.v1",
+            "filters": {
+              "project_id": "project-c614ef15fc204feaaf5e60e3e4b14a70",
+              "model_id": "FRIDGE-A",
+              "source_ids": [
+                "SYNTH-REVIEWS-DATED-DEMO-v1"
+              ],
+              "dataset_version": "synthetic-dated-demo.20261006.v1",
+              "start_date": "2027-01-01",
+              "end_date_exclusive": "2027-02-01",
+              "source_kind": "synthetic",
+              "granularity": "month",
+              "timezone": "Asia/Seoul",
+              "topic_ids": [
+                "cleaning"
+              ]
+            },
+            "timezone": "Asia/Seoul",
+            "aggregation_version": "data-review-trends.v1",
+            "classification": {
+              "method": "human",
+              "model_id": null,
+              "revision": null
+            },
+            "topic_taxonomy_version": "kitchen-review-topics-candidate.v1",
+            "dedup_policy_version": "exact-utf8-text-within-source-model-version.v1",
+            "counts": {
+              "input_review_count": 36,
+              "excluded_out_of_scope_count": 26,
+              "in_scope_review_count": 10,
+              "excluded_undated_count": 1,
+              "excluded_outside_period_count": 9,
+              "duplicate_count": 0,
+              "eligible_unique_review_count": 0,
+              "unclassified_review_count": 0
+            },
+            "buckets": [
+              {
+                "bucket_id": "MONTH-2027-01",
+                "label": "2027년 1월",
+                "period_start": "2027-01-01",
+                "period_end_exclusive": "2027-02-01",
+                "partial_period": false,
+                "total_reviews": 0,
+                "topics": [
+                  {
+                    "topic_id": "cleaning",
+                    "topic_review_count": 0,
+                    "ratio": null,
+                    "evidence_count": 0,
+                    "evidence_ids": [],
+                    "evidence_ids_truncated": false
+                  }
+                ]
+              }
+            ],
+            "warnings": [
+              "집계 가능한 리뷰가 없습니다: 2027년 1월."
+            ],
+            "notes": "자료 성격: synthetic. 주제별 수치는 리뷰 주제 등장 비율입니다. 감정·불편 비율이나 판매량·시장 수요를 뜻하지 않습니다. 날짜가 없는 원문은 분모에서 빼고 제외 건수로 보고합니다."
+          },
+          "denominator": 0,
+          "cleaning_numerator": 0,
+          "cleaning_ratio": null,
+          "evidence_ids": [],
+          "source_text_sha256": {},
+          "api_mcp_exact_same": true,
+          "same_query_same_snapshot": true,
+          "restart_exact_same": true
+        }
+      ],
+      "counters": {
+        "HTTP": 25,
+        "queries": 5,
+        "MCP_tool_calls": 15,
+        "original_pages": 5,
+        "rejections": 4
+      },
+      "source_kind": "synthetic",
+      "taxonomy_status": "candidate-preview",
+      "injection": "temporary_owned_server_only",
+      "production_injected": false,
+      "new_model_calls": 0,
+      "host_auth_mounted": false
+    }
+  ],
+  "summary": {
+    "packs": [
+      {
+        "name": "original",
+        "counters": {
+          "HTTP": 25,
+          "queries": 5,
+          "MCP_tool_calls": 15,
+          "original_pages": 5,
+          "rejections": 4
+        },
+        "october": {
+          "denominator": 0,
+          "cleaning_numerator": 0,
+          "cleaning_ratio": null,
+          "evidence_ids": []
+        }
+      },
+      {
+        "name": "pm",
+        "counters": {
+          "HTTP": 25,
+          "queries": 5,
+          "MCP_tool_calls": 15,
+          "original_pages": 5,
+          "rejections": 4
+        },
+        "october": {
+          "denominator": 3,
+          "cleaning_numerator": 1,
+          "cleaning_ratio": 0.3333333333333333,
+          "evidence_ids": [
+            "DEMO-TREND-REVIEW-EVIDENCE-001"
+          ]
+        }
+      },
+      {
+        "name": "data",
+        "counters": {
+          "HTTP": 25,
+          "queries": 5,
+          "MCP_tool_calls": 15,
+          "original_pages": 5,
+          "rejections": 4
+        },
+        "october": {
+          "denominator": 4,
+          "cleaning_numerator": 1,
+          "cleaning_ratio": 0.25,
+          "evidence_ids": [
+            "SYNTH-DATED-REVIEW-EVIDENCE-006"
+          ]
+        }
+      }
+    ],
+    "all_passed": true,
+    "new_model_calls": 0,
+    "host_auth_mounted": false,
+    "network": "none",
+    "production_injected": false,
+    "independent_evaluation_run": false
+  },
+  "injection": "temporary_owned_server_only",
+  "production_verified": false,
+  "model_calls": 0,
+  "host_auth_mounted": false,
+  "fixed_image": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3"
+}

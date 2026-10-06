@@ -1,0 +1,206 @@
+{
+  "base_commit": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+  "unpublished_original_commit": "66bd627be91e2438bb6a5c6413cece3f690d1049",
+  "source_digest": "bc0411c7c11d6ed813ef07b50f87f00a1d9c6a108d76c699d4a0f21996faee8a",
+  "code_file_sha256": {
+    "scripts/check_data005_operating_snapshot.py": "fffd37e90a3983afb1b6be5f35a9366a77bb46c5ca1c2b2540ac5d8b0654825d",
+    "tests/test_data005_operating_snapshot.py": "7c0464ccb51e7419076b47febb925e2272fbcc52158bd90d2e7422fb9be26165"
+  },
+  "executor_image": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+  "checks": [
+    {
+      "name": "capture-regression",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_data005_operating_snapshot.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "stopped_reason": null,
+      "log_sha256": "8c16985998747e8e787e898a59034d902d84fe67ffce6382a5b8bcc9c99d617b",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    {
+      "name": "existing-data-collector",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_review_trends.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "stopped_reason": null,
+      "log_sha256": "759239be89b3112c4ac62bb3beee7ce3edc40460984a6bbc198c78278c63d204",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    {
+      "name": "existing-workspace-trends",
+      "argv": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_workspace_trends.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "stopped_reason": null,
+      "log_sha256": "ed93c85c65032e7bceb3738a0fe97e9b84df8b21d686e83560de233c8d704af5",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    {
+      "name": "contracts",
+      "argv": [
+        "python",
+        "scripts/check_contracts.py"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "stopped_reason": null,
+      "log_sha256": "83ff39a7aa73fcf380b0b281a91fbc9bad239834b2f70c6f93607d591faded90",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    {
+      "name": "rules",
+      "argv": [
+        "python",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "stopped_reason": null,
+      "log_sha256": "56b21f915cb5a695479359f4ca6063582b0b9bcbdaee1869782a2a805a2a82cd",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    {
+      "name": "lint",
+      "argv": [
+        "python",
+        "-c",
+        "import pathlib, shutil, tempfile, subprocess, sys\nroot=pathlib.Path.cwd()\ntarget=pathlib.Path(tempfile.mkdtemp(prefix='data005-lint-'))\nfor name in ('pyproject.toml','scripts/check_data005_operating_snapshot.py','tests/test_data005_operating_snapshot.py'):\n    path=target/name\n    path.parent.mkdir(parents=True,exist_ok=True)\n    shutil.copyfile(root/name,path)\n    path.chmod(0o644)\nraise SystemExit(subprocess.run([sys.executable,'-m','ruff','check','--no-cache','--config',\n    str(target/'pyproject.toml'),str(target/'scripts/check_data005_operating_snapshot.py'),\n    str(target/'tests/test_data005_operating_snapshot.py')]).returncode)\n"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 0,
+      "passed": false,
+      "stopped_reason": null,
+      "log_sha256": "bd29f7f8296a609489725aca152e05e3a1b2ba2d20947e9815541077480eff23",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    }
+  ],
+  "new_product_model_calls": 0,
+  "new_ocr_calls": 0,
+  "production_verified": false
+}

@@ -1,0 +1,40 @@
+{
+  "target": "WEB #27/#149",
+  "pack": "DATA9 constructed-date preview",
+  "dataset_version": "synthetic-dated-demo.20261006.v1",
+  "dataset_sha256": "d7740d3b61be29e78a4a4fd4d48a6e549eae3158c37994670493f02d4b33fff0",
+  "annotation_version": "synthetic-dated-demo.20261006.v1",
+  "annotation_sha256": "0f534b263c87eb896146967158bc7dbb630bdd6290fe9471bdc90c274027e64b",
+  "source_ids": [
+    "SYNTH-REVIEWS-DATED-DEMO-v1"
+  ],
+  "scope": {
+    "model_id": "FRIDGE-A",
+    "document_version": "1.0",
+    "source_kind": "synthetic",
+    "start_date": "2026-10-01",
+    "end_date_exclusive": "2026-11-01",
+    "timezone": "Asia/Seoul"
+  },
+  "expected": {
+    "denominator": 4,
+    "cleaning_numerator": 1,
+    "cleaning_ratio": 0.25,
+    "excluded_undated_count": 1,
+    "excluded_outside_period_count": 5,
+    "cleaning_evidence_id": "SYNTH-DATED-REVIEW-EVIDENCE-006",
+    "cleaning_text_sha256": "8dcbc36c8d51613be586180e2606b954e3d8efc996bf401ebf871e70a92a33f1",
+    "cleaning_review_is_positive_mention": true
+  },
+  "actual_local_aggregate_id": "TREND-c7ff9f8377b89085a83adc55296f9e7b9bc3206780e839ce8f29ecc651a63162",
+  "project_id_is_run_specific": true,
+  "instructions": [
+    "Get a new aggregate ID for the actual WEB project; old local IDs are not reusable across projects.",
+    "Compare dataset/source/version and returned aggregate ID across chart, original drilldown and export.",
+    "Check denominator4, excluded dates1/outside5, positive006 original and mention ratio25%.",
+    "Keep constructed dates/synthetic samples and candidate taxonomy visible; do not label as complaint rate or market demand.",
+    "Compare monthly/winter/empty periods and source/group changes against the fresh API receipts."
+  ],
+  "browser_chart_export_verified_this_run": false,
+  "production_source_selected": false
+}

@@ -1,0 +1,175 @@
+"""Actual owned API/MCP/restart across three public synthetic packs; no models."""
+import asyncio
+import json
+import os
+import secrets
+import socket
+import sys
+import threading
+import time
+from hashlib import sha256
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+import httpx
+import uvicorn
+from lgax_api.review_trends import create_review_trend_collector
+from lgax_api.workspace_auth import TokenRegistry
+from lgax_api.workspace_server import create_workspace_app
+from lgax_core.retrieval import GroundedDemoStore
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
+
+
+def unwrap(result):
+    value = result.structuredContent or json.loads(next(x.text for x in result.content if x.type == "text"))
+    if set(value) == {"result"}:
+        value = value["result"]
+    return value.get("data", value)
+
+
+async def via_mcp(url, credentials, filters, aggregate):
+    params = StdioServerParameters(command=sys.executable,
+        args=["-B", "-X", "utf8", "-m", "lgax_mcp.workspace_server", "--url", url,
+              "--credential-file", str(credentials)], cwd="/workspace",
+        env={"PYTHONPATH": os.environ["PYTHONPATH"], "PYTHONUTF8": "1"})
+    async with stdio_client(params) as (read, write), ClientSession(read, write) as session:
+        await session.initialize()
+        queried = unwrap(await session.call_tool("review_trends", {"filters": filters}))["aggregate"]
+        saved = unwrap(await session.call_tool("get_review_trends", {
+            "project_id": filters["project_id"], "aggregate_id": aggregate["aggregate_id"]}))["aggregate"]
+        assert queried == aggregate == saved
+        evidence = unwrap(await session.call_tool("trend_evidence", {
+            "project_id": filters["project_id"], "aggregate_id": aggregate["aggregate_id"],
+            "bucket_id": aggregate["buckets"][0]["bucket_id"], "topic_id": "cleaning"}))
+    return evidence
+
+
+def run_pack(name):
+    folder = Path("/inputs") / name
+    dataset = json.loads((folder / "dataset.json").read_bytes())
+    metadata = json.loads((folder / "annotation.json").read_bytes())
+    source_ids = sorted({r["source_id"] for r in dataset["reviews"] if r["model_id"] == "FRIDGE-A"})
+    originals = {r["id"]: r for r in dataset["evidence"]}
+    counters = {"HTTP": 0, "queries": 0, "MCP_tool_calls": 0, "original_pages": 0, "rejections": 0}
+    with TemporaryDirectory(prefix="data1516-") as temporary:
+        root = Path(temporary)
+        token = secrets.token_urlsafe(48)
+        credentials = root / "credentials.json"
+        credentials.write_text(json.dumps({"token": token}))
+        registry = TokenRegistry([{"principal_id": "data1516-local-only", "role": "editor",
+            "token_sha256": sha256(token.encode()).hexdigest()}])
+
+        def launch():
+            app = create_workspace_app(root / "workspace.sqlite", registry,
+                evidence_store=GroundedDemoStore(dataset), trend_collector=create_review_trend_collector(metadata))
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.bind(("127.0.0.1", 0))
+            server = uvicorn.Server(uvicorn.Config(app, log_level="error"))
+            thread = threading.Thread(target=server.run, kwargs={"sockets": [sock]}, daemon=True)
+            thread.start()
+            deadline = time.monotonic() + 10
+            while not server.started:
+                assert thread.is_alive() and time.monotonic() < deadline
+                time.sleep(.02)
+            url = f"http://127.0.0.1:{sock.getsockname()[1]}"
+            client = httpx.Client(base_url=url, headers={"Authorization": "Bearer " + token,
+                "Origin": "http://127.0.0.1:5173"}, timeout=30)
+            return server, thread, sock, client, url
+
+        def stop(active):
+            active[3].close()
+            active[0].should_exit = True
+            active[1].join(10)
+            assert not active[1].is_alive()
+            active[2].close()
+
+        active = launch()
+        cases = []
+        try:
+            request = json.loads(Path("/workspace/data/demo/planning_requests.json").read_bytes())[0]
+            request.update(model_ids=["FRIDGE-A"], dataset_version=dataset["manifest"]["version"])
+            response = active[3].post("/api/workspace/projects", json={"name": "DATA1516 owned " + name,
+                "request": request, "document_versions": {"FRIDGE-A": "1.0"}})
+            counters["HTTP"] += 1
+            assert response.status_code == 201
+            pid = response.json()["data"]["project"]["id"]
+            path = f"/api/workspace/projects/{pid}/review-trends"
+            for period, start, end, granularity in (
+                ("october", "2026-10-01", "2026-11-01", "month"),
+                ("empty", "2030-05-01", "2030-06-01", "month"),
+                ("winter", "2026-12-01", "2027-03-01", "season"),
+                ("december", "2026-12-01", "2027-01-01", "month"),
+                ("january", "2027-01-01", "2027-02-01", "month")):
+                filters = {"project_id": pid, "model_id": "FRIDGE-A", "source_ids": source_ids,
+                    "dataset_version": dataset["manifest"]["version"], "start_date": start,
+                    "end_date_exclusive": end, "granularity": granularity, "topic_ids": ["cleaning"],
+                    "source_kind": "synthetic", "timezone": "Asia/Seoul"}
+                response = active[3].get(path, params={k: v for k, v in filters.items() if k != "project_id"})
+                counters["HTTP"] += 1
+                assert response.status_code == 200, response.text
+                aggregate = response.json()["data"]["aggregate"]
+                aid = aggregate["aggregate_id"]
+                bucket = aggregate["buckets"][0]
+                cleaning = next(t for t in bucket["topics"] if t["topic_id"] == "cleaning")
+                evidence_response = active[3].get(f"{path}/{aid}/evidence", params={
+                    "bucket_id": bucket["bucket_id"], "topic_id": "cleaning"})
+                counters["HTTP"] += 1
+                assert evidence_response.status_code == 200
+                evidence = evidence_response.json()["data"]
+                for item in evidence["evidence"]:
+                    assert item == originals[item["id"]]
+                mcp = asyncio.run(via_mcp(active[4], credentials, filters, aggregate))
+                counters["MCP_tool_calls"] += 3
+                assert mcp == evidence
+                repeated = active[3].get(path, params={k: v for k, v in filters.items() if k != "project_id"})
+                counters["HTTP"] += 1
+                assert repeated.json()["data"]["aggregate"] == aggregate
+                counters["queries"] += 1
+                counters["original_pages"] += 1
+                cases.append({"period": period, "filters": filters, "aggregate": aggregate,
+                    "denominator": bucket["total_reviews"], "cleaning_numerator": cleaning["topic_review_count"],
+                    "cleaning_ratio": cleaning["ratio"], "evidence_ids": [e["id"] for e in evidence["evidence"]],
+                    "source_text_sha256": {e["id"]: sha256(e["text"].encode()).hexdigest() for e in evidence["evidence"]},
+                    "api_mcp_exact_same": True, "same_query_same_snapshot": True})
+            october = cases[0]
+            expected = {"original": (0, 0, None), "pm": (3, 1, 1/3), "data": (4, 1, .25)}[name]
+            assert (october["denominator"], october["cleaning_numerator"], october["cleaning_ratio"]) == expected
+            for key, value in (("dataset_version", "wrong-dataset"), ("model_id", "NOT-IN-PROJECT"),
+                               ("timezone", "UTC"), ("source_kind", "public")):
+                invalid = dict(october["filters"])
+                invalid[key] = value
+                response = active[3].get(path, params={k: v for k, v in invalid.items() if k != "project_id"})
+                counters["HTTP"] += 1
+                assert response.status_code >= 400, (key, response.text)
+                counters["rejections"] += 1
+            # Restart our own server/DB and re-read all exact saved aggregates.
+            stop(active)
+            active = None
+            active = launch()
+            for case in cases:
+                response = active[3].get(f"{path}/{case['aggregate']['aggregate_id']}")
+                counters["HTTP"] += 1
+                assert response.status_code == 200 and response.json()["data"]["aggregate"] == case["aggregate"]
+                case["restart_exact_same"] = True
+            return {"pack": name, "cases": cases, "counters": counters,
+                "source_kind": "synthetic", "taxonomy_status": "candidate-preview",
+                "injection": "temporary_owned_server_only", "production_injected": False,
+                "new_model_calls": 0, "host_auth_mounted": False}
+        finally:
+            if active:
+                stop(active)
+
+
+output = Path("/results")
+packs = []
+for name in ("original", "pm", "data"):
+    result = run_pack(name)
+    (output / (name + "-api-mcp.json")).write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")
+    packs.append(result)
+    print(json.dumps({"pack": name, "passed": True, "counters": result["counters"]}), flush=True)
+summary = {"packs": [{"name": r["pack"], "counters": r["counters"], "october": {
+        k: r["cases"][0][k] for k in ("denominator", "cleaning_numerator", "cleaning_ratio", "evidence_ids")}}
+        for r in packs], "all_passed": True, "new_model_calls": 0, "host_auth_mounted": False,
+    "network": "none", "production_injected": False, "independent_evaluation_run": False}
+(output / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n")

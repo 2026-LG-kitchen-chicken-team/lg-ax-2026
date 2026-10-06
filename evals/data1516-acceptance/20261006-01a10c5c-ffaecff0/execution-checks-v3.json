@@ -1,0 +1,80 @@
+{
+  "base_commit": "9cd2d56be52588764c18c109c9ffca4c104bd48c",
+  "unpublished_original_commit": "66bd627be91e2438bb6a5c6413cece3f690d1049",
+  "source_digest": "d7c1042303b1adcca22c99f73d044f869b27bd6548e504fe916ab265602403fe",
+  "code_file_sha256": {
+    "scripts/check_data005_operating_snapshot.py": "b15cd51a5e7a72a49de6689d4f49e599c8ae55eb34c9900be5fb03e6f9b571bc",
+    "tests/test_data005_operating_snapshot.py": "7c0464ccb51e7419076b47febb925e2272fbcc52158bd90d2e7422fb9be26165"
+  },
+  "executor_image": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+  "checks": [
+    {
+      "name": "lint",
+      "argv": [
+        "python",
+        "-c",
+        "import pathlib, shutil, tempfile, subprocess, sys\nroot=pathlib.Path.cwd()\ntarget=pathlib.Path(tempfile.mkdtemp(prefix='data005-lint-'))\nfor name in ('pyproject.toml','scripts/check_data005_operating_snapshot.py','tests/test_data005_operating_snapshot.py'):\n    path=target/name\n    path.parent.mkdir(parents=True,exist_ok=True)\n    shutil.copyfile(root/name,path)\n    path.chmod(0o644)\nraise SystemExit(subprocess.run([sys.executable,'-m','ruff','check','--no-cache','--config',\n    str(target/'pyproject.toml'),str(target/'scripts/check_data005_operating_snapshot.py'),\n    str(target/'tests/test_data005_operating_snapshot.py')]).returncode)\n"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "stopped_reason": null,
+      "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    {
+      "name": "missing-operating-capture",
+      "argv": [
+        "python",
+        "scripts/check_data005_operating_snapshot.py",
+        "--snapshot",
+        "evals/data1516-acceptance/20261006-01a10c5c-ffaecff0/operating-snapshot-template.json",
+        "--dataset",
+        "data/research/DATA-owner-followup-20261006-01a1100e/dataset.synthetic-dated-demo.v1.json",
+        "--annotation",
+        "data/research/DATA-owner-followup-20261006-01a1100e/annotation.synthetic-dated-demo.v1.json",
+        "--date-source",
+        "data/research/DATA-owner-followup-20261006-01a1100e/source.synthetic-dated-demo.v1.json"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "passed": true,
+      "stopped_reason": null,
+      "log_sha256": "ffbe16fbf7c703c8746075fe0777108ee6a284ea1f2ec8f36130050655403b94",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    }
+  ],
+  "new_product_model_calls": 0,
+  "new_ocr_calls": 0,
+  "production_verified": false
+}
