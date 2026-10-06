@@ -1,0 +1,306 @@
+{
+  "input": {
+    "request": {
+      "product_group": "microwave",
+      "target_customer": "해당 주방 가전의 가정 사용자",
+      "use_situation": "자료에 서술된 같은 사용 경험을 검토한다.",
+      "improvement_task": "음식이 충분히 데워졌는지 확인하려고 문을 열어 꺼내야 해 조리가 끊긴다.",
+      "exclusions": [
+        "다른 모델 기능 혼용",
+        "근거 없는 효과 단정"
+      ],
+      "model_ids": [
+        "HOLD-20261005-06-MODEL"
+      ],
+      "dataset_version": "HOLD-20261005-06-frozen-v2.0"
+    },
+    "product": {
+      "model_id": "HOLD-20261005-06-MODEL",
+      "name": "별도 고정 합성 microwave",
+      "product_group": "microwave",
+      "document_version": "2.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "HOLD-20261005-06-REVIEW",
+        "model_id": "HOLD-20261005-06-MODEL",
+        "document_version": "2.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "HOLD-20261005-06-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "음식이 충분히 데워졌는지 확인하려고 문을 열어 꺼내야 해 조리가 끊긴다.",
+        "feature_ids": []
+      },
+      {
+        "id": "HOLD-20261005-06-MANUAL",
+        "model_id": "HOLD-20261005-06-MODEL",
+        "document_version": "2.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "HOLD-20261005-06-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능과 사용 조건"
+        },
+        "text": "문서2.0: 가열 센서가 목표 온도에 도달하면 문을 열지 않아도 외부 화면에 준비 완료 상태가 표시된다.",
+        "feature_ids": [
+          "HOLD-20261005-06-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "HOLD-20261005-06-FEATURE",
+        "model_id": "HOLD-20261005-06-MODEL",
+        "document_version": "2.0",
+        "name": "자료에 명시된 현재 기능",
+        "description": "문서2.0: 가열 센서가 목표 온도에 도달하면 문을 열지 않아도 외부 화면에 준비 완료 상태가 표시된다.",
+        "conditions": [
+          "문서에 기재된 사용 조건에 따른다."
+        ],
+        "evidence_ids": [
+          "HOLD-20261005-06-MANUAL"
+        ]
+      }
+    ],
+    "revision_count": 0,
+    "max_concepts": 2,
+    "changed_evidence_ids": []
+  },
+  "dataset": {
+    "manifest": {
+      "dataset_id": "HOLD-20261005-06",
+      "version": "HOLD-20261005-06-frozen-v2.0",
+      "description": "새 고정 합성 자료; 독립 검수 전",
+      "source_kind": "synthetic",
+      "model_count": 1,
+      "review_count": 1,
+      "analysis_implemented": false
+    },
+    "products": [
+      {
+        "model_id": "HOLD-20261005-06-MODEL",
+        "name": "별도 고정 합성 microwave",
+        "product_group": "microwave",
+        "document_version": "2.0",
+        "source_kind": "synthetic"
+      }
+    ],
+    "reviews": [
+      {
+        "id": "ROW-HOLD-20261005-06-REVIEW",
+        "evidence_id": "HOLD-20261005-06-REVIEW",
+        "model_id": "HOLD-20261005-06-MODEL",
+        "text": "음식이 충분히 데워졌는지 확인하려고 문을 열어 꺼내야 해 조리가 끊긴다.",
+        "source_kind": "synthetic",
+        "document_version": "2.0",
+        "source_id": "HOLD-20261005-06-CSV",
+        "locator": {
+          "row": 2
+        }
+      }
+    ],
+    "evidence": [
+      {
+        "id": "HOLD-20261005-06-REVIEW",
+        "model_id": "HOLD-20261005-06-MODEL",
+        "document_version": "2.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "HOLD-20261005-06-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "음식이 충분히 데워졌는지 확인하려고 문을 열어 꺼내야 해 조리가 끊긴다.",
+        "feature_ids": []
+      },
+      {
+        "id": "HOLD-20261005-06-MANUAL",
+        "model_id": "HOLD-20261005-06-MODEL",
+        "document_version": "2.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "HOLD-20261005-06-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능과 사용 조건"
+        },
+        "text": "문서2.0: 가열 센서가 목표 온도에 도달하면 문을 열지 않아도 외부 화면에 준비 완료 상태가 표시된다.",
+        "feature_ids": [
+          "HOLD-20261005-06-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "HOLD-20261005-06-FEATURE",
+        "model_id": "HOLD-20261005-06-MODEL",
+        "document_version": "2.0",
+        "name": "자료에 명시된 현재 기능",
+        "description": "문서2.0: 가열 센서가 목표 온도에 도달하면 문을 열지 않아도 외부 화면에 준비 완료 상태가 표시된다.",
+        "conditions": [
+          "문서에 기재된 사용 조건에 따른다."
+        ],
+        "evidence_ids": [
+          "HOLD-20261005-06-MANUAL"
+        ]
+      }
+    ]
+  },
+  "previous_input": {
+    "request": {
+      "product_group": "microwave",
+      "target_customer": "해당 주방 가전의 가정 사용자",
+      "use_situation": "자료에 서술된 같은 사용 경험을 검토한다.",
+      "improvement_task": "음식이 충분히 데워졌는지 확인하려고 문을 열어 꺼내야 해 조리가 끊긴다.",
+      "exclusions": [
+        "다른 모델 기능 혼용",
+        "근거 없는 효과 단정"
+      ],
+      "model_ids": [
+        "HOLD-20261005-06-MODEL"
+      ],
+      "dataset_version": "HOLD-20261005-06-frozen-v1.0"
+    },
+    "product": {
+      "model_id": "HOLD-20261005-06-MODEL",
+      "name": "별도 고정 합성 microwave",
+      "product_group": "microwave",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "HOLD-20261005-06-REVIEW",
+        "model_id": "HOLD-20261005-06-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "HOLD-20261005-06-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "음식이 충분히 데워졌는지 확인하려고 문을 열어 꺼내야 해 조리가 끊긴다.",
+        "feature_ids": []
+      },
+      {
+        "id": "HOLD-20261005-06-MANUAL",
+        "model_id": "HOLD-20261005-06-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "HOLD-20261005-06-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능과 사용 조건"
+        },
+        "text": "문서1.0: 사용자가 가열 시간과 출력을 직접 설정한다. 음식의 가열 상태는 문을 열어 확인한다.",
+        "feature_ids": [
+          "HOLD-20261005-06-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "HOLD-20261005-06-FEATURE",
+        "model_id": "HOLD-20261005-06-MODEL",
+        "document_version": "1.0",
+        "name": "자료에 명시된 현재 기능",
+        "description": "문서1.0: 사용자가 가열 시간과 출력을 직접 설정한다. 음식의 가열 상태는 문을 열어 확인한다.",
+        "conditions": [
+          "문서에 기재된 사용 조건에 따른다."
+        ],
+        "evidence_ids": [
+          "HOLD-20261005-06-MANUAL"
+        ]
+      }
+    ],
+    "revision_count": 0,
+    "max_concepts": 2,
+    "changed_evidence_ids": []
+  },
+  "previous_dataset": {
+    "manifest": {
+      "dataset_id": "HOLD-20261005-06",
+      "version": "HOLD-20261005-06-frozen-v1.0",
+      "description": "새 고정 합성 자료; 독립 검수 전",
+      "source_kind": "synthetic",
+      "model_count": 1,
+      "review_count": 1,
+      "analysis_implemented": false
+    },
+    "products": [
+      {
+        "model_id": "HOLD-20261005-06-MODEL",
+        "name": "별도 고정 합성 microwave",
+        "product_group": "microwave",
+        "document_version": "1.0",
+        "source_kind": "synthetic"
+      }
+    ],
+    "reviews": [
+      {
+        "id": "ROW-HOLD-20261005-06-REVIEW",
+        "evidence_id": "HOLD-20261005-06-REVIEW",
+        "model_id": "HOLD-20261005-06-MODEL",
+        "text": "음식이 충분히 데워졌는지 확인하려고 문을 열어 꺼내야 해 조리가 끊긴다.",
+        "source_kind": "synthetic",
+        "document_version": "1.0",
+        "source_id": "HOLD-20261005-06-CSV",
+        "locator": {
+          "row": 2
+        }
+      }
+    ],
+    "evidence": [
+      {
+        "id": "HOLD-20261005-06-REVIEW",
+        "model_id": "HOLD-20261005-06-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "HOLD-20261005-06-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "음식이 충분히 데워졌는지 확인하려고 문을 열어 꺼내야 해 조리가 끊긴다.",
+        "feature_ids": []
+      },
+      {
+        "id": "HOLD-20261005-06-MANUAL",
+        "model_id": "HOLD-20261005-06-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "HOLD-20261005-06-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능과 사용 조건"
+        },
+        "text": "문서1.0: 사용자가 가열 시간과 출력을 직접 설정한다. 음식의 가열 상태는 문을 열어 확인한다.",
+        "feature_ids": [
+          "HOLD-20261005-06-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "HOLD-20261005-06-FEATURE",
+        "model_id": "HOLD-20261005-06-MODEL",
+        "document_version": "1.0",
+        "name": "자료에 명시된 현재 기능",
+        "description": "문서1.0: 사용자가 가열 시간과 출력을 직접 설정한다. 음식의 가열 상태는 문을 열어 확인한다.",
+        "conditions": [
+          "문서에 기재된 사용 조건에 따른다."
+        ],
+        "evidence_ids": [
+          "HOLD-20261005-06-MANUAL"
+        ]
+      }
+    ]
+  }
+}

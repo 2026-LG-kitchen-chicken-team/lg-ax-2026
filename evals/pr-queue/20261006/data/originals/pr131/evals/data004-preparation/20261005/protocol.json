@@ -1,0 +1,128 @@
+{
+  "task_id": "P2-DATA-004",
+  "scope": "development_preparation_only",
+  "status": "prepared_not_executed",
+  "criteria": [
+    {
+      "id": "K01",
+      "requirement_ids": [
+        "R05",
+        "R06"
+      ],
+      "title": "원문 연결",
+      "pass_condition": "근거 ID·모델·문서 버전·원문 위치·hash·public/synthetic 성격을 결과까지 유지한다.",
+      "failure_action": "retain original output; mark failed/held and request correction or source clarification"
+    },
+    {
+      "id": "K02",
+      "requirement_ids": [
+        "R05"
+      ],
+      "title": "조건 보존",
+      "pass_condition": "조건부 기능·사용 전 조건·숫자/단위·제품 열을 삭제하거나 모든 모델로 확대하지 않는다.",
+      "failure_action": "retain original output; mark failed/held and request correction or source clarification"
+    },
+    {
+      "id": "K03",
+      "requirement_ids": [
+        "R05",
+        "R06"
+      ],
+      "title": "충돌 보존",
+      "pass_condition": "충돌하는 모든 관찰값·출처·범위·확인일을 남기고 미해결이면 임의 평균/최신 단정으로 덮지 않는다.",
+      "failure_action": "retain original output; mark failed/held and request correction or source clarification"
+    },
+    {
+      "id": "K04",
+      "requirement_ids": [
+        "R05",
+        "R06"
+      ],
+      "title": "모델·개정 혼동",
+      "pass_condition": "다른 모델·미지정 과거 개정을 현재 모델/개정 근거로 대체하지 않는다.",
+      "failure_action": "retain original output; mark failed/held and request correction or source clarification"
+    },
+    {
+      "id": "K05",
+      "requirement_ids": [
+        "R05"
+      ],
+      "title": "근거 부족",
+      "pass_condition": "미언급·정보 부족은 null/미확인·추가 조건 요청으로 유지하고 미지원 또는 지원 확정으로 바꾸지 않는다.",
+      "failure_action": "retain original output; mark failed/held and request correction or source clarification"
+    },
+    {
+      "id": "K06",
+      "requirement_ids": [
+        "R05"
+      ],
+      "title": "중복·불편 구분",
+      "pass_condition": "이미 있는 기능의 중복과 불편 해소 여부를 구분하고 기능 존재만으로 수요/효과를 확정하지 않는다.",
+      "failure_action": "retain original output; mark failed/held and request correction or source clarification"
+    },
+    {
+      "id": "K07",
+      "requirement_ids": [
+        "R22"
+      ],
+      "title": "변경 이력",
+      "pass_condition": "변경 전후 snapshot/hash·자료 성격·버전과 원 실행을 보존하고 새 실행 ID에 변경 출처를 연결한다.",
+      "failure_action": "retain original output; mark failed/held and request correction or source clarification"
+    },
+    {
+      "id": "K08",
+      "requirement_ids": [
+        "R22"
+      ],
+      "title": "영향 추적",
+      "pass_condition": "변경 근거에 의존하는 판단/후보만 재검토하고 관련 없는 근거·후보를 그대로 보존한다.",
+      "failure_action": "retain original output; mark failed/held and request correction or source clarification"
+    },
+    {
+      "id": "K09",
+      "requirement_ids": [
+        "E01"
+      ],
+      "title": "평가 분리",
+      "pass_condition": "이 개발 사례를 독립 평가로 쓰지 않고 최종 입력/기대 정답은 별도 작성자/PM 검토와 비공개 경로로 분리한다.",
+      "failure_action": "retain original output; mark failed/held and request correction or source clarification"
+    },
+    {
+      "id": "K10",
+      "requirement_ids": [
+        "E01"
+      ],
+      "title": "실행 진실성",
+      "pass_condition": "actual run/오류/보류·반환 근거·검수자/시각을 기록한다. 예상 대응이나 규칙 검사로 실제 결과를 채우지 않는다.",
+      "failure_action": "retain original output; mark failed/held and request correction or source clarification"
+    }
+  ],
+  "independent_final_evaluation": {
+    "answer_content_read": false,
+    "modified": false,
+    "cases_used": false
+  },
+  "real_customer_reviews": 0,
+  "semantic_gold_review": "pending_PM",
+  "integration_required": [
+    "DATA002 real processed output",
+    "core actual change/re-evaluation service",
+    "PM independent six-type execution/review"
+  ],
+  "source_change_policy": "Only one real manufacturer revision exists per model; before/after fixtures have synthetic source IDs and DEV versions, never fake manufacturer revisions",
+  "handoff_fields": [
+    "case_id",
+    "type",
+    "input_sha256",
+    "output_run_id",
+    "output_sha256",
+    "source_ids",
+    "before_after_hashes",
+    "affected_judgement_ids",
+    "affected_candidate_ids",
+    "reviewer",
+    "reviewed_at",
+    "observed_checks",
+    "failure_reason"
+  ]
+}

@@ -1,0 +1,898 @@
+{
+  "execution_kind": "live_model",
+  "source_kind": "synthetic",
+  "source_sha256": {
+    "packages/core/src/lgax_core/planning_agent.py": "05c53cd9bfe95730de2a70babad52a611443e4e52b8b3949b93fd300f8fcd12e",
+    "packages/core/src/lgax_core/revision_guard.py": "56734c5dd363016a40e7cd01bd288f30c0fd907f6f888149f0b8e10e1fb01849",
+    "packages/core/src/lgax_core/reexecution.py": "e613ae8e76ee0bb9f1a28c003f557a1e481a76721246a2bedebd7da7e61c05a0",
+    "packages/core/src/lgax_core/correction_budget.py": "07201cd20b0144b3401a8601c64447d3aaec0f35c9325c378707ebcb922ea5e9",
+    "packages/core/src/lgax_core/semantic_review.py": "e7fca7081f512af353f6cd8abf7e419f1550f9e5967cb94f9997ec356e76af2f",
+    "packages/core/src/lgax_core/judgement_contract.py": "db7560e7d61e81e8d228b439969d3a28293b0cd219b7560eddea12923a2b2c24",
+    "packages/core/src/lgax_core/model_client.py": "e8b6ec95b9ab30900b65cdf1c954468a637214e81902d92717125d44f05da822",
+    "packages/core/src/lgax_core/no_candidate_review.py": "45e9dd7b02b05f7ef8f43889c6af9c73fde90d7ff1cab9593d286249340d7d95",
+    "packages/core/src/lgax_core/store.py": "2dba0b34a62b58f704fc1fc617e9113d7cdb277819cd5b72d3df1849411245fe",
+    "packages/core/src/lgax_core/skill_runner.py": "9f7d157409431cc8d235e5daeb89ff5d4d8c57e451af959b838c63489c275517"
+  },
+  "cases": [
+    {
+      "product_group": "fridge",
+      "plans": {
+        "before": {
+          "new_run_required": true,
+          "new_project_required": false,
+          "first_stage": "plan",
+          "stages": [
+            "plan",
+            "retrieve",
+            "needs",
+            "compare",
+            "concepts",
+            "review"
+          ],
+          "project_action": "new_run",
+          "previous_input_sha256": "8647c78d965d862d944d9ce611caa708c064a525ff5b5b18bcfb1ec7112e9745",
+          "supplied_input_sha256": "8647c78d965d862d944d9ce611caa708c064a525ff5b5b18bcfb1ec7112e9745",
+          "prepared_input_sha256": "1baa9a97166c55657da64633b517be75d1547437294fc84dcc72f7c23a8f1780",
+          "prepared_input": {
+            "request": {
+              "product_group": "fridge",
+              "target_customer": "청소 시간이 짧은 1인 가구",
+              "use_situation": "냉장고 사용 중 작은 음료 얼룩을 청소한다.",
+              "improvement_task": "국소 얼룩을 닦으려면 선반 위 용기를 모두 꺼내야 해 번거롭다.",
+              "exclusions": [
+                "다른 모델 기능 혼용"
+              ],
+              "model_ids": [
+                "CHANGE-FRIDGE-MODEL"
+              ],
+              "dataset_version": "CHANGE-FRIDGE-v1"
+            },
+            "product": {
+              "model_id": "CHANGE-FRIDGE-MODEL",
+              "name": "재실행 예제용 가상 fridge",
+              "product_group": "fridge",
+              "document_version": "1.0",
+              "source_kind": "synthetic"
+            },
+            "sources": [
+              {
+                "id": "CHANGE-FRIDGE-REVIEW",
+                "model_id": "CHANGE-FRIDGE-MODEL",
+                "document_version": "1.0",
+                "source_kind": "synthetic",
+                "source_type": "review",
+                "source_id": "CHANGE-FRIDGE-REVIEW-DOC",
+                "locator": {
+                  "row": 2
+                },
+                "text": "국소 얼룩을 닦으려면 선반 위 용기를 모두 꺼내야 해 번거롭다.",
+                "feature_ids": []
+              },
+              {
+                "id": "CHANGE-FRIDGE-MANUAL",
+                "model_id": "CHANGE-FRIDGE-MODEL",
+                "document_version": "1.0",
+                "source_kind": "synthetic",
+                "source_type": "manual",
+                "source_id": "CHANGE-FRIDGE-MANUAL-DOC",
+                "locator": {
+                  "page": 3,
+                  "section": "사용 조건"
+                },
+                "text": "선반 전체를 분리하여 세척할 수 있다. 분리 전에 식품을 모두 꺼낸다.",
+                "feature_ids": [
+                  "CHANGE-FRIDGE-FEATURE"
+                ]
+              }
+            ],
+            "features": [
+              {
+                "id": "CHANGE-FRIDGE-FEATURE",
+                "model_id": "CHANGE-FRIDGE-MODEL",
+                "document_version": "1.0",
+                "name": "설명서의 현재 지원 기능",
+                "description": "선반 전체를 분리하여 세척할 수 있다. 분리 전에 식품을 모두 꺼낸다.",
+                "conditions": [
+                  "설명서의 사용 조건을 충족해야 함"
+                ],
+                "evidence_ids": [
+                  "CHANGE-FRIDGE-MANUAL"
+                ]
+              }
+            ],
+            "revision_count": 0,
+            "max_concepts": 3,
+            "changed_evidence_ids": []
+          },
+          "changes": {
+            "request_fields": [],
+            "evidence": {
+              "added": [],
+              "removed": [],
+              "updated": []
+            },
+            "features": {
+              "added": [],
+              "removed": [],
+              "updated": []
+            },
+            "product": false,
+            "source_order": false,
+            "feature_order": false,
+            "max_concepts": false
+          },
+          "reasons": [
+            "원 요청·제품 조건 또는 호출자의 명시적 새 실행 요청을 반영한다."
+          ],
+          "model_calls": 0,
+          "notice": "재실행 계획이다. 실제 생성·변경 효과·Workspace 저장 성공이 아니다."
+        },
+        "after": {
+          "new_run_required": true,
+          "new_project_required": false,
+          "first_stage": "plan",
+          "stages": [
+            "plan",
+            "retrieve",
+            "needs",
+            "compare",
+            "concepts",
+            "review"
+          ],
+          "project_action": "new_run",
+          "previous_input_sha256": "8647c78d965d862d944d9ce611caa708c064a525ff5b5b18bcfb1ec7112e9745",
+          "supplied_input_sha256": "68de7756ca1724913c4875b93cb5d83366c80ecda199566f8765f2958a6e6863",
+          "prepared_input_sha256": "68de7756ca1724913c4875b93cb5d83366c80ecda199566f8765f2958a6e6863",
+          "prepared_input": {
+            "request": {
+              "product_group": "fridge",
+              "target_customer": "청소 시간이 짧은 1인 가구",
+              "use_situation": "냉장고 사용 중 작은 음료 얼룩을 청소한다.",
+              "improvement_task": "국소 얼룩을 닦으려면 선반 위 용기를 모두 꺼내야 해 번거롭다.",
+              "exclusions": [
+                "다른 모델 기능 혼용",
+                "물탱크와 펌프를 추가하는 자동 세척 장치"
+              ],
+              "model_ids": [
+                "CHANGE-FRIDGE-MODEL"
+              ],
+              "dataset_version": "CHANGE-FRIDGE-v1"
+            },
+            "product": {
+              "model_id": "CHANGE-FRIDGE-MODEL",
+              "name": "재실행 예제용 가상 fridge",
+              "product_group": "fridge",
+              "document_version": "1.0",
+              "source_kind": "synthetic"
+            },
+            "sources": [
+              {
+                "id": "CHANGE-FRIDGE-REVIEW",
+                "model_id": "CHANGE-FRIDGE-MODEL",
+                "document_version": "1.0",
+                "source_kind": "synthetic",
+                "source_type": "review",
+                "source_id": "CHANGE-FRIDGE-REVIEW-DOC",
+                "locator": {
+                  "row": 2
+                },
+                "text": "국소 얼룩을 닦으려면 선반 위 용기를 모두 꺼내야 해 번거롭다.",
+                "feature_ids": []
+              },
+              {
+                "id": "CHANGE-FRIDGE-MANUAL",
+                "model_id": "CHANGE-FRIDGE-MODEL",
+                "document_version": "1.0",
+                "source_kind": "synthetic",
+                "source_type": "manual",
+                "source_id": "CHANGE-FRIDGE-MANUAL-DOC",
+                "locator": {
+                  "page": 3,
+                  "section": "사용 조건"
+                },
+                "text": "선반 전체를 분리하여 세척할 수 있다. 분리 전에 식품을 모두 꺼낸다.",
+                "feature_ids": [
+                  "CHANGE-FRIDGE-FEATURE"
+                ]
+              }
+            ],
+            "features": [
+              {
+                "id": "CHANGE-FRIDGE-FEATURE",
+                "model_id": "CHANGE-FRIDGE-MODEL",
+                "document_version": "1.0",
+                "name": "설명서의 현재 지원 기능",
+                "description": "선반 전체를 분리하여 세척할 수 있다. 분리 전에 식품을 모두 꺼낸다.",
+                "conditions": [
+                  "설명서의 사용 조건을 충족해야 함"
+                ],
+                "evidence_ids": [
+                  "CHANGE-FRIDGE-MANUAL"
+                ]
+              }
+            ],
+            "revision_count": 0,
+            "max_concepts": 3,
+            "changed_evidence_ids": []
+          },
+          "changes": {
+            "request_fields": [
+              "exclusions"
+            ],
+            "evidence": {
+              "added": [],
+              "removed": [],
+              "updated": []
+            },
+            "features": {
+              "added": [],
+              "removed": [],
+              "updated": []
+            },
+            "product": false,
+            "source_order": false,
+            "feature_order": false,
+            "max_concepts": false
+          },
+          "reasons": [
+            "원 요청·제품 조건 또는 호출자의 명시적 새 실행 요청을 반영한다."
+          ],
+          "model_calls": 0,
+          "notice": "재실행 계획이다. 실제 생성·변경 효과·Workspace 저장 성공이 아니다."
+        }
+      },
+      "executions": [
+        {
+          "part": "before",
+          "status": "completed",
+          "decision": {
+            "valid": true,
+            "action": "accept",
+            "revision_count": 0,
+            "next_revision_count": 0,
+            "rerun_from": null,
+            "violations": []
+          },
+          "revision_count": 0,
+          "concepts": 1,
+          "measurements": {
+            "latency_ms": 66078.0,
+            "input_tokens": 8803,
+            "output_tokens": 1912,
+            "model_calls": 4,
+            "tool_calls": null,
+            "cost": null,
+            "modification_seconds": null
+          },
+          "artifact": "fridge.before.json",
+          "artifact_sha256": "cb5e17ae8e1c701633a20898be2e7243eb4f0dbb2a2eb3d22e4fa7abea05b2b6"
+        },
+        {
+          "part": "after",
+          "status": "completed",
+          "decision": {
+            "valid": true,
+            "action": "accept",
+            "revision_count": 0,
+            "next_revision_count": 0,
+            "rerun_from": null,
+            "violations": []
+          },
+          "revision_count": 0,
+          "concepts": 1,
+          "measurements": {
+            "latency_ms": 68609.0,
+            "input_tokens": 9119,
+            "output_tokens": 1993,
+            "model_calls": 4,
+            "tool_calls": null,
+            "cost": null,
+            "modification_seconds": null
+          },
+          "artifact": "fridge.after.json",
+          "artifact_sha256": "363f14241a999cfc637a52f1635c1353ee6b37e1099c0963774b383826dcf037"
+        }
+      ]
+    },
+    {
+      "product_group": "dishwasher",
+      "plans": {
+        "before": {
+          "new_run_required": true,
+          "new_project_required": false,
+          "first_stage": "plan",
+          "stages": [
+            "plan",
+            "retrieve",
+            "needs",
+            "compare",
+            "concepts",
+            "review"
+          ],
+          "project_action": "new_run",
+          "previous_input_sha256": "38ac498120259ab070ab6c6c136923a10ea6414f7a32998d56e9224bdbeac482",
+          "supplied_input_sha256": "38ac498120259ab070ab6c6c136923a10ea6414f7a32998d56e9224bdbeac482",
+          "prepared_input_sha256": "4ae297849e86dff5c6b018e7efaaa4b74d0520904587a1ebafa707b187bb19a1",
+          "prepared_input": {
+            "request": {
+              "product_group": "dishwasher",
+              "target_customer": "식기세척기를 처음 사용하는 가구",
+              "use_situation": "큰 냄비와 그릇을 함께 적재한다.",
+              "improvement_task": "냄비 손잡이가 회전 날개에 닿는지 확인하기 어려워 중간에 다시 적재했다.",
+              "exclusions": [
+                "다른 모델 기능 혼용"
+              ],
+              "model_ids": [
+                "CHANGE-DISHWASHER-MODEL"
+              ],
+              "dataset_version": "CHANGE-DISHWASHER-v1"
+            },
+            "product": {
+              "model_id": "CHANGE-DISHWASHER-MODEL",
+              "name": "재실행 예제용 가상 dishwasher",
+              "product_group": "dishwasher",
+              "document_version": "1.0",
+              "source_kind": "synthetic"
+            },
+            "sources": [
+              {
+                "id": "CHANGE-DISHWASHER-REVIEW",
+                "model_id": "CHANGE-DISHWASHER-MODEL",
+                "document_version": "1.0",
+                "source_kind": "synthetic",
+                "source_type": "review",
+                "source_id": "CHANGE-DISHWASHER-REVIEW-DOC",
+                "locator": {
+                  "row": 2
+                },
+                "text": "냄비 손잡이가 회전 날개에 닿는지 확인하기 어려워 중간에 다시 적재했다.",
+                "feature_ids": []
+              },
+              {
+                "id": "CHANGE-DISHWASHER-MANUAL",
+                "model_id": "CHANGE-DISHWASHER-MODEL",
+                "document_version": "1.0",
+                "source_kind": "synthetic",
+                "source_type": "manual",
+                "source_id": "CHANGE-DISHWASHER-MANUAL-DOC",
+                "locator": {
+                  "page": 3,
+                  "section": "사용 조건"
+                },
+                "text": "회전 날개에 식기가 닿지 않게 배치한다. 적재 예시 그림을 제공한다.",
+                "feature_ids": [
+                  "CHANGE-DISHWASHER-FEATURE"
+                ]
+              }
+            ],
+            "features": [
+              {
+                "id": "CHANGE-DISHWASHER-FEATURE",
+                "model_id": "CHANGE-DISHWASHER-MODEL",
+                "document_version": "1.0",
+                "name": "설명서의 현재 지원 기능",
+                "description": "회전 날개에 식기가 닿지 않게 배치한다. 적재 예시 그림을 제공한다.",
+                "conditions": [
+                  "설명서의 사용 조건을 충족해야 함"
+                ],
+                "evidence_ids": [
+                  "CHANGE-DISHWASHER-MANUAL"
+                ]
+              }
+            ],
+            "revision_count": 0,
+            "max_concepts": 3,
+            "changed_evidence_ids": []
+          },
+          "changes": {
+            "request_fields": [],
+            "evidence": {
+              "added": [],
+              "removed": [],
+              "updated": []
+            },
+            "features": {
+              "added": [],
+              "removed": [],
+              "updated": []
+            },
+            "product": false,
+            "source_order": false,
+            "feature_order": false,
+            "max_concepts": false
+          },
+          "reasons": [
+            "원 요청·제품 조건 또는 호출자의 명시적 새 실행 요청을 반영한다."
+          ],
+          "model_calls": 0,
+          "notice": "재실행 계획이다. 실제 생성·변경 효과·Workspace 저장 성공이 아니다."
+        },
+        "after": {
+          "new_run_required": true,
+          "new_project_required": true,
+          "first_stage": "plan",
+          "stages": [
+            "plan",
+            "retrieve",
+            "needs",
+            "compare",
+            "concepts",
+            "review"
+          ],
+          "project_action": "new_project_required",
+          "previous_input_sha256": "38ac498120259ab070ab6c6c136923a10ea6414f7a32998d56e9224bdbeac482",
+          "supplied_input_sha256": "54f8dfb9487ce57f9e1c07994bee1929c53c6521ba980f46d69102bbec9f8f78",
+          "prepared_input_sha256": "0414c0cd253d9b814fec7489ec0010eb7b850687ef79af3357b96703dccbde30",
+          "prepared_input": {
+            "request": {
+              "product_group": "dishwasher",
+              "target_customer": "식기세척기를 처음 사용하는 가구",
+              "use_situation": "큰 냄비와 그릇을 함께 적재한다.",
+              "improvement_task": "냄비 손잡이가 회전 날개에 닿는지 확인하기 어려워 중간에 다시 적재했다.",
+              "exclusions": [
+                "다른 모델 기능 혼용"
+              ],
+              "model_ids": [
+                "CHANGE-DISHWASHER-MODEL"
+              ],
+              "dataset_version": "CHANGE-DISHWASHER-v2"
+            },
+            "product": {
+              "model_id": "CHANGE-DISHWASHER-MODEL",
+              "name": "재실행 예제용 가상 dishwasher",
+              "product_group": "dishwasher",
+              "document_version": "1.0",
+              "source_kind": "synthetic"
+            },
+            "sources": [
+              {
+                "id": "CHANGE-DISHWASHER-REVIEW",
+                "model_id": "CHANGE-DISHWASHER-MODEL",
+                "document_version": "1.0",
+                "source_kind": "synthetic",
+                "source_type": "review",
+                "source_id": "CHANGE-DISHWASHER-REVIEW-DOC",
+                "locator": {
+                  "row": 2
+                },
+                "text": "냄비 손잡이가 회전 날개에 닿는지 확인하기 어려워 중간에 다시 적재했다.",
+                "feature_ids": []
+              },
+              {
+                "id": "CHANGE-DISHWASHER-MANUAL",
+                "model_id": "CHANGE-DISHWASHER-MODEL",
+                "document_version": "1.0",
+                "source_kind": "synthetic",
+                "source_type": "manual",
+                "source_id": "CHANGE-DISHWASHER-MANUAL-DOC",
+                "locator": {
+                  "page": 3,
+                  "section": "사용 조건"
+                },
+                "text": "회전 날개에 식기가 닿지 않게 배치한다. 적재 예시 그림을 제공한다.",
+                "feature_ids": [
+                  "CHANGE-DISHWASHER-FEATURE"
+                ]
+              },
+              {
+                "id": "CHANGE-DISHWASHER-REVIEW-2",
+                "model_id": "CHANGE-DISHWASHER-MODEL",
+                "document_version": "1.0",
+                "source_kind": "synthetic",
+                "source_type": "review",
+                "source_id": "CHANGE-DISHWASHER-REVIEW-DOC",
+                "locator": {
+                  "row": 3
+                },
+                "text": "같은 적재 그림을 따라 놓으니 냄비 손잡이 간섭 없이 잘 세척되었다.",
+                "feature_ids": []
+              }
+            ],
+            "features": [
+              {
+                "id": "CHANGE-DISHWASHER-FEATURE",
+                "model_id": "CHANGE-DISHWASHER-MODEL",
+                "document_version": "1.0",
+                "name": "설명서의 현재 지원 기능",
+                "description": "회전 날개에 식기가 닿지 않게 배치한다. 적재 예시 그림을 제공한다.",
+                "conditions": [
+                  "설명서의 사용 조건을 충족해야 함"
+                ],
+                "evidence_ids": [
+                  "CHANGE-DISHWASHER-MANUAL"
+                ]
+              }
+            ],
+            "revision_count": 0,
+            "max_concepts": 3,
+            "changed_evidence_ids": [
+              "CHANGE-DISHWASHER-REVIEW-2"
+            ]
+          },
+          "changes": {
+            "request_fields": [
+              "dataset_version"
+            ],
+            "evidence": {
+              "added": [
+                "CHANGE-DISHWASHER-REVIEW-2"
+              ],
+              "removed": [],
+              "updated": []
+            },
+            "features": {
+              "added": [],
+              "removed": [],
+              "updated": []
+            },
+            "product": false,
+            "source_order": true,
+            "feature_order": false,
+            "max_concepts": false
+          },
+          "reasons": [
+            "원 요청·제품 조건 또는 호출자의 명시적 새 실행 요청을 반영한다.",
+            "현재 원문/기능을 재조회하고 새 근거의 버전·내용·순서를 검증한다."
+          ],
+          "model_calls": 0,
+          "notice": "재실행 계획이다. 실제 생성·변경 효과·Workspace 저장 성공이 아니다."
+        }
+      },
+      "executions": [
+        {
+          "part": "before",
+          "status": "completed",
+          "decision": {
+            "valid": true,
+            "action": "accept",
+            "revision_count": 0,
+            "next_revision_count": 0,
+            "rerun_from": null,
+            "violations": []
+          },
+          "revision_count": 0,
+          "concepts": 1,
+          "measurements": {
+            "latency_ms": 69250.0,
+            "input_tokens": 9214,
+            "output_tokens": 1992,
+            "model_calls": 4,
+            "tool_calls": null,
+            "cost": null,
+            "modification_seconds": null
+          },
+          "artifact": "dishwasher.before.json",
+          "artifact_sha256": "d775ed002f88b9da18eb39cca6c96e479939b72e37b5f0c9a60a3410f429cb94"
+        },
+        {
+          "part": "after",
+          "status": "completed",
+          "decision": {
+            "valid": true,
+            "action": "accept",
+            "revision_count": 0,
+            "next_revision_count": 0,
+            "rerun_from": null,
+            "violations": []
+          },
+          "revision_count": 0,
+          "concepts": 1,
+          "measurements": {
+            "latency_ms": 83156.0,
+            "input_tokens": 9884,
+            "output_tokens": 2447,
+            "model_calls": 4,
+            "tool_calls": null,
+            "cost": null,
+            "modification_seconds": null
+          },
+          "artifact": "dishwasher.after.json",
+          "artifact_sha256": "54deaf62f1b68afd23544f67c8137b02e4e8ba35dabf112be5bf5bc5be4d8fa6"
+        }
+      ]
+    },
+    {
+      "product_group": "microwave",
+      "plans": {
+        "before": {
+          "new_run_required": true,
+          "new_project_required": false,
+          "first_stage": "plan",
+          "stages": [
+            "plan",
+            "retrieve",
+            "needs",
+            "compare",
+            "concepts",
+            "review"
+          ],
+          "project_action": "new_run",
+          "previous_input_sha256": "c8b7c3b7f928f67a6536c10547e13b95822d934e600208506286dd723bd4f27c",
+          "supplied_input_sha256": "c8b7c3b7f928f67a6536c10547e13b95822d934e600208506286dd723bd4f27c",
+          "prepared_input_sha256": "e1ff318a498b8ed08d12c43cb7835225ec61c85271b172569f1faa1769846133",
+          "prepared_input": {
+            "request": {
+              "product_group": "microwave",
+              "target_customer": "냉동밥을 자주 데우는 사용자",
+              "use_situation": "냉동밥을 해동한 후 가열한다.",
+              "improvement_task": "해동 후 가열 시간은 직접 정해야 해서 밥 중앙이 차가워 다시 돌렸다.",
+              "exclusions": [
+                "다른 모델 기능 혼용"
+              ],
+              "model_ids": [
+                "CHANGE-MICROWAVE-MODEL"
+              ],
+              "dataset_version": "CHANGE-MICROWAVE-v1"
+            },
+            "product": {
+              "model_id": "CHANGE-MICROWAVE-MODEL",
+              "name": "재실행 예제용 가상 microwave",
+              "product_group": "microwave",
+              "document_version": "1.0",
+              "source_kind": "synthetic"
+            },
+            "sources": [
+              {
+                "id": "CHANGE-MICROWAVE-REVIEW",
+                "model_id": "CHANGE-MICROWAVE-MODEL",
+                "document_version": "1.0",
+                "source_kind": "synthetic",
+                "source_type": "review",
+                "source_id": "CHANGE-MICROWAVE-REVIEW-DOC",
+                "locator": {
+                  "row": 2
+                },
+                "text": "해동 후 가열 시간은 직접 정해야 해서 밥 중앙이 차가워 다시 돌렸다.",
+                "feature_ids": []
+              },
+              {
+                "id": "CHANGE-MICROWAVE-MANUAL",
+                "model_id": "CHANGE-MICROWAVE-MODEL",
+                "document_version": "1.0",
+                "source_kind": "synthetic",
+                "source_type": "manual",
+                "source_id": "CHANGE-MICROWAVE-MANUAL-DOC",
+                "locator": {
+                  "page": 3,
+                  "section": "사용 조건"
+                },
+                "text": "무게를 입력하면 해동 시간을 계산한다. 가열 시간은 사용자가 직접 설정한다.",
+                "feature_ids": [
+                  "CHANGE-MICROWAVE-FEATURE"
+                ]
+              }
+            ],
+            "features": [
+              {
+                "id": "CHANGE-MICROWAVE-FEATURE",
+                "model_id": "CHANGE-MICROWAVE-MODEL",
+                "document_version": "1.0",
+                "name": "설명서의 현재 지원 기능",
+                "description": "무게를 입력하면 해동 시간을 계산한다. 가열 시간은 사용자가 직접 설정한다.",
+                "conditions": [
+                  "설명서의 사용 조건을 충족해야 함"
+                ],
+                "evidence_ids": [
+                  "CHANGE-MICROWAVE-MANUAL"
+                ]
+              }
+            ],
+            "revision_count": 0,
+            "max_concepts": 3,
+            "changed_evidence_ids": []
+          },
+          "changes": {
+            "request_fields": [],
+            "evidence": {
+              "added": [],
+              "removed": [],
+              "updated": []
+            },
+            "features": {
+              "added": [],
+              "removed": [],
+              "updated": []
+            },
+            "product": false,
+            "source_order": false,
+            "feature_order": false,
+            "max_concepts": false
+          },
+          "reasons": [
+            "원 요청·제품 조건 또는 호출자의 명시적 새 실행 요청을 반영한다."
+          ],
+          "model_calls": 0,
+          "notice": "재실행 계획이다. 실제 생성·변경 효과·Workspace 저장 성공이 아니다."
+        },
+        "after": {
+          "new_run_required": true,
+          "new_project_required": true,
+          "first_stage": "plan",
+          "stages": [
+            "plan",
+            "retrieve",
+            "needs",
+            "compare",
+            "concepts",
+            "review"
+          ],
+          "project_action": "new_project_required",
+          "previous_input_sha256": "c8b7c3b7f928f67a6536c10547e13b95822d934e600208506286dd723bd4f27c",
+          "supplied_input_sha256": "0f59a33a64bfc3446e1824c697caf0ba006f9ffe934ea35171a760ca62b3db63",
+          "prepared_input_sha256": "a6fe6b54a15a8fbc0fda46505e8a424a90729f5f50185a2e0b24cd3ed1aabb26",
+          "prepared_input": {
+            "request": {
+              "product_group": "microwave",
+              "target_customer": "냉동밥을 자주 데우는 사용자",
+              "use_situation": "냉동밥을 해동한 후 가열한다.",
+              "improvement_task": "해동 후 가열 시간은 직접 정해야 해서 밥 중앙이 차가워 다시 돌렸다.",
+              "exclusions": [
+                "다른 모델 기능 혼용"
+              ],
+              "model_ids": [
+                "CHANGE-MICROWAVE-MODEL"
+              ],
+              "dataset_version": "CHANGE-MICROWAVE-v2"
+            },
+            "product": {
+              "model_id": "CHANGE-MICROWAVE-MODEL",
+              "name": "재실행 예제용 가상 microwave",
+              "product_group": "microwave",
+              "document_version": "2.0",
+              "source_kind": "synthetic"
+            },
+            "sources": [
+              {
+                "id": "CHANGE-MICROWAVE-REVIEW",
+                "model_id": "CHANGE-MICROWAVE-MODEL",
+                "document_version": "2.0",
+                "source_kind": "synthetic",
+                "source_type": "review",
+                "source_id": "CHANGE-MICROWAVE-REVIEW-DOC",
+                "locator": {
+                  "row": 2
+                },
+                "text": "해동 후 가열 시간은 직접 정해야 해서 밥 중앙이 차가워 다시 돌렸다.",
+                "feature_ids": []
+              },
+              {
+                "id": "CHANGE-MICROWAVE-MANUAL",
+                "model_id": "CHANGE-MICROWAVE-MODEL",
+                "document_version": "2.0",
+                "source_kind": "synthetic",
+                "source_type": "manual",
+                "source_id": "CHANGE-MICROWAVE-MANUAL-DOC",
+                "locator": {
+                  "page": 3,
+                  "section": "사용 조건"
+                },
+                "text": "무게에 따른 해동 후 자동 가열까지 연결하는 냉동밥 코스를 제공한다. 전용 용기를 사용한다.",
+                "feature_ids": [
+                  "CHANGE-MICROWAVE-FEATURE"
+                ]
+              }
+            ],
+            "features": [
+              {
+                "id": "CHANGE-MICROWAVE-FEATURE",
+                "model_id": "CHANGE-MICROWAVE-MODEL",
+                "document_version": "2.0",
+                "name": "설명서의 현재 지원 기능",
+                "description": "무게에 따른 해동 후 자동 가열까지 연결하는 냉동밥 코스를 제공한다. 전용 용기를 사용한다.",
+                "conditions": [
+                  "냉동밥 코스에서 전용 용기를 사용한다."
+                ],
+                "evidence_ids": [
+                  "CHANGE-MICROWAVE-MANUAL"
+                ]
+              }
+            ],
+            "revision_count": 0,
+            "max_concepts": 3,
+            "changed_evidence_ids": [
+              "CHANGE-MICROWAVE-MANUAL",
+              "CHANGE-MICROWAVE-REVIEW"
+            ]
+          },
+          "changes": {
+            "request_fields": [
+              "dataset_version"
+            ],
+            "evidence": {
+              "added": [],
+              "removed": [],
+              "updated": [
+                "CHANGE-MICROWAVE-MANUAL",
+                "CHANGE-MICROWAVE-REVIEW"
+              ]
+            },
+            "features": {
+              "added": [],
+              "removed": [],
+              "updated": [
+                "CHANGE-MICROWAVE-FEATURE"
+              ]
+            },
+            "product": true,
+            "source_order": false,
+            "feature_order": false,
+            "max_concepts": false
+          },
+          "reasons": [
+            "원 요청·제품 조건 또는 호출자의 명시적 새 실행 요청을 반영한다.",
+            "현재 원문/기능을 재조회하고 새 근거의 버전·내용·순서를 검증한다."
+          ],
+          "model_calls": 0,
+          "notice": "재실행 계획이다. 실제 생성·변경 효과·Workspace 저장 성공이 아니다."
+        }
+      },
+      "executions": [
+        {
+          "part": "before",
+          "status": "completed",
+          "decision": {
+            "valid": true,
+            "action": "accept",
+            "revision_count": 0,
+            "next_revision_count": 0,
+            "rerun_from": null,
+            "violations": []
+          },
+          "revision_count": 0,
+          "concepts": 1,
+          "measurements": {
+            "latency_ms": 78829.0,
+            "input_tokens": 9017,
+            "output_tokens": 2314,
+            "model_calls": 4,
+            "tool_calls": null,
+            "cost": null,
+            "modification_seconds": null
+          },
+          "artifact": "microwave.before.json",
+          "artifact_sha256": "0e95429fbec47e6811b0243d92e39e57e90bcb2aedb6c4792c736a2453778e37"
+        },
+        {
+          "part": "after",
+          "status": "completed",
+          "decision": {
+            "valid": true,
+            "action": "accept",
+            "revision_count": 0,
+            "next_revision_count": 0,
+            "rerun_from": null,
+            "violations": []
+          },
+          "revision_count": 0,
+          "concepts": 1,
+          "measurements": {
+            "latency_ms": 77094.0,
+            "input_tokens": 9006,
+            "output_tokens": 2278,
+            "model_calls": 4,
+            "tool_calls": null,
+            "cost": null,
+            "modification_seconds": null
+          },
+          "artifact": "microwave.after.json",
+          "artifact_sha256": "6e54c73d15bdbdfe30caf9bb765dafb58f9358b44ed8e521f8d7454962437620"
+        }
+      ]
+    }
+  ],
+  "model_id": "qwen3.5:27b",
+  "model_digest": "64ae5b1d651fb2709d5928ccb8dcfb4bb2cc9c2c8001ac34497e36a6cf905b59",
+  "sampling": {
+    "temperature": 0.7,
+    "seed": 42,
+    "num_ctx": 16384,
+    "num_predict": 8192,
+    "top_p": 0.8,
+    "top_k": 20,
+    "min_p": 0
+  },
+  "api_mode": "chat",
+  "thinking": false,
+  "semantic_scores": null,
+  "evaluation_complete": false
+}

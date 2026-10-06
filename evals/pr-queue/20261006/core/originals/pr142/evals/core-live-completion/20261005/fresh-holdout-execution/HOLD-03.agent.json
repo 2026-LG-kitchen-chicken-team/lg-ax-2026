@@ -1,0 +1,293 @@
+{
+  "execution_kind": "live_model",
+  "original_input": {
+    "request": {
+      "product_group": "dishwasher",
+      "target_customer": "해당 주방 가전의 가정 사용자",
+      "use_situation": "자료에 서술된 같은 사용 경험을 검토한다.",
+      "improvement_task": "사용 중인 이 모델에 상단 분사 강도를 세 단계로 바꾸는 기능이 있는지 확인하고 싶다.",
+      "exclusions": [
+        "다른 모델 기능 혼용",
+        "근거 없는 효과 단정"
+      ],
+      "model_ids": [
+        "HOLD-20261005-03-MODEL"
+      ],
+      "dataset_version": "HOLD-20261005-03-frozen-v1.0"
+    },
+    "product": {
+      "model_id": "HOLD-20261005-03-MODEL",
+      "name": "별도 고정 합성 dishwasher",
+      "product_group": "dishwasher",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "HOLD-20261005-03-REVIEW",
+        "model_id": "HOLD-20261005-03-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "HOLD-20261005-03-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "사용 중인 이 모델에 상단 분사 강도를 세 단계로 바꾸는 기능이 있는지 확인하고 싶다.",
+        "feature_ids": []
+      },
+      {
+        "id": "HOLD-20261005-03-MANUAL",
+        "model_id": "HOLD-20261005-03-MODEL-OTHER",
+        "document_version": "9.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "HOLD-20261005-03-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능과 사용 조건"
+        },
+        "text": "다른 모델의 설명서9.0: 상단 분사 강도는 약·중·강 세 단계로 선택할 수 있다.",
+        "feature_ids": [
+          "HOLD-20261005-03-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "HOLD-20261005-03-FEATURE",
+        "model_id": "HOLD-20261005-03-MODEL-OTHER",
+        "document_version": "9.0",
+        "name": "자료에 명시된 현재 기능",
+        "description": "다른 모델의 설명서9.0: 상단 분사 강도는 약·중·강 세 단계로 선택할 수 있다.",
+        "conditions": [
+          "문서에 기재된 사용 조건에 따른다."
+        ],
+        "evidence_ids": [
+          "HOLD-20261005-03-MANUAL"
+        ]
+      }
+    ],
+    "revision_count": 0,
+    "max_concepts": 2,
+    "changed_evidence_ids": []
+  },
+  "input": {
+    "request": {
+      "product_group": "dishwasher",
+      "target_customer": "해당 주방 가전의 가정 사용자",
+      "use_situation": "자료에 서술된 같은 사용 경험을 검토한다.",
+      "improvement_task": "사용 중인 이 모델에 상단 분사 강도를 세 단계로 바꾸는 기능이 있는지 확인하고 싶다.",
+      "exclusions": [
+        "다른 모델 기능 혼용",
+        "근거 없는 효과 단정"
+      ],
+      "model_ids": [
+        "HOLD-20261005-03-MODEL"
+      ],
+      "dataset_version": "HOLD-20261005-03-frozen-v1.0"
+    },
+    "product": {
+      "model_id": "HOLD-20261005-03-MODEL",
+      "name": "별도 고정 합성 dishwasher",
+      "product_group": "dishwasher",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "HOLD-20261005-03-REVIEW",
+        "model_id": "HOLD-20261005-03-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "HOLD-20261005-03-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "사용 중인 이 모델에 상단 분사 강도를 세 단계로 바꾸는 기능이 있는지 확인하고 싶다.",
+        "feature_ids": []
+      },
+      {
+        "id": "HOLD-20261005-03-MANUAL",
+        "model_id": "HOLD-20261005-03-MODEL-OTHER",
+        "document_version": "9.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "HOLD-20261005-03-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능과 사용 조건"
+        },
+        "text": "다른 모델의 설명서9.0: 상단 분사 강도는 약·중·강 세 단계로 선택할 수 있다.",
+        "feature_ids": [
+          "HOLD-20261005-03-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "HOLD-20261005-03-FEATURE",
+        "model_id": "HOLD-20261005-03-MODEL-OTHER",
+        "document_version": "9.0",
+        "name": "자료에 명시된 현재 기능",
+        "description": "다른 모델의 설명서9.0: 상단 분사 강도는 약·중·강 세 단계로 선택할 수 있다.",
+        "conditions": [
+          "문서에 기재된 사용 조건에 따른다."
+        ],
+        "evidence_ids": [
+          "HOLD-20261005-03-MANUAL"
+        ]
+      }
+    ],
+    "revision_count": 0,
+    "max_concepts": 2,
+    "changed_evidence_ids": []
+  },
+  "output": null,
+  "decision": null,
+  "status": "held",
+  "trace": [
+    {
+      "stage": "plan",
+      "operation": "plan",
+      "inputs": {
+        "product_group": "dishwasher",
+        "target_customer": "해당 주방 가전의 가정 사용자",
+        "use_situation": "자료에 서술된 같은 사용 경험을 검토한다.",
+        "improvement_task": "사용 중인 이 모델에 상단 분사 강도를 세 단계로 바꾸는 기능이 있는지 확인하고 싶다.",
+        "exclusions": [
+          "다른 모델 기능 혼용",
+          "근거 없는 효과 단정"
+        ],
+        "model_ids": [
+          "HOLD-20261005-03-MODEL"
+        ],
+        "dataset_version": "HOLD-20261005-03-frozen-v1.0"
+      },
+      "outputs": {
+        "model_id": "HOLD-20261005-03-MODEL",
+        "document_version": "1.0",
+        "stages": [
+          "retrieve",
+          "needs",
+          "compare",
+          "concepts",
+          "review"
+        ],
+        "source_ids": [
+          "HOLD-20261005-03-REVIEW",
+          "HOLD-20261005-03-MANUAL"
+        ],
+        "max_concepts": 2,
+        "max_revisions": 2
+      },
+      "elapsed_ms": 0.0
+    },
+    {
+      "stage": "review",
+      "operation": "stop",
+      "inputs": {},
+      "outputs": {
+        "ok": false,
+        "error": {
+          "code": "VALIDATION_FAILED",
+          "message": "입력의 범위·근거 관계가 맞지 않습니다.",
+          "details": {
+            "violations": [
+              {
+                "code": "FEATURE_SCOPE_MISMATCH",
+                "stage": "retrieve"
+              },
+              {
+                "code": "SOURCE_SCOPE_MISMATCH",
+                "stage": "retrieve"
+              }
+            ]
+          }
+        }
+      },
+      "elapsed_ms": 0.0
+    }
+  ],
+  "model_calls": [],
+  "semantic_reviews": [],
+  "no_candidate_reviews": [],
+  "errors": [
+    {
+      "code": "VALIDATION_FAILED",
+      "message": "입력의 범위·근거 관계가 맞지 않습니다.",
+      "details": {
+        "violations": [
+          {
+            "code": "FEATURE_SCOPE_MISMATCH",
+            "stage": "retrieve"
+          },
+          {
+            "code": "SOURCE_SCOPE_MISMATCH",
+            "stage": "retrieve"
+          }
+        ]
+      }
+    }
+  ],
+  "correction_budget": {
+    "revision_count": 0,
+    "max_revisions": 2,
+    "closed": true,
+    "terminal_reason": "hold",
+    "attempts": []
+  },
+  "actual_generation_requests": [],
+  "source_sha256": {
+    "packages/core/src/lgax_core/planning_agent.py": "05c53cd9bfe95730de2a70babad52a611443e4e52b8b3949b93fd300f8fcd12e",
+    "packages/core/src/lgax_core/semantic_review.py": "e7fca7081f512af353f6cd8abf7e419f1550f9e5967cb94f9997ec356e76af2f",
+    "packages/core/src/lgax_core/no_candidate_review.py": "45e9dd7b02b05f7ef8f43889c6af9c73fde90d7ff1cab9593d286249340d7d95",
+    "packages/core/src/lgax_core/revision_guard.py": "56734c5dd363016a40e7cd01bd288f30c0fd907f6f888149f0b8e10e1fb01849",
+    "packages/core/src/lgax_core/correction_budget.py": "07201cd20b0144b3401a8601c64447d3aaec0f35c9325c378707ebcb922ea5e9",
+    "packages/core/src/lgax_core/judgement_contract.py": "db7560e7d61e81e8d228b439969d3a28293b0cd219b7560eddea12923a2b2c24",
+    "packages/core/src/lgax_core/model_client.py": "e8b6ec95b9ab30900b65cdf1c954468a637214e81902d92717125d44f05da822",
+    "packages/core/src/lgax_core/skill_runner.py": "9f7d157409431cc8d235e5daeb89ff5d4d8c57e451af959b838c63489c275517",
+    "packages/core/src/lgax_core/store.py": "2dba0b34a62b58f704fc1fc617e9113d7cdb277819cd5b72d3df1849411245fe",
+    "evals/core-semantic/run_comparison.py": "7ef6e720072a569833385ecccb3496146a2788d5f50bde070be4a7693bc397dc"
+  },
+  "conditions": {
+    "request_sha256": "0a855a0e586df6abceb21811cc2369ad80506f15e84fd35e9f19027381b96160",
+    "data_sha256": "1044d6ee07aba6bc9f8cb0f301838ae7c9bfbc266bc8259d9035605fc37e0762",
+    "output_contract_sha256": "f5ebb8b0c466e0c38ff6df19dfee1446db84350d9c4a36478438d0b5aa92b7d5",
+    "model": {
+      "id": "qwen3.5:27b",
+      "revision": "64ae5b1d651fb2709d5928ccb8dcfb4bb2cc9c2c8001ac34497e36a6cf905b59",
+      "digest": "64ae5b1d651fb2709d5928ccb8dcfb4bb2cc9c2c8001ac34497e36a6cf905b59"
+    },
+    "sampling": {
+      "temperature": 0.7,
+      "seed": 42,
+      "top_p": 0.8,
+      "top_k": 20,
+      "min_p": 0,
+      "thinking": false
+    },
+    "output_budget": {
+      "max_output_tokens_per_call": 8192,
+      "total_output_tokens_limit": null
+    },
+    "environment": {
+      "provider": "ollama",
+      "host": "temporary-own-lg-lab-ollama-0.34.0",
+      "runtime": "0.34.0",
+      "context_tokens": 16384,
+      "adapter": "ollama",
+      "constraint_mode": "native_schema_and_local_validation",
+      "api_mode": "chat",
+      "model_quantization": "Q4_K_M",
+      "gpu": "RTX A6000 GPU2 (own temporary service; separately verified)"
+    },
+    "data_access": {
+      "pool": "entire_case_dataset",
+      "availability": "all_materials_available",
+      "truncation": "none"
+    },
+    "measurement_scope": "whole_request_including_all_model_calls_and_retries"
+  }
+}

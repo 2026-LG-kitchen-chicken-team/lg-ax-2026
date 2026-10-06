@@ -1,0 +1,22 @@
+# Keep evidence hashes identical across Windows and Linux checkouts.
+* text=auto eol=lf
+# Preserve downloaded source files byte for byte.
+*.md text eol=lf
+*.json text eol=lf
+*.py text eol=lf
+*.yml text eol=lf
+자료/공식/** -text -whitespace
+자료/*.html -text -whitespace
+# Execution artifacts are immutable byte records, including failed historical runs.
+harness/phase2/runs/** -text -whitespace
+evals/bootstrap-connections/** -text -whitespace
+evals/bootstrap-models/** -text -whitespace
+evals/pm-workspace/** -text -whitespace
+evals/pm-preparation/** -text -whitespace
+evals/web/** -text -whitespace
+evals/core-live-completion/** -text -whitespace
+evals/core-revision-local/** -text -whitespace
+evals/core-semantic/recorded-replay/** -text -whitespace
+# Large raw executions remain available while GitHub focuses reviews on code.
+evals/core-live-completion/**/*.json linguist-generated=true
+evals/core-revision-local/**/*.json linguist-generated=true

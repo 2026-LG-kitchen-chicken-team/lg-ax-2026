@@ -1,0 +1,1299 @@
+{
+  "schema_version": 1,
+  "assessment_kind": "independent_ai_semantic_review",
+  "reviewer_id": "independent-ai-review-02-semantic-judge-01",
+  "independent_ai_assessment_complete": true,
+  "formal_evaluation_complete": false,
+  "pm_acceptance": false,
+  "source_content_treated_as_untrusted_evidence": true,
+  "anonymous_method_identity_inferred": false,
+  "rubric_definitions": {
+    "semantic_verdict": {
+      "pass": "공급된 근거 범위를 지키며 필요한 구분·보류·후보 판단에 명백한 차단 결함이 없음. 표현이 다르다는 이유로 실패시키지 않음.",
+      "fail": "필요한 결론을 바꾸는 미지원 사실 주장, 욕구 변형, 근거 부족/상충 미보류 또는 원래 요구와 연결되지 않는 후보 등 명백한 차단 의미 결함이 있음.",
+      "uncertain": "사용 조건/결론 범위가 모호하거나 오류만 제공되어 실질 판단 품질을 확정할 수 없음. 모호함을 통과나 실패로 자동 변환하지 않음."
+    },
+    "citation_checks": "원문 인용이라고 해석할 명시적 소스 귀속과 따옴표가 있는 출현을 개별 집계. UI 기능명·짧은 용어에 붙인 따옴표는 원문 인용 주장이 아니므로 제외 목록에 기록. bare ID 및 반복 bare ID는 인용 검사에 포함하지 않음. 원문 문자열 정확 일치, 해당 소스/모델/버전 및 연관 사실 주장 지지가 모두 확인되어야 correct=true. 0/0은 미관측이며 100%가 아님.",
+    "citation_interpretation_limit": "공유 출력 계약에 별도 quote/citation 구조가 없어서 자유 문장 안의 원문 인용과 UI 용어 표시를 분류해야 함. 모든 따옴표 출현을 감사 파일에 보존하여 다른 해석으로도 재현 가능하게 함. 인용 수치는 bare evidence ID의 의미 근거 평가를 대신하지 않음.",
+    "product_model_errors": "다른 모델 또는 버전의 사실을 대상 모델/현행 버전의 사실로 주장한 서로 다른 사실 명제의 수. 다른 자료를 명시적으로 배제하거나 보류하는 것은 오류가 아님. 누락된 사실을 현재 모델에 대해 발명하는 문제는 의미 결함으로 따로 기록하며 모델 혼용 건수로 부풀리지 않음.",
+    "duplicate_feature_proposals": "자료에 명시된 동일 모델·버전·동일 조건의 기존 기능을 실질적으로 재포장한 후보 개념당 1건. 같은 pain을 겨냥해 다른 설계를 가설로 제안하는 것만으로 중복으로 세지 않음. 자료의 미언급은 실제 기능 부재나 전체 신규성을 입증하지 않음.",
+    "modification_seconds": "사람 편집 시간을 측정하지 않았으므로 모든 카드 null.",
+    "status_consistency": "기능 유무/상충 적용 조건 등 결론의 필수 정보를 모르면 held/조건화 필요. 지원 사양이 확인된 후 선택적인 추가 탐색 질문이나 proposed 설계의 기술 검증 질문만 있다는 이유로 completed를 실패시키지 않음.",
+    "evidence_and_effects": "욕구, 불편 경험, 긍정/해결 경험, 조건부 사양을 구분. 현재 기능 존재는 실제 경험이 모두 해소됨의 증명이 아님. proposed 설계 효과는 가설로 인정하되 기존 제품의 확정 사실·검증된 효과와 구분."
+  },
+  "input_integrity": {
+    "original_file_checks": [
+      {
+        "file": "review.json",
+        "expected_sha256": "25f2a3c80cd08c388fe24999b3f100c8bd8d685449962d57ab7d9dff5cc38132",
+        "actual_sha256": "25f2a3c80cd08c388fe24999b3f100c8bd8d685449962d57ab7d9dff5cc38132",
+        "matches": true
+      },
+      {
+        "file": "scorecard.json",
+        "expected_sha256": "ba2ca691bb56d493c50b30af03cd46aa15808c16f0b159bee702da7b584df0a8",
+        "actual_sha256": "ba2ca691bb56d493c50b30af03cd46aa15808c16f0b159bee702da7b584df0a8",
+        "matches": true
+      },
+      {
+        "file": "preparation.json",
+        "expected_sha256": "0e1246ff88fda724d09b03f3a823f384dd663e39aaff87c39277b828cdae28f9",
+        "actual_sha256": "0e1246ff88fda724d09b03f3a823f384dd663e39aaff87c39277b828cdae28f9",
+        "matches": true
+      },
+      {
+        "file": "materials/HOLD-01.json",
+        "expected_sha256": "efcaa705aa45e6b6e833802d939625842613fd7c686b0b2433824b591fc76217",
+        "actual_sha256": "efcaa705aa45e6b6e833802d939625842613fd7c686b0b2433824b591fc76217",
+        "matches": true
+      },
+      {
+        "file": "materials/HOLD-02.json",
+        "expected_sha256": "a697e6f8a2668820d4f8f67d86ad3fd849b1ba600c83c133f12ccea971d46c99",
+        "actual_sha256": "a697e6f8a2668820d4f8f67d86ad3fd849b1ba600c83c133f12ccea971d46c99",
+        "matches": true
+      },
+      {
+        "file": "materials/HOLD-03.json",
+        "expected_sha256": "1044d6ee07aba6bc9f8cb0f301838ae7c9bfbc266bc8259d9035605fc37e0762",
+        "actual_sha256": "1044d6ee07aba6bc9f8cb0f301838ae7c9bfbc266bc8259d9035605fc37e0762",
+        "matches": true
+      },
+      {
+        "file": "materials/HOLD-04.json",
+        "expected_sha256": "aa02cafcd720c88b9f86c3a32e70eb23cb35a34e140644643586e13b4fb4c30f",
+        "actual_sha256": "aa02cafcd720c88b9f86c3a32e70eb23cb35a34e140644643586e13b4fb4c30f",
+        "matches": true
+      },
+      {
+        "file": "materials/HOLD-05.json",
+        "expected_sha256": "cdc65f0deaaacb389541e8846e138e704ab35756a46f3f32db42f1e966026f10",
+        "actual_sha256": "cdc65f0deaaacb389541e8846e138e704ab35756a46f3f32db42f1e966026f10",
+        "matches": true
+      },
+      {
+        "file": "materials/HOLD-06.json",
+        "expected_sha256": "13b3d8183b147eb0fe8b3ffdda13d17c0a5a81359f2dd27d84be90ea8c87425d",
+        "actual_sha256": "13b3d8183b147eb0fe8b3ffdda13d17c0a5a81359f2dd27d84be90ea8c87425d",
+        "matches": true
+      },
+      {
+        "file": "PROTOCOL.md",
+        "expected_sha256": "72812f3e7e8aaeeb74dc96d1affb2858a43495c2762c2d1786a74e764aac5641",
+        "actual_sha256": "72812f3e7e8aaeeb74dc96d1affb2858a43495c2762c2d1786a74e764aac5641",
+        "matches": true
+      }
+    ],
+    "case_input_checks": [
+      {
+        "case_id": "HOLD-03",
+        "review_request_equals_material_input": true
+      },
+      {
+        "case_id": "HOLD-04",
+        "review_request_equals_material_input": true
+      },
+      {
+        "case_id": "HOLD-01",
+        "review_request_equals_material_input": true
+      },
+      {
+        "case_id": "HOLD-02",
+        "review_request_equals_material_input": true
+      },
+      {
+        "case_id": "HOLD-06",
+        "review_request_equals_material_input": true
+      },
+      {
+        "case_id": "HOLD-05",
+        "review_request_equals_material_input": true
+      }
+    ],
+    "supplemental_contract_check": {
+      "schema_sha256": "f5ebb8b0c466e0c38ff6df19dfee1446db84350d9c4a36478438d0b5aa92b7d5",
+      "matches_supplement": true,
+      "matches_all_six_case_contracts": true,
+      "original_input_freeze_sha256": "24c50901a5673f588e5b60376c0750a0386480f958b4565144990abc713214ec",
+      "original_freeze_matches_supplement": true
+    }
+  },
+  "case_assessments": [
+    {
+      "case_id": "HOLD-01",
+      "label": "A",
+      "category": "normal",
+      "semantic_verdict": "pass",
+      "rationale": "사용자 청소가 불편하게 남는다는 근거를 보존하고, 분리 부품이라는 주장 없이 형상 개선과 전용 도구를 검증 전 제안으로 제시한다. 현재 기능 지원 표기는 불명확하지만, 잔여 불편과 새 설계 가설을 구분하는 핵심 결론은 타당하다.",
+      "dimensions": {
+        "scope_and_model_version": "pass: 해당 모델 1.0 범위 유지",
+        "review_evidence_interpretation": "pass: 청소 후 잔여 빵가루와 손가락 접근 불편을 complaint로 보존",
+        "existing_feature_vs_residual_pain": "uncertain: 젖은 천 청소의 존재는 명시됨; insufficient_evidence/unmentioned가 청소 가능성인지 모서리 효과인지 불분명",
+        "hold_and_clarification": "pass: 제조·밀봉·도구 효율 검증은 제안 후 검증 항목이며 자료가 보여 주는 잔여 불편은 충분함",
+        "candidate_relevance": "pass: 두 제안은 알려진 젖은 천 방법을 반복하지 않고 모서리 접근을 바꿈",
+        "status_consistency": "pass: proposed와 기술 검증 질문은 completed인 초안과 양립 가능",
+        "exclusions_and_effects": "pass: 새 설계 기대 효과로 읽을 수 있고 가정·미해결 검증을 별도 표기; 검증된 효과라는 증거는 없음",
+        "specification_change": "not_applicable"
+      },
+      "issues": [
+        {
+          "code": "SUPPORT_SCOPE_AMBIGUITY",
+          "severity": "observation",
+          "explanation": "설명서는 청소 방법과 사용자 분리 금지를 명시한다. output의 unmentioned/insufficient_evidence를 기능의 존재에 관한 판단으로 읽으면 부정확하다. 모서리 청소 효과에 대한 근거 부족으로 읽으면 타당하다. 의미를 분명히 해야 한다.",
+          "output_paths": [
+            "$.cases[2].outputs.A.raw_output.gaps[0].support_status",
+            "$.cases[2].outputs.A.raw_output.gap_assessments[0].support_basis",
+            "$.cases[2].outputs.A.raw_output.review_assessments[1].polarity"
+          ],
+          "output_quotes": [
+            {
+              "path": "$.cases[2].outputs.A.raw_output.gaps[0].support_status",
+              "value": "insufficient_evidence"
+            },
+            {
+              "path": "$.cases[2].outputs.A.raw_output.gap_assessments[0].support_basis",
+              "value": "unmentioned"
+            },
+            {
+              "path": "$.cases[2].outputs.A.raw_output.review_assessments[1].polarity",
+              "value": "irrelevant"
+            }
+          ],
+          "source_quotes": [
+            {
+              "evidence_id": "HOLD-20261005-01-MANUAL",
+              "source_file": "materials/HOLD-01.json",
+              "source_json_path": "$.input.sources[1].text",
+              "model_id": "HOLD-20261005-01-MODEL",
+              "document_version": "1.0",
+              "quote": "문 고무 패킹은 문을 연 상태에서 젖은 천으로 닦을 수 있다. 패킹은 사용자 분리 부품이 아니다."
+            },
+            {
+              "evidence_id": "HOLD-20261005-01-REVIEW",
+              "source_file": "materials/HOLD-01.json",
+              "source_json_path": "$.input.sources[0].text",
+              "model_id": "HOLD-20261005-01-MODEL",
+              "document_version": "1.0",
+              "quote": "매주 문 고무 패킹을 닦지만 접힌 안쪽 모서리에 빵가루가 남아 손가락을 밀어 넣어야 한다."
+            }
+          ]
+        },
+        {
+          "code": "NOVELTY_LIMITED_TO_SUPPLIED_FEATURE",
+          "severity": "observation",
+          "explanation": "제공된 기능 설명과 다른 도구/형상 제안은 중복이 아니다. 다만 짧은 설명서의 미언급만으로 제품 전체에 전용 도구나 다른 형상이 없음을 확정할 수는 없다. distinct는 제공된 기능과의 비교 범위에 한정해 해석했다.",
+          "output_paths": [
+            "$.cases[2].outputs.A.raw_output.concept_assessments[0].reason",
+            "$.cases[2].outputs.A.raw_output.concept_assessments[1].reason"
+          ],
+          "output_quotes": [
+            {
+              "path": "$.cases[2].outputs.A.raw_output.concept_assessments[0].reason",
+              "value": "기존 기능은 청소 방법만 제시하고 구조 개선 없으므로 차별화됨"
+            },
+            {
+              "path": "$.cases[2].outputs.A.raw_output.concept_assessments[1].reason",
+              "value": "기존 기능은 천 사용을 전제하고 전용 도구 제공이 없으므로 차별화됨"
+            }
+          ],
+          "source_quotes": [
+            {
+              "evidence_id": "HOLD-20261005-01-MANUAL",
+              "source_file": "materials/HOLD-01.json",
+              "source_json_path": "$.input.sources[1].text",
+              "model_id": "HOLD-20261005-01-MODEL",
+              "document_version": "1.0",
+              "quote": "문 고무 패킹은 문을 연 상태에서 젖은 천으로 닦을 수 있다. 패킹은 사용자 분리 부품이 아니다."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "HOLD-01",
+      "label": "B",
+      "category": "normal",
+      "semantic_verdict": "fail",
+      "rationale": "잔여 청소 불편과 젖은 천 기능을 함께 유지하고 제안은 기존 기능과 구별되지만, 리뷰의 불편을 '모서리 세정이 불가능한 물리적 한계'로 확정한다. 이는 제공된 경험보다 강한 사실 주장이다.",
+      "dimensions": {
+        "scope_and_model_version": "pass: 해당 모델 1.0 범위",
+        "review_evidence_interpretation": "fail: 어려운 접근을 물리적 세정 불가능으로 확대",
+        "existing_feature_vs_residual_pain": "pass: explicit_supported와 remaining을 동시에 유지",
+        "hold_and_clarification": "pass: 밀폐 요구 및 형상 영향은 후속 검증 가설로 표시",
+        "candidate_relevance": "pass: 평면 패킹은 제공된 젖은 천 청소와 다른 설계 가설",
+        "status_consistency": "pass: 검증 전 proposed인 후보 생성 완료로 읽을 수 있음",
+        "exclusions_and_effects": "fail: 기존 구조의 세정 불가능이라는 미지원 단정; 새 형상의 청소 효과는 미검증 가설",
+        "specification_change": "not_applicable"
+      },
+      "issues": [
+        {
+          "code": "UNSUPPORTED_CATEGORICAL_PHYSICAL_LIMIT",
+          "severity": "blocking",
+          "explanation": "리뷰는 닦아도 빵가루가 남아 손가락을 밀어 넣어야 하는 불편을 서술한다. 설명서도 천 청소 가능성을 제시한다. 어느 자료도 모서리 세정 자체가 물리적으로 불가능하다고 입증하지 않는다.",
+          "output_paths": [
+            "$.cases[2].outputs.B.raw_output.concept_assessments[0].reason"
+          ],
+          "output_quotes": [
+            {
+              "path": "$.cases[2].outputs.B.raw_output.concept_assessments[0].reason",
+              "value": "기존 기능은 패킹을 분리하지 않고 천으로 닦는 방식을 전제로 하지만, 접힌 구조로 인해 모서리 세정이 불가능한 물리적 한계가 있다. 제안된 개념은 패킹의 형상 자체를 평면으로 변경하여 이물질을 쌓일 수 있는 공간 (모서리) 을 제거하므로 작동 원리가 근본적으로 다르다."
+            }
+          ],
+          "source_quotes": [
+            {
+              "evidence_id": "HOLD-20261005-01-REVIEW",
+              "source_file": "materials/HOLD-01.json",
+              "source_json_path": "$.input.sources[0].text",
+              "model_id": "HOLD-20261005-01-MODEL",
+              "document_version": "1.0",
+              "quote": "매주 문 고무 패킹을 닦지만 접힌 안쪽 모서리에 빵가루가 남아 손가락을 밀어 넣어야 한다."
+            },
+            {
+              "evidence_id": "HOLD-20261005-01-MANUAL",
+              "source_file": "materials/HOLD-01.json",
+              "source_json_path": "$.input.sources[1].text",
+              "model_id": "HOLD-20261005-01-MODEL",
+              "document_version": "1.0",
+              "quote": "문 고무 패킹은 문을 연 상태에서 젖은 천으로 닦을 수 있다. 패킹은 사용자 분리 부품이 아니다."
+            }
+          ]
+        },
+        {
+          "code": "PROJECTED_CLEANING_BENEFIT_UNMEASURED",
+          "severity": "observation",
+          "explanation": "평면 패킹의 전체 세정 효과는 proposed 설계의 의도된 결과로 취급했다. 자료에 실험·사용자 결과는 없으며 밀폐 검증 가정도 효과 검증을 대신하지 않는다. 효과가 증명된 것으로 해석할 수 없다.",
+          "output_paths": [
+            "$.cases[2].outputs.B.raw_output.concepts[0].differentiation",
+            "$.cases[2].outputs.B.raw_output.concepts[0].assumptions"
+          ],
+          "output_quotes": [
+            {
+              "path": "$.cases[2].outputs.B.raw_output.concepts[0].differentiation",
+              "value": "기존의 접혀서 모서리를 형성하는 패킹 구조를 제거하고, 문과 본체 사이에 밀착되는 평면형 패킹으로 변경한다. 이로 인해 이물질이 쌓이는 안쪽 모서리가 물리적으로 사라지므로, 손가락을 밀어 넣는 행위가 불필요해지고 젖은 천으로 문 표면을 닦는 동작만으로 전체 패킹을 세정할 수 있다."
+            },
+            {
+              "path": "$.cases[2].outputs.B.raw_output.concepts[0].assumptions",
+              "value": [
+                "후속 검증: 평면형 패킹 설계가 기존 모델의 냉기 밀폐 요구사항을 충족할 수 있는지 확인",
+                "후속 검증: 평면형 구조 변경 시 문 닫힘 시 충격음이나 진동 발생 여부 평가"
+              ]
+            }
+          ],
+          "source_quotes": [
+            {
+              "evidence_id": "HOLD-20261005-01-REVIEW",
+              "source_file": "materials/HOLD-01.json",
+              "source_json_path": "$.input.sources[0].text",
+              "model_id": "HOLD-20261005-01-MODEL",
+              "document_version": "1.0",
+              "quote": "매주 문 고무 패킹을 닦지만 접힌 안쪽 모서리에 빵가루가 남아 손가락을 밀어 넣어야 한다."
+            },
+            {
+              "evidence_id": "HOLD-20261005-01-MANUAL",
+              "source_file": "materials/HOLD-01.json",
+              "source_json_path": "$.input.sources[1].text",
+              "model_id": "HOLD-20261005-01-MODEL",
+              "document_version": "1.0",
+              "quote": "문 고무 패킹은 문을 연 상태에서 젖은 천으로 닦을 수 있다. 패킹은 사용자 분리 부품이 아니다."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "HOLD-02",
+      "label": "A",
+      "category": "duplicate_feature",
+      "semantic_verdict": "uncertain",
+      "rationale": "15초 END 깜박임은 소리 설정과 무관하게 이미 모든 코스에서 지원되어, 같은 기능을 새 후보로 만들지 않은 판단은 타당하다. 다만 기능 일치에서 '잔여 불편 없음/모두 해결'로 확정한 부분은 실제 사용자의 인지와 불편 해소를 입증하지 않는다.",
+      "dimensions": {
+        "scope_and_model_version": "pass: 해당 모델 1.0",
+        "review_evidence_interpretation": "pass: 종료 소리를 못 듣는 경험과 시각적 표시 욕구 모두 포착",
+        "existing_feature_vs_residual_pain": "uncertain: 요청 기능의 지원은 확정 가능; 실제 불편 전부 해소는 미확인",
+        "hold_and_clarification": "uncertain: 기능 유무에는 추가 질문 불필요하나 실제 인지 개선에는 조건 확인 필요",
+        "candidate_relevance": "pass: 정확히 같은 기능의 후보를 생성하지 않음",
+        "status_consistency": "uncertain: capability 검토 완료에는 부합하지만 경험까지 무조건 resolved라는 범위는 과함",
+        "exclusions_and_effects": "uncertain: 기존 기능 존재로 실제 인지 효과까지 확정할 수 없음",
+        "specification_change": "not_applicable"
+      },
+      "issues": [
+        {
+          "code": "CAPABILITY_MATCH_VERSUS_EXPERIENCE_CLOSURE",
+          "severity": "uncertainty",
+          "explanation": "지원 사양은 원하는 15초 깜박임과 정확히 일치한다. 리뷰는 기존 표시가 작동하지 않는다고 말하지도, 표시 덕분에 소리 미인지 불편이 해소됐다고 말하지도 않는다. 기능 중복 여부에는 통과하지만, 실제 불편이 모두 해결됐다는 문장은 조건부로 좁혀야 한다. 요구가 기능 유무인지 경험 결과까지인지 자료만으로 확정하지 않았다.",
+          "output_paths": [
+            "$.cases[3].outputs.A.raw_output.gap_assessments[0].resolution",
+            "$.cases[3].outputs.A.raw_output.gaps[0].remaining_pain",
+            "$.cases[3].outputs.A.raw_output.no_candidate_reasons[0]",
+            "$.cases[3].outputs.A.raw_output.no_candidate_reasons[1]"
+          ],
+          "output_quotes": [
+            {
+              "path": "$.cases[3].outputs.A.raw_output.gap_assessments[0].resolution",
+              "value": "resolved"
+            },
+            {
+              "path": "$.cases[3].outputs.A.raw_output.gaps[0].remaining_pain",
+              "value": ""
+            },
+            {
+              "path": "$.cases[3].outputs.A.raw_output.no_candidate_reasons[0]",
+              "value": "고객이 요청한 기능 (조리 종료 후 15 초간 화면 표시) 이 현재 제품 사양에서 이미 명시적으로 지원되고 있어 잔여 불편이 없으므로 신규 후보 생성이 불필요합니다."
+            },
+            {
+              "path": "$.cases[3].outputs.A.raw_output.no_candidate_reasons[1]",
+              "value": "조회한 기존 기능으로 확인된 불편이 모두 해결되어 신규 후보가 필요하지 않습니다."
+            }
+          ],
+          "source_quotes": [
+            {
+              "evidence_id": "HOLD-20261005-02-REVIEW",
+              "source_file": "materials/HOLD-02.json",
+              "source_json_path": "$.input.sources[0].text",
+              "model_id": "HOLD-20261005-02-MODEL",
+              "document_version": "1.0",
+              "quote": "조리 종료 소리를 못 듣는 경우가 있어 종료 후 화면에 15초 동안 끝났다는 표시가 깜박였으면 좋겠다."
+            },
+            {
+              "evidence_id": "HOLD-20261005-02-MANUAL",
+              "source_file": "materials/HOLD-02.json",
+              "source_json_path": "$.input.sources[1].text",
+              "model_id": "HOLD-20261005-02-MODEL",
+              "document_version": "1.0",
+              "quote": "모든 조리 코스가 끝나면 화면의 END 문자가 15초 동안 깜박인다. 소리 설정과 무관하게 작동한다."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "HOLD-02",
+      "label": "B",
+      "category": "duplicate_feature",
+      "semantic_verdict": "pass",
+      "rationale": "명시적으로 같은 시각적 알림을 확인해 새 기능을 제안하지 않는다. 기능 지원을 resolved로 두면서 실제 인지/가시성의 추가 가능성을 질문으로 남긴다. 이 질문은 확인된 제품 결함으로 주장되지 않으므로 핵심 중복 판별은 타당하다.",
+      "dimensions": {
+        "scope_and_model_version": "pass: 해당 모델 1.0",
+        "review_evidence_interpretation": "pass: 청각 알림 불편과 시각적 욕구 구분; 인지 원인은 미확인",
+        "existing_feature_vs_residual_pain": "pass: 사양 일치와 경험/가시성의 추가 확인 가능성 구분",
+        "hold_and_clarification": "pass: 기능 지원이 명시된 상황에서 탐색 질문을 덧붙일 수 있음",
+        "candidate_relevance": "pass: 후보 없음; 같은 조건 기능 중복 방지",
+        "status_consistency": "pass: resolved는 요청 기능의 존재로 한정되고 질문은 탐색적인 개선 가능성",
+        "exclusions_and_effects": "pass: 추가 가시성 문제를 증명된 결함으로 제시하지 않음",
+        "specification_change": "not_applicable"
+      },
+      "issues": [
+        {
+          "code": "AWARENESS_QUESTION_PRESUPPOSITION",
+          "severity": "observation",
+          "explanation": "'인지하지 못하는 이유'라는 질문은 사용자가 이미 있는 표시를 모른다는 전제를 담는다. 리뷰는 소리를 못 듣고 표시를 원한다고만 말하므로, 현재 표시를 보았는지/알고 있는지를 먼저 확인하는 표현이 더 정확하다. 주변 uncertainties가 이를 미확인으로 표기하여 결정적 오류로 보지는 않았다.",
+          "output_paths": [
+            "$.cases[3].outputs.B.raw_output.gaps[0].questions[0]",
+            "$.cases[3].outputs.B.raw_output.questions[0]",
+            "$.cases[3].outputs.B.raw_output.needs[0].uncertainties[1]"
+          ],
+          "output_quotes": [
+            {
+              "path": "$.cases[3].outputs.B.raw_output.gaps[0].questions[0]",
+              "value": "사용자가 현재 구현된 'END 문자 15 초 깜빡임' 기능을 인지하지 못하는 이유는 무엇인가?"
+            },
+            {
+              "path": "$.cases[3].outputs.B.raw_output.questions[0]",
+              "value": "사용자가 현재 시각적 알림 기능을 인지하지 못하는 구체적인 원인은 무엇인가?"
+            },
+            {
+              "path": "$.cases[3].outputs.B.raw_output.needs[0].uncertainties[1]",
+              "value": "현재 시각적 알림 기능의 가시성이나 인지도가 실제로 문제인지 확인 필요"
+            }
+          ],
+          "source_quotes": [
+            {
+              "evidence_id": "HOLD-20261005-02-REVIEW",
+              "source_file": "materials/HOLD-02.json",
+              "source_json_path": "$.input.sources[0].text",
+              "model_id": "HOLD-20261005-02-MODEL",
+              "document_version": "1.0",
+              "quote": "조리 종료 소리를 못 듣는 경우가 있어 종료 후 화면에 15초 동안 끝났다는 표시가 깜박였으면 좋겠다."
+            },
+            {
+              "evidence_id": "HOLD-20261005-02-MANUAL",
+              "source_file": "materials/HOLD-02.json",
+              "source_json_path": "$.input.sources[1].text",
+              "model_id": "HOLD-20261005-02-MODEL",
+              "document_version": "1.0",
+              "quote": "모든 조리 코스가 끝나면 화면의 END 문자가 15초 동안 깜박인다. 소리 설정과 무관하게 작동한다."
+            }
+          ]
+        },
+        {
+          "code": "OPTIONAL_QUESTIONS_VERSUS_EMPTY_UNRESOLVED",
+          "severity": "observation",
+          "explanation": "unresolved가 빈 배열인 것은 질문을 추가 탐색으로 해석하면 양립 가능하다. 가시성 확인이 완료의 필수 조건이라는 의미라면 resolved/completed와 맞지 않으므로 질문의 우선순위를 명시하면 좋다.",
+          "output_paths": [
+            "$.cases[3].outputs.B.raw_output.questions",
+            "$.cases[3].outputs.B.raw_output.unresolved",
+            "$.cases[3].outputs.B.raw_output.gap_assessments[0].resolution"
+          ],
+          "output_quotes": [
+            {
+              "path": "$.cases[3].outputs.B.raw_output.questions",
+              "value": [
+                "사용자가 현재 시각적 알림 기능을 인지하지 못하는 구체적인 원인은 무엇인가?",
+                "시각적 알림의 가시성을 높이기 위한 추가 개선이 필요한가?"
+              ]
+            },
+            {
+              "path": "$.cases[3].outputs.B.raw_output.unresolved",
+              "value": []
+            },
+            {
+              "path": "$.cases[3].outputs.B.raw_output.gap_assessments[0].resolution",
+              "value": "resolved"
+            }
+          ],
+          "source_quotes": [
+            {
+              "evidence_id": "HOLD-20261005-02-REVIEW",
+              "source_file": "materials/HOLD-02.json",
+              "source_json_path": "$.input.sources[0].text",
+              "model_id": "HOLD-20261005-02-MODEL",
+              "document_version": "1.0",
+              "quote": "조리 종료 소리를 못 듣는 경우가 있어 종료 후 화면에 15초 동안 끝났다는 표시가 깜박였으면 좋겠다."
+            },
+            {
+              "evidence_id": "HOLD-20261005-02-MANUAL",
+              "source_file": "materials/HOLD-02.json",
+              "source_json_path": "$.input.sources[1].text",
+              "model_id": "HOLD-20261005-02-MODEL",
+              "document_version": "1.0",
+              "quote": "모든 조리 코스가 끝나면 화면의 END 문자가 15초 동안 깜박인다. 소리 설정과 무관하게 작동한다."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "HOLD-03",
+      "label": "A",
+      "category": "model_version_confusion",
+      "semantic_verdict": "pass",
+      "rationale": "다른 모델 9.0 설명서를 대상 모델 1.0의 기능 근거로 사용하지 않고, 해당 모델 설명서/사양 추가 확인까지 held로 보류한다. 기능 없음도 확정하지 않는다.",
+      "dimensions": {
+        "scope_and_model_version": "pass: 다른 모델/9.0 자료를 명시적으로 irrelevant 처리",
+        "review_evidence_interpretation": "pass: 욕구/기능 문의를 uncertain으로 유지",
+        "existing_feature_vs_residual_pain": "pass: 대상 모델 기능 유무는 미확인, 정보 부족만 유지",
+        "hold_and_clarification": "pass: 대상 모델 근거 요청과 후보 보류",
+        "candidate_relevance": "pass: 후보 없음",
+        "status_consistency": "pass: held와 hold_reasons/questions/unresolved 일치",
+        "exclusions_and_effects": "pass: 다른 모델 혼용·근거 없는 효과 없음",
+        "specification_change": "not_applicable"
+      },
+      "issues": []
+    },
+    {
+      "case_id": "HOLD-03",
+      "label": "B",
+      "category": "model_version_confusion",
+      "semantic_verdict": "uncertain",
+      "rationale": "오류 객체의 held와 범위 불일치 표시는 실제 제공된 다른 모델/버전 자료와 일치한다. 그러나 raw_output과 decision이 null이라 욕구·질문·기존 기능 비교를 포함한 실질 답변의 품질은 측정할 수 없다. 올바른 범위 거절만으로 전체 의미 품질 통과로 처리하지 않았다.",
+      "dimensions": {
+        "scope_and_model_version": "pass: FEATURE_SCOPE_MISMATCH/SOURCE_SCOPE_MISMATCH는 제공된 다른 모델 9.0과 맞음",
+        "review_evidence_interpretation": "not_assessable: 실질 decision 없음",
+        "existing_feature_vs_residual_pain": "not_assessable: 실질 decision 없음",
+        "hold_and_clarification": "uncertain: 안전한 범위 보류는 맞지만 대상 모델 자료 확보 질문 없음",
+        "candidate_relevance": "not_assessable: 실질 후보 판단 없음",
+        "status_consistency": "pass: wrapper failure와 raw_error held가 오류 거절을 일관되게 설명",
+        "exclusions_and_effects": "pass: 대상 모델로 다른 기능을 전용한 사실 주장 없음",
+        "specification_change": "not_applicable"
+      },
+      "issues": [
+        {
+          "code": "ERROR_ONLY_RESPONSE_COVERAGE",
+          "severity": "uncertainty",
+          "explanation": "범위 불일치로 보류한 것은 근거와 일치한다. 오류만 반환되어 다른 의미 평가 항목은 관측할 수 없다. checked=0/correct=0이고, 이것은 인용 정확도 100% 또는 실질 답변 통과가 아니다.",
+          "output_paths": [
+            "$.cases[0].outputs.B.raw_output",
+            "$.cases[0].outputs.B.raw_error.status",
+            "$.cases[0].outputs.B.raw_error.decision",
+            "$.cases[0].outputs.B.raw_error.errors[0].details.violations"
+          ],
+          "output_quotes": [
+            {
+              "path": "$.cases[0].outputs.B.raw_output",
+              "value": null
+            },
+            {
+              "path": "$.cases[0].outputs.B.raw_error.status",
+              "value": "held"
+            },
+            {
+              "path": "$.cases[0].outputs.B.raw_error.decision",
+              "value": null
+            },
+            {
+              "path": "$.cases[0].outputs.B.raw_error.errors[0].details.violations",
+              "value": [
+                {
+                  "code": "FEATURE_SCOPE_MISMATCH",
+                  "stage": "retrieve"
+                },
+                {
+                  "code": "SOURCE_SCOPE_MISMATCH",
+                  "stage": "retrieve"
+                }
+              ]
+            }
+          ],
+          "source_quotes": [
+            {
+              "evidence_id": "HOLD-20261005-03-REVIEW",
+              "source_file": "materials/HOLD-03.json",
+              "source_json_path": "$.input.sources[0].text",
+              "model_id": "HOLD-20261005-03-MODEL",
+              "document_version": "1.0",
+              "quote": "사용 중인 이 모델에 상단 분사 강도를 세 단계로 바꾸는 기능이 있는지 확인하고 싶다."
+            },
+            {
+              "evidence_id": "HOLD-20261005-03-MANUAL",
+              "source_file": "materials/HOLD-03.json",
+              "source_json_path": "$.input.sources[1].text",
+              "model_id": "HOLD-20261005-03-MODEL-OTHER",
+              "document_version": "9.0",
+              "quote": "다른 모델의 설명서9.0: 상단 분사 강도는 약·중·강 세 단계로 선택할 수 있다."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "HOLD-04",
+      "label": "A",
+      "category": "conflicting_reviews",
+      "semantic_verdict": "pass",
+      "rationale": "같은 설정·수량에서 걸림 경험과 비걸림 경험을 둘 다 보존하고, 원인/범위를 확정하지 않은 채 held로 보류한다. 기본 배출 지원만으로 걸림 불편이 해결됐다고 보지 않는다.",
+      "dimensions": {
+        "scope_and_model_version": "pass: 해당 모델 1.0",
+        "review_evidence_interpretation": "pass: complaint와 positive를 구분하여 상충을 유지",
+        "existing_feature_vs_residual_pain": "pass: 기본 배출 기능으로 사용자 걸림 경험을 지우지 않음",
+        "hold_and_clarification": "pass: 차이를 설명하는 환경/기기 조건 추가 확인",
+        "candidate_relevance": "pass: 조건 미확정 상태에서 후보 보류",
+        "status_consistency": "pass: held와 hold_reasons/questions 일치; 빈 gaps는 보류 판단을 뒤집지 않음",
+        "exclusions_and_effects": "pass: 미확인 기계 원인·효과를 단정하지 않음",
+        "specification_change": "not_applicable"
+      },
+      "issues": [
+        {
+          "code": "KNOWN_EQUAL_QUANTITY_CONDITION",
+          "severity": "observation",
+          "explanation": "두 리뷰 모두 같은 설정과 같은 수량이라고 명시한다. 추가 질문의 '얼음 양'은 정확한 수량/환경 파악으로 읽을 수 있으나, 수량 차이가 이미 관찰됐다는 전제로 사용해서는 안 된다. 현재 출력은 가능한 조건의 예시로만 사용하므로 실패로 보지 않았다.",
+          "output_paths": [
+            "$.cases[1].outputs.A.raw_output.needs[0].uncertainties[0]",
+            "$.cases[1].outputs.A.raw_output.questions[1]"
+          ],
+          "output_quotes": [
+            {
+              "path": "$.cases[1].outputs.A.raw_output.needs[0].uncertainties[0]",
+              "value": "얼음 걸림 현상이 모든 사용 상황에서 발생하는지 또는 특정 조건 (예: 얼음 양, 온도) 에만 발생하는지 불분명"
+            },
+            {
+              "path": "$.cases[1].outputs.A.raw_output.questions[1]",
+              "value": "얼음 걸림 현상이 발생하는 빈도나 구체적인 상황 (예: 얼음 양, 냉동실 온도 등) 에 대한 추가 정보 필요"
+            }
+          ],
+          "source_quotes": [
+            {
+              "evidence_id": "HOLD-20261005-04-REVIEW",
+              "source_file": "materials/HOLD-04.json",
+              "source_json_path": "$.input.sources[0].text",
+              "model_id": "HOLD-20261005-04-MODEL",
+              "document_version": "1.0",
+              "quote": "표준 각얼음 설정에서 같은 수량의 얼음을 받았는데 출구에 매번 걸려 손으로 빼야 했다."
+            },
+            {
+              "evidence_id": "HOLD-20261005-04-REVIEW-2",
+              "source_file": "materials/HOLD-04.json",
+              "source_json_path": "$.input.sources[1].text",
+              "model_id": "HOLD-20261005-04-MODEL",
+              "document_version": "1.0",
+              "quote": "표준 각얼음 설정에서 같은 수량의 얼음을 받았는데 출구에 한번도 걸리지 않고 모두 나왔다."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "HOLD-04",
+      "label": "B",
+      "category": "conflicting_reviews",
+      "semantic_verdict": "fail",
+      "rationale": "서로 상충하는 경험을 인식하지만, 설명서의 미언급을 걸림 방지/자동 제거 구조의 부재로 확정하고 원인과 적용 조건이 미확정인 채 completed로 두 개 후보를 제안한다. 가설 제안 자체보다 검증되지 않은 기존 기능 부재 및 잔여 문제의 확정이 결함이다.",
+      "dimensions": {
+        "scope_and_model_version": "pass: 해당 모델 1.0",
+        "review_evidence_interpretation": "pass: complaint와 positive 모두 수록",
+        "existing_feature_vs_residual_pain": "fail: 단순 배출 설명만으로 방지 메커니즘 부재와 unsupported를 확정",
+        "hold_and_clarification": "fail: 상충/발생 원인 질문이 남아도 적용 조건 보류가 없음",
+        "candidate_relevance": "uncertain: 걸림 개선 가설로는 관련 있으나 어느 조건/원인에 적합한지 불명",
+        "status_consistency": "fail: conflicting, 원인 질문, 보편성 unresolved와 무조건 completed/remaining 결론 불일치",
+        "exclusions_and_effects": "fail: 기존 메커니즘 없음이라는 미지원 주장; 제안 효과는 검증 전 가설",
+        "specification_change": "not_applicable"
+      },
+      "issues": [
+        {
+          "code": "SOURCE_ABSENCE_TO_FEATURE_ABSENCE",
+          "severity": "blocking",
+          "explanation": "설명서는 표준 각얼음 배출을 명시할 뿐 자동 제거, 걸림 방지 또는 구조 최적화의 존재/부재를 명시하지 않는다. 부재를 사실로 확정하여 unsupported와 distinct의 근거로 쓰는 것은 근거 범위를 넘는다.",
+          "output_paths": [
+            "$.cases[1].outputs.B.raw_output.gaps[0].support_status",
+            "$.cases[1].outputs.B.raw_output.gaps[0].remaining_pain",
+            "$.cases[1].outputs.B.raw_output.concept_assessments[0].reason",
+            "$.cases[1].outputs.B.raw_output.concept_assessments[1].reason"
+          ],
+          "output_quotes": [
+            {
+              "path": "$.cases[1].outputs.B.raw_output.gaps[0].support_status",
+              "value": "unsupported"
+            },
+            {
+              "path": "$.cases[1].outputs.B.raw_output.gaps[0].remaining_pain",
+              "value": "기존 기능은 배출 동작만 명시하고 얼음 걸림 방지 메커니즘이 없음"
+            },
+            {
+              "path": "$.cases[1].outputs.B.raw_output.concept_assessments[0].reason",
+              "value": "기존 기능은 단순 배출만 지원하고 자동 걸림 제거 기능이 없음"
+            },
+            {
+              "path": "$.cases[1].outputs.B.raw_output.concept_assessments[1].reason",
+              "value": "기존 기능은 구조 최적화 없이 기본 배출만 수행함"
+            }
+          ],
+          "source_quotes": [
+            {
+              "evidence_id": "HOLD-20261005-04-MANUAL",
+              "source_file": "materials/HOLD-04.json",
+              "source_json_path": "$.input.sources[2].text",
+              "model_id": "HOLD-20261005-04-MODEL",
+              "document_version": "1.0",
+              "quote": "표준 각얼음 설정을 선택하면 각얼음이 배출구로 나온다."
+            }
+          ]
+        },
+        {
+          "code": "UNRESOLVED_CONFLICT_COMPLETED",
+          "severity": "blocking",
+          "explanation": "동일한 설정·수량의 반대 경험이 있고, 출력도 원인/기기 상태 차이를 미확인으로 인정한다. 후보는 조건부 탐색 가설로 제시할 수 있지만, 현재 자료로 일반적인 기능 결핍과 해결되지 않는 문제를 확정하고 완료 상태를 부여하기에는 필요한 조건이 남아 있다.",
+          "output_paths": [
+            "$.cases[1].outputs.B.raw_output.status",
+            "$.cases[1].outputs.B.raw_output.gap_assessments[0].support_basis",
+            "$.cases[1].outputs.B.raw_output.gap_assessments[0].reason",
+            "$.cases[1].outputs.B.raw_output.questions",
+            "$.cases[1].outputs.B.raw_output.unresolved",
+            "$.cases[1].outputs.B.raw_output.hold_reasons"
+          ],
+          "output_quotes": [
+            {
+              "path": "$.cases[1].outputs.B.raw_output.status",
+              "value": "completed"
+            },
+            {
+              "path": "$.cases[1].outputs.B.raw_output.gap_assessments[0].support_basis",
+              "value": "conflicting"
+            },
+            {
+              "path": "$.cases[1].outputs.B.raw_output.gap_assessments[0].reason",
+              "value": "REVIEW 는 걸림 문제를 제기하나 REVIEW-2 는 문제가 없음을 보여 증거 간 상충이 있으며, 기존 기능은 이 문제를 해결하지 못함"
+            },
+            {
+              "path": "$.cases[1].outputs.B.raw_output.questions",
+              "value": [
+                "얼음 걸림 현상이 발생하는 구체적인 환경 조건 (온도, 얼음 양) 은 무엇인가?",
+                "걸림이 발생하는 기기의 공통된 물리적 결함이나 제조 편차가 있는가?"
+              ]
+            },
+            {
+              "path": "$.cases[1].outputs.B.raw_output.unresolved",
+              "value": [
+                "동일 모델 내에서의 경험 차이 (REVIEW vs REVIEW-2) 로 인해 문제의 보편성이 불확실함"
+              ]
+            },
+            {
+              "path": "$.cases[1].outputs.B.raw_output.hold_reasons",
+              "value": []
+            }
+          ],
+          "source_quotes": [
+            {
+              "evidence_id": "HOLD-20261005-04-REVIEW",
+              "source_file": "materials/HOLD-04.json",
+              "source_json_path": "$.input.sources[0].text",
+              "model_id": "HOLD-20261005-04-MODEL",
+              "document_version": "1.0",
+              "quote": "표준 각얼음 설정에서 같은 수량의 얼음을 받았는데 출구에 매번 걸려 손으로 빼야 했다."
+            },
+            {
+              "evidence_id": "HOLD-20261005-04-REVIEW-2",
+              "source_file": "materials/HOLD-04.json",
+              "source_json_path": "$.input.sources[1].text",
+              "model_id": "HOLD-20261005-04-MODEL",
+              "document_version": "1.0",
+              "quote": "표준 각얼음 설정에서 같은 수량의 얼음을 받았는데 출구에 한번도 걸리지 않고 모두 나왔다."
+            },
+            {
+              "evidence_id": "HOLD-20261005-04-MANUAL",
+              "source_file": "materials/HOLD-04.json",
+              "source_json_path": "$.input.sources[2].text",
+              "model_id": "HOLD-20261005-04-MODEL",
+              "document_version": "1.0",
+              "quote": "표준 각얼음 설정을 선택하면 각얼음이 배출구로 나온다."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "HOLD-05",
+      "label": "A",
+      "category": "missing_evidence",
+      "semantic_verdict": "fail",
+      "rationale": "기능 존재를 모른다는 정보 부족을 적절히 보존하고 후보도 만들지 않지만, 자료 추가 확인이 필요한 핵심 질문/미해결을 남기면서 status=completed, hold_reasons=[]로 끝낸다.",
+      "dimensions": {
+        "scope_and_model_version": "pass: 해당 모델 1.0",
+        "review_evidence_interpretation": "pass: 기능 문의와 설명서 부재에 따른 정보 불편을 uncertain으로 취급",
+        "existing_feature_vs_residual_pain": "pass: 원격 기능 없음으로 확정하지 않음",
+        "hold_and_clarification": "fail: 필수 매뉴얼/기능 확인 질문을 제시하면서 명시 보류 없음",
+        "candidate_relevance": "pass: 후보 없음; 근거 부족/중복 위험을 인식",
+        "status_consistency": "fail: insufficient_evidence와 핵심 unresolved인데 completed",
+        "exclusions_and_effects": "pass: 혼용/지원되지 않은 실제 효과 주장 없음",
+        "specification_change": "not_applicable"
+      },
+      "issues": [
+        {
+          "code": "MISSING_EVIDENCE_WITHOUT_HOLD",
+          "severity": "blocking",
+          "explanation": "유일한 자료는 기능 유무를 묻는 리뷰이며 설명서가 없다. 출력도 지원 여부·방법을 모르고 합성 자료로 검증 불가라고 명시한다. 이 상태는 기능 검토 결론을 보류해야 하는 핵심 근거 부족이며 completed 및 빈 hold_reasons와 충돌한다.",
+          "output_paths": [
+            "$.cases[5].outputs.A.raw_output.status",
+            "$.cases[5].outputs.A.raw_output.gaps[0].support_status",
+            "$.cases[5].outputs.A.raw_output.questions[0]",
+            "$.cases[5].outputs.A.raw_output.unresolved",
+            "$.cases[5].outputs.A.raw_output.hold_reasons"
+          ],
+          "output_quotes": [
+            {
+              "path": "$.cases[5].outputs.A.raw_output.status",
+              "value": "completed"
+            },
+            {
+              "path": "$.cases[5].outputs.A.raw_output.gaps[0].support_status",
+              "value": "insufficient_evidence"
+            },
+            {
+              "path": "$.cases[5].outputs.A.raw_output.questions[0]",
+              "value": "HOLD-20261005-05-MODEL 모델의 제품 매뉴얼 또는 사양서에 원격 모니터링 기능에 대한 명시적 기술이 있는가?"
+            },
+            {
+              "path": "$.cases[5].outputs.A.raw_output.unresolved",
+              "value": [
+                "원격 세척 시간 확인 기능의 유무와 사용 방법 불명확",
+                "제공된 합성 자료만으로는 제품 기능 검증 불가"
+              ]
+            },
+            {
+              "path": "$.cases[5].outputs.A.raw_output.hold_reasons",
+              "value": []
+            }
+          ],
+          "source_quotes": [
+            {
+              "evidence_id": "HOLD-20261005-05-REVIEW",
+              "source_file": "materials/HOLD-05.json",
+              "source_json_path": "$.input.sources[0].text",
+              "model_id": "HOLD-20261005-05-MODEL",
+              "document_version": "1.0",
+              "quote": "다른 방에서 남은 세척 시간을 화면으로 확인할 수 있는지 알고 싶지만 설명서를 찾을 수 없다."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "HOLD-05",
+      "label": "B",
+      "category": "missing_evidence",
+      "semantic_verdict": "pass",
+      "rationale": "지원 여부를 모르는 상태를 unknown/insufficient_evidence로 유지하고, 설명서·연결 장치 확인 질문과 held를 함께 남긴다. 설명서 부재를 기능 부재로 바꾸거나 새 원격 기능을 제안하지 않는다.",
+      "dimensions": {
+        "scope_and_model_version": "pass: 해당 모델 1.0",
+        "review_evidence_interpretation": "pass: complaint는 설명서/기능 정보 접근 불편으로 해석; 기능 미지원 경험으로 바꾸지 않음",
+        "existing_feature_vs_residual_pain": "pass: 지원 여부 unknown, 정보 부족의 pain을 보존",
+        "hold_and_clarification": "pass: 설명서와 지원 장치/앱 확인",
+        "candidate_relevance": "pass: 후보 없음",
+        "status_consistency": "pass: held와 unknown/questions/hold_reasons/unresolved 일치",
+        "exclusions_and_effects": "pass: 다른 모델·원격 기능 부재·효과 단정 없음",
+        "specification_change": "not_applicable"
+      },
+      "issues": []
+    },
+    {
+      "case_id": "HOLD-06",
+      "label": "A",
+      "category": "specification_change",
+      "semantic_verdict": "uncertain",
+      "rationale": "현재 2.0의 목표 온도 도달 시 외부 준비 완료 표시를 사용하고 신규 후보를 억제하여, 문을 열어 확인하던 1.0과 달라진 지원 사양은 인식한다. 다만 목표 온도가 사용자가 뜻한 '충분히 데워짐'과 같은 조건인지, 그 표시가 실제 불편을 모두 없앴는지는 확인되지 않는다.",
+      "dimensions": {
+        "scope_and_model_version": "pass: 현재 2.0 명시 사양 사용; 다른 모델/과거 사양 전용 없음",
+        "review_evidence_interpretation": "pass: 충분한 가열 확인을 위해 문을 열어 조리가 중단되는 complaint를 유지",
+        "existing_feature_vs_residual_pain": "uncertain: 목표 온도 완료 확인은 지원; 음식 충분성 및 실제 경험 전부 해소는 미확인",
+        "hold_and_clarification": "uncertain: 대상 온도/음식/확인 시점의 일치 확인 없이 무조건 resolved",
+        "candidate_relevance": "pass: 현재 기능과 겹치는 준비 완료 표시를 새 기능으로 만들지 않음",
+        "status_consistency": "uncertain: 요청을 센서 목표 온도 완료 확인으로 한정하면 완료 가능; 다른 충분성 조건에는 근거 부족",
+        "exclusions_and_effects": "uncertain: 실제 불편 전부 해소라는 조건 없는 효과 결론",
+        "specification_change": "pass (capability only): 1.0은 문 열어 확인, 2.0은 목표 온도 도달 시 외부 준비 완료. 이전 실제 출력/수정 과정은 평가하지 않음"
+      },
+      "issues": [
+        {
+          "code": "THRESHOLD_SUPPORT_VERSUS_UNCONDITIONAL_RESOLUTION",
+          "severity": "uncertainty",
+          "explanation": "2.0 기능은 '가열 센서가 목표 온도에 도달하면'이라는 조건에서 준비 완료를 표시한다. 리뷰는 음식이 충분히 데워졌는지 확인하려 한다. 목표 온도와 충분한 가열의 관계/음식 조건/기능 인지가 주어지지 않았다. 센서 목표 조건의 기능 지원은 확정할 수 있지만, 확인된 불편이 모두 해결됐다고까지 확정할 수는 없다. 반대로 이 조건이 요구와 일치한다면 후보 없음은 유효하므로 실패로 단정하지 않았다.",
+          "output_paths": [
+            "$.cases[4].outputs.A.raw_output.gaps[0].remaining_pain",
+            "$.cases[4].outputs.A.raw_output.gap_assessments[0].resolution",
+            "$.cases[4].outputs.A.raw_output.gap_assessments[0].reason",
+            "$.cases[4].outputs.A.raw_output.no_candidate_reasons[0]",
+            "$.cases[4].outputs.A.raw_output.questions"
+          ],
+          "output_quotes": [
+            {
+              "path": "$.cases[4].outputs.A.raw_output.gaps[0].remaining_pain",
+              "value": ""
+            },
+            {
+              "path": "$.cases[4].outputs.A.raw_output.gap_assessments[0].resolution",
+              "value": "resolved"
+            },
+            {
+              "path": "$.cases[4].outputs.A.raw_output.gap_assessments[0].reason",
+              "value": "설명서 (HOLD-20261005-06-MANUAL) 에 명시된 기능 (HOLD-20261005-06-FEATURE) 은 문을 열지 않고도 외부 화면을 통해 조리 완료 상태를 확인하게 하여, 리뷰 (HOLD-20261005-06-REVIEW) 에서 제기된 '문을 열어 꺼내야 하는' 불편을 해결합니다."
+            },
+            {
+              "path": "$.cases[4].outputs.A.raw_output.no_candidate_reasons[0]",
+              "value": "조회한 기존 기능으로 확인된 불편이 모두 해결되어 신규 후보가 필요하지 않습니다."
+            },
+            {
+              "path": "$.cases[4].outputs.A.raw_output.questions",
+              "value": []
+            }
+          ],
+          "source_quotes": [
+            {
+              "evidence_id": "HOLD-20261005-06-REVIEW",
+              "source_file": "materials/HOLD-06.json",
+              "source_json_path": "$.input.sources[0].text",
+              "model_id": "HOLD-20261005-06-MODEL",
+              "document_version": "2.0",
+              "quote": "음식이 충분히 데워졌는지 확인하려고 문을 열어 꺼내야 해 조리가 끊긴다."
+            },
+            {
+              "evidence_id": "HOLD-20261005-06-MANUAL",
+              "source_file": "materials/HOLD-06.json",
+              "source_json_path": "$.input.sources[1].text",
+              "model_id": "HOLD-20261005-06-MODEL",
+              "document_version": "2.0",
+              "quote": "문서2.0: 가열 센서가 목표 온도에 도달하면 문을 열지 않아도 외부 화면에 준비 완료 상태가 표시된다."
+            },
+            {
+              "evidence_id": "HOLD-20261005-06-MANUAL",
+              "source_file": "materials/HOLD-06.json",
+              "source_json_path": "$.previous_input.sources[1].text",
+              "model_id": "HOLD-20261005-06-MODEL",
+              "document_version": "1.0",
+              "quote": "문서1.0: 사용자가 가열 시간과 출력을 직접 설정한다. 음식의 가열 상태는 문을 열어 확인한다."
+            }
+          ]
+        },
+        {
+          "code": "NON_LITERAL_ATTRIBUTED_QUOTE",
+          "severity": "observation",
+          "explanation": "리뷰를 직접 지칭한 따옴표 안 문구는 원문 부분 문자열과 일치하지 않는다. 조사/어미를 바꾼 요약으로 의미는 유사하지만, 엄격한 명시 인용 검사에서는 correct=false이다. 이 문구 차이 자체만으로 의미 실패를 선언하지 않았다.",
+          "output_paths": [
+            "$.cases[4].outputs.A.raw_output.gap_assessments[0].reason"
+          ],
+          "output_quotes": [
+            {
+              "path": "$.cases[4].outputs.A.raw_output.gap_assessments[0].reason",
+              "value": "설명서 (HOLD-20261005-06-MANUAL) 에 명시된 기능 (HOLD-20261005-06-FEATURE) 은 문을 열지 않고도 외부 화면을 통해 조리 완료 상태를 확인하게 하여, 리뷰 (HOLD-20261005-06-REVIEW) 에서 제기된 '문을 열어 꺼내야 하는' 불편을 해결합니다."
+            }
+          ],
+          "source_quotes": [
+            {
+              "evidence_id": "HOLD-20261005-06-REVIEW",
+              "source_file": "materials/HOLD-06.json",
+              "source_json_path": "$.input.sources[0].text",
+              "model_id": "HOLD-20261005-06-MODEL",
+              "document_version": "2.0",
+              "quote": "음식이 충분히 데워졌는지 확인하려고 문을 열어 꺼내야 해 조리가 끊긴다."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "HOLD-06",
+      "label": "B",
+      "category": "specification_change",
+      "semantic_verdict": "fail",
+      "rationale": "현재 준비 완료 표시를 인식하지만, 원래 욕구인 충분한 가열 확인을 실시간 진행도/직접 시각 관찰 욕구로 확장하여 unmentioned/remaining으로 결론내린다. 두 후보는 같은 기능의 단순 중복으로 세지 않았으나, 준비 완료 지원과 어떤 잔여 조건이 다르게 남는지 확인하지 않아 원래 불편에 대한 관련성이 부족하다.",
+      "dimensions": {
+        "scope_and_model_version": "pass: 현재 2.0을 참조; 다른 모델/버전 사실 전용 없음",
+        "review_evidence_interpretation": "fail: 충분히 데워짐 확인을 실시간 진행 상황 확인으로 바꿈",
+        "existing_feature_vs_residual_pain": "fail: 목표 온도 준비 완료 지원을 원래 욕구의 지원으로 평가하지 않고 미언급 실시간 기능을 잔여 pain으로 만듦",
+        "hold_and_clarification": "fail: 현재 표시 적용 조건/인지와 실시간 욕구를 확인하기 전에 remaining 및 completed",
+        "candidate_relevance": "fail: 내부 시야나 시간 퍼센트는 음식의 충분한 가열 상태를 입증하지 않음; 원래 열적 확인과 연결 근거 없음",
+        "status_consistency": "fail: 기능 지원 여부와 새 욕구 적용 질문이 남는데 hold 없이 completed",
+        "exclusions_and_effects": "fail: 준비 완료 '만' 표시라는 전체 기능 제한은 미지원; 가설 설계 효과는 검증되지 않음",
+        "specification_change": "fail: 2.0 신규 센서 목표 완료 지원은 인정하지만 욕구를 바꿔 gap unmentioned를 유지; 1.0과의 지원 변화 결론이 충분하지 않음"
+      },
+      "issues": [
+        {
+          "code": "DESIRED_OUTCOME_DRIFT_AND_CANDIDATE_RELEVANCE",
+          "severity": "blocking",
+          "explanation": "리뷰는 음식이 충분히 데워졌는지 확인하는 데 생기는 중단을 말한다. 2.0은 목표 온도 도달 준비 완료를 외부에 표시한다. 출력은 이를 실시간 진행도 요구로 바꾸고, 시각 관찰/설정 시간 대비 퍼센트를 제안한다. 보이는 상태나 경과 시간이 충분한 가열을 확인해 준다는 근거는 없다. 추가 욕구 가설로는 검토할 수 있으나 원래 잔여 불편의 확정 근거로는 부족하다.",
+          "output_paths": [
+            "$.cases[4].outputs.B.raw_output.desired_outcomes[0].desired_outcome",
+            "$.cases[4].outputs.B.raw_output.gaps[0].remaining_pain",
+            "$.cases[4].outputs.B.raw_output.gap_assessments[0].reason",
+            "$.cases[4].outputs.B.raw_output.concepts[0].requirements",
+            "$.cases[4].outputs.B.raw_output.concepts[1].requirements"
+          ],
+          "output_quotes": [
+            {
+              "path": "$.cases[4].outputs.B.raw_output.desired_outcomes[0].desired_outcome",
+              "value": "문 열지 않고도 음식의 조리 진행 상황을 실시간으로 확인 가능"
+            },
+            {
+              "path": "$.cases[4].outputs.B.raw_output.gaps[0].remaining_pain",
+              "value": "조리 중 음식 상태를 비접촉으로 확인하는 기능이 명확히 구현되어 있지 않다."
+            },
+            {
+              "path": "$.cases[4].outputs.B.raw_output.gap_assessments[0].reason",
+              "value": "조리 중 실시간 상태 확인 기능이 명시되지 않아 불편이 완전히 해결되지 않음."
+            },
+            {
+              "path": "$.cases[4].outputs.B.raw_output.concepts[0].requirements",
+              "value": [
+                "내부 조명 자동 점등 시 조리 진행 상황 가시화",
+                "문 닫힌 상태에서도 내부를 명확히 관찰할 수 있는 유리 설계"
+              ]
+            },
+            {
+              "path": "$.cases[4].outputs.B.raw_output.concepts[1].requirements",
+              "value": [
+                "조리 시작부터 종료까지 외부 화면에 진행 상태 시각화",
+                "사용자가 설정한 시간 대비 실제 진행률 표시"
+              ]
+            }
+          ],
+          "source_quotes": [
+            {
+              "evidence_id": "HOLD-20261005-06-REVIEW",
+              "source_file": "materials/HOLD-06.json",
+              "source_json_path": "$.input.sources[0].text",
+              "model_id": "HOLD-20261005-06-MODEL",
+              "document_version": "2.0",
+              "quote": "음식이 충분히 데워졌는지 확인하려고 문을 열어 꺼내야 해 조리가 끊긴다."
+            },
+            {
+              "evidence_id": "HOLD-20261005-06-MANUAL",
+              "source_file": "materials/HOLD-06.json",
+              "source_json_path": "$.input.sources[1].text",
+              "model_id": "HOLD-20261005-06-MODEL",
+              "document_version": "2.0",
+              "quote": "문서2.0: 가열 센서가 목표 온도에 도달하면 문을 열지 않아도 외부 화면에 준비 완료 상태가 표시된다."
+            },
+            {
+              "evidence_id": "HOLD-20261005-06-MANUAL",
+              "source_file": "materials/HOLD-06.json",
+              "source_json_path": "$.previous_input.sources[1].text",
+              "model_id": "HOLD-20261005-06-MODEL",
+              "document_version": "1.0",
+              "quote": "문서1.0: 사용자가 가열 시간과 출력을 직접 설정한다. 음식의 가열 상태는 문을 열어 확인한다."
+            }
+          ]
+        },
+        {
+          "code": "UNCONFIRMED_SCOPE_AND_FEATURE_EXCLUSIVITY",
+          "severity": "blocking",
+          "explanation": "문서는 준비 완료 표시를 명시하지만 그것만 표시한다고 하거나 다른 상태 확인 방법이 없다고 명시하지 않는다. 사용자 인지, 현재 표시 적용 범위 및 실시간 상태 욕구를 미확인으로 인정하면서 현재 기능의 범위를 제한하고 완료한 결론은 보류/조건화가 필요하다.",
+          "output_paths": [
+            "$.cases[4].outputs.B.raw_output.concepts[1].differentiation",
+            "$.cases[4].outputs.B.raw_output.needs[0].uncertainties",
+            "$.cases[4].outputs.B.raw_output.gaps[0].questions",
+            "$.cases[4].outputs.B.raw_output.status",
+            "$.cases[4].outputs.B.raw_output.hold_reasons",
+            "$.cases[4].outputs.B.raw_output.unresolved"
+          ],
+          "output_quotes": [
+            {
+              "path": "$.cases[4].outputs.B.raw_output.concepts[1].differentiation",
+              "value": "기존 '준비 완료' 표시만 있는 기능을 확장하여, 남은 시간이나 진행 퍼센트를 실시간으로 표시한다."
+            },
+            {
+              "path": "$.cases[4].outputs.B.raw_output.needs[0].uncertainties",
+              "value": [
+                "사용자가 '준비 완료 표시' 기능을 인지하고 있는지 여부",
+                "현재 기능의 표시가 조리 중 상태까지 포함하는지 확인 불가"
+              ]
+            },
+            {
+              "path": "$.cases[4].outputs.B.raw_output.gaps[0].questions",
+              "value": [
+                "현재 '준비 완료 표시' 기능이 조리 중 실시간 상태 확인을 지원하는가?",
+                "사용자가 문 열지 않고 상태를 확인할 수 있는 다른 방법이 존재하는가?"
+              ]
+            },
+            {
+              "path": "$.cases[4].outputs.B.raw_output.status",
+              "value": "completed"
+            },
+            {
+              "path": "$.cases[4].outputs.B.raw_output.hold_reasons",
+              "value": []
+            },
+            {
+              "path": "$.cases[4].outputs.B.raw_output.unresolved",
+              "value": [
+                "사용자가 현재 '준비 완료' 기능을 인지하고 있는지 확인 필요",
+                "조리 중 상태 표시를 위한 센서 데이터의 정확도 검증 필요"
+              ]
+            }
+          ],
+          "source_quotes": [
+            {
+              "evidence_id": "HOLD-20261005-06-REVIEW",
+              "source_file": "materials/HOLD-06.json",
+              "source_json_path": "$.input.sources[0].text",
+              "model_id": "HOLD-20261005-06-MODEL",
+              "document_version": "2.0",
+              "quote": "음식이 충분히 데워졌는지 확인하려고 문을 열어 꺼내야 해 조리가 끊긴다."
+            },
+            {
+              "evidence_id": "HOLD-20261005-06-MANUAL",
+              "source_file": "materials/HOLD-06.json",
+              "source_json_path": "$.input.sources[1].text",
+              "model_id": "HOLD-20261005-06-MODEL",
+              "document_version": "2.0",
+              "quote": "문서2.0: 가열 센서가 목표 온도에 도달하면 문을 열지 않아도 외부 화면에 준비 완료 상태가 표시된다."
+            }
+          ]
+        },
+        {
+          "code": "DISTINCT_HYPOTHESES_ARE_NOT_DUPLICATE_COUNTS",
+          "severity": "observation",
+          "explanation": "제공된 기능은 목표 온도 준비 완료 표시이고, 두 제안은 내부 시각 관찰과 시간/진행도 표시이므로 같은 조건의 동일 기능을 다시 제안한 것으로 세지 않았다. 다만 다른 기능의 실제 부재나 두 제안의 효과를 이 자료로 확인할 수 없고, 원래 충분성 요구와의 관련성은 별도 결함이다.",
+          "output_paths": [
+            "$.cases[4].outputs.B.raw_output.concept_assessments",
+            "$.cases[4].outputs.B.raw_output.concepts[0].assumptions",
+            "$.cases[4].outputs.B.raw_output.concepts[1].assumptions"
+          ],
+          "output_quotes": [
+            {
+              "path": "$.cases[4].outputs.B.raw_output.concept_assessments",
+              "value": [
+                {
+                  "concept_id": "CONCEPT-001",
+                  "duplication": "distinct",
+                  "compared_feature_ids": [
+                    "HOLD-20261005-06-FEATURE"
+                  ],
+                  "reason": "기존 텍스트 기반 표시와 달리 시각적 직접 관찰을 제공하여 차별화됨."
+                },
+                {
+                  "concept_id": "CONCEPT-002",
+                  "duplication": "distinct",
+                  "compared_feature_ids": [
+                    "HOLD-20261005-06-FEATURE"
+                  ],
+                  "reason": "준비 완료 표시만 있는 기존 기능을 조리 중 진행 상태까지 확장함."
+                }
+              ]
+            },
+            {
+              "path": "$.cases[4].outputs.B.raw_output.concepts[0].assumptions",
+              "value": [
+                "투명 유리가 마이크로파 차폐 성능을 유지함",
+                "내부 조명이 음식 가열에 간섭하지 않음"
+              ]
+            },
+            {
+              "path": "$.cases[4].outputs.B.raw_output.concepts[1].assumptions",
+              "value": [
+                "현재 센서 데이터가 조리 중 시간 경과를 추적할 수 있음",
+                "외부 화면이 동적 콘텐츠 표시를 지원함"
+              ]
+            }
+          ],
+          "source_quotes": [
+            {
+              "evidence_id": "HOLD-20261005-06-MANUAL",
+              "source_file": "materials/HOLD-06.json",
+              "source_json_path": "$.input.sources[1].text",
+              "model_id": "HOLD-20261005-06-MODEL",
+              "document_version": "2.0",
+              "quote": "문서2.0: 가열 센서가 목표 온도에 도달하면 문을 열지 않아도 외부 화면에 준비 완료 상태가 표시된다."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metric_audits": {
+    "citation_audit_file": "citation-audit.json",
+    "proposed_concept_comparisons": [
+      {
+        "case_id": "HOLD-04",
+        "label": "B",
+        "concept_id": "CONCEPT-AUTO-CLEAR",
+        "output_json_path": "$.cases[1].outputs.B.raw_output.concepts[0]",
+        "duplicate_of_explicit_existing_same_condition_feature": false,
+        "duplicate_count": 0,
+        "compared_features": [
+          {
+            "feature_id": "HOLD-20261005-04-FEATURE",
+            "model_id": "HOLD-20261005-04-MODEL",
+            "document_version": "1.0",
+            "description": "표준 각얼음 설정을 선택하면 각얼음이 배출구로 나온다."
+          }
+        ],
+        "novelty_beyond_supplied_feature": "not_established",
+        "reason": "자동 걸림 제거/배출 형상 가설은 명시된 각얼음 배출 기능의 같은 동작 재포장이 아니다. 실제 부재·적용 원인·효과는 미확인이다."
+      },
+      {
+        "case_id": "HOLD-04",
+        "label": "B",
+        "concept_id": "CONCEPT-ANGLE-OPT",
+        "output_json_path": "$.cases[1].outputs.B.raw_output.concepts[1]",
+        "duplicate_of_explicit_existing_same_condition_feature": false,
+        "duplicate_count": 0,
+        "compared_features": [
+          {
+            "feature_id": "HOLD-20261005-04-FEATURE",
+            "model_id": "HOLD-20261005-04-MODEL",
+            "document_version": "1.0",
+            "description": "표준 각얼음 설정을 선택하면 각얼음이 배출구로 나온다."
+          }
+        ],
+        "novelty_beyond_supplied_feature": "not_established",
+        "reason": "자동 걸림 제거/배출 형상 가설은 명시된 각얼음 배출 기능의 같은 동작 재포장이 아니다. 실제 부재·적용 원인·효과는 미확인이다."
+      },
+      {
+        "case_id": "HOLD-01",
+        "label": "A",
+        "concept_id": "CONCEPT-001",
+        "output_json_path": "$.cases[2].outputs.A.raw_output.concepts[0]",
+        "duplicate_of_explicit_existing_same_condition_feature": false,
+        "duplicate_count": 0,
+        "compared_features": [
+          {
+            "feature_id": "HOLD-20261005-01-FEATURE",
+            "model_id": "HOLD-20261005-01-MODEL",
+            "document_version": "1.0",
+            "description": "문 고무 패킹은 문을 연 상태에서 젖은 천으로 닦을 수 있다. 패킹은 사용자 분리 부품이 아니다."
+          }
+        ],
+        "novelty_beyond_supplied_feature": "not_established",
+        "reason": "형상 변경/별도 도구 가설은 명시된 젖은 천 청소 방법과 다르다. 전체 제품에 부재함까지 입증하지 않는다."
+      },
+      {
+        "case_id": "HOLD-01",
+        "label": "A",
+        "concept_id": "CONCEPT-002",
+        "output_json_path": "$.cases[2].outputs.A.raw_output.concepts[1]",
+        "duplicate_of_explicit_existing_same_condition_feature": false,
+        "duplicate_count": 0,
+        "compared_features": [
+          {
+            "feature_id": "HOLD-20261005-01-FEATURE",
+            "model_id": "HOLD-20261005-01-MODEL",
+            "document_version": "1.0",
+            "description": "문 고무 패킹은 문을 연 상태에서 젖은 천으로 닦을 수 있다. 패킹은 사용자 분리 부품이 아니다."
+          }
+        ],
+        "novelty_beyond_supplied_feature": "not_established",
+        "reason": "형상 변경/별도 도구 가설은 명시된 젖은 천 청소 방법과 다르다. 전체 제품에 부재함까지 입증하지 않는다."
+      },
+      {
+        "case_id": "HOLD-01",
+        "label": "B",
+        "concept_id": "CONCEPT-FRIDGE-SEAL-CLEAN-01",
+        "output_json_path": "$.cases[2].outputs.B.raw_output.concepts[0]",
+        "duplicate_of_explicit_existing_same_condition_feature": false,
+        "duplicate_count": 0,
+        "compared_features": [
+          {
+            "feature_id": "HOLD-20261005-01-FEATURE",
+            "model_id": "HOLD-20261005-01-MODEL",
+            "document_version": "1.0",
+            "description": "문 고무 패킹은 문을 연 상태에서 젖은 천으로 닦을 수 있다. 패킹은 사용자 분리 부품이 아니다."
+          }
+        ],
+        "novelty_beyond_supplied_feature": "not_established",
+        "reason": "형상 변경/별도 도구 가설은 명시된 젖은 천 청소 방법과 다르다. 전체 제품에 부재함까지 입증하지 않는다."
+      },
+      {
+        "case_id": "HOLD-06",
+        "label": "B",
+        "concept_id": "CONCEPT-001",
+        "output_json_path": "$.cases[4].outputs.B.raw_output.concepts[0]",
+        "duplicate_of_explicit_existing_same_condition_feature": false,
+        "duplicate_count": 0,
+        "compared_features": [
+          {
+            "feature_id": "HOLD-20261005-06-FEATURE",
+            "model_id": "HOLD-20261005-06-MODEL",
+            "document_version": "2.0",
+            "description": "문서2.0: 가열 센서가 목표 온도에 도달하면 문을 열지 않아도 외부 화면에 준비 완료 상태가 표시된다."
+          }
+        ],
+        "novelty_beyond_supplied_feature": "not_established",
+        "reason": "시각 관찰/실시간 진행도 가설은 명시된 목표 온도 준비 완료 표시와 다른 동작이다. 충분한 가열 확인과의 관련성 및 실제 신규성은 미확인이다."
+      },
+      {
+        "case_id": "HOLD-06",
+        "label": "B",
+        "concept_id": "CONCEPT-002",
+        "output_json_path": "$.cases[4].outputs.B.raw_output.concepts[1]",
+        "duplicate_of_explicit_existing_same_condition_feature": false,
+        "duplicate_count": 0,
+        "compared_features": [
+          {
+            "feature_id": "HOLD-20261005-06-FEATURE",
+            "model_id": "HOLD-20261005-06-MODEL",
+            "document_version": "2.0",
+            "description": "문서2.0: 가열 센서가 목표 온도에 도달하면 문을 열지 않아도 외부 화면에 준비 완료 상태가 표시된다."
+          }
+        ],
+        "novelty_beyond_supplied_feature": "not_established",
+        "reason": "시각 관찰/실시간 진행도 가설은 명시된 목표 온도 준비 완료 표시와 다른 동작이다. 충분한 가열 확인과의 관련성 및 실제 신규성은 미확인이다."
+      }
+    ],
+    "product_model_error_counting_notes": "다른 모델/버전 자료로 대상 모델 기능을 주장한 사실 명제는 모든 출력에서 0건. HOLD-03 B는 오류만 있어 실질 판단 품질 미관측이며 이를 통과로 해석하지 않는다."
+  },
+  "evaluation_limitations": [
+    "한 번의 고정 합성 자료 6사례와 이미 생성된 익명 출력 12개만 평가했다.",
+    "평가자는 AI 한 명이며 작성자와 같은 기반 모델을 공유한다. 독립된 평가 문맥은 인간 독립성이나 보편적 심판 신뢰성을 보장하지 않는다.",
+    "블라인딩은 방법 라벨에만 적용됐다. 출력 구조, 오류 양식 및 문체가 방법을 드러낼 수 있고 라벨 대응은 사례별로 다를 수 있다. 방법 정체를 추정하지 않았다.",
+    "원본 합성 자료 및 동결 출력만 의미 평가했다. 실제 고객 효용, 제품 안전성, 모델 실행 진위/과정, 코드 품질, 인간 편집 소요 시간 또는 통계적 유의성은 평가하지 않았다.",
+    "사양 변경 사례의 이전 입력 스냅샷은 제공되었지만 이전 실제 모델 출력은 제공되지 않았다. 지원 근거 변화만 비교하며 실제 재생성/수정 성공은 주장하지 않는다.",
+    "짧은 설명서와 리뷰는 모든 제품 기능·사용 조건·실제 경험 해소를 증명하지 않는다. 기능 신규성 또는 효과의 미관측은 0건 지표의 품질 보증으로 바뀌지 않는다.",
+    "추가 제공된 동일 출력 계약은 원래 동결 해시와 사례별 계약 해시가 일치했다. 계약은 구조와 enum만 제공하며 지원/완료의 상세 의미를 정의하지 않아 의미 해석은 이 보고서의 일관된 정의에 따른다.",
+    "PM 수용 또는 공식 평가 완료의 근거가 없다. independent_ai_assessment_complete=true는 이번 제한된 독립 AI 평가 작성의 완료만 뜻한다."
+  ],
+  "evaluation_actions": {
+    "models_rerun": 0,
+    "production_code_or_tests_run": 0,
+    "network_access_used": false,
+    "repository_files_changed": false,
+    "original_inputs_modified": false,
+    "external_publication": false,
+    "human_modification_seconds": null
+  }
+}

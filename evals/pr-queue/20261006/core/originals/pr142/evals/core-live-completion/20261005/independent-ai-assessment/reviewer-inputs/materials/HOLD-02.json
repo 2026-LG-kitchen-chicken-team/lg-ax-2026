@@ -1,0 +1,154 @@
+{
+  "input": {
+    "request": {
+      "product_group": "microwave",
+      "target_customer": "해당 주방 가전의 가정 사용자",
+      "use_situation": "자료에 서술된 같은 사용 경험을 검토한다.",
+      "improvement_task": "조리 종료 소리를 못 듣는 경우가 있어 종료 후 화면에 15초 동안 끝났다는 표시가 깜박였으면 좋겠다.",
+      "exclusions": [
+        "다른 모델 기능 혼용",
+        "근거 없는 효과 단정"
+      ],
+      "model_ids": [
+        "HOLD-20261005-02-MODEL"
+      ],
+      "dataset_version": "HOLD-20261005-02-frozen-v1.0"
+    },
+    "product": {
+      "model_id": "HOLD-20261005-02-MODEL",
+      "name": "별도 고정 합성 microwave",
+      "product_group": "microwave",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "HOLD-20261005-02-REVIEW",
+        "model_id": "HOLD-20261005-02-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "HOLD-20261005-02-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "조리 종료 소리를 못 듣는 경우가 있어 종료 후 화면에 15초 동안 끝났다는 표시가 깜박였으면 좋겠다.",
+        "feature_ids": []
+      },
+      {
+        "id": "HOLD-20261005-02-MANUAL",
+        "model_id": "HOLD-20261005-02-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "HOLD-20261005-02-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능과 사용 조건"
+        },
+        "text": "모든 조리 코스가 끝나면 화면의 END 문자가 15초 동안 깜박인다. 소리 설정과 무관하게 작동한다.",
+        "feature_ids": [
+          "HOLD-20261005-02-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "HOLD-20261005-02-FEATURE",
+        "model_id": "HOLD-20261005-02-MODEL",
+        "document_version": "1.0",
+        "name": "자료에 명시된 현재 기능",
+        "description": "모든 조리 코스가 끝나면 화면의 END 문자가 15초 동안 깜박인다. 소리 설정과 무관하게 작동한다.",
+        "conditions": [
+          "문서에 기재된 사용 조건에 따른다."
+        ],
+        "evidence_ids": [
+          "HOLD-20261005-02-MANUAL"
+        ]
+      }
+    ],
+    "revision_count": 0,
+    "max_concepts": 2,
+    "changed_evidence_ids": []
+  },
+  "dataset": {
+    "manifest": {
+      "dataset_id": "HOLD-20261005-02",
+      "version": "HOLD-20261005-02-frozen-v1.0",
+      "description": "새 고정 합성 자료; 독립 검수 전",
+      "source_kind": "synthetic",
+      "model_count": 1,
+      "review_count": 1,
+      "analysis_implemented": false
+    },
+    "products": [
+      {
+        "model_id": "HOLD-20261005-02-MODEL",
+        "name": "별도 고정 합성 microwave",
+        "product_group": "microwave",
+        "document_version": "1.0",
+        "source_kind": "synthetic"
+      }
+    ],
+    "reviews": [
+      {
+        "id": "ROW-HOLD-20261005-02-REVIEW",
+        "evidence_id": "HOLD-20261005-02-REVIEW",
+        "model_id": "HOLD-20261005-02-MODEL",
+        "text": "조리 종료 소리를 못 듣는 경우가 있어 종료 후 화면에 15초 동안 끝났다는 표시가 깜박였으면 좋겠다.",
+        "source_kind": "synthetic",
+        "document_version": "1.0",
+        "source_id": "HOLD-20261005-02-CSV",
+        "locator": {
+          "row": 2
+        }
+      }
+    ],
+    "evidence": [
+      {
+        "id": "HOLD-20261005-02-REVIEW",
+        "model_id": "HOLD-20261005-02-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "HOLD-20261005-02-CSV",
+        "locator": {
+          "row": 2
+        },
+        "text": "조리 종료 소리를 못 듣는 경우가 있어 종료 후 화면에 15초 동안 끝났다는 표시가 깜박였으면 좋겠다.",
+        "feature_ids": []
+      },
+      {
+        "id": "HOLD-20261005-02-MANUAL",
+        "model_id": "HOLD-20261005-02-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "HOLD-20261005-02-DOC",
+        "locator": {
+          "page": 4,
+          "section": "기능과 사용 조건"
+        },
+        "text": "모든 조리 코스가 끝나면 화면의 END 문자가 15초 동안 깜박인다. 소리 설정과 무관하게 작동한다.",
+        "feature_ids": [
+          "HOLD-20261005-02-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "HOLD-20261005-02-FEATURE",
+        "model_id": "HOLD-20261005-02-MODEL",
+        "document_version": "1.0",
+        "name": "자료에 명시된 현재 기능",
+        "description": "모든 조리 코스가 끝나면 화면의 END 문자가 15초 동안 깜박인다. 소리 설정과 무관하게 작동한다.",
+        "conditions": [
+          "문서에 기재된 사용 조건에 따른다."
+        ],
+        "evidence_ids": [
+          "HOLD-20261005-02-MANUAL"
+        ]
+      }
+    ]
+  }
+}

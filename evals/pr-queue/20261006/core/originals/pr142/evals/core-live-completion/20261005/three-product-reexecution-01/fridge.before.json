@@ -1,0 +1,211 @@
+{
+  "execution_kind": "live_model",
+  "original_input": {
+    "request": {
+      "product_group": "fridge",
+      "target_customer": "청소 시간이 짧은 1인 가구",
+      "use_situation": "냉장고 사용 중 작은 음료 얼룩을 청소한다.",
+      "improvement_task": "국소 얼룩을 닦으려면 선반 위 용기를 모두 꺼내야 해 번거롭다.",
+      "exclusions": [
+        "다른 모델 기능 혼용"
+      ],
+      "model_ids": [
+        "CHANGE-FRIDGE-MODEL"
+      ],
+      "dataset_version": "CHANGE-FRIDGE-v1"
+    },
+    "product": {
+      "model_id": "CHANGE-FRIDGE-MODEL",
+      "name": "재실행 예제용 가상 fridge",
+      "product_group": "fridge",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "CHANGE-FRIDGE-REVIEW",
+        "model_id": "CHANGE-FRIDGE-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "CHANGE-FRIDGE-REVIEW-DOC",
+        "locator": {
+          "row": 2
+        },
+        "text": "국소 얼룩을 닦으려면 선반 위 용기를 모두 꺼내야 해 번거롭다.",
+        "feature_ids": []
+      },
+      {
+        "id": "CHANGE-FRIDGE-MANUAL",
+        "model_id": "CHANGE-FRIDGE-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "CHANGE-FRIDGE-MANUAL-DOC",
+        "locator": {
+          "page": 3,
+          "section": "사용 조건"
+        },
+        "text": "선반 전체를 분리하여 세척할 수 있다. 분리 전에 식품을 모두 꺼낸다.",
+        "feature_ids": [
+          "CHANGE-FRIDGE-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "CHANGE-FRIDGE-FEATURE",
+        "model_id": "CHANGE-FRIDGE-MODEL",
+        "document_version": "1.0",
+        "name": "설명서의 현재 지원 기능",
+        "description": "선반 전체를 분리하여 세척할 수 있다. 분리 전에 식품을 모두 꺼낸다.",
+        "conditions": [
+          "설명서의 사용 조건을 충족해야 함"
+        ],
+        "evidence_ids": [
+          "CHANGE-FRIDGE-MANUAL"
+        ]
+      }
+    ],
+    "revision_count": 2,
+    "max_concepts": 3,
+    "changed_evidence_ids": []
+  },
+  "input": {
+    "request": {
+      "product_group": "fridge",
+      "target_customer": "청소 시간이 짧은 1인 가구",
+      "use_situation": "냉장고 사용 중 작은 음료 얼룩을 청소한다.",
+      "improvement_task": "국소 얼룩을 닦으려면 선반 위 용기를 모두 꺼내야 해 번거롭다.",
+      "exclusions": [
+        "다른 모델 기능 혼용"
+      ],
+      "model_ids": [
+        "CHANGE-FRIDGE-MODEL"
+      ],
+      "dataset_version": "CHANGE-FRIDGE-v1"
+    },
+    "product": {
+      "model_id": "CHANGE-FRIDGE-MODEL",
+      "name": "재실행 예제용 가상 fridge",
+      "product_group": "fridge",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "CHANGE-FRIDGE-REVIEW",
+        "model_id": "CHANGE-FRIDGE-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "CHANGE-FRIDGE-REVIEW-DOC",
+        "locator": {
+          "row": 2
+        },
+        "text": "국소 얼룩을 닦으려면 선반 위 용기를 모두 꺼내야 해 번거롭다.",
+        "feature_ids": []
+      },
+      {
+        "id": "CHANGE-FRIDGE-MANUAL",
+        "model_id": "CHANGE-FRIDGE-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "CHANGE-FRIDGE-MANUAL-DOC",
+        "locator": {
+          "page": 3,
+          "section": "사용 조건"
+        },
+        "text": "선반 전체를 분리하여 세척할 수 있다. 분리 전에 식품을 모두 꺼낸다.",
+        "feature_ids": [
+          "CHANGE-FRIDGE-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "CHANGE-FRIDGE-FEATURE",
+        "model_id": "CHANGE-FRIDGE-MODEL",
+        "document_version": "1.0",
+        "name": "설명서의 현재 지원 기능",
+        "description": "선반 전체를 분리하여 세척할 수 있다. 분리 전에 식품을 모두 꺼낸다.",
+        "conditions": [
+          "설명서의 사용 조건을 충족해야 함"
+        ],
+        "evidence_ids": [
+          "CHANGE-FRIDGE-MANUAL"
+        ]
+      }
+    ],
+    "revision_count": 2,
+    "max_concepts": 3,
+    "changed_evidence_ids": []
+  },
+  "output": null,
+  "decision": null,
+  "status": "held",
+  "trace": [
+    {
+      "stage": "review",
+      "operation": "stop",
+      "inputs": {},
+      "outputs": {
+        "ok": false,
+        "error": {
+          "code": "INVALID_ARGUMENT",
+          "message": "새 실행의 내부 수정 회차는 0이어야 합니다.",
+          "details": {}
+        }
+      },
+      "elapsed_ms": 0.0
+    }
+  ],
+  "model_calls": [],
+  "semantic_reviews": [],
+  "errors": [
+    {
+      "code": "INVALID_ARGUMENT",
+      "message": "새 실행의 내부 수정 회차는 0이어야 합니다.",
+      "details": {}
+    }
+  ],
+  "correction_budget": {
+    "revision_count": 0,
+    "max_revisions": 2,
+    "closed": true,
+    "terminal_reason": "hold",
+    "attempts": []
+  },
+  "manual_execution": {
+    "observed_at": "2026-10-05T20:37:46.457708+09:00",
+    "input_file": "evals/core-reexecution/examples/fridge.before.input.json",
+    "dataset_file": "evals/core-reexecution/examples/fridge.before.dataset.json",
+    "input_file_sha256": "64767841152abde771b3bb85d2f2a07819c673b1eae20af55360755781042ae4",
+    "dataset_file_sha256": "a406d4ef69a7f52a63a5bb6a00c9a4656c80402a6fdd665109e9a5f87342d309",
+    "prepared_reexecution_plan": null,
+    "seconds": 0.032,
+    "source_sha256": {
+      "packages/core/src/lgax_core/planning_agent.py": "b9aeb2e33de824549fef5d08e9a49f24fa9ab55110f1b9a04b8580bd3b81f0f5",
+      "packages/core/src/lgax_core/revision_guard.py": "56734c5dd363016a40e7cd01bd288f30c0fd907f6f888149f0b8e10e1fb01849",
+      "packages/core/src/lgax_core/reexecution.py": "e613ae8e76ee0bb9f1a28c003f557a1e481a76721246a2bedebd7da7e61c05a0",
+      "packages/core/src/lgax_core/correction_budget.py": "07201cd20b0144b3401a8601c64447d3aaec0f35c9325c378707ebcb922ea5e9",
+      "packages/core/src/lgax_core/semantic_review.py": "e7fca7081f512af353f6cd8abf7e419f1550f9e5967cb94f9997ec356e76af2f",
+      "packages/core/src/lgax_core/judgement_contract.py": "db7560e7d61e81e8d228b439969d3a28293b0cd219b7560eddea12923a2b2c24",
+      "packages/core/src/lgax_core/model_client.py": "c46e0cfbf3ea902bbaf14545c0f2719ca16672ba866dc1423d27b5beb76b9e8f"
+    },
+    "ssh_account": "own_authorized_account",
+    "new_model_downloaded": false,
+    "existing_model_files_preserved": true,
+    "new_remote_server_started": false,
+    "model_id": "qwen3:8b",
+    "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+    "settings": {
+      "temperature": 0,
+      "seed": 42,
+      "thinking": false,
+      "num_ctx": 16384,
+      "num_predict": 8192
+    }
+  }
+}

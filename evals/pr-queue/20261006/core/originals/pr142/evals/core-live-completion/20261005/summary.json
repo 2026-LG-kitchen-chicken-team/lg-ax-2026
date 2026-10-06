@@ -1,0 +1,314 @@
+{
+  "observed_at": "2026-10-05T20:53:25.831509+09:00",
+  "state": "waiting_for_user_inference_configuration_choice",
+  "scope": "pre-automation CORE002-005 incomplete work only",
+  "new_assignments_or_worker_changed": false,
+  "model": {
+    "id": "qwen3:8b",
+    "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+    "quantization": "Q4_K_M",
+    "runtime": "Ollama0.34.0"
+  },
+  "settings": {
+    "temperature": 0,
+    "seed": 42,
+    "thinking": false,
+    "context_tokens": 16384,
+    "max_output_tokens": 8192
+  },
+  "diagnostics": [
+    {
+      "artifact": "evals/core-live-completion/20261005/diagnostic-01-development-normal.json",
+      "sha256": "33fb4cd8d216c1d8c9de5744479e4bc55e82b7e4a7551be0e06e7c261b944324",
+      "status": "held",
+      "revision_count": 0,
+      "call_attempts": 4,
+      "seconds": 54.187,
+      "source_sha256": {
+        "packages/core/src/lgax_core/planning_agent.py": "8555ac1b370d60f039ada2dd969b42d1f8e8fe57af65e2a655497d40708a9c48",
+        "packages/core/src/lgax_core/revision_guard.py": "9369ba0e8f804e56ea0a458a266cca52bfdcb1be6f2fb28f790dd5e4e84d499b",
+        "packages/core/src/lgax_core/correction_budget.py": "07201cd20b0144b3401a8601c64447d3aaec0f35c9325c378707ebcb922ea5e9",
+        "packages/core/src/lgax_core/semantic_review.py": "43bf14e29b44c7fa176f3315f9b757321a1c25f38c925eca40dfe40cf6e00a5d",
+        "packages/core/src/lgax_core/judgement_contract.py": "db7560e7d61e81e8d228b439969d3a28293b0cd219b7560eddea12923a2b2c24",
+        "packages/core/src/lgax_core/model_client.py": "c46e0cfbf3ea902bbaf14545c0f2719ca16672ba866dc1423d27b5beb76b9e8f"
+      }
+    },
+    {
+      "artifact": "evals/core-live-completion/20261005/diagnostic-02-development-normal.json",
+      "sha256": "2c7789d19c34e06f4ed081d3118a62ae5b2bf136690976d83d7e8977dccfb86b",
+      "status": "held",
+      "revision_count": 0,
+      "call_attempts": 4,
+      "seconds": 61.031,
+      "source_sha256": {
+        "packages/core/src/lgax_core/planning_agent.py": "613e837ddbca0974d8069d136c2c73b7b53b8a4ac3f9114e6fa09e6d2aa877ce",
+        "packages/core/src/lgax_core/revision_guard.py": "9369ba0e8f804e56ea0a458a266cca52bfdcb1be6f2fb28f790dd5e4e84d499b",
+        "packages/core/src/lgax_core/correction_budget.py": "07201cd20b0144b3401a8601c64447d3aaec0f35c9325c378707ebcb922ea5e9",
+        "packages/core/src/lgax_core/semantic_review.py": "7ef59d5da002e71795242066f666e45cd189acaea6bdfde78cf22e7c5cddf36f",
+        "packages/core/src/lgax_core/judgement_contract.py": "db7560e7d61e81e8d228b439969d3a28293b0cd219b7560eddea12923a2b2c24",
+        "packages/core/src/lgax_core/model_client.py": "c46e0cfbf3ea902bbaf14545c0f2719ca16672ba866dc1423d27b5beb76b9e8f"
+      }
+    },
+    {
+      "artifact": "evals/core-live-completion/20261005/diagnostic-03-development-normal.json",
+      "sha256": "67126be2a7fd5fba7f25924eee0d34d0725aed8c8cabacc046a55127f439fa66",
+      "status": "failed",
+      "revision_count": 2,
+      "call_attempts": 6,
+      "seconds": 94.844,
+      "source_sha256": {
+        "packages/core/src/lgax_core/planning_agent.py": "ce712ac9e33907dba85d05aa9e61c0f27159d61532635d254ff5554abc081bcf",
+        "packages/core/src/lgax_core/revision_guard.py": "9369ba0e8f804e56ea0a458a266cca52bfdcb1be6f2fb28f790dd5e4e84d499b",
+        "packages/core/src/lgax_core/correction_budget.py": "07201cd20b0144b3401a8601c64447d3aaec0f35c9325c378707ebcb922ea5e9",
+        "packages/core/src/lgax_core/semantic_review.py": "b8dee61d2c9d7ec7f8f9178b37f951a0f7ad61c75713f93880d1b9311be6abb7",
+        "packages/core/src/lgax_core/judgement_contract.py": "db7560e7d61e81e8d228b439969d3a28293b0cd219b7560eddea12923a2b2c24",
+        "packages/core/src/lgax_core/model_client.py": "c46e0cfbf3ea902bbaf14545c0f2719ca16672ba866dc1423d27b5beb76b9e8f"
+      }
+    },
+    {
+      "artifact": "evals/core-live-completion/20261005/diagnostic-04-development-normal.json",
+      "sha256": "d3a5080048aaaef06b8cfb3717192f3f74dcdb3121872a779210585b1000a6df",
+      "status": "held",
+      "revision_count": 0,
+      "call_attempts": 4,
+      "seconds": 65.343,
+      "source_sha256": {
+        "packages/core/src/lgax_core/planning_agent.py": "b9aeb2e33de824549fef5d08e9a49f24fa9ab55110f1b9a04b8580bd3b81f0f5",
+        "packages/core/src/lgax_core/revision_guard.py": "56734c5dd363016a40e7cd01bd288f30c0fd907f6f888149f0b8e10e1fb01849",
+        "packages/core/src/lgax_core/correction_budget.py": "07201cd20b0144b3401a8601c64447d3aaec0f35c9325c378707ebcb922ea5e9",
+        "packages/core/src/lgax_core/semantic_review.py": "e7fca7081f512af353f6cd8abf7e419f1550f9e5967cb94f9997ec356e76af2f",
+        "packages/core/src/lgax_core/judgement_contract.py": "db7560e7d61e81e8d228b439969d3a28293b0cd219b7560eddea12923a2b2c24",
+        "packages/core/src/lgax_core/model_client.py": "c46e0cfbf3ea902bbaf14545c0f2719ca16672ba866dc1423d27b5beb76b9e8f"
+      }
+    }
+  ],
+  "independent_comparison_execution_cases": 6,
+  "comparison_totals": {
+    "agent": {
+      "model_calls": 19,
+      "input_tokens": 43133,
+      "output_tokens": 20263,
+      "latency_ms": 220626.0
+    },
+    "single_prompt_baseline": {
+      "model_calls": 6,
+      "input_tokens": 23029,
+      "output_tokens": 9187,
+      "latency_ms": 98861.0
+    }
+  },
+  "normal_or_spec_change_candidate_completion_verified": false,
+  "semantic_scores": null,
+  "independent_review_complete": false,
+  "evaluation_complete": false,
+  "comparison_preparation": {
+    "case_count": 6,
+    "state": "live_results_awaiting_independent_review",
+    "private_review_file_created": true,
+    "pm_received_or_reviewed": false
+  },
+  "three_product_actual_pairs": [
+    {
+      "product_group": "fridge",
+      "before": {
+        "artifact": "evals/core-live-completion/20261005/three-product-before-repeat-02/fridge.before.json",
+        "artifact_sha256": "b38a86a48375941a6b014de2c9b7ae1d74917bbfb4773e0b09a84d6820b2b5bb",
+        "status": "held",
+        "calls": 4,
+        "revision_count": 0,
+        "decision": {
+          "valid": false,
+          "action": "hold",
+          "revision_count": 0,
+          "next_revision_count": 0,
+          "rerun_from": null,
+          "violations": [
+            {
+              "code": "EXCLUSION_VIOLATION",
+              "stage": "concepts"
+            },
+            {
+              "code": "QUALITY_UNCERTAIN",
+              "stage": "concepts"
+            }
+          ]
+        },
+        "seconds": 60.125
+      },
+      "after": {
+        "artifact": "evals/core-live-completion/20261005/three-product-reexecution-01/fridge.after.json",
+        "artifact_sha256": "8a5278a53fc7ee34936ca1d27ea3cb3b6f29d98d600952c7a9a781715019aa5e",
+        "status": "held",
+        "calls": 6,
+        "revision_count": 1,
+        "decision": {
+          "valid": false,
+          "action": "hold",
+          "revision_count": 1,
+          "next_revision_count": 1,
+          "rerun_from": null,
+          "violations": [
+            {
+              "code": "EXCLUSION_VIOLATION",
+              "stage": "concepts"
+            },
+            {
+              "code": "QUALITY_UNCERTAIN",
+              "stage": "concepts"
+            }
+          ]
+        },
+        "seconds": 145.61
+      }
+    },
+    {
+      "product_group": "dishwasher",
+      "before": {
+        "artifact": "evals/core-live-completion/20261005/three-product-before-repeat-02/dishwasher.before.json",
+        "artifact_sha256": "708716ea25628e8ff7ad81ff552868b26c708900d0d3394f4ac68656860a13e7",
+        "status": "held",
+        "calls": 4,
+        "revision_count": 0,
+        "decision": {
+          "valid": false,
+          "action": "hold",
+          "revision_count": 0,
+          "next_revision_count": 0,
+          "rerun_from": null,
+          "violations": [
+            {
+              "code": "EXCLUSION_VIOLATION",
+              "stage": "concepts"
+            }
+          ]
+        },
+        "seconds": 78.75
+      },
+      "after": {
+        "artifact": "evals/core-live-completion/20261005/three-product-reexecution-01/dishwasher.after.json",
+        "artifact_sha256": "b444234301a9ea4757838120ed3fcb34870ec414569cf90c2bef674d12242949",
+        "status": "held",
+        "calls": 2,
+        "revision_count": 0,
+        "decision": {
+          "valid": false,
+          "action": "hold",
+          "revision_count": 0,
+          "next_revision_count": 0,
+          "rerun_from": null,
+          "violations": [
+            {
+              "code": "GAP_MANUAL_MISSING",
+              "stage": "compare"
+            },
+            {
+              "code": "UNSUPPORTED_WITHOUT_MANUAL",
+              "stage": "compare"
+            }
+          ]
+        },
+        "seconds": 12.141
+      }
+    },
+    {
+      "product_group": "microwave",
+      "before": {
+        "artifact": "evals/core-live-completion/20261005/three-product-before-repeat-02/microwave.before.json",
+        "artifact_sha256": "b612b869710fb11783e529e7f32bbb5037aab680c3611507302e8d4a24ed1602",
+        "status": "held",
+        "calls": 2,
+        "revision_count": 0,
+        "decision": {
+          "valid": true,
+          "action": "hold",
+          "revision_count": 0,
+          "next_revision_count": 0,
+          "rerun_from": null,
+          "violations": []
+        },
+        "seconds": 9.266
+      },
+      "after": {
+        "artifact": "evals/core-live-completion/20261005/three-product-reexecution-01/microwave.after.json",
+        "artifact_sha256": "c0676812693a9cf67625fcea4e70e6e43bc26803c4d844c28fe4f367222ea5ad",
+        "status": "held",
+        "calls": 4,
+        "revision_count": 0,
+        "decision": {
+          "valid": false,
+          "action": "hold",
+          "revision_count": 0,
+          "next_revision_count": 0,
+          "rerun_from": null,
+          "violations": [
+            {
+              "code": "EXCLUSION_VIOLATION",
+              "stage": "concepts"
+            },
+            {
+              "code": "QUALITY_UNCERTAIN",
+              "stage": "concepts"
+            }
+          ]
+        },
+        "seconds": 63.156
+      }
+    }
+  ],
+  "sem06_prior_snapshot": {
+    "execution_kind": "live_model",
+    "source_kind": "synthetic",
+    "case_id": "SEM-06-before",
+    "evaluation_complete": false,
+    "notice": "Prior1.0 snapshot only, separate from current2.0 six-case measurements",
+    "input_sha256": "73787351ddbfbb59192660139c79b1482bd14fcde8cb618622518990ef76f359",
+    "runs": [
+      {
+        "method": "agent",
+        "planning_status": "held",
+        "model_calls": 2,
+        "latency_ms": 8188.0,
+        "artifact_sha256": "bf35a000a053733d1fc55abf88531685244983b94e00201516c03b327a6772b1"
+      },
+      {
+        "method": "single_prompt_baseline",
+        "planning_status": "completed",
+        "model_calls": 1,
+        "latency_ms": 16812.0,
+        "artifact_sha256": "0e5f2dca5059cbdfd63240515dfbad2b79d6db5ca3cbaa0c6ad33c11b78066c5"
+      }
+    ]
+  },
+  "verification": {
+    "python_tests_passed": 491,
+    "python_test_log_sha256": "4f88902d869a8c70fad45f6312b299f2c62a5ee29276bc59880a3bf4853eb7a2",
+    "python_test_log": "evals/core-live-completion/20261005/verification/python-tests.txt",
+    "ruff": "pass",
+    "git_diff_check": "pass",
+    "agent_rules_byte_check": "pass",
+    "canonical_contracts": "pass",
+    "phase2_record_integrity": "pass",
+    "remote_ci": null
+  },
+  "code_changes": [
+    "previous contract-checked declarations bound to the revision session",
+    "manual source cannot be regenerated as a customer review",
+    "generation-only literal quote choices; canonical recorded substring checks preserved",
+    "complete frozen baseline data and schema delivered within prompt limit",
+    "bounded shared correction budget and original-response replay preserved"
+  ],
+  "existing_model_files_preserved": true,
+  "new_model_downloaded": false,
+  "new_remote_service_started": false,
+  "ssh_tunnel_closed": true,
+  "shared_existing_ollama_process_stopped": false,
+  "new_commit_or_pr_created": false,
+  "limitations": [
+    "One synthetic six-case batch; author observations are not independent quality scores.",
+    "Returned JSON and record execution success do not mean planning correctness.",
+    "Three original before examples had revision_count2 and were rejected without generation; failed attempts are preserved, explicit owner repeats at0 provide actual before runs.",
+    "No formal PM acceptance, merge, integration or Done is claimed.",
+    "The exact original936-byte known_hosts file was not fully recovered."
+  ],
+  "decision_required": "Keep agreed settings or explicitly compare another inference configuration/model."
+}

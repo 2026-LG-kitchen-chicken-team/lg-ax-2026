@@ -1,0 +1,211 @@
+{
+  "execution_kind": "live_model",
+  "original_input": {
+    "request": {
+      "product_group": "microwave",
+      "target_customer": "냉동밥을 자주 데우는 사용자",
+      "use_situation": "냉동밥을 해동한 후 가열한다.",
+      "improvement_task": "해동 후 가열 시간은 직접 정해야 해서 밥 중앙이 차가워 다시 돌렸다.",
+      "exclusions": [
+        "다른 모델 기능 혼용"
+      ],
+      "model_ids": [
+        "CHANGE-MICROWAVE-MODEL"
+      ],
+      "dataset_version": "CHANGE-MICROWAVE-v1"
+    },
+    "product": {
+      "model_id": "CHANGE-MICROWAVE-MODEL",
+      "name": "재실행 예제용 가상 microwave",
+      "product_group": "microwave",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "CHANGE-MICROWAVE-REVIEW",
+        "model_id": "CHANGE-MICROWAVE-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "CHANGE-MICROWAVE-REVIEW-DOC",
+        "locator": {
+          "row": 2
+        },
+        "text": "해동 후 가열 시간은 직접 정해야 해서 밥 중앙이 차가워 다시 돌렸다.",
+        "feature_ids": []
+      },
+      {
+        "id": "CHANGE-MICROWAVE-MANUAL",
+        "model_id": "CHANGE-MICROWAVE-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "CHANGE-MICROWAVE-MANUAL-DOC",
+        "locator": {
+          "page": 3,
+          "section": "사용 조건"
+        },
+        "text": "무게를 입력하면 해동 시간을 계산한다. 가열 시간은 사용자가 직접 설정한다.",
+        "feature_ids": [
+          "CHANGE-MICROWAVE-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "CHANGE-MICROWAVE-FEATURE",
+        "model_id": "CHANGE-MICROWAVE-MODEL",
+        "document_version": "1.0",
+        "name": "설명서의 현재 지원 기능",
+        "description": "무게를 입력하면 해동 시간을 계산한다. 가열 시간은 사용자가 직접 설정한다.",
+        "conditions": [
+          "설명서의 사용 조건을 충족해야 함"
+        ],
+        "evidence_ids": [
+          "CHANGE-MICROWAVE-MANUAL"
+        ]
+      }
+    ],
+    "revision_count": 2,
+    "max_concepts": 3,
+    "changed_evidence_ids": []
+  },
+  "input": {
+    "request": {
+      "product_group": "microwave",
+      "target_customer": "냉동밥을 자주 데우는 사용자",
+      "use_situation": "냉동밥을 해동한 후 가열한다.",
+      "improvement_task": "해동 후 가열 시간은 직접 정해야 해서 밥 중앙이 차가워 다시 돌렸다.",
+      "exclusions": [
+        "다른 모델 기능 혼용"
+      ],
+      "model_ids": [
+        "CHANGE-MICROWAVE-MODEL"
+      ],
+      "dataset_version": "CHANGE-MICROWAVE-v1"
+    },
+    "product": {
+      "model_id": "CHANGE-MICROWAVE-MODEL",
+      "name": "재실행 예제용 가상 microwave",
+      "product_group": "microwave",
+      "document_version": "1.0",
+      "source_kind": "synthetic"
+    },
+    "sources": [
+      {
+        "id": "CHANGE-MICROWAVE-REVIEW",
+        "model_id": "CHANGE-MICROWAVE-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "review",
+        "source_id": "CHANGE-MICROWAVE-REVIEW-DOC",
+        "locator": {
+          "row": 2
+        },
+        "text": "해동 후 가열 시간은 직접 정해야 해서 밥 중앙이 차가워 다시 돌렸다.",
+        "feature_ids": []
+      },
+      {
+        "id": "CHANGE-MICROWAVE-MANUAL",
+        "model_id": "CHANGE-MICROWAVE-MODEL",
+        "document_version": "1.0",
+        "source_kind": "synthetic",
+        "source_type": "manual",
+        "source_id": "CHANGE-MICROWAVE-MANUAL-DOC",
+        "locator": {
+          "page": 3,
+          "section": "사용 조건"
+        },
+        "text": "무게를 입력하면 해동 시간을 계산한다. 가열 시간은 사용자가 직접 설정한다.",
+        "feature_ids": [
+          "CHANGE-MICROWAVE-FEATURE"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "CHANGE-MICROWAVE-FEATURE",
+        "model_id": "CHANGE-MICROWAVE-MODEL",
+        "document_version": "1.0",
+        "name": "설명서의 현재 지원 기능",
+        "description": "무게를 입력하면 해동 시간을 계산한다. 가열 시간은 사용자가 직접 설정한다.",
+        "conditions": [
+          "설명서의 사용 조건을 충족해야 함"
+        ],
+        "evidence_ids": [
+          "CHANGE-MICROWAVE-MANUAL"
+        ]
+      }
+    ],
+    "revision_count": 2,
+    "max_concepts": 3,
+    "changed_evidence_ids": []
+  },
+  "output": null,
+  "decision": null,
+  "status": "held",
+  "trace": [
+    {
+      "stage": "review",
+      "operation": "stop",
+      "inputs": {},
+      "outputs": {
+        "ok": false,
+        "error": {
+          "code": "INVALID_ARGUMENT",
+          "message": "새 실행의 내부 수정 회차는 0이어야 합니다.",
+          "details": {}
+        }
+      },
+      "elapsed_ms": 16.0
+    }
+  ],
+  "model_calls": [],
+  "semantic_reviews": [],
+  "errors": [
+    {
+      "code": "INVALID_ARGUMENT",
+      "message": "새 실행의 내부 수정 회차는 0이어야 합니다.",
+      "details": {}
+    }
+  ],
+  "correction_budget": {
+    "revision_count": 0,
+    "max_revisions": 2,
+    "closed": true,
+    "terminal_reason": "hold",
+    "attempts": []
+  },
+  "manual_execution": {
+    "observed_at": "2026-10-05T20:40:24.271623+09:00",
+    "input_file": "evals/core-reexecution/examples/microwave.before.input.json",
+    "dataset_file": "evals/core-reexecution/examples/microwave.before.dataset.json",
+    "input_file_sha256": "f7ed0845c2f84b396f5eafc6befc688dcd4563781b091aba9f313aea87f7baf3",
+    "dataset_file_sha256": "d92b72b0d14b6e54a3df2d18ef0708d19763700a8bb859be649a618b9ccd39a5",
+    "prepared_reexecution_plan": null,
+    "seconds": 0.016,
+    "source_sha256": {
+      "packages/core/src/lgax_core/planning_agent.py": "b9aeb2e33de824549fef5d08e9a49f24fa9ab55110f1b9a04b8580bd3b81f0f5",
+      "packages/core/src/lgax_core/revision_guard.py": "56734c5dd363016a40e7cd01bd288f30c0fd907f6f888149f0b8e10e1fb01849",
+      "packages/core/src/lgax_core/reexecution.py": "e613ae8e76ee0bb9f1a28c003f557a1e481a76721246a2bedebd7da7e61c05a0",
+      "packages/core/src/lgax_core/correction_budget.py": "07201cd20b0144b3401a8601c64447d3aaec0f35c9325c378707ebcb922ea5e9",
+      "packages/core/src/lgax_core/semantic_review.py": "e7fca7081f512af353f6cd8abf7e419f1550f9e5967cb94f9997ec356e76af2f",
+      "packages/core/src/lgax_core/judgement_contract.py": "db7560e7d61e81e8d228b439969d3a28293b0cd219b7560eddea12923a2b2c24",
+      "packages/core/src/lgax_core/model_client.py": "c46e0cfbf3ea902bbaf14545c0f2719ca16672ba866dc1423d27b5beb76b9e8f"
+    },
+    "ssh_account": "own_authorized_account",
+    "new_model_downloaded": false,
+    "existing_model_files_preserved": true,
+    "new_remote_server_started": false,
+    "model_id": "qwen3:8b",
+    "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+    "settings": {
+      "temperature": 0,
+      "seed": 42,
+      "thinking": false,
+      "num_ctx": 16384,
+      "num_predict": 8192
+    }
+  }
+}
