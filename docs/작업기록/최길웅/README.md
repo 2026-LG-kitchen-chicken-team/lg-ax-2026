@@ -23,7 +23,7 @@
 - 시험 요령:
   - 조회만 하는 화면 시험은 `LGAX_E2E_PORT=5183`의 별도 Vite로 하고, `LGAX_WORKSPACE_PROXY`·`LGAX_PUBLIC_API_PROXY`로 시험 서버를 가리킨다. 사용자 5173·18867·18869는 건드리지 않는다.
   - 재생 DB `private/workspace-model-study-replay`를 쓰는 읽기 전용 서버: `uv run --no-sync python -X utf8 -m lgax_api.workspace_server --db private/workspace-model-study-replay/workspace.sqlite --credentials private/workspace-model-study-replay/credentials.json --port 18879`(작업 공간 `Desktop/lgax-wt-live`).
-- PR190 head 실제 코어 기록(fixture, 모델 0)으로 #210 사전 검증: UNCERTAINTY_CONTEXT_MISSING은 한국어로 표시된다. 상위와 같은 VALIDATION_FAILED 반복을 제거하고, 상충 경로·사유·리뷰 표시를 추가했다(#210 `a59fb3e`, #211에 merge). [기록 049](2026-10-07/최길웅-20261007-049.md)
+- PR190 head 실제 코어 기록(fixture, 모델 0)으로 #210 사전 검증: UNCERTAINTY_CONTEXT_MISSING은 한국어로 표시된다. 상위와 같은 VALIDATION_FAILED 반복을 제거하고, 상충 경로·사유·리뷰 표시를 추가했다. 회차별 검사 결과에도 직전 실패 단계의 세부를 붙였다(#210 `ab4f94a`, #211에 merge). [기록 049](2026-10-07/최길웅-20261007-049.md)
 - 컨설팅(10/7 15:00) 웹 설명 브리핑·시연 순서·한계·예상 질문: [기록 048](2026-10-07/최길웅-20261007-048.md)
 - 최신 기록 ID: 최길웅-20261007-049. 상세:
   - 049 PR190 실제 코어 기록으로 오류 세부 표시 보완(#210): [상세](2026-10-07/최길웅-20261007-049.md)
