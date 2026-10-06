@@ -1,8 +1,8 @@
 # 황대겸 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
-- 2026-10-06 CORE-R3-01a10729: PM169 원 JSON/SHA·원문 대조와 선언 모순 재생. fixture 검증과 실모델·독립 품질·PM Done을 구분한다.
-- [새 근거](2026-10-06/CORE-R3-01a10729.md) · [수행 기록](../../작업기록/황대겸/2026-10-06/CORE-R3-01a10729.md) · [CORE→DATA 인계](../../../evals/core-manual-quality/20261006/r3/source-handoff.json). 접속 비밀/원 메일은 비공개 보존.
+- 2026-10-06 CORE-R4-01a10729: PR173 main8f9d83f 병합 후 고정8B3건 실제9호출, 모두 failed/수정2. 원 비용·원 응답 보존과 보류 feedback 보완.
+- [새 상세](2026-10-06/CORE-R4-01a10729.md) · [실제 원 결과](../../../evals/core-manual-quality/20261006/r4/README.md). 후보 accept/적절한 hold·WEB/MCP·독립 품질과 PM Done은 남아 있다.
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
 
