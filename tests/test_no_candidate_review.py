@@ -1,6 +1,7 @@
 """Replay the real empty-result false acceptance, then verify bounded correction."""
 import json
 import unittest
+from copy import deepcopy
 from pathlib import Path
 
 import test_planning_agent as fixtures
@@ -105,3 +106,48 @@ class NoCandidateReviewTests(unittest.TestCase):
             review_no_candidate(self.payload, self.false_output, value)
         value["questions"] = ["현재 사용 조건의 상세 설명서를 제공할 수 있나요?"]
         self.assertEqual(review_no_candidate(self.payload, self.false_output, value)["action"], "hold")
+
+    def test_consistent_held_declaration_never_promotes_original_hold_to_accept(self):
+        held = deepcopy(self.false_output)
+        held.update(status="held", questions=["관련 상세 조건을 제공할 수 있나요?"],
+                    hold_reasons=["추가 자료 필요"])
+        self.assertEqual(review_judgement(self.payload, held)["action"], "hold")
+        decision = review_no_candidate(self.payload, held, report_for(self.payload, held))
+        self.assertEqual(decision["action"], "hold")
+        self.assertEqual(decision["next_revision_count"], 0)
+
+    def test_structurally_valid_false_hold_is_reviewed_and_corrected_with_same_budget(self):
+        def alter(skill, context, value, _count):
+            if skill == "product_compare" and context["revision_count"] == 0:
+                value["result"]["unresolved"] = ["현재 기능 설명서가 없다고 판단했다"]
+                value["hold_reasons"] = ["현재 기능 설명서가 없다고 판단했다"]
+                value["questions"] = ["설명서를 제공할 수 있나요?"]
+            if skill == "no_candidate_review":
+                value["assessments"][1].update(verdict="violation", reason="연결된 설명서 원문과 위치가 이미 제공됐다")
+            return value
+        agent, transport = self.agent(alter)
+        result = agent.run(self.payload)
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual(result["input"]["revision_count"], 1)
+        self.assertEqual(result["no_candidate_reviews"][0]["reviewed_output"]["status"], "held")
+        self.assertEqual(result["no_candidate_reviews"][0]["decision"]["rerun_from"], "compare")
+        self.assertEqual([p["skill"] for p in transport.posts], [
+            "need_extract", "product_compare", "no_candidate_review",
+            "product_compare", "concept_draft", "semantic_review"])
+        self.assertEqual(result["output"]["hold_reasons"], [])
+
+    def test_genuine_hold_preserves_questions_and_never_generates_candidates(self):
+        def alter(skill, _context, value, _count):
+            if skill == "product_compare":
+                value["result"]["unresolved"] = ["고객이 원하는 추가 조건은 아직 없다"]
+                value["hold_reasons"] = ["고객이 원하는 추가 조건은 아직 없다"]
+                value["questions"] = ["추가 조건을 제공할 수 있나요?"]
+            return value
+        agent, transport = self.agent(alter)
+        result = agent.run(self.payload)
+        self.assertEqual(result["status"], "held")
+        self.assertEqual(result["input"]["revision_count"], 0)
+        self.assertEqual(result["output"]["questions"], ["추가 조건을 제공할 수 있나요?"])
+        self.assertEqual(result["output"]["concepts"], [])
+        self.assertEqual([p["skill"] for p in transport.posts], [
+            "need_extract", "product_compare", "no_candidate_review"])

@@ -121,8 +121,15 @@ class SkillRuntimeTests(unittest.TestCase):
     def test_need_outcomes_are_complete_and_have_no_duplicate_ids(self):
         need = self.example("product_compare")["needs"][0]
         self.fixture("need_extract", {"needs": [need], "desired_outcomes": [], "unresolved": []})
-        self.assertEqual(self.runtime.execute("need_extract", self.example("need_extract"))["error"]["code"],
-                         "VALIDATION_FAILED")
+        error = self.runtime.execute("need_extract", self.example("need_extract"))["error"]
+        self.assertEqual(error["code"], "VALIDATION_FAILED")
+        self.assertEqual(error["details"]["missing_need_ids"], [need["id"]])
+        self.assertEqual(error["details"]["expected_count"], 1)
+        outcome = {"need_id": need["id"], "desired_outcome": "개발 검증"}
+        self.runtime = SkillRuntime(self.store)
+        self.fixture("need_extract", {"needs": [need], "desired_outcomes": [outcome, outcome], "unresolved": []})
+        error = self.runtime.execute("need_extract", self.example("need_extract"))["error"]
+        self.assertEqual(error["details"]["duplicate_need_ids"], [need["id"]])
 
     def test_original_text_and_locator_cannot_be_forged(self):
         payload = self.example("evidence_lookup")

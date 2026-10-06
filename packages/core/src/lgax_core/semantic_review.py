@@ -8,6 +8,7 @@ from typing import Any
 
 from jsonschema import Draft202012Validator
 
+from .concept_lineage import trace_concept_lineage
 from .errors import DomainError
 from .judgement_contract import input_digest
 
@@ -30,6 +31,8 @@ INSTRUCTIONS = (
     "mechanism은 잔여 불편을 줄이는 구체적인 작동 방식이 설명됐는지, "
     "difference_from_current_features는 현재 기능과 다른 점이 설명됐는지를 검사합니다. "
     "차이가 설명된 사실 자체는 difference 위반이 아닙니다. "
+    "차이가 충족됐다고 판정할 때는 해당 후보의 각 Gap에 연결된 고객 리뷰와 같은 제품/버전의 설명서를 "
+    "source_quotes에 함께 인용하고, 각 연결 기능의 설명서도 대조하세요. 다른 Gap의 근거로 대신하지 마세요. "
     "unverified_assumptions는 제조·안전·효과를 이미 입증했다고 단정하지 않고 후속 검증 대상으로 표시했는지를 검사합니다. "
     "assumptions 배열은 미검증 전제 목록입니다. 이를 실현 가능한 것으로 이미 검증했다는 선언과 구분하세요. "
     "요청·사용 조건을 지켜야 한다는 requirements는 설계 요구이며 입증된 성능 주장이 아닙니다. "
@@ -39,6 +42,9 @@ INSTRUCTIONS = (
     "그 사유에 담긴 기존 제품의 기능 부재·물리적 불가능·원인 단정도 원문 사실과 대조해야 합니다. "
     "사용 불편이나 문서 미언급을 불가능·부재라는 확정 사실로 확대하지 마세요. "
     "특정 효과 수치나 실현 가능성을 이미 확인된 사실로 단정한 경우에는 해당 문구와 근거를 대조해 violation을 기록하세요. "
+    "quality_context의 기능 지원·잔여 불편·후보 추적은 선언과 인용 연결 검사이며 의미가 맞다는 승인이 아닙니다. "
+    "numeric_mentions는 검토할 수치 문구입니다. matching_evidence_ids가 있어도 수치의 대상·조건·효과가 같아야 "
+    "사실 근거이며, 같은 숫자의 출현만으로 입증하지 마세요. 가설의 목표 수치와 측정 완료 주장을 구분하세요. "
     "exclusion의 verdict는 compliant/violation/uncertain이고 quality는 satisfied/violation/uncertain입니다. "
     "candidate_quote는 해당 후보 또는 같은 concept_id의 concept_assessments 원문 일부를 그대로 인용하세요. "
     "인용문을 요약·합성·교정하지 말고 해당 후보의 한 문자열 필드 안에서 연속된 부분을 복사하세요. "
@@ -133,13 +139,19 @@ def semantic_feedback(report: dict) -> list[dict]:
 
 def review_semantics(payload: dict, output: dict, report: Any) -> dict:
     """Bind the review to exact inputs/candidates; decide hold/retry within the same budget."""
-    def invalid(reason: str):
-        raise DomainError("VALIDATION_FAILED", "의미 검토의 원문·범위·완전성을 확인해야 합니다.", {"reason": reason})
+    def invalid(reason: str, details: dict | None = None):
+        raise DomainError("VALIDATION_FAILED", "의미 검토의 원문·범위·완전성을 확인해야 합니다.",
+                          {"reason": reason, **(details or {})})
 
     if any(Draft202012Validator(schema_for_review(payload, output)).iter_errors(report)):
         invalid("semantic_review_schema")
     concepts = {c["id"]: c for c in output["concepts"]}
     sources = {s["id"]: s["text"] for s in payload["sources"]}
+    product = payload["product"]
+    scoped_sources = {s["id"]: s for s in payload["sources"]
+                      if all(s[key] == product[key] for key in ("model_id", "document_version"))
+                      and (s["source_kind"] == "synthetic") == (product["source_kind"] == "synthetic")}
+    lineage = {row["concept_id"]: row for row in trace_concept_lineage(payload, output)["candidates"]}
     conditions = payload["request"]["exclusions"]
     seen_exclusions, seen_quality = set(), set()
     for category, rows in (("exclusion", report["exclusion_assessments"]), ("quality", report["quality_assessments"])):
@@ -163,6 +175,30 @@ def review_semantics(payload: dict, output: dict, report: Any) -> dict:
             for citation in row["source_quotes"]:
                 if citation["quote"] not in sources[citation["evidence_id"]]:
                     invalid("source_quote_not_literal")
+            if (category == "quality" and row["criterion"] == "difference_from_current_features"
+                    and row["verdict"] == "satisfied"):
+                cited = {citation["evidence_id"] for citation in row["source_quotes"]}
+                linked_gaps = {link["gap_id"] for link in lineage[candidate]["links"]}
+                for gap_id in concepts[candidate]["gap_ids"]:
+                    if gap_id not in linked_gaps:
+                        invalid("difference_gap_missing", {"concept_id": candidate, "gap_id": gap_id})
+                for link in lineage[candidate]["links"]:
+                    context = {"concept_id": candidate, "gap_id": link["gap_id"]}
+                    reviews = set(link["review_evidence_ids"]) & scoped_sources.keys()
+                    manuals = set(link["manual_evidence_ids"]) & scoped_sources.keys()
+                    if not (cited & reviews and cited & manuals):
+                        invalid("difference_requires_review_and_manual", {
+                            **context, "need_id": link["need_id"],
+                            "required_review_evidence_ids": sorted(reviews),
+                            "linked_manual_evidence_ids": sorted(manuals),
+                        })
+                    for feature in link["features"]:
+                        linked_manuals = manuals & set(feature["manual_evidence_ids"])
+                        if not cited & linked_manuals:
+                            invalid("difference_requires_linked_feature_manual", {
+                                **context, "feature_id": feature["feature_id"],
+                                "linked_manual_evidence_ids": sorted(linked_manuals),
+                            })
     if seen_exclusions != {(c, n) for c in concepts for n in range(len(conditions))} or (
         seen_quality != {(c, q) for c in concepts for q in QUALITY}
     ):

@@ -100,6 +100,9 @@ class PlanningReuseTests(unittest.TestCase):
             self.assertTrue(third["output"]["no_candidate_reasons"])
             self.assertEqual(third["errors"], [])
             self.assertEqual(len(third["semantic_reviews"]), int(hold_at == "semantic_review"))
+            self.assertEqual(len(third["no_candidate_reviews"]), int(hold_at == "need_extract"))
+            if hold_at == "need_extract":
+                self.assertEqual(third["no_candidate_reviews"][0]["decision"]["action"], "hold")
             self.assertEqual(first, frozen_first)
             self.assertEqual(second, frozen_second)
 
@@ -115,7 +118,8 @@ class PlanningReuseTests(unittest.TestCase):
                     request_context = request_context["context"]
                 self.assertEqual(request_context["request"], snapshot["request"])
         for result, snapshot in ((second, second_original), (third, third_original)):
-            expected_skills = (["need_extract"] if result is third and hold_at == "need_extract"
+            expected_skills = (["need_extract", "no_candidate_review"]
+                               if result is third and hold_at == "need_extract"
                                else ["need_extract", "product_compare", "concept_draft", "semantic_review"])
             self.assertEqual([c["skill_id"] for c in result["model_calls"]], expected_skills)
             self.assertEqual(result["input"]["revision_count"], 0)
