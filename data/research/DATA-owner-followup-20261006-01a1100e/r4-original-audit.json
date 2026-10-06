@@ -1,0 +1,648 @@
+{
+  "observed_at": "2026-10-06T10:31:19.636167+00:00",
+  "manifest_path": "evals/core-manual-quality/20261006/r4/execution-manifest.json",
+  "manifest_sha256": "4758f251d1c90d2d01a437d357b4abfc4c8bfa73c18ab74ae1c4ebab9110a959",
+  "new_model_calls": 0,
+  "originals_rewritten": 0,
+  "independent_evaluation_answers_used": false,
+  "cases": [
+    {
+      "case_id": "fridge-changed",
+      "output_path": "evals/core-manual-quality/20261006/r4/results/fridge-changed.json",
+      "output_sha256": "2f19e0a0c00343231f3a03f1d388349532caf99d1f9783e7b00acbca37b23121",
+      "input_path": "evals/core-manual-quality/20261006/r2/inputs/fridge-changed.input.json",
+      "input_file_sha256": "4d6611488d64788b8c212d5ce1c2ebeffaac5562b464182e9f1738220331055e",
+      "dataset_path": "evals/core-manual-quality/20261006/r2/inputs/synthetic.dataset.json",
+      "dataset_file_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+      "source_exact_match_count": 11,
+      "source_ids": [
+        "MANUAL-001",
+        "REVIEW-EVIDENCE-001",
+        "REVIEW-EVIDENCE-002",
+        "REVIEW-EVIDENCE-003",
+        "REVIEW-EVIDENCE-004",
+        "REVIEW-EVIDENCE-005",
+        "REVIEW-EVIDENCE-006",
+        "REVIEW-EVIDENCE-007",
+        "REVIEW-EVIDENCE-008",
+        "REVIEW-EVIDENCE-009",
+        "REVIEW-EVIDENCE-010"
+      ],
+      "status": "failed",
+      "decision_violations": [
+        {
+          "code": "HOLD_WITHOUT_QUESTIONS",
+          "stage": "review"
+        }
+      ],
+      "calls": [
+        {
+          "revision_count": 0,
+          "prompt_sha256": "80fe72676ab06f2d04246966bc6a648e638241c075e6b3ba72df9b0f789a7e47",
+          "raw_response_sha256": "30eb8d6300c276cb3e1a72f9933f3b6c5df51505cdd949b8a492bfb48724ec82",
+          "unresolved": [
+            "NEED-001",
+            "NEED-002",
+            "NEED-003",
+            "NEED-004",
+            "NEED-005",
+            "NEED-006",
+            "NEED-007",
+            "NEED-008",
+            "NEED-009"
+          ],
+          "questions": [],
+          "hold_reasons": []
+        },
+        {
+          "revision_count": 1,
+          "prompt_sha256": "57c4f64614fd6db7b09d8fe0f92f5e4d5b350cc8b48f65ab0c6685e8e4bfe0b6",
+          "raw_response_sha256": "30eb8d6300c276cb3e1a72f9933f3b6c5df51505cdd949b8a492bfb48724ec82",
+          "unresolved": [
+            "NEED-001",
+            "NEED-002",
+            "NEED-003",
+            "NEED-004",
+            "NEED-005",
+            "NEED-006",
+            "NEED-007",
+            "NEED-008",
+            "NEED-009"
+          ],
+          "questions": [],
+          "hold_reasons": []
+        },
+        {
+          "revision_count": 2,
+          "prompt_sha256": "f9639228fd92a1b500fbdd1c019ea7202ec578f40b1af3b1342681bbfba49a27",
+          "raw_response_sha256": "30eb8d6300c276cb3e1a72f9933f3b6c5df51505cdd949b8a492bfb48724ec82",
+          "unresolved": [
+            "NEED-001",
+            "NEED-002",
+            "NEED-003",
+            "NEED-004",
+            "NEED-005",
+            "NEED-006",
+            "NEED-007",
+            "NEED-008",
+            "NEED-009"
+          ],
+          "questions": [],
+          "hold_reasons": []
+        }
+      ],
+      "needs": [
+        {
+          "need_id": "NEED-001",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-001"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 2
+            }
+          ],
+          "observation": "근거 ID·원문 일치. 요구의 의미 강도는 별도 판정."
+        },
+        {
+          "need_id": "NEED-002",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-002"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 3
+            }
+          ],
+          "observation": "근거 ID·원문 일치. 요구의 의미 강도는 별도 판정."
+        },
+        {
+          "need_id": "NEED-003",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-003"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 4
+            }
+          ],
+          "observation": "원문은 안쪽 식품 찾기·수납 정리. 고정 situation의 선반 청소 맥락과 차이."
+        },
+        {
+          "need_id": "NEED-004",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-004"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 5
+            }
+          ],
+          "observation": "근거 ID·원문 일치. 요구의 의미 강도는 별도 판정."
+        },
+        {
+          "need_id": "NEED-005",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-005"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 6
+            }
+          ],
+          "observation": "근거 ID·원문 일치. 요구의 의미 강도는 별도 판정."
+        },
+        {
+          "need_id": "NEED-006",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-007"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 8
+            }
+          ],
+          "observation": "원문은 가족의 정리 표시 이해 차이. 선반 청소 맥락을 직접 뒷받침하지 않음."
+        },
+        {
+          "need_id": "NEED-007",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-008"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 9
+            }
+          ],
+          "observation": "원문은 빠른 청소를 바라는 문장. 실제 발생 불편·빈도·효과로 확대할 수 없음."
+        },
+        {
+          "need_id": "NEED-008",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-009"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 10
+            }
+          ],
+          "observation": "근거 ID·원문 일치. 요구의 의미 강도는 별도 판정."
+        },
+        {
+          "need_id": "NEED-009",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-010"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 11
+            }
+          ],
+          "observation": "근거 ID·원문 일치. 요구의 의미 강도는 별도 판정."
+        }
+      ],
+      "uncited_review_ids": [
+        "REVIEW-EVIDENCE-006"
+      ],
+      "uncited_review_observation": "006 원문은 선반을 쉽게 꺼내 청소하며 크게 불편하지 않다는 긍정 문장. 빠진 불편 근거라고 단정하지 않음.",
+      "questions": [],
+      "unresolved": [
+        "NEED-001",
+        "NEED-002",
+        "NEED-003",
+        "NEED-004",
+        "NEED-005",
+        "NEED-006",
+        "NEED-007",
+        "NEED-008",
+        "NEED-009",
+        "HOLD_WITHOUT_QUESTIONS"
+      ],
+      "feature_gap_concept_count": [
+        0,
+        0,
+        0
+      ],
+      "manual_feature_explanations_assessed": false,
+      "semantic_conclusion": "질문 없는 보류 및 맥락 차이를 확인. 신규 실모델 성공/전체 의미 품질 통과 아님."
+    },
+    {
+      "case_id": "fridge-normal",
+      "output_path": "evals/core-manual-quality/20261006/r4/results/fridge-normal.json",
+      "output_sha256": "4cf82fb2fe7f6c25750107c8f52388e276e4e5baa9661ba71f0670a5b58a8d26",
+      "input_path": "evals/core-manual-quality/20261006/r2/inputs/fridge-normal.input.json",
+      "input_file_sha256": "d07e0e18ccf9b12bbed92fc71205bec7e38fb5094a91b902ef3d22b56dc11f91",
+      "dataset_path": "evals/core-manual-quality/20261006/r2/inputs/synthetic.dataset.json",
+      "dataset_file_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+      "source_exact_match_count": 11,
+      "source_ids": [
+        "MANUAL-001",
+        "REVIEW-EVIDENCE-001",
+        "REVIEW-EVIDENCE-002",
+        "REVIEW-EVIDENCE-003",
+        "REVIEW-EVIDENCE-004",
+        "REVIEW-EVIDENCE-005",
+        "REVIEW-EVIDENCE-006",
+        "REVIEW-EVIDENCE-007",
+        "REVIEW-EVIDENCE-008",
+        "REVIEW-EVIDENCE-009",
+        "REVIEW-EVIDENCE-010"
+      ],
+      "status": "failed",
+      "decision_violations": [
+        {
+          "code": "HOLD_WITHOUT_QUESTIONS",
+          "stage": "review"
+        }
+      ],
+      "calls": [
+        {
+          "revision_count": 0,
+          "prompt_sha256": "6809aa52f749db19a3af7b117706617fcf139fc1aeb80e56fdfc4ff51c963c60",
+          "raw_response_sha256": "aa51f56ae095848ee8dbd3baf406a087a5ffff9a33eac9b105135afb22202de2",
+          "unresolved": [
+            "NEED-001",
+            "NEED-002",
+            "NEED-003",
+            "NEED-004",
+            "NEED-005",
+            "NEED-006",
+            "NEED-007",
+            "NEED-008",
+            "NEED-009"
+          ],
+          "questions": [],
+          "hold_reasons": []
+        },
+        {
+          "revision_count": 1,
+          "prompt_sha256": "cdc5c41af72728da04860fcfeeb275d97dcd4def20f9b5404e658f1846cd2616",
+          "raw_response_sha256": "4b02bdb2372ac05d2ccadf0478c0b3e2adfe947e6fde5916753abee0d0d14fff",
+          "unresolved": [
+            "questions",
+            "hold_reasons"
+          ],
+          "questions": [],
+          "hold_reasons": []
+        },
+        {
+          "revision_count": 2,
+          "prompt_sha256": "9ab3507646f6405f770c5e7c02649a4a953c25e857455211534eae5478508177",
+          "raw_response_sha256": "4b02bdb2372ac05d2ccadf0478c0b3e2adfe947e6fde5916753abee0d0d14fff",
+          "unresolved": [
+            "questions",
+            "hold_reasons"
+          ],
+          "questions": [],
+          "hold_reasons": []
+        }
+      ],
+      "needs": [
+        {
+          "need_id": "NEED-001",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-001"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 2
+            }
+          ],
+          "observation": "근거 ID·원문 일치. 요구의 의미 강도는 별도 판정."
+        },
+        {
+          "need_id": "NEED-002",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-002"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 3
+            }
+          ],
+          "observation": "근거 ID·원문 일치. 요구의 의미 강도는 별도 판정."
+        },
+        {
+          "need_id": "NEED-003",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-003"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 4
+            }
+          ],
+          "observation": "원문은 안쪽 식품 찾기·수납 정리. 고정 situation의 선반 청소 맥락과 차이."
+        },
+        {
+          "need_id": "NEED-004",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-004"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 5
+            }
+          ],
+          "observation": "근거 ID·원문 일치. 요구의 의미 강도는 별도 판정."
+        },
+        {
+          "need_id": "NEED-005",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-005"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 6
+            }
+          ],
+          "observation": "근거 ID·원문 일치. 요구의 의미 강도는 별도 판정."
+        },
+        {
+          "need_id": "NEED-006",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-007"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 8
+            }
+          ],
+          "observation": "원문은 가족의 정리 표시 이해 차이. 선반 청소 맥락을 직접 뒷받침하지 않음."
+        },
+        {
+          "need_id": "NEED-007",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-008"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 9
+            }
+          ],
+          "observation": "원문은 빠른 청소를 바라는 문장. 실제 발생 불편·빈도·효과로 확대할 수 없음."
+        },
+        {
+          "need_id": "NEED-008",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-009"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 10
+            }
+          ],
+          "observation": "근거 ID·원문 일치. 요구의 의미 강도는 별도 판정."
+        },
+        {
+          "need_id": "NEED-009",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-010"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 11
+            }
+          ],
+          "observation": "근거 ID·원문 일치. 요구의 의미 강도는 별도 판정."
+        }
+      ],
+      "uncited_review_ids": [
+        "REVIEW-EVIDENCE-006"
+      ],
+      "uncited_review_observation": "006 원문은 선반을 쉽게 꺼내 청소하며 크게 불편하지 않다는 긍정 문장. 빠진 불편 근거라고 단정하지 않음.",
+      "questions": [],
+      "unresolved": [
+        "questions",
+        "hold_reasons",
+        "HOLD_WITHOUT_QUESTIONS"
+      ],
+      "feature_gap_concept_count": [
+        0,
+        0,
+        0
+      ],
+      "manual_feature_explanations_assessed": false,
+      "semantic_conclusion": "질문 없는 보류 및 맥락 차이를 확인. 신규 실모델 성공/전체 의미 품질 통과 아님."
+    },
+    {
+      "case_id": "fridge-missing-manual",
+      "output_path": "evals/core-manual-quality/20261006/r4/results/fridge-missing-manual.json",
+      "output_sha256": "b3a128e8fb49fbb3d4cdfdb778e3ae526f7ba2480150583c91edad97dd409862",
+      "input_path": "evals/core-manual-quality/20261006/r2/inputs/fridge-missing-manual.input.json",
+      "input_file_sha256": "74892c19dcbbfbdf120987e224bb9617975162bcadc37c2792b9ca0c82c545d8",
+      "dataset_path": "evals/core-manual-quality/20261006/r2/inputs/missing-manual.dataset.json",
+      "dataset_file_sha256": "3e5896bc363d93dbfe5d6bb049a550fb1cd204209264b9ef0e078f7d8f2dfcd9",
+      "source_exact_match_count": 10,
+      "source_ids": [
+        "REVIEW-EVIDENCE-001",
+        "REVIEW-EVIDENCE-002",
+        "REVIEW-EVIDENCE-003",
+        "REVIEW-EVIDENCE-004",
+        "REVIEW-EVIDENCE-005",
+        "REVIEW-EVIDENCE-006",
+        "REVIEW-EVIDENCE-007",
+        "REVIEW-EVIDENCE-008",
+        "REVIEW-EVIDENCE-009",
+        "REVIEW-EVIDENCE-010"
+      ],
+      "status": "failed",
+      "decision_violations": [
+        {
+          "code": "HOLD_WITHOUT_QUESTIONS",
+          "stage": "review"
+        }
+      ],
+      "calls": [
+        {
+          "revision_count": 0,
+          "prompt_sha256": "63ecd8afc22ca355e05e0b649d29bc38040696f0ebc6743b2943b7cc8c3021e1",
+          "raw_response_sha256": "efd8f8dd2e18bebb62ede23fe593f226a39cbd3f37f234af697c4bd285e1666c",
+          "unresolved": [
+            "questions",
+            "hold_reasons"
+          ],
+          "questions": [],
+          "hold_reasons": []
+        },
+        {
+          "revision_count": 1,
+          "prompt_sha256": "5bb93518d3b6dc93d09b7136878e0755086b5036a7d392c1d8ac6bac7989a9eb",
+          "raw_response_sha256": "1f0c91301284c4f50d34a024f96d63d136e85613704137d1ac7bc0ade80e9689",
+          "unresolved": [
+            "questions",
+            "hold_reasons"
+          ],
+          "questions": [],
+          "hold_reasons": []
+        },
+        {
+          "revision_count": 2,
+          "prompt_sha256": "a12cc97b22a0ccd8829f37e621e0b7c8b79ff9e439a8908785526a314931deb2",
+          "raw_response_sha256": "fd2f978dfe2376e553fbd61c52c322fae1868e0ff96b8110d2acd228a27cf45b",
+          "unresolved": [
+            "questions",
+            "hold_reasons"
+          ],
+          "questions": [],
+          "hold_reasons": []
+        }
+      ],
+      "needs": [
+        {
+          "need_id": "NEED-001",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-001"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 2
+            }
+          ],
+          "observation": "근거 ID·원문 일치. 요구의 의미 강도는 별도 판정."
+        },
+        {
+          "need_id": "NEED-002",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-002"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 3
+            }
+          ],
+          "observation": "근거 ID·원문 일치. 요구의 의미 강도는 별도 판정."
+        },
+        {
+          "need_id": "NEED-003",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-003"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 4
+            }
+          ],
+          "observation": "원문은 안쪽 식품 찾기·수납 정리. 고정 situation의 선반 청소 맥락과 차이."
+        },
+        {
+          "need_id": "NEED-004",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-004"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 5
+            }
+          ],
+          "observation": "근거 ID·원문 일치. 요구의 의미 강도는 별도 판정."
+        },
+        {
+          "need_id": "NEED-005",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-005"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 6
+            }
+          ],
+          "observation": "근거 ID·원문 일치. 요구의 의미 강도는 별도 판정."
+        },
+        {
+          "need_id": "NEED-006",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-007"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 8
+            }
+          ],
+          "observation": "원문은 가족의 정리 표시 이해 차이. 선반 청소 맥락을 직접 뒷받침하지 않음."
+        },
+        {
+          "need_id": "NEED-007",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-008"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 9
+            }
+          ],
+          "observation": "원문은 빠른 청소를 바라는 문장. 실제 발생 불편·빈도·효과로 확대할 수 없음."
+        },
+        {
+          "need_id": "NEED-008",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-009"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 10
+            }
+          ],
+          "observation": "근거 ID·원문 일치. 요구의 의미 강도는 별도 판정."
+        },
+        {
+          "need_id": "NEED-009",
+          "evidence_ids": [
+            "REVIEW-EVIDENCE-010"
+          ],
+          "pain_exact_text": true,
+          "source_locators": [
+            {
+              "row": 11
+            }
+          ],
+          "observation": "근거 ID·원문 일치. 요구의 의미 강도는 별도 판정."
+        }
+      ],
+      "uncited_review_ids": [
+        "REVIEW-EVIDENCE-006"
+      ],
+      "uncited_review_observation": "006 원문은 선반을 쉽게 꺼내 청소하며 크게 불편하지 않다는 긍정 문장. 빠진 불편 근거라고 단정하지 않음.",
+      "questions": [],
+      "unresolved": [
+        "questions",
+        "hold_reasons",
+        "HOLD_WITHOUT_QUESTIONS"
+      ],
+      "feature_gap_concept_count": [
+        0,
+        0,
+        0
+      ],
+      "manual_feature_explanations_assessed": false,
+      "semantic_conclusion": "질문 없는 보류 및 맥락 차이를 확인. 신규 실모델 성공/전체 의미 품질 통과 아님."
+    }
+  ],
+  "prior_27b_clarification": "GAP003/006 unmentioned + unsupported = SUPPORT_BASIS_MISMATCH. 계약상 unmentioned는 insufficient_evidence. 원 unsupported 판정/질문[]을 성공으로 바꾸지 않음."
+}

@@ -13,8 +13,9 @@ from contextlib import closing
 from copy import deepcopy
 from pathlib import Path
 
-from .document_store import DocumentStore
 from .errors import DomainError
+from .retrieval import GroundedDocumentStore
+from .source_ranges import capture_source, verify_source_range
 
 MAX_BYTES = 15 * 1024 * 1024
 
@@ -125,9 +126,14 @@ class DocumentRepository:
                             "start_char": start, "end_char": start + len(excerpt),
                             "text_sha256": digest(excerpt.encode()), "document_version": spec["document_version"],
                             "source_kind": spec["source_kind"], "original_text_exact": True})
+            snapshot = capture_source(data, document_id=did, model_id=spec["product"]["model_id"],
+                document_version=spec["document_version"], source_kind=spec["source_kind"], pages=parsed["pages"],
+                sections={selection["section"]: (page, start, start + len(excerpt))})
+            # Exact ID/scope/hash/page/character-range verification before persistence.
+            verify_source_range(snapshot, evidence[-1], origins[-1], current_original=data)
         dataset = {"artifact_kind": "document_dataset", "dataset_version": self.plan["dataset_version"],
                    "products": [spec["product"]], "reviews": [], "features": spec["features"], "evidence": evidence}
-        DocumentStore(dataset)  # Validate before any persisted registration.
+        GroundedDocumentStore(dataset, sources=[spec])  # Validate before persisted registration.
         record = {"document_id": did, "sha256": sha, "bytes": len(data), "product": spec["product"],
                   "document_version": spec["document_version"], "source_kind": spec["source_kind"],
                   "url": spec["url"], "checked_at": spec["checked_at"], "parser": parsed["parser"],
@@ -161,6 +167,20 @@ class DocumentRepository:
         for record in records:
             # Query clients must verify the retained original just as downloads do.
             self.original(record["document_id"])
+            spec = self.specs.get(record["document_id"])
+            if (spec is None or record["sha256"] != spec["sha256"]
+                    or record["plan_sha256"] != self.plan_sha256
+                    or record["dataset"]["dataset_version"] != self.plan["dataset_version"]
+                    or record["dataset"]["products"] != [spec["product"]]
+                    or record["dataset"]["features"] != spec["features"]):
+                raise DomainError("SOURCE_MISMATCH", "등록 기록이 승인 자료 범위와 다릅니다.", {})
+            expected = [{"id": s["evidence_id"], "model_id": spec["product"]["model_id"],
+                "document_version": spec["document_version"], "source_kind": spec["source_kind"],
+                "source_type": "manual", "source_id": record["document_id"],
+                "locator": {"page": s["page"], "section": s["section"]},
+                "text": s["excerpt"], "feature_ids": s["feature_ids"]} for s in spec["selections"]]
+            if record["dataset"]["evidence"] != expected or record["dataset"]["reviews"]:
+                raise DomainError("SOURCE_MISMATCH", "등록 근거의 원문·ID·위치가 승인 원문과 다릅니다.", {})
             for collection in ("products", "features", "evidence"):
                 dataset[collection].extend(record["dataset"][collection])
-        return DocumentStore(dataset)
+        return GroundedDocumentStore(dataset, sources=list(self.specs.values()), source_reader=self.original)

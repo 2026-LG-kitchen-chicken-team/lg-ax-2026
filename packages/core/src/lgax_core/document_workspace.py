@@ -12,15 +12,22 @@ import uvicorn
 from lgax_api.workspace_auth import TokenRegistry
 from lgax_api.workspace_server import create_workspace_app
 
-from .document_store import DocumentStore
+from .retrieval import GroundedDocumentStore
 from .workspace_planning import EnvPlanningRunner
 
 
-class WorkspaceDocumentStore(DocumentStore):
-    def __init__(self, dataset):
-        super().__init__(dataset)
+class WorkspaceDocumentStore(GroundedDocumentStore):
+    def __init__(self, dataset, *, sources=None, source_reader=None):
+        super().__init__(dataset, sources=sources, source_reader=source_reader)
         if not isinstance(dataset.get("dataset_version"), str) or not dataset["dataset_version"].strip():
             raise ValueError("Document dataset version required")
+
+    @classmethod
+    def from_repository(cls, repository):
+        """Preserve current original checks when injecting a registered corpus."""
+        dataset = repository.store().bootstrap()["data"]
+        dataset.pop("contract_version", None)
+        return cls(dataset, sources=list(repository.specs.values()), source_reader=repository.original)
 
     def bootstrap(self):
         response = super().bootstrap()
