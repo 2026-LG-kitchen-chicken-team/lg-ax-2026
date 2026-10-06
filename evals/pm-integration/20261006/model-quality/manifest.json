@@ -618,10 +618,67 @@
           "Concept generation guard passed with lossless annotation table; final semantic_review still rejected above16000 before upstream dispatch. Five actual generations and six client attempts are different."
         ]
       }
+    },
+    {
+      "case_id": "fridge-normal",
+      "source_commit": "428f237bb7bddc021aa7f9c09d97fda825615fb2",
+      "dataset_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+      "input_sha256": "d07e0e18ccf9b12bbed92fc71205bec7e38fb5094a91b902ef3d22b56dc11f91",
+      "full_git_archive_sha256": "1a23cc7c1e5922322d9f80d70c0980ee0538e220718a734e2553e3b14840ed8c",
+      "status": "held",
+      "actual_calls": 6,
+      "tokens": 37910,
+      "settings": {
+        "temperature": 0,
+        "seed": 42,
+        "num_ctx": 16384,
+        "num_predict": 8192
+      },
+      "revision_count": 2,
+      "model_id": "qwen3.5:122b-a10b-q4_K_M",
+      "model_digest": "8b9d11d807c57feb1e2ecb0d6cbf40334c37dcc3523bed5540af4f927f112a37",
+      "source_unchanged": true,
+      "group": "122b-full-cap-v3",
+      "path": "evals/pm-integration/20261006/model-quality/122b-full-cap-v3/fridge-normal.output.json",
+      "output_sha256": "dc0eb5afbeda7baff5133ae639e4b31a362a4877a002e4db40b27fbd93e4960e",
+      "output_bytes": 1167347,
+      "source_kind": "synthetic",
+      "scope": "full_original_10_reviews",
+      "source_selection_by": "Original full input, no review removal",
+      "original_private_summary_sha256": "6e5b3009d99692f9005344344f4de4063e333a8e3b61b9805057cbcf9ddad02a",
+      "original_relay_sha256": "b390c6a28ba59d039d7f2920b9ee1241679b683e6b1efd57dfdb9b38e938a8af",
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "recorded_client_attempts": 6,
+      "quality": {
+        "verdict": "semantic_quality_hold_not_appropriate_data_hold",
+        "normal_accept_verified": false,
+        "limits": [
+          "Actual semantic review reached upstream response; prompt transport limit fixed.",
+          "Proposed new mechanism was incorrectly required to appear in existing manual; unsupported current-product claims were marked satisfied.",
+          "Nine unrelated gaps matched FEATURE001; wish008 treated as observed complaint; shared revision limit2 preserved."
+        ],
+        "independent_audit_path": "evals/pm-integration/20261006/model-quality/122b-full-cap-v3/independent-audit.json",
+        "independent_audit_sha256": "8c8de9307b7135b2933dfea2eae0ac9a5b2565556cac0d2a25e5bcd883d20f8a"
+      }
     }
   ],
-  "fresh_actual_model_calls": 47,
-  "tokens": 155798,
+  "fresh_actual_model_calls": 53,
+  "tokens": 193708,
   "original_outputs_rewritten": false,
   "automatic_jobs_or_quotas_reset": false,
   "automation_mode": "OFF",

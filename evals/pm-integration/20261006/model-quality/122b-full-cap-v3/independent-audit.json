@@ -1,0 +1,148 @@
+{
+  "audit_kind": "independent_inert_artifact_and_semantic_review",
+  "source_commit": "428f237bb7bddc021aa7f9c09d97fda825615fb2",
+  "product_execution": 0,
+  "model_calls_by_auditor": 0,
+  "raw_files": {
+    "summary.json": {
+      "sha256": "6e5b3009d99692f9005344344f4de4063e333a8e3b61b9805057cbcf9ddad02a",
+      "bytes": 2034
+    },
+    "fridge-normal/output.json": {
+      "sha256": "dc0eb5afbeda7baff5133ae639e4b31a362a4877a002e4db40b27fbd93e4960e",
+      "bytes": 1167347
+    },
+    "fridge-normal/relay.json": {
+      "sha256": "b390c6a28ba59d039d7f2920b9ee1241679b683e6b1efd57dfdb9b38e938a8af",
+      "bytes": 501287
+    }
+  },
+  "dataset": {
+    "actual_path": "evals/core-manual-quality/20261006/r2/inputs/synthetic.dataset.json",
+    "actual_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+    "original_demo_sha256": "97fe4b6badd54f3b64daf5e34f71033732e0e0b9d696d8bfc67b03b981512cf0",
+    "difference_keys": [
+      "manifest"
+    ],
+    "products": 5,
+    "reviews": 36,
+    "evidence": 42,
+    "input_original_sources": 11,
+    "input_original_reviews": 10,
+    "input_sha256": "d07e0e18ccf9b12bbed92fc71205bec7e38fb5094a91b902ef3d22b56dc11f91",
+    "input_version": "0.1.0-manual-quality-r1-development"
+  },
+  "upstream_verification": {
+    "requests": 18,
+    "actual_generations": 6,
+    "total_tokens": 37910,
+    "all_request_and_response_digests_match": true,
+    "before_and_after_model_digest_match": true,
+    "all_prompt_schema_settings_usage_match": true,
+    "calls": [
+      {
+        "stage": "need_extract",
+        "prompt_sha256": "6af0241192ece54c9f01b6db15c1b454311250fcd9384adb76b023e8885c19e4",
+        "schema_sha256": "4b35c98c078b09c62d25e90243a1f2094037008d855b7846273bb3425dd5cd0b",
+        "prompt_chars": 6249,
+        "prompt_utf8_bytes": 8992,
+        "upstream_response_sha256": "4944f259ac9f5f8507fb346d8cccac4f6edd0b53421373797f8dc516f56771c8",
+        "tokens": 3966
+      },
+      {
+        "stage": "need_extract",
+        "prompt_sha256": "b1d472e6ebf0c047e305a599543fc45ac0b63bd6a680d5f8ab331ad16fce0584",
+        "schema_sha256": "4b35c98c078b09c62d25e90243a1f2094037008d855b7846273bb3425dd5cd0b",
+        "prompt_chars": 7286,
+        "prompt_utf8_bytes": 10282,
+        "upstream_response_sha256": "c2eb57e73d960faff06d889eec59d677e74541fc2517b239578f6fbcb095d785",
+        "tokens": 4508
+      },
+      {
+        "stage": "product_compare",
+        "prompt_sha256": "2001e5b87b4ec86b1990542287c65108c77f39e986107adfe0bfc5d16f29f175",
+        "schema_sha256": "367c6d5fe934e4d5ae71b052b6ac7845cc3e78b869399d23f2992b26671f7c9d",
+        "prompt_chars": 11639,
+        "prompt_utf8_bytes": 16592,
+        "upstream_response_sha256": "728433d81dd7a23c16ea0b86c043e2d71e311eb2acdecb9746ae418947f175c2",
+        "tokens": 6157
+      },
+      {
+        "stage": "concept_draft",
+        "prompt_sha256": "62d4704fa3b2a2142d48d34ef38150a613ae87c1116f93985fd9f10b3457edba",
+        "schema_sha256": "c07e41b1ac0096ddb9f6148ea9f22b4b866c3bf82bf04d2ad12f4c6f340ec3a0",
+        "prompt_chars": 15388,
+        "prompt_utf8_bytes": 20592,
+        "upstream_response_sha256": "1ddf8fd0b709fdd0fde6051ecdeba7035872c2476728d69d38c29adde919dddd",
+        "tokens": 6548
+      },
+      {
+        "stage": "concept_draft",
+        "prompt_sha256": "0c18d4668c141dabe116d972b8c3d19f131c97f7c1b2facd7c25c8520fd5c386",
+        "schema_sha256": "c07e41b1ac0096ddb9f6148ea9f22b4b866c3bf82bf04d2ad12f4c6f340ec3a0",
+        "prompt_chars": 14406,
+        "prompt_utf8_bytes": 19357,
+        "upstream_response_sha256": "d5f4ccb4de901c1c60ca75d7e405d1c711ed35e4984d47cab738abc98335bff6",
+        "tokens": 6218
+      },
+      {
+        "stage": "semantic_review",
+        "prompt_sha256": "16ee7797e039ab3f955e056b3ca182153a993e8ba2680a088c0b3acad39fc4ea",
+        "schema_sha256": "3223092b849f53f14a14be66d1e87fe4b1d370151f2eb5a6714e7dc323bb0b81",
+        "prompt_chars": 21393,
+        "prompt_utf8_bytes": 30183,
+        "upstream_response_sha256": "676129dc6eba745e39c2d42c41025a85fe39ff7e4a8e35ac238a61fba42aa151",
+        "tokens": 10513
+      }
+    ]
+  },
+  "length_guard": {
+    "resolved_for_this_input": true,
+    "semantic_chars": 21393,
+    "semantic_utf8_bytes": 30183,
+    "general_context_capacity_proved": false
+  },
+  "terminal": {
+    "status": "held",
+    "decision_valid": false,
+    "action": "hold",
+    "violations": [
+      {
+        "code": "QUALITY_UNCERTAIN",
+        "stage": "concepts"
+      }
+    ],
+    "terminal_reason": "revision_limit",
+    "revision_count": 2,
+    "final_concepts": 0,
+    "fake_completed_pass": false,
+    "valid_missing_data_hold_demonstrated": false
+  },
+  "semantic_findings": [
+    {
+      "priority": 1,
+      "artifact": "model_calls[5].generated.data.quality_assessments",
+      "problem": "All three difference_from_current_features judgments ask existing manual to document newly proposed mechanisms; this conflates design-hypothesis feasibility with evidence of the current baseline.",
+      "next_action": "CORE: distinguish existing-feature fact, proposed mechanism hypothesis, and required future feasibility test in semantic rubric; add counterexample using this unchanged ten-review input."
+    },
+    {
+      "priority": 1,
+      "artifact": "model_calls[4].generated.data.result.concepts / model_calls[5].generated.data.quality_assessments",
+      "problem": "CONCEPT-002 asserts absence of temporary storage; CONCEPT-003 asserts entire basket removal is necessary. MANUAL-001 only supports shelf removal and moving shelf food. Unsupported baseline factual claims nevertheless receive satisfied.",
+      "next_action": "CORE: require each current-product factual premise to have exact-scope source support and reject/neutralize unsupported absence/whole-basket claims."
+    },
+    {
+      "priority": 2,
+      "artifact": "model_calls[2].generated.data.result.gaps",
+      "problem": "All nine gaps link FEATURE-001 shelf removal, including findability, family labeling, basket/height needs without supplied relevant feature documentation.",
+      "next_action": "CORE/DATA: allow an unmatched feature or evidence insufficiency for unrelated needs, retaining full review coverage without inventing feature relations."
+    },
+    {
+      "priority": 2,
+      "artifact": "model_calls[1].generated.data.review_assessments / model_calls[4].generated.data.result.concepts",
+      "problem": "Review 008 wish is classified as complaint; CONCEPT-001 hardware shelf mechanism is labeled service. These do not create false terminal success but impair evidence taxonomy.",
+      "next_action": "CORE: add wish-versus-experienced-complaint and product-versus-service counterexamples."
+    }
+  ],
+  "classification": "Bounded real upstream run and resolved prompt guard; judgment-quality hold plus exhausted shared correction budget. Not normal accept and not proof of a justified missing-original-data hold."
+}

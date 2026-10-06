@@ -26,3 +26,11 @@
 - v2 GET tags-only ConnectError는 생성0이며 SSHforward 복구 뒤 별도ID실행을 했다. v2 actual5generation과6clientattempt의 마지막 semantic_review prompt guard는 적절한 자료보류가 아니다.
 - 정적 검사·CI·fixture 재생·실모델·브라우저·사용자확인·공식요건을 구분한다. 제출/품질전체완료·효과수치·실제시장 수요·독립모델성능을 이 증거로 주장하지 않는다.
 - 기존 AGENTS/CLAUDE 완전일치·문서이관·개인이관·계약·phase2·원source/정식증거 gate는 최종고정 source에서 재실행한다. 중앙 OFF·Project승인 main·메일Sent·Notion반영은 실제확인 뒤 별도 종료 근거에 연결한다.
+
+## 20:55 KST 후속 인수·실제 실행 확인
+
+- 새 WEB186, DATA187/189, CORE192까지 독립 검수·원문 보존·CI4/4 뒤 부분 병합했다. PR190의 새 오류 label 미등록과 판단 metadata 의미 충돌은 따로 검수 중이며, OCR191/193은 중복·원본/각주 보존을 대조한다. 최종 처분은 실제 PR 큐를 따른다.
+- 어댑터 cap428f237의 실제 실패 입력·경계7검사와 가역 annotation 통합4검사 총11 PASS. source96ec98c 전체 Python1490실행·실패0·skip4와 지침/계약/하네스/개인 이관/문서 gate를 확인했다. sourceb8cb480의 웹516 PASS·skip5, Node4·tsc/build PASS. 모두 zero-auth Docker/source_changed[]/추가모델0이며 이후 source 변경의 최종 CI와 구분한다.
+- 122B cap-v3의 원10리뷰/설명서 전체로6generation·37910토큰을 추가해 누적13원출력·53actual·193708토큰이다. 실제 semantic21,393자/30,183B까지 응답했고 길이 제한은 해결됐다. 최종 QUALITY_UNCERTAIN/revision_limit2/held0concept이므로 전체 정상 완료는 아직 실패다. 신규 제안 가설을 기존 설명서로 증명하라는 판정, 근거 없는 현재제품 단정, 모든9Gap의 FEATURE001 연결 반례를 CORE에 전달한다. PR192 효과는 아직 미실측이다.
+- R4 CORE/DATA/WEB3배정은 각 Issue11/13/25 댓글과 Project 최근배정/메일 안내에 기록했고 Gmail 발송 결과를 SENT·to/from/subject로 재확인했다. 공개 notification은 sent이며 수신자의 열람/착수는 미확인이다. 주소/원메일은 private에만 둔다. 자동화는 OFF다.
+- 문서 재구성의 실제 공유·최종 검사/중앙 승인 main·Notion 재조회는 후속 종료 기록에 연결한다. CORE 의미 품질→3제품 정상/변경/적절한 보류→같은 정상 run 웹/MCP→독립 평가/제출 순서의 미완료를 유지한다.

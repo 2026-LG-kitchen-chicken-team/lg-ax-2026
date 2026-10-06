@@ -6,7 +6,7 @@
 - 원PR·새PR178~185 actual head/CI/병합·원 실패/비용/owner기록을 연결한 부분 인수다. 전체 Agent/parent Done 증거 아님.
 - 원문5개161753B·제목104·링크169 및 원Git/반례4개의 이관근거와 동일AGENTS/CLAUDE를 연결했다. 일상검사는 default 이관과 정본규칙을 따른다.
 - Docker144 core/1469 Python실행 및 웹514/516·skip5/build, 실제 PDF3 등록/검색/restart와API/MCP, 현재 Chromium20/20+4/4 수신증·source pin·hash는 [E045 상세](2026-10-06/정이량-E045-INTEGRATION.md)에 있다.
-- 실제 모델47generation/155798tokens·12 원출력, 제한2리뷰와원10리뷰·attempt/actualcall·마지막semantic길이실패를 구분한다. R6 gateway5044토큰 대조는 원응답복원/원ledger수정 아님.
+- 실제 모델53generation/193708tokens·13 원출력, 제한2리뷰와원10리뷰·attempt/actualcall·v3입력해결/남은semantic품질실패를 구분한다. R6 gateway5044토큰 대조는 원응답복원/원ledger수정 아님.
 - [010 의도·수행](../../작업기록/정이량/2026-10-06/정이량-20261006-010-INTEGRATION.md), [문서 허브](../../README.md), [R4](../../pm/integration-followup-20261006.md). 최종공유/통합·메일/Project/Notion은 실제확인 뒤 새종료근거로 연결한다.
 
 <!-- member-log:owner-updates:end -->

@@ -1,6 +1,6 @@
 # 실제 모델 제한 검증과 독립 내용 검수
 
-2026-10-06 사용자 지시로 PM이 유한한 수동 비교를 수행했다. 자동화는 OFF이며 기존 실패·예약·비용·판단 검사를 초기화하거나 완화하지 않았다. [manifest](manifest.json)는 실제 실행 12건의 source/input/dataset/output SHA·모델 digest·설정·호출 수·토큰·권한 경계를 연결한다. 출력 JSON은 원바이트 그대로다.
+2026-10-06 사용자 지시로 PM이 유한한 수동 비교를 수행했다. 자동화는 OFF이며 기존 실패·예약·비용·판단 검사를 초기화하거나 완화하지 않았다. [manifest](manifest.json)는 실제 실행 13건의 source/input/dataset/output SHA·모델 digest·설정·호출 수·토큰·권한 경계를 연결한다. 출력 JSON은 원바이트 그대로다.
 
 | 실행군 | 입력 범위 | 실제 결과 | 호출/토큰 | 독립 판단 |
 |---|---|---|---|---|
@@ -11,7 +11,7 @@
 | 122B 최종 원문 전체 재확인 | 원10리뷰, 안내v4+CORE182 피드백 | 보류1 | 3 / 14,631 | client attempt4 중 concepts attempt는 upstream 호출 전 INVALID_ARGUMENT. 전체 원문 정상 성공은 미완료 |
 | 122B 원문 전체·annotation 테이블v2 | 같은 원10리뷰·guard/수정2회 유지 | 보류1 | 5 / 27,397 | 후보 생성2회까지 실제 실행. client attempt6의 의미 검토는16,000자 guard로 upstream 전 거절. 적절한 자료 부족 보류가 아님 |
 
-총47개의 실제 upstream 호출/155,798토큰이며 이전에 기록된8B 실행은 이 합계에 중복 넣지 않았다. client attempt와 실제 모델 호출 수를 구분한다. 일반/변경/자료부족은 별도 고정 입력이며 내부 수정 예산은 최대2회, 실행별 호출 상한12·토큰 상한100,000이다. 모델 공급/실행 오류와 입력 의미 오류를 분리한다. v2 최초 착수는 SSH forward가 없는 GET tags에서 ConnectError로 종료됐고 생성 요청0이었다. 원 실패를 보존한 뒤 연결을 확인해 별도 실행 ID로 수행했다.
+총53개의 실제 upstream 호출/193,708토큰이며 이전에 기록된8B 실행은 이 합계에 중복 넣지 않았다. client attempt와 실제 모델 호출 수를 구분한다. 일반/변경/자료부족은 별도 고정 입력이며 내부 수정 예산은 최대2회, 실행별 호출 상한12·토큰 상한100,000이다. 모델 공급/실행 오류와 입력 의미 오류를 분리한다. v2 최초 착수는 SSH forward가 없는 GET tags에서 ConnectError로 종료됐고 생성 요청0이었다. 원 실패를 보존한 뒤 연결을 확인해 별도 실행 ID로 수행했다.
 
 ## 첫 정상 사례에서 확인한 것
 
@@ -32,3 +32,11 @@
 - source/input/record bytes를 고정한 Docker UID1000, read-only root, network none, cap-drop/no-new-privileges, 게시 자격증명·AI 프로필 미마운트 경계를 사용했다. 모델 연결은 고정 모델/설정/도구의 유한 파일 중계이며 범용 네트워크나 무인 Worker 재개가 아니다.
 - `focused-cases/provenance.json`에 원10리뷰와 PM 선택2리뷰의 차이·원문 해시·동일 제외 조건을 연결했다. private helper의 `explicit_user_selected` 레이블은 잘못됐으며 **PM(Codex) 선택**으로 정정한다. 원요약/중계 원바이트 해시는 manifest에서 보존한다.
 - 원 모델 출력의 completed는 검증기의 선언·인용 검사 통과이고 독립 내용 검수와 다르다. 실제 API/브라우저/MCP 전체 연결·요구사항 verified·부모 Done·최종 제출은 이 비교로 올리지 않는다.
+
+## 입력 상한 v3의 실제 검증과 남은 의미 오류
+
+고정 source `428f237bb7bddc021aa7f9c09d97fda825615fb2`에서 검증된 Ollama/context16,384의 입력 상한24,000자·UTF-8 45,000바이트를 적용했다. 실제 마지막 의미 검토21,393자·30,183바이트는 upstream 응답까지 도달했다. 같은 원10리뷰와 설명서11source, 출력/schema/digest/설정·공유수정2회를 보존했다.
+
+최종 결과는 `QUALITY_UNCERTAIN`과 수정2회 소진에 따른 `held`, 후보0개다. 모델은 새 제안의 작동 방식이 기존 설명서에 명시돼야 차별성을 입증할 수 있다고 판정하는 반면, 임시 수납 공간이 없거나 바구니 전체를 분리해야 한다는 현재 제품 단정은 근거 없이 통과시켰다. 서로 다른9개 불편을 모두 선반 기능001에 연결하고 희망008을 실제 불편으로 해석한 문제도 남는다. 따라서 정상 채택·조건변경·정당한 자료 부족 보류의 성공으로 인수하지 않는다.
+
+실제 자료팩은 `evals/core-manual-quality/20261006/r2/inputs/synthetic.dataset.json`의36리뷰·42근거이며 SHA4ed91b01…이다. 원 demo와 다른 키는 manifest뿐이다. 선택2리뷰 개발 실험과 전체10리뷰 실행은 입력 SHA/포함 원문으로 구분한다. 원 응답과 [독립 감사](122b-full-cap-v3/independent-audit.json)는 원바이트로 보존한다. PR192의 후속 Need 지침은 이 실행 뒤 인수됐으므로 그 개선 효과는 아직 검증하지 않았다.
