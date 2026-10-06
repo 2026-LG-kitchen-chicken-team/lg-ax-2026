@@ -1,19 +1,30 @@
-# LG AX AtoZ 하네스
+# LG AX 개발 하네스 입구
 
-아이디어 탐색·도출부터 비교·선정·Agent 설계·구현·평가·제출까지, 현재 Codex가 자연어 요청에 따라 수행하는 하네스다. '하네스' 키워드를 따로 말할 필요는 없다.
-
-**현재 사용법:** [AtoZ_사용법.md](AtoZ_사용법.md). 단계/행동 계약은 `atoz.json`, 재개 상태는 `atoz_state.json`, 최신 선정 산출물은 `runs/sample_first/`에 있다. 패킷의 `runs/current/`는 기본 작성 경로이며 실제 완료 파일은 상태 기록을 따른다.
+현재 개발은 [phase2](phase2/README.md)를 사용한다. [PM 현재 배정](../docs/pm/현재배정.md), [문서 정본·작성 위치](../docs/README.md), [공통 실행 안내](../docs/bootstrap/README.md)를 함께 읽는다.
 
 ```powershell
-python scripts/ax_workflow.py next
-python scripts/ax_workflow.py packet design
-python scripts/ax_workflow.py validate
+uv run python scripts/phase2.py status
+uv run python scripts/phase2.py next --member 정이량
+uv run python scripts/phase2.py packet <작업ID>
+uv run python scripts/phase2.py validate
 ```
 
-Codex가 패킷의 일을 실제 도구로 수행해 결과 파일을 만들고 `finish <stage> <artifact>`로 검토·증빙을 기록한다. 선행 단계 누락, 빈 결과, 변경된 증거를 검사한다. 이전에는 진행 검사만 있었고, 지금은 단계별 실행 행동과 입력/출력 계약·재개·변경 전파를 연결했다.
+담당자 이름과 작업 ID는 실제 배정에 맞춘다. 명령은 저장소 루트에서 승인된 실행 환경으로 수행한다. 하네스는 상태·작업 패킷·검사 도구이며 자체 AI 실행기가 아니다. 자연어 요청을 받은 현재 AI가 실제 작업·검증·기록을 수행한다. 검사 통과·개별 검증·PM 검수·실제 병합·통합 확인·완료를 구분한다. 자동화는 새 사용자 ON 지시 전 OFF다.
 
-최신 요청은 구현 난도와 1차 서류 설득력 두 조건만으로 원점 재검토하는 것이다. 6개 최소 구현을 비교하고 공개 데이터 접근·파싱·연결을 실행해 **Theme A 고객 불편·기존 제품 대조 기반 키친 상품기획 Agent**를 위임 선정했다. 현재 12단계 중 목표~선정 6단계가 완료 기록되었고 다음은 상세 설계다. 최신 근거는 `기획/샘플데이터_기준_재검토.md`다. 사용자 정정에 따라 샘플·가상 명세·모의 연동을 모든 후보에 공통 적용해 난도를 보정했고 같은 A 선정을 유지했다. 새 실험이 아니라 기존 자료·저장 결과를 재검토했다. 원자료 표본과 모델 성능·현업 효용·합격 확률의 검증을 구분한다. 이전 설계·12개 후보·A/B 우선 추천은 각 실행 폴더에 보존했다. 새 안의 상세 설계·제안서/신청·모델 연결·UI·독립 평가·발표는 남아 있다.
+**현재 기준 파일**
 
-기존 `project.json`과 `scripts/harness.py`의 `status/validate/gate topic/gate submission`은 공식 접수 점검을 위해 유지한다. `topic_trial.py`와 `flow_audit.py`는 이전 후보의 제한된 규칙·UX 그래프 실험이다. CI는 상태·코드·저장된 실행 결과를 검사한다. 기획의 우수성, 서명 진위, 실제 접수 성공은 자동으로 판단하지 않는다.
+- [phase2 상태·작업](phase2/README.md), [신청서 31개 요구](phase2/requirements.json), [GitHub 연결](phase2/github.json)을 따른다. 변동하는 수치·현재 실행 버전은 직접 조회와 원 근거로 확인한다.
+- [project.json](project.json)은 공모전 전체 정보·역사 상태, [AtoZ 사용법](AtoZ_사용법.md)·[atoz.json](atoz.json)·[atoz_state.json](atoz_state.json)과 `runs/`의 선정 기록은 탐색·접수 당시 근거다. 이전 AtoZ `finish`를 현재 개발 완료로 사용하지 않는다.
+- 공식 자료·계약·실행 증거의 원 경로와 해시를 보존한다. 미완료 모델 품질·외부 AI 연결·평가·제출을 문서 정리로 완료하지 않는다.
 
-참고: 사용자 `harness-100`의 시장 조사·PM·LLM 앱·테스트 구조. 실제 읽은 파일과 적용 범위는 `research/atoz/README.md`에 기록했다. 별도 유료 API나 하위 Agent를 만들지 않고 현재 Codex가 순서대로 역할을 수행한다.
+**과거 하네스 안내**
+
+이전 README 전체는 [원바이트 원문](../docs/history/project/20261006/originals/harness/README.md)에 보존했다. 아래 원 제목은 기존 anchor를 유지하는 탐색 목차이며 [이관 설명](../docs/history/project/20261006/README.md)과 [원래 위치 기준 링크 안내](../docs/history/project/20261006/links.md)를 따른다. 당시의 ‘현재 AtoZ·다음 설계’ 설명은 현재 개발 모드가 아니다.
+
+<!-- document-navigation:legacy-anchors:start -->
+
+# LG AX AtoZ 하네스
+
+[당시 원문 — 원 경로 harness/README.md, 1행](../docs/history/project/20261006/originals/harness/README.md#lg-ax-atoz-하네스)
+
+<!-- document-navigation:legacy-anchors:end -->
