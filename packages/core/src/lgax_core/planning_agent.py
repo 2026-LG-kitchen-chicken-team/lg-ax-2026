@@ -661,6 +661,17 @@ class PlanningAgent:
                 save_corrections()
                 return result
             feedback = deepcopy(decision["violations"] if retry_feedback is None else retry_feedback)
+            if retry_feedback is None:
+                for item in feedback:
+                    if item["code"] == "HOLD_WITHOUT_QUESTIONS":
+                        item["message"] = (
+                            "보류 사유가 있지만 확인 질문이 없습니다. 아래 실제 값을 원문과 대조해 "
+                            "판단에 필요한 실제 누락 사실과 그 사실을 묻는 questions를 작성하세요. "
+                            "실제 미해결 사실이 없다면 해당 배열은 비우되, 확인되지 않은 사실을 추정하지 마세요. "
+                            "Need ID나 필드 이름 자체는 누락 사실의 설명이 아닙니다."
+                        )
+                        item["details"] = {key: deepcopy(current[key])
+                                           for key in ("unresolved", "hold_reasons", "questions")}
             if valid_previous_analysis:
                 # One installed session shares every earlier stage retry. Failed
                 # completions spend a claim too; they never recreate the session.
