@@ -352,7 +352,10 @@ export function judgementRunSnapshot(input: JudgementInput, output: JudgementOut
 
 export interface ModelCallRecord {
   stage: string; skill_id: string; execution_kind: string; revision_count: number; model_id: string; model_digest: string;
-  metadata?: { adapter?: string; elapsed_ms?: number; generation_settings?: Record<string, unknown> };
+  /** prompt_eval_count/eval_count: input/output tokens as the model server reported them (Ollama metadata). */
+  metadata?: { adapter?: string; elapsed_ms?: number; generation_settings?: Record<string, unknown>; prompt_eval_count?: number; eval_count?: number };
+  /** Exact prompt sent and response received, when the core kept them. */
+  formatted_prompt?: string; raw_response?: string;
 }
 export interface TraceStep { stage: string; operation: string; elapsed_ms?: number; outputs?: unknown }
 export interface SemanticAssessment {
@@ -376,6 +379,102 @@ export interface PlanningExecution {
   rejected_execution?: unknown; rejected_execution_omitted?: string;
   /** Shared revision budget (packages/core correction_budget.py); terminal_reason says why the run stopped. */
   correction_budget?: { revision_count: number; max_revisions: number; closed: boolean; terminal_reason: string | null; attempts?: unknown[] };
+  no_candidate_reviews?: unknown[];
+  /** Skill execution record; trusted_collector_verified=false means no trusted PM collector checked this run. */
+  skill_trace?: { trusted_collector_verified?: unknown };
+}
+
+/** One model call's usage as the model server reported it (record 034 audit U5). A missing value stays null, never 0. */
+export interface CallMetrics { stage: string; skill_id: string; revision_count: number; prompt_tokens: number | null; output_tokens: number | null; elapsed_ms: number | null }
+export interface ExecutionMetrics {
+  calls: CallMetrics[];
+  /** Totals over every call; null when any call lacks the value, so a partial sum never reads as the whole usage. */
+  prompt_tokens: number | null; output_tokens: number | null; model_elapsed_ms: number | null;
+  /** Calls whose token counts were not recorded. */
+  unrecorded_token_calls: number;
+  /** Last trace offset: time since the run started, including retrieval and checks — not model time. */
+  run_elapsed_ms: number | null;
+  /** Distinct generation settings across calls, e.g. "temperature 0 · seed 42". */
+  settings: string[];
+}
+
+const reported = (value: unknown): number | null => typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null;
+const totalOf = (values: (number | null)[]): number | null => values.length && values.every(value => value !== null) ? values.reduce<number>((sum, value) => sum + (value ?? 0), 0) : null;
+const SETTING_LABEL: [string, string][] = [['temperature', 'temperature'], ['seed', 'seed'], ['num_ctx', '문맥'], ['num_predict', '최대 출력']];
+
+function settingsText(settings: unknown): string | null {
+  if (!settings || typeof settings !== 'object') return null;
+  const parts = SETTING_LABEL.flatMap(([key, label]) => {
+    const value = (settings as Record<string, unknown>)[key];
+    return typeof value === 'number' || typeof value === 'string' ? [`${label} ${value}`] : [];
+  });
+  return parts.length ? parts.join(' · ') : null;
+}
+
+export function executionMetrics(execution: PlanningExecution): ExecutionMetrics {
+  const calls = execution.model_calls.map(call => ({ stage: call.stage, skill_id: call.skill_id, revision_count: call.revision_count,
+    prompt_tokens: reported(call.metadata?.prompt_eval_count), output_tokens: reported(call.metadata?.eval_count), elapsed_ms: reported(call.metadata?.elapsed_ms) }));
+  const times = execution.trace.map(step => reported(step.elapsed_ms)).filter((value): value is number => value !== null);
+  return {
+    calls, prompt_tokens: totalOf(calls.map(call => call.prompt_tokens)), output_tokens: totalOf(calls.map(call => call.output_tokens)),
+    model_elapsed_ms: totalOf(calls.map(call => call.elapsed_ms)),
+    unrecorded_token_calls: calls.filter(call => call.prompt_tokens === null || call.output_tokens === null).length,
+    run_elapsed_ms: times.length ? Math.max(...times) : null,
+    settings: [...new Set(execution.model_calls.map(call => settingsText(call.metadata?.generation_settings)).filter((item): item is string => item !== null))],
+  };
+}
+
+/** What this run did and did not verify (record 034 audit U5). Read from the record; nothing is inferred. */
+export interface VerificationScope {
+  semantic_reviews: number; no_candidate_reviews: number;
+  /** A judgement output was stored, so its declarations are on screen and need the scope note. */
+  has_output: boolean;
+  /** null when the record does not say. */
+  trusted_collector_verified: boolean | null;
+  /** Last quality_context rule check per module; empty when the trace has none. */
+  rule_modules: { module: string; violations: number; semantic_accuracy_verified: boolean | null }[];
+  source_kinds: string[];
+}
+export const RULE_MODULE_LABEL: Record<string, string> = { feature_support: '기능 지원', residual_matrix: '잔여 불편 행렬', concept_lineage: '콘셉트 계보' };
+
+export const grouped = (value: number) => value.toLocaleString('en-US');
+/** null = the record did not report it; shown as 미기록, never as 0. */
+export const seconds = (ms: number | null) => ms === null ? '미기록' : `${(ms / 1000).toFixed(1)}초`;
+export function tokenText(metrics: ExecutionMetrics): string {
+  if (!metrics.calls.length) return '호출 없음';
+  if (metrics.prompt_tokens === null || metrics.output_tokens === null) return `미기록(${metrics.calls.length}회 중 ${metrics.unrecorded_token_calls}회 기록 없음 · 합계 계산 안 함)`;
+  return `입력 ${grouped(metrics.prompt_tokens)} · 출력 ${grouped(metrics.output_tokens)} · 합 ${grouped(metrics.prompt_tokens + metrics.output_tokens)}`;
+}
+
+/** The same scope sentences on screen and in the Markdown export. */
+export function scopeLines(scope: VerificationScope, kind: PlanningExecution['execution_kind']): string[] {
+  const items: string[] = [];
+  if (!scope.semantic_reviews && !scope.no_candidate_reviews && scope.has_output) items.push(`의미 검토 0회 · 후보 없음 검토 0회: 이 실행에서는 규칙·계약 검사만 했습니다. 리뷰 판단·기능 대조·후보는 ${kind === 'fixture' ? '작성된 fixture 선언' : '판단 모델의 선언'}이며 의미 정확성은 검증되지 않았습니다.`);
+  else if (scope.semantic_reviews || scope.no_candidate_reviews) items.push(`의미 검토 ${scope.semantic_reviews}회 · 후보 없음 검토 ${scope.no_candidate_reviews}회: 판단과 같은 모델의 검토 선언이며 독립 검증이 아닙니다.`);
+  if (scope.rule_modules.length) {
+    const unverified = scope.rule_modules.some(item => item.semantic_accuracy_verified !== true);
+    items.push(`규칙 모듈 마지막 검사: ${scope.rule_modules.map(item => `${RULE_MODULE_LABEL[item.module]} 위반 ${item.violations}건`).join(' · ')}${unverified ? ' · 의미 정확성 미검증(semantic_accuracy_verified=false)' : ''}. 규칙 통과는 불편·간극·남은 불편의 내용이 맞다는 뜻이 아니며 최종 결정은 위 코어 결정을 따릅니다.`);
+  }
+  if (scope.trusted_collector_verified === false) items.push('신뢰 수집기 검증 안 됨(trusted_collector_verified=false): 이 기록은 PM의 신뢰 수집기가 검증한 제품 증거가 아닙니다.');
+  if (scope.source_kinds.includes('synthetic')) items.push('입력 자료에 합성자료가 있습니다. 동작 확인용이며 실제 고객 수요·제품 성능의 근거가 아닙니다.');
+  return items;
+}
+
+export function verificationScope(execution: PlanningExecution): VerificationScope {
+  const step = [...execution.trace].reverse().find(item => item.operation === 'quality_context');
+  const outputs = step?.outputs && typeof step.outputs === 'object' ? step.outputs as Record<string, unknown> : {};
+  const rule_modules = Object.keys(RULE_MODULE_LABEL).flatMap(module => {
+    const value = outputs[module] as { violations?: unknown; semantic_accuracy_verified?: unknown } | undefined;
+    if (!value || typeof value !== 'object' || !Array.isArray(value.violations)) return [];
+    return [{ module, violations: value.violations.length, semantic_accuracy_verified: typeof value.semantic_accuracy_verified === 'boolean' ? value.semantic_accuracy_verified : null }];
+  });
+  const verified = execution.skill_trace?.trusted_collector_verified;
+  return {
+    semantic_reviews: (execution.semantic_reviews ?? []).length, has_output: execution.output !== null,
+    no_candidate_reviews: Array.isArray(execution.no_candidate_reviews) ? execution.no_candidate_reviews.length : 0,
+    trusted_collector_verified: typeof verified === 'boolean' ? verified : null, rule_modules,
+    source_kinds: [...new Set([execution.input.product.source_kind, ...execution.input.sources.map(item => item.source_kind)].filter((item): item is string => typeof item === 'string'))],
+  };
 }
 
 /** packages/core feature_support.py SUPPORT: the support_status a gap's manual basis allows. */
@@ -420,7 +519,8 @@ export function terminalReason(snapshot: RunSnapshot): string | null {
 export type ExecutionView =
   | { kind: 'none' }
   | { kind: 'invalid'; errors: string[] }
-  | { kind: 'ok'; execution: PlanningExecution; problems: string[]; models: string[]; model_calls: number; elapsed_ms: number | null };
+  /** elapsed_ms is the last trace offset (whole run, cumulative), not model time; per-call usage is in metrics. */
+  | { kind: 'ok'; execution: PlanningExecution; problems: string[]; models: string[]; model_calls: number; elapsed_ms: number | null; metrics: ExecutionMetrics };
 
 
 function inputErrors(label: string, value: unknown): string[] {
@@ -501,8 +601,8 @@ export function planningExecutionView(snapshot: RunSnapshot): ExecutionView {
   if (execution.status !== 'completed' && snapshot.run.concepts.length) problems.push('보류·실패한 판단인데 실행에 후보가 남아 있습니다.');
   if (execution.rejected_execution !== undefined || execution.rejected_execution_omitted) problems.push('규격에 맞지 않아 거절된 판단 기록이 있습니다. 완료 결과로 쓰지 않았습니다.');
   const models = [...new Set(execution.model_calls.map(call => `${call.model_id} · ${call.model_digest.slice(0, 12)}`))];
-  const times = execution.trace.map(step => step.elapsed_ms).filter((value): value is number => typeof value === 'number');
-  return { kind: 'ok', execution, problems, models, model_calls: execution.model_calls.length, elapsed_ms: times.length ? Math.max(...times) : null };
+  const metrics = executionMetrics(execution);
+  return { kind: 'ok', execution, problems, models, model_calls: execution.model_calls.length, elapsed_ms: metrics.run_elapsed_ms, metrics };
 }
 
 /**
@@ -570,6 +670,10 @@ export type ExportJudgement =
     /** Turned-down candidates with their gaps, stored lineage verdict and own violation codes (record 034 audit U3). */
     rejected_candidates: { id: string; title: string; gap_ids: string[]; lineage_valid: boolean | null; codes: string[] }[]; semantic_reviews: { round: number; action: string; violations: string[] }[];
     semantic_rows: ExportSemanticRow[]; models: string[]; model_calls: number;
+    /** Reported model usage (null = not recorded, never 0) and what the run did not verify (record 034 audit U5). */
+    metrics: ExecutionMetrics; scope: VerificationScope;
+    /** Agent-internal revisions within this request (max 2); the planner's request revision is meta.request_revision. */
+    internal_revisions: { used: number; max: number };
     /**
      * The judging model's own declarations (record 034 audit U4): review polarity, gap support/resolution and candidate
      * duplication, including duplication rows left without a candidate. Declarations, not an independent check.
@@ -623,11 +727,13 @@ export function exportJudgement(snapshot: RunSnapshot): ExportJudgement | null {
       verdict: row.verdict, candidate_quote: row.candidate_quote, reason: row.reason,
     }))),
     models: [...view.models], model_calls: view.model_calls,
+    metrics: structuredClone(view.metrics), scope: verificationScope(execution),
+    internal_revisions: { used: execution.correction_budget?.revision_count ?? execution.input.revision_count, max: execution.correction_budget?.max_revisions ?? 2 },
     review_assessments: (output?.review_assessments ?? []).map(item => ({ evidence_id: item.evidence_id, polarity: item.polarity, reason: item.reason })),
     gap_assessments: (output?.gap_assessments ?? []).map(item => ({ gap_id: item.gap_id, support_basis: item.support_basis, resolution: item.resolution, reason: item.reason })),
     concept_assessments: [...conceptAssessments(output, 'output'), ...conceptAssessments(execution.rejected_output, 'rejected_output')],
     unused_review_ids: output ? unusedReviewIds(output) : [],
-    no_candidate_reviews: Array.isArray((execution as { no_candidate_reviews?: unknown }).no_candidate_reviews) ? ((execution as { no_candidate_reviews?: unknown[] }).no_candidate_reviews ?? []).length : 0,
+    no_candidate_reviews: Array.isArray(execution.no_candidate_reviews) ? execution.no_candidate_reviews.length : 0,
     check_rounds: facts.rounds,
   };
 }

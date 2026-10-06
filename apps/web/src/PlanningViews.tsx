@@ -16,6 +16,7 @@ import type { ErrorView, EvidenceSearch, LiveWorkspace } from './liveWorkspace';
 import {
   buildComparison, buildExport, buildRerunRequest, candidateChoicesFor, conceptDetailChanges, exportMarkdown, FIXTURE_NOTICE, heldItems,
   nextRequestRevision, POLARITY_TEXT, requestChanges, RESOLUTION_TEXT, rowNotes, scopeWarnings, scopeWarningText, splitConditions, statusLabel,
+  sourceKindLabel,
 } from './planning';
 import type { CandidateChoice, Concept, ConceptTextChange, DataMode, Feature, MissingQuestion, PlanningRequest, RequestChange, RunSnapshot } from './planning';
 import { ArrowIcon, SearchIcon } from './icons';
@@ -117,12 +118,7 @@ export function FixtureBanner() {
   return <div className="fixture-banner" role="note"><strong>모의 데이터 모드</strong><p>{FIXTURE_NOTICE} 서버에 아무것도 저장하거나 전송하지 않습니다.</p></div>;
 }
 
-const SOURCE_KINDS: Record<string, string> = { synthetic: '합성자료', public: '공개자료', licensed: '이용허락 자료', private: '비공개 자료' };
-
-/** Real vs synthetic origin stays visible wherever a source is quoted. */
-export function sourceKindLabel(kind: string): string {
-  return SOURCE_KINDS[kind] ?? kind;
-}
+export { sourceKindLabel };
 
 /** Inline citation: shows the original text, location and version without leaving the current view. */
 function EvidenceRef({ id, evidence }: { id: string; evidence: Map<string, Evidence> }) {

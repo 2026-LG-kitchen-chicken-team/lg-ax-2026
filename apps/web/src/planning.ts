@@ -5,7 +5,7 @@ import { ApiError } from './api';
 import { evidenceLocation } from './domain';
 import type { Evidence, ProductGroup } from './domain';
 // judgement.ts also imports from this module; neither uses the other at module load, so the cycle is safe.
-import { executionKindText, exportJudgement, judgedNotes, reasonText, SUPPORT_FROM_BASIS } from './judgement';
+import { executionKindText, exportJudgement, judgedNotes, reasonText, scopeLines, seconds, SUPPORT_FROM_BASIS, tokenText } from './judgement';
 import type { ExportJudgement, JudgedNotes } from './judgement';
 
 export type DataMode = 'live' | 'fixture';
@@ -508,6 +508,13 @@ export function comparisonVerdict(row: Pick<ExportDocument['comparison'][number]
 }
 
 // The budget closes before the final correction runs. revision_limit can coexist with a connection/other execution error.
+const SOURCE_KINDS: Record<string, string> = { synthetic: '합성자료', public: '공개자료', licensed: '이용허락 자료', private: '비공개 자료' };
+
+/** Real vs synthetic origin stays visible wherever a source is quoted. */
+export function sourceKindLabel(kind: string): string {
+  return SOURCE_KINDS[kind] ?? kind;
+}
+
 export const TERMINAL_TEXT: Record<string, string> = {
   revision_limit: '내부 수정 한도 도달(구체적인 종료 경과는 실행 기록 확인)', hold: '보류로 종료(내부 수정 없음)', unresolved: '미해결 종료',
   backend_failure: '모델 연결 오류로 중단', policy_changed: '수정 정책 변경으로 중단', completed: '완료',
@@ -528,8 +535,12 @@ function judgementMarkdown(judgement: ExportJudgement | null): string[] {
   return [
     '## 판단 실행 기록', '',
     `- 실행 종류: ${executionKindText(judgement.execution_kind, judgement.model_calls)} · 종료 상태: ${STATUS_TEXT[judgement.status]} · 코어 결정: ${judgement.decision ? DECISION_TEXT[judgement.decision] ?? judgement.decision : '없음'}`,
-    `- 모델: ${judgement.models.join(', ') || '호출 기록 없음'} · 호출 ${judgement.model_calls}회`,
+    `- 모델: ${judgement.models.join(', ') || '호출 기록 없음'} · 호출 ${judgement.model_calls}회${judgement.model_calls ? ` · 모델 시간 ${seconds(judgement.metrics.model_elapsed_ms)}` : ''}`,
+    // Record 034 audit U5: reported usage (미기록, never 0, when absent); run time is cumulative and includes retrieval and checks.
+    `- 토큰(모델 서버 보고): ${tokenText(judgement.metrics)} · 생성 설정: ${judgement.model_calls ? judgement.metrics.settings.join(' / ') || '미기록' : '호출 없음'} · 전체 실행 시간(조회·검사 포함): ${seconds(judgement.metrics.run_elapsed_ms)}`,
+    `- Agent 내부 수정: ${judgement.internal_revisions.used}/${judgement.internal_revisions.max}회 (같은 요청 안 자동 수정 · 기획자 조건 변경은 위 요청 회차)`,
     ...(judgement.terminal_reason ? [`- 종료 사유: ${TERMINAL_TEXT[judgement.terminal_reason] ?? judgement.terminal_reason} (\`${judgement.terminal_reason}\`)`] : []), RAW_NOTE, '',
+    ...list('검증 범위(이 실행이 확인하지 않은 것)', scopeLines(judgement.scope, judgement.execution_kind)),
     ...(judgement.unrevised_errors.length && judgement.hold_causes.length
       ? [...list('보류를 일으킨 문제(근거 확인 필요)', judgement.hold_causes), ...list('함께 발견된 판단 오류(보류로 내부 수정하지 않음)', judgement.unrevised_errors)]
       : list('검사에서 발견한 문제', judgement.violations)),

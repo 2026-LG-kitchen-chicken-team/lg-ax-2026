@@ -11,7 +11,7 @@ import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { exportJudgement, judgementView, planningExecutionView, rejectedCandidateCount, rerunBaseNotice, runSources, selectableConcepts, terminalReason } from './judgement';
+import { executionMetrics, exportJudgement, judgementView, planningExecutionView, rejectedCandidateCount, rerunBaseNotice, runSources, selectableConcepts, terminalReason, tokenText, verificationScope } from './judgement';
 import type { PlanningExecution } from './judgement';
 import { runStatusView } from './liveWorkspace';
 import { ConceptsView, HistoryView } from './PlanningViews';
@@ -298,6 +298,66 @@ describe('turned-down candidates, violation targets and check rounds read from t
   });
 });
 
+describe('model usage, run time and verification scope read from the stored record (R4 U5, record 043)', () => {
+  // Facts of the recordings (summed once from each call's metadata with Python, record 043 evidence), not from the code.
+  const USAGE: Record<string, { prompt: number; output: number; model_s: string; run_s: string; calls: number; revisions: number }> = {
+    '27b-enum-guide/fridge-normal': { prompt: 10246, output: 4011, model_s: '141.9', run_s: '142.1', calls: 3, revisions: 0 },
+    '27b-bounded12/fridge-normal': { prompt: 9565, output: 3719, model_s: '135.9', run_s: '136.2', calls: 3, revisions: 0 },
+    '8b-bounded12/fridge-normal': { prompt: 33278, output: 11109, model_s: '130.1', run_s: '130.9', calls: 9, revisions: 2 },
+    '8b-bounded12/microwave-normal': { prompt: 17376, output: 4297, model_s: '52.7', run_s: '53.2', calls: 9, revisions: 2 },
+  };
+
+  it('tokens and model time are the per-call sums; the run time is the cumulative trace and is reported apart', () => {
+    for (const { row, snapshot } of RUNS) {
+      const expected = USAGE[row.case];
+      const metrics = executionMetrics(execution(snapshot));
+      expect([metrics.calls.length, metrics.prompt_tokens, metrics.output_tokens, metrics.unrecorded_token_calls]).toEqual([expected.calls, expected.prompt, expected.output, 0]);
+      expect(((metrics.model_elapsed_ms ?? NaN) / 1000).toFixed(1)).toBe(expected.model_s);
+      expect(((metrics.run_elapsed_ms ?? NaN) / 1000).toFixed(1)).toBe(expected.run_s);
+      expect(metrics.settings).toEqual(['temperature 0 · seed 42 · 문맥 16384 · 최대 출력 8192']);
+      const judgement = exportJudgement(snapshot)!;
+      if (!judgement.record_valid) throw new Error(row.case);
+      expect(judgement.internal_revisions).toEqual({ used: expected.revisions, max: 2 });
+      const markdown = exportMarkdown(buildExport('live', snapshot, [], [], '2026-10-06T10:00:00.000Z', [snapshot]));
+      expect(markdown).toContain(`모델 시간 ${expected.model_s}초`);
+      expect(markdown).toContain(`- 토큰(모델 서버 보고): 입력 ${expected.prompt.toLocaleString('en-US')} · 출력 ${expected.output.toLocaleString('en-US')} · 합 ${(expected.prompt + expected.output).toLocaleString('en-US')}`);
+      expect(markdown).toContain(`전체 실행 시간(조회·검사 포함): ${expected.run_s}초`);
+      expect(markdown).toContain(`- Agent 내부 수정: ${expected.revisions}/2회`);
+    }
+  });
+
+  it('a call without reported tokens or time makes the totals unrecorded, never 0 or a partial sum', () => {
+    const record = structuredClone(execution(RUNS[0].snapshot));
+    delete record.model_calls[1].metadata!.eval_count;
+    delete record.model_calls[2].metadata!.elapsed_ms;
+    const metrics = executionMetrics(record);
+    expect([metrics.prompt_tokens, metrics.output_tokens, metrics.model_elapsed_ms, metrics.unrecorded_token_calls]).toEqual([10246, null, null, 1]);
+    expect(metrics.calls[1].output_tokens).toBeNull();
+    expect(tokenText(metrics)).toBe('미기록(3회 중 1회 기록 없음 · 합계 계산 안 함)');
+    record.model_calls = [];
+    expect(tokenText(executionMetrics(record))).toBe('호출 없음');
+    expect(executionMetrics(record).prompt_tokens).toBeNull();
+  });
+
+  it('scope comes from the record: no semantic or no-candidate review, rule modules unverified, untrusted collector, synthetic input', () => {
+    for (const { row, snapshot } of RUNS) {
+      const record = execution(snapshot);
+      const scope = verificationScope(record);
+      expect([scope.semantic_reviews, scope.no_candidate_reviews, scope.has_output]).toEqual([0, 0, true]);
+      expect(scope.trusted_collector_verified).toBe(false);
+      expect(scope.source_kinds).toEqual(['synthetic']);
+      type Rule = { violations: unknown[]; semantic_accuracy_verified: boolean };
+      const quality = [...record.trace].reverse().find(step => step.operation === 'quality_context')!.outputs as Record<string, Rule>;
+      expect(scope.rule_modules).toEqual(['feature_support', 'residual_matrix', 'concept_lineage'].map(module => ({ module, violations: quality[module].violations.length, semantic_accuracy_verified: quality[module].semantic_accuracy_verified })));
+      expect(scope.rule_modules.every(item => item.semantic_accuracy_verified === false)).toBe(true);
+      const markdown = exportMarkdown(buildExport('live', snapshot, [], [], '2026-10-06T10:00:00.000Z', [snapshot]));
+      expect(markdown, row.case).toContain('검증 범위(이 실행이 확인하지 않은 것):');
+      expect(markdown).toContain('의미 검토 0회 · 후보 없음 검토 0회');
+      expect(markdown).toContain('신뢰 수집기 검증 안 됨');
+    }
+  });
+});
+
 describe('real held / failed runs in the actual React DOM (record 034)', () => {
   let host: HTMLDivElement;
   let root: Root;
@@ -351,6 +411,17 @@ describe('real held / failed runs in the actual React DOM (record 034)', () => {
     expect([...host.querySelectorAll('[data-orphan-assessment]')].map(node => node.getAttribute('data-orphan-assessment'))).toEqual(orphans);
     expect(host.querySelectorAll('.check-rounds [data-round]').length).toBeGreaterThan(0);
     if (row.recorded_status === 'failed') expect(host.querySelector('.check-rounds [data-field="terminal"]')?.textContent).toContain('revision_limit');
+    // R4 U5: model time, tokens and run time apart; rounds name both counters; scope notice and per-call originals present.
+    const metrics = executionMetrics(execution(snapshot));
+    expect(panel.querySelector('[data-field="model-calls"]')?.textContent).toBe(`${metrics.calls.length}회 · 모델 시간 ${((metrics.model_elapsed_ms ?? NaN) / 1000).toFixed(1)}초`);
+    expect(panel.querySelector('[data-field="tokens"]')?.textContent).toBe(tokenText(metrics));
+    expect(panel.querySelector('[data-field="run-time"]')?.textContent).toBe(`${((metrics.run_elapsed_ms ?? NaN) / 1000).toFixed(1)}초`);
+    expect(panel.querySelector('[data-field="rounds"]')?.textContent).toContain(`요청 회차 ${snapshot.request_revision}(기획자 조건 변경) · Agent 내부 수정 ${execution(snapshot).correction_budget!.revision_count}/2`);
+    expect(panel.textContent).toContain('합성자료');
+    expect(panel.querySelector('[aria-label="검증 범위"]')?.textContent).toContain('의미 정확성 미검증(semantic_accuracy_verified=false)');
+    expect(panel.querySelectorAll('[aria-label="모델 호출 기록"] [data-call]')).toHaveLength(metrics.calls.length);
+    expect(panel.querySelector('[aria-label="모델 호출 기록"] pre')?.textContent).toBe(execution(snapshot).model_calls[0].formatted_prompt);
+    expect(panel.textContent).toContain('시간은 실행 시작부터 누적');
   });
 
   it.each(RUNS.map(item => [item.row.case, item] as const))('%s: the revision timeline does not call a first run without candidates "the first run\'s candidates"', async (_name, { snapshot }) => {
