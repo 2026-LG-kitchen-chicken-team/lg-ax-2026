@@ -1,0 +1,31 @@
+{
+  "assignment_id": "PM-20261006-CORE-QUALITY-R3",
+  "task_id": "P2-CORE-005",
+  "purpose": "실모델 근거·불편·기능 대조의 의미 오류 보완",
+  "instructions": [
+    "자동화는 OFF로 유지하고 수동 개인 branch/worktree에서 진행한다. PR169 검수·병합 뒤 최신 main을 사용한다. PM 공통 model_client.py·prompt_context.py·입력 예산/필드 의미 안내는 정이량이 단독 편집하므로 중복 수정하지 않는다.",
+    "evals/pm-prototype/20261006/finite-model-study 원 결과와 docs/pm/pm-execution-20261006.md를 읽는다. 동일 고정 commit45fe0f23에서8B 냉장고·전자레인지가 각각9호출 뒤 failed,27B 냉장고가3호출 뒤 held였다. 실행 실패와 의미 거부를 구분한다.",
+    "판단/Skill 소유 범위에서 독립 원문 대조 반례를 먼저 만든다. 명시 불편을 positive로 분류, NEED와 evidence ID의 의미 오연결, 희망 결과와 현재 기능 지원 혼동, 빈 concepts와 assessments 불일치, 새로운 작동을 duplicate로 표시한 사례를 다룬다. 근거를 바꾸거나 forced accept·검사 완화로 성공시키지 않는다.",
+    "작은 수정 PR과 변경 전후 원문·필드·기대 대응·실제 실패를 인계한다. 공유 내부 수정2회, 자료 부족 보류, 기능 지원과 불편 해소의 구별을 유지한다. PM이 고정한 모델 digest·입력·예산 없이 새 대형 반복 실행을 시작하지 않는다.",
+    "공식 팀장으로10/7 15시 컨설팅 수신 메일의 접속 URL·소요시간·참석 조건과 팀별 지원API 공급 모델·크레딧 한도·개발/테스트 허용·지정API 의무/로컬 병행 여부를 확인해 PM에게 공유한다. 키 값은 일반 문서나 Issue·메일 본문에 넣지 않는다.",
+    "새 날짜/고유ID 개인 기록과 근거에 사용자/PM 지시 원문·AI 해석·수행·검사·미완료·다음 행동을 상세히 기록한다. Issue11 및 PR에 연결하며 부모 Done·전체 품질 성공을 먼저 선언하지 않는다."
+  ],
+  "acceptance": [
+    "원문과 NEED/GAP/CONCEPT의 근거 연결 및 enum 의미에 대한 독립 정상·반례가 있다.",
+    "실제 정상1건·조건변경1건·적절한 보류1건은 각 고정 입력/모델/호출·수정 예산과 결과로 확인한다. 미실행은 미완료로 남긴다.",
+    "공통 계약/PM 어댑터와 충돌하지 않는 작은 diff·개별 검사·현재 head를 제출한다."
+  ],
+  "next_action": "원 실패3건의 원문 대조표와 수정 범위를 먼저 Issue11에 공유한 뒤 판단/Skill의 작은 수정 PR을 제출한다.",
+  "deadline": "내부 목표10/6 18:00 KST 부분 산출물 또는 구체 막힘 보고; 컨설팅10/7 15:00 KST",
+  "source": "2026-10-06 사용자 PM 남은 작업 전체 진행·더 큰 모델 검토; 정이량007/E042",
+  "requirement_ids": [
+    "R09",
+    "R10",
+    "R16",
+    "R17",
+    "E01"
+  ],
+  "pm_account": "jeongiryang",
+  "recipient_account": "unknownamed",
+  "assignment_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/11#issuecomment-6011523496"
+}

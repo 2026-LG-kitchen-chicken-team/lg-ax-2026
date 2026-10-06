@@ -1,6 +1,29 @@
 # 최길웅 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
+## 최신 재개 요약 (작성자 갱신, 2026-10-06 16:2x KST)
+
+- 상태: 자동화 OFF, Worker 예약 `LGAX-Worker-choigilung` Disabled. 수동 진행. 기록은 #165 새 규칙(날짜·ID 파일 + 이 구역)을 따른다.
+- 열린 PR(모두 PM 검수 대기):
+  - [#158](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/158) 리뷰 동향(WEB005/#27 정식 보고): PM 검수 결함(원문 혼선·늦은 응답) 수정, 분모 0 보완, main 반영.
+  - [#164](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/164) 집계 스냅샷 내보내기: #158 위에 쌓음.
+  - [#163](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/163) WEB-003 accept 전 실서버 부분 검증.
+- 막힘:
+  - 코어 프롬프트가 어댑터 상한 16,000자를 넘는다(FRIDGE concept_draft 23,300 / MICROWAVE semantic_review 16,730). 그래서 accept가 0이다. 황대겸에게 [#25 보고](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25#issuecomment-6010457730).
+  - 실제 동향 집계는 신진하 #148 대기.
+- 다음:
+  - PM 검수 대응
+  - 정상 run을 받으면 후보 선택 → 조건 변경 → 내보내기 검증
+  - #148이 준비되면 동향 실서비스 통합(숫자·원문·MCP 같은 aggregate ID·스냅샷)
+- 실서버 시험 주의: 사용자 5173 cmd 창은 사용자가 직접 끈다. 서버 창 제목이 "선택"이면 Esc를 누른다.
+- 최신 기록 ID: 최길웅-20261006-030. 상세:
+  - 030 스냅샷 내보내기: 세션 파일 `세션/최길웅/trends-snapshot-20261006.md`(PR #164)
+  - 029 #158 검수 수정: [세션 파일](../세션/최길웅/trends-drilldown-fix-20261006.md)(이 PR)
+  - 028 WEB-REBALANCE-R2 실서버 검증: 세션 파일 `세션/최길웅/rebalance-r2-20261006.md`(PR #163)
+  - 027 검사 코드 설명: [세션 파일](../세션/최길웅/reason-codes-20261006.md)(main, PR #160)
+  - 026 리뷰 동향 웹: [상세](2026-10-06/최길웅-20261006-026.md)
+  - 025 이전은 아래 목차를 본다.
+- 029·030·028의 세션 파일은 열린 PR의 기존 경로라 옮기지 않았다(README 규칙). 각 PR이 병합되면 이 링크가 main에서 열린다.
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
 

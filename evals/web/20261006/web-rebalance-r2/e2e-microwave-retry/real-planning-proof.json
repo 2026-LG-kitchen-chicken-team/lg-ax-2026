@@ -1,0 +1,49 @@
+{
+  "kind": "browser_initiated_real_planning",
+  "started_at": "2026-10-06T06:02:54.801Z",
+  "model_id": "MICROWAVE-A",
+  "quality_asserted": false,
+  "live_model_required": true,
+  "web_commit": "f686ea037d0dad8b3eea004a9db1149b40ba4ac1",
+  "first": {
+    "run_id": "run-53c5eb6941b843d8a613ad96d0501407",
+    "previous_run_id": "run-0180fefa93164f39883b3663eeb25b4a",
+    "request_revision": 2,
+    "run_status": "held",
+    "candidates": 0,
+    "execution_kind": "live_model",
+    "decision": "hold",
+    "model_calls": 8,
+    "models": [
+      "qwen3:8b@500a1f067a9f"
+    ],
+    "errors": []
+  },
+  "first_verified_model_calls": 8,
+  "save_heading": "요청 저장 · 판단 보류(후보 없음)",
+  "export": {
+    "json_complete": true,
+    "json_has_execution_record": true,
+    "markdown_has_judgement": true
+  },
+  "rerun_kind": "condition",
+  "second": {
+    "run_id": "run-2202ca4584244c9daaa15c33aa2335df",
+    "previous_run_id": "run-53c5eb6941b843d8a613ad96d0501407",
+    "request_revision": 3,
+    "run_status": "held",
+    "candidates": 0,
+    "execution_kind": "live_model",
+    "decision": null,
+    "model_calls": 4,
+    "models": [
+      "qwen3:8b@500a1f067a9f"
+    ],
+    "errors": [
+      "INVALID_ARGUMENT"
+    ]
+  },
+  "result": "flow_failed",
+  "failure": "AssertionError [ERR_ASSERTION]: Generation metadata missing",
+  "finished_at": "2026-10-06T06:05:16.548Z"
+}

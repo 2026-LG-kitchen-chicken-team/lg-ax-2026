@@ -1,0 +1,122 @@
+{
+  "kind": "rebalance_manual_checks",
+  "observed_at": "2026-10-06T05:59:11.618Z",
+  "checks": [
+    {
+      "flow": "connect",
+      "result": "ok",
+      "observed": {
+        "projects": 3
+      }
+    },
+    {
+      "flow": "hold/failure display DISHWASHER-A",
+      "result": "ok",
+      "observed": {
+        "project": "project-79fb7d9154e443de8b9d888decbf79c7",
+        "codes_on_screen": [
+          "MODEL_UNAVAILABLE"
+        ],
+        "unregistered_shown": false,
+        "excerpt": "CORE RECORD판단 실행 기록 run-b5886243903f41d7a3914084ae7e70b2실제 모델 실행 기록(저장된 결과)실패 · 내부 수정 1/2판단 모델qwen3:8b · 500a1f067a9f모델 호출2회 · 13.8초판단한 제품·문서DISHWASHER-A · 문서 1.0 · synthetic입력 원문·기능4건 · 1개실행 중 기록된 오류·검사 실패 1건MODEL_UNAVAILABLE 판단 모델 실행을 완료하지 못했습니다.원 요청 Agent에 그대로 전달된 조건개선 과제서로 다른 크기의 식기를 넣을 때 남는 불편을 검토해줘.제외 조건이미 있는 기능을 다시 제안하지 않기 / 적재 안내 서비스만 검토 (E2E 1791265954942)판단 출력이 저장되지 않았습니다(실패). 위의 오류와 실행 순서를 확인해 주세요.실행 순서 trace 16단계planplan0.0sretrievebootstrap0.0sretrieveselect_feature_scope0.0sretrievelist_products0.0sretrieveget_evidence0.0sretrieveget_evidence0.0sretrieveget_evidence0.0sretrievege",
+        "mentions_input_error": false
+      }
+    },
+    {
+      "flow": "hold/failure display MICROWAVE-A",
+      "result": "ok",
+      "observed": {
+        "project": "project-cad4a53d63d846abbf2b759a1eee0f6b",
+        "codes_on_screen": [
+          "MODEL_UNAVAILABLE"
+        ],
+        "unregistered_shown": false,
+        "excerpt": "CORE RECORD판단 실행 기록 run-0180fefa93164f39883b3663eeb25b4a실제 모델 실행 기록(저장된 결과)실패 · 내부 수정 0/2판단 모델qwen3:8b · 500a1f067a9f모델 호출1회 · 1.2초판단한 제품·문서MICROWAVE-A · 문서 1.0 · synthetic입력 원문·기능4건 · 1개실행 중 기록된 오류·검사 실패 1건MODEL_UNAVAILABLE 판단 모델 실행을 완료하지 못했습니다.원 요청 Agent에 그대로 전달된 조건개선 과제조리 설정을 반복할 때의 불편이 기존 기능으로 해결되는지 검토해줘.제외 조건이미 있는 기능을 다시 제안하지 않기 / 기존 설정 저장 기능과 겹치는 안은 제외 (E2E 1791266041210)판단 출력이 저장되지 않았습니다(실패). 위의 오류와 실행 순서를 확인해 주세요.실행 순서 trace 10단계planplan0.0sretrievebootstrap0.0sretrieveselect_feature_scope0.0sretrievelist_products0.1sretrieveget_evidence0.1sretrieveget_evidence0.1sretrieveget_evidence0",
+        "mentions_input_error": false
+      }
+    },
+    {
+      "flow": "hold/failure display FRIDGE-A",
+      "result": "ok",
+      "observed": {
+        "project": "project-6cd23ffc6d5646cf9e17ecd152c43bda",
+        "codes_on_screen": [
+          "INVALID_ARGUMENT"
+        ],
+        "unregistered_shown": false,
+        "excerpt": "CORE RECORD판단 실행 기록 run-4ccf79bdd8844cd6b56b5f4ed4f0e2f8실제 모델 실행 기록(저장된 결과)보류 · 내부 수정 0/2판단 모델qwen3:8b · 500a1f067a9f모델 호출3회 · 50.3초판단한 제품·문서FRIDGE-A · 문서 1.0 · synthetic입력 원문·기능11건 · 1개실행 중 기록된 오류·검사 실패 1건INVALID_ARGUMENT 작업실 입력 값을 확인해 주세요.원 요청 Agent에 그대로 전달된 조건개선 과제냉장고를 청소할 때 느끼는 불편을 줄일 기능을 찾아줘.제외 조건이미 있는 기능을 다시 제안하지 않기판단 출력이 저장되지 않았습니다(보류). 위의 오류와 실행 순서를 확인해 주세요.실행 순서 trace 19단계planplan0.0sretrievebootstrap0.0sretrieveselect_feature_scope0.0sretrievelist_products0.1sretrieveget_evidence0.1sretrieveget_evidence0.1sretrieveget_evidence0.1sretrieveget_evidence0.1sretrieveget_evidence0.1sretrie",
+        "mentions_input_error": true
+      }
+    },
+    {
+      "flow": "revision separation DISHWASHER-A",
+      "result": "ok",
+      "observed": {
+        "timeline_runs": [
+          "run-066d82890c674393a92c78b2b2b7b453",
+          "run-63ab7bf825a94a03ab8b23946b6393bc",
+          "run-77dd3b80d61c494ba406e9d360be02ce",
+          "run-b5886243903f41d7a3914084ae7e70b2"
+        ],
+        "excerpt": "REVISIONS수정 이력서버에 저장된 실행 기록 · 자료 성격은 각 실행의 근거 원문에서 확인하세요.run-066d82890c674393a92c78b2b2b7b453요청 회차 0 · 원 요청첫 실행(원 요청 기준)보류검토·수정 단계Agent 내부 수정 0 / 2회 (실행 내부 회차이며 사용자 변경이 아님)사용한 자료: 0.1.0 · sha256 8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03 · 문서 DISHWASHER-A 1.0첫 실행의 후보입니다.run-63ab7bf825a94a03ab8b23946b6393bc요청 회차 1 · 사용자 조건 변경← run-066d82890c674393a92c78b2b2b7b453실패검토·수정 단계Agent 내부 수정 2 / 2회 (실행 내부 회차이며 사용자 변경이 아님)사용한 자료: 0.1.0 · sha256 8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03 · 문서 DISHWASHER-A 1.0항목변경 전변경 후제외 조건이미 있는 기능을 다시 제안하지 않기이미 있는 기능을 다시 제안하지 않기, 적재 안내 서비스만 검토 (E2E 1791265954942)이전 실행 대비 후보 변화가 없습니다.run-77dd3b80d61c494ba406e9d360be02ce요청 회차 "
+      }
+    },
+    {
+      "flow": "duplicate condition",
+      "result": "ok",
+      "observed": {
+        "condition": "이미 있는 기능을 다시 제안하지 않기",
+        "occurrences_after": 1,
+        "new_posts": 0,
+        "message": "이미 같은 조건이 있습니다"
+      }
+    },
+    {
+      "flow": "evidence on a run without candidates DISHWASHER-A",
+      "result": "ok",
+      "observed": {
+        "candidate_traces": 0,
+        "input_sources": 4,
+        "input_features": 1
+      }
+    },
+    {
+      "flow": "history refetch after reload",
+      "result": "ok",
+      "observed": {
+        "before": [
+          "run-066d82890c674393a92c78b2b2b7b453",
+          "run-63ab7bf825a94a03ab8b23946b6393bc",
+          "run-77dd3b80d61c494ba406e9d360be02ce",
+          "run-b5886243903f41d7a3914084ae7e70b2"
+        ],
+        "after": [
+          "run-066d82890c674393a92c78b2b2b7b453",
+          "run-63ab7bf825a94a03ab8b23946b6393bc",
+          "run-77dd3b80d61c494ba406e9d360be02ce",
+          "run-b5886243903f41d7a3914084ae7e70b2"
+        ]
+      }
+    },
+    {
+      "flow": "no-candidate codes on the first run",
+      "result": "ok",
+      "observed": {
+        "run": "run-066d82890c674393a92c78b2b2b7b453",
+        "labelled": [
+          {
+            "code": "NO_CANDIDATE_VIOLATION",
+            "on_screen": true,
+            "label": null
+          },
+          {
+            "code": "NO_CANDIDATE_UNCERTAIN",
+            "on_screen": true,
+            "label": null
+          }
+        ],
+        "excerpt": "CORE RECORD판단 실행 기록 run-066d82890c674393a92c78b2b2b7b453실제 모델 실행 기록(저장된 결과)보류 · 내부 수정 0/2판단 모델qwen3:8b · 500a1f067a9f모델 호출2회 · 21.3초판단한 제품·문서DISHWASHER-A · 문서 1.0 · synthetic입력 원문·기능4건 · 1개원 요청 Agent에 그대로 전달된 조건개선 과제서로 다른 크기의 식기를 넣을 때 남는 불편을 검토해줘.제외 조건이미 있는 기능을 다시 제안하지 않기보류코어 검사 결정 · holdDISHWASHER-A · 문서 1.0 · 내부 수정 0/2 · 입력 c690e5400b9a자료 범위나 근거를 확인한 뒤 새 입력으로 다시 실행해야 합니다. 이 결과의 후보는 선택할 수 없습니다.검사에서 발견한 문제 2건후보 없음 판단이 원자료와 맞지 않습니다 (NO_CANDIDATE_VIOLATION · compare 단계)후보 없음 판단을 확인할 자료가 부족합니다 (NO_CANDIDATE_UNCERTAIN · concepts 단계)리뷰 판단불편큰 접시와 냄비를 같이 넣을 때 어디에 놓아야 하는지 모르겠어요.REVIEW-EVIDENCE-031 · 식기 배치 위치에 대한 명확한 안내가 부족해 불편함불편설명서의 식기 조합과 우리 집 식기 조합이 달라요.REVIEW-EVIDENCE-032 · 식기 조합에 따른 적재 방법이 명확하지 않아 불편함불편긴 손잡이가 회전 날개를 막는지 확인하고 싶어요.REVIEW-EVIDENCE-033 · 긴 손잡이의 회전 날개 간섭 여부에 대한 확인이 필요함기능 대조후보 0개후보가 없습니다.확인할 질문 2건긴 손잡이의 회전 날개 간섭 여부에 대한 명확한 정보 부족식기 조합에 따른 적재 방법이 명확하지 않음보류 사유 4건식기 조합에 따른 적재 방법이 명확하"
+      }
+    }
+  ]
+}

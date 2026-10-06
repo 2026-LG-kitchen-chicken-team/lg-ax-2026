@@ -27,6 +27,36 @@ from .errors import DomainError
 _DIGEST = re.compile(r"[0-9a-f]{64}\Z")
 _FENCE = re.compile(r"\A```(?:json)?[ \t]*\r?\n(.*?)\r?\n```[ \t]*\Z", re.DOTALL | re.IGNORECASE)
 _SCHEMA_BYTES_LIMIT = 16384
+_SCHEMA_FIELD_GUIDES = {
+    "polarity": (
+        ("complaint", "positive", "conflicting", "irrelevant", "uncertain"),
+        "polarity: complaint=명시 불편/미충족 요구; positive=불편 없는 칭찬; "
+        "conflicting=자료 상충; irrelevant=요청과 무관; uncertain=원문만으로 판단 불가. "
+        "긍정 표현과 명시 불편이 함께 있어도 그 불편을 positive로 바꾸지 마세요.",
+    ),
+    "duplication": (
+        ("distinct", "duplicate", "uncertain"),
+        "duplication: distinct=기존 기능이 제공하지 않는 작동/행동; "
+        "duplicate=원문에 명시된 기존 작동/행동과 동일; uncertain=자료만으로 비교 불가. "
+        "일부 구성 공유나 기능 미지원만으로 duplicate라 하지 마세요.",
+    ),
+    "support_status": (
+        ("supported", "unsupported", "insufficient_evidence"),
+        "support_status: supported=현재 기능의 명시적 지원; unsupported=명시적 미지원; "
+        "insufficient_evidence=미언급/상충으로 확인 불가.",
+    ),
+    "support_basis": (
+        ("explicit_supported", "explicit_unsupported", "unmentioned", "conflicting"),
+        "support_basis: explicit_supported=supported; explicit_unsupported=unsupported; "
+        "unmentioned/conflicting=insufficient_evidence. 명시된 현재 기능을 희망 결과가 "
+        "충족되지 않았다는 이유로 unmentioned로 바꾸지 마세요.",
+    ),
+    "resolution": (
+        ("resolved", "remaining", "unknown"),
+        "resolution: resolved=희망 결과 충족; remaining=확인된 잔여 불편; "
+        "unknown=원문만으로 해결 여부 불명. 현재 기능이 supported여도 remaining일 수 있습니다.",
+    ),
+}
 
 
 def _fail(code: str, reason: str, **details: Any) -> DomainError:
@@ -91,6 +121,45 @@ def _schema_validator(schema: dict[str, Any]) -> tuple[Draft202012Validator, str
         raise _fail("INVALID_ARGUMENT", "invalid_schema") from None
     validator = Draft202012Validator(schema, format_checker=FormatChecker(), registry=Registry(retrieve=_no_remote_schema))
     return validator, encoded, sha256(encoded.encode()).hexdigest()
+
+
+def _schema_field_guide(schema: dict[str, Any]) -> tuple[str, tuple[str, ...]]:
+    """Explain known enum contracts, without interpreting source facts or outputs."""
+    found: set[str] = set()
+    pending: list[Any] = [schema]
+    while pending:
+        node = pending.pop()
+        if not isinstance(node, dict):
+            continue
+        properties = node.get("properties")
+        if isinstance(properties, dict):
+            for name, (expected, _line) in _SCHEMA_FIELD_GUIDES.items():
+                definition = properties.get(name)
+                values = definition.get("enum") if isinstance(definition, dict) else None
+                if isinstance(values, list) and tuple(values) == expected:
+                    found.add(name)
+        # Traverse only schema children, never annotation/example/enum data.
+        for key in ("properties", "patternProperties", "$defs", "definitions", "dependentSchemas"):
+            children = node.get(key)
+            if isinstance(children, dict):
+                pending.extend(children.values())
+        for key in ("allOf", "anyOf", "oneOf", "prefixItems"):
+            children = node.get(key)
+            if isinstance(children, list):
+                pending.extend(children)
+        for key in ("items", "contains", "additionalProperties", "unevaluatedProperties",
+                    "unevaluatedItems", "propertyNames", "not", "if", "then", "else", "contentSchema"):
+            child = node.get(key)
+            if isinstance(child, dict):
+                pending.append(child)
+    fields = tuple(name for name in _SCHEMA_FIELD_GUIDES if name in found)
+    if not fields:
+        return "", fields
+    lines = ["판정값 안내: 값과 reason의 의미를 일치시키고 제공된 원문으로 판단하세요."]
+    if found & {"support_status", "support_basis", "resolution"}:
+        lines.append("기능 지원은 선택한 현재 기능의 문서상 지원이며, 고객 희망 결과의 해결 여부와 별개입니다.")
+    lines.extend(_SCHEMA_FIELD_GUIDES[name][1] for name in fields)
+    return "\n".join(lines) + "\n\n", fields
 
 
 def _model_json(response: str, validator: Draft202012Validator) -> tuple[Any, str]:
@@ -441,11 +510,24 @@ class StructuredModelClient:
         if not isinstance(prompt, str) or not prompt.strip():
             raise _fail("INVALID_ARGUMENT", "empty_prompt")
         validator, encoded_schema, schema_digest = _schema_validator(schema)
-        formatted = (
-            "요청에 답하는 JSON 값 하나만 출력하세요. 설명·마크다운·코드 펜스를 출력하지 마세요. "
-            "출력은 아래 JSON Schema를 충족해야 합니다.\n"
-            f"JSON Schema:\n{encoded_schema}\n\n요청:\n{prompt}"
-        )
+        guide, guide_fields = _schema_field_guide(schema)
+        native_schema = getattr(self.adapter, "backend_schema_enforced", False) is True
+        if native_schema:
+            # The full schema is already sent as the native format constraint.
+            # Retain the caller's complete task/evidence, without a second copy
+            # of the schema in the text prompt. Unknown wrappers stay on the
+            # conservative embedded-schema path until they forward this flag.
+            formatted = (
+                "요청에 답하는 JSON 값 하나만 출력하세요. 설명·마크다운·코드 펜스를 출력하지 마세요. "
+                "출력은 요청의 native JSON Schema 형식 제약을 충족해야 합니다.\n\n"
+                f"{guide}요청:\n{prompt}"
+            )
+        else:
+            formatted = (
+                "요청에 답하는 JSON 값 하나만 출력하세요. 설명·마크다운·코드 펜스를 출력하지 마세요. "
+                "출력은 아래 JSON Schema를 충족해야 합니다.\n"
+                f"JSON Schema:\n{encoded_schema}\n\n{guide}요청:\n{prompt}"
+            )
         if len(formatted) > self.adapter.max_prompt_characters:
             raise _fail("INVALID_ARGUMENT", "prompt_too_large", maximum=self.adapter.max_prompt_characters)
         output = self.adapter.generate(formatted, schema)
@@ -453,6 +535,15 @@ class StructuredModelClient:
         return StructuredModelResult(data, {
             **output["metadata"], "schema_sha256": schema_digest,
             "response_format": response_format, "locally_validated": True,
+            "schema_prompt_embedded": not native_schema,
+            "schema_field_guide": {
+                "version": "enum_meanings_v1", "fields": list(guide_fields),
+                "characters": len(guide), "utf8_bytes": len(guide.encode("utf-8")),
+                "sha256": sha256(guide.encode("utf-8")).hexdigest(),
+            },
+            "formatted_prompt_characters": len(formatted),
+            "formatted_prompt_utf8_bytes": len(formatted.encode("utf-8")),
+            "formatted_prompt_sha256": sha256(formatted.encode("utf-8")).hexdigest(),
         })
 
 

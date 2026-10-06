@@ -25,6 +25,7 @@ from .judgement_contract import schema_for as judgement_schema
 from .model_client import StructuredModelClient
 from .no_candidate_review import INSTRUCTIONS as NO_CANDIDATE_INSTRUCTIONS
 from .no_candidate_review import no_candidate_feedback, no_candidate_review_schema, review_no_candidate
+from .prompt_context import model_context
 from .revision_guard import RevisionSession
 from .semantic_review import INSTRUCTIONS, review_semantics, schema_for_review, semantic_feedback
 from .skill_runner import SkillRuntime
@@ -146,6 +147,7 @@ class _RecordingAdapter:
         self.adapter, self.record = adapter, record
         self.config = adapter.config
         self.max_prompt_characters = adapter.max_prompt_characters
+        self.backend_schema_enforced = getattr(adapter, "backend_schema_enforced", False)
 
     def generate(self, prompt: str, schema: dict) -> dict:
         self.record["formatted_prompt"] = prompt
@@ -295,6 +297,8 @@ class PlanningAgent:
                       "source_boundary_sha256": boundary.context_sha256,
                       "allowed_tools": list(boundary.allowed_tools),
                       "prompt": prompt, "schema": schema, "request_context": deepcopy(context),
+                      "prompt_context": model_context(context),
+                      "prompt_context_sha256": input_digest(model_context(context)),
                       "model_id": config.model_id, "model_digest": config.expected_digest}
             calls.append(record)
             model = StructuredModelClient(_RecordingAdapter(self.client.adapter, record))
@@ -406,7 +410,7 @@ class PlanningAgent:
                     + instructions[skill_id]
                     + ("" if skill_id == "concept_draft" else "JSON 외의 설명을 출력하지 마세요.")
                     + "\nDATA_JSON:\n"
-                    + json.dumps(context, ensure_ascii=False, separators=(",", ":"))
+                    + json.dumps(model_context(context), ensure_ascii=False, separators=(",", ":"))
                 )
                 generated = model_call(STAGE[skill_id], skill_id, context, prompt,
                                        generation_schema(skill_id, review_evidence_ids=review_ids))
@@ -556,7 +560,7 @@ class PlanningAgent:
                     try:
                         report = model_call("review", "no_candidate_review", context,
                                             NO_CANDIDATE_INSTRUCTIONS + json.dumps(
-                                                context, ensure_ascii=False, separators=(",", ":")),
+                                                model_context(context), ensure_ascii=False, separators=(",", ":")),
                                             no_candidate_review_schema(payload, current)).data
                         decision = review_no_candidate(payload, current, report)
                         reviewed_questions = deepcopy(report["questions"] or (
@@ -592,7 +596,7 @@ class PlanningAgent:
                     context["quality_context"] = quality_context
                     try:
                         report = model_call("review", "semantic_review", context,
-                                            INSTRUCTIONS + json.dumps(context, ensure_ascii=False, separators=(",", ":")),
+                                            INSTRUCTIONS + json.dumps(model_context(context), ensure_ascii=False, separators=(",", ":")),
                                             schema_for_review(payload, current, literal_choices=True)).data
                         decision = review_semantics(payload, current, report)
                         reviewed_questions = deepcopy(report["questions"])

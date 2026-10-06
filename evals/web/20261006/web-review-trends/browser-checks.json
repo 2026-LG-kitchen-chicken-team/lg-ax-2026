@@ -1,0 +1,18 @@
+{
+  "assignment_id": "PM-20261006-WEB-TRENDS-QUALITY",
+  "issue": 149,
+  "observed_at_kst": "2026-10-06 13:2x",
+  "web": "Desktop/lgax branch codex/web-review-trends (uncommitted tree = this PR's first commit)",
+  "server": "workspace_server from the same tree on 127.0.0.1:18879 with the private test DB of record 025 (no collector configured)",
+  "checks": [
+    {"check": "panel reachable from the app", "observed": "nav '05 리뷰 동향' opens the panel; fixture month view draws 6 bars", "result": "ok"},
+    {"check": "denominator and exclusions", "observed": "분모 84 · 날짜 없음 10 · 기간 밖 4 · 중복 2 · 범위 밖 20 · 미분류 3 (fixture)", "result": "ok"},
+    {"check": "empty period vs 0%", "observed": "2026년 2월 bar labelled '자료 없음' (hatched), aria-label '2026년 2월: 리뷰 없음'", "result": "ok"},
+    {"check": "partial period / small sample", "observed": "June marked 부분 구간; buckets with <20 reviews marked 작은 표본", "result": "ok"},
+    {"check": "keyboard", "observed": "focus May bar, Enter -> aria-pressed true, 7 source reviews of that bucket/topic listed", "result": "ok"},
+    {"check": "hand-off to planning", "observed": "'이 구간을 기획 요청에 추가' -> 기획 요청 view, prompt gains [리뷰 동향 근거 · TREND-… · 2026년 5월 · 청소 불편 7/30건(23.3%) · 근거 EV-… · 합성 fixture · 리뷰 수는 판매량·수요 증가를 뜻하지 않음]", "result": "ok"},
+    {"check": "real server", "observed": "connected test workspace, 실제 서버 -> 동향 조회: GET …/review-trends?… 501 Not Implemented; panel shows '실제 동향 집계 미연결', 0 bars, no numbers", "result": "ok (integration pending DATA148 collector)"},
+    {"check": "narrow screen 375px", "observed": "document width 375 (no horizontal scroll), icon 44x44, bars 101px wide wrapping 3 per row", "result": "ok"}
+  ],
+  "not_claimed": ["real aggregate numbers", "DATA148 collector", "MCP host call", "customer demand or sales", "WEB-005/#27 completion"]
+}

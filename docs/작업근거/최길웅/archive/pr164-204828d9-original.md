@@ -1,0 +1,282 @@
+# 최길웅 — 작업근거
+
+작업 의도·진행: [최길웅 기록](../작업기록/최길웅.md). 형식: [공통 규칙](../작업기록/README.md#근거-문서-형식).
+
+## 현재 상태
+
+최신 근거: 최길웅-E021(리뷰 동향 패널 fixture 검증·실서버 501, 2026-10-06). 이전: E020(수동 사용자 흐름 점검·이중 제출 수정·진행 안내, 2026-10-06). 이전: E019(검사 실패 복구, PR #144 원문 보존), E018(WEB-START-R1: Worker 대기·readiness 원본 인계·중앙 OFF 대기, 2026-10-05). 이전: E017(자동화 Worker Docker 격리 canary·컨테이너 로그인·preflight·OFF 설치, 2026-10-05). 이전: E016(검사 코드 사유 표시·식기세척기/전자레인지 실제 모델 엄격 E2E, 2026-10-05). 이전: E015(실제 공유 모델 엄격 모드 브라우저 E2E 1개 시나리오, 2026-10-05). 이전: E014(자동화 Worker PC 초기 설정·preflight, 모델 미실행, 2026-10-05). 이전: E013(실서버 판단 브라우저 E2E 준비·모델 없는 실제 서버 경로 검증·종료 문구 보정, 2026-10-05). 이전: E012(round2 실제 held 기록 회귀·다운로드 파일·원 실행 기록 보존, 2026-10-05). 이전: E011(판단 종료 기록의 항목 형식 오류·후보 선택 제한·내보내기 판단 기록, 2026-10-05). 이전: E010(코어가 저장하는 실패·보류·의미 검토 기록의 웹 표시, mock 응답 코어 실행, 2026-10-05). 이전: E009(실제 저장 판단 기록의 화면 연결·기록 재생), E008(CORE-001 판단 계약 웹 어댑터), E007(코어 대기 6사례 회귀), E006(PR #45 리뷰 보완, PR #48로 main 병합), E001~E005. 화면 존재만으로 실제 Agent·서버 연결 성공을 주장하지 않는다.
+
+## 근거 기록
+
+### 최길웅-E021 — WEB-TRENDS-QUALITY: 리뷰 동향 패널(fixture 검증·실서버 501)
+
+- 관련 기록: [최길웅-20261006-026](../작업기록/최길웅.md) / Issue #149(부모 #27) / 계약 `docs/pm/review-trends-contract-v1.md`
+- 확인일: 2026-10-06 13:0x~13:3x KST. 실행 종류: 단위/DOM(합성 fixture, 모델 호출 없음) + 앱 내 브라우저(합성 fixture 화면, 실서버 501).
+- 코드 버전: main `d0cfbde`(PR #156) 위 이 PR의 commit. 브라우저 확인은 커밋 전 같은 작업 트리.
+- 재현: `npx vitest run src/reviewTrends.test.ts`; 브라우저는 `lgax_api.workspace_server --port 18879`(집계기 없음) + `LGAX_WORKSPACE_PROXY=http://127.0.0.1:18879 npx vite`.
+- 출력(`evals/web/20261006/web-review-trends/`): `browser-checks.json`, `live-server-request.log`(GET …/review-trends … 501), 캡처 `fixture-month-chart.jpg`·`live-501-not-connected.jpg`·`mobile-375.jpg`.
+- 결과: vitest 451 통과(신규 11: fixture의 ReviewTrendAggregate/Request/EvidenceResponse 스키마 통과·일관성 0건, 겨울 연도, 드릴다운 페이징·소속, 불일치 8종 검출, 빈/0%/작은 표본, 필터 검증, 기획 문장, DOM fixture·불일치 거부·실서버 501), tsc·build 통과. 브라우저 8항목 정상.
+- 실패·반대 근거: 첫 시험 서버 실행에서 Vite가 경로 문제로 뜨지 않아 따로 실행. 그 밖의 실패 없음.
+- 지지하는 주장: 웹이 고정 집계의 숫자를 검사 후에만 그리고, 빈 구간·0%·작은 표본·부분 구간·제외 건수를 구분해 보이며, 막대의 원문은 그 집계·구간·주제 원문만 보여 주고, 기획 요청에는 같은 aggregate_id와 근거 ID로 연결한다. 집계기가 없으면 숫자를 만들지 않는다.
+- 지지하지 않는 주장: 실제 리뷰 동향 수치, 실서버 드릴다운 성공, MCP 동일 ID, 계절성·수요·판매 근거, #27/#149 완료.
+
+### 최길웅-E020 — WEB-MANUAL-FLOW-R1: 실제 사용자 경로 점검·이중 제출 결함·진행 안내·코드/상태 표시
+
+- 관련 기록: [최길웅-20261006-025](../작업기록/최길웅.md) / 배정 `PM-20261006-WEB-MANUAL-FLOW-R1` / R14·R21·R25 / [Issue #25](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25)
+- 확인일: 2026-10-06 11:15~12:45 KST. 실행 종류: 앱 내 브라우저 수동 경로(`live_model`, 실제 서버·실제 공유 모델) + 단위/DOM(모델 호출 없음) + 엄격 실모델 E2E.
+- 코드 버전: 시작 main `b477860b2612f51b7e81f37b635c05ba02338bfb`(제품 소스 = PR #151 `96c6d949`). 수정은 이 PR의 commit. E2E proof의 `web_commit`이 `b477860`인 것은 커밋 전 작업 트리(이 PR과 같은 내용)에서 실행했기 때문이다.
+- 환경: 공개 API 18867·판단 서버 18879(`--enable-planning`, `private/workspace-manual-flow` 새 DB)·웹 5173·model_proxy 18873. 모델 `qwen3:8b` digest `500a1f067a9f…b41`, 출력 8192/문맥 16384/240초/think false. 합성 자료.
+- 출력(`evals/web/20261006/web-manual-flow-r1/`): `manual-flow-checks.json`(경로별 관찰·run ID·결과), `workspace-records-summary.json`·`workspace-runs-full.json`(테스트 DB 5프로젝트·6실행, 중복 전자레인지 프로젝트 포함), `workspace-server.log`(POST 횟수 근거), 캡처 3장, `e2e-fridge/`(real-planning-proof.json, 내려받은 JSON/Markdown, 화면 2장, e2e-strict-live.txt).
+- 결과:
+  - 수동 경로 정상: 입력 검증·마우스 더블클릭 1회·보류 표시·빈 답변 차단·답변 새 회차(`run-23ea84eb…` ← `run-e47f242b…`)·재조회·원문 근거·조건 중복 차단·구조화 오류.
+  - 결함: 다시 그리기 전 연속 클릭 → `POST /projects` 2회(`project-c6e7…` 외 실행 없는 중복 1개). 수정 후 세 번 연속 클릭 → 1회(로그 projects 3→4, `run-a6157478…`).
+  - 웹 검사: vitest 24 files·362 tests 통과(5 skipped), node 4 통과, `tsc -b`·`vite build` 통과.
+  - 엄격 E2E(FRIDGE-A, 4.4분): 1회차 `run-3f057414…` failed/unresolved(VALIDATION_FAILED, 호출 8), 조건 교정 `run-a07ae880…` held/hold(호출 3), 내보내기 완전·이전 불변 true, flow_completed.
+- 실패·반대 근거: 신규 테스트 파일의 첫 전체 실행이 약 30분 뒤 실패로 끝남(PC 일시 정지로 추정) → 같은 코드 재실행 2회 통과. 브라우저 창의 키 입력이 일부 필드에 들어가지 않아 해당 필드는 DOM 값 설정+input 이벤트로 입력했다(검사 대상 로직은 같은 React onChange 경로).
+- 지지하는 주장: PR #151 작업실의 필수 사용자 흐름이 실제 서버·모델에서 보류·실패를 성공처럼 보이지 않게 저장·표시·비교·내보내기한다. 연속 클릭 이중 저장이 수정되었다. 판단 대기 중 상태와 질문·상태 문구가 사용자 언어로 보인다.
+- 지지하지 않는 주장: 실모델 accept·후보 선택 재실행, 판단 품질, 단계별 실시간 진행(서버 미지원), 외부 AI 호스트, 동향 화면, WEB-003 완료.
+
+### 최길웅-E019 — 자동 작업 검사 실패 2건 원인·수동 복구·격리 재검증·Worker 갱신
+
+- 관련 기록: [최길웅-20261005-024](../작업기록/최길웅.md) / 배정 `PM-20261005-WEB-WORKER-RECOVERY` / PM 메일 「웹 자동화 검사 실패 해결 요청」 / [Issue #25](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25) / PR #143(1fced38)·이 PR(39a1421)
+- 확인일: 2026-10-05 22:3x~23:1x KST. 실행 종류: 원 로그 판독, 로컬 vitest·tsc 재현, Docker validator 재검증, Worker canary/preflight/중앙 조회. 모델 호출 없음.
+- 원 실패 근거(비공개 실행 기록, 비밀 없음): `C:/LGAX-state/choigilung/runs/auto-39a1421…-attempt1-g1/{checkpoint.json,validation-0,1.log}`, `…/auto-1fced38…-attempt1-g1/{checkpoint.json,validation-0~2.log}`. 39a1421: checks rc [0,1]; 1fced38: rc [0,0,1]. 원 결과·비용·미게시 보존(수정·삭제 없음).
+- 로컬 재현: 병합 브랜치에서 `npx vitest run src/round2Live.test.ts` 1 failed/17 passed → 수정 후 18 passed. `npx tsc -b` TS6133 → 수정 후 exit 0, `evidenceTracePanel.test.ts` 10 passed.
+- 격리 재검증: 승인된 `isolation.py`(main `c05ee880b160353414180e689f32a42dd23c2d64`)의 `DockerExecutor(DockerConfig(image=sha256:98b86955…, workspace_root=C:/LGAX-execution/choigilung, engine=claude)).run(argv, role="validator", env={}, timeout 1800s)`. 소스는 `git archive <branch>`를 새 폴더에 풀어 사용(.git·인증 없음). 명령: `npm --prefix apps/web ci --offline --ignore-scripts --no-audit --no-fund` → `run test` → `run typecheck` → `run build`.
+  - 39a1421 commit `186e370998637539cd6833e00026aabc4e8a430c`: rc 0/0/0/0(30.0/647.7/15.3/22.3s) → `evals/web/20261005/worker-recovery/auto-39a1421/`
+  - 1fced38 commit `a3d731cd370139c40ad45f5d9fb2d41dcf338f7f`: rc 0/0/0/0(18.9/686.2/13.0/22.8s) → `evals/web/20261005/worker-recovery/auto-1fced38/`
+- Worker 갱신: 새 묶음 `worker-reviewed-c05ee88` entry sha256 `e1f9c2541e00f0ae9f46cb20477c9c2ca9649a569eb49037b49f671281f5fba2`, report entry `12e949ba65a473ce48353fcef325210465e209e5ed867b82f0823124b935479b`. readiness `evals/web/20261005/worker-recovery/choigilung-readiness-c05ee88-1.json`(원본과 바이트 동일, sha256 `6199bff2b2d5d5478002cb665accc8d92dc865be179f07480f951420f3ce6ca4`, 토큰·이메일·경로 없음): execution/publisher separation·login verified true, github_publication_verified false. preflight passed. 작업 스케줄러 동작 → 새 entry, Running PID 12796(22:38:58). publisher clone fetch `c05ee88..02f9a64` 정상. 중앙 presence online(`worker-presence-v1`, runtime sha256 `2fc6de27647f4ddc627d87799d9899e2cf8f7c93099e65ca8ca842a6a2cd8585`).
+- 실패·반대 근거: 첫 재검증 시도는 Windows `tar`의 한글 경로 해제 실패로 검사 전 중단(검사 결과 아님) → Python tarfile로 재실행.
+- 지지하는 주장: 두 blocked 작업의 실패는 일반 코드·테스트 결함이며, 최소 수정 후 원 Worker와 같은 격리 validator에서 고정 검사 4개가 통과한다. 이 PC Worker는 최신 승인 실행기로 경계·로그인 검증 후 중앙에 online이다.
+- 지지하지 않는 주장: 수정의 PM 검수·병합, 중앙 job 상태 변경, 실제 서버·모델 흐름, 근거 패널의 화면 연결, PR #98과의 우선순위, WEB-003 완료.
+- 한계: 수동 재검증은 Worker 자체가 아닌 같은 격리 코드 경로를 호출한 스크립트로 수행했다. heartbeat는 controller 연결 없이 로컬 True.
+
+### 최길웅-E018 — WEB-START-R1: Worker 대기·readiness 원본 인계
+
+- 관련 기록: [최길웅-20261005-023](../작업기록/최길웅.md) / 배정 `PM-20261005-WEB-START-R1` / [Issue #25](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25) / PR #85
+- 확인일: 2026-10-05 08:5x KST. 실행 종류: 상태 조회·파일 검사. 모델 실행·GitHub 게시 없음.
+- readiness 원본: `evals/web/20261005/automation-readiness/choigilung-readiness-12f5a92-1.json` — sha256 `47ed55516d2ab332fd3ee137637d99820b8aabf5c4cbc736e404a1d13a60c6cd`(private 원본과 바이트 동일), collector `trusted_pm`, account `choigilung`, verified_at `1791156535.65`(2026-10-05 08:28:55 KST), image `sha256:98b8695564be6287745790bc88ccfcb769faee7d8572c31de12f857f8c797b02`, 생성 코드 main `12f5a92`, Worker entry sha256 `e445ce8e91e0475f3bddfdbc5bbeedca56803daf81d1bc1b64f7144300478288`, report entry `12e949ba65a473ce48353fcef325210465e209e5ed867b82f0823124b935479b`.
+- 비밀 검사: 개인 controller 토큰 문자열 불포함, `ghp_/gho_/github_pat_/sk-ant/JWT/이메일` 패턴 0건, 절대 경로 0건.
+- runtime 동일성: `git diff 12f5a92 a0141b6 -- services/automation scripts/automation_isolation.py scripts/build_worker_runtime.py scripts/build_worker_report_bundle.py scripts/project_report*.py harness/phase2/project-reports.policy.json` 변경 없음.
+- Worker: 작업 `LGAX-Worker-choigilung` Running, PID 24844→20600(08:35:59 시작), 충전 중, 실행 컨테이너 0.
+- 중앙: global off, 네 명 off, jobs 0, reservations 0.
+- 지지하는 주장: 이 PC Worker가 OFF 대기로 실행 중이고 중앙에 연결되며, PM이 readiness 원본을 저장소에서 해시로 인수할 수 있다.
+- 지지하지 않는 주장: ON, 작업 배정·실행, 모델 개발·검사·PR·Project 보고 완주, GitHub 게시 검증.
+
+### 최길웅-E017 — 자동화 Worker Docker 격리 인계(이 PC 실증)
+
+- 관련 기록: [최길웅-20261005-022](../작업기록/최길웅.md) / 배정 `PM-20261005-WEB-DOCKER-HANDOFF` / R14·R25 / [Issue #25](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25) / 기준 [Issue #28](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28) 고정 commit
+- 확인일: 2026-10-05 08:20~08:35 KST. 실행 종류: Docker 컨테이너 경계 실검사(무해 canary)·컨테이너 CLI 로그인 metadata·preflight. **모델 생성 없음, GitHub 게시 없음, 자동화 OFF.**
+- 코드 버전: 자동화 clone `C:/LGAX/lg-ax-2026` = main `12f5a920d2170113f08f2f806fada5070d3acb4d`.
+- 재현(문서 `docs/bootstrap/automation-isolation.md`): `automation_isolation.py build-context --output C:/LGAX-build/executor-reviewed-12f5a92` → `docker build … --tag lgax-executor-reviewed` → `docker image inspect` → `build_worker_runtime.py --output C:/LGAX-tools/worker-reviewed-12f5a92`, `build_worker_report_bundle.py --output C:/LGAX-tools/report-reviewed-12f5a92` → private worker.json 연결 → `automation_isolation.py verify --config … --output C:/LGAX-state/choigilung/readiness-12f5a92-1.json` → `worker_entry.py --config … --preflight` → `install-worker.ps1 … -DedicatedExecutionEnvironment -Start` → `automation.py --config <개인 client.json> status`.
+- 빌드 입력 해시(build-context 출력): Dockerfile `8d1144ee…`, pyproject.toml `47433f6b…`, uv.lock `5a4604fc…`, apps/web/package.json `8219df7f…`, package-lock.json `271f5c74…`. Docker engine linux 29.7.2. 이미지 CLI: Claude Code 2.1.289(Dockerfile 고정).
+- 결과:
+  - 이미지 `sha256:98b8695564be6287745790bc88ccfcb769faee7d8572c31de12f857f8c797b02`, Config.User `1000:1000`.
+  - readiness proof(private, sha256 `47ed5551…`): `execution_isolation_verified`·`publisher_separation_verified`·`login_verified` true, `authentication.source=actual_isolated_cli`(claude), `github_publication_verified=false`, `automation_enabled=false`.
+  - model: publisher canary 읽기 false(보호 경로 시도 4), AI 프로필 읽기 true, Docker socket false, network bridge, mount `/agent-auth`·`/artifacts`·`/workspace`.
+  - validator: publisher canary false, AI 프로필 false, Docker socket false, 외부 네트워크 false(network none), mount `/artifacts`·`/workspace`.
+  - 공통: read-only root, capability 제거, no-new-privileges, uid 1000, 게시 인증 미mount.
+  - preflight: passed, `container_auth_verified` true, `linux_engine` true, `native_fallback` false, `automation_ready` false, `execution_started` false.
+  - 작업 스케줄러 `LGAX-Worker-choigilung` 등록, 상태 Queued(배터리 사용 중·설정 DisallowStartIfOnBatteries=True), Worker 프로세스 없음.
+  - 충전기 연결 후(08:36 KST): 상태 Running, Worker 프로세스 실행, 시작 preflight 생성, `docker ps` 실행 컨테이너 0, 중앙 jobs 0·reservations 0 → OFF 대기 확인.
+  - 중앙: global_mode off, choigilung false, jobs 0.
+- 실패·반대 근거: verify 1차 — `C:\.git`(다른 프로젝트 저장소) 때문에 `PMError: PM policy/journal must be outside source-controlled workspaces`. 사용자 승인으로 이름 변경 후 통과. `automation.py status`를 `--config` 없이 실행하면 FileNotFoundError.
+- 지지하는 주장: 이 PC에서 고정 이미지의 model·validator 컨테이너가 호스트 게시 인증 canary를 읽지 못하고, validator는 AI 로그인도 읽지 못하며 네트워크가 없다. 본인 전용 Claude 프로필로 컨테이너 CLI 인증이 된다. 자동화는 OFF다.
+- 지지하지 않는 주장: 실제 모델 개발·고정 검사·GitHub 게시·Project 보고 완주, ON 준비 완료, 팀 전체 준비.
+- 한계: canary는 무해 파일 경계 검사이며 실제 비밀 접근 시도 전체를 대신하지 않는다. private 절대 경로·토큰은 기록하지 않았다.
+
+### 최길웅-E016 — P2-WEB-003: 검사 코드 사유 표시·식기세척기/전자레인지 실제 모델 엄격 E2E
+
+- 관련 기록: [최길웅-20261005-021](../작업기록/최길웅.md) / R18~R23 / [Issue #25](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25) / PR #83
+- 확인일: 2026-10-05 08:1x KST. 실행 종류: 단위·DOM 검사(모델 호출 없음) + `live_model` 브라우저 E2E(개인 model_proxy → 공유 `qwen3:8b` digest `500a1f067a9f…b41`, 합성 자료 kitchen-demo).
+- 코드 버전: commit `99d270b5bdefa5341a028ed7caf272bcdbfc1edc`.
+- 재현: `npm test`·`npx vitest run`·`npm run typecheck`·`npm run build`(apps/web). E2E는 E015와 같은 절차에 `LGAX_E2E_PLANNING_MODEL=DISHWASHER-A|MICROWAVE-A`, 제품마다 새 작업실 `private/workspace-e2e-{제품}`.
+- 출력: `evals/web/20261005/p2-web-003-live-model-dishwasher-a/`, `…-microwave-a/` — real-planning-proof.json, stored-run-first/second.json(작업실 DB 저장본), first-export.json·first-export.md(브라우저 다운로드), real-planning-first/second.png, run-config.json, e2e-strict-live.txt, workspace-server.log.
+- 결과: 웹 Test Files 18 통과·3 건너뜀, Tests 292 통과·5 건너뜀(신규 `reasonText.test.ts` 4), node 검사 4 통과, typecheck·build 통과. E2E 식기세척기 통과(2.1분, held→failed, 호출 4+5), 전자레인지 통과(2.6분, held→held, 호출 2+6). 모든 호출 metadata·digest 전후 확인, 이전 실행 불변 true. 내려받은 Markdown의 사유가 설명+코드로 표시됨.
+- 실패·반대 근거: 새 단위 검사 첫 실행에서 Markdown `## 미해결·보류` 절의 원 코드 줄을 발견 → 수정 후 통과. typecheck에서 검사 파일 형 변환 오류 1건 → 수정.
+- 지지하는 주장: 코어가 사유에 넣는 모든 검사 코드가 화면·Markdown에서 사람이 읽는 설명과 원래 코드로 함께 표시되고 저장값·JSON은 바뀌지 않는다. 세 제품 모두 브라우저 → 실제 모델 판단 → 저장 → 같은 run ID 표시·내보내기 → 조건 교정 재실행 → 이전 불변이 엄격 모드로 확인됐다.
+- 지지하지 않는 주장: 설명 문구의 사용자 이해도 검증, 판단 품질·accept, 후보 제외 재실행(실제 모델), 독립 평가, WEB-003 완료.
+- 한계: 제품별 1회 실행(모델 출력은 매번 다름). E2E 입력 문장은 AI가 시나리오에 맞춰 작성. 정이량 PC가 온라인일 때만 재현 가능.
+
+### 최길웅-E015 — P2-WEB-003: 실제 공유 모델 엄격 모드 브라우저 E2E
+
+- 관련 기록: [최길웅-20261005-020](../작업기록/최길웅.md) / R18~R23 / [Issue #25](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25) / 배정 `PM-20261005-WEB-AUTOMATION-PREP`
+- 확인일: 2026-10-05 07:48~07:53 KST. 실행 종류: `live_model` — 개인 model_proxy(loopback 18873) → 공유 게이트웨이 → `qwen3:8b` digest `500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41`. 합성 자료(kitchen-demo).
+- 코드 버전: commit `d20b31f6e79976d54160984af746ea3ecc254846`(main `f2cbf01` + PR #80 기록 commit). 웹·코어 코드 변경 없음.
+- 재현: `uv run python -m services.automation.model_proxy --config <개인 client.json>` → `scripts/init_workspace.py --directory private/workspace-e2e-live` → `LGAX_MODEL_ADAPTER=ollama LGAX_MODEL_ENDPOINT=http://127.0.0.1:18873 LGAX_MODEL_ID=qwen3:8b LGAX_MODEL_DIGEST=<위> LGAX_MODEL_TIMEOUT_SECONDS=240 LGAX_MODEL_MAX_OUTPUT_TOKENS=8192 LGAX_MODEL_CONTEXT_TOKENS=16384 LGAX_MODEL_THINK=false python -m lgax_api.workspace_server --db … --credentials … --port 18879 --enable-planning` → (5173 비움) `LGAX_WORKSPACE_PROXY=http://127.0.0.1:18879 LGAX_E2E_PLANNING_TOKEN_FILE=… LGAX_E2E_PLANNING_PROOF_DIR=… LGAX_E2E_REQUIRE_LIVE_MODEL=1 LGAX_E2E_EXPECTED_MODEL_ID=qwen3:8b LGAX_E2E_EXPECTED_MODEL_DIGEST=<위> npx playwright test e2e/real-planning.spec.ts`(로컬 Chrome). 공개 API 18867은 기존 로컬 프로세스.
+- 출력: `evals/web/20261005/p2-web-003-live-model/` — real-planning-proof.json(sha256 `a205f480…`), run-config.json(`47f0ea3f…`), stored-run-first/second/attempt1.json(API 저장본), first-export.json(`c9152349…`)·first-export.md(브라우저 다운로드), real-planning-first/second.png, e2e-strict-live.txt, workspace-server.log. 실패 시도: `evals/web/20261005/p2-web-003-live-model-attempt1/`.
+- 결과: 시도 2 통과(1 passed, 3.1분). 1회차 `run-306fbdb7…` failed/unresolved(`GAP_MANUAL_MISSING`@compare, 내부 수정 2회), 호출 4회(입력/출력 토큰 예: needs 2796/2097). 재실행 `run-8dd0fcf0…` held/hold(`REVIEW_CONFLICT`@needs), 호출 3회, 후보 3개 거절. 모든 호출 metadata `model_id=qwen3:8b`·revision=digest·`pin_verification=before_and_after_generation`. 이전 실행 불변 true.
+- 실패·반대 근거: 시도 0 — 5183 출처 403(허용목록 5173만, 우회하지 않음). 시도 1 — 기본 출력 256 토큰에서 `MODEL_UNAVAILABLE`/`output_truncated`, 엄격 검사가 실패로 거부.
+- 지지하는 주장: 브라우저에서 시작한 요청이 실제 공유 모델(고정 digest)을 호출하는 판단 서버를 거쳐 저장되고, 같은 run ID로 실패·보류가 성공처럼 보이지 않게 표시·내보내기되며, 조건 교정 재실행이 이전 실행에 연결되고 이전 실행은 바뀌지 않는다. 모델 미호출·metadata 누락은 엄격 모드에서 실패한다.
+- 지지하지 않는 주장: 판단 품질·accept 결과, 후보 제외 재실행(실제 모델), 식기세척기·전자레인지 시나리오, 독립 평가, 실제 고객 효용, WEB-003 완료.
+- 한계: 1회 실행(모델 출력은 매번 다를 수 있음). 정이량 PC가 온라인일 때만 재현 가능. `REVIEW_CONFLICT`가 사람이 읽는 사유 대신 코드로 표시된다.
+
+### 최길웅-E014 — 자동화 Worker PC 초기 설정·preflight
+
+- 관련 기록: [최길웅-20261005-019](../작업기록/최길웅.md) / 배정 `PM-20261005-WEB-AUTOMATION-PREP` / [Issue #25](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25) / 안내 `docs/pm/automation.md`, `docs/bootstrap/automation-workers.md`
+- 확인일: 2026-10-05 KST. 실행 종류: 설치·인증·점검(`--preflight`)만. **모델 실행 없음, Worker 실행 시작 없음.**
+- 출처 구분: 아래 항목은 사용자(최길웅)가 PC에서 수행·확인해 보고한 결과다. 이 세션이 직접 읽어 확인한 것은 `claude --version` = `2.1.289 (Claude Code)`, `gh api user --jq .login` = `choigilung`, 경로 `C:/LGAX/lg-ax-2026`·`C:/LGAX-tools/worker-reviewed`·`C:/LGAX-tools/report-reviewed`·`C:/LGAX-auth/choigilung-claude` 존재뿐이다(인증 파일 내용은 읽지 않음).
+- 사용자 보고 결과: Claude CLI 2.1.289·자동 업데이트 끔 / 전용 configDirectory `C:/LGAX-auth/choigilung-claude`에 claude.ai 로그인(firstParty) / `automation.py setup` 중앙 가입 성공·개인 모드 OFF / 고정 보고 묶음 SHA256 `12e949ba…` / `worker.json`(`engine=claude`, `isolation_acknowledged=false`) / `--preflight`: `passed`, `model_executed=false`, `execution_started=false`.
+- 실패·반대 근거: 이전 클라우드 세션에서 중앙 서버 접속이 네트워크 정책으로 HTTP 403 차단되어 setup 불가 → PC에서 재수행.
+- 지지하는 주장: 최길웅 PC에 `engine=claude` Worker 실행 준비(버전 고정·전용 로그인·개인 GitHub 인증·중앙 가입·전용 clone·고정 묶음·설정)가 갖춰졌고 preflight가 통과했다.
+- 지지하지 않는 주장: 실행 사용자와 GitHub 게시 자격증명의 격리, 실제 모델→검사→PR 무인 완주, PM 읽기 시범 성공, 서비스 등록, 팀·개인 ON, P2-WEB-003 완료.
+- 한계: preflight 원본 출력·SHA256 전체 값은 이 문서에 싣지 않았다(PC 로컬 보관). 같은 OS 사용자로 실행하므로 인증 파일 접근 경계는 미실증. 토큰·이메일은 기록하지 않는다.
+
+### 최길웅-E013 — P2-WEB-003: 실서버 판단 브라우저 E2E(opt-in)·종료 상태 문구
+
+- 관련 기록: [최길웅-20261005-017](../작업기록/최길웅.md) / R21·R25·R27 / [Issue #25](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25) / PR #68
+- 확인일: 2026-10-05 KST. 실행 종류: `live_service`(이 세션의 공개 API 18867 + `--enable-planning` 작업실 서버 18879, 기본 kitchen-demo 자료) — **모델 설정 없음**, 모든 판단 실행이 모델 호출 0회로 INVALID_ARGUMENT 실패. 실제 모델 실행 아님.
+- 코드 버전: commit `f8dd74b03231ccff7a83c3ee7c6ff4b55799f69b`.
+- 재현: `uv run python scripts/init_workspace.py --directory private/workspace-e2e-cloud` → 공개 API 18867 → `uv run python -m lgax_api.workspace_server --db private/workspace-e2e-cloud/workspace.sqlite --credentials private/workspace-e2e-cloud/server-credentials.json --port 18879 --enable-planning` → `LGAX_WORKSPACE_PROXY=http://127.0.0.1:18879 LGAX_E2E_PLANNING_TOKEN_FILE=../../private/workspace-e2e-cloud/editor-client.json LGAX_E2E_PLANNING_PROOF_DIR=<dir> npx playwright test e2e/real-planning.spec.ts`(컨테이너 Chromium 임시 설정).
+- 출력: `evals/web/20261005/p2-web-003-real-planning-ready/` — real-planning-proof.json(마지막 실행: 기존 프로젝트 회차 4, 조건 교정 재실행, 이전 불변 true, flow_completed), real-planning-first/second.png, first-export.md, e2e-real-planning.txt, e2e-default.txt, web-tests/typecheck/build, rules, contracts, phase2.
+- 결과: 실서버 경로 E2E 통과(새 프로젝트 1회·기존 프로젝트 이어서 1회), 기본 Playwright 4 통과·2 건너뜀, 웹 278 통과·5 건너뜀, 정적 검사 통과. 실패 2건(스크립트 run ID 파싱·중복 조건)은 수정 후 재실행.
+- 지지하는 주장: 브라우저에서 시작한 요청이 판단 서버의 실제 경로를 거쳐 저장되고, 같은 run ID로 표시·내보내기(원 실행 기록 일치)·재실행·이전 불변이 실제 서버 API 기준으로 확인된다. 판단 실패·모델 미호출이 성공이나 모델 출력처럼 표시되지 않는다. PM이 같은 시험을 실제 모델 설정으로 실행할 수 있다.
+- 지지하지 않는 주장: 실제 모델 판단·accept·후보 제외 재실행, 판단 품질, 연구실 환경 실행 결과, WEB-003 완료.
+- 한계: 모델 없는 실패 경로만 실행. 재실행이 accept 후보를 고르는 분기는 이 환경에서 실행되지 않았다. 판단이 길면 단계 제한 시간(기본 20분)을 조정해야 한다.
+
+### 최길웅-E012 — P2-WEB-003 TERMINAL-UX 잔여: round2 실제 held 기록 재생·다운로드 파일·원 실행 기록 보존
+
+- 관련 기록: [최길웅-20261005-016](../작업기록/최길웅.md) / 요구 R14·R21·R25·R27 / [Issue #25](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25) / 배정 `PM-20261005-WEB-003-TERMINAL-UX`
+- 확인일: 2026-10-05 KST. 실행 종류: `fixture` — PM 실제 기록(round2 `api-live/workspace-live.json`: TypeScript→인증 API→Qwen3:8B→저장, run `run-437a…`·`run-a39e…`)의 데이터 재생, 현재 main 코어의 mock 파이프라인 실행. 이 세션에서 모델 호출 없음.
+- 코드 버전: commit `b1cf69ef46aacf80dc8fe7453f4411bfd01e113d`(main `e5de02e` 병합 위). packages/core·tests는 main과 동일.
+- 재현: `npm run test|typecheck|build --prefix apps/web`; 공개 API(18867) 실행 후 `npx playwright test e2e/round2-live.spec.ts`(컨테이너 Chromium 임시 설정); `uv run python evals/web/20261005/p2-web-003-core-records/generate.py --root . --set main|semantic`.
+- 출력: `evals/web/20261005/p2-web-003-round2-live/`(web-tests/typecheck/build, e2e, rules, contracts, phase2, round2-held-concepts.png), `evals/web/20261005/p2-web-003-core-records/main-core-e5de02e.json`.
+- 결과: 웹 275 통과·5 건너뜀(신규 18), 타입·빌드, Playwright 4 통과·1 건너뜀, 정적 검사 통과. 민감도 2종 3·2건 실패 후 복구.
+- 지지하는 주장: 실제 저장된 held 실행 2건이 같은 run ID로 보류·질문·의미 검토·거절 후보와 함께 표시되고 성공으로 보이지 않는다. 후보 선택은 제공되지 않고 조건 교정 새 요청만 이전 실행에 연결되며 저장된 실행은 바뀌지 않는다. 브라우저에서 내려받은 JSON·Markdown 파일에 판단 요약·종료 사유·원 실행 기록 전체가 들어 있고, 점검이 원본과 대조한다. 현재 main 코어는 모든 경로에서 정규 결정을 저장한다(mock).
+- 지지하지 않는 주장: 실제 서버·모델로 새 실행을 만든 브라우저 흐름, 실제 accept 실행의 후보 선택, 판단 의미 품질, 독립 평가, WEB-003 완료.
+- 한계: 재생 서버는 새 요청을 request-only로 저장한다. Playwright는 컨테이너 Chromium 임시 설정. 번들 크기 경고.
+
+### 최길웅-E011 — P2-WEB-003 TERMINAL-UX 선행분: 항목 형식 오류 표시·채택 판단만 후보 선택·내보내기 판단 기록
+
+- 관련 기록: [최길웅-20261005-014](../작업기록/최길웅.md) / 요구 R14·R21·R25 / [Issue #25](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25) / 배정 `PM-20261005-WEB-003-TERMINAL-UX` / PR #61
+- 확인일: 2026-10-05 KST. 실행 종류: `fixture` — 코어 실제 파이프라인 mock 기록(E010)·PM 실제 기록(workspace-live.json) 재생과 그 파생본. 모델 호출 없음.
+- 코드 버전: commit `6afe68f6ffbca5669e06c81d89999f71ad8fb7a6`.
+- 재현: `npm run test|typecheck|build --prefix apps/web`, 공개 API(18867) 실행 뒤 Playwright(컨테이너 Chromium 임시 설정). 정적 검사 `sync_agent_rules --check`·`check_contracts`·`phase2 validate`.
+- 출력: `evals/web/20261005/p2-web-003-terminal-ux/` — web-tests/typecheck/build, e2e, rules, contracts, phase2.
+- 결과: 웹 237 통과·4 건너뜀(신규 25), 타입·빌드, Playwright 3 통과·1 건너뜀, 정적 검사 통과. 민감도 4종 각각 4·1·6·10건 실패 후 복구.
+- 지지하는 주장: 잘못된 trace/model_calls/errors 항목이 화면 예외 없이 경로가 있는 오류로 표시된다. 코어 기록이 있는 실행은 채택된 판단일 때만 후보 선택을 제공하고, 보류·실패·결정 없음·기록 오류는 조건 교정 새 요청만 허용하며 그렇게 안내한다. 내보내기 JSON/Markdown에 코어 결정·위반·오류·질문·종료 사유·거절 후보·의미 검토 행이 포함되고 완전성 검사가 기록과 대조한다.
+- 지지하지 않는 주장: PM round2 실제 Qwen 출력에서의 표시(자료 미게시), 실제 서버·모델 브라우저 흐름, 최신 main 기준 통합, 의미 판단 정확도, WEB-003 완료.
+- 한계: 파생본(항목 손상·후보 잔존·decision=null 실패)은 시험이 만든 것. decision=null 실패 모양은 `workspace_planning.failed_execution`을 따랐다. 번들 크기 경고.
+
+### 최길웅-E010 — P2-WEB-003: 코어가 저장하는 실패·보류·의미 검토 기록의 웹 표시
+
+- 관련 기록: [최길웅-20261005-013](../작업기록/최길웅.md) / 요구 R14·R16·R21·R25 / [Issue #25](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25) / PR #61 / 공유 댓글 [PR #60](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/60#issuecomment-5982511771)
+- 확인일: 2026-10-05 KST. 실행 종류: `fixture` — 실제 코어 파이프라인(`PlanningAgent`)을 MockTransport와 코어 시험의 작성된 응답으로 실행. 모델 호출 없음.
+- 코드 버전: commit `5d21589e01ac2fde8930de158035ca4565704470`. 코어 버전: main 코어(브랜치 `cfb8153`, main `07be0aa`과 packages·tests 동일), PR #60 Draft head `4b42728ba1133dd295feb6910fb166f4444467ab`(별도 worktree).
+- 재현: `uv run python evals/web/20261005/p2-web-003-core-records/generate.py --root . --set main --out …/main-core.json`, PR #60은 그 브랜치 worktree를 `--root`로 주고 `PYTHONPATH=<worktree>/packages/core/src:<worktree>/packages/contracts/src`로 `--set semantic`. 이후 `npm run test|typecheck|build --prefix apps/web`, 공개 API(18867) 실행 뒤 Playwright.
+- 출력: `evals/web/20261005/p2-web-003-core-records/` — main-core.json, pr60-semantic-preview.json, generate.py, web-tests/typecheck/build, e2e, rules, contracts, phase2.
+- 결과: main 4건(failed/unresolved ×2, held/hold, completed/accept), PR #60 4건(completed/accept, failed/unresolved, held/hold, failed/unresolved). 웹 211 통과·4 건너뜀(신규 10), 타입·빌드, Playwright 3 통과·1 건너뜀, 지침·계약·phase2 통과. 민감도: 변경 5종 각각 되돌리면 3·4·1·1·1건 실패.
+- 지지하는 주장: 코어가 실제로 저장하는 실패(출력 없음)·거절 후보·보류·수정 후 accept 기록과 PR #60 Draft의 의미 검토 기록을 웹이 형식 오류로 숨기지 않고 코어 결정·위반 사유·거절 후보·조건별 판정과 함께 보여 준다. 코어 결정의 필드 누락·불일치는 웹이 채우지 않고 문제로 드러낸다.
+- 지지하지 않는 주장: 모델이 실제로 이런 응답을 낸다는 것, 의미 검토 판정의 정확도, PR #60 형식 확정, 실제 서버·모델 브라우저 재현, WEB-003 완료.
+- 실패·수정: 시험의 problems 순서 기대값 1건 수정. Playwright 첫 실행은 임시 설정 위치 때문에 webServer cwd 오류 → cwd 지정 후 통과.
+- 한계: 모델 응답은 작성된 fixture. 브라우저 E2E는 기존 spec(기록 재생·fixture)만이며 새 기록의 화면은 jsdom DOM 시험으로 확인했다. 번들 505 kB로 Vite 크기 경고.
+- 후속(코드 `d2927e7`): PR #60 head `28788164c1827ef5a89a053562306e3837f614a1`로 `pr60-semantic-preview.json` 재생성. 네 결정 모두 정규 형식(CORE-001 엄격 검사 통과, 저장 기록 불일치 0). 웹 212 통과·4 건너뜀, typecheck·build 통과. 지지하지 않는 주장은 위와 같다(PR #60은 아직 Draft·미병합).
+
+### 최길웅-E009 — P2-WEB-003: 실제 저장 판단 기록(planning_execution)의 검토·이력 화면 연결
+
+- 관련 기록: [최길웅-20261005-012](../작업기록/최길웅.md) / 요구 R14·R16·R21·R25·R27 / [Issue #25](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25) / 배정 `PM-20261005-WEB-003-LIVE-RESULTS`
+- 확인일: 2026-10-05 KST. 실행 종류: `fixture`(PM이 기록한 실제 모델 실행 결과의 데이터 재생 + 파생본). 이 세션은 모델을 호출하지 않았다.
+- 코드 버전: commit `f3c652c8005c0c9b322c60eb85ece0001464ee20`. 파일 해시는 [individual-evidence.json](../../evals/web/20261005/p2-web-003-live-results/individual-evidence.json)의 `code_versions`·`source_versions`.
+- 재생한 기록: `evals/pm-integration/20261005/workspace-live.json`(PM, 작업실 API→Qwen3:8B, run `run-743b…`·`run-2c49…`), 의미 검토 `semantic-review.json`.
+- 재현: `npm run test|typecheck|build --prefix apps/web`. 기록 재생 E2E는 공개 API(18867) 실행 후 `npx playwright test e2e/live-results.spec.ts`(설치된 Chrome 또는 컨테이너 Chromium 지정). 정적 검사는 `sync_agent_rules --check`·`check_contracts`·`phase2 validate`·`unittest discover -s tests`.
+- 출력: `evals/web/20261005/p2-web-003-live-results/` — web-tests/typecheck/build, e2e, rules, contracts, phase2, python-tests, live-results-concepts.png, individual-evidence.json.
+- 결과: 웹 201 통과·4 건너뜀(신규 12), 타입·빌드, Playwright 3 통과·1 건너뜀, 지침·계약·phase2, Python 382 OK. 시험 민감도 확인(2·4·1건 실패 후 복구).
+- 지지하는 주장: 웹이 저장된 판단 기록을 다시 판단하지 않고 같은 run ID로 원 요청·입력·판단·코어 결정·trace·모델 호출·오류와 함께 보여 준다. 형식 오류·불일치·거절 기록을 성공처럼 보이지 않는다. 실행의 판단 입력 원문으로 대조표·내보내기가 누락 없이 만들어진다. accept를 의미 검증으로 표시하지 않는다. 기록 재생 브라우저 흐름에서 후보 제외 새 실행 요청과 기존 실행 불변을 확인했다.
+- 지지하지 않는 주장: 실제 서버·모델 대상 브라우저 재현, 제외 후 실제 재판단 결과, 판단 의미 정확도·실현성, 세 제품·6유형 실제 결과, 사람 사용성(E03), WEB-003 완료.
+- 실패·수정: 시험 기대값 1건(기록이 이전 형식), 타입 캐스트 1건, E2E 선택자 1건 수정.
+- 한계: 보류·실패·0후보는 파생본. Playwright는 컨테이너 Chromium 임시 설정. CI E2E에는 이 spec이 포함되지 않는다.
+
+### 최길웅-E008 — P2-WEB-003: CORE-001 판단 계약 결과·코어 검사 결정의 웹 표시 어댑터
+
+- 관련 기록: [최길웅-20261005-011](../작업기록/최길웅.md) / 요구 R14·R16·R21·R25 / [Issue #25](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25) / PR #53
+- 확인일: 2026-10-05 KST. 실행 종류: `fixture`(코어 fixture 선언 + 결정적 코어 검사기의 실제 실행). 실제 모델 없음.
+- 코드 버전: commit `438c8d65b7e7f577eb94e4c60abccb6878659099`. 파일별 SHA256은 [individual-evidence.json](../../evals/web/20261004/p2-web-003-core-judgement/individual-evidence.json)의 `code_versions`·`source_versions`.
+- 고정 입력: 공통 계약 0.1.0 `lgax.schema.json`, 판단 출력 Schema 검토용 복사본 `evals/core-contract/schemas/output.json`(Python 시험이 `schema_for`와 동일함을 고정), `evals/core-contract/{development,heldout}/`의 입력·fixture 선언·expected(황대겸 PR #51, main `c7adfbd`).
+- 재현: `uv run python evals/core-contract/check_cases.py --suite evals/core-contract/development --output evals/web/20261004/p2-web-003-core-judgement/core-decisions-development.json`(heldout 동일) → `npm run test|typecheck|build --prefix apps/web` → `sync_agent_rules --check`·`check_contracts`·`phase2 validate`·`unittest discover -s tests`.
+- 출력 위치: `evals/web/20261004/p2-web-003-core-judgement/` — core-decisions-development/heldout.json, web-tests/typecheck/build, rules, contracts, phase2, python-tests, individual-evidence.json.
+- 결과: 코어 검사기 두 suite passed(accept 1·hold 2·revise 3씩). 웹 188 통과·3 건너뜀(신규 46), 타입·빌드 통과, 지침 동일·계약 pass·phase2 valid, Python 316 OK. 시험 민감도: 후보 항상 선택 가능→15건 실패, 보류 실행에 후보 유지→4건 실패, 복구 후 통과.
+- 지지하는 주장: 웹이 CORE-001 판단 출력 형식을 검사하고, 판단이 스스로 선언한 status가 아니라 코어 검사 결정 기준으로 표시한다. 수락 전 후보는 선택 흐름에 들어가지 않는다. 종료 결정(accept/hold)은 공통 WorkspaceRunSnapshot 계약에 맞는 실행으로 바뀌고 대조표·내보내기 누락 0이다. 모델혼동 사례의 범위 밖 원문을 드러낸다.
+- 지지하지 않는 주장: 실제 모델이 이 사례를 이렇게 판단한다는 것, 판단의 의미 정확도, 실제 Workspace 저장/화면 연결(아직 앱에 마운트하지 않음), WEB-003 완료, 사용자 효용.
+- 실패·수정: 첫 실행에서 시험이 `new URL(..., import.meta.url)`로 저장소 파일을 읽어 Vite가 자산 변환을 시도하다 거부됐다(`Denied ID AGENTS.md?url`) → `process.cwd()` 기준 경로로 변경. 대조표 행 구조를 잘못 가정한 시험 6건 실패 → `missingIds`/`evidence` 기준으로 수정.
+- 한계: hold/unresolved 변환 규칙(후보 제외·위반 사유를 Run.unresolved로)은 코어 문서에 대한 웹의 해석이며 PM·황대겸 확인 필요. E2E·실서버 시험은 재실행하지 않음(E007이 최신).
+
+### 최길웅-E007 — P2-WEB-003 코어 대기 단계: 6유형×세 제품 계약 fixture 회귀·범위 밖 문서 버전 표시
+
+- 관련 기록: [최길웅-20261004-009](../작업기록/최길웅.md) / R14·R21·R25 / [Issue #25](https://github.com/jeongiryang/lg-ax-2026/issues/25) / 배정 `PM-20261004-WEB-003-CORE-INTEGRATION`
+- 확인일: 2026-10-04 KST. 실행 종류: `live_service`(이 세션의 새 작업실 서버 127.0.0.1:18869·합성 API 18867) + 계약 fixture. 실제 모델 없음. 코드 commit `4279d647ab3d2d6f09073379efb034fcd037c3e1`, 파일 해시는 [individual-evidence.json](../../evals/web/20261004/p2-web-003-case-matrix/individual-evidence.json).
+- 고정 입력: 계약 0.1.0, kitchen-demo 0.1.0(canonical SHA `8cbc9a49…2c03`), `lgax_core/workspace.py`·`workspace_server.py`(같은 commit 해시).
+- 재현: `npm ci --prefix apps/web` → `npm run test|typecheck|build --prefix apps/web`. 실서버: `uv run python scripts/init_workspace.py --directory private/workspace-cloud` → `uv run python -m lgax_api.workspace_server --db private/workspace-cloud/workspace.sqlite --credentials private/workspace-cloud/server-credentials.json --port 18869` → `LGAX_WORKSPACE_URL=http://127.0.0.1:18869 LGAX_WORKSPACE_CREDENTIAL_FILE=…/editor-client.json LGAX_WORKSPACE_VIEWER_FILE=…/viewer-client.json LGAX_CASE_PROOF_FILE=… npx vitest run src/liveCaseMatrix.test.ts src/liveWorkspace.test.ts`. E2E는 API 18867도 띄우고 `LGAX_E2E_TOKEN_FILE`을 지정한다(클라우드에서는 사전 설치 Chromium을 지정한 임시 설정 사용).
+- 출력: `evals/web/20261004/p2-web-003-case-matrix/` (web-tests/typecheck/build, live-workspace-test, live-case-requests.json, live-workspace-flow.json, e2e, rules, contracts, phase2, python-tests).
+- 결과: 웹 142 통과·3 건너뜀, 실서버 12 통과, E2E 3 통과, Python 282 OK, 정적 검사 통과, 하네스 검사기 오류 0. 변이 확인: `scopeWarnings`를 빈 결과로 바꾸면 문서갱신 사례 3건이 실패한다.
+- 지지하는 주장: 계약 0.1.0 모양의 결과라면 6유형·세 제품 사례의 판단·원문·문서 버전·가정·보류·범위 밖 버전이 화면과 내보내기에 누락 없이 나타난다. 후보 선택·조건 교정 재실행은 원 실행과 원 요청 문장을 바꾸지 않는다. 같은 요청이 실제 작업실 서버에 그대로 저장되고 연결된다.
+- 지지하지 않는 주장: 실제 판단 코어가 이 사례들을 이렇게 판단한다는 것, 실제 Agent 후보가 있는 실행에서의 재현(배정 acceptance), 사람의 사용성·E03 효과, 저장소 기본 설정(Chrome 채널)으로의 E2E 실행, CI 통과.
+- 한계: fixture는 사람이 작성했다. 실서버 실행은 모두 not_implemented다. 클라우드 세션의 새 DB는 PC 작업실과 별개다.
+
+### 최길웅-E006 — PR #45 리뷰 보완(#4 중복 프로젝트, #7 새 프로젝트 회차) 검증
+
+- 관련 기록: 최길웅-20261004-007·008 / R02·R25 / Issue #25, [PR #45](https://github.com/jeongiryang/lg-ax-2026/pull/45)(PM 승인·병합)
+- 확인일: 2026-10-04 KST. 실행 종류: `live_service`. 코드 commit `dbff065`, 해시는 [individual-evidence.json](../../evals/web/20261004/p2-web-review-fixes/individual-evidence.json). P2-WEB-003 완료 근거가 아니다.
+- 방법: main(c8fc93e) 기준 브랜치를 스크래치패드 worktree에서 깨끗하게 checkout하고 `npm ci` 후 실행했다.
+- 결과: Playwright E2E 3 passed(Chrome, 실서버 흐름 포함), 실서버 vitest 11 passed, 웹 105 통과·2 건너뜀, typecheck·build·계약·지침·phase2 통과, 하네스 검사기 오류 0.
+  - 첫 E2E 실행은 실서버 흐름 1건이 실패했다. API(18867)가 꺼져 있었기 때문이며, 다시 띄운 뒤 통과했다. 실패 출력은 덮어썼고 이 문단으로 기록한다.
+- 지지하는 주장:
+  - 첫 실행 저장이 실패해도 새 프로젝트가 선택된 채 남고, 재시도는 같은 프로젝트에 저장된다(jsdom 시험).
+  - 새 실서버 프로젝트는 회차 0으로 표시된다(E2E 조건부 확인).
+- 지지하지 않는 주장: 판단 Agent 결과가 있는 실행, 사람의 사용성.
+- 한계: #7 E2E 확인은 저장 버튼이 새 프로젝트 경로일 때만 실행되는 조건부 단언이다.
+
+### 최길웅-E005 — P2-WEB-004 내보내기 점검·브라우저 E2E·수정 시간 측정
+
+- 관련 기록: [최길웅-20261004-006](../작업기록/최길웅.md) / R27·E03 / [Issue #26](https://github.com/jeongiryang/lg-ax-2026/issues/26)
+- 확인일: 2026-10-04 KST. 실행 종류: `live_service`(E2E 실서버 흐름·작업실 시험) + fixture E2E. 코드 commit `fc8efa5f2f52b10d9df246922946ed734f2d514a`, 해시는 [individual-evidence.json](../../evals/web/20261004/p2-web-004/individual-evidence.json).
+- 재현: `npm run test:e2e --prefix apps/web`(설치된 Chrome). 실서버 흐름은 `LGAX_E2E_TOKEN_FILE`을 지정해야 실행된다.
+- 출력: `evals/web/20261004/p2-web-004/` (e2e.txt, live-workspace-test/flow, web-tests/typecheck/build, rules, contracts, phase2, browser-check.json).
+- 결과: E2E 3 passed, 실서버 11 passed, 단위 59 통과·2 건너뜀, 정적 검사 통과, 하네스 검사기 오류 0.
+- 지지하는 주장: 내보내기가 인용 근거 원문·요구사항·가정·미확인·미해결·보류·계보를 포함하고, 누락을 스스로 보고한다. 사용자 흐름(요청→검토→재실행→내보내기)이 실제 브라우저에서 끝까지 작동한다. 수정 시간을 정해진 기준으로 기록·내보낼 수 있다.
+- 지지하지 않는 주장: 사람의 실제 수정 시간·절감 효과(E03 실제 기록 없음), CI에서의 E2E 실행, 판단 Agent 결과가 있는 내보내기.
+
+### 최길웅-E004 — P2-WEB-003 후보 비교·원문/판단/가정/보류 검토·후보/조건 재실행
+
+- 관련 기록: [최길웅-20261004-005](../작업기록/최길웅.md) / R14·R21·R25 / [Issue #25](https://github.com/jeongiryang/lg-ax-2026/issues/25)
+- 확인일: 2026-10-04 KST. 실행 종류: `live_service`(작업실 18869·합성 API 18867) + fixture 화면. 코드 commit `d72eec1a155032666a813a52a1c9574119f7cc90`, 파일 해시는 [individual-evidence.json](../../evals/web/20261004/p2-web-003/individual-evidence.json).
+- 출력: `evals/web/20261004/p2-web-003/` (live-workspace-test/flow, web-tests/typecheck/build, rules, contracts, phase2, browser-check.json).
+- 결과: 실서버 11 passed(회차 0→1→2), 웹 51 통과·2 건너뜀, 정적 검사 통과, 하네스 검사기 오류 0.
+- 지지하는 주장: 기획자가 후보 선택과 조건 교정으로 연결된 새 실행을 만들 수 있다(실서버 저장). 후보별 원문·판단·가정·보류를 한곳에서 확인할 수 있다. 후보 변화의 세부 항목을 비교할 수 있다. 공통 계약을 바꾸지 않았다.
+- 지지하지 않는 주장: 실제 판단 결과에서의 후보 표시, Agent가 후보 선택 문장을 해석하는지, 사람의 사용성.
+
+### 최길웅-E003 — P2-WEB-002 중간점검 보완 검증 (E002 대체 근거)
+
+- 관련 기록: [최길웅-20261004-004](../작업기록/최길웅.md) / R02·R14·R21·R25 / Issue #24, PR #37
+- 확인일: 2026-10-04 KST. 실행 종류: `live_service`. 코드 commit `295e2a528051df3db66e25c04b1ab8d1702d36ee`, 파일 해시는 [individual-evidence.json](../../evals/web/20261004/p2-web-002-r2/individual-evidence.json).
+- 출력: `evals/web/20261004/p2-web-002-r2/` (live-workspace-test/flow, web-tests/typecheck/build, rules, contracts, phase2, browser-check.json).
+- 결과: 실서버 11 passed, 웹 45 통과·2 건너뜀, 정적 검사 통과, 하네스 검사기 오류 0. 브라우저에서 다중 모델·변경 요청 회차·변경 없음·누락 질문·합성자료 표시·모델 열을 확인했다.
+- 지지하는 주장: 공통 샘플 요청(3모델)을 입력·저장할 수 있다. 같은 범위의 변경 요청은 서버 이력에 회차로 남는다. 계약 오류 코드 전부에 전용 안내가 있다.
+- 지지하지 않는 주장: 새 오류 4종·DATASET_MISMATCH의 실서버 동작, 여러 모델의 실제 판단 결과, 사람 사용성.
+
+### 최길웅-E002 — P2-WEB-002 실제 작업실 API 연결·오류·빈 결과·미구현 표시
+
+- 관련 기록: [최길웅-20261004-002](../작업기록/최길웅.md) / 요구 R02·R14·R21·R25 / [Issue #24](https://github.com/jeongiryang/lg-ax-2026/issues/24)
+- 확인일: 2026-10-04 KST. 실행 종류: `live_service`(로컬 작업실 서버 127.0.0.1:18869, 합성 API 18867). 실제 모델 없음.
+- 코드 버전: commit `06e1023d90d7967dc1325ba96aa313e06f52b169`. 파일별 SHA256은 [individual-evidence.json](../../evals/web/20261004/p2-web-002/individual-evidence.json)의 `code_versions`(git_commit 고정).
+- 고정 입력: 계약 0.1.0, kitchen-demo 0.1.0(canonical SHA `8cbc9a49…2c03`), 서버 구현 `workspace_server.py`·`lgax_core/workspace.py`, 공통 클라이언트 `workspace.ts`(같은 commit의 해시).
+- 재현: 작업실 서버 `uv run python scripts/init_workspace.py --directory private/workspace`(1회) 후 `uv run python -m lgax_api.workspace_server --db private/workspace/workspace.sqlite --credentials private/workspace/server-credentials.json --port 18869`. 실서버 시험 명령은 작업기록 002의 인수인계 참고. 화면은 실제 서버 모드에서 작업실 토큰(`private/workspace/editor-client.json`의 값)을 붙여 넣는다.
+- 출력 위치: `evals/web/20261004/p2-web-002/` — live-workspace-test.txt, live-workspace-flow.json, web-tests/typecheck/build, rules, contracts, phase2, browser-check.json, individual-evidence.json.
+- 결과: 실서버 9 passed(저장·연결 실행·서버 회차 일치·검색 적중 4건/빈 결과·오류 6종 코드), 웹 41 통과·2 건너뜀, 타입·빌드·계약·지침·phase2 통과. 하네스 검사기(`artifact_errors`) 오류 0.
+- 지지하는 주장: 실제 서버 모드의 네 영역은 서버 데이터(작업실 프로젝트·실행, 고정 범위 검색, 합성 근거)를 사용한다. 저장 성공과 분석 미구현을 구분해 표시한다. 오류 코드와 빈 결과를 서로 다르게 표시한다. 토큰은 화면 메모리에만 있다(DOM·저장소 확인).
+- 지지하지 않는 주장: 판단 Agent의 결과·정확도(서버 실행은 모두 not_implemented), DATASET_MISMATCH 실서버 동작, 팀 배포·인증 체계, 사람의 사용성·E03.
+- 실패·수정: 첫 브라우저 연결에서 공통 `WorkspaceClient`의 메서드형 transport 호출 때문에 모든 요청이 CONNECTION_FAILED가 됐다(네트워크 요청 0건으로 확인). 웹 래퍼로 해결하고 재현 시험을 추가했다. fixture 상태 배지 오인 표시를 수정했다.
+- 한계: phase2 상태 전환은 P2-WEB-001 완료 후. 실서버 시험은 실행마다 작업실 DB에 프로젝트를 하나씩 추가한다.
+
+### 최길웅-E001 — P2-WEB-001 웹 네 영역 계약 fixture 검증
+
+- 관련 기록: [최길웅-20261004-001](../작업기록/최길웅.md) / 요구 R02·R14·R21·R25·R27 / [Issue #23](https://github.com/jeongiryang/lg-ax-2026/issues/23)
+- 확인일: 2026-10-04 KST. 실행 종류: `fixture`(결정적 로직 + 계약 fixture) 및 기존 합성 API live 회귀 확인. 실제 모델 없음.
+- 코드 버전: commit `59cd703332815b17a2b7c18a2305323c72e73e96`. 파일별 SHA256은 [individual-evidence.json](../../evals/web/20261004/p2-web-001/individual-evidence.json)의 `code_versions`(git_commit 고정).
+- 고정 입력: `packages/contracts/schemas/lgax.schema.json`(0.1.0), `data/demo/dataset.json`(kitchen-demo 0.1.0, canonical SHA `8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03` — Python `lgax_core.workspace._json` 규칙과 Node 정렬 직렬화가 같은 값).
+- 재현 명령: `npm ci --prefix apps/web`, `npm run test|typecheck|build --prefix apps/web`, `uv run python scripts/sync_agent_rules.py --check`, `uv run python scripts/check_contracts.py`, `uv run python scripts/phase2.py validate`, `uv run python -m unittest discover -s tests`. 화면: API `uv run python -m lgax_api.server --host 127.0.0.1 --port 18867`, 웹 `npm run dev --prefix apps/web` 후 상단 '계약 fixture' 전환.
+- 출력 위치: `evals/web/20261004/p2-web-001/` — web-tests/typecheck/build, rules, contracts, phase2, python-tests, browser-check.json, individual-evidence.json.
+- 결과: 웹 시험 33 통과·1 건너뜀(신규 16), 타입·빌드 통과, 계약·지침·phase2 통과, Python 170 OK. 브라우저에서 네 영역·오류·내보내기·모바일 확인([browser-check.json](../../evals/web/20261004/p2-web-001/browser-check.json)).
+- 지지하는 주장: 웹이 공통 계약 형태의 요청·대조·후보·실행 이력을 표시·검사·내보낼 수 있다. fixture 근거는 합성자료 원문과 동일하다. 추가 조건은 연결된 새 실행 초안으로 기록되며 결과를 꾸미지 않는다. live 모드 동작은 바뀌지 않았다.
+- 지지하지 않는 주장: 판단 Agent의 성능·정확도, 실제 서버 저장·연결(R25), 실제 고객 수요, 사람의 사용성·수정 시간 단축(E03). fixture 불편·간극·콘셉트는 손으로 작성한 예시다.
+- 실패·수정: 브라우저 확인 중 not_implemented 초안이 후보 삭제처럼 보이던 표시와 빈 값 표시를 수정한 뒤 종료 검사를 실행했다.
+- 한계: 초안 실행은 브라우저 메모리에만 있다. R02 질문은 규칙 기반 누락 필드 질문이다.

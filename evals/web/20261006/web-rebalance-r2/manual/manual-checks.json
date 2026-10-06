@@ -1,0 +1,110 @@
+{
+  "kind": "rebalance_manual_checks",
+  "observed_at": "2026-10-06T05:58:27.303Z",
+  "checks": [
+    {
+      "flow": "connect",
+      "result": "ok",
+      "observed": {
+        "projects": 3
+      }
+    },
+    {
+      "flow": "hold/failure display DISHWASHER-A",
+      "result": "ok",
+      "observed": {
+        "project": "project-79fb7d9154e443de8b9d888decbf79c7",
+        "codes_on_screen": [
+          "NON_COMPLAINT_AS_NEED"
+        ],
+        "unregistered_shown": false,
+        "excerpt": "CORE RECORD판단 실행 기록 run-77dd3b80d61c494ba406e9d360be02ce실제 모델 실행 기록(저장된 결과)실패 · 내부 수정 2/2판단 모델qwen3:8b · 500a1f067a9f모델 호출3회 · 34.1초판단한 제품·문서DISHWASHER-A · 문서 1.0 · synthetic입력 원문·기능4건 · 1개원 요청 Agent에 그대로 전달된 조건개선 과제서로 다른 크기의 식기를 넣을 때 남는 불편을 검토해줘.제외 조건이미 있는 기능을 다시 제안하지 않기 / 적재 안내 서비스만 검토 (E2E 1791265954942)미해결 종료코어 검사 결정 · unresolvedDISHWASHER-A · 문서 1.0 · 내부 수정 2/2 · 입력 9a349ef8f430두 번 수정한 뒤에도 문제가 남았거나 판단에 실패했습니다. 추가 모델 호출을 멈추고 사유를 남깁니다.검사에서 발견한 문제 1건불편이 아닌 리뷰를 불편 근거로 썼습니다 (NON_COMPLAINT_AS_NEED · needs 단계)리뷰 판단불편큰 접시와 냄비를 같이 넣을 때 어디에 놓아야 하는지 모르겠어요.REVIEW-EVIDENCE-031 · 큰 접시와 냄비의 적재 위치 불확실성상충",
+        "mentions_input_error": false
+      }
+    },
+    {
+      "flow": "hold/failure display MICROWAVE-A",
+      "result": "ok",
+      "observed": {
+        "project": "project-cad4a53d63d846abbf2b759a1eee0f6b",
+        "codes_on_screen": [
+          "MODEL_UNAVAILABLE"
+        ],
+        "unregistered_shown": false,
+        "excerpt": "CORE RECORD판단 실행 기록 run-0180fefa93164f39883b3663eeb25b4a실제 모델 실행 기록(저장된 결과)실패 · 내부 수정 0/2판단 모델qwen3:8b · 500a1f067a9f모델 호출1회 · 1.2초판단한 제품·문서MICROWAVE-A · 문서 1.0 · synthetic입력 원문·기능4건 · 1개실행 중 기록된 오류·검사 실패 1건MODEL_UNAVAILABLE 판단 모델 실행을 완료하지 못했습니다.원 요청 Agent에 그대로 전달된 조건개선 과제조리 설정을 반복할 때의 불편이 기존 기능으로 해결되는지 검토해줘.제외 조건이미 있는 기능을 다시 제안하지 않기 / 기존 설정 저장 기능과 겹치는 안은 제외 (E2E 1791266041210)판단 출력이 저장되지 않았습니다(실패). 위의 오류와 실행 순서를 확인해 주세요.실행 순서 trace 10단계planplan0.0sretrievebootstrap0.0sretrieveselect_feature_scope0.0sretrievelist_products0.1sretrieveget_evidence0.1sretrieveget_evidence0.1sretrieveget_evidence0",
+        "mentions_input_error": false
+      }
+    },
+    {
+      "flow": "hold/failure display FRIDGE-A",
+      "result": "ok",
+      "observed": {
+        "project": "project-6cd23ffc6d5646cf9e17ecd152c43bda",
+        "codes_on_screen": [
+          "INVALID_ARGUMENT"
+        ],
+        "unregistered_shown": false,
+        "excerpt": "CORE RECORD판단 실행 기록 run-4ccf79bdd8844cd6b56b5f4ed4f0e2f8실제 모델 실행 기록(저장된 결과)보류 · 내부 수정 0/2판단 모델qwen3:8b · 500a1f067a9f모델 호출3회 · 50.3초판단한 제품·문서FRIDGE-A · 문서 1.0 · synthetic입력 원문·기능11건 · 1개실행 중 기록된 오류·검사 실패 1건INVALID_ARGUMENT 작업실 입력 값을 확인해 주세요.원 요청 Agent에 그대로 전달된 조건개선 과제냉장고를 청소할 때 느끼는 불편을 줄일 기능을 찾아줘.제외 조건이미 있는 기능을 다시 제안하지 않기판단 출력이 저장되지 않았습니다(보류). 위의 오류와 실행 순서를 확인해 주세요.실행 순서 trace 19단계planplan0.0sretrievebootstrap0.0sretrieveselect_feature_scope0.0sretrievelist_products0.1sretrieveget_evidence0.1sretrieveget_evidence0.1sretrieveget_evidence0.1sretrieveget_evidence0.1sretrieveget_evidence0.1sretrie",
+        "mentions_input_error": true
+      }
+    },
+    {
+      "flow": "revision separation DISHWASHER-A",
+      "result": "ok",
+      "observed": {
+        "timeline_runs": [
+          "run-066d82890c674393a92c78b2b2b7b453",
+          "run-63ab7bf825a94a03ab8b23946b6393bc",
+          "run-77dd3b80d61c494ba406e9d360be02ce"
+        ],
+        "excerpt": "REVISIONS수정 이력서버에 저장된 실행 기록 · 자료 성격은 각 실행의 근거 원문에서 확인하세요.run-066d82890c674393a92c78b2b2b7b453요청 회차 0 · 원 요청첫 실행(원 요청 기준)보류검토·수정 단계Agent 내부 수정 0 / 2회 (실행 내부 회차이며 사용자 변경이 아님)사용한 자료: 0.1.0 · sha256 8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03 · 문서 DISHWASHER-A 1.0첫 실행의 후보입니다.run-63ab7bf825a94a03ab8b23946b6393bc요청 회차 1 · 사용자 조건 변경← run-066d82890c674393a92c78b2b2b7b453실패검토·수정 단계Agent 내부 수정 2 / 2회 (실행 내부 회차이며 사용자 변경이 아님)사용한 자료: 0.1.0 · sha256 8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03 · 문서 DISHWASHER-A 1.0항목변경 전변경 후제외 조건이미 있는 기능을 다시 제안하지 않기이미 있는 기능을 다시 제안하지 않기, 적재 안내 서비스만 검토 (E2E 1791265954942)이전 실행 대비 후보 변화가 없습니다.run-77dd3b80d61c494ba406e9d360be02ce요청 회차 "
+      }
+    },
+    {
+      "flow": "duplicate condition",
+      "result": "ok",
+      "observed": {
+        "condition": "이미 있는 기능을 다시 제안하지 않기",
+        "occurrences_after": 1,
+        "new_posts": 0,
+        "message": "이미 같은 조건이 있습니다"
+      }
+    },
+    {
+      "flow": "evidence on a run without candidates DISHWASHER-A",
+      "result": "ok",
+      "observed": {
+        "candidate_traces": 0,
+        "input_sources": 4,
+        "input_features": 1
+      }
+    },
+    {
+      "flow": "history refetch after reload",
+      "result": "ok",
+      "observed": {
+        "before": [
+          "run-066d82890c674393a92c78b2b2b7b453",
+          "run-63ab7bf825a94a03ab8b23946b6393bc",
+          "run-77dd3b80d61c494ba406e9d360be02ce"
+        ],
+        "after": [
+          "run-066d82890c674393a92c78b2b2b7b453",
+          "run-63ab7bf825a94a03ab8b23946b6393bc",
+          "run-77dd3b80d61c494ba406e9d360be02ce"
+        ]
+      }
+    },
+    {
+      "flow": "triple click save",
+      "result": "ok",
+      "observed": {
+        "posts": [
+          "/api/workspace/projects/project-79fb7d9154e443de8b9d888decbf79c7/runs"
+        ],
+        "heading": "요청 저장 · 판단 실패",
+        "message": "요청 저장 · 판단 실패기존 프로젝트의 변경 요청으로 저장했습니다(이전 실행 run-77dd3b80d61c494ba406e9d360be02ce). 실행 run-b5886243903f41d7a3914084ae7e70b2 · 요청 회차 3 · 실패: 실행 중 오류가 발생했습니다. 미해결 항목을 확인해 주세요.SAVED_FAILED"
+      }
+    }
+  ]
+}
