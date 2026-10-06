@@ -34,8 +34,12 @@ async def mcp_calls(url: str, credential: Path, project_id: str, filters: dict, 
         tools = sorted(tool.name for tool in (await session.list_tools()).tools)
         query = structured(await session.call_tool("review_trends", {"filters": filters}))
         saved = structured(await session.call_tool("get_review_trends", {"project_id": project_id, "aggregate_id": aggregate_id}))
-        page = structured(await session.call_tool("trend_evidence", {
-            "project_id": project_id, "aggregate_id": aggregate_id, "bucket_id": "MONTH-2026-10", "topic_id": "cleaning"}))
+        result = await session.call_tool("trend_evidence", {
+            "project_id": project_id, "aggregate_id": aggregate_id, "bucket_id": "MONTH-2026-10", "topic_id": "cleaning"})
+        try:
+            page = structured(result)
+        except (ValueError, StopIteration):  # an empty bucket may be refused; keep the raw tool text instead of crashing
+            page = {"tool_error": [getattr(item, "text", "") for item in result.content]}
         return {"tools": tools, "query": query, "saved": saved, "evidence": page}
 
 
@@ -44,12 +48,14 @@ def main() -> int:
     parser.add_argument("--url", default="http://127.0.0.1:18879")
     parser.add_argument("--credential-file", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--collector-label", default="tests/test_workspace_trends.py::FixtureCollector (unit fixture, not DATA #148)")
+    parser.add_argument("--project-name", default="R3 동향 소비 경로 단위 fixture")
     args = parser.parse_args()
     token = json.loads(args.credential_file.read_text("utf-8"))["token"]
     api = httpx.Client(base_url=args.url, headers={"Authorization": f"Bearer {token}", "Origin": "http://127.0.0.1:5173"}, timeout=30)
     request = json.loads((ROOT / "data/demo/planning_requests.json").read_text("utf-8"))[0]
     request["model_ids"] = ["FRIDGE-A"]
-    created = api.post("/api/workspace/projects", json={"name": "R3 동향 소비 경로 단위 fixture", "request": request,
+    created = api.post("/api/workspace/projects", json={"name": args.project_name, "request": request,
                                                        "document_versions": {"FRIDGE-A": "1.0"}})
     created.raise_for_status()
     project = created.json()["data"]["project"]
@@ -63,7 +69,7 @@ def main() -> int:
     query = {key: value for key, value in filters.items() if key not in ("project_id", "topic_ids")}
     first = api.get(base, params=query)
     out: dict = {"kind": "review_trend_consumption_path", "observed_at": datetime.now(UTC).isoformat(), "server": args.url,
-                 "collector": "tests/test_workspace_trends.py::FixtureCollector (unit fixture, not DATA #148)", "project_id": project_id,
+                 "collector": args.collector_label, "project_id": project_id,
                  "filters": filters, "checks": {}}
     if first.status_code == 501:
         out["result"] = "not_connected"
@@ -73,16 +79,22 @@ def main() -> int:
         aggregate = first.json()["data"]["aggregate"]
         aid = aggregate["aggregate_id"]
         again = api.get(f"{base}/{aid}").json()["data"]["aggregate"]
-        page = api.get(f"{base}/{aid}/evidence", params={"bucket_id": "MONTH-2026-10", "topic_id": "cleaning", "offset": 0, "limit": 50}).json()["data"]
+        page_response = api.get(f"{base}/{aid}/evidence", params={"bucket_id": "MONTH-2026-10", "topic_id": "cleaning", "offset": 0, "limit": 50})
+        out["api_evidence_status"] = page_response.status_code
+        page = page_response.json()["data"] if page_response.status_code == 200 else {"api_error": page_response.json().get("error")}
+        bucket = next((item for item in aggregate["buckets"] if item["bucket_id"] == "MONTH-2026-10"), {"topics": []})
+        topic = next((item for item in bucket["topics"] if item["topic_id"] == "cleaning"), {"evidence_ids": []})
         via_mcp = asyncio.run(mcp_calls(args.url, args.credential_file, project_id, filters, aid))
         m_query, m_saved, m_page = (via_mcp[key].get("data", via_mcp[key]) for key in ("query", "saved", "evidence"))
         m_query_agg, m_saved_agg = m_query.get("aggregate", m_query), m_saved.get("aggregate", m_saved)
         checks = out["checks"]
         checks["api_requery_same_aggregate"] = again == aggregate
         checks["api_empty_topic_filter_kept"] = aggregate["filters"]["topic_ids"] == []
-        checks["api_evidence_same_key"] = (page["aggregate_id"], page["bucket_id"], page["topic_id"]) == (aid, "MONTH-2026-10", "cleaning")
-        checks["api_evidence_in_bucket_ids"] = sorted(item["id"] for item in page["evidence"]) == sorted(aggregate["buckets"][0]["topics"][0]["evidence_ids"])
-        checks["api_evidence_document_version"] = sorted({item["document_version"] for item in page["evidence"]}) == [document_versions["FRIDGE-A"]]
+        page_items = page.get("evidence", [])
+        checks["api_evidence_same_key"] = (page.get("aggregate_id"), page.get("bucket_id"), page.get("topic_id")) == (aid, "MONTH-2026-10", "cleaning")
+        checks["api_evidence_in_bucket_ids"] = sorted(item["id"] for item in page_items) == sorted(topic["evidence_ids"])
+        # An honest empty bucket has no evidence rows; the version check then only requires that none of another version leak in.
+        checks["api_evidence_document_version"] = {item["document_version"] for item in page_items} <= {document_versions["FRIDGE-A"]}
         checks["mcp_tools_present"] = {"review_trends", "get_review_trends", "trend_evidence"} <= set(via_mcp["tools"])
         checks["mcp_query_same_id"] = m_query_agg.get("aggregate_id") == aid
         checks["mcp_saved_identical"] = m_saved_agg == aggregate
@@ -92,7 +104,7 @@ def main() -> int:
         out["dataset_sha256"] = aggregate["dataset_sha256"]
         out["counts"] = aggregate["counts"]
         out["buckets"] = aggregate["buckets"]
-        out["evidence_ids"] = [item["id"] for item in page["evidence"]]
+        out["evidence_ids"] = [item["id"] for item in page_items]
         out["mcp_tools"] = via_mcp["tools"]
         out["result"] = "consumption_path_ok" if all(checks.values()) else "consumption_path_mismatch"
     args.out.parent.mkdir(parents=True, exist_ok=True)

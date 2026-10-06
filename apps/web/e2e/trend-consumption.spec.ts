@@ -23,7 +23,7 @@ test('review trend: same aggregate ID from API/MCP → chart → original text �
   const token = (JSON.parse(readFileSync(tokenFile!, 'utf8')) as { token: string }).token;
   const path = JSON.parse(readFileSync(pathFile!, 'utf8')) as {
     result: string; project_id: string; aggregate_id: string; dataset_sha256: string; filters: { start_date: string; end_date_exclusive: string; model_id: string };
-    evidence_ids: string[]; counts: { eligible_unique_review_count: number };
+    evidence_ids: string[]; counts: { eligible_unique_review_count: number; excluded_undated_count: number };
   };
   expect(path.result, 'API→MCP leg must have passed first').toBe('consumption_path_ok');
   const proof: Record<string, unknown> = { kind: 'review_trend_web_leg', started_at: new Date().toISOString(), project_id: path.project_id, mcp_aggregate_id: path.aggregate_id };
@@ -48,6 +48,36 @@ test('review trend: same aggregate ID from API/MCP → chart → original text �
     proof.fixture_note_shown = await page.locator('.fixture-note').count() > 0;
     expect(proof.fixture_note_shown).toBe(false);
     if (proofDir) { mkdirSync(proofDir, { recursive: true }); await page.screenshot({ path: join(proofDir, 'web-trend-chart.png'), fullPage: true }); }
+
+    if (path.counts.eligible_unique_review_count === 0) {
+      // Honest empty aggregate (e.g. a real collector over undated reviews): denominator 0, every bar "자료 없음",
+      // never 0%, nothing to drill into, and the exports keep the same ID with no viewed evidence.
+      await expect(page.locator('[data-denominator="zero"]')).toBeVisible();
+      await expect(page.locator('.trend-counts')).toContainText(`날짜 없음 제외${path.counts.excluded_undated_count}건`);
+      await expect(page.locator('.trend-bar.value')).toHaveCount(0);
+      const bars = await page.locator('.trend-bar').allTextContents();
+      expect(bars.length).toBeGreaterThan(0);
+      expect(bars.every(text => text.includes('자료 없음') && !text.includes('0%'))).toBe(true);
+      proof.empty_aggregate = { bars, undated: path.counts.excluded_undated_count };
+      const [jsonDownload] = await Promise.all([page.waitForEvent('download'), page.locator('.trend-export').getByRole('button', { name: 'JSON' }).click()]);
+      const snapshot = JSON.parse(await readDownload(jsonDownload));
+      expect(snapshot.source).toBe('server');
+      expect(snapshot.aggregate_id).toBe(path.aggregate_id);
+      expect(snapshot.aggregate.dataset_sha256).toBe(path.dataset_sha256);
+      expect(snapshot.aggregate.counts.eligible_unique_review_count).toBe(0);
+      const [mdDownload] = await Promise.all([page.waitForEvent('download'), page.locator('.trend-export').getByRole('button', { name: '문서(Markdown)' }).click()]);
+      const markdown = await readDownload(mdDownload);
+      expect(markdown).toContain(path.aggregate_id);
+      // Table rows only (the notes legitimately say "0%와 다릅니다"): every bucket × topic cell must read "자료 없음".
+      const rows = markdown.split('\n').filter(line => line.startsWith('| ') && !line.startsWith('| 구간'));
+      expect(rows.length).toBeGreaterThan(0);
+      expect(rows.every(row => row.split('|').slice(2, -1).every(cell => cell.trim() === '자료 없음'))).toBe(true);
+      expect(markdown).toContain('분모(유효 고유 리뷰) 0건');
+      proof.export = { json_source: snapshot.source, json_aggregate_id: snapshot.aggregate_id, json_viewed_evidence: snapshot.viewed_evidence ?? null, markdown_has_id: true };
+      if (proofDir) { writeFileSync(join(proofDir, 'web-snapshot.json'), JSON.stringify(snapshot, null, 2)); writeFileSync(join(proofDir, 'web-snapshot.md'), markdown); }
+      proof.result = 'web_leg_ok_empty_aggregate';
+      return;
+    }
 
     // 2. Drill-down shows exactly the API/MCP evidence of that bucket/topic.
     await page.locator('.trend-bar.value').first().click();
