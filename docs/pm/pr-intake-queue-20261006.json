@@ -1,0 +1,15 @@
+{
+  "schema_version": "pm-manual-intake-v1",
+  "mode": "OFF",
+  "source": "사용자 4번까지 진행 및 처리 중 새 PR도 큐에 추가 지시",
+  "meaning": "수동 PM 검수 큐이며 자동 Worker release/부모 완료가 아니다",
+  "items": [
+    {"pr":177,"head":"1923b6f697cf318fe02bb40eb758593ac80dbb56","scope":"CORE feedback + raw failed evidence","state":"independent_review_passed_pm_docker_pending"},
+    {"pr":176,"head":"bebb54efb5d82e412e9e14ca784d701c7b05a533","scope":"DATA original audit + deterministic collector","state":"independent_review_passed_runtime_integration_pending"},
+    {"pr":172,"head":"e2190209b3e5921e5e237c265b5ff2b4a24a86df","scope":"WEB historical cause correction","state":"source_review_passed_ci_cleanup_race_under_review"},
+    {"pr":178,"head":"2325c7ab5706ccb36d5463ad6411de18d8ef95c6","scope":"WEB176 precheck and empty-data consumption; stacked on172","state":"queued_independent_review"},
+    {"pr":168,"head":"0d1967c48e9082e8ae4a3913f863b9705e6d865a","scope":"historical partial preparation/failure handoff","state":"draft_preserved"},
+    {"pr":140,"head":"6d98cc976a5fdd4bfa8efeeccd0713d0af396fdf","scope":"historical lossless records","state":"draft_preserved"}
+  ],
+  "rules": ["各 인수/공유 단계에서 새 열린 PR과 실제 head/CI를 다시 조회", "같은 코드/개인 문서의 stack·겹침은 원 지시와 원본을 보존하며 조정", "Draft·실패 CI·미검증 품질을 성공으로 바꾸지 않음"]
+}

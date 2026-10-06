@@ -153,12 +153,42 @@ def _schema_field_guide(schema: dict[str, Any]) -> tuple[str, tuple[str, ...]]:
             if isinstance(child, dict):
                 pending.append(child)
     fields = tuple(name for name in _SCHEMA_FIELD_GUIDES if name in found)
+    # Stage control arrays must be described even when the provider receives
+    # the schema natively. Never derive instructions from schema annotations.
+    properties = schema.get("properties", {})
+    result = properties.get("result", {}) if isinstance(properties, dict) else {}
+    result_properties = result.get("properties", {}) if isinstance(result, dict) else {}
+    array_fields = {
+        "unresolved": result_properties.get("unresolved") if isinstance(result_properties, dict) else None,
+        **{name: properties.get(name) if isinstance(properties, dict) else None
+           for name in ("questions", "hold_reasons", "no_candidate_reasons")},
+    }
+    stage_control = (
+        isinstance(result_properties, dict)
+        and bool(set(result_properties) & {"needs", "gaps", "concepts"})
+        and all(isinstance(definition, dict) and definition.get("type") == "array"
+                and isinstance(definition.get("items"), dict)
+                and definition["items"].get("type") == "string"
+                for definition in array_fields.values())
+    )
+    if stage_control:
+        fields += tuple(array_fields)
     if not fields:
         return "", fields
     lines = ["판정값 안내: 값과 reason의 의미를 일치시키고 제공된 원문으로 판단하세요."]
     if found & {"support_status", "support_basis", "resolution"}:
         lines.append("기능 지원은 선택한 현재 기능의 문서상 지원이며, 고객 희망 결과의 해결 여부와 별개입니다.")
-    lines.extend(_SCHEMA_FIELD_GUIDES[name][1] for name in fields)
+    lines.extend(_SCHEMA_FIELD_GUIDES[name][1] for name in fields if name in _SCHEMA_FIELD_GUIDES)
+    if stage_control:
+        lines.extend((
+            "unresolved: 원문에서 확인할 수 없어 현재 판단을 막는 사실을 문장으로 적습니다. "
+            "Need ID·필드명·작업 대기 목록이나 확인된 불편을 적는 곳이 아닙니다. 불명 사실이 없으면 [].",
+            "questions: 그 불명 사실을 확인할 구체 질문입니다. 판단을 보류할 때는 무엇을 확인할지 묻습니다.",
+            "hold_reasons: 현재 판단을 막는 자료 누락·상충의 이유입니다. "
+            "불편이 남아 있다는 이유만으로 보류하지 않습니다. 판단 가능하면 [].",
+            "no_candidate_reasons: 판단 후 후보가 없거나 필요 없을 때의 이유입니다. "
+            "후보 작성 전에는 []. 필요한 자료가 실제 없을 때는 보류·질문을 유지하세요.",
+        ))
     return "\n".join(lines) + "\n\n", fields
 
 
@@ -537,7 +567,8 @@ class StructuredModelClient:
             "response_format": response_format, "locally_validated": True,
             "schema_prompt_embedded": not native_schema,
             "schema_field_guide": {
-                "version": "enum_meanings_v1", "fields": list(guide_fields),
+                "version": "enum_and_hold_meanings_v2" if "unresolved" in guide_fields else "enum_meanings_v1",
+                "fields": list(guide_fields),
                 "characters": len(guide), "utf8_bytes": len(guide.encode("utf-8")),
                 "sha256": sha256(guide.encode("utf-8")).hexdigest(),
             },

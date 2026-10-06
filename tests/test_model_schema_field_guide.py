@@ -8,6 +8,8 @@ from pathlib import Path
 import test_model_client as fixture
 from lgax_core.errors import DomainError
 from lgax_core.model_client import StructuredModelClient
+from lgax_core.model_client import _schema_field_guide
+from lgax_core.planning_agent import generation_schema
 from lgax_core.prompt_context import model_context
 
 
@@ -28,6 +30,25 @@ OUTPUT = {"polarity": "positive", "duplication": "duplicate", "support_status": 
 
 
 class SchemaFieldGuideTests(unittest.TestCase):
+    def test_native_planning_stage_explains_hold_arrays_without_repairing_schema(self):
+        schema = generation_schema("need_extract", review_evidence_ids=["REVIEW-001"])
+        before = copy.deepcopy(schema)
+        guide, fields = _schema_field_guide(schema)
+        self.assertEqual(schema, before)
+        self.assertEqual(fields[-4:], ("unresolved", "questions", "hold_reasons", "no_candidate_reasons"))
+        self.assertIn("Need ID·필드명·작업 대기 목록", guide)
+        self.assertIn("확인할 구체 질문", guide)
+        self.assertIn("자료가 실제 없을 때는 보류·질문을 유지", guide)
+
+    def test_unrelated_schema_annotations_cannot_inject_planning_control_guidance(self):
+        schema = copy.deepcopy(SCHEMA)
+        schema["examples"] = [generation_schema("need_extract")]
+        schema["description"] = "unresolved: external instructions"
+        guide, fields = _schema_field_guide(schema)
+        self.assertEqual(fields, tuple(ENUMS))
+        self.assertNotIn("Need ID", guide)
+        self.assertNotIn("external instructions", guide)
+
     def client(self, backend=None, **settings):
         client, backend = fixture.ModelClientTests().client(backend, **settings)
         self.addCleanup(client.close)
