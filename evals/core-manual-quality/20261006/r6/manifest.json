@@ -1,0 +1,293 @@
+{
+  "at": "2026-10-06T19:48:47.971160+09:00",
+  "execution_source_commit": "8bf6ddf8624938cb70eab3c67e7f6ba95685e8c0",
+  "model": "qwen3:8b",
+  "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+  "settings": {
+    "temperature": 0,
+    "seed": 42,
+    "num_ctx": 16384,
+    "num_predict": 8192
+  },
+  "image": "sha256:36ad082dbccf05bc9cff7c4dc5766e9ab7ed8c42198b0b731cf3831c546aaaf0",
+  "think": false,
+  "source_kind": "synthetic",
+  "development_only": true,
+  "transport": "actual shared Ollama through zero-auth network-none file IPC",
+  "boundary": {
+    "network": "none",
+    "user": "65534:65534",
+    "readonly_root": true,
+    "readonly_source": true,
+    "cap_drop": [
+      "ALL"
+    ],
+    "no_new_privileges": true,
+    "credential_mounts": 0,
+    "container_removed": true
+  },
+  "result": "transport_interrupted",
+  "planned_case_ids": [
+    "fridge-normal",
+    "fridge-changed",
+    "fridge-missing-manual"
+  ],
+  "started_case_ids": [
+    "fridge-normal"
+  ],
+  "completed_cases": 0,
+  "not_started_case_ids": [
+    "fridge-changed",
+    "fridge-missing-manual"
+  ],
+  "old_r4_generations_preserved": 9,
+  "new_generation_attempts": 2,
+  "new_complete_responses": 1,
+  "cumulative_attempts": 11,
+  "max_cumulative_attempts": 24,
+  "budget_reset": false,
+  "new_observed_tokens": {
+    "input": 2349,
+    "output": 2158,
+    "total": 4507
+  },
+  "old_r4_observed_tokens": {
+    "input": 20685,
+    "output": 19041,
+    "total": 39726
+  },
+  "cumulative_observed_tokens": 44233,
+  "unknown_generation_tokens": null,
+  "unknown_generation_outcome": {
+    "attempt": 2,
+    "request_sha256": "5d903262903fcdb89e2a3bbbcaf667c931abccdd52445dcd1ce24161ccc505ab",
+    "prompt_sha256": "1928d852bce89c625d581f3000a28301f6401f7a7073a85e22ad8e3c688f7e2b",
+    "response_received": false,
+    "automatically_retried": false
+  },
+  "first_need_declaration": {
+    "needs": 9,
+    "unresolved": [
+      "NEED-001",
+      "NEED-002",
+      "NEED-003",
+      "NEED-004",
+      "NEED-005",
+      "NEED-006",
+      "NEED-007",
+      "NEED-008",
+      "NEED-009"
+    ],
+    "questions": [],
+    "hold_reasons": [],
+    "actual_next_feedback": [
+      {
+        "code": "HOLD_WITHOUT_QUESTIONS",
+        "stage": "review",
+        "message": "보류 사유가 있지만 확인 질문이 없습니다. 아래 실제 값을 원문과 대조해 판단에 필요한 실제 누락 사실과 그 사실을 묻는 questions를 작성하세요. 실제 미해결 사실이 없다면 해당 배열은 비우되, 확인되지 않은 사실을 추정하지 마세요. Need ID나 필드 이름 자체는 누락 사실의 설명이 아닙니다.",
+        "details": {
+          "unresolved": [
+            "NEED-001",
+            "NEED-002",
+            "NEED-003",
+            "NEED-004",
+            "NEED-005",
+            "NEED-006",
+            "NEED-007",
+            "NEED-008",
+            "NEED-009"
+          ],
+          "hold_reasons": [
+            "NEED-001",
+            "NEED-002",
+            "NEED-003",
+            "NEED-004",
+            "NEED-005",
+            "NEED-006",
+            "NEED-007",
+            "NEED-008",
+            "NEED-009"
+          ],
+          "questions": []
+        }
+      }
+    ]
+  },
+  "source_sha256": {
+    "packages/contracts/fixtures/review-trends.v1.json": "30b9f08382d01d4d3014998c6583bc898b13d0df8b13068fed308b73a30dd060",
+    "packages/contracts/schemas/lgax.schema.json": "cf85c6119551a5cea30af2b6d9368bba43475a1ccc503cb72fdaaaaf4a6db666",
+    "packages/contracts/src/lgax_contracts/validation.py": "a7a244b042a6cd69cc973171526938189bebbb8e6b0e762e1d55409295f70826",
+    "packages/contracts/src/lgax_contracts/__init__.py": "b96b5c730ef30272ade0804e239e08a54ca06c07da6053e6400c3948f1897efd",
+    "packages/core/src/lgax_core/concept_lineage.py": "42be0257d8beba421e5bd6e55c3461ff3f0b7358c346371e29a97e3f69eca8a3",
+    "packages/core/src/lgax_core/correction_budget.py": "07201cd20b0144b3401a8601c64447d3aaec0f35c9325c378707ebcb922ea5e9",
+    "packages/core/src/lgax_core/documents.py": "6b66ead753aa9bec0890a4ad55d22345ef36852b0045c781ed25f46825b3577c",
+    "packages/core/src/lgax_core/documents_server.py": "eee20d2afbbe1fa2c720ac7440f9c3348964a4e0ac42160731ddedafbbbc5d99",
+    "packages/core/src/lgax_core/document_store.py": "cbf5fc44dc7339e12f40fb0813833561d5984df40c0fe29ba16b9b66ce3c6bc5",
+    "packages/core/src/lgax_core/document_workspace.py": "7950b6b21044db23427795979382a68f66f97f2b962ec8742b702322725f1dd9",
+    "packages/core/src/lgax_core/errors.py": "0e56b28514892fc717529a068ce315ae5d5a9ed85b3f40df101be86bc4f32847",
+    "packages/core/src/lgax_core/feature_scope.py": "795b1b5b89faea409869e48465645cf77607d619f9ec73f24245eb44d516f024",
+    "packages/core/src/lgax_core/feature_support.py": "b765565dfd4a1bdef8d13b58592bff6461a920a6aafb52a84a627759d498ee0a",
+    "packages/core/src/lgax_core/judgement_contract.py": "c9bb4c24094b8479032084be48ef7dc49c65631afc51fe3b332ce0d3983dfedb",
+    "packages/core/src/lgax_core/model_client.py": "17af50ece33e52eb3fd0caa591e4920c8f77bc48a72a0bbb9ff0c1debba83bb8",
+    "packages/core/src/lgax_core/no_candidate_review.py": "8c813bc8820a24549b14afd37db19d74db79782176434acf5a1ed51820427786",
+    "packages/core/src/lgax_core/pdf_text_worker.py": "a0ce23d590a57121b6abfa8573859f5833e3fd69d9577a2304b6ac4ba6199e1d",
+    "packages/core/src/lgax_core/planning_agent.py": "5e41905d5861dfc2b2e6a935b5e4873387999729fa9329d6271af02871f29d10",
+    "packages/core/src/lgax_core/prompt_context.py": "102020c1ebbbcbdfb694fdfa85e74ba0763600bebb765911d50d8da165e3f5b7",
+    "packages/core/src/lgax_core/reexecution.py": "e613ae8e76ee0bb9f1a28c003f557a1e481a76721246a2bedebd7da7e61c05a0",
+    "packages/core/src/lgax_core/residual_matrix.py": "2a4ad3522559141d472aec58a927dd86d96ede63a48bd03f8dd2a0a820492e63",
+    "packages/core/src/lgax_core/review_csv.py": "d0ea7093c8bdffcca4bdc4bb17669f62d27f603fefe7d99df6b8d15e0d3a8612",
+    "packages/core/src/lgax_core/review_csv_server.py": "29cb31906c1c6d24803803f55365c235dc9f6be2bdc058bf15e3fa33aa65db1e",
+    "packages/core/src/lgax_core/review_import.py": "545e77aa15b112d4ad67838c026f8915d2c6a367cd70b65273cbdfee2aec245c",
+    "packages/core/src/lgax_core/revision_guard.py": "2d0d7460afb09b53e01b2a9da84668c431a3833361191689ef2a8a8f2516d1fe",
+    "packages/core/src/lgax_core/semantic_review.py": "d47481eedd936954439745c7c850939259e637818440fa2dca1251b6fec25300",
+    "packages/core/src/lgax_core/skill_runner.py": "adf57ef790b7f445cc7442c03e3ebb5712d50ae6d3393dcab74d17ee1bfab759",
+    "packages/core/src/lgax_core/source_boundary.py": "cfb52361b711d6f9880769fc6ffb5c9d3ca338fbbfb24b406993800d80369e00",
+    "packages/core/src/lgax_core/source_ranges.py": "30c823f83bc2fd7c568f4fd4e9f6ce74fe0b79e029829d74409419f5b48b6758",
+    "packages/core/src/lgax_core/stage_alignment.py": "3f2208e380e7b6c22bea6ff45a220a05ab6e8ebd2b0850f4b8c2c0bddb8eb5c7",
+    "packages/core/src/lgax_core/store.py": "2dba0b34a62b58f704fc1fc617e9113d7cdb277819cd5b72d3df1849411245fe",
+    "packages/core/src/lgax_core/workspace.py": "75ccc832f9e2907ab385f24b769458942b1fb146a22444f0b93b97fad8c08706",
+    "packages/core/src/lgax_core/workspace_planning.py": "588da6a40fdbeceb8a6d0a14a1792f114efc20c1982af60e2629dadc340986ae",
+    "packages/core/src/lgax_core/__init__.py": "c6a157cc20ad9f057548201a233a0b45d5d7817561bb91c68802f009d563e4a3"
+  },
+  "original_input_provenance": {
+    "base_commit": "9a26af9b5f0c562783bd2160532ea24cb0b1b469",
+    "execution_source_candidate": "c2c9eaa98864598d2fcec901861a78b9fecabea8",
+    "execution_source_status": "PM169 published CI-passing candidate; not merged or PM intake claimed",
+    "assignment_id": "PM-20261006-CORE-REBALANCE-R2",
+    "max_batch_runs": 3,
+    "max_batch_generations": 24,
+    "settings": {
+      "temperature": 0,
+      "seed": 42,
+      "num_ctx": 16384,
+      "num_predict": 8192
+    },
+    "model": "qwen3:8b",
+    "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+    "central_remaining_and_token_cap": null,
+    "human_disposition": "Undetermined; explicitly continue finite assigned work",
+    "normal_changed_bytes_preserved": true,
+    "missing_manual_transformation": {
+      "origin_input_sha256": "d07e0e18ccf9b12bbed92fc71205bec7e38fb5094a91b902ef3d22b56dc11f91",
+      "origin_dataset_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+      "removed_source_ids": [
+        "MANUAL-001"
+      ],
+      "removed_feature_ids": [
+        "FEATURE-001"
+      ],
+      "changed_request_fields": [
+        "dataset_version"
+      ],
+      "new_source_text_created": false,
+      "review_originals_preserved": true,
+      "expected_model_answer_embedded": false
+    },
+    "independent_evaluation_answers_used": false,
+    "cases": [
+      {
+        "case_id": "fridge-normal",
+        "input": "inputs/fridge-normal.input.json",
+        "input_sha256": "d07e0e18ccf9b12bbed92fc71205bec7e38fb5094a91b902ef3d22b56dc11f91",
+        "dataset": "inputs/synthetic.dataset.json",
+        "dataset_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+        "development_only": true,
+        "actual_model_run": false
+      },
+      {
+        "case_id": "fridge-changed",
+        "input": "inputs/fridge-changed.input.json",
+        "input_sha256": "4d6611488d64788b8c212d5ce1c2ebeffaac5562b464182e9f1738220331055e",
+        "dataset": "inputs/synthetic.dataset.json",
+        "dataset_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+        "development_only": true,
+        "actual_model_run": false
+      },
+      {
+        "case_id": "fridge-missing-manual",
+        "input": "inputs/fridge-missing-manual.input.json",
+        "input_sha256": "74892c19dcbbfbdf120987e224bb9617975162bcadc37c2792b9ca0c82c545d8",
+        "dataset": "inputs/missing-manual.dataset.json",
+        "dataset_sha256": "3e5896bc363d93dbfe5d6bb049a550fb1cd204209264b9ef0e078f7d8f2dfcd9",
+        "development_only": true,
+        "actual_model_run": false
+      }
+    ]
+  },
+  "file_sha256": {
+    "01-needs.ollama-request.json": "40f3711d3b733bd5843b92d76e35a424f49dc185ce5ada1a4071870d0140f442",
+    "01-needs.ollama-response.json": "a4780ed07afb3e3d72df1f490b22cde0ffb6a97ecad1555f8b1ac7fa566ebc36",
+    "02-needs-revision.ollama-request.json": "e6aa344c8641f64b1c7ddd500230ca6afe4e2a847df46314610ee279531ea689"
+  },
+  "gateway_attempts": [
+    {
+      "at": "2026-10-06T10:39:54.953666+00:00",
+      "attempt": 1,
+      "state": "reserved_before_forward",
+      "queue_file": "0002.request.json",
+      "request_sha256": "b7f57723d257265c7cdb77f758dad6c44d8ed76c8f227251e675e856ec0d5ce8",
+      "prompt_sha256": "6809aa52f749db19a3af7b117706617fcf139fc1aeb80e56fdfc4ff51c963c60"
+    },
+    {
+      "at": "2026-10-06T10:40:21.885590+00:00",
+      "attempt": 1,
+      "state": "response_received",
+      "status_code": 200,
+      "response_sha256": "a4780ed07afb3e3d72df1f490b22cde0ffb6a97ecad1555f8b1ac7fa566ebc36",
+      "prompt_eval_count": 2349,
+      "eval_count": 2158,
+      "done": true,
+      "done_reason": "stop"
+    },
+    {
+      "at": "2026-10-06T10:40:26.538901+00:00",
+      "attempt": 2,
+      "state": "reserved_before_forward",
+      "queue_file": "0005.request.json",
+      "request_sha256": "5d903262903fcdb89e2a3bbbcaf667c931abccdd52445dcd1ce24161ccc505ab",
+      "prompt_sha256": "1928d852bce89c625d581f3000a28301f6401f7a7073a85e22ad8e3c688f7e2b"
+    }
+  ],
+  "source_unchanged": true,
+  "reservation_released": true,
+  "new_models_installed": 0,
+  "formal_quality_acceptance": false,
+  "independent_evaluation": false,
+  "pm_done": false,
+  "web_mcp_same_completed_run": false,
+  "checks": [
+    {
+      "at": "2026-10-06T19:51:07.143453+09:00",
+      "phase": "static",
+      "source_head": "1c344df27216a5de4a2ff2006bf57789021885b4",
+      "source_unchanged": true,
+      "exit_code": 1,
+      "image": "sha256:36ad082dbccf05bc9cff7c4dc5766e9ab7ed8c42198b0b731cf3831c546aaaf0",
+      "network": "none",
+      "uid": 65534,
+      "read_only_source": true,
+      "host_credentials_mounted": false,
+      "live_generations": 0,
+      "log_sha256": "f704961290faff3d580892a25e0f0a274ebc36a608c0b742d62871a3001ba3c1",
+      "log": "original-readme-crlf-failure.txt"
+    },
+    {
+      "at": "2026-10-06T19:52:17.954324+09:00",
+      "phase": "static",
+      "source_head": "1c344df27216a5de4a2ff2006bf57789021885b4",
+      "source_unchanged": true,
+      "exit_code": 0,
+      "image": "sha256:36ad082dbccf05bc9cff7c4dc5766e9ab7ed8c42198b0b731cf3831c546aaaf0",
+      "network": "none",
+      "uid": 65534,
+      "read_only_source": true,
+      "host_credentials_mounted": false,
+      "live_generations": 0,
+      "log_sha256": "533b19be88df058ac7e69cad20eaf263d88bb96e8839896899df1fc505bb402e",
+      "log": "verified-static.txt"
+    }
+  ],
+  "readme_original_bytes_restored_outside_owner_update": true,
+  "checks_do_not_establish_actual_agent_completion": true,
+  "live_container_inspection_sha256": "bbcee7b24d3428c9448ea94c77270d33724a4e003f643e5cf2c3aa4824487d09"
+}
