@@ -7,8 +7,9 @@ import { ExecutionPanel } from './JudgementViews';
 import { buildEvidenceTrace, EvidenceTracePanel, subjectFromGap } from './EvidenceTracePanel';
 import { buildRevisionTimeline, isIntermediateRun, RevisionTimeline } from './RevisionTimeline';
 import { ClarificationPanel } from './ClarificationPanel';
+import { PendingJudgement } from './PendingJudgement';
 import { exportJudgement, planningExecutionView, reasonText, rerunBaseNotice, selectableConcepts } from './judgement';
-import { runStatusView } from './liveWorkspace';
+import { runStatusView, stageLabel } from './liveWorkspace';
 import { editSummary, END_RULE, START_RULE } from './measurement';
 import type { EditSummary, ModificationMeasurement } from './measurement';
 import type { ErrorView, EvidenceSearch, LiveWorkspace } from './liveWorkspace';
@@ -191,7 +192,7 @@ function ExportActions({ mode, snapshot, features, evidence, runs }: { mode: Dat
 }
 
 function RunPicker({ runs, selected, onSelect }: { runs: RunSnapshot[]; selected: RunSnapshot; onSelect: (id: string) => void }) {
-  return <label className="run-picker">실행 기록<select value={selected.run.id} onChange={event => onSelect(event.target.value)}>{runs.map(item => <option key={item.run.id} value={item.run.id}>{item.run.id} · 요청 회차 {item.request_revision} · {item.run.status}</option>)}</select></label>;
+  return <label className="run-picker">실행 기록<select value={selected.run.id} onChange={event => onSelect(event.target.value)}>{runs.map(item => <option key={item.run.id} value={item.run.id}>{item.run.id} · 요청 회차 {item.request_revision} · {runStatusView(item.run.status).label}</option>)}</select></label>;
 }
 
 interface PlanningProps { mode: DataMode; runs: RunSnapshot[]; selected: RunSnapshot; onSelect: (id: string) => void; features: Feature[]; evidence: Evidence[]; currentEvidence?: Evidence[] }
@@ -200,7 +201,7 @@ function RunStatus({ snapshot, mode }: { snapshot: RunSnapshot; mode: DataMode }
   const view = runStatusView(snapshot.run.status);
   // Fixture runs are hand-written examples, so their status must not read as an Agent result.
   const fixture = mode === 'fixture' && snapshot.actor_id !== 'local-draft';
-  return <span className={`run-status ${fixture ? 'fixture' : view.tone}`} title={fixture ? FIXTURE_NOTICE : view.detail}>{fixture ? `fixture 예시 · ${snapshot.run.status}` : view.label}<small>{snapshot.run.status} · {snapshot.run.stage}</small></span>;
+  return <span className={`run-status ${fixture ? 'fixture' : view.tone}`} title={fixture ? FIXTURE_NOTICE : view.detail}>{fixture ? `fixture 예시 · ${snapshot.run.status}` : view.label}<small title={`${snapshot.run.status} · ${snapshot.run.stage}`}>{stageLabel(snapshot.run.stage)}</small></span>;
 }
 
 /** Candidates side by side on the attributes a planner compares before choosing. */
@@ -361,6 +362,8 @@ function RerunPanel({ mode, selected, original, onRerun, busy, measure }: { mode
   const [conditions, setConditions] = useState(() => startConditions.map((text, id) => ({ id, text })));
   const [draft, setDraft] = useState('');
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const inFlight = useRef(false);
 
   let preview: PlanningRequest | null = null;
   let previewError = '';
@@ -379,7 +382,9 @@ function RerunPanel({ mode, selected, original, onRerun, busy, measure }: { mode
     event.preventDefault();
     if (!preview) return;
     if (!changes.length) { setError('바뀐 조건이 없습니다. 후보 선택이나 조건을 수정한 뒤 다시 실행해 주세요.'); return; }
-    try { await onRerun(preview, editSummary(initialChoices, choices, startConditions, splitConditions(preview, concepts).conditions)); setError(''); } catch (failure) { setError(failure instanceof ApiError ? failure.message : '새 실행을 만들지 못했습니다.'); }
+    if (busy || inFlight.current) return;
+    inFlight.current = true; setSubmitting(true);
+    try { await onRerun(preview, editSummary(initialChoices, choices, startConditions, splitConditions(preview, concepts).conditions)); setError(''); } catch (failure) { setError(failure instanceof ApiError ? failure.message : '새 실행을 만들지 못했습니다.'); } finally { inFlight.current = false; setSubmitting(false); }
   }
 
   return <form className="panel planning-panel condition-form" onSubmit={submit} aria-label="후보·조건 선택 후 재실행">
@@ -402,6 +407,7 @@ function RerunPanel({ mode, selected, original, onRerun, busy, measure }: { mode
     <h4 className="sub">다음 요청 미리보기 <small>요청 회차 {preview ? nextRequestRevision(original, selected, preview) : '-'}</small></h4>
     {previewError ? <p className="form-error" role="alert">{previewError}</p> : changes.length ? <table className="change-table"><thead><tr><th>항목</th><th>지금</th><th>다음 실행</th></tr></thead><tbody>{changes.map(item => <tr key={item.field}><th>{item.label}</th><td>{item.before}</td><td>{item.after}</td></tr>)}</tbody></table> : <p className="muted">아직 바뀐 내용이 없습니다.</p>}
     <div className="form-footer"><p>후보 선택은 공통 요청 규격 안에서 제외 조건("후보 제외: …")과 기획 요청 끝의 "[집중 검토: …]"로 전달됩니다.</p><button className="primary-button" type="submit" disabled={busy || !preview}>{mode === 'fixture' ? '새 실행 초안' : busy ? '저장 중…' : '다시 실행 요청'}<ArrowIcon /></button></div>
+    <PendingJudgement active={submitting && mode !== 'fixture'} action="새 실행 저장과 판단 실행" />
     {error ? <p className="form-error" role="alert">{error}</p> : null}
   </form>;
 }
@@ -511,7 +517,7 @@ export function HistoryView({ mode, runs, selected, onSelect, features, evidence
         <div className="planning-head"><div><p className="eyebrow">BEFORE / AFTER</p><h3>{selected.run.id} 변경 전후</h3></div><ExportActions mode={mode} snapshot={selected} features={features} evidence={evidence} runs={runs} /></div>
         <dl className="run-meta">
           <div><dt>이전 실행</dt><dd>{selected.previous_run_id ?? '없음(원 요청 기준)'}</dd></div>
-          <div><dt>상태 / 단계</dt><dd>{selected.run.status} / {selected.run.stage}</dd></div>
+          <div><dt>상태 / 단계</dt><dd>{runStatusView(selected.run.status).label} / {stageLabel(selected.run.stage)} <small>({selected.run.status} / {selected.run.stage})</small></dd></div>
           <div><dt>Agent 내부 수정</dt><dd>{selected.run.revision_count} / {selected.run.max_revisions}회</dd></div>
           <div><dt>문서 버전</dt><dd>{Object.entries(selected.document_versions).map(([model, version]) => `${model} ${version}`).join(', ')}</dd></div>
           <div><dt>기록 시각</dt><dd>{selected.created_at}</dd></div>

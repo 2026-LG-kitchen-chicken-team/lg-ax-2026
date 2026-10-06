@@ -10,6 +10,7 @@ import type { WorkspaceProject } from './workspace';
 import { runSources } from './judgement';
 import { contractErrors, draftRunFromRequest, missingRequestQuestions, nextRequestRevision, requestChanges } from './planning';
 import type { DataMode, Feature, PlanningRequest, RunSnapshot } from './planning';
+import { PendingJudgement } from './PendingJudgement';
 import { ConceptsView, download, FixtureBanner, HistoryView, ModeSwitch, RequestInsights, ServerEvidenceSearch, WorkspaceBar } from './PlanningViews';
 import { currentEvidenceForSnapshot } from './EvidenceTracePanel';
 import type { MeasureControls } from './PlanningViews';
@@ -52,7 +53,8 @@ function EvidenceDetail({ selected, features }: { selected: Evidence | undefined
   </aside>;
 }
 
-interface LiveRequestTarget { project: WorkspaceProject | null; latest: RunSnapshot | null; save: (request: PlanningRequest, continueProject: boolean) => Promise<RunSnapshot | null> }
+// busy is the workspace's own in-flight state: it survives this form being re-mounted while a save is still running.
+interface LiveRequestTarget { project: WorkspaceProject | null; latest: RunSnapshot | null; busy?: boolean; save: (request: PlanningRequest, continueProject: boolean) => Promise<RunSnapshot | null> }
 
 function lines(value: string): string[] {
   return [...new Set(value.split('\n').map(item => item.trim()).filter(Boolean))];
@@ -70,7 +72,10 @@ function RequestView({ data, group, modelId, mode, live }: { data: BootstrapData
   const [excluded, setExcluded] = useState((seed?.exclusions ?? ['이미 있는 기능을 다시 제안하지 않기']).join('\n'));
   const [models, setModels] = useState<string[]>(seed?.model_ids ?? (modelId ? [modelId] : []));
   const [busy, setBusy] = useState(false);
+  // Synchronous lock: two clicks delivered before React re-renders the disabled button must not save twice.
+  const inFlight = useRef(false);
   const [result, setResult] = useState<{ code: string; message: string } | null>(null);
+  const saving = busy || Boolean(live?.busy);
 
   const selectedModels = groupModels.length ? groupModels.filter(id => models.includes(id)) : models;
   const datasetVersion = typeof data?.manifest.version === 'string' ? data.manifest.version : '';
@@ -93,6 +98,8 @@ function RequestView({ data, group, modelId, mode, live }: { data: BootstrapData
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (inFlight.current || live?.busy) return;
+    inFlight.current = true;
     setBusy(true);
     setResult(null);
     try {
@@ -121,7 +128,7 @@ function RequestView({ data, group, modelId, mode, live }: { data: BootstrapData
       await requestPlanning(request as unknown as Record<string, unknown>);
     } catch (error) {
       setResult({ code: error instanceof ApiError ? error.code : 'UNKNOWN_ERROR', message: friendlyError(error) });
-    } finally { setBusy(false); }
+    } finally { inFlight.current = false; setBusy(false); }
   }
 
   const footer = live
@@ -138,11 +145,15 @@ function RequestView({ data, group, modelId, mode, live }: { data: BootstrapData
     </fieldset>
     <label className="field-label" htmlFor="planning-situation">사용 상황</label><textarea id="planning-situation" rows={2} value={situation} onChange={event => setSituation(event.target.value)} />
     <label className="field-label" htmlFor="planning-excluded">제외 조건 <small>한 줄에 하나씩</small></label><textarea id="planning-excluded" rows={2} value={excluded} onChange={event => setExcluded(event.target.value)} />
-    <div className="form-footer"><p>{footer}</p><button className="primary-button" type="submit" disabled={!data || busy}>{busy ? '서버 확인 중…' : mode === 'fixture' ? '요청 규격 검사' : live ? unchanged ? '같은 요청 다시 기록' : continueProject ? '변경 요청 저장' : '새 프로젝트로 저장' : '요청 연결 확인'}<ArrowIcon /></button></div>
-    {result ? <div className={`inline-message ${['NOT_IMPLEMENTED', 'FIXTURE_ONLY', 'SAVED', 'SAVED_NOT_IMPLEMENTED', 'SAVED_COMPLETED', 'SAVED_HELD', 'NEEDS_INFO'].includes(result.code) ? 'notice' : 'error'}`} role="status"><strong>{result.code === 'NOT_IMPLEMENTED' ? '기획 실행 연결이 준비 중입니다' : result.code === 'FIXTURE_ONLY' ? '요청 규격 확인 완료(전송 안 함)' : result.code.startsWith('SAVED') ? SAVED_TITLE[result.code] ?? '요청 저장 완료' : result.code === 'NEEDS_INFO' ? '확인이 필요한 정보가 있습니다 · 저장하지 않음' : '요청을 처리하지 못했습니다'}</strong><p>{result.message}</p><code>{result.code}</code></div> : null}
+    <div className="form-footer"><p>{footer}</p><button className="primary-button" type="submit" disabled={!data || saving}>{saving ? '서버 확인 중…' : mode === 'fixture' ? '요청 규격 검사' : live ? unchanged ? '같은 요청 다시 기록' : continueProject ? '변경 요청 저장' : '새 프로젝트로 저장' : '요청 연결 확인'}<ArrowIcon /></button></div>
+    <PendingJudgement active={saving && mode === 'live' && Boolean(live)} action="요청 저장과 판단 실행" />
+    {result ? <div className={`inline-message ${NOTICE_CODES.includes(result.code) ? 'notice' : 'error'}`} role="status" data-code={result.code}><strong>{result.code === 'NOT_IMPLEMENTED' ? '기획 실행 연결이 준비 중입니다' : result.code === 'FIXTURE_ONLY' ? '요청 규격 확인 완료(전송 안 함)' : result.code.startsWith('SAVED') ? SAVED_TITLE[result.code] ?? '요청 저장 완료' : result.code === 'NEEDS_INFO' ? '확인이 필요한 정보가 있습니다 · 저장하지 않음' : '요청을 처리하지 못했습니다'}</strong><p>{result.message}</p>{NOTICE_CODES.includes(result.code) ? null : <code>{result.code}</code>}</div> : null}
     <RequestInsights questions={questions} changes={changes} revision={revision} mode={mode} />
   </form><aside className="request-guide panel"><p className="eyebrow">WORKFLOW</p><h3>요청에서 기획안까지</h3><ol>{['자료 조회', '니즈 구조화', '기능 대조', '콘셉트 작성', '검토·수정'].map((title, index) => <li key={title}><span>{String(index + 1).padStart(2, '0')}</span><div><strong>{title}</strong><small>{index === 0 ? '원문과 자료 범위 확인' : '저장된 실행 기록에서 확인'}</small></div></li>)}</ol><p className="guide-note">분석이 연결된 서버는 최대 3개 후보를 생성하고 근거가 부족하면 보류합니다. 요청만 저장된 경우에는 분석 결과로 표시하지 않습니다.</p></aside></div>;
 }
+
+// Outcome codes that are not errors: the heading already says what happened, so the raw code chip is shown only for errors.
+const NOTICE_CODES = ['NOT_IMPLEMENTED', 'FIXTURE_ONLY', 'SAVED', 'SAVED_NOT_IMPLEMENTED', 'SAVED_COMPLETED', 'SAVED_HELD', 'NEEDS_INFO'];
 
 // The save heading says what the server actually did: stored a request only, or ran the judgement to a terminal state.
 const SAVED_CODE: Record<string, string> = { not_implemented: 'SAVED_NOT_IMPLEMENTED', completed: 'SAVED_COMPLETED', held: 'SAVED_HELD', failed: 'SAVED_FAILED' };
@@ -352,7 +363,7 @@ export default function App() {
             {active.status === 'loading' ? <div className="loading-state" role="status"><div className="skeleton" /><div className="skeleton" /><div className="skeleton" /><p>공통 API에서 근거를 불러오는 중입니다…</p></div> : !data ? <EmptyState title="API 연결이 필요합니다" text="서버가 연결되면 실제 자료와 근거를 확인할 수 있습니다." /> : !visibleEvidence.length ? <EmptyState title={allModelEvidence.length ? '검색 결과가 없습니다' : '등록된 근거가 없습니다'} text={allModelEvidence.length ? '검색어 또는 자료 유형을 바꿔 보세요.' : '이 모델에 리뷰와 제품 문서를 등록하면 여기에 표시됩니다.'} /> : <ul>{visibleEvidence.map(item => <li key={item.id}><button className={`evidence-card ${selected?.id === item.id ? 'selected' : ''}`} aria-pressed={selected?.id === item.id} onClick={() => setSelectedId(item.id)}><div className="evidence-card-top"><SourceBadge type={item.source_type} /><span>{evidenceLocation(item)}</span></div><p>{item.text}</p><div className="evidence-card-bottom"><span>{item.model_id} · {item.document_version}</span><ArrowIcon /></div></button></li>)}</ul>}
           </div><EvidenceDetail selected={selected} features={data?.features ?? []} /></div>
           <footer className="evidence-footer"><span className={`status-dot ${active.status}`} /><p>{data ? '원문과 모델별 필터를 조회합니다. 판단에 사용된 근거는 각 저장된 실행에서 확인하세요.' : '자료 API가 연결되면 원문을 조회할 수 있습니다.'}</p></footer>
-        </section> : view === 'request' ? <RequestView key={`${group}-${mode}-${formSeed}-${requestConnectionKey}`} data={data} group={group} modelId={modelId} mode={mode} live={mode === 'live' && workspace.connection === 'connected' ? { project: workspace.project, latest: workspace.runs[workspace.runs.length - 1] ?? null, save: (request, continueProject) => {
+        </section> : view === 'request' ? <RequestView key={`${group}-${mode}-${formSeed}-${requestConnectionKey}`} data={data} group={group} modelId={modelId} mode={mode} live={mode === 'live' && workspace.connection === 'connected' ? { project: workspace.project, latest: workspace.runs[workspace.runs.length - 1] ?? null, busy: workspace.busy, save: (request, continueProject) => {
           invalidateMeasurements(); setRunChoice('');
           return continueProject ? workspace.addRun(request, workspace.runs[workspace.runs.length - 1]?.run.id ?? null) : workspace.saveRequest(request, data?.products ?? []);
         } } : undefined} /> : selectedRun && originalRequest && view === 'concepts' ? <ConceptsView {...planningProps} selected={selectedRun} /> : selectedRun && originalRequest ? <HistoryView {...planningProps} selected={selectedRun} original={originalRequest} onRerun={rerun} busy={workspace.busy} measure={measure} /> : view === 'concepts' ? <section className="panel future-panel"><EmptyState type="future" title="근거를 갖춘 콘셉트를 이곳에서 검토합니다" text="작업실에 연결하고 기획 요청을 저장하면 실행 결과를 확인할 수 있습니다. 요청만 저장됐거나 분석이 보류된 경우에는 후보를 표시하지 않습니다." /><div className="future-columns"><div><strong>콘셉트 비교</strong><span>최대 3개 타당한 후보 · 근거 부족 시 보류</span></div><div><strong>요구사항 확인</strong><span>연결된 원문 · 남은 불편 · 검토할 조건</span></div><div><strong>기획자 검토</strong><span>선택 · 수정 요청 · 추가 조건</span></div></div></section> : <section className="panel future-panel"><EmptyState type="future" title="아직 실행·수정 이력이 없습니다" text="작업실에 연결하면 동일 기획의 저장된 실행과 변경 전후, 사용한 자료 버전을 확인할 수 있습니다." /><div className="history-plan"><span>기획 요청</span><ArrowIcon /><span>근거·판단 기록</span><ArrowIcon /><span>새 자료로 재검토</span><ArrowIcon /><span>변경 전후 비교</span></div></section>}

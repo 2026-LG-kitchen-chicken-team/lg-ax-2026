@@ -156,7 +156,9 @@ describe('RevisionTimeline renders in the DOM', () => {
     await mount([saved], saved.run.id, vi.fn(), 'live');
     const shown = host.querySelector('[data-field="run-status"]');
     expect(shown?.textContent).toContain(label);
-    expect(shown?.textContent).toContain(`${status} · ${saved.run.stage}`);
+    // The stage is shown in planner words; the stored status · stage stays available as the element's title.
+    expect(shown?.querySelector('small')?.getAttribute('title')).toBe(`${status} · ${saved.run.stage}`);
+    expect(shown?.textContent).toContain('단계');
     expect(shown?.textContent).not.toContain('fixture 예시');
   });
   it('marks hand-written fixture status as an example, but marks an unexecuted local draft as request-only', async () => {
