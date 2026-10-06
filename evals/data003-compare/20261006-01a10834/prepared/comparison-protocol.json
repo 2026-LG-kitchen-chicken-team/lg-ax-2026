@@ -1,0 +1,157 @@
+{
+  "status": "prepared_not_executed",
+  "split": "development",
+  "main_commit": "b477860b2612f51b7e81f37b635c05ba02338bfb",
+  "dataset_version": "lg-manual-scope-20261006.3-pm-intake",
+  "models": [
+    {
+      "model_id": "BAAI/bge-m3",
+      "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+      "license": "mit",
+      "source": "https://huggingface.co/BAAI/bge-m3",
+      "pinned_source": "https://huggingface.co/BAAI/bge-m3/blob/5617a9f61b028005a4858fdac845db406aefb181/README.md",
+      "verification": "2026-10-05 pinned official README metadata verified"
+    },
+    {
+      "model_id": "BAAI/bge-reranker-v2-m3",
+      "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+      "license": "apache-2.0",
+      "source": "https://huggingface.co/BAAI/bge-reranker-v2-m3",
+      "pinned_source": "https://huggingface.co/BAAI/bge-reranker-v2-m3/blob/953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e/README.md",
+      "verification": "2026-10-05 pinned official README metadata verified"
+    },
+    {
+      "model_id": "PaddlePaddle/korean_PP-OCRv5_mobile_rec",
+      "revision": "c02ecaf1f22bfd1c618cce154fd19185b47e663a",
+      "license": "apache-2.0",
+      "source": "https://huggingface.co/PaddlePaddle/korean_PP-OCRv5_mobile_rec",
+      "pinned_source": "https://huggingface.co/PaddlePaddle/korean_PP-OCRv5_mobile_rec/blob/c02ecaf1f22bfd1c618cce154fd19185b47e663a/README.md",
+      "verification": "bootstrap license record; pinned tree accessible, README web read failed"
+    }
+  ],
+  "retrieval": {
+    "methods": [
+      "bm25_filtered",
+      "bge_m3_filtered",
+      "bge_m3_filtered_reranker"
+    ],
+    "unit": "one exact registered manual quote; original text unchanged",
+    "filter": "same resolved model_id AND exact document_version for all three methods, before ranking",
+    "unresolved_scope": "missing requested version: request revision, do not substitute current revision",
+    "foreign_scope": "reject use of another model's evidence for the target model",
+    "bm25": {
+      "implementation": "scripts/model_benchmark.py bm25",
+      "k1": 1.5,
+      "b": 0.75,
+      "tokenization": "Unicode word regex, casefold; no new Korean morphological analyzer"
+    },
+    "embedding": {
+      "pooling": "L2-normalized CLS dense vectors",
+      "max_length_tokens": 256,
+      "batch_size": 8,
+      "query_instruction": null,
+      "precision": "float32"
+    },
+    "reranker": {
+      "candidate_top_n": 10,
+      "max_length_tokens": 256,
+      "score": "raw logits",
+      "precision": "float32"
+    },
+    "ties": "score descending, evidence ID ascending",
+    "display_k": [
+      1,
+      3
+    ],
+    "primary_metric": "macro Hit@1 on the 11 questions with supported evidence",
+    "secondary_metrics": [
+      "Recall@3",
+      "MRR@3",
+      "model_mix_rate@3",
+      "version_mix_rate@3"
+    ],
+    "formulas": {
+      "Hit@1": "1 if first ID is in gold, otherwise 0; failures count 0",
+      "Recall@3": "distinct gold IDs in first 3 / number of gold IDs; failures count 0",
+      "MRR@3": "1 / first relevant rank when rank <=3, otherwise 0",
+      "model_mix_rate@3": "foreign model IDs / returned IDs; empty=NA",
+      "version_mix_rate@3": "wrong document version IDs / returned IDs; empty=NA"
+    },
+    "no_gold_policy": "4 non-answerable/scope/input cases excluded from ranking average; response disposition and prohibited claims reviewed separately",
+    "latency": {
+      "warmups_per_method": 2,
+      "measured_repeats_per_query": 5,
+      "seed": 20261005,
+      "order": "fixed shuffled query order shared across methods",
+      "reported": [
+        "median_ms",
+        "p95_ms",
+        "failure_count",
+        "cold_load_ms",
+        "index_build_ms"
+      ],
+      "boundary": "warm query embedding + structural filtering/ranking + optional reranking; cold download/load/index separate",
+      "failure_policy": "record every attempt; timeouts/failures retained, latency summary successful attempts only with failure_count"
+    },
+    "runtime": {
+      "initial_device": "same host CPU for all methods",
+      "cpu_threads": 4,
+      "torch": "2.8.0+cpu bootstrap configuration",
+      "transformers": "4.57.1 bootstrap configuration",
+      "hardware_record_required": [
+        "cpu",
+        "ram",
+        "os",
+        "device",
+        "versions",
+        "peak_rss_mb"
+      ],
+      "gpu_track": "separate run only after assigned GPU usage check; never compare CPU and GPU as same-condition latency"
+    },
+    "truncation_policy": "record actual tokenizer lengths; any truncation requires new protocol version and rerun of all methods"
+  },
+  "model_inputs_include_gold": false,
+  "changed_input": "21 exact registered manual excerpts, replacing 27 development fact summaries",
+  "model_corpus_sha256": "1e097362bf1d7bf6564a3cc17281900d92aedf5a9c573706afdb2254fd9fbffe",
+  "model_queries_sha256": "399c51838a28a749991cd1b1e985df859545e0f1cc4f34b5cee86dece4189055",
+  "query_order": [
+    "DW-01",
+    "DW-05",
+    "FR-04",
+    "MW-03",
+    "MW-01",
+    "MW-02",
+    "DW-03",
+    "FR-01",
+    "MW-04",
+    "FR-02",
+    "FR-03",
+    "DW-02",
+    "MW-05",
+    "DW-04",
+    "FR-05"
+  ],
+  "requested_implementation": "same frozen retrieval-v1 CLS/float32 and local CPU settings",
+  "runtime_filter": "missing revision produces request_revision; no current revision substitution",
+  "score_policy": "retain legacy ID diagnostics separately; do not claim semantic Hit@1 until FR-01 mapping is resolved",
+  "timing_denominators": {
+    "supported": 11,
+    "no_gold": 4,
+    "all_attempts_per_method": 75,
+    "supported_attempts_per_method": 55,
+    "warmups_per_method": 2
+  },
+  "latency_summary": "supported-query successful attempts only, nearest-rank p95; retain all no-gold/failed/empty attempt timings separately",
+  "zero_score_policy": "preserve old BM25 zero-score ranking behavior; record zero_score_only separately from empty list",
+  "current_API_search_method": "literal_token_count",
+  "API_baseline_is_BM25_or_BGE": false,
+  "required_before_new_execution": [
+    "13 fixed registration/export/API/original/restart evidence agrees with manifest",
+    "PM reviews FR-01 changed quote and gold mapping",
+    "all tokenizer lengths including query/excerpt pairs <=256",
+    "same approved model-ready isolated environment and CPU reservation available"
+  ],
+  "new_model_calls": 0,
+  "new_OCR_calls": 0,
+  "new_scores": null
+}

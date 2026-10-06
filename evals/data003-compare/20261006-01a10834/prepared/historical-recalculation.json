@@ -1,0 +1,159 @@
+{
+  "execution_kind": "saved_result_recalculation_no_new_model_calls",
+  "retrieval": {
+    "bm25_filtered": {
+      "macro_hit_at_1": 0.9090909090909091,
+      "macro_recall_at_3": 0.9090909090909091,
+      "macro_mrr_at_3": 0.9090909090909091,
+      "measured_attempts": 75,
+      "failed_attempts": 0,
+      "median_ms": 0.6337,
+      "p95_ms": 0.9264,
+      "supported_questions": 11,
+      "excluded_no_gold": 4,
+      "empty_attempts_all_75": 5,
+      "ranking_attribution": "original 27-summary corpus, not current 21-quote corpus"
+    },
+    "bge_m3_filtered": {
+      "macro_hit_at_1": 1,
+      "macro_recall_at_3": 1.0,
+      "macro_mrr_at_3": 1.0,
+      "measured_attempts": 75,
+      "failed_attempts": 0,
+      "median_ms": 316.2207,
+      "p95_ms": 365.0488,
+      "supported_questions": 11,
+      "excluded_no_gold": 4,
+      "empty_attempts_all_75": 5,
+      "ranking_attribution": "original 27-summary corpus, not current 21-quote corpus"
+    },
+    "bge_m3_filtered_reranker": {
+      "macro_hit_at_1": 1,
+      "macro_recall_at_3": 1.0,
+      "macro_mrr_at_3": 1.0,
+      "measured_attempts": 75,
+      "failed_attempts": 0,
+      "median_ms": 6006.4974,
+      "p95_ms": 9531.8831,
+      "supported_questions": 11,
+      "excluded_no_gold": 4,
+      "empty_attempts_all_75": 5,
+      "ranking_attribution": "original 27-summary corpus, not current 21-quote corpus"
+    }
+  },
+  "original_environment": {
+    "python": "3.11.17",
+    "os": "Windows-10-10.0.26200-SP0",
+    "cpu": "Intel64 Family 6 Model 140 Stepping 1, GenuineIntel",
+    "logical_cpus": 8,
+    "device": "CPU",
+    "cpu_threads": 4,
+    "versions": {
+      "torch": "2.8.0+cpu",
+      "transformers": "4.57.1",
+      "huggingface-hub": "0.36.0",
+      "numpy": "2.3.3",
+      "safetensors": "0.6.2"
+    },
+    "peak_rss_mb": 4206.1171875,
+    "ram_gb": 15.684394836425781,
+    "memory_probe": "Windows process PeakWorkingSetSize and GlobalMemoryStatusEx",
+    "background_load": "shared PC external activity uncontrolled",
+    "gpu_used": false
+  },
+  "original_timing": {
+    "embedding_load_ms": 3444.695300073363,
+    "reranker_load_ms": 1985.382299986668,
+    "index_build_ms": 14486.332100001164,
+    "boundary": "query embedding + exact scope/rank + optional reranker",
+    "rss_scope": "whole combined benchmark process; not method-specific memory",
+    "percentile": "nearest rank",
+    "latency_denominator": "supported-query successful attempts only"
+  },
+  "checks": [
+    {
+      "name": "bm25_filtered:macro_hit_at_1",
+      "pass": true
+    },
+    {
+      "name": "bm25_filtered:macro_recall_at_3",
+      "pass": true
+    },
+    {
+      "name": "bm25_filtered:macro_mrr_at_3",
+      "pass": true
+    },
+    {
+      "name": "bm25_filtered:measured_attempts",
+      "pass": true
+    },
+    {
+      "name": "bm25_filtered:failed_attempts",
+      "pass": true
+    },
+    {
+      "name": "bm25_filtered:median_ms",
+      "pass": true
+    },
+    {
+      "name": "bm25_filtered:p95_ms",
+      "pass": true
+    },
+    {
+      "name": "bge_m3_filtered:macro_hit_at_1",
+      "pass": true
+    },
+    {
+      "name": "bge_m3_filtered:macro_recall_at_3",
+      "pass": true
+    },
+    {
+      "name": "bge_m3_filtered:macro_mrr_at_3",
+      "pass": true
+    },
+    {
+      "name": "bge_m3_filtered:measured_attempts",
+      "pass": true
+    },
+    {
+      "name": "bge_m3_filtered:failed_attempts",
+      "pass": true
+    },
+    {
+      "name": "bge_m3_filtered:median_ms",
+      "pass": true
+    },
+    {
+      "name": "bge_m3_filtered:p95_ms",
+      "pass": true
+    },
+    {
+      "name": "bge_m3_filtered_reranker:macro_hit_at_1",
+      "pass": true
+    },
+    {
+      "name": "bge_m3_filtered_reranker:macro_recall_at_3",
+      "pass": true
+    },
+    {
+      "name": "bge_m3_filtered_reranker:macro_mrr_at_3",
+      "pass": true
+    },
+    {
+      "name": "bge_m3_filtered_reranker:measured_attempts",
+      "pass": true
+    },
+    {
+      "name": "bge_m3_filtered_reranker:failed_attempts",
+      "pass": true
+    },
+    {
+      "name": "bge_m3_filtered_reranker:median_ms",
+      "pass": true
+    },
+    {
+      "name": "bge_m3_filtered_reranker:p95_ms",
+      "pass": true
+    }
+  ]
+}

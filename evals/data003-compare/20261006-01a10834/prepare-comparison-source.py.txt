@@ -1,0 +1,341 @@
+"""Read-only data analysis and preparation. No imports of repository/model code."""
+import csv
+import difflib
+import hashlib
+import json
+import math
+import statistics
+import unicodedata
+from collections import Counter
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+OUT = Path(__file__).resolve().parent
+ROOT = OUT.parent.parent
+OLD = ROOT / ".worktrees/data003-preparation"
+REF = OUT / "main-reference"
+DEST = OUT / "prepared"
+DEST.mkdir(exist_ok=False)
+
+
+def read(path):
+    return json.loads(path.read_text("utf-8-sig"))
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def save(name, data):
+    path = DEST / name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x", encoding="utf-8", newline="\n") as handle:
+        json.dump(data, handle, ensure_ascii=False, indent=2)
+        handle.write("\n")
+
+
+def write(name, text):
+    path = DEST / name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x", encoding="utf-8", newline="\n") as handle:
+        handle.write(text)
+
+
+def csvfile(name, rows, fields=None):
+    with (DEST / name).open("x", encoding="utf-8-sig", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fields or list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def p95(values):
+    return sorted(values)[math.ceil(len(values) * .95) - 1] if values else None
+
+
+def norm(text):
+    return " ".join(unicodedata.normalize("NFC", text).split())
+
+
+def distance(left, right):
+    prev = list(range(len(right) + 1))
+    for i, a in enumerate(left, 1):
+        row = [i]
+        for j, b in enumerate(right, 1):
+            row.append(min(row[-1] + 1, prev[j] + 1, prev[j - 1] + (a != b)))
+        prev = row
+    return prev[-1]
+
+
+snapshot = read(OUT / "snapshot.json")
+tree = {v["path"]: v for v in read(OUT / "github/tree.json")["tree"] if v["type"] == "blob"}
+old_manifest = read(OLD / "evals/data003-delivery/20261005-01a10834/publication-manifest.json")
+preserved = []
+for entry in old_manifest["files"]:
+    name = entry["path"]
+    if not name.startswith("evals/") or name.startswith("evals/data003-delivery/"):
+        continue
+    data = (OLD / name).read_bytes()
+    assert sha(data) == entry["sha256"], name
+    target = DEST / "historical" / name
+    target.parent.mkdir(parents=True, exist_ok=True)
+    with target.open("xb") as handle:
+        handle.write(data)
+    blob = hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
+    preserved.append({"path": name, "bytes": len(data), "sha256": sha(data),
+                      "old_manifest_match": True, "main_git_blob_match": tree.get(name, {}).get("sha") == blob})
+assert len(preserved) == 75
+save("historical-preservation.json", {"scope": "original 75 public artifacts; no private evaluation answers read",
+                                      "files": preserved, "new_model_calls": 0})
+
+prep = OLD / "evals/data003-preparation/20261005"
+corpus = read(prep / "corpus.json")
+queries = read(prep / "queries.json")
+protocol = read(prep / "protocol.json")
+live = OLD / "evals/data003-live/20261005"
+retrieval = read(live / "retrieval-v1/results.json")
+ocr = read(live / "ocr-v3/results.json")
+runtime_queries = retrieval["runtime_inputs"]
+old_by_id = {e["id"]: e for e in corpus["evidence"]}
+qmap = {q["id"]: q for q in queries}
+runtime_map = {q["id"]: q for q in runtime_queries}
+pack = REF / "data/research/PM-DATA-intake-20261006/generated"
+dataset = read(pack / "dataset.json")
+origins = {v["evidence_id"]: v for v in read(pack / "origins.json")}
+plan = read(pack / "plan.json")
+pack_summary = read(pack / "pack-summary.json")
+current = {e["id"]: e for e in dataset["evidence"]}
+documents = {d["document_id"]: d for d in plan["documents"]}
+assert len(current) == 21 and len(dataset["products"]) == 3
+assert len(origins) == 21
+assert len(queries) == len(runtime_queries) == 15
+
+lineage = []
+for e in dataset["evidence"]:
+    original = origins[e["id"]]
+    doc = documents[e["source_id"]]
+    assert e["model_id"] == doc["product"]["model_id"]
+    assert e["document_version"] == original["document_version"] == doc["document_version"]
+    assert e["locator"]["page"] == original["page"]
+    assert sha(e["text"].encode()) == original["text_sha256"]
+    assert len(e["text"]) == original["end_char"] - original["start_char"]
+    lineage.append({**e, "raw_text_sha256": sha(e["text"].encode()), "original": original,
+                    "source_pdf_sha256": doc["sha256"], "source_url": doc["url"],
+                    "offset_unit": "unicode_codepoints_end_exclusive", "normalization_applied": False})
+save("corpus-manifest.json", {"status": "PM_registered_pack_snapshot_awaiting_13_runtime_handoff",
+    "main_commit": snapshot["current_main"], "dataset_version": dataset["dataset_version"],
+    "dataset_file_sha256": sha((pack / "dataset.json").read_bytes()),
+    "artifact_source": "main/data/research/PM-DATA-intake-20261006/generated/dataset.json",
+    "live_13_registration_executed_by_14": False, "live_13_output_received": False,
+    "evidence_count": 21, "evidence": lineage, "conditions": pack_summary["unresolved_conditions"]})
+
+diff = []
+for eid in sorted(set(old_by_id) | set(current)):
+    old, new = old_by_id.get(eid), current.get(eid)
+    diff.append({"evidence_id": eid, "presence": "both" if old and new else "development_only" if old else "current_only",
+                 "old_text_kind": old.get("text_kind") if old else None,
+                 "old_source_id": old.get("source_id") if old else None,
+                 "current_source_id": new.get("source_id") if new else None,
+                 "old_document_id": old.get("document_id") if old else None,
+                 "old_model_id": old.get("model_id") if old else None,
+                 "current_model_id": new.get("model_id") if new else None,
+                 "old_document_version": old.get("document_version") if old else None,
+                 "current_document_version": new.get("document_version") if new else None,
+                 "same_raw_text": old["text"] == new["text"] if old and new else None,
+                 "same_model_version": (old["model_id"], old["document_version"]) == (new["model_id"], new["document_version"]) if old and new else None,
+                 "old_text": old.get("text") if old else None, "current_text": new.get("text") if new else None})
+counts = dict(Counter(x["presence"] for x in diff))
+save("corpus-difference.json", {"old_version": corpus["dataset_version"], "current_version": dataset["dataset_version"],
+    "old_count": len(old_by_id), "current_count": len(current), "counts": counts,
+    "shared_changed_text": sum(x["same_raw_text"] is False for x in diff),
+    "same_ID_does_not_mean_same_quote": True, "rows": diff})
+csvfile("corpus-difference.csv", diff)
+
+proposal = read(OLD / "evals/data003-independent/20261005-01a10834/missing-evidence-proposal.json")
+confirmed = []
+for p in proposal["selections"]:
+    e = current[p["evidence_id"]]
+    assert e["text"] == p["excerpt"] and sha(e["text"].encode()) == p["text_sha256"]
+    assert (e["model_id"], e["document_version"], e["source_id"], e["locator"]["page"]) == (
+        p["model_id"], p["document_version"], p["document_id"], p["page"])
+    confirmed.append({"evidence_id": p["evidence_id"], "status": "confirmed_in_PM_registered_pack",
+        "current_dataset_version": dataset["dataset_version"], "text_sha256": p["text_sha256"],
+        "new_registration_by_14": False, "original_status_preserved": p["status"]})
+save("accepted-six-confirmation.json", {"count": 6, "actual_new_registration": 0, "rows": confirmed})
+
+mapping = []
+for q in queries:
+    gold = q["relevant_evidence_ids"]
+    issue = "FR-01 same-ID quote changed: food-removal answer is in F10-FOOD; old F10 now only describes lifting/removing shelf" if q["id"] == "FR-01" else None
+    mapping.append({"query_id": q["id"], "query": q["query"], "model_id": q["model_id"],
+        "requested_document_version": runtime_map[q["id"]]["document_version"],
+        "unchanged_old_gold_ids": gold, "present_current_gold_ids": [eid for eid in gold if eid in current],
+        "all_old_gold_ids_present": all(eid in current for eid in gold) if gold else None,
+        "ranking_metric_applicable": q["ranking_metric_applicable"], "expected_response": q["expected_response"],
+        "mapping_review_required": issue, "proposed_relevant_id_for_PM_review_only": ["T876MEE1H1-MANUAL-F10-FOOD"] if issue else [],
+        "actual_scoring_gold_changed": False,
+        "current_gold_raw_text": {eid: current[eid]["text"] for eid in gold if eid in current}})
+save("question-evidence-map.json", {"split": "development", "questions": 15, "legacy_supported": 11,
+    "legacy_no_gold": 4, "legacy_ID_coverage": "11/11; not search accuracy",
+    "mapping_status": "FR-01 relevance mapping requires PM decision before aggregate quality score",
+    "gold_original_bytes_preserved": True, "rows": mapping})
+
+model_inputs = [{k: e[k] for k in ["id", "model_id", "document_version", "text"]} for e in dataset["evidence"]]
+query_inputs = [{k: q[k] for k in ["id", "model_id", "document_version", "query"]} for q in runtime_queries]
+save("model-corpus.json", model_inputs)
+save("model-queries.json", query_inputs)
+methods = protocol["retrieval"]["methods"]
+order = retrieval["query_order"]
+new_protocol = {"status": "prepared_not_executed", "split": "development", "main_commit": snapshot["current_main"],
+    "dataset_version": dataset["dataset_version"], "models": protocol["models"],
+    "retrieval": protocol["retrieval"], "model_inputs_include_gold": False,
+    "changed_input": "21 exact registered manual excerpts, replacing 27 development fact summaries",
+    "model_corpus_sha256": sha((DEST / "model-corpus.json").read_bytes()),
+    "model_queries_sha256": sha((DEST / "model-queries.json").read_bytes()),
+    "query_order": order, "requested_implementation": "same frozen retrieval-v1 CLS/float32 and local CPU settings",
+    "runtime_filter": "missing revision produces request_revision; no current revision substitution",
+    "score_policy": "retain legacy ID diagnostics separately; do not claim semantic Hit@1 until FR-01 mapping is resolved",
+    "timing_denominators": {"supported": 11, "no_gold": 4, "all_attempts_per_method": 75,
+        "supported_attempts_per_method": 55, "warmups_per_method": 2},
+    "latency_summary": "supported-query successful attempts only, nearest-rank p95; retain all no-gold/failed/empty attempt timings separately",
+    "zero_score_policy": "preserve old BM25 zero-score ranking behavior; record zero_score_only separately from empty list",
+    "current_API_search_method": "literal_token_count", "API_baseline_is_BM25_or_BGE": False,
+    "required_before_new_execution": ["13 fixed registration/export/API/original/restart evidence agrees with manifest",
+        "PM reviews FR-01 changed quote and gold mapping", "all tokenizer lengths including query/excerpt pairs <=256",
+        "same approved model-ready isolated environment and CPU reservation available"],
+    "new_model_calls": 0, "new_OCR_calls": 0, "new_scores": None}
+new_protocol["retrieval"]["unit"] = "one exact registered manual quote; original text unchanged"
+save("comparison-protocol.json", new_protocol)
+
+fields = ["query_id", "method", "repeat", "status", "dataset_version", "corpus_sha256", "queries_sha256",
+    "model_id", "document_version", "ranking_metric_applicable", "ranking_ids", "hit_at_1", "recall_at_3", "mrr_at_3",
+    "foreign_model_ids", "wrong_version_ids", "returned_count", "empty_result", "zero_score_only",
+    "scope_disposition", "elapsed_ms", "error_code", "token_truncated", "registration_handoff_sha256"]
+blank_rows = []
+for qid in order:
+    q = runtime_map[qid]
+    for method in methods:
+        for repeat in range(1, 6):
+            row = dict.fromkeys(fields)
+            row.update(query_id=qid, method=method, repeat=repeat, status="not_executed",
+                dataset_version=dataset["dataset_version"], corpus_sha256=new_protocol["model_corpus_sha256"],
+                queries_sha256=new_protocol["model_queries_sha256"], model_id=q["model_id"],
+                document_version=q["document_version"], ranking_metric_applicable=qmap[qid]["ranking_metric_applicable"])
+            blank_rows.append(row)
+assert len(blank_rows) == 225
+save("retrieval-measurement-template.json", {"status": "prepared_not_executed", "results": blank_rows})
+csvfile("retrieval-measurement-template.csv", blank_rows, fields)
+
+historical_summaries = {}
+old_attempt_rows = []
+checks = []
+for method in methods:
+    rows = [v for v in retrieval["results"] if v["method"] == method]
+    supported = [v for v in rows if qmap[v["query_id"]]["ranking_metric_applicable"]]
+    latencies = [a["elapsed_ms"] for v in supported for a in v["latency_attempts"] if a["status"] == "success"]
+    all_attempts = [a for v in rows for a in v["latency_attempts"]]
+    recalculated = {"macro_hit_at_1": statistics.mean(v["hit_at_1"] for v in supported),
+        "macro_recall_at_3": statistics.mean(v["recall_at_3"] for v in supported),
+        "macro_mrr_at_3": statistics.mean(v["mrr_at_3"] for v in supported),
+        "measured_attempts": len(all_attempts), "failed_attempts": sum(a["status"] != "success" for a in all_attempts),
+        "median_ms": statistics.median(latencies), "p95_ms": p95(latencies)}
+    checks.extend({"name": method + ":" + k, "pass": math.isclose(v, retrieval["summary"][method][k], abs_tol=1e-6)}
+                  for k, v in recalculated.items())
+    for v in rows:
+        q = runtime_map[v["query_id"]]
+        for attempt in v["latency_attempts"]:
+            ranking = attempt.get("ranking", [])
+            old_attempt_rows.append({"query_id": v["query_id"], "method": method, "repeat": attempt["repeat"],
+                "status": attempt["status"], "old_corpus_version": corpus["dataset_version"],
+                "ranking_ids": json.dumps([e["id"] for e in ranking]), "empty_result": not ranking,
+                "zero_score_only": all(e["score"] == 0 for e in ranking) if ranking else None,
+                "foreign_model_ids": sum(e["model_id"] != q["model_id"] for e in ranking),
+                "wrong_version_ids": sum(e["document_version"] != q["document_version"] for e in ranking),
+                "elapsed_ms": attempt.get("elapsed_ms"), "gold_hit_at_1": v["hit_at_1"],
+                "ranking_metric_applicable": v["ranking_metric_applicable"],
+                "scope_disposition": v["scope_disposition"], "semantic_response_evaluated": False})
+    historical_summaries[method] = {**recalculated, "supported_questions": 11, "excluded_no_gold": 4,
+        "empty_attempts_all_75": sum(not a.get("ranking") for a in all_attempts),
+        "ranking_attribution": "original 27-summary corpus, not current 21-quote corpus"}
+assert len(old_attempt_rows) == 225
+save("historical-recalculation.json", {"execution_kind": "saved_result_recalculation_no_new_model_calls",
+    "retrieval": historical_summaries, "original_environment": retrieval["environment"],
+    "original_timing": retrieval["timing"], "checks": checks})
+csvfile("historical-retrieval-attempts.csv", old_attempt_rows)
+
+crops = read(OLD / "evals/data003-ocr-inputs/20261005-v2/crop-manifest.json")
+regions = {region["id"]: (case, region) for case in crops["cases"] for region in case["regions"]}
+ocr_errors = []
+ocr_attempts = []
+for v in ocr["results"]:
+    case, region = regions[v["region_id"]]
+    assert v["gold_text"] == region["gold_text"] and v["crop_sha256"] == region["crop_sha256"]
+    edits = distance(norm(v["gold_text"]), norm(v["recognized"]))
+    checks.append({"name": v["region_id"] + ":normalized_edit_distance", "pass": edits == v["edit_distance"]})
+    current_refs = [e["id"] for e in dataset["evidence"] if e["model_id"] == v["source_model_id"] and e["locator"]["page"] == v["page"]]
+    differences = [{"operation": op, "gold": norm(v["gold_text"])[a:b], "recognized": norm(v["recognized"])[c:d]}
+        for op, a, b, c, d in difflib.SequenceMatcher(None, norm(v["gold_text"]), norm(v["recognized"])).get_opcodes() if op != "equal"]
+    ocr_errors.append({"region_id": v["region_id"], "case_id": v["case_id"], "model_id": v["source_model_id"],
+        "document_version": v["document_version"], "source_pdf_sha256": case["source_pdf_sha256"],
+        "page": v["page"], "crop_sha256": v["crop_sha256"], "crop_bbox_px": region["crop_bbox_px"],
+        "gold_text": v["gold_text"], "recognized": v["recognized"], "normalized_edit_distance": edits,
+        "CER": v["CER"], "normalized_exact_match": v["normalized_exact_match"], "character_differences": differences,
+        "numeric_correct": v["numeric_correct"], "numeric_total": v["numeric_total"],
+        "strict_numeric_field_correct": v["numeric_field_correct"], "observed_values": v.get("observed_values"),
+        "explicit_unit_correct": v["explicit_unit_correct"], "unit_total": v["unit_total"],
+        "field_target": region.get("field_target"), "table_row_crop": case["kind"] != "source_line",
+        "table_extraction_error": None, "table_extraction_status": "not_measured_by_manual_crop_recognizer",
+        "model_column_accuracy": None, "current_same_page_evidence_ids": current_refs,
+        "same_page_is_not_quote_equivalence": True, "new_OCR_calls": 0})
+    for attempt in v["attempts"]:
+        ocr_attempts.append({"region_id": v["region_id"], "repeat": attempt["repeat"], "status": attempt["status"],
+            "recognized": attempt["recognized"], "elapsed_ms": attempt["elapsed_ms"], "error": attempt.get("error")})
+assert len(ocr_errors) == 14 and len(ocr_attempts) == 70
+recalc_ocr = {"regions": len(ocr_errors), "measured_attempts": len(ocr_attempts),
+    "normalized_exact_matches": sum(e["normalized_exact_match"] for e in ocr_errors),
+    "micro_CER": sum(e["normalized_edit_distance"] for e in ocr_errors) / sum(v["normalized_gold_length"] for v in ocr["results"]),
+    "numeric_correct": sum(v["numeric_correct"] or 0 for v in ocr_errors),
+    "numeric_total": sum(v["numeric_total"] for v in ocr_errors),
+    "numeric_fields_correct": sum(v["strict_numeric_field_correct"] is True for v in ocr_errors),
+    "numeric_fields_total": sum(v["numeric_total"] > 0 for v in ocr_errors),
+    "explicit_unit_correct": sum(v["explicit_unit_correct"] or 0 for v in ocr_errors),
+    "unit_total": sum(v["unit_total"] for v in ocr_errors), "model_column_accuracy": None}
+checks.extend({"name": "OCR:" + k, "pass": math.isclose(v, ocr["summary"][k], abs_tol=1e-10)}
+              for k, v in recalc_ocr.items() if v is not None)
+save("ocr-error-ledger.json", {"execution_kind": "saved_70_attempts_reanalysis", "original_summary": ocr["summary"],
+    "recalculated": recalc_ocr, "original_settings": ocr["settings"], "original_environment": ocr["environment"],
+    "no_new_OCR_execution": True, "rows": ocr_errors})
+csvfile("historical-ocr-attempts.csv", ocr_attempts)
+ocr_csv = [{k: v for k, v in e.items() if k in ["region_id", "model_id", "document_version", "page", "gold_text",
+    "recognized", "CER", "normalized_exact_match", "numeric_correct", "numeric_total", "strict_numeric_field_correct",
+    "explicit_unit_correct", "unit_total", "table_extraction_status", "model_column_accuracy"]} for e in ocr_errors]
+csvfile("ocr-error-ledger.csv", ocr_csv)
+
+cache = read(live / "downloaded-models.json")
+cache_inventory = []
+for model in cache["models"]:
+    files = []
+    for f in model["files"]:
+        path = OLD / model["snapshot"] / f["name"]
+        files.append({"path": str(path), "exists": path.is_file(), "current_bytes": path.stat().st_size if path.is_file() else None,
+            "pinned_bytes": f["size_bytes"], "historical_sha256": f["sha256"], "full_hash_rechecked_this_session": False})
+    cache_inventory.append({"model_id": model["model_id"], "revision": model["revision"], "license": model["license"], "files": files})
+save("model-environment-reuse.json", {"models": cache_inventory,
+    "historical_retrieval_environment": str(OLD / "private/model-runtime/retrieval-venv"),
+    "historical_OCR_environment": str(OLD / "private/model-runtime/ocr-venv"),
+    "historical_native_environment_is_not_current_isolated_execution_approval": True,
+    "known_validator_image": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+    "known_missing_model_modules_in_validator": ["torch", "transformers", "huggingface_hub", "paddle", "paddleocr"],
+    "validator_module_probe_repeated_this_session": False, "environment_installed_or_changed": False,
+    "active_reservation": read(OUT / "resource-readiness.json")["reservations"],
+    "current_model_execution": "not attempted; #12 active reservation has priority, approved isolated model runtime needs confirmation"})
+
+assert all(c["pass"] for c in checks), [c for c in checks if not c["pass"]]
+save("analysis-checks.json", {"kind": "file_integrity_and_saved_result_arithmetic_not_repository_tests",
+    "checks": checks, "historical_artifacts_unchanged": 75, "additional_evidence_confirmed": 6,
+    "current_raw_quote_hashes_checked": 21, "new_measurement_rows": 225,
+    "new_measurement_metric_cells_all_null": all(v[k] is None for v in blank_rows for k in ["hit_at_1", "elapsed_ms", "empty_result"]),
+    "AGENTS_CLAUDE_same_bytes": (REF / "AGENTS.md").read_bytes() == (REF / "CLAUDE.md").read_bytes(),
+    "repository_tests_or_model_code_run": False, "new_model_calls": 0, "new_OCR_calls": 0,
+    "generated_at_kst": datetime.now(timezone(timedelta(hours=9))).isoformat()})
+print(json.dumps({"prepared": str(DEST), "corpus_difference": counts, "changed_shared_quotes": sum(x["same_raw_text"] is False for x in diff),
+    "checks": len(checks), "passed": all(c["pass"] for c in checks), "new_execution": False}, ensure_ascii=False))
