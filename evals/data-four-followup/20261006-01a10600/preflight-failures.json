@@ -1,0 +1,30 @@
+{
+  "failures": [
+    {
+      "stage": "host publication scope preflight, before any new inference",
+      "reason": "Approved project-local .tools installation appeared as untracked files",
+      "correction": "Added .tools/retrieval-isolated/.gitignore for this local environment only; source staging remains an exact whitelist",
+      "repository_code_executed": false,
+      "model_forward_calls": 0,
+      "original_console_failure_preserved_in_chat": true
+    },
+    {
+      "stage": "post-run publication scope preflight",
+      "reason": "Trusted Git helper strips leading whitespace; first porcelain status row was incorrectly parsed",
+      "correction": "Use structured filename lists (git diff --name-only and ls-files --others) instead of status columns",
+      "scope_violation_observed": false,
+      "new_model_forward_calls": 0,
+      "original_console_failure_preserved_in_chat": true
+    },
+    {
+      "stage": "publisher identity preflight, before push or PR",
+      "reason": "Successful reviewed github_identity helper returns None; host glue incorrectly expected the login string",
+      "correction": "Require configured account ginaginaring, then invoke existing raising-on-mismatch identity validator",
+      "actual_account_validation_passed": true,
+      "authentication_failure": false,
+      "external_publication_before_correction": false,
+      "new_model_forward_calls": 0,
+      "original_console_failure_preserved_in_chat": true
+    }
+  ]
+}

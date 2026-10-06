@@ -1,0 +1,906 @@
+{
+  "status": "225_measurements_complete_primary_gold_adjudication_pending",
+  "execution_code_commit": "d728d786a057ab6c3fccb1b97534653bcdcf22ea",
+  "dataset_version": "lg-manual-scope-20261006.3-pm-intake",
+  "corpus_evidence": 21,
+  "queries": 15,
+  "methods": {
+    "bm25_filtered": {
+      "measured_attempts": 75,
+      "failed_attempts": 0,
+      "ranked_attempts": 70,
+      "missing_version_empty_attempts": 5,
+      "zero_score_only_attempts": 0,
+      "quality_denominator_unique_queries": 10,
+      "excluded_ambiguous_query": "FR-01",
+      "development_diagnostic_10_queries": {
+        "hit_at_1": 0.7,
+        "recall_at_3": 0.85,
+        "mrr_at_3": 0.8
+      },
+      "primary_11_question_Hit_at_1": null,
+      "latency_denominator_successful_supported_attempts": 55,
+      "latency_median_ms": 0.19488800000999618,
+      "latency_p95_ms": 0.2734310000391815,
+      "no_gold_attempt_timings_excluded_from_supported_summary": 20,
+      "model_mix_rate_at_3": 0.0,
+      "version_mix_rate_at_3": 0.0,
+      "returned_evidence_instances": 210,
+      "mix_removed_by_structural_policy_not_model_quality": true
+    },
+    "bge_m3_filtered": {
+      "measured_attempts": 75,
+      "failed_attempts": 0,
+      "ranked_attempts": 70,
+      "missing_version_empty_attempts": 5,
+      "zero_score_only_attempts": 0,
+      "quality_denominator_unique_queries": 10,
+      "excluded_ambiguous_query": "FR-01",
+      "development_diagnostic_10_queries": {
+        "hit_at_1": 0.7,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 0.8333333333333334
+      },
+      "primary_11_question_Hit_at_1": null,
+      "latency_denominator_successful_supported_attempts": 55,
+      "latency_median_ms": 390.28959600000235,
+      "latency_p95_ms": 993.7836510000011,
+      "no_gold_attempt_timings_excluded_from_supported_summary": 20,
+      "model_mix_rate_at_3": 0.0,
+      "version_mix_rate_at_3": 0.0,
+      "returned_evidence_instances": 210,
+      "mix_removed_by_structural_policy_not_model_quality": true
+    },
+    "bge_m3_filtered_reranker": {
+      "measured_attempts": 75,
+      "failed_attempts": 0,
+      "ranked_attempts": 70,
+      "missing_version_empty_attempts": 5,
+      "zero_score_only_attempts": 0,
+      "quality_denominator_unique_queries": 10,
+      "excluded_ambiguous_query": "FR-01",
+      "development_diagnostic_10_queries": {
+        "hit_at_1": 0.7,
+        "recall_at_3": 0.9,
+        "mrr_at_3": 0.7833333333333333
+      },
+      "primary_11_question_Hit_at_1": null,
+      "latency_denominator_successful_supported_attempts": 55,
+      "latency_median_ms": 6621.958703000018,
+      "latency_p95_ms": 13116.403759999912,
+      "no_gold_attempt_timings_excluded_from_supported_summary": 20,
+      "model_mix_rate_at_3": 0.0,
+      "version_mix_rate_at_3": 0.0,
+      "returned_evidence_instances": 210,
+      "mix_removed_by_structural_policy_not_model_quality": true
+    }
+  },
+  "per_query": [
+    {
+      "method": "bm25_filtered",
+      "query_id": "FR-01",
+      "top3_ids": [
+        "T876MEE1H1-MANUAL-F10-P18",
+        "T876MEE1H1-MANUAL-F08",
+        "T876MEE1H1-MANUAL-F10-FOOD"
+      ],
+      "quality_metrics": null,
+      "quality_status": "FR-01_mapping_pending",
+      "FR01_legacy_gold_diagnostic": {
+        "hit_at_1": 0,
+        "recall_at_3": 0.0,
+        "mrr_at_3": 0.0
+      },
+      "FR01_proposed_gold_diagnostic": {
+        "hit_at_1": 0,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 0.3333333333333333
+      },
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bm25_filtered",
+      "query_id": "FR-02",
+      "top3_ids": [
+        "T876MEE1H1-MANUAL-F11",
+        "DATA003-T876MEE1H1-F13",
+        "DATA003-T876MEE1H1-F12"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 1,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 1.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bm25_filtered",
+      "query_id": "FR-03",
+      "top3_ids": [
+        "DATA003-T876MEE1H1-F13",
+        "DATA003-T876MEE1H1-F12",
+        "T876MEE1H1-MANUAL-F08"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 1,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 1.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bm25_filtered",
+      "query_id": "FR-04",
+      "top3_ids": [],
+      "quality_metrics": null,
+      "quality_status": "non_answerable_semantics_not_tested",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "request_document_version",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bm25_filtered",
+      "query_id": "FR-05",
+      "top3_ids": [
+        "T876MEE1H1-MANUAL-F08",
+        "T876MEE1H1-MANUAL-F11",
+        "DATA003-T876MEE1H1-F12"
+      ],
+      "quality_metrics": null,
+      "quality_status": "non_answerable_semantics_not_tested",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "reject_foreign_model",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bm25_filtered",
+      "query_id": "DW-01",
+      "top3_ids": [
+        "DUE6BGL2E-MANUAL-D12",
+        "DUE6BGL2E-MANUAL-D09",
+        "DUE6BGL2E-MANUAL-D14"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 0,
+        "recall_at_3": 0.5,
+        "mrr_at_3": 0.5
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bm25_filtered",
+      "query_id": "DW-02",
+      "top3_ids": [
+        "DUE6BGL2E-MANUAL-D12",
+        "DATA003-DUE6BGL2E-D03",
+        "DUE6BGL2E-MANUAL-D09"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 1,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 1.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bm25_filtered",
+      "query_id": "DW-03",
+      "top3_ids": [
+        "DATA003-DUE6BGL2E-D03",
+        "DUE6BGL2E-MANUAL-D09",
+        "DUE6BGL2E-MANUAL-D12"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 1,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 1.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bm25_filtered",
+      "query_id": "DW-04",
+      "top3_ids": [
+        "DUE6BGL2E-MANUAL-D14",
+        "DUE6BGL2E-MANUAL-D12",
+        "DUE6BGL2E-MANUAL-D13"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 1,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 1.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bm25_filtered",
+      "query_id": "DW-05",
+      "top3_ids": [
+        "DUE6BGL2E-MANUAL-D14",
+        "DATA003-DUE6BGL2E-D03",
+        "DUE6BGL2E-MANUAL-D09"
+      ],
+      "quality_metrics": null,
+      "quality_status": "non_answerable_semantics_not_tested",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "request_dish_dimensions_and_layout",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bm25_filtered",
+      "query_id": "MW-01",
+      "top3_ids": [
+        "DATA003-MW23FDI-M13",
+        "DATA003-MW23FDI-M06",
+        "DATA003-MW23FDI-M07"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 0,
+        "recall_at_3": 0.0,
+        "mrr_at_3": 0.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bm25_filtered",
+      "query_id": "MW-02",
+      "top3_ids": [
+        "MW23FDI-MANUAL-M15",
+        "MW23FDI-MANUAL-M14",
+        "DATA003-MW23FDI-M13"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 0,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 0.5
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bm25_filtered",
+      "query_id": "MW-03",
+      "top3_ids": [
+        "DATA003-MW23FDI-M06",
+        "DATA003-MW23FDI-M13",
+        "DATA003-MW23FDI-M07"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 1,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 1.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bm25_filtered",
+      "query_id": "MW-04",
+      "top3_ids": [
+        "DATA003-MW23FDI-M13",
+        "DATA003-MW23FDI-M06",
+        "DATA003-MW23FDI-M07"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 1,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 1.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_conditionally_and_mark_unknown",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bm25_filtered",
+      "query_id": "MW-05",
+      "top3_ids": [
+        "DATA003-MW23FDI-M06",
+        "MW23FDI-MANUAL-M15",
+        "DATA003-MW23FDI-M13"
+      ],
+      "quality_metrics": null,
+      "quality_status": "non_answerable_semantics_not_tested",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "not_confirmed",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered",
+      "query_id": "FR-01",
+      "top3_ids": [
+        "T876MEE1H1-MANUAL-F11",
+        "T876MEE1H1-MANUAL-F10-FOOD",
+        "T876MEE1H1-MANUAL-F10-P18"
+      ],
+      "quality_metrics": null,
+      "quality_status": "FR-01_mapping_pending",
+      "FR01_legacy_gold_diagnostic": {
+        "hit_at_1": 0,
+        "recall_at_3": 0.0,
+        "mrr_at_3": 0.0
+      },
+      "FR01_proposed_gold_diagnostic": {
+        "hit_at_1": 0,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 0.5
+      },
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered",
+      "query_id": "FR-02",
+      "top3_ids": [
+        "T876MEE1H1-MANUAL-F11",
+        "DATA003-T876MEE1H1-F12",
+        "T876MEE1H1-MANUAL-F10-P18"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 1,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 1.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered",
+      "query_id": "FR-03",
+      "top3_ids": [
+        "DATA003-T876MEE1H1-F13",
+        "DATA003-T876MEE1H1-F12",
+        "T876MEE1H1-MANUAL-F10"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 1,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 1.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered",
+      "query_id": "FR-04",
+      "top3_ids": [],
+      "quality_metrics": null,
+      "quality_status": "non_answerable_semantics_not_tested",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "request_document_version",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered",
+      "query_id": "FR-05",
+      "top3_ids": [
+        "T876MEE1H1-MANUAL-F08",
+        "DATA003-T876MEE1H1-F13",
+        "DATA003-T876MEE1H1-F12"
+      ],
+      "quality_metrics": null,
+      "quality_status": "non_answerable_semantics_not_tested",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "reject_foreign_model",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered",
+      "query_id": "DW-01",
+      "top3_ids": [
+        "DUE6BGL2E-MANUAL-D13",
+        "DUE6BGL2E-MANUAL-D09",
+        "DUE6BGL2E-MANUAL-D14"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 1,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 1.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered",
+      "query_id": "DW-02",
+      "top3_ids": [
+        "DUE6BGL2E-MANUAL-D14",
+        "DUE6BGL2E-MANUAL-D12",
+        "DUE6BGL2E-MANUAL-D13"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 0,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 0.5
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered",
+      "query_id": "DW-03",
+      "top3_ids": [
+        "DATA003-DUE6BGL2E-D03",
+        "DUE6BGL2E-MANUAL-D09",
+        "DUE6BGL2E-MANUAL-D13-P24"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 1,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 1.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered",
+      "query_id": "DW-04",
+      "top3_ids": [
+        "DUE6BGL2E-MANUAL-D13",
+        "DUE6BGL2E-MANUAL-D14",
+        "DUE6BGL2E-MANUAL-D13-P24"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 0,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 0.5
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered",
+      "query_id": "DW-05",
+      "top3_ids": [
+        "DUE6BGL2E-MANUAL-D14",
+        "DUE6BGL2E-MANUAL-D13-P24",
+        "DUE6BGL2E-MANUAL-D13"
+      ],
+      "quality_metrics": null,
+      "quality_status": "non_answerable_semantics_not_tested",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "request_dish_dimensions_and_layout",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered",
+      "query_id": "MW-01",
+      "top3_ids": [
+        "DATA003-MW23FDI-M13",
+        "DATA003-MW23FDI-M06",
+        "MW23FDI-MANUAL-M11"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 0,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 0.3333333333333333
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered",
+      "query_id": "MW-02",
+      "top3_ids": [
+        "MW23FDI-MANUAL-M14",
+        "MW23FDI-MANUAL-M15",
+        "DATA003-MW23FDI-M13"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 1,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 1.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered",
+      "query_id": "MW-03",
+      "top3_ids": [
+        "DATA003-MW23FDI-M06",
+        "DATA003-MW23FDI-M07",
+        "DATA003-MW23FDI-M13"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 1,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 1.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered",
+      "query_id": "MW-04",
+      "top3_ids": [
+        "DATA003-MW23FDI-M13",
+        "MW23FDI-MANUAL-M14",
+        "MW23FDI-MANUAL-M15"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 1,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 1.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_conditionally_and_mark_unknown",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered",
+      "query_id": "MW-05",
+      "top3_ids": [
+        "MW23FDI-MANUAL-M14",
+        "MW23FDI-MANUAL-M15",
+        "DATA003-MW23FDI-M13"
+      ],
+      "quality_metrics": null,
+      "quality_status": "non_answerable_semantics_not_tested",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "not_confirmed",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered_reranker",
+      "query_id": "FR-01",
+      "top3_ids": [
+        "T876MEE1H1-MANUAL-F11",
+        "T876MEE1H1-MANUAL-F10-FOOD",
+        "T876MEE1H1-MANUAL-F10-P18"
+      ],
+      "quality_metrics": null,
+      "quality_status": "FR-01_mapping_pending",
+      "FR01_legacy_gold_diagnostic": {
+        "hit_at_1": 0,
+        "recall_at_3": 0.0,
+        "mrr_at_3": 0.0
+      },
+      "FR01_proposed_gold_diagnostic": {
+        "hit_at_1": 0,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 0.5
+      },
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered_reranker",
+      "query_id": "FR-02",
+      "top3_ids": [
+        "T876MEE1H1-MANUAL-F11",
+        "T876MEE1H1-MANUAL-F10-P18",
+        "DATA003-T876MEE1H1-F12"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 1,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 1.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered_reranker",
+      "query_id": "FR-03",
+      "top3_ids": [
+        "DATA003-T876MEE1H1-F13",
+        "DATA003-T876MEE1H1-F12",
+        "T876MEE1H1-MANUAL-F10"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 1,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 1.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered_reranker",
+      "query_id": "FR-04",
+      "top3_ids": [],
+      "quality_metrics": null,
+      "quality_status": "non_answerable_semantics_not_tested",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "request_document_version",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered_reranker",
+      "query_id": "FR-05",
+      "top3_ids": [
+        "T876MEE1H1-MANUAL-F08",
+        "DATA003-T876MEE1H1-F13",
+        "DATA003-T876MEE1H1-F12"
+      ],
+      "quality_metrics": null,
+      "quality_status": "non_answerable_semantics_not_tested",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "reject_foreign_model",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered_reranker",
+      "query_id": "DW-01",
+      "top3_ids": [
+        "DUE6BGL2E-MANUAL-D12",
+        "DUE6BGL2E-MANUAL-D14",
+        "DUE6BGL2E-MANUAL-D14-P20"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 0,
+        "recall_at_3": 0.0,
+        "mrr_at_3": 0.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered_reranker",
+      "query_id": "DW-02",
+      "top3_ids": [
+        "DUE6BGL2E-MANUAL-D12",
+        "DUE6BGL2E-MANUAL-D13-P24",
+        "DUE6BGL2E-MANUAL-D14"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 1,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 1.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered_reranker",
+      "query_id": "DW-03",
+      "top3_ids": [
+        "DATA003-DUE6BGL2E-D03",
+        "DUE6BGL2E-MANUAL-D09",
+        "DUE6BGL2E-MANUAL-D12"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 1,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 1.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered_reranker",
+      "query_id": "DW-04",
+      "top3_ids": [
+        "DUE6BGL2E-MANUAL-D13-P24",
+        "DUE6BGL2E-MANUAL-D14",
+        "DUE6BGL2E-MANUAL-D12"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 0,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 0.5
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered_reranker",
+      "query_id": "DW-05",
+      "top3_ids": [
+        "DUE6BGL2E-MANUAL-D14",
+        "DUE6BGL2E-MANUAL-D13-P24",
+        "DUE6BGL2E-MANUAL-D13"
+      ],
+      "quality_metrics": null,
+      "quality_status": "non_answerable_semantics_not_tested",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "request_dish_dimensions_and_layout",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered_reranker",
+      "query_id": "MW-01",
+      "top3_ids": [
+        "DATA003-MW23FDI-M13",
+        "DATA003-MW23FDI-M06",
+        "MW23FDI-MANUAL-M11"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 0,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 0.3333333333333333
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered_reranker",
+      "query_id": "MW-02",
+      "top3_ids": [
+        "MW23FDI-MANUAL-M14",
+        "MW23FDI-MANUAL-M15",
+        "DATA003-MW23FDI-M13"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 1,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 1.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered_reranker",
+      "query_id": "MW-03",
+      "top3_ids": [
+        "DATA003-MW23FDI-M06",
+        "DATA003-MW23FDI-M07",
+        "MW23FDI-MANUAL-M11"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 1,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 1.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_with_evidence",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered_reranker",
+      "query_id": "MW-04",
+      "top3_ids": [
+        "DATA003-MW23FDI-M13",
+        "DATA003-MW23FDI-M06",
+        "MW23FDI-MANUAL-M14"
+      ],
+      "quality_metrics": {
+        "hit_at_1": 1,
+        "recall_at_3": 1.0,
+        "mrr_at_3": 1.0
+      },
+      "quality_status": "development_diagnostic_not_independent",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "answer_conditionally_and_mark_unknown",
+      "actual_AI_answer_or_response_disposition_tested": false
+    },
+    {
+      "method": "bge_m3_filtered_reranker",
+      "query_id": "MW-05",
+      "top3_ids": [
+        "MW23FDI-MANUAL-M15",
+        "DATA003-MW23FDI-M13",
+        "MW23FDI-MANUAL-M14"
+      ],
+      "quality_metrics": null,
+      "quality_status": "non_answerable_semantics_not_tested",
+      "FR01_legacy_gold_diagnostic": null,
+      "FR01_proposed_gold_diagnostic": null,
+      "expected_response_from_public_development_map": "not_confirmed",
+      "actual_AI_answer_or_response_disposition_tested": false
+    }
+  ],
+  "cold_load_ms": {
+    "embedding": 23916.96199200004,
+    "reranker": 2261.5259189999506
+  },
+  "index_build_ms": 25647.367232000022,
+  "peak_rss_mb": 3609.61328125,
+  "inference_forward_calls": {
+    "encoder": 147,
+    "reranker": 72
+  },
+  "product_generation_calls": 0,
+  "independent_evaluation_scores": null,
+  "limitations": [
+    "FR-01 old F10 quote lacks food-removal text; F10-FOOD proposed but not approved. Original gold unchanged.",
+    "10-question scores are public development diagnostics, not independent/full Agent quality.",
+    "Four no-gold cases have raw rankings/timings; semantic reject/clarification or unsupported-answer decisions are not generated.",
+    "Scope mixing is prevented structurally before scoring; this does not prove model understanding.",
+    "Fixed CPU comparison in local container is not operating API or GPU throughput."
+  ]
+}
