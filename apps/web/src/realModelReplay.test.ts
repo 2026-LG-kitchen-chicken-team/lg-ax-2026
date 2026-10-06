@@ -11,7 +11,7 @@ import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { errorDetails, errorDetailText, executionMetrics, exportJudgement, judgementView, planningExecutionView, rejectedCandidateCount, rerunBaseNotice, runSources, selectableConcepts, terminalReason, tokenText, verificationScope } from './judgement';
+import { errorDetails, errorDetailText, errorNotes, executionMetrics, exportJudgement, judgementView, planningExecutionView, rejectedCandidateCount, rerunBaseNotice, runSources, selectableConcepts, terminalReason, tokenText, verificationScope } from './judgement';
 import type { PlanningExecution } from './judgement';
 import { runStatusView } from './liveWorkspace';
 import { ConceptsView, HistoryView } from './PlanningViews';
@@ -401,6 +401,31 @@ describe('specific check codes inside an error are shown, not only VALIDATION_FA
     expect(markdown).toContain(`- VALIDATION_FAILED: 리뷰 판단 사유·미확인 정보·확인 질문을 보완해야 합니다. — 세부 검사: ${errorDetailText(errorDetails(ERRORS[0])[0])} / `);
     expect(markdown).toContain(`- VALIDATION_FAILED: 니즈를 추출하지 못했다면 이유를 남겨야 합니다. — 세부 검사: ${reasonText('EMPTY_NEEDS_WITHOUT_JUDGEMENT')}`);
     expect(markdown).toContain('- INVALID_EVIDENCE_ID: 근거 ID가 입력에 없습니다.\n');
+  });
+});
+
+describe('error details of real PR #190 head core records (fixture transport, no model; record 049)', () => {
+  // First error of each record produced by PR #190 head 28e4431's PlanningAgent with its own test transport; long
+  // free-text policy/instruction fields dropped. Code and paths are byte-for-byte the core's.
+  const REAL = {"failed-context-missing": {"code": "VALIDATION_FAILED", "message": "리뷰 판단 사유·미확인 정보·확인 질문을 보완해야 합니다.", "details": {"stage": "need_extract", "violations": [{"code": "UNCERTAINTY_CONTEXT_MISSING", "evidence_id": "DEV-01-REVIEW", "required_fields": ["reason", "missing_information", "questions"]}], "expected_review_evidence_ids": ["DEV-01-REVIEW"]}}, "failed-p1-polarity": {"code": "VALIDATION_FAILED", "message": "단계 판단 메타데이터의 두 표현이 다릅니다.", "details": {"violations": [{"code": "VALIDATION_FAILED", "stage": "needs"}], "conflicting_paths": ["review_assessments", "result/review_assessments"]}}, "failed-scope-mismatch": {"code": "VALIDATION_FAILED", "message": "미확인 정보와 리뷰 판단의 근거 ID·극성이 다릅니다.", "details": {"violations": [{"code": "VALIDATION_FAILED", "stage": "needs"}], "evidence_id": "DEV-01-REVIEW", "declared_polarity": "uncertain"}}, "failed-field-missing": {"code": "VALIDATION_FAILED", "message": "모델 출력이 JSON 형식 또는 요청한 스키마를 충족하지 않습니다.", "details": {"reason": "schema_mismatch"}}};
+  it('shows the specific code, the conflicting declarations and the stated reason; never the parent code again', () => {
+    expect(errorDetails(REAL['failed-context-missing']).map(errorDetailText)).toEqual([`${reasonText('UNCERTAINTY_CONTEXT_MISSING')} · 리뷰 DEV-01-REVIEW`]);
+    expect(errorNotes(REAL['failed-context-missing'])).toEqual([]);
+    expect(errorDetails(REAL['failed-p1-polarity'])).toEqual([]);
+    expect(errorNotes(REAL['failed-p1-polarity'])).toEqual(['서로 다른 두 선언: review_assessments ↔ result/review_assessments']);
+    expect(errorDetails(REAL['failed-scope-mismatch'])).toEqual([]);
+    expect(errorNotes(REAL['failed-scope-mismatch'])).toEqual(['리뷰 DEV-01-REVIEW(선언 극성 uncertain)']);
+    expect(errorNotes(REAL['failed-field-missing'])).toEqual(['사유: schema_mismatch']);
+  });
+  it('the export carries the same notes', () => {
+    const snapshot = structuredClone(FAILED[0].snapshot);
+    execution(snapshot).errors = structuredClone(Object.values(REAL));
+    const judgement = exportJudgement(snapshot)!;
+    if (!judgement.record_valid) throw new Error('invalid');
+    expect(judgement.errors.map(item => item.notes)).toEqual(Object.values(REAL).map(errorNotes));
+    const markdown = exportMarkdown(buildExport('live', snapshot, [], [], '2026-10-06T10:00:00.000Z', [snapshot]));
+    expect(markdown).toContain('- VALIDATION_FAILED: 단계 판단 메타데이터의 두 표현이 다릅니다. — 서로 다른 두 선언: review_assessments ↔ result/review_assessments');
+    expect(markdown).not.toContain('세부 검사: 모델 응답이 단계 규격에 맞지 않습니다');
   });
 });
 

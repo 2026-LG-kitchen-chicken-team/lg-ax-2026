@@ -370,7 +370,7 @@ export interface ErrorDetail { code: string; evidence_id: string | null; path: s
  * details.violations and EMPTY_NEEDS_WITHOUT_JUDGEMENT in details.code, while the error itself is only VALIDATION_FAILED.
  * Read as stored; malformed entries are skipped, never guessed.
  */
-export function errorDetails(error: { details?: unknown }): ErrorDetail[] {
+export function errorDetails(error: { code?: string; details?: unknown }): ErrorDetail[] {
   const details = error.details;
   if (!details || typeof details !== 'object') return [];
   const text = (value: unknown) => typeof value === 'string' && value ? value : null;
@@ -378,10 +378,27 @@ export function errorDetails(error: { details?: unknown }): ErrorDetail[] {
     if (!item || typeof item !== 'object') return [];
     const record = item as Record<string, unknown>;
     const code = text(record.code);
-    return code && BARE_CODE.test(code) ? [{ code, evidence_id: text(record.evidence_id), path: text(record.path) }] : [];
+    // A detail repeating the error's own code (PR #190 metadata conflict: violations [{code: VALIDATION_FAILED}]) adds nothing.
+    return code && BARE_CODE.test(code) && code !== error.code ? [{ code, evidence_id: text(record.evidence_id), path: text(record.path) }] : [];
   };
   const record = details as Record<string, unknown>;
   return [...(Array.isArray(record.violations) ? record.violations.flatMap(entry) : []), ...entry({ code: record.code })];
+}
+
+/**
+ * Other stored facts of an error that say where to look (record 049, real PR #190 core records): the two conflicting
+ * declaration paths, the stated reason (e.g. schema_mismatch) and a review named at the top of the details.
+ */
+export function errorNotes(error: { details?: unknown }): string[] {
+  const details = error.details;
+  if (!details || typeof details !== 'object') return [];
+  const record = details as Record<string, unknown>;
+  const notes: string[] = [];
+  const paths = Array.isArray(record.conflicting_paths) ? record.conflicting_paths.filter((item): item is string => typeof item === 'string') : [];
+  if (paths.length) notes.push(`서로 다른 두 선언: ${paths.join(' ↔ ')}`);
+  if (typeof record.reason === 'string' && record.reason) notes.push(`사유: ${record.reason}`);
+  if (typeof record.evidence_id === 'string' && record.evidence_id) notes.push(`리뷰 ${record.evidence_id}${typeof record.declared_polarity === 'string' ? `(선언 극성 ${record.declared_polarity})` : ''}`);
+  return notes;
 }
 
 export function errorDetailText(item: ErrorDetail): string {
@@ -683,7 +700,7 @@ export type ExportJudgement =
   | { record_valid: false; record_errors: string[] }
   | {
     record_valid: true; execution_kind: PlanningExecution['execution_kind']; status: PlanningExecution['status'];
-    decision: StoredDecision['action'] | null; violations: string[]; record_problems: string[]; errors: { code: string; message: string; details: ErrorDetail[] }[];
+    decision: StoredDecision['action'] | null; violations: string[]; record_problems: string[]; errors: { code: string; message: string; details: ErrorDetail[]; notes: string[] }[];
     /** Hold only: violations that caused the hold, and judgement errors the hold left unrevised (screen lists the same). */
     hold_causes: string[]; unrevised_errors: string[]; terminal_reason: string | null;
     questions: string[]; hold_reasons: string[]; unresolved: string[]; no_candidate_reasons: string[];
@@ -734,7 +751,7 @@ export function exportJudgement(snapshot: RunSnapshot): ExportJudgement | null {
   return {
     record_valid: true, execution_kind: execution.execution_kind, status: execution.status, decision: execution.decision?.action ?? null,
     violations: (execution.decision?.violations ?? []).map(item => targetedViolationText(item, facts.targets.get(item.code) ?? [])), record_problems: [...view.problems],
-    errors: execution.errors.map(item => ({ code: item.code, message: item.message, details: errorDetails(item) })),
+    errors: execution.errors.map(item => ({ code: item.code, message: item.message, details: errorDetails(item), notes: errorNotes(item) })),
     ...(output && execution.decision ? (({ hold_causes, unrevised_errors }) => ({ hold_causes, unrevised_errors }))(judgementView(execution.input, output, execution.decision, facts)) : { hold_causes: [], unrevised_errors: [] }),
     terminal_reason: terminalReason(snapshot),
     questions: unique([...(output?.questions ?? []), ...(output?.gaps ?? []).flatMap(gap => gap.questions), ...reviews.flatMap(review => review.report.questions)]).map(item => questionWithTargets(item, facts)),
