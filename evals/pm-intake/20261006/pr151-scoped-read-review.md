@@ -60,3 +60,13 @@ PM은 PR151의 통합 소스, 원본/CRLF 해시 보존, WEB 최종 수정, 실�
 `core-quality-review.md`의 반대 근거를 유지한다. 후속 냉장고 보류는 설명서 ID가 들어와도 비교 의미가 틀린 사례를 포함한다. 식기세척기 준비 입력은 제출 원고의 식기 조합별 배치 예시와 맞지 않았으므로 다음 corrected case는 원고에 정렬해야 하며 원 실패는 보존한다. 그 입력 불일치와 별개로 review 누락, desired outcome cardinality, 유용하지 않은 재시도 피드백, held 경로 의미 검사 미호출이 남는다.
 
 검토한 범위는 `approve_scoped_intake`, 차단 finding 0이다. 실제 최신 통합 CI·병합 후 검사·기록 재생 실행과 외부 host 전체 흐름은 담당 PM의 후속 근거이며, 3예시 정상/변경 품질 성공·독립 평가·효과/토큰 개선·31요구 완료를 이 검수로 대신하지 않는다.
+
+## 추가 인수·검사 근거 읽기 확인
+
+이후 로컬 통합 head `e6d90931f36648a916c4f18ea82caf4a6791a6e1`까지 추가 변경을 읽었다. 제품 코드(`packages/`, `apps/`, `skills/`, `services/`, `scripts/`)는 검수한 `3bbdd2e…`와 같다. 기록 재생 도구도 검수 후보 `c9378241…`와 같으며, 원본 중복 복사 commit은 인수하지 않고 원본 6개 bytes를 유지하는 좁은 하위 attribute와 평가 도구·검사 증빙을 인수했다. 추가된 PM 개인 기록은 부모 PM의 기록으로 읽기만 했고 작성하지 않았다.
+
+인수된 `recorded-workspace/validation.json`은 exact source `c9378241…`, 고정 validator image, network none, uid1000, workspace/artifacts만 mount, host/AI 인증 없음, returncode 0·source_changed=[]·model_calls=0·all_pass=true를 명시한다. 저장된 HTTP/MCP readback JSON 파일 hash는 서로 같고 replay summary는 원본 6사례·역사 호출 23·새 호출 0·held1/failed5·품질 미완료를 유지한다. 원 file SHA와 Workspace canonical SHA의 서로 다른 값을 별도로 보존했다. 최초/후속 hash 실패 log와 validator JSON도 삭제하지 않고 provenance에 원본/보관본 hash를 연결한다. 이 추가 읽기 확인에서 차단 결함은 없다.
+
+`integrated-python-aad-validation.json`은 실제 검사 source `aad053c4b8661be4683cad48eeeef63ca7c42984`에서 unittest 1294건·skip3·failure0·error0, rules/contracts/phase2/MCP stdio 모두 성공을 기록한다. 고정 무인증 격리·객체만 전달한 Git 역사·model0·source_changed=[] 경계와 원 비공개 summary/log hash를 포함하며 application/quality complete는 false다. 이 검수 AI는 해당 검사를 다시 실행하지 않았다. 제품 코드 동일성을 확인했지만 이후 WEB 브라우저 수리·최종 source CI는 해당 새 버전의 검증과 연결해야 한다.
+
+별도 비공개 작은 단위 수신증 초안에는 원 PR145의 `source_boundary.py`와 `test_source_boundary.py`, 원 PR147의 `RevisionTimeline.tsx`와 `revisionTimeline.test.ts`를 각각 검수했다. CORE 원/인수 두 Git blob은 동일하다. WEB 두 파일은 데이터만 바뀐 원인 분류, 잘못된 기록과 pending/running 비교 보류, fixture/선택 상태 표시 및 대응 회귀의 명시된 적응 변경으로 분류했다. 원 implementation ID는 실제 protected metadata의 값을 유지하고 검수 ID는 실제 Codex `session_meta`의 독립 위임 세션에 연결했다. 최종 WEB 수정과 실제 검사 연결 전에는 `tested_commit=null`·apply_ready=false로 두어 선택 인수 도구가 이 초안을 승인 근거로 사용할 수 없게 했다.
