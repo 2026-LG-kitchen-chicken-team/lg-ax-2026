@@ -191,6 +191,8 @@ def _schema_field_guide(schema: dict[str, Any]) -> tuple[str, tuple[str, ...]]:
     lines = ["판정값 안내: 값과 reason의 의미를 일치시키고 제공된 원문으로 판단하세요."]
     if found & {"support_status", "support_basis", "resolution"}:
         lines.append("기능 지원은 선택한 현재 기능의 문서상 지원이며, 고객 희망 결과의 해결 여부와 별개입니다.")
+        lines.append("features나 설명서가 비어 있거나 기능이 미언급이면 기능 부재의 증거가 아닙니다. "
+                     "unmentioned/conflicting은 insufficient_evidence로 판단하고 현재 기능·사용 조건을 확인할 구체 질문을 남기세요.")
     lines.extend(_SCHEMA_FIELD_GUIDES[name][1] for name in fields if name in _SCHEMA_FIELD_GUIDES)
     if stage_control:
         lines.extend((
@@ -209,6 +211,10 @@ def _schema_field_guide(schema: dict[str, Any]) -> tuple[str, tuple[str, ...]]:
             "각 연결 Feature의 설명서도 인용하세요. mechanism 등 다른 항목의 리뷰 인용으로 대신 충족하지 않습니다. "
             "원문에 없는 기능 부재를 사실로 단정하지 말고, 자료가 없으면 uncertain과 구체 확인 질문을 남기세요."
         )
+    if "duplication" in found and isinstance(result_properties, dict) and "concepts" in result_properties:
+        fields += ("candidate_gap_gate",)
+        lines.append("현재 quality_context의 residual_matrix에서 valid와 candidate_eligible가 모두 true인 "
+                     "Gap만 후보에 연결하세요. 확인 불가 Gap은 후보로 해결했다고 단정하지 않습니다.")
     return "\n".join(lines) + "\n\n", fields
 
 
@@ -587,7 +593,8 @@ class StructuredModelClient:
             "response_format": response_format, "locally_validated": True,
             "schema_prompt_embedded": not native_schema,
             "schema_field_guide": {
-                "version": ("enum_and_citation_meanings_v3" if "difference_source_quotes" in guide_fields
+                "version": ("enum_and_lineage_meanings_v4" if "candidate_gap_gate" in guide_fields
+                            else "enum_and_citation_meanings_v3" if "difference_source_quotes" in guide_fields
                             else "enum_and_hold_meanings_v2" if "unresolved" in guide_fields
                             else "enum_meanings_v1"),
                 "fields": list(guide_fields),
