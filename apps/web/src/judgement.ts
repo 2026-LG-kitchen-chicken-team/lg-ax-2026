@@ -362,10 +362,37 @@ export interface SemanticReview {
   /** Exact immutable originals of this review attempt, when retained by the core. */
   reviewed_input?: JudgementInput; reviewed_output?: JudgementOutput;
 }
+/** One check the core reported inside an error's details: the specific code, and which review/field it points at. */
+export interface ErrorDetail { code: string; evidence_id: string | null; path: string | null }
+
+/**
+ * The specific check codes inside an error (R4, PR #190): need_extract puts REVIEW_ and UNCERTAINTY_ codes in
+ * details.violations and EMPTY_NEEDS_WITHOUT_JUDGEMENT in details.code, while the error itself is only VALIDATION_FAILED.
+ * Read as stored; malformed entries are skipped, never guessed.
+ */
+export function errorDetails(error: { details?: unknown }): ErrorDetail[] {
+  const details = error.details;
+  if (!details || typeof details !== 'object') return [];
+  const text = (value: unknown) => typeof value === 'string' && value ? value : null;
+  const entry = (item: unknown): ErrorDetail[] => {
+    if (!item || typeof item !== 'object') return [];
+    const record = item as Record<string, unknown>;
+    const code = text(record.code);
+    return code && BARE_CODE.test(code) ? [{ code, evidence_id: text(record.evidence_id), path: text(record.path) }] : [];
+  };
+  const record = details as Record<string, unknown>;
+  return [...(Array.isArray(record.violations) ? record.violations.flatMap(entry) : []), ...entry({ code: record.code })];
+}
+
+export function errorDetailText(item: ErrorDetail): string {
+  return [reasonText(item.code), item.evidence_id ? `리뷰 ${item.evidence_id}` : '', item.path ? `위치 ${item.path}` : ''].filter(Boolean).join(' · ');
+}
+
 export interface PlanningExecution {
   execution_kind: 'fixture' | 'live_model'; status: 'completed' | 'held' | 'failed';
   original_input: JudgementInput; input: JudgementInput; output: JudgementOutput | null; decision: StoredDecision | null;
-  trace: TraceStep[]; model_calls: ModelCallRecord[]; errors: { code: string; message: string }[];
+  /** details: the core's structured error details (e.g. need_extract VALIDATION_FAILED → details.violations, PR #190). */
+  trace: TraceStep[]; model_calls: ModelCallRecord[]; errors: { code: string; message: string; details?: unknown }[];
   /** The checked output the core turned down; the terminal output keeps no candidates. */
   rejected_output?: JudgementOutput;
   semantic_reviews?: SemanticReview[];
@@ -656,7 +683,7 @@ export type ExportJudgement =
   | { record_valid: false; record_errors: string[] }
   | {
     record_valid: true; execution_kind: PlanningExecution['execution_kind']; status: PlanningExecution['status'];
-    decision: StoredDecision['action'] | null; violations: string[]; record_problems: string[]; errors: { code: string; message: string }[];
+    decision: StoredDecision['action'] | null; violations: string[]; record_problems: string[]; errors: { code: string; message: string; details: ErrorDetail[] }[];
     /** Hold only: violations that caused the hold, and judgement errors the hold left unrevised (screen lists the same). */
     hold_causes: string[]; unrevised_errors: string[]; terminal_reason: string | null;
     questions: string[]; hold_reasons: string[]; unresolved: string[]; no_candidate_reasons: string[];
@@ -707,7 +734,7 @@ export function exportJudgement(snapshot: RunSnapshot): ExportJudgement | null {
   return {
     record_valid: true, execution_kind: execution.execution_kind, status: execution.status, decision: execution.decision?.action ?? null,
     violations: (execution.decision?.violations ?? []).map(item => targetedViolationText(item, facts.targets.get(item.code) ?? [])), record_problems: [...view.problems],
-    errors: execution.errors.map(item => ({ code: item.code, message: item.message })),
+    errors: execution.errors.map(item => ({ code: item.code, message: item.message, details: errorDetails(item) })),
     ...(output && execution.decision ? (({ hold_causes, unrevised_errors }) => ({ hold_causes, unrevised_errors }))(judgementView(execution.input, output, execution.decision, facts)) : { hold_causes: [], unrevised_errors: [] }),
     terminal_reason: terminalReason(snapshot),
     questions: unique([...(output?.questions ?? []), ...(output?.gaps ?? []).flatMap(gap => gap.questions), ...reviews.flatMap(review => review.report.questions)]).map(item => questionWithTargets(item, facts)),

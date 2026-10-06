@@ -5,7 +5,7 @@ import { ApiError } from './api';
 import { evidenceLocation } from './domain';
 import type { Evidence, ProductGroup } from './domain';
 // judgement.ts also imports from this module; neither uses the other at module load, so the cycle is safe.
-import { executionKindText, exportJudgement, judgedNotes, reasonText, scopeLines, seconds, SUPPORT_FROM_BASIS, tokenText } from './judgement';
+import { errorDetailText, executionKindText, exportJudgement, judgedNotes, reasonText, scopeLines, seconds, SUPPORT_FROM_BASIS, tokenText } from './judgement';
 import type { ExportJudgement, JudgedNotes } from './judgement';
 
 export type DataMode = 'live' | 'fixture';
@@ -545,7 +545,7 @@ function judgementMarkdown(judgement: ExportJudgement | null): string[] {
       ? [...list('보류를 일으킨 문제(근거 확인 필요)', judgement.hold_causes), ...list('함께 발견된 판단 오류(보류로 내부 수정하지 않음)', judgement.unrevised_errors)]
       : list('검사에서 발견한 문제', judgement.violations)),
     ...(judgement.record_problems.length ? list('저장 기록 불일치', judgement.record_problems) : []),
-    ...(judgement.errors.length ? list('실행 오류', judgement.errors.map(item => `${item.code}: ${item.message}`)) : []),
+    ...(judgement.errors.length ? list('실행 오류', judgement.errors.map(item => `${item.code}: ${item.message}${item.details.length ? ` — 세부 검사: ${item.details.map(errorDetailText).join(' / ')}` : ''}`)) : []),
     ...list('확인할 질문', judgement.questions.map(reasonText)), ...list('보류 사유', judgement.hold_reasons.map(reasonText)),
     ...list('미해결', judgement.unresolved.map(reasonText)),
     ...list(`후보 없음 사유(판단 모델 작성 · 후보 없음 검토 ${judgement.no_candidate_reviews ? `${judgement.no_candidate_reviews}회` : '없음'})`, judgement.no_candidate_reasons.map(reasonText)),

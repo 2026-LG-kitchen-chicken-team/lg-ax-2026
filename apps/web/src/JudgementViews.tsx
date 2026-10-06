@@ -1,5 +1,5 @@
 import type { Evidence } from './domain';
-import { executionKindText, grouped, judgementView, planningExecutionView, reasonText, scopeLines, seconds, tokenText, traceFacts, unusedReviewIds, verificationScope, violationText } from './judgement';
+import { errorDetails, errorDetailText, executionKindText, grouped, judgementView, planningExecutionView, reasonText, scopeLines, seconds, tokenText, traceFacts, unusedReviewIds, verificationScope, violationText } from './judgement';
 import type { ExecutionMetrics, JudgementDecision, JudgementInput, JudgementOutput, ModelCallRecord, PlanningExecution, SemanticAssessment, StoredDecision, TraceFacts } from './judgement';
 import { sourceKindLabel, TERMINAL_TEXT } from './planning';
 import type { RunSnapshot } from './planning';
@@ -210,7 +210,7 @@ export function ExecutionPanel({ snapshot }: { snapshot: RunSnapshot }) {
       <div><dt>입력 원문·기능</dt><dd>{execution.input.sources.length}건 · {execution.input.features.length}개</dd></div>
     </dl>
     {view.problems.length ? <div className="unresolved" role="alert"><strong>저장 기록 불일치</strong><ul>{view.problems.map(item => <li key={item}>{item}</li>)}</ul></div> : null}
-    {execution.errors.length ? <div className="unresolved"><strong>실행 중 기록된 오류·검사 실패 {execution.errors.length}건</strong><ul>{execution.errors.map((item, index) => <li key={`${item.code}-${index}`}><code>{item.code}</code> {item.message}</li>)}</ul></div> : null}
+    {execution.errors.length ? <div className="unresolved"><strong>실행 중 기록된 오류·검사 실패 {execution.errors.length}건</strong><ul>{execution.errors.map((item, index) => <li key={`${item.code}-${index}`}><code>{item.code}</code> {item.message}{errorDetails(item).length ? <ul className="error-details" data-error-details={index}>{errorDetails(item).map((detail, n) => <li key={n}>{errorDetailText(detail)}</li>)}</ul> : null}</li>)}</ul></div> : null}
     <h4 className="sub">원 요청 <small>Agent에 그대로 전달된 조건</small></h4>
     <dl className="run-meta">
       <div><dt>개선 과제</dt><dd>{original.improvement_task}</dd></div>

@@ -11,10 +11,11 @@ import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { executionMetrics, exportJudgement, judgementView, planningExecutionView, rejectedCandidateCount, rerunBaseNotice, runSources, selectableConcepts, terminalReason, tokenText, verificationScope } from './judgement';
+import { errorDetails, errorDetailText, executionMetrics, exportJudgement, judgementView, planningExecutionView, rejectedCandidateCount, rerunBaseNotice, runSources, selectableConcepts, terminalReason, tokenText, verificationScope } from './judgement';
 import type { PlanningExecution } from './judgement';
 import { runStatusView } from './liveWorkspace';
 import { ConceptsView, HistoryView } from './PlanningViews';
+import { reasonText } from './judgement';
 import type { MeasureControls } from './PlanningViews';
 import { buildComparison, buildExport, contractErrors, exportCompleteness, exportMarkdown } from './planning';
 import type { PlanningRequest, RunSnapshot } from './planning';
@@ -358,6 +359,51 @@ describe('model usage, run time and verification scope read from the stored reco
   });
 });
 
+describe('specific check codes inside an error are shown, not only VALIDATION_FAILED (R4, PR #190 error details, record 045)', () => {
+  // Exact shapes PR #190 head 28e4431 raises: need_extraction.py VALIDATION_FAILED with details.violations, and
+  // skill_runner.py with details.code. One malformed entry must be skipped, never guessed.
+  const ERRORS = [
+    { code: 'VALIDATION_FAILED', message: '리뷰 판단 사유·미확인 정보·확인 질문을 보완해야 합니다.', details: { stage: 'need_extract', violations: [
+      { code: 'UNCERTAINTY_FIELD_MISSING', evidence_id: 'REVIEW-EVIDENCE-002', path: 'uncertainty_assessments/0/questions', field: 'questions' },
+      { code: 'NON_COMPLAINT_AS_NEED', evidence_id: 'REVIEW-EVIDENCE-001', need_id: 'NEED-001', declared_polarity: 'positive' },
+      { code: 'REVIEW_ASSESSMENT_COVERAGE', expected_review_evidence_ids: ['REVIEW-EVIDENCE-001'], actual_review_evidence_ids: [] },
+      { code: 'not a code' }, 5,
+    ], expected_review_evidence_ids: ['REVIEW-EVIDENCE-001', 'REVIEW-EVIDENCE-002'] } },
+    { code: 'VALIDATION_FAILED', message: '니즈를 추출하지 못했다면 이유를 남겨야 합니다.', details: { stage: 'need_extract', code: 'EMPTY_NEEDS_WITHOUT_JUDGEMENT', expected_review_evidence_ids: [] } },
+    { code: 'INVALID_EVIDENCE_ID', message: '근거 ID가 입력에 없습니다.' },
+  ];
+  const withErrors = () => {
+    const snapshot = structuredClone(FAILED[0].snapshot);
+    execution(snapshot).errors = structuredClone(ERRORS);
+    return snapshot;
+  };
+
+  it('reads the codes, review IDs and paths as stored; malformed entries and errors without details give nothing', () => {
+    expect(errorDetails(ERRORS[0])).toEqual([
+      { code: 'UNCERTAINTY_FIELD_MISSING', evidence_id: 'REVIEW-EVIDENCE-002', path: 'uncertainty_assessments/0/questions' },
+      { code: 'NON_COMPLAINT_AS_NEED', evidence_id: 'REVIEW-EVIDENCE-001', path: null },
+      { code: 'REVIEW_ASSESSMENT_COVERAGE', evidence_id: null, path: null },
+    ]);
+    expect(errorDetails(ERRORS[1])).toEqual([{ code: 'EMPTY_NEEDS_WITHOUT_JUDGEMENT', evidence_id: null, path: null }]);
+    expect(errorDetails(ERRORS[2])).toEqual([]);
+    expect(errorDetailText(errorDetails(ERRORS[0])[0])).toBe(`${reasonText('UNCERTAINTY_FIELD_MISSING')} · 리뷰 REVIEW-EVIDENCE-002 · 위치 uncertainty_assessments/0/questions`);
+    expect(reasonText('NON_COMPLAINT_AS_NEED')).not.toContain('설명이 등록되지 않은');
+  });
+
+  it('JSON summary and Markdown carry the same details; the record stays valid', () => {
+    const snapshot = withErrors();
+    expect(planningExecutionView(snapshot).kind).toBe('ok');
+    const judgement = exportJudgement(snapshot)!;
+    if (!judgement.record_valid) throw new Error('invalid');
+    expect(judgement.errors.map(item => item.details.map(detail => detail.code))).toEqual([
+      ['UNCERTAINTY_FIELD_MISSING', 'NON_COMPLAINT_AS_NEED', 'REVIEW_ASSESSMENT_COVERAGE'], ['EMPTY_NEEDS_WITHOUT_JUDGEMENT'], []]);
+    const markdown = exportMarkdown(buildExport('live', snapshot, [], [], '2026-10-06T10:00:00.000Z', [snapshot]));
+    expect(markdown).toContain(`- VALIDATION_FAILED: 리뷰 판단 사유·미확인 정보·확인 질문을 보완해야 합니다. — 세부 검사: ${errorDetailText(errorDetails(ERRORS[0])[0])} / `);
+    expect(markdown).toContain(`- VALIDATION_FAILED: 니즈를 추출하지 못했다면 이유를 남겨야 합니다. — 세부 검사: ${reasonText('EMPTY_NEEDS_WITHOUT_JUDGEMENT')}`);
+    expect(markdown).toContain('- INVALID_EVIDENCE_ID: 근거 ID가 입력에 없습니다.\n');
+  });
+});
+
 describe('real held / failed runs in the actual React DOM (record 034)', () => {
   let host: HTMLDivElement;
   let root: Root;
@@ -422,6 +468,19 @@ describe('real held / failed runs in the actual React DOM (record 034)', () => {
     expect(panel.querySelectorAll('[aria-label="모델 호출 기록"] [data-call]')).toHaveLength(metrics.calls.length);
     expect(panel.querySelector('[aria-label="모델 호출 기록"] pre')?.textContent).toBe(execution(snapshot).model_calls[0].formatted_prompt);
     expect(panel.textContent).toContain('시간은 실행 시작부터 누적');
+  });
+
+  it('error details are listed under each stored error with the review ID and field path (R4, PR #190)', async () => {
+    const snapshot = structuredClone(FAILED[0].snapshot);
+    execution(snapshot).errors = [{ code: 'VALIDATION_FAILED', message: '리뷰 판단 사유·미확인 정보·확인 질문을 보완해야 합니다.', details: { stage: 'need_extract', violations: [
+      { code: 'UNCERTAINTY_FIELD_MISSING', evidence_id: 'REVIEW-EVIDENCE-002', path: 'uncertainty_assessments/0/questions', field: 'questions' },
+      { code: 'NON_COMPLAINT_AS_NEED', evidence_id: 'REVIEW-EVIDENCE-001', need_id: 'NEED-001', declared_polarity: 'positive' }] } },
+    { code: 'INVALID_EVIDENCE_ID', message: '근거 ID가 입력에 없습니다.' }];
+    await act(async () => root.render(createElement(ConceptsView, { mode: 'live', runs: [snapshot], selected: snapshot, onSelect: () => {}, ...runSources(snapshot, [], []) })));
+    const items = [...host.querySelectorAll('[data-error-details="0"] li')].map(node => node.textContent);
+    expect(items).toEqual(errorDetails(execution(snapshot).errors[0]).map(errorDetailText));
+    expect(items[0]).toContain('리뷰 REVIEW-EVIDENCE-002 · 위치 uncertainty_assessments/0/questions');
+    expect(host.querySelector('[data-error-details="1"]')).toBeNull();
   });
 
   it.each(RUNS.map(item => [item.row.case, item] as const))('%s: the revision timeline does not call a first run without candidates "the first run\'s candidates"', async (_name, { snapshot }) => {
