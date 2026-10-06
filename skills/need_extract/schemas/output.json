@@ -75,6 +75,91 @@
                     "minLength": 1
                   },
                   "uniqueItems": true
+                },
+                "review_assessments": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "evidence_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "polarity": {
+                        "enum": [
+                          "complaint",
+                          "positive",
+                          "conflicting",
+                          "irrelevant",
+                          "uncertain"
+                        ]
+                      },
+                      "reason": {
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": "\\S"
+                      }
+                    },
+                    "required": [
+                      "evidence_id",
+                      "polarity",
+                      "reason"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "uncertainty_assessments": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "evidence_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "reason": {
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": "\\S"
+                      },
+                      "missing_information": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "pattern": "\\S"
+                        },
+                        "uniqueItems": true,
+                        "minItems": 1
+                      },
+                      "questions": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "pattern": "\\S"
+                        },
+                        "uniqueItems": true,
+                        "minItems": 1
+                      }
+                    },
+                    "required": [
+                      "evidence_id",
+                      "reason",
+                      "missing_information",
+                      "questions"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "questions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "\\S"
+                  },
+                  "uniqueItems": true
                 }
               },
               "required": [
@@ -134,6 +219,14 @@
       "minLength": 1,
       "maxLength": 100,
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+    },
+    "SourceKind": {
+      "enum": [
+        "synthetic",
+        "public",
+        "licensed",
+        "private"
+      ]
     },
     "Need": {
       "type": "object",
@@ -249,14 +342,6 @@
       ],
       "additionalProperties": false
     },
-    "SourceKind": {
-      "enum": [
-        "synthetic",
-        "public",
-        "licensed",
-        "private"
-      ]
-    },
     "Locator": {
       "type": "object",
       "properties": {
@@ -311,7 +396,8 @@
             "NOT_FOUND",
             "DATASET_MISMATCH",
             "CONNECTION_FAILED",
-            "CONTRACT_MISMATCH"
+            "CONTRACT_MISMATCH",
+            "INVALID_INPUT"
           ]
         },
         "message": {

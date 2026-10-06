@@ -1,0 +1,59 @@
+{
+  "checks": [
+    {
+      "name": "priority-documents-trends",
+      "base": "1a8e4363b3b1c0105a52371fe11d0b92084b5d74",
+      "argv": [
+        "python",
+        "-c",
+        "import unittest; patterns=['test_document_registration.py', 'test_document_plan_history.py', 'test_document_store_snapshot.py', 'test_document_skill_intake.py', 'test_review_trends.py', 'test_review_trend_contracts.py']; loader=unittest.TestLoader(); suites=[loader.discover('tests',pattern=p) for p in patterns]; assert all(s.countTestCases()>0 for s in suites); suite=unittest.TestSuite(suites); result=unittest.TextTestRunner(verbosity=2).run(suite); raise SystemExit(not result.wasSuccessful())"
+      ],
+      "exit_code": 0,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "log_sha256": "90678e7a49ba67ace80bd4a4e13ca3480382a0730bfade3b66e366c582294a6e"
+    },
+    {
+      "name": "baseline-phase2",
+      "base": "1a8e4363b3b1c0105a52371fe11d0b92084b5d74",
+      "argv": [
+        "python",
+        "scripts/phase2.py",
+        "validate"
+      ],
+      "exit_code": 1,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "log_sha256": "fa10b3eeae6d2a4aac2fa44b3f524a87f98785cae5803c7bab35c40b85866e8c"
+    }
+  ],
+  "new_model_ocr_calls": 0
+}

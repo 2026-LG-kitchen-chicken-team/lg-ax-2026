@@ -1,0 +1,121 @@
+{
+  "observed_at": "2026-10-06T13:31:48.701153+00:00",
+  "status": "independently_verified_existing_new_corpus_execution",
+  "measurements": 225,
+  "corpus_items": 21,
+  "queries": 15,
+  "repeats": 5,
+  "new_model_reruns_in_this_audit": 0,
+  "source_model_execution_id": "data-four-followup-20261006-01a10600",
+  "split": "development",
+  "independent_evaluation": false,
+  "old_gold_preserved": true,
+  "FR01_semantic_score_excluded": true,
+  "model_corpus_sha256": "1e097362bf1d7bf6564a3cc17281900d92aedf5a9c573706afdb2254fd9fbffe",
+  "model_queries_sha256": "399c51838a28a749991cd1b1e985df859545e0f1cc4f34b5cee86dece4189055",
+  "runner_sha256": "4d352b7de02a9f132d5f8ef6d2b8cb82d85b6a0e391bb6d181f84b95abd0f3a7",
+  "input_file_hashes": {
+    "attempts.jsonl": "ac215807a49c989e68cfa80503adcbb104ff418dbfce72a7beaafdda57462de4",
+    "execution.json": "906de9a71ef82a93f9040fc4e333dcb07f0d34f95e0bca40dc17697f15dfbee7",
+    "model-corpus.json": "1e097362bf1d7bf6564a3cc17281900d92aedf5a9c573706afdb2254fd9fbffe",
+    "model-queries.json": "399c51838a28a749991cd1b1e985df859545e0f1cc4f34b5cee86dece4189055",
+    "question-evidence-map.json": "4074bdbd5dad457c906b8949bfef50696eac93ce4ade32ec0f20e90e00bdd3e2",
+    "registered-dataset.json": "d4649f1cd48db49277b0556c3fd8243b64dc748cca6631bf1e9441279aab81be",
+    "runner.py": "4d352b7de02a9f132d5f8ef6d2b8cb82d85b6a0e391bb6d181f84b95abd0f3a7",
+    "tokenizer-lengths.json": "e2f789fffe8721cb605d0790fed8644afdeed6e08f9a090b3c264c098470afeb",
+    "weight-pin-verification.json": "c7b1c84d7f2f85d5ee7cc3f4a10f0dadd978b84abb78f761bd1161e92901a460"
+  },
+  "tokenizer_maxima": {
+    "embedding_corpus": 154,
+    "embedding_queries": 31,
+    "reranker_pairs": 181
+  },
+  "hardware": {
+    "cpu": "11th Gen Intel(R) Core(TM) i7-1165G7 @ 2.80GHz",
+    "os": "Linux-6.18.40.1-microsoft-standard-WSL2-x86_64-with-glibc2.36",
+    "python": "3.11.17",
+    "device": "cpu",
+    "cpu_threads": 4,
+    "container_cpus_limit": 4,
+    "container_memory_limit_bytes": 7516192768,
+    "system_memory_kib": 7971200,
+    "torch": "2.8.0+cpu",
+    "transformers": "4.57.1",
+    "torch_interop_threads": 1
+  },
+  "cold_load_ms": {
+    "embedding": 23916.96199200004,
+    "reranker": 2261.5259189999506
+  },
+  "index_build_ms": 25647.367232000022,
+  "peak_rss_mb": 3609.61328125,
+  "inference_forward_calls": {
+    "encoder": 147,
+    "reranker": 72
+  },
+  "generation_calls": 0,
+  "paid_api_calls": 0,
+  "metrics": [
+    {
+      "hit_at_1": 0.7,
+      "recall_at_3": 0.85,
+      "mrr_at_3": 0.8,
+      "method": "bm25_filtered",
+      "semantic_gold_review_pending": [
+        "FR-01"
+      ],
+      "eligible_queries": 10,
+      "scored_attempts": 50,
+      "supported_latency_attempts": 55,
+      "median_supported_ms": 0.19488800000999618,
+      "p95_supported_ms": 0.2734310000391815,
+      "median_all_15_queries_ms": 0.18477999998367522,
+      "model_mix_rate": 0,
+      "version_mix_rate": 0,
+      "failures": 0
+    },
+    {
+      "hit_at_1": 0.7,
+      "recall_at_3": 1.0,
+      "mrr_at_3": 0.8333333333333334,
+      "method": "bge_m3_filtered",
+      "semantic_gold_review_pending": [
+        "FR-01"
+      ],
+      "eligible_queries": 10,
+      "scored_attempts": 50,
+      "supported_latency_attempts": 55,
+      "median_supported_ms": 390.28959600000235,
+      "p95_supported_ms": 993.7836510000011,
+      "median_all_15_queries_ms": 390.28959600000235,
+      "model_mix_rate": 0,
+      "version_mix_rate": 0,
+      "failures": 0
+    },
+    {
+      "hit_at_1": 0.7,
+      "recall_at_3": 0.9,
+      "mrr_at_3": 0.7833333333333333,
+      "method": "bge_m3_filtered_reranker",
+      "semantic_gold_review_pending": [
+        "FR-01"
+      ],
+      "eligible_queries": 10,
+      "scored_attempts": 50,
+      "supported_latency_attempts": 55,
+      "median_supported_ms": 6621.958703000018,
+      "p95_supported_ms": 13116.403759999912,
+      "median_all_15_queries_ms": 6621.958703000018,
+      "model_mix_rate": 0,
+      "version_mix_rate": 0,
+      "failures": 0
+    }
+  ],
+  "all_passed": true,
+  "limitations": [
+    "FR-01 is excluded from semantic scoring pending PM gold mapping review.",
+    "Same host/container/device/settings; shared PC load means these timings are observed developer measurements.",
+    "Four no-gold queries are disposition diagnostics, not ranking accuracy or independent evaluation.",
+    "The public literal_token_count API was not changed or measured."
+  ]
+}
