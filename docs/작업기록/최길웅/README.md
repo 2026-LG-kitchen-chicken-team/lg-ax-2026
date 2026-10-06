@@ -1,34 +1,28 @@
 # 최길웅 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
-## 최신 재개 요약 (작성자 갱신, 2026-10-06 16:2x KST)
-
-- **#169 병합 감지(17:0x KST) 후속:** 최신 main 동향 회귀 119 통과. 제품 자료 미연결 안내 분리. [상세 032](2026-10-06/최길웅-20261006-032.md)
-
-- **R3 소비 경로 검증(17:0x KST):** 단위 FixtureCollector 주입 서버에서 API→MCP 10/10, 웹 E2E 통과. 같은 aggregate ID가 그래프·원문·스냅샷·기획 입력까지 이어짐. 실제 collector(#148)·#169 병합 뒤 재확인 대기. [상세 031](2026-10-06/최길웅-20261006-031.md)
-- **R3 착수(16:4x KST):** 배정 PM-20261006-WEB-INTEGRATION-R3(P2-WEB-005). #169(PM 통합) 병합 전에는 그 영역을 편집하지 않는다. 범위 회귀는 #169에 있다(빈 topic_ids·대체 모델 없음). 지금 할 일은 단위 FixtureCollector 주입 서버로 같은 aggregate ID의 웹 → MCP 소비 경로 E2E를 준비하는 것이다. [상세 031](2026-10-06/최길웅-20261006-031.md)
+## 최신 재개 요약 (작성자 갱신, 2026-10-06 17:2x KST, 기록 033)
 
 - 상태: 자동화 OFF, Worker 예약 `LGAX-Worker-choigilung` Disabled. 수동 진행. 기록은 #165 새 규칙(날짜·ID 파일 + 이 구역)을 따른다.
-- 열린 PR(모두 PM 검수 대기):
-  - [#158](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/158) 리뷰 동향(WEB005/#27 정식 보고): PM 검수 결함(원문 혼선·늦은 응답) 수정, 분모 0 보완, main 반영.
-  - [#164](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/164) 집계 스냅샷 내보내기: #158 위에 쌓음.
-  - [#163](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/163) WEB-003 accept 전 실서버 부분 검증.
-- 막힘:
-  - 코어 프롬프트가 어댑터 상한 16,000자를 넘는다(FRIDGE concept_draft 23,300 / MICROWAVE semantic_review 16,730). 그래서 accept가 0이다. 황대겸에게 [#25 보고](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25#issuecomment-6010457730).
-  - 실제 동향 집계는 신진하 #148 대기.
+- **열린 PR 없음(기록 PR 제외).** [#170](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/170)(R3 소비 경로 검증 + 자료 미연결 안내)은 main `c9a724e`에 병합됐다. #158·#163·#164는 PM이 [#169](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/169)로 선택 인수하고 superseded로 닫았다(branch 보존).
+- 막힘(모두 다른 담당 결과 대기, 18:00 R3 막힘 보고 = 기록 033):
+  - WEB-005/#27: 실제 동향 collector(신진하 #148)가 아직 없다. 예약 HTTP 409로 구현 전이다.
+  - WEB-003/#25: 코어 프롬프트가 어댑터 상한 16,000자를 넘어 accept 0이다(FRIDGE concept_draft 23,300 / MICROWAVE semantic_review 16,730). [황대겸에게 보고](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25#issuecomment-6010457730), 답 없음.
 - 다음:
-  - PM 검수 대응
-  - 정상 run을 받으면 후보 선택 → 조건 변경 → 내보내기 검증
-  - #148이 준비되면 동향 실서비스 통합(숫자·원문·MCP 같은 aggregate ID·스냅샷)
-- 실서버 시험 주의: 사용자 5173 cmd 창은 사용자가 직접 끈다. 서버 창 제목이 "선택"이면 Esc를 누른다.
-- 최신 기록 ID: 최길웅-20261006-030. 상세:
-  - 030 스냅샷 내보내기: 세션 파일 `세션/최길웅/trends-snapshot-20261006.md`(PR #164)
-  - 029 #158 검수 수정: [세션 파일](../세션/최길웅/trends-drilldown-fix-20261006.md)(이 PR)
-  - 028 WEB-REBALANCE-R2 실서버 검증: 세션 파일 `세션/최길웅/rebalance-r2-20261006.md`(PR #163)
-  - 027 검사 코드 설명: [세션 파일](../세션/최길웅/reason-codes-20261006.md)(main, PR #160)
+  - #148이 나오면 `evals/web/20261006/web-integration-r3`의 두 시험(API→MCP, 웹 E2E)을 실제 collector로 실행한다.
+  - 코어 정상 run이 나오면 같은 run으로 후보 선택 → 조건 변경 → 내보내기를 검증한다.
+  - PM 새 배정이 오면 그것부터 한다.
+- 실서버 시험 주의: 사용자 서버 18867·18869·5173은 사용자 것이다. 5173을 비워야 하면 사용자에게 cmd 창 종료를 요청한다. 창 제목이 "선택"이면 Esc. 시험 작업 공간은 `Desktop/lgax-wt-live`.
+- 최신 기록 ID: 최길웅-20261006-033. 상세:
+  - 033 새 세션 인계·상태 정리·막힘 보고: [상세](2026-10-06/최길웅-20261006-033.md)
+  - 032 제품 자료 미연결 안내: [상세](2026-10-06/최길웅-20261006-032.md)
+  - 031 R3 소비 경로 검증: [상세](2026-10-06/최길웅-20261006-031.md)
+  - 030 스냅샷 내보내기: [세션 파일](../세션/최길웅/trends-snapshot-20261006.md)
+  - 029 #158 검수 수정: [세션 파일](../세션/최길웅/trends-drilldown-fix-20261006.md)
+  - 028 WEB-REBALANCE-R2 실서버 검증: [세션 파일](../세션/최길웅/rebalance-r2-20261006.md)
+  - 027 검사 코드 설명: [세션 파일](../세션/최길웅/reason-codes-20261006.md)
   - 026 리뷰 동향 웹: [상세](2026-10-06/최길웅-20261006-026.md)
   - 025 이전은 아래 목차를 본다.
-- 029·030·028의 세션 파일은 열린 PR의 기존 경로라 옮기지 않았다(README 규칙). 각 PR이 병합되면 이 링크가 main에서 열린다.
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
 
