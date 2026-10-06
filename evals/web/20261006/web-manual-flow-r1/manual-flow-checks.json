@@ -1,0 +1,32 @@
+{
+  "assignment_id": "PM-20261006-WEB-MANUAL-FLOW-R1",
+  "kind": "manual_user_path_walkthrough",
+  "observed_at_kst": "2026-10-06 11:15-12:35",
+  "operator": "Claude Code for 최길웅 (built-in browser, user path clicks/typing; a few inputs set through the DOM value setter where the pane's typing did not reach the field)",
+  "environment": {
+    "web_before_fix": "lgax-wt-live worktree at main b477860 (product source = PR151 / 96c6d949)",
+    "web_after_fix": "Desktop/lgax branch codex/web-manual-flow-r1 (this PR)",
+    "public_api": "127.0.0.1:18867 started from main b477860",
+    "workspace_server": "127.0.0.1:18879 --enable-planning, fresh private DB private/workspace-manual-flow",
+    "model": "qwen3:8b digest 500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41 via personal loopback model_proxy (18873); MAX_OUTPUT_TOKENS 8192, CONTEXT 16384, TIMEOUT 240, THINK false",
+    "data": "synthetic kitchen-demo (FRIDGE-A, DISHWASHER-A, MICROWAVE-A)",
+    "automation": "team/personal OFF; Worker scheduled task disabled (not used)"
+  },
+  "checks": [
+    {"flow": "request validation", "input": "FRIDGE-A unchecked", "observed": "'확인이 필요한 정보가 있습니다 · 저장하지 않음' (검토 모델 선택 요구), no POST", "result": "ok"},
+    {"flow": "save + double click (mouse)", "run_id": "run-e47f242b8e2749f6b8abc7be75082d88", "observed": "1 POST /projects + 1 POST runs; button '서버 확인 중…' disabled", "result": "ok"},
+    {"flow": "progress while judging (~72s live model)", "observed_before_fix": "only the disabled button label '서버 확인 중…'; no elapsed/explanation", "result": "gap -> fixed (PendingJudgement)"},
+    {"flow": "held result display", "run_id": "run-e47f242b8e2749f6b8abc7be75082d88", "observed": "'요청 저장 · 판단 보류(후보 없음)', 후보 0개·선택 불가, 검사 문제 3건, 보류 사유, trace 20단계, 모델 호출 3회 72.1s; raw 'SAVED_HELD' chip and 'held · review' strings shown", "result": "ok with raw-code gap -> fixed"},
+    {"flow": "clarification questions", "observed_before_fix": "questions contain raw codes ('판단 근거의 NON_COMPLAINT_AS_NEED 조건…')", "result": "gap -> fixed (inline labels, code kept)"},
+    {"flow": "clarification empty submit", "observed": "alert '답변을 하나 이상 입력하세요.', no POST", "result": "ok"},
+    {"flow": "clarification answer + double click", "run_id": "run-23ea84eb46e94179b84ba305dac07e6b", "previous_run_id": "run-e47f242b8e2749f6b8abc7be75082d88", "observed": "1 new run, 요청 회차 1, before/after request diff, reasons/questions/violations compared (new/gone/kept), both held", "result": "ok"},
+    {"flow": "history re-query after reload", "observed": "token memory-only -> '미연결'; reconnect lists project and runs 0/1 from server", "result": "ok"},
+    {"flow": "evidence drilldown", "observed": "REVIEW-EVIDENCE-001 expands to original text with '합성자료 · FRIDGE-A · 문서 1.0 · 2행 · REVIEWS-CSV-v1.0'", "result": "ok"},
+    {"flow": "condition duplicate", "observed": "Enter in 추가 조건 adds; same condition -> '이미 같은 조건이 있습니다.'", "result": "ok"},
+    {"flow": "structured error (server stopped)", "observed": "alert '작업실 서버에 연결할 수 없습니다 … 저장 요청은 자동으로 다시 보내지 않으니…' CONNECTION_FAILED + '새 실행을 저장하지 못했습니다.'", "result": "ok; minor: message names port 18869 regardless of proxy, header still says '연결됨'"},
+    {"flow": "save with two clicks delivered before re-render", "observed_before_fix": "2 POST /projects (duplicate MICROWAVE-A projects project-c6e7… and a second with no run); form re-mounted and unlocked while the first save was still judging", "result": "defect -> fixed (synchronous in-flight lock + workspace busy)"},
+    {"flow": "same, after fix", "observed": "three synchronous clicks -> exactly 1 POST /projects (projects 3 -> 4), notice '요청 저장과 판단 실행 · 서버 응답 대기 중 (2초)'", "run_id": "run-a6157478fe5d41dda1c3cb1c0977e0ea", "result": "ok"},
+    {"flow": "three products", "observed": "FRIDGE-A held(0), held(1); MICROWAVE-A held; DISHWASHER-A held (내부 수정 1/2). No accepted result in this session.", "result": "recorded; normal demo NOT complete"}
+  ],
+  "not_claimed": ["accepted/completed judgement or candidate selection with the live model", "core judgement quality", "external AI hosts", "WEB-003 completion"]
+}
