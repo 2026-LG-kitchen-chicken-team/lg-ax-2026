@@ -29,7 +29,9 @@ export function JudgementPanel({ input, output, decision, fixture }: { input: Ju
     <p className="judgement-detail">{view.detail}</p>
     {fixture ? <p className="fixture-note">사람이 작성한 판단 선언(fixture)과 코어 검사기의 실제 결정입니다. 모델이 생성한 결과가 아닙니다.</p> : null}
     {view.declared_status_overridden ? <p className="scope-flag">판단이 스스로 선언한 상태는 '{output.status}'였지만, 코어 검사 결정에 따라 '{view.label}'로 표시합니다.</p> : null}
-    <TextList title="검사에서 발견한 문제" items={view.violations} empty="없음" />
+    {view.unrevised_errors.length && view.hold_causes.length
+      ? <><TextList title="보류를 일으킨 문제(근거 확인 필요)" items={view.hold_causes} /><TextList title="함께 발견된 판단 오류(보류로 내부 수정하지 않음)" items={view.unrevised_errors} /></>
+      : <TextList title="검사에서 발견한 문제" items={view.violations} empty="없음" />}
     <TextList title="다른 모델·문서 버전의 원문" items={view.out_of_scope_sources} />
     <h4>리뷰 판단</h4>
     <ul className="quote-list">{output.review_assessments.map(item => <li key={item.evidence_id}><span className={`status-pill ${item.polarity}`}>{POLARITY[item.polarity]}</span>{sources.get(item.evidence_id) ? <q>{sources.get(item.evidence_id)!.text}</q> : <span className="missing-note">{item.evidence_id} · 원문을 찾을 수 없습니다(자료 누락)</span>}<small>{item.evidence_id} · {item.reason}</small></li>)}</ul>
@@ -133,8 +135,11 @@ export function ExecutionPanel({ snapshot }: { snapshot: RunSnapshot }) {
   const { execution } = view;
   const original = execution.original_input.request;
   const revised = execution.input.revision_count;
+  // The pill names the record kind; its colour follows how the run ended so a held/failed record never looks successful.
+  const accepted = execution.status === 'completed' && execution.decision?.action === 'accept';
+  const headTone = execution.execution_kind === 'fixture' ? 'fixture' : accepted ? 'done' : execution.status === 'failed' ? 'error' : 'notice';
   return <section className="panel planning-panel execution-panel" aria-label="판단 실행 기록">
-    <div className="planning-head"><div><p className="eyebrow">CORE RECORD</p><h3>판단 실행 기록 <span className="id">{snapshot.run.id}</span></h3></div><span className={`run-status ${execution.execution_kind === 'fixture' ? 'fixture' : 'done'}`}>{executionKindText(execution.execution_kind, view.model_calls)}<small>{STATUS_LABEL[execution.status]} · 내부 수정 {revised}/2</small></span></div>
+    <div className="planning-head"><div><p className="eyebrow">CORE RECORD</p><h3>판단 실행 기록 <span className="id">{snapshot.run.id}</span></h3></div><span className={`run-status ${headTone}`}>{executionKindText(execution.execution_kind, view.model_calls)}<small>{STATUS_LABEL[execution.status]} · 내부 수정 {revised}/2</small></span></div>
     <dl className="run-meta">
       <div><dt>판단 모델</dt><dd>{view.models.length ? view.models.join(', ') : '호출 기록 없음'}</dd></div>
       <div><dt>모델 호출</dt><dd>{view.model_calls}회{view.elapsed_ms !== null ? ` · ${(view.elapsed_ms / 1000).toFixed(1)}초` : ''}</dd></div>
