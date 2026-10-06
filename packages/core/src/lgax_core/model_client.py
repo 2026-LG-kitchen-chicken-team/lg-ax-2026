@@ -173,6 +173,19 @@ def _schema_field_guide(schema: dict[str, Any]) -> tuple[str, tuple[str, ...]]:
     )
     if stage_control:
         fields += tuple(array_fields)
+    quality = properties.get("quality_assessments", {}) if isinstance(properties, dict) else {}
+    quality_items = quality.get("items", {}) if isinstance(quality, dict) else {}
+    quality_properties = quality_items.get("properties", {}) if isinstance(quality_items, dict) else {}
+    criterion = quality_properties.get("criterion", {}) if isinstance(quality_properties, dict) else {}
+    semantic_citations = (
+        isinstance(quality, dict) and quality.get("type") == "array"
+        and isinstance(criterion, dict)
+        and criterion.get("enum") == ["mechanism", "difference_from_current_features",
+                                      "unverified_assumptions", "unsupported_factual_claims"]
+        and {"source_quotes", "candidate_quote", "concept_id", "verdict"} <= set(quality_properties)
+    )
+    if semantic_citations:
+        fields += ("difference_source_quotes",)
     if not fields:
         return "", fields
     lines = ["판정값 안내: 값과 reason의 의미를 일치시키고 제공된 원문으로 판단하세요."]
@@ -189,6 +202,13 @@ def _schema_field_guide(schema: dict[str, Any]) -> tuple[str, tuple[str, ...]]:
             "no_candidate_reasons: 판단 후 후보가 없거나 필요 없을 때의 이유입니다. "
             "후보 작성 전에는 []. 필요한 자료가 실제 없을 때는 보류·질문을 유지하세요.",
         ))
+    if semantic_citations:
+        lines.append(
+            "difference_from_current_features를 satisfied로 판단하는 같은 quality_assessments 항목의 "
+            "source_quotes 안에 각 연결 Gap의 고객 리뷰 최소 1개와 같은 모델·버전 설명서를 함께 원문 인용하세요. "
+            "각 연결 Feature의 설명서도 인용하세요. mechanism 등 다른 항목의 리뷰 인용으로 대신 충족하지 않습니다. "
+            "원문에 없는 기능 부재를 사실로 단정하지 말고, 자료가 없으면 uncertain과 구체 확인 질문을 남기세요."
+        )
     return "\n".join(lines) + "\n\n", fields
 
 
@@ -567,7 +587,9 @@ class StructuredModelClient:
             "response_format": response_format, "locally_validated": True,
             "schema_prompt_embedded": not native_schema,
             "schema_field_guide": {
-                "version": "enum_and_hold_meanings_v2" if "unresolved" in guide_fields else "enum_meanings_v1",
+                "version": ("enum_and_citation_meanings_v3" if "difference_source_quotes" in guide_fields
+                            else "enum_and_hold_meanings_v2" if "unresolved" in guide_fields
+                            else "enum_meanings_v1"),
                 "fields": list(guide_fields),
                 "characters": len(guide), "utf8_bytes": len(guide.encode("utf-8")),
                 "sha256": sha256(guide.encode("utf-8")).hexdigest(),
