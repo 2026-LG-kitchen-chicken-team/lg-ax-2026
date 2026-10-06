@@ -1,0 +1,87 @@
+{
+  "observed_at": "2026-10-06T11:30:20.969360+00:00",
+  "checks": [
+    {
+      "command": [
+        "python311",
+        "-m",
+        "unittest",
+        "tests.test_evidence_catalog",
+        "tests.test_retrieval",
+        "tests.test_retrieval_benchmark",
+        "tests.test_upload_query_integration",
+        "tests.test_data_followup_handoff",
+        "tests.test_document_registration",
+        "tests.test_document_plan_history",
+        "tests.test_document_store_snapshot",
+        "tests.test_document_skill_intake",
+        "tests.test_review_import",
+        "tests.test_source_ranges",
+        "tests.test_review_trends",
+        "tests.test_review_trend_contracts",
+        "-v"
+      ],
+      "exit_code": 0,
+      "test_count": 85,
+      "log": "check-01.log",
+      "log_sha256": "cb40903466d4413cc8861a3419a6496a34822aa19bcc55e784a6862d233ccc75"
+    },
+    {
+      "command": [
+        "python311",
+        "scripts/check_contracts.py"
+      ],
+      "exit_code": 0,
+      "test_count": null,
+      "log": "check-02.log",
+      "log_sha256": "1894c6d9b707180b50d5b98f09f7e210a68ff31f60f7de2b375320cc40467952"
+    },
+    {
+      "command": [
+        "python311",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "test_count": null,
+      "log": "check-03.log",
+      "log_sha256": "f1cd2e5dd2fbd5e50876d9d64f7b45ffb39f001a40b6528d2ddf61af5decbafd"
+    },
+    {
+      "command": [
+        "python311",
+        "scripts/migrate_member_logs.py",
+        "--verify"
+      ],
+      "exit_code": 0,
+      "test_count": null,
+      "log": "check-04.log",
+      "log_sha256": "9728b22cfb10bb671689000a976668cfa35827a1eda7ffee42460f1c93756be7"
+    },
+    {
+      "command": [
+        "python311",
+        "scripts/phase2.py",
+        "validate"
+      ],
+      "exit_code": 0,
+      "test_count": null,
+      "log": "check-05.log",
+      "log_sha256": "bd82782c96589f6c0efd77685145d37e545b36803adc6cf31a398d844f897ad6"
+    },
+    {
+      "command": [
+        "python311",
+        "services/inference/build_manifest.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "test_count": null,
+      "log": "check-06.log",
+      "log_sha256": "39cb1d84499e7d6453ed3f976f7f26b875336c678f2365a4997a4d68f0d61d6c"
+    }
+  ],
+  "all_passed": true,
+  "model_calls": 0,
+  "production_runtime_injection": false
+}
