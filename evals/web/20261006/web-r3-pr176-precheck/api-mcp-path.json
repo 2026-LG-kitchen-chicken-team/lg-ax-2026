@@ -1,0 +1,104 @@
+{
+  "kind": "review_trend_consumption_path",
+  "observed_at": "2026-10-06T09:40:04.340532+00:00",
+  "server": "http://127.0.0.1:18881",
+  "collector": "DATA PR #176 head bebb54e review_trends.create_review_trend_collector + candidate sidecar candidate-2026-10-06-v1 (unapproved; test-only injection)",
+  "project_id": "project-005ebc5bc2834b05a0045b4391abc0f6",
+  "filters": {
+    "project_id": "project-005ebc5bc2834b05a0045b4391abc0f6",
+    "model_id": "FRIDGE-A",
+    "source_ids": [
+      "REVIEWS-CSV-v1.0"
+    ],
+    "dataset_version": "0.1.0",
+    "start_date": "2026-10-01",
+    "end_date_exclusive": "2026-11-01",
+    "granularity": "month",
+    "topic_ids": [],
+    "source_kind": "synthetic",
+    "timezone": "Asia/Seoul"
+  },
+  "checks": {
+    "api_requery_same_aggregate": true,
+    "api_empty_topic_filter_kept": true,
+    "api_evidence_same_key": true,
+    "api_evidence_in_bucket_ids": true,
+    "api_evidence_document_version": true,
+    "mcp_tools_present": true,
+    "mcp_query_same_id": true,
+    "mcp_saved_identical": true,
+    "mcp_same_dataset_sha256": true,
+    "mcp_evidence_identical": true
+  },
+  "api_evidence_status": 200,
+  "aggregate_id": "TREND-f9e7eb76155c5e440ba414fad61ba4965d9d19d418376fad636bcbd395da5347",
+  "dataset_sha256": "8cbc9a492bd41f1112907a166744972501095aca49325630afbabe27b43b2c03",
+  "counts": {
+    "input_review_count": 36,
+    "excluded_out_of_scope_count": 26,
+    "in_scope_review_count": 10,
+    "excluded_undated_count": 10,
+    "excluded_outside_period_count": 0,
+    "duplicate_count": 0,
+    "eligible_unique_review_count": 0,
+    "unclassified_review_count": 0
+  },
+  "buckets": [
+    {
+      "bucket_id": "MONTH-2026-10",
+      "label": "2026년 10월",
+      "period_start": "2026-10-01",
+      "period_end_exclusive": "2026-11-01",
+      "partial_period": false,
+      "total_reviews": 0,
+      "topics": [
+        {
+          "topic_id": "cleaning",
+          "topic_review_count": 0,
+          "ratio": null,
+          "evidence_count": 0,
+          "evidence_ids": [],
+          "evidence_ids_truncated": false
+        },
+        {
+          "topic_id": "food_findability",
+          "topic_review_count": 0,
+          "ratio": null,
+          "evidence_count": 0,
+          "evidence_ids": [],
+          "evidence_ids_truncated": false
+        },
+        {
+          "topic_id": "manual_guidance",
+          "topic_review_count": 0,
+          "ratio": null,
+          "evidence_count": 0,
+          "evidence_ids": [],
+          "evidence_ids_truncated": false
+        },
+        {
+          "topic_id": "temporary_storage",
+          "topic_review_count": 0,
+          "ratio": null,
+          "evidence_count": 0,
+          "evidence_ids": [],
+          "evidence_ids_truncated": false
+        }
+      ]
+    }
+  ],
+  "evidence_ids": [],
+  "mcp_tools": [
+    "create_workspace_project",
+    "create_workspace_run",
+    "get_review_trends",
+    "get_workspace_project",
+    "get_workspace_run",
+    "list_workspace_projects",
+    "list_workspace_runs",
+    "review_trends",
+    "search_workspace_evidence",
+    "trend_evidence"
+  ],
+  "result": "consumption_path_ok"
+}
