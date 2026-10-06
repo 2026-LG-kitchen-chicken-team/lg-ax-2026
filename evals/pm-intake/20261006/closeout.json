@@ -1,0 +1,234 @@
+{
+  "kind": "PM_integration_closeout",
+  "source_head": "50606806a9c96badc99fa78c5ada28b31f10261a",
+  "merged_main": "96c6d949ccb7de0f91bd7f006318cf54ecd9ddcd",
+  "pr": 151,
+  "main_ci": [
+    {
+      "conclusion": "success",
+      "details_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/actions/runs/37392987188/job/112042212758",
+      "head_sha": "96c6d949ccb7de0f91bd7f006318cf54ecd9ddcd",
+      "id": 112042212758,
+      "name": "python-and-harness",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "details_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/actions/runs/37392987188/job/112042212608",
+      "head_sha": "96c6d949ccb7de0f91bd7f006318cf54ecd9ddcd",
+      "id": 112042212608,
+      "name": "web",
+      "status": "completed"
+    }
+  ],
+  "browser_summary": {
+    "schema_version": 1,
+    "mode": "browser_e2e",
+    "synthetic_data_only": true,
+    "planning_agent_executed": false,
+    "private_credentials": true,
+    "screenshots_traces_videos": false,
+    "status": "pass",
+    "checks": {
+      "real_synthetic_bootstrap_ready": true,
+      "unauthenticated_denied": true,
+      "new_private_workspace_is_empty": true,
+      "viewer_write_denied": true,
+      "exact_origin_allowed": true,
+      "other_origin_denied": true,
+      "all_three_browser_cases_pass_without_skip": true,
+      "owned_children_reaped": true,
+      "isolated_ports_released": true,
+      "temporary_material_removed": true
+    },
+    "browser_stats": {
+      "expected": 3,
+      "unexpected": 0,
+      "skipped": 0,
+      "flaky": 0
+    },
+    "browser_cases": [
+      {
+        "case": "fixture_planning",
+        "outcome": "expected",
+        "results": [
+          "passed"
+        ]
+      },
+      {
+        "case": "fixture_unmeasured",
+        "outcome": "expected",
+        "results": [
+          "passed"
+        ]
+      },
+      {
+        "case": "live_workspace",
+        "outcome": "expected",
+        "results": [
+          "passed"
+        ]
+      }
+    ],
+    "credentials_retained": false
+  },
+  "exact_source_validation": {
+    "source_commit": "50606806a9c96badc99fa78c5ada28b31f10261a",
+    "all_pass": true,
+    "source_changed": [],
+    "zero_auth": true,
+    "model_calls": 0,
+    "raw_receipt_sha256": "1bca95592cf37939b4d9ece964b125b8435f40297e3af85c85391ebd5d4af2fb",
+    "checks": [
+      {
+        "returncode": 0,
+        "stop": null,
+        "boundary": {
+          "backend": "docker",
+          "image_id": "sha256:76ed86b7e2a84169b14e6910b67d10a8453e0e58e53f8f2e9ef96e404df8d494",
+          "role": "validator",
+          "uid": 1000,
+          "readonly_root": true,
+          "caps_dropped": true,
+          "no_new_privileges": true,
+          "network": "none",
+          "mount_targets": [
+            "/artifacts",
+            "/workspace"
+          ],
+          "publisher_credentials_mounted": false,
+          "ai_profile_mounted": false
+        }
+      }
+    ]
+  },
+  "runtime_observation": {
+    "observed_at": "2026-10-06T00:38:13.902135+00:00",
+    "task_state": "Running",
+    "runtime_processes": 1,
+    "global_mode": "on",
+    "members": {
+      "jeongiryang": true,
+      "unknownamed": true,
+      "ginaginaring": true,
+      "choigilung": true
+    },
+    "formal_commit": "96c6d949ccb7de0f91bd7f006318cf54ecd9ddcd",
+    "worker_contact": {
+      "jeongiryang": {
+        "registered": true,
+        "presence": "online",
+        "age_seconds": 14.610378742218018,
+        "phase": "idle",
+        "last_seen_at": 1791247079.2670555
+      },
+      "unknownamed": {
+        "registered": true,
+        "presence": "never_seen",
+        "age_seconds": null,
+        "phase": null,
+        "last_seen_at": null
+      },
+      "ginaginaring": {
+        "registered": true,
+        "presence": "stale",
+        "age_seconds": 36141.02045798302,
+        "phase": "idle",
+        "last_seen_at": 1791210952.8569763
+      },
+      "choigilung": {
+        "registered": true,
+        "presence": "stale",
+        "age_seconds": 17096.199722528458,
+        "phase": "idle",
+        "last_seen_at": 1791229997.6777117
+      }
+    },
+    "jobs": [
+      {
+        "job_id": "auto-6bb32e0278ccd2357db4a3303d197e6de44fdc8b",
+        "owner": "jeongiryang",
+        "task_id": "P2-PM-006",
+        "status": "blocked",
+        "attempt": 1,
+        "lease_generation": 1,
+        "base_commit": "089ab16cc5c4fd727a2de904c516b62ea8ab493d"
+      },
+      {
+        "job_id": "auto-62cf0ffdcbd4ac7d952193ae82e741db19e8c7f6",
+        "owner": "unknownamed",
+        "task_id": "P2-CORE-003",
+        "status": "accepted",
+        "attempt": 1,
+        "lease_generation": 2,
+        "base_commit": "02f9a643e92c4665f2f0f71a5690f9ed6ed28930"
+      },
+      {
+        "job_id": "auto-bb18aeb662ec3c3da6ebbc123f5c55243861b54f",
+        "owner": "choigilung",
+        "task_id": "P2-WEB-003",
+        "status": "blocked",
+        "attempt": 1,
+        "lease_generation": 1,
+        "base_commit": "02f9a643e92c4665f2f0f71a5690f9ed6ed28930"
+      },
+      {
+        "job_id": "auto-3a9bc38b3290fb504ed78dd67d0cbf172bcf1ad9",
+        "owner": "choigilung",
+        "task_id": "P2-WEB-003",
+        "status": "accepted",
+        "attempt": 1,
+        "lease_generation": 2,
+        "base_commit": "02f9a643e92c4665f2f0f71a5690f9ed6ed28930"
+      },
+      {
+        "job_id": "auto-b31577338948021023b385d6a9342d0feadf8e15",
+        "owner": "ginaginaring",
+        "task_id": "P2-DATA-002",
+        "status": "pending",
+        "attempt": 0,
+        "lease_generation": 0,
+        "base_commit": "96c6d949ccb7de0f91bd7f006318cf54ecd9ddcd"
+      },
+      {
+        "job_id": "auto-1828c769924bbc3c55b33df27817f3ddfcc2c181",
+        "owner": "choigilung",
+        "task_id": "P2-WEB-003",
+        "status": "pending",
+        "attempt": 0,
+        "lease_generation": 0,
+        "base_commit": "96c6d949ccb7de0f91bd7f006318cf54ecd9ddcd"
+      }
+    ],
+    "source_proof_sha256": "399565e68244160d5856b1e075cb35ca0d92caef5915292acd4560e67decd771",
+    "model_calls_by_observer": 0
+  },
+  "formal_request_comment": 6006324915,
+  "formal_accepted_comment": 6006331040,
+  "selective_operator_comment": 6006406572,
+  "DATA_new_packet_operator_comment": 6006435529,
+  "parent_done": false,
+  "requirements_verified": 0,
+  "quality_complete": false,
+  "original_failures_and_costs_preserved": true,
+  "worker_resume_notifications": [
+    {
+      "member": "황대겸",
+      "github_login": "unknownamed",
+      "notification_id": "PM-20261006-CORE-WORKER-RESUME",
+      "sent_and_header_readback_verified": true
+    },
+    {
+      "member": "신진하",
+      "github_login": "ginaginaring",
+      "notification_id": "PM-20261006-DATA-WORKER-RESUME",
+      "sent_and_header_readback_verified": true
+    },
+    {
+      "member": "최길웅",
+      "github_login": "choigilung",
+      "notification_id": "PM-20261006-WEB-WORKER-RESUME",
+      "sent_and_header_readback_verified": true
+    }
+  ]
+}
