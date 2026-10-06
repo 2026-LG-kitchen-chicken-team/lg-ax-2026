@@ -1,25 +1,30 @@
 {
   "id": "P2-DATA-005",
   "owner": "신진하",
-  "title": "기술·경쟁 탐색 확장 타당성 실험",
+  "title": "리뷰 동향 자료·기술 탐색 확장",
   "requirement_ids": [
     "R12",
     "R15"
   ],
   "depends_on": [
-    "P2-DATA-003"
+    "P2-PM-001"
   ],
   "allowed_execution_kinds": [
-    "live_model"
+    "live_service"
   ],
   "actions": [
-    "원안 요구 완성을 우선하고 추가 기능의 채택 여부는 PM에게 확인한다.",
-    "자료 접근·라이선스·인용과 적용 조건을 검증한다."
+    "필수 원 자료 품질 회귀와 독립 근거 대조를 우선하고 날짜/주제 sidecar·결정적 집계기를 병렬 개발한다.",
+    "원36리뷰/8열CSV를 보존하며 합성 날짜를 별도 자료 버전으로 분리한다.",
+    "PM152 TrendCollection의 원문/hash·모델/버전·분모/중복/KST/표본 경고·membership을 실제 검사한다.",
+    "자료 접근·라이선스·인용 조건과 후속 기술/경쟁 탐색 범위를 기록한다."
   ],
-  "status": "pending",
+  "status": "ready",
   "scope": "proposed_extension",
   "adoption_required": true,
-  "adoption": null,
+  "adoption": {
+    "path": "harness/phase2/runs/pm-rebalance-20261006/P2-DATA-005-adoption.json",
+    "sha256": "be334611de95e5c4b4c75d94fdc7099148ad69abd8c6b1ce363de8170500b1c5"
+  },
   "issue_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/16",
   "branch": null,
   "individual_evidence": null,
@@ -28,5 +33,25 @@
   "integration": null,
   "completion": null,
   "block_reason": null,
-  "history": []
+  "history": [
+    {
+      "at": "2026-10-06T05:07:31+00:00",
+      "action": "PM_rebalance_and_adopt_extension",
+      "status": "ready",
+      "previous_scope": {
+        "title": "기술·경쟁 탐색 확장 타당성 실험",
+        "depends_on": [
+          "P2-DATA-003"
+        ],
+        "allowed_execution_kinds": [
+          "live_model"
+        ],
+        "actions": [
+          "원안 요구 완성을 우선하고 추가 기능의 채택 여부는 PM에게 확인한다.",
+          "자료 접근·라이선스·인용과 적용 조건을 검증한다."
+        ],
+        "status": "pending"
+      }
+    }
+  ]
 }
