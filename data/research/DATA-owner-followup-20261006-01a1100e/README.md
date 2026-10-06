@@ -28,3 +28,7 @@
 ## 제출 후 추가 자기검수
 
 [승인계획 외부 모델·개정 변경 회귀](plan-freeze-regression.json)를 재현·수정했다. constructor 입력을 변경해도 원 승인계획의 모델·버전·SHA만 사용한다. [추가 검증85PASS/무결성](checks-plan-freeze/checks.json), [GitHub 보고·인계 수신증](github-report-receipts.json)을 추가했다. 원 로그/실패는 보존했다. 이전 구현head d5b3ee7의CI4/4 성공과 새 수정commitCI·PM 승인/병합을 구분한다.
+
+## PR183 merged and follow-up
+
+PR183 merged by jeongiryang at 20:15:21 KST; partial DATA acceptance only. Caller-plan freeze is a separate follow-up, validated on main `3f88c0a`: [receipt](post-merge-followup.json), [85 regressions / 5 integrity checks](checks-followup-main/checks.json). No new model calls.
