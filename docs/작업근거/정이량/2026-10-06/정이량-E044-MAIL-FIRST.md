@@ -41,3 +41,14 @@ AGENTS/CLAUDE의 동일 문장·전체byte 일치, 협업체계/작업기록 시
 - [DATA 원 예약 확인 요청](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/13#issuecomment-6012438474)도실제게시됐다. 강제예약해제/재시도/ON은0이며원담당의실제상태인계는남았다.
 
 추가로PR173은CORE의작은조기검사보완으로제출됐다. 준비/재생검사와실모델정상품질은구분하며이문서변경과별도검수한다.
+
+## 실제 공유·추가 CORE 검수 근거
+
+- PR174 exactheade51d712·CI4success·독립blocker0→mainbca380c15f8a57e3ea238960c7720deee3c66351,08:35:20Z병합. mainCI2success와로컬fastforward를확인했다. 두지침byte/SHA·이관원문보존결과는위수신증과같다.
+- 노션LGtask_a0e0ea71e3554764873a397aefb477ec=succeeded. 재조회에서‘10/6 작업 전 메일·팀 의존 확인 지침 반영’존재와기존50583자본문전체가포함됨을확인했다. 주소·비밀원문/회의접속정보는추가하지않았다.
+- PR173 최종head31c61daea9ec8c5c3d05330de0d14855749dfaa6/basebca380c1의CI4success·독립blocker0. 이전357d975d의코드21경로는모두동일하고sourceSHA29개/원인계12개가맞았다. 원자료/타인기록변경0·forcedaccept0·공유수정예산변경0이다.
+- PM자체격리실행manual-pm-execution-6c94e68fcc854a6c86f8cfd2a825038b는게시/AI인증마운트0,uid1000/networknone/readonlyroot/dropcaps/no-newpriv이며sourcechanged0·returncode0·modelcalls0이다. 새6건을포함한115검사4.227sPASS,worktreeinputSHA456e0feaae05c8a05531f77d87b6894c6308fae1cb3cfe37d2494fdb4e8d87ae. 공개정적수신증은[PR173검사](../../../../evals/pm-prototype/20261006/pr173-validation.json),원receipt/executorlog는private같은실행폴더에보존한다. 출력끝의INVALID_ARGUMENT/overwrite거절은거절검사의예상출력으로suite는OK다.
+- [PM검수6012581886](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/173#issuecomment-6012581886)→PR173 main8f9d83fc7641ceaea7631c166137379645574ea8,08:39:12Z병합. 원mock9→3은실제모델/토큰절감이아니다. Skill불확실문구와held일관성의비차단보완요청·정상/변경/보류및WEB/MCP후속조건을인수에명시했다.
+- 17:33:46KST 중앙read-only /v1/status에서위DATA예약ID matched0/globaloff/4personfalse/formal531을관측했고[6012519569](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/13#issuecomment-6012519569)로인계했다. 본인PC종료나충돌해결확정으로확대하지않는다. query원수신증은private/runtime/mail-first-data-reservation-read-20261006.json이다.
+
+Git최신main·metadata승인pin·실제품서비스배포를구분하며새중앙pin수신은운영Issue28의실제종료응답을따른다. 이문서끝의실제PM검사는PR173용이고메일지침자체의제품실행0범위와구분한다.

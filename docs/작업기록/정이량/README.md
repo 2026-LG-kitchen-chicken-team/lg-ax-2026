@@ -3,6 +3,8 @@
 <!-- member-log:owner-updates:start -->
 ## 현재 재개 요약 — 정이량-20261006-009-MAIL-FIRST
 
+- 종료 공유: 메일first PR174는 mainbca380c 병합·CI4/병합CI2/독립검수·노션본문보존 완료. 새 CORE173은 같은 원자료의 조기 거절 보완을 PM Docker115검사로 확인해 main8f9d83f로 부분 인수했다. 실모델 정상·변경·보류/실collector·전체Done은 남았다.
+
 - 최신 지시: 사용자 지시로 착수 전 실제 관련 메일·선행 작업/협의 점검을 AGENTS/CLAUDE와 협업/기록 규칙에 동일하게 추가했다. 사서함 조회와 Project 메일 안내는 구분한다.
 - 실제 확인: CORE R3 원문 인계, DATA 예약409, WEB 정상run/실collector 대기 메일6건을 읽었다. PR172의 옛 실패 원인 현재화 정정 요청과 DATA 원 예약 담당 확인 요청을 실제 Issue 댓글로 전달했다.
 - 이전 종료: PR169/170/171 병합 및 main531 Project21항목·서비스 ACCEPTED·중앙metadata readback 확인. 작업 상태/담당·jobs/예약/비용·전원OFF 보존. 제품 배포/정상accept 증거는 아니다.
