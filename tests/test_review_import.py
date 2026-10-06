@@ -3,6 +3,7 @@
 import csv
 import hashlib
 import io
+import unicodedata
 import unittest
 from copy import deepcopy
 
@@ -61,6 +62,24 @@ class ReviewImportTests(unittest.TestCase):
                         for item in result.dataset[collection]:
                             validate(definition, item)
                     self.assertEqual(result.store().get_evidence("NEW-E1")["data"]["evidence"]["text"], text)
+
+    def test_nfc_nfd_review_text_and_original_csv_bytes_are_preserved(self):
+        nfc = "한글 원문 보존"
+        nfd = unicodedata.normalize("NFD", nfc)
+        self.assertNotEqual(nfc, nfd)
+        self.assertEqual(unicodedata.normalize("NFC", nfd), nfc)
+        raw = self.csv([
+            self.row(text=nfc),
+            self.row(id="NEW-R2", evidence_id="NEW-E2", row="3", text=nfd),
+        ])
+
+        result = self.parse(raw)
+
+        self.assertEqual(result.original, raw)
+        self.assertEqual(result.sha256, hashlib.sha256(raw).hexdigest())
+        self.assertEqual([review["text"] for review in result.dataset["reviews"]], [nfc, nfd])
+        self.assertEqual(result.store().get_evidence("NEW-E1")["data"]["evidence"]["text"], nfc)
+        self.assertEqual(result.store().get_evidence("NEW-E2")["data"]["evidence"]["text"], nfd)
 
     def test_inputs_and_returned_trees_cannot_poison_snapshot_or_store(self):
         raw = bytearray(self.csv([self.row()]))

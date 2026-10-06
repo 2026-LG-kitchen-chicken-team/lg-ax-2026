@@ -1,6 +1,11 @@
 # 신진하 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
+## 작성자의 최신 재개 요약
+- 최신 기록 ID / 한국시간 / 현재 목표: `신진하-E-DATA-ORIGINAL-AUDIT-TRENDS-01a1100e` · 2026-10-06 17:34 KST · 세 고정 출력 원문 대조와 날짜·주제 collector 근거 보존.
+- 실제 완료 범위 / 미완료·막힘 / 다음 행동과 담당: 원자료 source/model/version/text 결합과 고정 output SHA 확인; 36행·8열 CSV 및 Korean NFC/NFD importer 회귀 보존. 집계 결과 0/null·중복·겨울 KST·윤일 및 혼입 거부를 검증. PR #171은 FixtureCollector API/MCP 경로만 통과했고 DATA 수집기·실제 날짜 미검증. 운영 주입·실자료 날짜 provenance·live restart 미완료; #13의 409 reservation과 로컬 workspace trend test cleanup 오류를 보존 기록. PM @jeongiryang, CORE @unknownamed, WEB @choigilung의 다음 행동은 날짜별 기록에 정리.
+- 상세 작업근거: [고유 근거ID](2026-10-06/신진하-E-DATA-ORIGINAL-AUDIT-TRENDS-01a1100e.md)
+- 관련 작업기록: 같은 commit의 [상세 기록](../../작업기록/신진하/2026-10-06/신진하-20261006-DATA-ORIGINAL-AUDIT-TRENDS-01a1100e.md)
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
 
