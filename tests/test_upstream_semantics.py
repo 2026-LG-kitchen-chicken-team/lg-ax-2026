@@ -7,8 +7,6 @@ from pathlib import Path
 
 import test_planning_agent as fixtures
 from jsonschema import Draft202012Validator
-from test_r5_semantic_prompt import DIGEST, MODEL, PreparationCapture, PreparedWithoutGeneration
-
 from lgax_core.errors import DomainError
 from lgax_core.judgement_contract import input_digest
 from lgax_core.model_client import ModelConfig, StructuredModelClient
@@ -20,6 +18,7 @@ from lgax_core.semantic_review import (
     semantic_model_context,
 )
 from lgax_core.source_boundary import SourceBoundary
+from test_r5_semantic_prompt import DIGEST, MODEL, PreparationCapture, PreparedWithoutGeneration
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "evals/pm-prototype/20261007/r5-core/normal-8ec-upstream-counterexample.json"

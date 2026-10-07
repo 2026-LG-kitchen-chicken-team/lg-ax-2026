@@ -5,12 +5,17 @@ import unittest
 from copy import deepcopy
 from pathlib import Path
 
+import test_planning_agent as fixtures
 from lgax_core.errors import DomainError
 from lgax_core.model_client import ModelConfig, OllamaAdapter, StructuredModelClient
 from lgax_core.prompt_context import model_context
-from lgax_core.semantic_review import INSTRUCTIONS, schema_for_review, semantic_grounding_requirements, semantic_model_context
+from lgax_core.semantic_review import (
+    INSTRUCTIONS,
+    schema_for_review,
+    semantic_grounding_requirements,
+    semantic_model_context,
+)
 from lgax_core.source_boundary import SourceBoundary
-import test_planning_agent as fixtures
 
 ROOT = Path(__file__).resolve().parents[1]
 ARTIFACT = ROOT / 'evals/pm-prototype/20261007/r5-core/semantic-prompt-counterexample.json'
