@@ -1,13 +1,14 @@
 # 최길웅 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
-## 최신 재개 요약 (작성자 갱신, 2026-10-08 03:3x KST, 기록 065)
+## 최신 재개 요약 (작성자 갱신, 2026-10-08 05:1x KST, 기록 066)
 
 - **새 배정(10/7 21:1x, PM 수동 재개 큐 [#234](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/234)):**
   - W1: 실제 기획 화면과 조건 변경. 우선순위 0, 선행 P0 공통 계약, #25·#26·#117·#120에 연결.
   - W2 [#236](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/236), W3 [#237](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/237), V1 [#239](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/239)는 선행 대기.
   - 합성 리뷰 금지, Figma 제외, 자동화 OFF.
   - P0 계약과 실제 자료 기획 화면은 PM PR #245(PM 채팅의 지원 구현)로 main `ef29aa8`에 병합됐다. PM 큐에서 W1·W2·W3는 `implemented_pending_integration`이다. 담당자인 나는 같은 화면을 다시 만들지 않고, 독립 검수와 국소 수정을 맡는다.
+- 요약 근거 집계 경계(기록 066, 코드 없음): CORE PR #251의 `summary_reference_coverage`가 API `public_research_brief` 허용 목록에 없어 웹·MCP에 오지 않는다. PM·CORE에 알렸고(#234), API가 통과시키면 요약 카드에 표시한다.
 - 연구 흐름 E2E(기록 065): `apps/web/e2e/research-flow.spec.ts` 5개 시나리오(수·미확인·빈 스크롤, 위치·버전, 초점, 선택 내보내기, 기획 OFF 501)를 추가했다. 환경변수가 있을 때만 돈다. 이 브랜치는 5 passed, 수정 전 main은 3 failed. #115·#116·#118은 완료로 보이고 #117·#119·#120은 다른 파일로 구현돼 있어 PM 판단이 필요하다. 기록 062·063·064와 함께 push했다.
 - DATA 동향 초안 인계(PR #258) 읽기 수신(기록 064): 해시·버전, 141 ID, 원 객체 보존, 인용 292개 위치·해시를 독립 검증했고 모두 통과했다. #16에 회신했다. 승인 전 초안이라 화면 소비는 PM 승인 뒤에 한다.
 - V1 모델 라이선스 조사(기록 063, 실행 없음): `docs/video/v1-model-license-survey-20261008.md`. HunyuanVideo 계열은 한국 제외로 사용 불가, XTTS-v2는 비상업만 허용. Apache/MIT 후보는 FLUX.1-schnell·Wan2.1/2.2·CogVideoX-2b·MeloTTS-Korean. PM 결정 자료다.
@@ -38,7 +39,8 @@
   - 사용자 5173·18867·18869는 건드리지 않는다.
 - 컨설팅(10/7 15:00) 웹 설명 브리핑·시연 순서·한계·예상 질문: [기록 048](2026-10-07/최길웅-20261007-048.md)
 - CORE 새 조합 코드 `UPSTREAM_{NEED,GAP}_{VIOLATION,UNCERTAIN}` 4개 웹 설명 추가(기록 053). PR #228은 PM 승인 뒤 PR230으로 main `58feb9c`에 병합됐다.
-- 최신 기록 ID: 최길웅-20261008-065. 상세:
+- 최신 기록 ID: 최길웅-20261008-066. 상세:
+  - 066 요약 근거 집계의 API 전달 경계 확인: [상세](2026-10-08/최길웅-20261008-066.md)
   - 065 실제 자료 기획 흐름 E2E 정식 추가·옛 이슈 #115~#120 대조: [상세](2026-10-08/최길웅-20261008-065.md)
   - 064 DATA 리뷰 동향 개발 초안 인계 읽기 수신 확인: [상세](2026-10-08/최길웅-20261008-064.md)
   - 063 V1 영상 제작용 오픈 웨이트 모델 라이선스 조사: [상세](2026-10-08/최길웅-20261008-063.md)
