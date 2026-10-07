@@ -12,7 +12,21 @@ OUT=WORK/REL
 OUT.mkdir(parents=True,exist_ok=True)
 def sha(b):return hashlib.sha256(b).hexdigest()
 def normal(text):return " ".join(unicodedata.normalize("NFC",text).split())
-def write(name,v):(OUT/name).write_text(json.dumps(v,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+def _approval_basis_metadata(value):
+    if isinstance(value, list):
+        return [_approval_basis_metadata(item) for item in value]
+    if isinstance(value, dict):
+        return {
+            ("user_request_basis" if key == "authorization" and child == "direct user request" else key):
+            _approval_basis_metadata(child)
+            for key, child in value.items()
+        }
+    return value
+
+def write(name, v):
+    if name in {"role-request-receipts.json", "automatic-table-handoff.json", "supplier-handoff-needed.json"}:
+        v = _approval_basis_metadata(v)
+    (OUT/name).write_text(json.dumps(v,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
 def csvfile(name,rows):
     keys=list(dict.fromkeys(k for r in rows for k in r))
     with (OUT/name).open("w",encoding="utf-8-sig",newline="") as f:
