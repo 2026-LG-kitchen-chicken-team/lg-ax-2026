@@ -30,7 +30,7 @@ class WorkspacePublicBootstrapTests(unittest.TestCase):
             token = secrets.token_urlsafe(40)
             registry = TokenRegistry([{'principal_id': 'reader', 'role': 'viewer', 'token_sha256': sha256(token.encode()).hexdigest()}])
             app = create_workspace_app(Path(temporary) / 'workspace.sqlite', registry, evidence_store=store)
-            with TestClient(app) as client:
+            with TestClient(app, base_url='http://127.0.0.1') as client:
                 self.assertEqual(client.get('/api/workspace/bootstrap').status_code, 401)
                 response = client.get('/api/workspace/bootstrap', headers={'Authorization': 'Bearer ' + token})
                 self.assertEqual(response.status_code, 200)
