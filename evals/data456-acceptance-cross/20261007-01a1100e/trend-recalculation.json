@@ -1,0 +1,104 @@
+{
+  "raw_rows": 239,
+  "unique_rows": 238,
+  "split_counts": {
+    "development": 141,
+    "independent_evaluation": 36,
+    "demonstration": 49,
+    "quarantine": 12
+  },
+  "quarantine_excluded": 12,
+  "research_denominator": 226,
+  "unknown_posting_date_excluded": 226,
+  "monthly_denominator": 0,
+  "exact_SKU_eligible_reviews": 0,
+  "removed_duplicate_observations": [
+    {
+      "id": "860977",
+      "text_sha256": "3e6f6af5b3e6844b4053145088137f80de5b3a6b405a6f70219208f7a6172335",
+      "same_normalized_body": true,
+      "retained": "fixed18"
+    }
+  ],
+  "unknown_posting_date_unique_total": 238,
+  "quarantine_and_unknown_date_intersection": 12,
+  "exclusion_union": 238,
+  "exclusion_order": [
+    "dedup original ID (same body required)",
+    "quarantine",
+    "unknown published_at"
+  ],
+  "research_rating_counts": {
+    "5": 197,
+    "1": 21,
+    "2": 2,
+    "3": 6
+  },
+  "split_intersections": [
+    {
+      "left": "development",
+      "right": "independent_evaluation",
+      "field": "original_review_id",
+      "shared": []
+    },
+    {
+      "left": "development",
+      "right": "independent_evaluation",
+      "field": "normalized_text_sha256",
+      "shared": []
+    },
+    {
+      "left": "development",
+      "right": "demonstration",
+      "field": "original_review_id",
+      "shared": []
+    },
+    {
+      "left": "development",
+      "right": "demonstration",
+      "field": "normalized_text_sha256",
+      "shared": []
+    },
+    {
+      "left": "independent_evaluation",
+      "right": "demonstration",
+      "field": "original_review_id",
+      "shared": []
+    },
+    {
+      "left": "independent_evaluation",
+      "right": "demonstration",
+      "field": "normalized_text_sha256",
+      "shared": []
+    }
+  ],
+  "windows": [
+    {
+      "window": "2026-10",
+      "start_inclusive": "2026-10-01T00:00:00+09:00",
+      "end_exclusive": "2026-11-01T00:00:00+09:00",
+      "timezone": "Asia/Seoul",
+      "denominator": 0,
+      "member_ids": [],
+      "topic_numerator": null,
+      "topic_ratio": null,
+      "boundary_with_real_dated_records_verified": false
+    },
+    {
+      "window": "2026-winter",
+      "start_inclusive": "2026-12-01T00:00:00+09:00",
+      "end_exclusive": "2027-03-01T00:00:00+09:00",
+      "timezone": "Asia/Seoul",
+      "denominator": 0,
+      "member_ids": [],
+      "topic_numerator": null,
+      "topic_ratio": null,
+      "boundary_with_real_dated_records_verified": false
+    }
+  ],
+  "topic_numerators": null,
+  "topic_ratios": null,
+  "topic_annotation_approved": false,
+  "scope": "frozen public research sample; not customers, purchased SKU or operating data",
+  "model_input_eligible_rows": 0
+}
