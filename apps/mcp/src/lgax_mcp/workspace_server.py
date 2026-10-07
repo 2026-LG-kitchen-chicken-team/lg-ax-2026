@@ -75,6 +75,17 @@ def create_workspace_mcp(client: WorkspaceClient) -> FastMCP:
         """Read the same immutable research planning brief displayed/exported by the web workspace."""
         return call(client.get_research_run, run_id)
 
+    @mcp.tool(annotations=read)
+    def create_research_guide(bundle_id: str, source_ids: list[str], bundle_sha256: str | None = None) -> dict:
+        """Export explicitly selected official references as JSON, Markdown and escaped HTML.
+
+        Copies source originals and facts; no model or database write, new settings or procedures. Requires
+        backend write permission for this POST despite the export itself being read-only. The backend rejects
+        customer reviews/questions, invalid selections and stale bundle hashes. Preserve applicability
+        limits: a shared or unknown-model manual is not verified for a purchased SKU. Never retry automatically.
+        """
+        return call(client.create_research_guide, bundle_id, source_ids, bundle_sha256)
+
     @mcp.tool(annotations=write)
     def create_workspace_project(name: str, request: dict, document_versions: dict[str, str]) -> dict:
         """Save a project and freeze selected model/document/data versions; requires write permission."""

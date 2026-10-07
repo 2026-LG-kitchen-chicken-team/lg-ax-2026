@@ -26,6 +26,7 @@ spec.loader.exec_module(helpers)
 helpers.TOOLS = helpers.TOOLS | {
     "review_trends", "get_review_trends", "trend_evidence",
     "list_research_bundles", "get_research_bundle", "create_research_run", "get_research_run",
+    "create_research_guide",
 }
 PRIVATE = "private-fixture-diagnostic-value"
 

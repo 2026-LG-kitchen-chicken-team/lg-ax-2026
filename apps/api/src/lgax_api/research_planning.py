@@ -17,6 +17,7 @@ from fastapi import APIRouter, Body, Request
 from jsonschema import ValidationError
 from lgax_contracts.research import validate_planning_brief, validate_research_bundle
 from lgax_core.errors import DomainError
+from lgax_core.guides import build_official_reference_guide, render_guide_html, render_guide_markdown
 
 _ERROR_CODES = {"INVALID_ARGUMENT", "MODEL_UNAVAILABLE", "VALIDATION_FAILED", "CONTRACT_MISMATCH"}
 _ERROR_REASONS = {
@@ -220,6 +221,29 @@ class ResearchWorkspace:
             raise DomainError("NOT_FOUND", "등록된 실제 자료를 찾을 수 없습니다.")
         return deepcopy(bundle)
 
+    def create_guide(self, payload: dict, principal) -> dict:
+        """Copy explicit official references into an export; do not call a model or mutate runs."""
+        principal.require_write()
+        if set(payload) - {"bundle_id", "source_ids", "bundle_sha256"}:
+            raise DomainError("INVALID_ARGUMENT", "공식 참고자료 선택만 보내 주세요.")
+        bundle_id = _identifier(payload.get("bundle_id"))
+        bundle = self.get_bundle(bundle_id)
+        digest = self.digests[bundle_id]
+        if "bundle_sha256" in payload and payload["bundle_sha256"] != digest:
+            raise DomainError("DATASET_MISMATCH", "선택한 자료가 갱신됐습니다. 자료를 다시 확인해 주세요.")
+        try:
+            guide = build_official_reference_guide(bundle, payload.get("source_ids"))
+        except (ValueError, TypeError, ValidationError) as error:
+            raise DomainError("INVALID_ARGUMENT", "현재 자료의 공식 문서·답변을 중복 없이 선택해 주세요.") from error
+        return {
+            "bundle_id": bundle_id,
+            "bundle_sha256": digest,
+            "source_ids": [source["source_id"] for source in guide["sources"]],
+            "guide": guide,
+            "markdown": render_guide_markdown(guide),
+            "html": render_guide_html(guide),
+        }
+
     def _row(self, run_id: str, principal):
         with self.connect() as connection:
             row = connection.execute("SELECT owner_id, bundle_id, bundle_sha256, brief FROM research_runs WHERE run_id = ?", (_identifier(run_id),)).fetchone()
@@ -367,6 +391,10 @@ def research_router(workspace: ResearchWorkspace | None) -> APIRouter:
     @router.post("/planning-runs", status_code=201)
     def create_run(request: Request, payload: Annotated[dict, Body()]):
         return configured().create_run(payload, request.state.principal)
+
+    @router.post("/guides")
+    def create_guide(request: Request, payload: Annotated[dict, Body()]):
+        return configured().create_guide(payload, request.state.principal)
 
     @router.get("/planning-runs/{run_id}")
     def run(request: Request, run_id: str):
