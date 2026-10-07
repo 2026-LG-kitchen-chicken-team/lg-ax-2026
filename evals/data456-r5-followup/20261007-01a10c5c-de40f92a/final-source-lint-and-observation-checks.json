@@ -1,0 +1,54 @@
+{
+  "code_main": "15c3529580a067c9b869af8b049b637280e912f9",
+  "checks": [
+    {
+      "name": "observations",
+      "exit_code": 0,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "log_sha256": "63196d7eff8905d047b2598524d1b1c2c58e4305b9778f5119a37a4e1ef27e9a"
+    },
+    {
+      "name": "source-lint",
+      "exit_code": 0,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    }
+  ],
+  "observations_source_sha256": {
+    "audit_public_observations.py": "df4f67e5707c7050d6468dab94f5697cc91ab79dd366cc6e1a392c55625b6631",
+    "public-ui-date-topic-observations.json": "f0d297a44ceb102bd542e9bd80089c354ac7d771e0cf7110cffda34bd48dab15",
+    "pdp-structured-date-observations.json": "6c78443ad662db4f366ad1723c0680e506f3773c9b824456c761928d6193e7d9"
+  },
+  "transport_source_sha256": "6cadadde6c518c3a8dc02546248b047c462f71aa0873185ecb4a599d8756f74d",
+  "new_model_calls": 0
+}
