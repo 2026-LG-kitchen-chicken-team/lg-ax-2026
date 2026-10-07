@@ -53,13 +53,17 @@ def create_workspace_mcp(client: WorkspaceClient) -> FastMCP:
 
     @mcp.tool(annotations=write)
     def create_research_run(bundle_id: str, goal: str, constraints: list[str] | None = None,
-                            previous_run_id: str | None = None) -> dict:
+                            previous_run_id: str | None = None,
+                            review_feedback: list[dict] | None = None) -> dict:
         """Discover problems and draft visual planning from actual sources. Manual opt-in backend only.
 
         Inspect partial/needs_sources states, retain facts and uncertainties, and never retry automatically.
         previous_run_id revises the same owner and exact bundle version; it does not mutate the old result.
+        For field repair, supply previous_run_id and unchanged goal/constraints. Each review_feedback item
+        contains item_kind (Problem/Comparison/Concept), item_id, fields and message. The backend validates
+        targets before any model call and creates a new immutable version; get_research_run reads that version.
         """
-        return call(client.create_research_run, bundle_id, goal, constraints, previous_run_id)
+        return call(client.create_research_run, bundle_id, goal, constraints, previous_run_id, review_feedback)
 
     @mcp.tool(annotations=read)
     def get_research_run(run_id: str) -> dict:

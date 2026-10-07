@@ -68,7 +68,7 @@ def public_research_brief(brief: dict, bundle_sha256: str) -> dict:
                 and not re.search(r"token|password|secret|bearer", value, re.IGNORECASE)):
             runtime[key] = value
     if (isinstance(raw.get("execution_kind"), str)
-            and raw["execution_kind"] in {"public_research_planner", "test_only_contract_stub"}):
+            and raw["execution_kind"] in {"public_research_planner", "public_research_field_repair", "test_only_contract_stub"}):
         runtime["execution_kind"] = raw["execution_kind"]
     for key in ("context_tokens", "max_output_tokens", "max_model_calls", "max_repairs_per_item",
                 "unique_customer_source_count"):
@@ -87,6 +87,16 @@ def public_research_brief(brief: dict, bundle_sha256: str) -> dict:
     calls = [call for call in calls if isinstance(call, dict)] if isinstance(calls, list) else []
     runtime["call_count"] = len(calls)
     runtime["repair_count"] = sum(call.get("stage") == "repair_fields" for call in calls)
+    outcomes = raw.get("repair_outcomes", [])
+    if raw.get("execution_kind") == "public_research_field_repair" and isinstance(outcomes, list):
+        runtime["repair_outcomes"] = [
+            {"item_kind": outcome["item_kind"], "item_id": outcome["item_id"], "status": outcome["status"]}
+            for outcome in outcomes if isinstance(outcome, dict)
+            and outcome.get("item_kind") in {"Problem", "Comparison", "Concept"}
+            and isinstance(outcome.get("item_id"), str)
+            and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}", outcome["item_id"])
+            and outcome.get("status") in {"accepted", "failed"}
+        ]
     runtime["model_failures"] = [{"call_index": index, **_safe_cause(call.get("error_code"), call.get("error_reason"))}
                                  for index, call in enumerate(calls) if call.get("status") == "rejected"]
     runtime["validation_issues"] = []
@@ -112,6 +122,28 @@ def _identifier(value: Any) -> str:
     return value
 
 
+def _preserved_repair(previous: dict, result: dict, feedback: list[dict]) -> bool:
+    """A model adapter cannot expand a field repair into a whole-brief rewrite."""
+    edits = {(entry["item_kind"], entry["item_id"]): set(entry["fields"]) for entry in feedback}
+    removed = {}
+    for kind, collection in (("Problem", "problems"), ("Comparison", "comparisons"), ("Concept", "concepts")):
+        old_items, new_items = previous[collection], result[collection]
+        if len(old_items) != len(new_items):
+            return False
+        for old, new in zip(old_items, new_items, strict=True):
+            fields = edits.get((kind, old["id"]), set())
+            if ({key: value for key, value in old.items() if key not in fields}
+                    != {key: value for key, value in new.items() if key not in fields}):
+                return False
+            removed[old["id"]] = (set(old["source_ids"] + old.get("counter_source_ids", []))
+                                  - set(new["source_ids"] + new.get("counter_source_ids", [])))
+    expected_relations = deepcopy(previous["relations"])
+    for relation in expected_relations:
+        deleted = removed.get(relation["from_id"], set()) | removed.get(relation["to_id"], set())
+        relation["source_ids"] = [source_id for source_id in relation["source_ids"] if source_id not in deleted]
+    return result["summaries"] == previous["summaries"] and result["relations"] == expected_relations
+
+
 class EnvResearchPlanner:
     def run(self, bundle: dict, goal: str, constraints: list[str], previous: dict | None = None) -> dict:
         from lgax_core.model_client import StructuredModelClient
@@ -119,6 +151,15 @@ class EnvResearchPlanner:
 
         with StructuredModelClient.from_env() as client:
             return PublicPlanner.from_model_client(client).run(bundle, goal, constraints, previous)
+
+    def repair(self, bundle: dict, previous: dict, feedback: list[dict]) -> dict:
+        from lgax_core.model_client import StructuredModelClient
+        from lgax_core.public_planning import PublicPlanner
+        from lgax_core.public_repair import validate_feedback
+
+        validate_feedback(bundle, previous, feedback)
+        with StructuredModelClient.from_env() as client:
+            return PublicPlanner.from_model_client(client).repair(bundle, previous, feedback)
 
 
 class ResearchWorkspace:
@@ -195,7 +236,7 @@ class ResearchWorkspace:
 
     def create_run(self, payload: dict, principal) -> dict:
         principal.require_write()
-        if set(payload) - {"bundle_id", "goal", "constraints", "previous_run_id"}:
+        if set(payload) - {"bundle_id", "goal", "constraints", "previous_run_id", "review_feedback"}:
             raise DomainError("INVALID_ARGUMENT", "허용된 기획 입력만 보내 주세요.")
         bundle_id = _identifier(payload.get("bundle_id"))
         bundle = self.get_bundle(bundle_id)
@@ -211,9 +252,20 @@ class ResearchWorkspace:
             if row[0] != principal.id or row[1] != bundle_id or row[2] != self.digests[bundle_id]:
                 raise DomainError("DATASET_MISMATCH", "같은 소유자·자료 버전의 실행에서만 조건을 변경할 수 있습니다.")
             previous = json.loads(row[3])
-        if self.planner is None:
-            raise DomainError("NOT_IMPLEMENTED", "실제 자료는 연결됐으며 모델 실행 설정을 기다리고 있습니다.")
         normalized_goal, normalized_constraints = goal.strip(), [item.strip() for item in constraints]
+        feedback = payload.get("review_feedback")
+        if "review_feedback" in payload:
+            if (previous is None or normalized_goal != previous["goal"]
+                    or normalized_constraints != previous["constraints"]):
+                raise DomainError("INVALID_ARGUMENT", "근거 검수 수정은 같은 목적·조건의 이전 실행에서만 가능합니다.")
+            from lgax_core.public_repair import validate_feedback
+
+            try:
+                validate_feedback(bundle, previous, feedback)
+            except (ValueError, TypeError, ValidationError) as error:
+                raise DomainError("INVALID_ARGUMENT", "수정할 항목과 필드·검수 의견을 확인해 주세요.") from error
+        if self.planner is None or (feedback is not None and not callable(getattr(self.planner, "repair", None))):
+            raise DomainError("NOT_IMPLEMENTED", "실제 자료는 연결됐으며 모델 실행 설정을 기다리고 있습니다.")
         expected_facts = [{"source_id": source["source_id"], "facts": deepcopy(source["facts"])} for source in bundle["sources"]]
         expected_group, expected_scope = bundle["product_group"], bundle["analysis_scope"]
         expected_previous = previous["brief_id"] if previous else None
@@ -225,7 +277,10 @@ class ResearchWorkspace:
                                 json.dumps(payload, ensure_ascii=False), datetime.now(UTC).isoformat()))
         brief = None
         try:
-            brief = self.planner.run(bundle, normalized_goal, deepcopy(normalized_constraints), deepcopy(previous))
+            if feedback is not None:
+                brief = self.planner.repair(bundle, deepcopy(previous), deepcopy(feedback))
+            else:
+                brief = self.planner.run(bundle, normalized_goal, deepcopy(normalized_constraints), deepcopy(previous))
             validate_planning_brief(brief)
             if (brief["bundle_id"] != bundle_id or brief["product_group"] != expected_group
                     or brief["analysis_scope"] != expected_scope
@@ -233,6 +288,9 @@ class ResearchWorkspace:
                     or brief["previous_brief_id"] != expected_previous or brief["revision"] != expected_revision
                     or brief["source_facts"] != expected_facts):
                 raise DomainError("CONTRACT_MISMATCH", "기획 결과의 자료·사실·조건·수정 버전이 다릅니다.",
+                                  {"reason": "run_snapshot_mismatch"})
+            if feedback is not None and not _preserved_repair(previous, brief, feedback):
+                raise DomainError("CONTRACT_MISMATCH", "검수 대상 밖의 정상 항목·근거가 변경됐습니다.",
                                   {"reason": "run_snapshot_mismatch"})
             try:
                 run_id = _identifier(brief["run_id"])

@@ -232,11 +232,16 @@ export function useLiveWorkspace(): LiveWorkspace {
         applyProject(project, listed.runs as unknown as RunSnapshot[]);
       }, scope);
     },
-    saveRequest(request, products) {
+    async saveRequest(request, products) {
+      // If the server refuses the new project, nothing was stored: show the project from before again (the picker
+      // still displays it) instead of an empty selection that also hides its dataset/model notices.
+      const previous = selectedProject.current ? { project: selectedProject.current, runs: state.runs } : null;
+      let stored = false;
       const scope = newScope();
-      return guarded(async (api, current) => {
+      const saved = await guarded(async (api, current) => {
         if (!connected.current) throw new ApiError('UNAUTHORIZED', '작업실 인증이 필요합니다.');
         const created = await api.createProject(projectName(request), request as unknown as Record<string, unknown>, documentVersionsFor(products, request.model_ids));
+        stored = true;
         if (!current()) return null;
         setState(value => ({ ...value, projects: [...value.projects, created] }));
         // Select the new project before its first run: if that save fails, the next save continues this project
@@ -247,6 +252,10 @@ export function useLiveWorkspace(): LiveWorkspace {
         applyProject(created, [run]);
         return run;
       }, scope);
+      // Only a refusal before anything was stored, in this same scope and login, goes back. An authorization failure
+      // has already cleared the scope; a project chosen meanwhile or a stored project stays selected.
+      if (!saved && !stored && previous && scope === generation.current && connected.current) applyProject(previous.project, previous.runs);
+      return saved;
     },
     addRun(request, previousRunId) {
       return guarded(async (api, current) => {

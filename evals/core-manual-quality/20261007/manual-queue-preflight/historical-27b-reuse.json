@@ -1,0 +1,267 @@
+{
+  "record_id": "CORE-MANUAL-QUEUE-PREFLIGHT-01a10729-01",
+  "verified_at": "2026-10-07T12:44:23.445719+00:00",
+  "historical_execution_date_kst": "2026-10-05",
+  "artifact_commit": "e7005f7cc0a6bb56bb6abb411dd9d48014c828fa",
+  "historical_integration_main": "c05ee880b160353414180e689f32a42dd23c2d64",
+  "model": {
+    "id": "qwen3.5:27b",
+    "revision": "64ae5b1d651fb2709d5928ccb8dcfb4bb2cc9c2c8001ac34497e36a6cf905b59",
+    "digest": "64ae5b1d651fb2709d5928ccb8dcfb4bb2cc9c2c8001ac34497e36a6cf905b59",
+    "quantization": "Q4_K_M",
+    "runtime": "Ollama 0.34.0",
+    "api_mode": "chat",
+    "thinking": false
+  },
+  "settings": {
+    "api_mode": "chat",
+    "thinking": false,
+    "temperature": 0.7,
+    "top_p": 0.8,
+    "top_k": 20,
+    "min_p": 0,
+    "seed": 42,
+    "num_ctx": 16384,
+    "num_predict": 8192,
+    "timeout_seconds": 300,
+    "max_response_bytes": 131072
+  },
+  "source_kind": "synthetic",
+  "product_change_runs": [
+    {
+      "product_group": "fridge",
+      "part": "before",
+      "status": "completed",
+      "concepts": 1,
+      "model_calls": 4,
+      "artifact": "evals/core-live-completion/20261005/selected-27b-three-products-04/fridge.before.json"
+    },
+    {
+      "product_group": "fridge",
+      "part": "after",
+      "status": "completed",
+      "concepts": 1,
+      "model_calls": 4,
+      "artifact": "evals/core-live-completion/20261005/selected-27b-three-products-04/fridge.after.json"
+    },
+    {
+      "product_group": "dishwasher",
+      "part": "before",
+      "status": "completed",
+      "concepts": 1,
+      "model_calls": 4,
+      "artifact": "evals/core-live-completion/20261005/selected-27b-three-products-04/dishwasher.before.json"
+    },
+    {
+      "product_group": "dishwasher",
+      "part": "after",
+      "status": "completed",
+      "concepts": 1,
+      "model_calls": 4,
+      "artifact": "evals/core-live-completion/20261005/selected-27b-three-products-04/dishwasher.after.json"
+    },
+    {
+      "product_group": "microwave",
+      "part": "before",
+      "status": "completed",
+      "concepts": 1,
+      "model_calls": 4,
+      "artifact": "evals/core-live-completion/20261005/selected-27b-three-products-04/microwave.before.json"
+    },
+    {
+      "product_group": "microwave",
+      "part": "after",
+      "status": "completed",
+      "concepts": 1,
+      "model_calls": 4,
+      "artifact": "evals/core-live-completion/20261005/selected-27b-three-products-04/microwave.after.json"
+    }
+  ],
+  "fresh_holdout": {
+    "case_ids": [
+      "HOLD-01",
+      "HOLD-02",
+      "HOLD-03",
+      "HOLD-04",
+      "HOLD-05",
+      "HOLD-06"
+    ],
+    "method_records": {
+      "agent": 6,
+      "single_prompt_baseline": 6
+    },
+    "totals": {
+      "agent": {
+        "model_calls": 13,
+        "input_tokens": 28975,
+        "output_tokens": 6437,
+        "latency_ms": 222423.0
+      },
+      "single_prompt_baseline": {
+        "model_calls": 6,
+        "input_tokens": 23825,
+        "output_tokens": 7627,
+        "latency_ms": 255095.0
+      }
+    },
+    "execution_statuses": [
+      {
+        "case_id": "HOLD-01",
+        "method": "agent",
+        "execution_status": "success",
+        "planning_status": "completed"
+      },
+      {
+        "case_id": "HOLD-01",
+        "method": "single_prompt_baseline",
+        "execution_status": "success",
+        "planning_status": "completed"
+      },
+      {
+        "case_id": "HOLD-02",
+        "method": "agent",
+        "execution_status": "success",
+        "planning_status": "completed"
+      },
+      {
+        "case_id": "HOLD-02",
+        "method": "single_prompt_baseline",
+        "execution_status": "success",
+        "planning_status": "completed"
+      },
+      {
+        "case_id": "HOLD-03",
+        "method": "agent",
+        "execution_status": "failure",
+        "planning_status": null
+      },
+      {
+        "case_id": "HOLD-03",
+        "method": "single_prompt_baseline",
+        "execution_status": "success",
+        "planning_status": "held"
+      },
+      {
+        "case_id": "HOLD-04",
+        "method": "agent",
+        "execution_status": "success",
+        "planning_status": "held"
+      },
+      {
+        "case_id": "HOLD-04",
+        "method": "single_prompt_baseline",
+        "execution_status": "success",
+        "planning_status": "completed"
+      },
+      {
+        "case_id": "HOLD-05",
+        "method": "agent",
+        "execution_status": "success",
+        "planning_status": "held"
+      },
+      {
+        "case_id": "HOLD-05",
+        "method": "single_prompt_baseline",
+        "execution_status": "success",
+        "planning_status": "completed"
+      },
+      {
+        "case_id": "HOLD-06",
+        "method": "agent",
+        "execution_status": "success",
+        "planning_status": "completed"
+      },
+      {
+        "case_id": "HOLD-06",
+        "method": "single_prompt_baseline",
+        "execution_status": "success",
+        "planning_status": "completed"
+      }
+    ],
+    "independent_ai_assessment_complete": true,
+    "decoded_verdict_totals": {
+      "agent": {
+        "fail": 1,
+        "uncertain": 3,
+        "pass": 2
+      },
+      "single_prompt_baseline": {
+        "pass": 3,
+        "fail": 3
+      }
+    },
+    "formal_evaluation_complete": false,
+    "pm_acceptance": false,
+    "corrected_code_live_model_regression_complete": false
+  },
+  "bindings": [
+    {
+      "path": "evals/core-live-completion/20261005/comparison-summary.json",
+      "sha256": "cd23bcf3fd90a8eb09425fc7b7360b9b6b399e276458941aecc3231821b0785d",
+      "matches_pinned_commit": true
+    },
+    {
+      "path": "evals/core-live-completion/20261005/selected-27b-three-products-04/summary.json",
+      "sha256": "2b973ecb33d1cc385b630d285077b5830992fda1c9bae9c12bea0d6164803acf",
+      "matches_pinned_commit": true
+    },
+    {
+      "path": "evals/core-live-completion/20261005/independent-ai-assessment/provenance.json",
+      "sha256": "a086c9da7e06be61b848195107c9a220747916d7498846d3289a4f9c3413209c",
+      "matches_pinned_commit": true
+    },
+    {
+      "path": "evals/core-live-completion/20261005/fresh-holdout-execution/summary.json",
+      "sha256": "4a5097809910e48bcb04e77bae7bef44b9535a90d7dcd42364cf60bdffb57831",
+      "matches_pinned_commit": true
+    },
+    {
+      "path": "evals/core-live-completion/20261005/fresh-holdout-execution/agent-results.json",
+      "sha256": "c1a244f079605601d07e170b62c476f442d02c5f0a42438ca30cb7597e9f8f6a",
+      "matches_pinned_commit": true
+    },
+    {
+      "path": "evals/core-live-completion/20261005/fresh-holdout-execution/single_prompt_baseline-results.json",
+      "sha256": "cd59ef9e50365b0977d33d1211a7e9b7ae6f2b5b91a120ffbc93f59a2573ec70",
+      "matches_pinned_commit": true
+    },
+    {
+      "path": "evals/core-live-completion/20261005/selected-27b-three-products-04/fridge.before.json",
+      "sha256": "cb5e17ae8e1c701633a20898be2e7243eb4f0dbb2a2eb3d22e4fa7abea05b2b6",
+      "matches_pinned_commit": true
+    },
+    {
+      "path": "evals/core-live-completion/20261005/selected-27b-three-products-04/fridge.after.json",
+      "sha256": "363f14241a999cfc637a52f1635c1353ee6b37e1099c0963774b383826dcf037",
+      "matches_pinned_commit": true
+    },
+    {
+      "path": "evals/core-live-completion/20261005/selected-27b-three-products-04/dishwasher.before.json",
+      "sha256": "d775ed002f88b9da18eb39cca6c96e479939b72e37b5f0c9a60a3410f429cb94",
+      "matches_pinned_commit": true
+    },
+    {
+      "path": "evals/core-live-completion/20261005/selected-27b-three-products-04/dishwasher.after.json",
+      "sha256": "54deaf62f1b68afd23544f67c8137b02e4e8ba35dabf112be5bf5bc5be4d8fa6",
+      "matches_pinned_commit": true
+    },
+    {
+      "path": "evals/core-live-completion/20261005/selected-27b-three-products-04/microwave.before.json",
+      "sha256": "0e95429fbec47e6811b0243d92e39e57e90bcb2aedb6c4792c736a2453778e37",
+      "matches_pinned_commit": true
+    },
+    {
+      "path": "evals/core-live-completion/20261005/selected-27b-three-products-04/microwave.after.json",
+      "sha256": "6e54c73d15bdbdfe30caf9bb765dafb58f9358b44ed8e521f8d7454962437620",
+      "matches_pinned_commit": true
+    }
+  ],
+  "verification": {
+    "historical_bytes_verified": true,
+    "new_model_requests": 0,
+    "new_ai_grading": 0,
+    "service_or_gpu_changes": 0,
+    "real_data_planning_acceptance": false
+  },
+  "notice": "Historical runtime execution and independent AI assessment are separate from current real-data planning, current endpoint availability, formal evaluation and PM acceptance. SEM-01..06 are a separate earlier experiment, not HOLD-01..06."
+}

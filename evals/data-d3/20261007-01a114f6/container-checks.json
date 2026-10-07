@@ -1,0 +1,38 @@
+{
+  "checked_source_commit": "04f2712e58fcb818229b10677fb50ec6d916c15f",
+  "image": "sha256:d2b9d2d0d1da29f3226a8293340d63f58877a03b7189d3982123ff6995e8e01c",
+  "network": "none",
+  "user": "10001:10001",
+  "readonly_source_copy": true,
+  "auth_mounts": 0,
+  "rules": {
+    "result": "AGENTS.md and CLAUDE.md are byte-identical",
+    "command": "python scripts/sync_agent_rules.py --check",
+    "exit_code": 0
+  },
+  "navigation": {
+    "original_byte_archives": 5,
+    "pinned_git_source_checked": false,
+    "current_entries_checked": 6,
+    "exit_code": 0,
+    "command": "python scripts/check_document_navigation.py",
+    "source_relative_links_checked": 169,
+    "network_calls": 0,
+    "product_execution": false
+  },
+  "manifest": {
+    "result_file": "package-verification.json",
+    "command": "python verify_manifest.py --pack fixed-source-pack",
+    "exit_code": 0
+  },
+  "comparison": {
+    "result_file": "comparison-verification.json",
+    "command": "python verify_comparison.py --pack fixed-source-pack --source-root fixed-source",
+    "exit_code": 0
+  },
+  "model_calls": 0,
+  "limitations": [
+    "source/metadata checks, not a physical/customer/LLM quality evaluation",
+    "P0 first problem binding and approved ResearchBundle adapter pending"
+  ]
+}
