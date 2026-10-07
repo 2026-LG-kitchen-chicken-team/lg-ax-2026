@@ -1,0 +1,46 @@
+{
+  "failures_preserved": [
+    {
+      "versions": [
+        1,
+        2
+      ],
+      "reason": "existing validator image has no pypdf; protected executor does not inherit caller PYTHONPATH",
+      "repair": "byte-pinned existing bundled pypdf copied read-only; owned child processes explicitly reference it"
+    },
+    {
+      "versions": [
+        3
+      ],
+      "reason": "15-second HTTP upload bound is shorter than the unchanged 90-second native PDF worker bound",
+      "repair": "upload timeout120; worker90 and total validator300 remain bounded"
+    },
+    {
+      "versions": [
+        4
+      ],
+      "reason": "checker assumed ranked results; current GET contract uses data.items of Evidence",
+      "repair": "consume current GET shape; preserve original response; no product code edit"
+    },
+    {
+      "versions": [
+        5
+      ],
+      "reason": "checker expected400; workspace INVALID_ARGUMENT is422, document invalid-version remains400",
+      "repair": "specific current-contract status checks; 5xx can never count as accepted rejection"
+    },
+    {
+      "artifact": "candidate-first-domain-check.json",
+      "reason": "checker compared whole API contract bytes to generated Agent input schema bytes",
+      "repair": "zero-auth current schema_for(input), indent2 plus LF, reproduces candidate schema SHA exactly"
+    },
+    {
+      "artifact": "lint-first.log",
+      "reason": "dictionary iteration and broad exception handler lint findings",
+      "repair": "use items and explicit expected failure types; final lint PASS"
+    }
+  ],
+  "repeated_scope": "failed owned HTTP/DB integration only; research1416-check audit was not repeated",
+  "new_model_or_OCR_retries": 0,
+  "old_outputs_private_archives_usage_and_reservations_preserved": true
+}
