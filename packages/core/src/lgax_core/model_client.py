@@ -10,6 +10,7 @@ import os
 import re
 import time
 from collections.abc import Callable, Mapping
+from copy import deepcopy
 from dataclasses import dataclass
 from hashlib import sha256
 from pathlib import Path
@@ -23,6 +24,7 @@ from referencing import Registry
 from referencing.exceptions import NoSuchResource, Unresolvable
 
 from .errors import DomainError
+from .prompt_context import candidate_item_path, public_generation_stage
 
 _DIGEST = re.compile(r"[0-9a-f]{64}\Z")
 _FENCE = re.compile(r"\A```(?:json)?[ \t]*\r?\n(.*?)\r?\n```[ \t]*\Z", re.DOTALL | re.IGNORECASE)
@@ -218,7 +220,8 @@ def _schema_field_guide(schema: dict[str, Any]) -> tuple[str, tuple[str, ...]]:
     return "\n".join(lines) + "\n\n", fields
 
 
-def _model_json(response: str, validator: Draft202012Validator) -> tuple[Any, str]:
+def _model_json(response: str, validator: Draft202012Validator,
+                item_stage: str | None = None) -> tuple[Any, str, list[dict]]:
     text = response.strip()
     response_format = "plain_json"
     if text.startswith("```"):
@@ -230,15 +233,19 @@ def _model_json(response: str, validator: Draft202012Validator) -> tuple[Any, st
         data = _strict_json(text)
     except (ValueError, TypeError, RecursionError):
         raise _fail("VALIDATION_FAILED", "invalid_json") from None
+    item_errors = []
     try:
-        error = next(validator.iter_errors(data), None)
+        for error in validator.iter_errors(data):
+            if item_stage is None or not candidate_item_path(item_stage, list(error.path)):
+                failure = _fail("VALIDATION_FAILED", "schema_mismatch")
+                failure.private_parsed_data = data
+                raise failure
+            item_errors.append({"path": list(error.path), "validator": error.validator})
     except (Unresolvable, ValueError, TypeError, RecursionError):
         # Unresolvable local references and user-defined invalid schema formats must
         # never reveal schema contents or trigger a recovery/model retry here.
         raise _fail("INVALID_ARGUMENT", "unresolvable_schema") from None
-    if error is not None:
-        raise _fail("VALIDATION_FAILED", "schema_mismatch")
-    return data, response_format
+    return data, response_format, item_errors
 
 
 @dataclass(frozen=True, slots=True)
@@ -577,14 +584,18 @@ class StructuredModelClient:
     def __exit__(self, *_args: object) -> None:
         self.close()
 
-    def generate(self, prompt: str, schema: dict[str, Any], model_id: str) -> StructuredModelResult:
+    def generate(self, prompt: str, schema: dict[str, Any], model_id: str, *,
+                 allow_item_validation: bool = False) -> StructuredModelResult:
         if model_id != self.adapter.config.model_id:
             raise _fail("INVALID_ARGUMENT", "requested_model_mismatch")
         if not isinstance(prompt, str) or not prompt.strip():
             raise _fail("INVALID_ARGUMENT", "empty_prompt")
+        if not isinstance(allow_item_validation, bool):
+            raise _fail("INVALID_ARGUMENT", "invalid_schema")
         validator, encoded_schema, schema_digest = _schema_validator(schema)
         guide, guide_fields = _schema_field_guide(schema)
         native_schema = getattr(self.adapter, "backend_schema_enforced", False) is True
+        item_stage = public_generation_stage(schema) if allow_item_validation and native_schema else None
         if native_schema:
             # The full schema is already sent as the native format constraint.
             # Retain the caller's complete task/evidence, without a second copy
@@ -621,10 +632,8 @@ class StructuredModelClient:
             raise _fail("INVALID_ARGUMENT", "prompt_too_large", maximum=max_characters,
                         maximum_utf8_bytes=max_utf8_bytes, limit="utf8_bytes")
         output = self.adapter.generate(formatted, schema)
-        data, response_format = _model_json(output["response"], validator)
-        return StructuredModelResult(data, {
+        metadata = {
             **output["metadata"], "schema_sha256": schema_digest,
-            "response_format": response_format, "locally_validated": True,
             "schema_prompt_embedded": not native_schema,
             "schema_field_guide": {
                 "version": ("enum_and_lineage_meanings_v4" if "candidate_gap_gate" in guide_fields
@@ -638,7 +647,23 @@ class StructuredModelClient:
             "formatted_prompt_characters": len(formatted),
             "formatted_prompt_utf8_bytes": len(formatted.encode("utf-8")),
             "formatted_prompt_sha256": sha256(formatted.encode("utf-8")).hexdigest(),
-        })
+        }
+        try:
+            data, response_format, item_errors = _model_json(output["response"], validator, item_stage)
+        except DomainError as error:
+            # Completed, pinned generations stay available only to private run
+            # traces. DomainError.response() intentionally excludes this field.
+            error.private_generation = {"response": output["response"], "metadata": deepcopy(metadata)}
+            if hasattr(error, "private_parsed_data"):
+                error.private_generation["parsed_data"] = deepcopy(error.private_parsed_data)
+                del error.private_parsed_data
+            raise
+        metadata.update({"response_format": response_format, "locally_validated": not item_errors})
+        if item_errors:
+            metadata.update({"constraint_mode": "native_schema_and_candidate_envelope_validation",
+                             "validation_state": "candidate_items_require_validation",
+                             "schema_validation_errors": item_errors})
+        return StructuredModelResult(data, metadata)
 
 
 def main(argv: list[str] | None = None) -> int:

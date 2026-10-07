@@ -306,7 +306,8 @@ class PublicPlanner:
         metadata = {"model_id": config.model_id, "model_digest": config.expected_digest,
                     "context_tokens": config.context_tokens, "max_output_tokens": config.max_output_tokens}
         metadata.update(kwargs.pop("runtime_metadata", {}))
-        return cls(lambda prompt, schema: client.generate(prompt, schema, config.model_id),
+        return cls(lambda prompt, schema: client.generate(prompt, schema, config.model_id,
+                                                         allow_item_validation=True),
                    runtime_metadata=metadata, **kwargs)
 
     def _source_context(self, source: dict) -> dict:
@@ -322,6 +323,7 @@ class PublicPlanner:
         row["scope_metadata"] = {key: deepcopy(metadata[key]) for key in (
             "experience_scope", "usage_problem_sample_eligible", "customer_question_sample_eligible",
             "scope_caveat", "paired_source_id", "registry_scope", "topic_tags",
+            "applicability", "source_scope_notes", "native_unit_caution", "continuation_pages",
         ) if key in metadata}
         return row
 
@@ -404,6 +406,9 @@ class PublicPlanner:
             except (ValidationError, ValueError, TypeError, RuntimeError, DomainError, OSError) as error:
                 record["status"], record["error_type"] = "rejected", type(error).__name__
                 if isinstance(error, DomainError):
+                    private_generation = getattr(error, "private_generation", None)
+                    if isinstance(private_generation, dict):
+                        record["failed_generation"] = deepcopy(private_generation)
                     if isinstance(error.code, str) and error.code in _MODEL_ERROR_CODES:
                         record["error_code"] = error.code
                     reason = error.details.get("reason") if isinstance(error.details, dict) else None

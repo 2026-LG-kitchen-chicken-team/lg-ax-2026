@@ -9,6 +9,52 @@ This does not alter any acceptance rule or infer support from customer pain.
 from copy import deepcopy
 
 
+def public_generation_stage(schema: dict) -> str | None:
+    """Recognize only the planner's complete, trusted generation schemas.
+
+    Patch, legacy and extended schemas remain strict. This recognizes an
+    envelope for item validation; it does not validate or approve any item.
+    """
+    from lgax_contracts.research import load_research_schema
+
+    root = load_research_schema()
+    definitions = root["$defs"]
+    properties = schema.get("properties", {})
+    if not isinstance(properties, dict):
+        return None
+    problem_array = properties.get("problems", {})
+    limit = problem_array.get("maxItems") if isinstance(problem_array, dict) else None
+    if type(limit) is int and 1 <= limit <= 5:
+        discover = {
+            "type": "object", "properties": {
+                "problems": {"type": "array", "maxItems": limit, "items": {"$ref": "#/$defs/Problem"}},
+                "summaries": definitions["PlanningBrief"]["properties"]["summaries"],
+            }, "required": ["problems", "summaries"], "additionalProperties": False,
+            "$defs": {name: definitions[name] for name in ("Problem", "SummaryItem")},
+        }
+        if schema == discover:
+            return "discover"
+    plan = {
+        "type": "object", "properties": {
+            "comparisons": {"type": "array", "maxItems": 3, "items": {"$ref": "#/$defs/Comparison"}},
+            "concepts": {"type": "array", "minItems": 1, "maxItems": 2, "items": {"$ref": "#/$defs/Concept"}},
+            "uncertainties": {"type": "array", "items": {"type": "string"}},
+        }, "required": ["comparisons", "concepts", "uncertainties"], "additionalProperties": False,
+        "$defs": {name: definitions[name] for name in ("Comparison", "Concept")},
+    }
+    return "plan" if schema == plan else None
+
+
+def candidate_item_path(stage: str, path: list) -> bool:
+    """Array shape, cardinality and envelope errors never count as item errors."""
+    if stage == "discover":
+        return (len(path) >= 2 and path[0] == "problems" and type(path[1]) is int
+                or len(path) >= 3 and path[0] == "summaries"
+                and path[1] in {"positive", "negative", "mixed"} and type(path[2]) is int)
+    return (stage == "plan" and len(path) >= 2 and path[0] in {"comparisons", "concepts"}
+            and type(path[1]) is int)
+
+
 def _column_table(rows: list[dict], columns: tuple[str, ...]) -> dict:
     return {"columns": list(columns), "values": [[row[key] for key in columns] for row in rows]}
 

@@ -16,7 +16,9 @@ function block(patch: Record<string, unknown> = {}) {
     classification_approved: false, market_frequency_estimated: false, ...patch };
 }
 function brief(runtime: Record<string, unknown>): PlanningBrief {
-  return { ...heldBrief(), source_facts: IDS.map(source_id => ({ source_id, facts: [] })), runtime };
+  return { ...heldBrief(), source_facts: IDS.map(source_id => ({ source_id, facts: [] })), runtime,
+    summaries: { positive: [{ text: '집계 계약 검사', source_ids: ['S-A'] }, { text: '집계 계약 검사', source_ids: ['S-B'] }],
+      negative: [{ text: '집계 계약 검사', source_ids: ['S-B', 'S-C'] }], mixed: [] } };
 }
 
 describe('summaryCoverageView', () => {
@@ -32,7 +34,8 @@ describe('summaryCoverageView', () => {
       polarity_source_ids: { positive: [], negative: [], mixed: [] }, denominator_customer_source_count: 0, denominator_source_ids: [],
       covered_customer_source_count: 0, covered_source_ids: [], unreferenced_processed_source_count: 0, unprocessed_input_source_count: 5,
       overlapping_polarity_source_count: 0, coverage_ratio: null });
-    const view = summaryCoverageView(brief({ summary_reference_coverage: empty }));
+    const emptyBrief = brief({ summary_reference_coverage: empty }); emptyBrief.summaries = { positive: [], negative: [], mixed: [] };
+    const view = summaryCoverageView(emptyBrief);
     expect(view.state).toBe('ok');
     expect(coverageText(view)).toContain('인용률 없음(처리된 원문 0건)');
     expect(summaryCoverageView(brief({}))).toEqual({ state: 'not_provided', reason: 'absent' });
@@ -69,7 +72,23 @@ describe('summaryCoverageView', () => {
       polarity_source_ids: { positive: covered, negative: [], mixed: [] }, input_customer_source_count: 1, denominator_customer_source_count: 1,
       denominator_source_ids: ['S-A'], covered_customer_source_count: covered.length, covered_source_ids: covered,
       unreferenced_processed_source_count: 1 - covered.length, unprocessed_input_source_count: 0, overlapping_polarity_source_count: 0, coverage_ratio: ratio });
-    expect(summaryCoverageView(brief({ summary_reference_coverage: single })).state).toBe('malformed');
-    expect(summaryCoverageView(brief({ summary_reference_coverage: { ...single, coverage_ratio: covered.length } })).state).toBe('ok');
+    const singleBrief = brief({ summary_reference_coverage: single });
+    singleBrief.summaries = { positive: covered.length ? [{ text: '집계 계약 검사', source_ids: covered }] : [], negative: [], mixed: [] };
+    expect(summaryCoverageView(singleBrief).state).toBe('malformed');
+    singleBrief.runtime.summary_reference_coverage = { ...single, coverage_ratio: covered.length };
+    expect(summaryCoverageView(singleBrief).state).toBe('ok');
+  });
+
+  it('rejects self-consistent stale counts or reference IDs that differ from the actual displayed summaries', () => {
+    const staleItems = brief({ summary_reference_coverage: block() }); staleItems.summaries.positive.pop();
+    expect(summaryCoverageView(staleItems)).toMatchObject({ state: 'malformed', reason: expect.stringContaining('실제 요약') });
+    const staleIds = brief({ summary_reference_coverage: block() }); staleIds.summaries.negative[0].source_ids = ['S-B', 'S-D'];
+    expect(summaryCoverageView(staleIds)).toMatchObject({ state: 'malformed', reason: expect.stringContaining('실제 요약') });
+  });
+
+  it('counts all summary items but only customer references in the successful discovery denominator', () => {
+    const value = brief({ summary_reference_coverage: block() });
+    value.summaries.positive[0].source_ids.push('S-E');
+    expect(summaryCoverageView(value).state).toBe('ok');
   });
 });

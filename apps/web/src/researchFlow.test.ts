@@ -138,6 +138,28 @@ describe('actual-source research screen state and revision flow', () => {
     expect(scroll).toHaveBeenCalledTimes(1);
     delete (HTMLElement.prototype as unknown as { scrollIntoView?: unknown }).scrollIntoView;
   });
+  it('plans from an explicit source selection and inherits that range after the current checkboxes change', async () => {
+    const fetch = api(); vi.stubGlobal('fetch', fetch); await act(async () => root.render(createElement(ResearchPlanningView))); await connect(); await choose();
+    const selectedButton = () => [...host.querySelectorAll<HTMLButtonElement>('button')].find(item => item.textContent?.startsWith('선택 근거로 새 기획 생성'))!;
+    expect(selectedButton().disabled).toBe(true);
+    await click('표시 자료 모두 선택'); expect(selectedButton().disabled).toBe(false);
+    const first = heldBrief(); first.source_facts = REAL_RESEARCH_BUNDLE.sources.map(source => ({ source_id: source.source_id, facts: source.facts }));
+    first.runtime = { input_scope: 'user_selected_sources', user_selected_source_ids: REAL_RESEARCH_BUNDLE.sources.map(source => source.source_id), selected_source_ids: [] };
+    fetch.mockResolvedValue(response(first));
+    await act(async () => selectedButton().click());
+    const firstRequest = JSON.parse(String(fetch.mock.calls.filter(call => call[1]?.method === 'POST')[0][1].body));
+    expect(firstRequest.selected_source_ids).toEqual(first.runtime.user_selected_source_ids);
+    expect(host.querySelector('[data-planning-input-scope]')?.textContent).toContain('사용자 선택 원문 1건');
+    await click('전체 선택 해제'); expect(selectedButton().disabled).toBe(true);
+    await enter('#research-extra-constraints', '하드웨어 변경 없이 개선');
+    const next = { ...first, run_id: 'TEST-selected-next-run', brief_id: 'TEST-selected-next', revision: 1, previous_brief_id: first.brief_id,
+      constraints: [...first.constraints, '하드웨어 변경 없이 개선'] };
+    fetch.mockResolvedValue(response(next)); await click('현재 결과에서 조건 변경');
+    const revisionRequest = JSON.parse(String(fetch.mock.calls.filter(call => call[1]?.method === 'POST')[1][1].body));
+    expect(revisionRequest).not.toHaveProperty('selected_source_ids'); expect(revisionRequest.previous_run_id).toBe(first.run_id);
+    expect(host.querySelector('[data-planning-input-scope]')?.textContent).toContain('사용자 선택 원문 1건');
+    expect(host.querySelector('#research-run-choice')?.textContent).toContain(next.run_id);
+  });
   // Record 최길웅-20261008-067: summary citation coverage is shown only from a consistent runtime block; absent stays absent.
   it('shows summary citation coverage from the brief and says so when it is not provided', async () => {
     const source = REAL_RESEARCH_BUNDLE.sources[0].source_id;

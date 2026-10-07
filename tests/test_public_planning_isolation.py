@@ -1,14 +1,16 @@
 """Retained real-source wire failures, not new model runs or semantic approval.
 
-The caller receives the original full schema. The native-client test explicitly
-preserves its earlier whole-response rejection until PM provides item recovery.
+The caller receives the original full schema. Default native generation remains
+strict; explicit PublicPlanner item recovery has its own boundary regressions.
 """
 import json
 import unittest
 from copy import deepcopy
 
 import test_model_client
-from lgax_core.public_planning import PublicPlanner, source_facts
+from lgax_contracts.research import load_research_schema
+from lgax_core.errors import DomainError
+from lgax_core.public_planning import PublicPlanner, _output_schema, source_facts
 from test_public_planning import real_bundle
 
 FAULTY = "고객은 냉동 핫도그를 데웠으나, 1분 후에도 완전 차가운 냉동 상태였다고 보고했습니다."
@@ -75,17 +77,20 @@ class PublicPlanningIsolationTests(unittest.TestCase):
         self.assertEqual(over_limit["problems"], [])
         self.assertEqual(over_limit["runtime"]["model_calls"][0]["status"], "rejected")
 
-    def test_actual_structured_client_still_rejects_whole_response_before_core_receives_items(self):
+    def test_default_structured_client_rejects_whole_response_without_opt_in(self):
         healthy = wire_problem(self.bundle, "test-only-source-copy", self.bundle["sources"][0]["text"])
         malformed = {key: value for key, value in healthy.items() if key != "title"}
         output = {"problems": [healthy, malformed], "summaries": {"positive": [], "negative": [], "mixed": []}}
         fixture = test_model_client.ModelClientTests()
         self.addCleanup(fixture.doCleanups)
         client, backend = fixture.client(test_model_client.Backend(response=json.dumps(output)))
-        result = PublicPlanner.from_model_client(client).run(self.bundle, "TEST ONLY: native 경계 검사", [])
-        self.assertEqual(result["problems"], [])
-        self.assertEqual(result["runtime"]["model_calls"][0]["error_reason"], "schema_mismatch")
-        self.assertNotIn("response", result["runtime"]["model_calls"][0])
+        schema = _output_schema({
+            "problems": {"type": "array", "maxItems": 3, "items": {"$ref": "#/$defs/Problem"}},
+            "summaries": deepcopy(load_research_schema()["$defs"]["PlanningBrief"]["properties"]["summaries"]),
+        }, ("Problem", "SummaryItem"))
+        with self.assertRaises(DomainError) as raised:
+            client.generate("TEST ONLY: 기본 native 경계 검사", schema, test_model_client.MODEL)
+        self.assertEqual(raised.exception.details["reason"], "schema_mismatch")
         self.assertEqual(len([r for r in backend.requests if r.url.path == "/api/generate"]), 1)
 
     def test_shared_limit_also_holds_through_actual_structured_client(self):

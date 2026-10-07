@@ -1,0 +1,172 @@
+{
+  "version": "r9-public-runtime.20261008.v1",
+  "producer": "scripts/prepare_research_runtime.py",
+  "source_commit": "94b560de72f91795cfd50aada9e17d6773383ae1",
+  "source_pull_request": 254,
+  "groups": {
+    "fridge": {
+      "input_path": "data/research/r8-public-research-20261007/d1-d2-01a10600/agent-input/fridge/research-bundle.json",
+      "input_sha256": "75423a9844a468ad5e64e9086e43b68649335faf0c7c68b82f3a949ebf6bf4dc",
+      "input_bundle_id": "LGE-D1-D2-fridge-20261007-01a10600-v1",
+      "output_path": "fridge.research-bundle.json",
+      "output_sha256": "523dcf1ec8e4291dc73bd0b51cea0be4765912e9e5b7993cf1d55af389876655",
+      "output_bundle_id": "LGE-R9-fridge-development-20261008-v1",
+      "source_count": 58,
+      "development_review_count": 48,
+      "schema_valid": true,
+      "permitted_diff_only": true
+    },
+    "microwave": {
+      "input_path": "data/research/r8-public-research-20261007/d1-d2-01a10600/agent-input/microwave/research-bundle.json",
+      "input_sha256": "457461ebd8cf13a1be6b171ed1a80802d33ed3b5714118179afef11ce1b87a5d",
+      "input_bundle_id": "LGE-D1-D2-microwave-20261007-01a10600-v1",
+      "output_path": "microwave.research-bundle.json",
+      "output_sha256": "c9cf7d3d9f8853ceaa49c853dafc4a7ae6745508aa6519676a77ba40b9b334ae",
+      "output_bundle_id": "LGE-R9-microwave-development-20261008-v1",
+      "source_count": 53,
+      "development_review_count": 45,
+      "schema_valid": true,
+      "permitted_diff_only": true
+    },
+    "dishwasher": {
+      "input_path": "data/research/r8-public-research-20261007/d1-d2-01a10600/agent-input/dishwasher/research-bundle.json",
+      "input_sha256": "e922c51dd7f1f805953fd8e4df4ea1a75479ad8da0e2ba500b541acd720e84d0",
+      "input_bundle_id": "LGE-D1-D2-dishwasher-20261007-01a10600-v2-care",
+      "output_path": "dishwasher.research-bundle.json",
+      "output_sha256": "fbc233a429c6ec1ceeb1571ce509ecad7d9494fe5388a0524fd3e64bfa0639ff",
+      "output_bundle_id": "LGE-R9-dishwasher-development-20261008-v1",
+      "source_count": 73,
+      "development_review_count": 48,
+      "schema_valid": true,
+      "permitted_diff_only": true
+    }
+  },
+  "metadata_corrections": [
+    {
+      "source_id": "D2-DUE-CARE-DW-INTERNAL-CLEAN-P39",
+      "field": "metadata.continuation_pages",
+      "old_value": [
+        40
+      ],
+      "new_value": [],
+      "reason": "Page 40 continues food-filter cleaning, not internal cleaning.",
+      "original_locator": {
+        "page": 39,
+        "printed_page": 39,
+        "section": "내부 청소하기",
+        "start_char": 261,
+        "end_char": 383,
+        "native_parser": "PDFium"
+      },
+      "original_text_sha256": "0f2bc187e8bb5b6417fa6b358d73b5fad9b299a6eb726c4cbaeb73569bba511f",
+      "original_pdf_sha256": "ff60f78ab8326c40b9a3446f11b49531b8f0c823a310ba98366716b633ba63f5"
+    },
+    {
+      "source_id": "D2-DUE-CARE-DW-TUB-CITRIC-P41",
+      "field": "metadata.continuation_pages",
+      "old_value": [
+        42
+      ],
+      "new_value": [],
+      "reason": "Citric-acid steps finish on page 41; page 42 continues vinegar.",
+      "original_locator": {
+        "page": 41,
+        "printed_page": 41,
+        "section": "세척조 청소하기",
+        "start_char": 536,
+        "end_char": 989,
+        "native_parser": "PDFium"
+      },
+      "original_text_sha256": "3f32b8538fe6db39d39ae6f6ae9b9a4201cb86c00dc100645fa71cae95989734",
+      "original_pdf_sha256": "ff60f78ab8326c40b9a3446f11b49531b8f0c823a310ba98366716b633ba63f5"
+    },
+    {
+      "source_id": "D2-DUE-CARE-DW-TUB-VINEGAR-P42",
+      "field": "metadata.continuation_pages",
+      "old_value": [
+        41,
+        43
+      ],
+      "new_value": [
+        41
+      ],
+      "reason": "Page 41 contains vinegar step 1; page 43 is nozzle/storage.",
+      "original_locator": {
+        "page": 42,
+        "printed_page": 42,
+        "section": "2 상단 식기 바구니 중앙",
+        "start_char": 9,
+        "end_char": 288,
+        "native_parser": "PDFium"
+      },
+      "original_text_sha256": "ac50fd39ee6959cb5e766a91772195a3325c4a484fdbb6378533af08bda0ca95",
+      "original_pdf_sha256": "ff60f78ab8326c40b9a3446f11b49531b8f0c823a310ba98366716b633ba63f5"
+    },
+    {
+      "source_id": "D2-DUE-CARE-DW-NOZZLE-P42",
+      "field": "metadata.continuation_pages",
+      "old_value": [
+        41,
+        43
+      ],
+      "new_value": [
+        43
+      ],
+      "reason": "Page 43 continues nozzle cleaning; page 41 is tub cleaning.",
+      "original_locator": {
+        "page": 42,
+        "printed_page": 42,
+        "section": "노즐 청소하기",
+        "start_char": 288,
+        "end_char": 747,
+        "native_parser": "PDFium"
+      },
+      "original_text_sha256": "a33669a64e4c64480ae4f687a5d24258b223c690cd521913b51d0ab4ebcaf6f6",
+      "original_pdf_sha256": "ff60f78ab8326c40b9a3446f11b49531b8f0c823a310ba98366716b633ba63f5"
+    },
+    {
+      "source_id": "D2-DUE-CARE-DW-STORAGE-P43",
+      "field": "metadata.continuation_pages",
+      "old_value": [
+        42
+      ],
+      "new_value": [],
+      "reason": "Storage is complete on page 43; page 42 is a different section.",
+      "original_locator": {
+        "page": 43,
+        "printed_page": 43,
+        "section": "제품 보관하기",
+        "start_char": 94,
+        "end_char": 324,
+        "native_parser": "PDFium"
+      },
+      "original_text_sha256": "435bf4a66687a3911caaa499d5d95b332426586f5895552a470b67098fd88565",
+      "original_pdf_sha256": "ff60f78ab8326c40b9a3446f11b49531b8f0c823a310ba98366716b633ba63f5"
+    }
+  ],
+  "continuation_pages_semantics": "Other pages continuing the same procedure/section, not nearby care sections",
+  "audit_references": [
+    {
+      "path": "evals/data-remaining-intake/20261008-01a1100e/care-source-bridge.csv",
+      "sha256": "22e11a49d74e46a550c392fe5ceaf71702a9c0a2f20dd870d4e221a57faca661",
+      "commit": "9516caa27f05330830aa91d725d4bd8902bf4d9e",
+      "pull_request": 259
+    },
+    {
+      "path": "evals/data-dish-manual-audit/20261007-01a1100e/manual-native-excerpts.json",
+      "sha256": "975b562d2c3c1f86fcc66efad0915c3ed8b4defd4e872c1dea32c41dd6c032c0",
+      "commit": "78a1906369479eb2336cecc3a134895a814f95b1",
+      "pull_request": 252
+    }
+  ],
+  "source_text_facts_locators_ids_and_other_metadata_preserved": true,
+  "original_input_bytes_preserved": true,
+  "development_reviews_preserved": 141,
+  "review_publication_dates_and_purchased_skus_unchanged": true,
+  "independent_evaluation_and_demonstration_not_added": true,
+  "runtime_registered": false,
+  "model_calls": 0,
+  "network_calls": 0,
+  "semantic_quality_verified": false,
+  "implementation_provenance": "Current chat manual support implementation; not an owner's direct execution record"
+}

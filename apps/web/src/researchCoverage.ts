@@ -2,8 +2,8 @@ import type { PlanningBrief } from './research';
 
 // Summary citation coverage (record 최길웅-20261008-067). CORE writes runtime.summary_reference_coverage (PR #251,
 // public_planning.summary_reference_coverage); its meaning and checks were fixed by CORE on #234 (comment 6045972338).
-// The public API does not pass it yet, so today every brief reads 'not_provided'. Nothing is computed or filled in here:
-// a missing block stays missing, an inconsistent one is rejected, and M=0 (ratio null) is a valid state of its own.
+// The API verifies customer/deduplication and discovery provenance before projecting this block. WEB also checks
+// the returned summaries against that block; a missing block stays missing, and M=0 (ratio null) remains distinct.
 //   N input_customer_source_count · M denominator (successful discovery) · C covered · M-C unreferenced · N-M unprocessed
 
 const POLARITIES = ['positive', 'negative', 'mixed'] as const;
@@ -50,6 +50,10 @@ export function summaryCoverageView(brief: PlanningBrief): CoverageState {
     const ids = polarityIds[key] as string[];
     if (!ids.every(id => denominatorIds.has(id))) return fail('극성별 인용이 분모 밖의 원문을 가리킵니다');
     if (ids.length !== polarityCounts[key]) return fail('극성별 건수와 ID 수가 다릅니다');
+    const actualIds = [...new Set(brief.summaries[key].flatMap(item => item.source_ids).filter(id => denominatorIds.has(id)))].sort();
+    if (itemCounts[key] !== brief.summaries[key].length || JSON.stringify(ids) !== JSON.stringify(actualIds)) {
+      return fail('집계가 화면에 표시하는 실제 요약·인용과 다릅니다');
+    }
     ids.forEach(id => { union.add(id); seen.set(id, (seen.get(id) ?? 0) + 1); });
   }
   if (coveredIds.length !== union.size || !coveredIds.every(id => union.has(id))) return fail('인용 합집합이 극성별 인용과 다릅니다');

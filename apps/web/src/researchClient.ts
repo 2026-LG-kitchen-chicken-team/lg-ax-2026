@@ -1,6 +1,7 @@
 import { ApiError } from './api';
 import { parseBundleList, parsePlanningBrief, parseResearchBundle } from './research';
 import type { PlanningBrief, ResearchBundle, ResearchPlanningInput } from './research';
+import { normalizeSourceSelection, planningInputScope } from './researchSelection';
 
 /** Research requests reuse workspace Bearer authorization; credentials stay in a caller-owned memory closure. */
 export class ResearchClient {
@@ -55,8 +56,21 @@ export class ResearchClient {
   async createPlan(bundle: ResearchBundle, input: ResearchPlanningInput, previous: PlanningBrief | null, signal?: AbortSignal): Promise<PlanningBrief> {
     if (input.bundle_id !== bundle.bundle_id || !input.goal.trim() || previous && previous.bundle_id !== bundle.bundle_id
         || (input.previous_run_id ?? null) !== (previous?.run_id ?? null)) throw new ApiError('INVALID_ARGUMENT', '자료·목적·기준 실행을 확인해 주세요.');
-    const brief = parsePlanningBrief(await this.request('planning-runs', signal, input), bundle);
+    const inherited = previous ? planningInputScope(previous, bundle) : null;
+    const selectedIds = input.selected_source_ids === undefined ? undefined : normalizeSourceSelection(bundle, input.selected_source_ids);
+    if (previous && selectedIds && JSON.stringify(selectedIds) !== JSON.stringify(inherited?.ids ?? previous.source_facts.map(item => item.source_id))) {
+      throw new ApiError('DATASET_MISMATCH', '조건 변경은 이전 입력 범위를 유지합니다. 다른 근거는 새 기획으로 시작해 주세요.');
+    }
+    const hash = this.bundleHashes.get(bundle.bundle_id);
+    if (input.bundle_sha256 !== undefined && hash && input.bundle_sha256 !== hash) throw new ApiError('DATASET_MISMATCH', '선택한 자료 버전이 달라졌습니다. 다시 연결해 주세요.');
+    const request = { ...input, ...(selectedIds ? { selected_source_ids: selectedIds } : {}), ...(hash ? { bundle_sha256: hash } : {}) };
+    const brief = parsePlanningBrief(await this.request('planning-runs', signal, request), bundle);
     this.checkHash(brief);
+    const scope = planningInputScope(brief, bundle);
+    const expected = previous ? inherited : { kind: selectedIds ? 'user_selected_sources' : 'full_bundle', ids: selectedIds ?? bundle.sources.map(source => source.source_id) };
+    if (((selectedIds || inherited) && !scope) || (scope && expected && (scope.kind !== expected.kind || JSON.stringify(scope.ids) !== JSON.stringify(expected.ids)))) {
+      throw new ApiError('CONTRACT_MISMATCH', '기획 결과의 입력 근거 범위가 요청과 다릅니다.');
+    }
     if (brief.goal !== input.goal || JSON.stringify(brief.constraints) !== JSON.stringify(input.constraints)
         || brief.previous_brief_id !== (previous?.brief_id ?? null) || previous && brief.revision !== previous.revision + 1) {
       throw new ApiError('CONTRACT_MISMATCH', '기획 결과의 목적·조건·수정 연결이 요청과 다릅니다.');
@@ -66,6 +80,7 @@ export class ResearchClient {
   async getPlan(bundle: ResearchBundle, id: string, signal?: AbortSignal): Promise<PlanningBrief> {
     const brief = parsePlanningBrief(await this.request(`planning-runs/${encodeURIComponent(id)}`, signal), bundle);
     this.checkHash(brief);
+    planningInputScope(brief, bundle);
     if (brief.run_id !== id) throw new ApiError('CONTRACT_MISMATCH', '요청한 실행과 결과 ID가 다릅니다.');
     return brief;
   }

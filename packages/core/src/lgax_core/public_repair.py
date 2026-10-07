@@ -223,6 +223,9 @@ def repair_public_brief(model_caller, bundle: dict, previous: dict, feedback: li
         except (ValidationError, ValueError, TypeError, KeyError, RuntimeError, DomainError, OSError) as error:
             record["status"], record["error_type"] = "rejected", type(error).__name__
             if isinstance(error, DomainError):
+                private_generation = getattr(error, "private_generation", None)
+                if isinstance(private_generation, dict):
+                    record["failed_generation"] = deepcopy(private_generation)
                 if isinstance(error.code, str) and error.code in _MODEL_ERROR_CODES:
                     record["error_code"] = error.code
                 reason = error.details.get("reason") if isinstance(error.details, dict) else None

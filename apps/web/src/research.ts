@@ -52,7 +52,10 @@ export interface PlanningBrief {
   relations: Array<{ from_id: string; to_id: string; relation: 'supports' | 'contradicts' | 'co_occurs' | 'addresses' | 'proposes'; source_ids: string[]; inferred: boolean }>;
   runtime: Record<string, unknown>;
 }
-export interface ResearchPlanningInput { bundle_id: string; goal: string; constraints: string[]; previous_run_id?: string | null }
+export interface ResearchPlanningInput {
+  bundle_id: string; goal: string; constraints: string[]; previous_run_id?: string | null;
+  selected_source_ids?: string[]; bundle_sha256?: string;
+}
 
 const ajv = new Ajv2020({ allErrors: true, strict: false });
 ajv.addFormat('uri', { type: 'string', validate: value => {
@@ -152,6 +155,14 @@ export function exportResearchPlan(bundle: ResearchBundle, brief: PlanningBrief)
   const lines = [`# ${researchGroupLabel(brief.product_group)} 기획안`, '', `- 실행: ${brief.run_id} / 수정 ${brief.revision}`,
     `- 상태: ${brief.status}`, `- 자료 범위: ${researchScopeLabel(brief.analysis_scope)}`, `- 목적: ${brief.goal}`,
     '- 제약:', ...brief.constraints.map(item => `  - ${item}`), '', '## 발견한 문제'];
+  const inputIds = brief.runtime.user_selected_source_ids;
+  const inputScope = brief.runtime.input_scope;
+  const inputLabel = inputScope === 'user_selected_sources' ? '사용자 선택 근거' : inputScope === 'full_bundle' ? '자료 묶음 전체' : '범위 미제공';
+  lines.splice(lines.indexOf('## 발견한 문제'), 0, '## 기획 입력 범위',
+    `- 입력: ${inputLabel}${Array.isArray(inputIds) ? ` ${inputIds.length}건` : ''}`,
+    `- 입력 근거 ID: ${Array.isArray(inputIds) ? inputIds.join(', ') : '제공되지 않음'}`,
+    `- 원등록 자료 SHA-256: ${typeof brief.runtime.bundle_sha256 === 'string' ? brief.runtime.bundle_sha256 : '제공되지 않음'}`,
+    '원등록 자료는 출처 맥락을 보존하기 위해 아래에 모두 포함합니다. 실제 기획 입력 범위는 위 ID 목록입니다.', '');
   for (const problem of brief.problems) lines.push(`### ${problem.title}`, problem.description, `근거: ${problem.source_ids.join(', ')}`,
     `반대 근거: ${problem.counter_source_ids.join(', ') || '확인된 자료 없음'}`, `범위: ${problem.scope_caveat}`, '');
   lines.push('## 기존·경쟁 제품 대조');
