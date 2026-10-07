@@ -1,0 +1,123 @@
+{
+  "record_id": "CORE-R5-RAW-AUDIT-01a10729-01",
+  "checked_at": "2026-10-07T01:38:06.441817+00:00",
+  "original_handoff_commit": "814fe2fbcd3b752ff6400d8a08671dce7bdd2d80",
+  "original_files": [
+    {
+      "case": "fridge-normal",
+      "sha256": "5625c0ff13d7e4282cbe7e6eb3ea0aa43d848cec8bf3d47c45845cf32d670f3d",
+      "bytes": 1309041,
+      "status": "failed",
+      "original_calls": 6,
+      "original_tokens": 42626,
+      "raw_generated_equal_calls": 6,
+      "original_input_revision": 0,
+      "final_input_revision": 2,
+      "correction_budget": {
+        "revision_count": 2,
+        "max_revisions": 2,
+        "closed": true,
+        "terminal_reason": "revision_limit",
+        "attempts": [
+          {
+            "operation": "stage_retry",
+            "revision_count": 1
+          },
+          {
+            "operation": "review_revision",
+            "revision_count": 2
+          }
+        ]
+      }
+    },
+    {
+      "case": "fridge-changed",
+      "sha256": "95833e754b034d7f0ec6749c549fb3f2f80ca3fa240d5bc1c98d80b49c8046e5",
+      "bytes": 831174,
+      "status": "failed",
+      "original_calls": 5,
+      "original_tokens": 27769,
+      "raw_generated_equal_calls": 5,
+      "original_input_revision": 0,
+      "final_input_revision": 2,
+      "correction_budget": {
+        "revision_count": 2,
+        "max_revisions": 2,
+        "closed": true,
+        "terminal_reason": "revision_limit",
+        "attempts": [
+          {
+            "operation": "stage_retry",
+            "revision_count": 1
+          },
+          {
+            "operation": "stage_retry",
+            "revision_count": 2
+          }
+        ]
+      }
+    },
+    {
+      "case": "fridge-missing-manual",
+      "sha256": "d4a7af4f3a881256e0af779174518c1e3e0176ed86a0b9e923bcf6f833ebb688",
+      "bytes": 607986,
+      "status": "held",
+      "original_calls": 4,
+      "original_tokens": 21192,
+      "raw_generated_equal_calls": 4,
+      "original_input_revision": 0,
+      "final_input_revision": 1,
+      "correction_budget": {
+        "revision_count": 1,
+        "max_revisions": 2,
+        "closed": true,
+        "terminal_reason": "hold",
+        "attempts": [
+          {
+            "operation": "stage_retry",
+            "revision_count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "comparison_sha256": "1a0eb0e71c1a1742773c981bb4aee1303e27b0d9d50490cdfb7eefff72c205af",
+  "verifier_sha256": "cfe1adf1b755b75f7d2815dce818eb5fbe422d4e29037c8c115ad5b19a39213c",
+  "isolation": {
+    "image": "sha256:36ad082dbccf05bc9cff7c4dc5766e9ab7ed8c42198b0b731cf3831c546aaaf0",
+    "user": "65534:65534",
+    "network": "none",
+    "root_readonly": true,
+    "cap_drop": [
+      "ALL"
+    ],
+    "security": [
+      "no-new-privileges"
+    ],
+    "auth_mounts": 0,
+    "socket_mounts": 0,
+    "container_exit": 0,
+    "new_model_calls": 0
+  },
+  "mount_scope": [
+    "source read-only",
+    "three public original artifacts read-only",
+    "audit result directory write-only purpose"
+  ],
+  "read_only_data_audit": true,
+  "imports_product_code": false,
+  "prototype_failed_checks": 3,
+  "prototype_failures": [
+    "semantic input is flattened",
+    "revision feedback is previous.violations",
+    "draft input has skill_input.gaps"
+  ],
+  "product_sources_changed": 0,
+  "new_model_calls": 0,
+  "original_total_calls": 15,
+  "original_total_tokens": 91587,
+  "new_pm_fix_head": null,
+  "quality_pass": false,
+  "pm_approval": false,
+  "six_regrades": 0
+}

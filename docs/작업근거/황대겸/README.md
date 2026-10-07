@@ -1,6 +1,8 @@
 # 황대겸 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-07 CORE-R5-RAW-AUDIT-01a10729-01: 원3 SHA/바이트·기존15회91587토큰·digest/수정2/원15 raw-generated 동일과 핵심 반례 경로 대조 통과. 후보 자체 근거와 항목별 검수 인용·false missing Need·정당 hold를 구분했다.
+- [상세](2026-10-07/CORE-R5-RAW-AUDIT-01a10729-01.md) · [대조 JSON/재현기/manifest](../../../evals/core-manual-quality/20261007/r5-independent/README.md). 인증0/networknone/UID65534 고정 Docker 검사; PM 새 head·실모델 효과·최종 인수 미검증. 원6 채점/모델 반복0.
 - 2026-10-06 CORE-SEMANTIC-GROUNDING-01a10729-01: PM full-cap-v3의 새 가설 설명서 요구/현재 제품 단정 반례 대조와 실제 검토 지침 보완. INSTRUCTIONS 외 AST 동일, 새모델0·후속효과 미검증.
 - [상세](2026-10-06/CORE-SEMANTIC-GROUNDING-01a10729-01.md) · [원 반례·검사](../../../evals/core-manual-quality/20261006/semantic-grounding/README.md). PR198 CI4/4·보고수신 완료는 별도, DATA conflicting1/WEB·실모델 품질/PM 인수·부모Done 남음.
 - 2026-10-06 CORE-METADATA-01a10729-01: 중복 판단 상충 거절·불확실성 사유/질문/누락 정보 최종 hold 전달. 관련130/전체1475통과; 고정 DATA190 조합 conflicting1은 DATA 반영 전 미완료.
