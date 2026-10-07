@@ -1,0 +1,64 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> /tmp/data456-lint-z3lo7s67/audit_input_transport.py:7:1
+   |
+ 5 |   Run only in the pinned validator; never import this on an authenticated host.
+ 6 |   """
+ 7 | / from __future__ import annotations
+ 8 | |
+ 9 | | import argparse
+10 | | import hashlib
+11 | | import json
+12 | | import re
+13 | | import stat
+14 | | import zipfile
+15 | | from copy import deepcopy
+16 | | from pathlib import Path, PurePosixPath
+17 | |
+18 | | import httpx
+19 | | from jsonschema import Draft202012Validator
+20 | | from lgax_contracts import load_schema
+21 | | from lgax_core.errors import DomainError
+22 | | from lgax_core.document_store import DocumentStore
+23 | | from lgax_core.judgement_contract import input_digest, review_judgement, schema_for
+24 | | from lgax_core.model_client import ModelConfig, OllamaAdapter, StructuredModelClient
+25 | | from lgax_core.planning_agent import PlanningAgent
+26 | | from lgax_core.store import DemoStore
+   | |_____________________________________^
+27 |
+28 |   ROOT = Path.cwd()
+   |
+help: Organize imports
+   |
+20 | from lgax_contracts import load_schema
+21 + from lgax_core.document_store import DocumentStore
+22 | from lgax_core.errors import DomainError
+   - from lgax_core.document_store import DocumentStore
+23 | from lgax_core.judgement_contract import input_digest, review_judgement, schema_for
+   |
+
+FURB162 Unnecessary timezone replacement with zero offset
+  --> /tmp/data456-lint-z3lo7s67/audit_public_observations.py:55:32
+   |
+53 |         check('official model/page mapping', registry[page['model']] == page['page'])
+54 |         check('bounded visible page rows', 0 < len(page['rows']) <= 10)
+55 |         datetime.fromisoformat(page['observed_at_utc'].replace('Z', '+00:00'))
+   |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+56 |         url = observations['source_url_template'].replace('{page}', page['page'])
+57 |         for topic in page['vendor_topic_candidates']:
+   |
+help: Remove `.replace()` call
+
+DTZ007 Naive datetime constructed using `datetime.datetime.strptime()` without %z
+  --> /tmp/data456-lint-z3lo7s67/audit_public_observations.py:62:22
+   |
+60 |         for rank, (review_id, row_page, date) in enumerate(page['rows'], 1):
+61 |             observed_ids.append(review_id)
+62 |             parsed = datetime.strptime(date, '%Y.%m.%d').date().isoformat()
+   |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+63 |             item = {'original_review_id': review_id, 'model_page': page['model'],
+64 |                     'source_url': url, 'UI_rank': rank, 'review_row_page': row_page,
+   |
+help: Call `.replace(tzinfo=<timezone>)` or `.astimezone()` to convert to an aware datetime
+
+Found 3 errors.
+[*] 1 fixable with the `--fix` option (1 hidden fix can be enabled with the `--unsafe-fixes` option).

@@ -1,0 +1,14 @@
+PERF102 When using only the values of a dict use the `values()` method
+  --> /tmp/data456-lint-tu_8wori/audit_public_observations.py:91:34
+   |
+89 |           == structured['browser_observation_canonical_sha256'])
+90 |     normalized_records = {}
+91 |     for _, (pack, index, row) in lookup.items():
+   |                                  ^^^^^^^^^^^^
+92 |         text = ' '.join(unicodedata.normalize('NFKC', row['text']).split())
+93 |         digest = hashlib.sha256(text.encode()).hexdigest()
+   |
+help: Replace `.items()` with `.values()`
+
+Found 1 error.
+No fixes available (1 hidden fix can be enabled with the `--unsafe-fixes` option).

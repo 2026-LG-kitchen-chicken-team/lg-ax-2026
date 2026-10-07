@@ -1,14 +1,21 @@
 # 최길웅 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
-## 최신 재개 요약 (작성자 갱신, 2026-10-07 13:0x KST, 기록 053)
+## 최신 재개 요약 (작성자 갱신, 2026-10-07 21:3x KST, 기록 055)
 
-- 현재 배정: **PM-20261007-WEB-PROTOTYPE-INDEPENDENT-R5**([#25 원문](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25#issuecomment-6028759150), 메일 01:16Z). 실제 후기 새 기획·조건 변경·보류·원문/내보내기를 독립 사용자 흐름으로 검수한다.
+- **새 배정(10/7 21:1x, PM 수동 재개 큐 [#234](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/234)):**
+  - W1: 실제 기획 화면과 조건 변경. 우선순위 0, 선행 P0 공통 계약, #25·#26·#117·#120에 연결.
+  - W2 [#236](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/236), W3 [#237](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/237), V1 [#239](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/239)는 선행 대기.
+  - 합성 리뷰 금지, Figma 제외, 자동화 OFF.
+  - P0 초안 위치와 PM 채팅의 `apps/web` 편집 여부를 #6에 질문했다(답 대기).
+- W1 첫 단위(기록 055): O2 수정. 저장이 거절돼도 이전 프로젝트·버전/모델 안내·고른 모델을 유지한다. 단위 테스트 3개 추가, 실제 브라우저 기준 main은 실패·수정은 통과. PR은 #232 위에 쌓았다.
+- 이전 배정(R5, 독립 검수 전용): **PM-20261007-WEB-PROTOTYPE-INDEPENDENT-R5**([#25 원문](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25#issuecomment-6028759150), 메일 01:16Z). 실제 후기 새 기획·조건 변경·보류·원문/내보내기를 독립 사용자 흐름으로 검수한다.
   - 문서: `docs/pm/real-review-prototype-r5-20261007.md`(PM 브랜치 `codex/pm-real-review-prototype-20261007-r5`).
-  - **apps/web은 PM 보조 WEB AI가 수정한다. 나는 apps/web·API·core를 편집하지 않고 `evals/web-prototype-independent/20261007`에서 독립 검수한다.**
+  - R5 범위에서는 apps/web을 PM 보조 WEB AI가 수정했고, 나는 `evals/web-prototype-independent/20261007`에서 독립 검수만 했다. #234 W1부터는 다시 내가 `apps/web`을 편집한다.
 - 상태: 자동화 OFF, 수동 진행. PM·팀원에게 알릴 것은 GitHub @멘션으로 남긴다. **Actions 사용량 90%(10/7) → 커밋을 모아 한 번에 push한다.**
 - R5 1단계 완료(기록 051): 실모델 원 3응답(122B, 정상 failed·조건 변경 failed·설명서 부족 held)을 독립 기대값으로 계산했다. 실제 HTTP 저장·재조회와 브라우저 화면·내보내기 대조 모두 일치했다. 발견 F1(회차별 검사 코드에 설명 미적용)을 PM 보조 WEB AI에게 인계했다. 시나리오 S1~S9와 내부 사용자 테스트 체크리스트도 준비했다.
 - R5 2단계 완료(기록 052): PM R5 통합 #218(main `8ec1e8a`)을 실제 서버·R5 공개 개발 자료(sha `aee2b54b…`, 후기 0)·브라우저로 독립 검수했다. 공개자료·버전·경고·후기 0 표시, S8(버전 변경 새 프로젝트), planning OFF 실행의 정직한 표시, 연결 해제를 확인했다. F1은 해소됐다. 발견 F2(근거 배지 `public`)·F3(버전 변경 뒤 모델 미선택으로 저장 막힘)·F4(출처 거절을 읽기 전용 토큰으로 안내)·F5(revise 문구 불일치)는 PM 보조 WEB AI에게 인계했다.
+- R5 3단계 완료(기록 054): F2~F5 수정(main `58feb9c`)을 같은 조건으로 다시 확인했다. 네 가지 모두 해소됐다(브라우저 1 passed, 원 3응답 재생 3/3). 새 관찰 O2(저장 거절 뒤 버전·모델 안내가 사라지고 선택 상자와 상태가 어긋남, `liveWorkspace.ts` `saveRequest`의 `newScope()`)는 PM 보조 WEB AI에게 인계했다.
 - 다음:
   1. 실모델 정상 새 요청(S1~S5)·실제 후기 입력은 구매 SKU·게시일 확인과 PM 유한 실모델 실행을 넘겨받은 뒤 같은 버전으로 독립 검수한다.
   2. DATA R5 실제 후기 자료팩이 나오면 S7·S8을 구체화한다.
@@ -20,8 +27,10 @@
   - Git Bash의 PYTHONPATH는 `C:/…` 형식으로 쓴다.
   - 사용자 5173·18867·18869는 건드리지 않는다.
 - 컨설팅(10/7 15:00) 웹 설명 브리핑·시연 순서·한계·예상 질문: [기록 048](2026-10-07/최길웅-20261007-048.md)
-- CORE 새 조합 코드 `UPSTREAM_{NEED,GAP}_{VIOLATION,UNCERTAIN}` 4개 웹 설명 추가(기록 053, PR 검수 대기).
-- 최신 기록 ID: 최길웅-20261007-053. 상세:
+- CORE 새 조합 코드 `UPSTREAM_{NEED,GAP}_{VIOLATION,UNCERTAIN}` 4개 웹 설명 추가(기록 053). PR #228은 PM 승인 뒤 PR230으로 main `58feb9c`에 병합됐다.
+- 최신 기록 ID: 최길웅-20261007-055. 상세:
+  - 055 W1 첫 단위: O2 수정(저장 거절 뒤 이전 프로젝트·안내 유지): [상세](2026-10-07/최길웅-20261007-055.md)
+  - 054 R5 3단계: F2~F5 재확인(모두 해소)·관찰 O2: [상세](2026-10-07/최길웅-20261007-054.md)
   - 053 CORE 새 검수 코드 4개 웹 설명: [상세](2026-10-07/최길웅-20261007-053.md)
   - 052 R5 2단계: #218 독립 검수(실제 공개 자료 웹 흐름·F1 해소·F2~F5): [상세](2026-10-07/최길웅-20261007-052.md)
   - 051 R5 1단계: 실모델 원 3응답 실제 HTTP·브라우저 재조회, 독립 시나리오·내부 테스트 준비: [상세](2026-10-07/최길웅-20261007-051.md)
