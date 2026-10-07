@@ -2,6 +2,7 @@
 import Ajv2020 from 'ajv/dist/2020';
 import schema from '../../../packages/contracts/schemas/lgax.schema.json';
 import { ApiError } from './api';
+import type { BootstrapData } from './domain';
 
 const ajv = new Ajv2020({ allErrors: true, strict: false });
 ajv.addFormat('date', { type: 'string', validate: value => {
@@ -110,6 +111,9 @@ export class WorkspaceClient {
       throw new ApiError('CONNECTION_FAILED', '공통 작업실 서버에 연결할 수 없습니다.');
     }
     const payload: unknown = await response.json().catch(() => null);
+    if (path === '/bootstrap' && response.status === 404) {
+      throw new ApiError('WORKSPACE_BOOTSTRAP_UNAVAILABLE', '이 작업실 서버는 인증된 자료 조회를 지원하지 않습니다. 서버와 웹의 버전을 확인해 주세요.');
+    }
     if (!response.ok) {
       if (payload && typeof payload === 'object' && 'error' in payload) {
         const error = payload.error;
@@ -130,6 +134,9 @@ export class WorkspaceClient {
 
   listProjects(): Promise<{ projects: WorkspaceProject[]; contract_version: string }> {
     return this.request('GET', '/projects', 'WorkspaceProjectsResponse');
+  }
+  bootstrap(): Promise<BootstrapData> {
+    return this.request('GET', '/bootstrap', 'WorkspaceBootstrapResponse');
   }
   createProject(name: string, request: Record<string, unknown>, documentVersions: Record<string, string>): Promise<WorkspaceProject> {
     const input = { name, request, document_versions: documentVersions };

@@ -8,7 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
 import * as api from './api';
 import type { BootstrapData } from './domain';
-import { FIXTURE_ORIGINAL_REQUEST, FIXTURE_RUNS } from './fixtures/planning.fixture';
+import { FIXTURE_BOOTSTRAP, FIXTURE_ORIGINAL_REQUEST, FIXTURE_RUNS } from './fixtures/planning.fixture';
 import type { PlanningRequest, RunSnapshot } from './planning';
 import { WorkspaceClient } from './workspace';
 import type { WorkspaceProject, WorkspaceRun } from './workspace';
@@ -59,12 +59,36 @@ async function mountAndConnect() {
 beforeEach(() => {
   vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true);
   host = document.createElement('div'); document.body.append(host); root = createRoot(host);
-  vi.spyOn(api, 'loadBootstrap').mockResolvedValue(api.parseBootstrap({ ok: true, data: BOOTSTRAP }));
+  vi.spyOn(api, 'loadBootstrap').mockResolvedValue(FIXTURE_BOOTSTRAP);
+  vi.spyOn(WorkspaceClient.prototype, 'bootstrap').mockResolvedValue(api.parseBootstrap({ ok: true, data: BOOTSTRAP }));
   vi.spyOn(WorkspaceClient.prototype, 'listProjects').mockResolvedValue({ projects: [], contract_version: '0.1.0' });
 });
 afterEach(async () => { await act(async () => root.unmount()); host.remove(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 describe('new public profile uses registered SKU, document and dataset boundaries', () => {
+  it('shows authenticated public sources only after connecting and clears their form/source on disconnect', async () => {
+    await act(async () => root.render(createElement(App)));
+    expect(host.querySelector('.hero-stats')?.textContent).toContain('합성자료');
+    expect(host.querySelector('.hero-stats')?.textContent).not.toContain(VERSION);
+    await setValue(host.querySelector<HTMLInputElement>('#workspace-token')!, 'test-token-not-a-credential');
+    await click('연결');
+    expect(host.querySelector('.hero-stats')?.textContent).toContain(VERSION);
+    await click('01기획 요청');
+    await setValue(host.querySelector<HTMLTextAreaElement>('#planning-prompt')!, 'private-login-test-request');
+    await click('연결 해제');
+    expect(host.querySelector('.hero-stats')?.textContent).toContain('합성자료');
+    expect(host.querySelector('.hero-stats')?.textContent).not.toContain(VERSION);
+    expect(host.querySelector<HTMLTextAreaElement>('#planning-prompt')?.value).not.toContain('private-login-test-request');
+  });
+
+  it('shows bootstrap incompatibility as a connection error rather than public-demo data', async () => {
+    vi.mocked(WorkspaceClient.prototype.bootstrap).mockRejectedValueOnce(new api.ApiError('WORKSPACE_BOOTSTRAP_UNAVAILABLE', 'old server'));
+    await mountAndConnect();
+    expect(host.textContent).toContain('인증된 자료 조회');
+    expect(host.querySelector('.hero-stats')?.textContent).not.toContain('합성자료');
+    expect(host.querySelector('.request-form button[type="submit"]')?.hasAttribute('disabled')).toBe(true);
+  });
+
   it.each(['held', 'failed'] as const)('sends once while waiting, preserves %s, then links changed conditions to the same data', async status => {
     const createProject = vi.spyOn(WorkspaceClient.prototype, 'createProject').mockImplementation(async (_name, input) => project('project-new-test', input as unknown as PlanningRequest));
     let finish: (value: WorkspaceRun) => void = () => {};
