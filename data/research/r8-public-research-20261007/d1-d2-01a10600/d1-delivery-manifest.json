@@ -1,0 +1,129 @@
+{
+  "artifact_kind": "research_delivery_manifest",
+  "version": "lg-public-research.20261007.d1-01a10600.v1",
+  "source_commit": "58feb9c30fc5faae1cc8acfb0ff409106a6d7174",
+  "task_ids": [
+    "D1",
+    "P2-DATA-001",
+    "P2-DATA-002",
+    "P2-DATA-005"
+  ],
+  "source_hashes": {
+    "data/research/r5-public-reviews-20261007/fixed18/records.json": "98830d3078d5c14443ee672a4fd6d5ae7fbafe6c77ea15ab6b14828ad2d5ad6f",
+    "data/research/r5-public-reviews-20261007/fixed18/products.json": "5575df7a988d919eedc16a050914d192e30fc8eff1e0ad7b5a97c6328adb9d8b",
+    "data/research/r5-public-reviews-20261007/fixed18/manifest.json": "3a35518787c1959d29dd11f6a651194f7b7a6be971e392a470cff3da240c895d",
+    "data/research/r5-public-reviews-20261007/balanced-pilot-v2/records.json": "d8ac06a75f53eac2fc2db469d78fa967bbc20883048aa44190217fd19d26fb7d",
+    "data/research/r5-public-reviews-20261007/balanced-pilot-v2/new_unique_records.json": "2929d20a4cb12c9ff20faa9d4fc1db8b5a14ae947c374f0b5166290178a2f3b2",
+    "data/research/r5-public-reviews-20261007/balanced-pilot-v2/manifest.json": "9ceb23e5b02e9541091a15673d6d1f161462bfd79c421eed5ddc652093aff37d",
+    "data/research/r5-public-reviews-20261007/fixed18/development.dataset.json": "aee2b54b80b5d48559cab4d45eed1e3c3a3d2cb7d9f087542a820a22cf5e69a7",
+    "data/research/r5-public-reviews-20261007/independence-holds.20261007.v1.json": "df4d83bc74a68897f17d0709a2ff5b4ab5edcc00eec0c6709491588a48d5fbbf"
+  },
+  "observations": 239,
+  "unique_reviews": 238,
+  "v1_rows": 179,
+  "new_v2_rows": 59,
+  "duplicate_observations": 1,
+  "split_counts": {
+    "development": 141,
+    "independent_evaluation": 36,
+    "demonstration": 49,
+    "quarantine": 12
+  },
+  "split_intersections": {
+    "development__independent_evaluation__original_review_id": [],
+    "development__independent_evaluation__normalized_body_sha256": [],
+    "development__demonstration__original_review_id": [],
+    "development__demonstration__normalized_body_sha256": [],
+    "independent_evaluation__demonstration__original_review_id": [],
+    "independent_evaluation__demonstration__normalized_body_sha256": []
+  },
+  "research_denominator_excluding_quarantine": 226,
+  "verified_purchased_model_count": 0,
+  "known_publication_date_count": 0,
+  "exact_sku_judgement_eligible_count": 0,
+  "monthly_publication_denominator": 0,
+  "rating_counts": {
+    "1": 22,
+    "2": 2,
+    "3": 6,
+    "5": 208
+  },
+  "product_group_counts": {
+    "fridge": 79,
+    "microwave": 79,
+    "dishwasher": 80
+  },
+  "source_sampling": {
+    "fixed18": "first recommendation-sorted page; all 179 five-star",
+    "balanced_v2": "three primary pages, latest 10 plus low-rating 10 each; 60 observations with one overlap"
+  },
+  "biases": [
+    "purposive, not random",
+    "recommendation and rating sort bias",
+    "rating is not sentiment",
+    "page model is not purchased SKU",
+    "purchase date is not publication date",
+    "current manual is not verified purchase-time revision"
+  ],
+  "exposure_overlay": {
+    "source_path": "data/research/r5-public-reviews-20261007/independence-holds.20261007.v1.json",
+    "known_groups": 3,
+    "demonstration_hold_groups": 2,
+    "all_independent_use_approved": false,
+    "remaining_historical_exposure": "unverified"
+  },
+  "research_bundle_schema_status": "producer-sidecar pending PM P0 canonical schema and consumer acceptance",
+  "runtime_integration_verified": false,
+  "model_calls": 0,
+  "network_calls": 0,
+  "original_179_database_received": false,
+  "database_kind": "new 238-row research landing, not app/operating DB",
+  "agent_development_reviews": 141,
+  "canonical_manual_dataset": {
+    "products": 3,
+    "features": 9,
+    "evidence": 21,
+    "reviews": 0,
+    "sha256": "aee2b54b80b5d48559cab4d45eed1e3c3a3d2cb7d9f087542a820a22cf5e69a7"
+  },
+  "delivery_checks": {
+    "sqlite_integrity": true,
+    "unique_rows_preserved": 238,
+    "all_original_observations_preserved": 239,
+    "source_text_hashes_verified": 238,
+    "existing_splits_preserved": 238,
+    "unknown_fields_preserved": 238,
+    "exact_canonical_dataset_bytes_preserved": true,
+    "development_only_bundles": true
+  },
+  "output_files": {
+    "agent-input/canonical-models.dataset.json": {
+      "sha256": "aee2b54b80b5d48559cab4d45eed1e3c3a3d2cb7d9f087542a820a22cf5e69a7",
+      "bytes": 18992
+    },
+    "agent-input/dishwasher/research-bundle.producer.json": {
+      "sha256": "5c8eaf3357411fce1acd70322bde4e26374ab603b2ae41f95f9a93a9387e97c3",
+      "bytes": 129799
+    },
+    "agent-input/fridge/research-bundle.producer.json": {
+      "sha256": "381663859c88db4738e448464eeff5b036cf93a8ecd0b8cce7c08efe5cc5b433",
+      "bytes": 134596
+    },
+    "agent-input/microwave/research-bundle.producer.json": {
+      "sha256": "eca29289fdef58bf6d41f902e1cac856981743ebedfd4eb0401ff8e97f13d5a5",
+      "bytes": 122777
+    },
+    "membership.json": {
+      "sha256": "8292183cea25c7b682f863aa29f8dfcccb2e45a8e49cb7431913d616dc97d072",
+      "bytes": 302026
+    },
+    "original-records.json": {
+      "sha256": "9e5fd84e53b13ee27e79e672ebdbb4ca5910f5e29a199709047e22610eda8d9a",
+      "bytes": 508018
+    },
+    "research-238.sqlite3": {
+      "sha256": "6a01e8e3e2a18b7325abf068e15cf8d17f5e72a6b4a8f3ec4776a3c4065ab8fd",
+      "bytes": 1437696
+    }
+  }
+}

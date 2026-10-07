@@ -1,0 +1,105 @@
+{
+  "checks": [
+    {
+      "name": "public-review-regression",
+      "command": [
+        "/opt/lgax-venv/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_public_review_collection.py",
+        "-v"
+      ],
+      "exit_code": 1,
+      "output_file": "public-review-regression.log"
+    },
+    {
+      "name": "review-import-regression",
+      "command": [
+        "/opt/lgax-venv/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_review_import.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "output_file": "review-import-regression.log"
+    },
+    {
+      "name": "contracts",
+      "command": [
+        "/opt/lgax-venv/bin/python",
+        "-B",
+        "scripts/check_contracts.py"
+      ],
+      "exit_code": 0,
+      "output_file": "contracts.log"
+    },
+    {
+      "name": "shared-instructions",
+      "command": [
+        "/opt/lgax-venv/bin/python",
+        "-B",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "output_file": "shared-instructions.log"
+    },
+    {
+      "name": "original-record-migration",
+      "command": [
+        "/opt/lgax-venv/bin/python",
+        "-B",
+        "scripts/migrate_member_logs.py",
+        "--verify"
+      ],
+      "exit_code": 1,
+      "output_file": "original-record-migration.log"
+    },
+    {
+      "name": "document-navigation",
+      "command": [
+        "/opt/lgax-venv/bin/python",
+        "-B",
+        "scripts/check_document_navigation.py"
+      ],
+      "exit_code": 0,
+      "output_file": "document-navigation.log"
+    },
+    {
+      "name": "phase2-packet",
+      "command": [
+        "/opt/lgax-venv/bin/python",
+        "-B",
+        "scripts/phase2.py",
+        "packet",
+        "P2-DATA-001"
+      ],
+      "exit_code": 0,
+      "output_file": "phase2-packet.log"
+    },
+    {
+      "name": "phase2-integrity",
+      "command": [
+        "/opt/lgax-venv/bin/python",
+        "-B",
+        "scripts/phase2.py",
+        "validate"
+      ],
+      "exit_code": 1,
+      "output_file": "phase2-integrity.log"
+    }
+  ],
+  "models_or_network_or_new_installs": 0,
+  "scope": "existing focused tests and metadata gates; not runtime ResearchBundle/AI integration"
+}

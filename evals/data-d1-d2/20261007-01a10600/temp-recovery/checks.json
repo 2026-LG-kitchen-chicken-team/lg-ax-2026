@@ -1,0 +1,23 @@
+{
+  "checks": [
+    {
+      "name": "public-review-regression",
+      "command": [
+        "/opt/lgax-venv/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_public_review_collection.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "output_file": "public-review-regression.log"
+    }
+  ],
+  "models_or_network_or_new_installs": 0,
+  "scope": "existing focused tests and metadata gates; not runtime ResearchBundle/AI integration"
+}
