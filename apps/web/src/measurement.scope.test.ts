@@ -132,8 +132,10 @@ describe('App request form authentication boundaries', () => {
   });
 
   it('preserves entered fields and the successful save message when connected project creation changes the scope', async () => {
-    vi.mocked(api.loadBootstrap).mockResolvedValue({ ...FIXTURE_BOOTSTRAP,
-      products: [...FIXTURE_BOOTSTRAP.products, { model_id: 'FRIDGE-B', product_group: 'fridge', name: '추가 검토 모델', document_version: '1.0' }] });
+    const expandedBootstrap = { ...FIXTURE_BOOTSTRAP,
+      products: [...FIXTURE_BOOTSTRAP.products, { model_id: 'FRIDGE-B', product_group: 'fridge', name: '추가 검토 모델', document_version: '1.0' }] };
+    vi.mocked(api.loadBootstrap).mockResolvedValue(expandedBootstrap);
+    vi.mocked(WorkspaceClient.prototype.bootstrap).mockResolvedValue(expandedBootstrap);
     // Refresh the mounted App so the controlled bootstrap response includes the second valid model.
     await act(async () => { root.unmount(); }); root = createRoot(container);
     await act(async () => { root.render(createElement(App)); });
