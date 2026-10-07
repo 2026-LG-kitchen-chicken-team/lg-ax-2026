@@ -11,6 +11,7 @@ from pathlib import Path
 
 from jsonschema import ValidationError
 from lgax_contracts.research import validate_planning_brief
+from lgax_core.errors import DomainError
 from lgax_core.public_planning import PublicPlanner, apply_field_patch, claim_issues, quantities, source_facts
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -121,6 +122,30 @@ class PublicPlanningTests(unittest.TestCase):
         self.assertEqual(second["previous_brief_id"], first["brief_id"])
         self.assertEqual(second["revision"], first["revision"] + 1)
         self.assertNotEqual(second["run_id"], first["run_id"])
+
+    def test_model_domain_error_retains_safe_cause_without_private_details(self):
+        for code, reason in (("MODEL_UNAVAILABLE", "timeout"), ("MODEL_UNAVAILABLE", "output_truncated"),
+                             ("VALIDATION_FAILED", "schema_mismatch"),
+                             ("MODEL_UNAVAILABLE", "http://127.0.0.1:18875/private")):
+            with self.subTest(code=code, reason=reason):
+                def failed(prompt, schema, error_code=code, error_reason=reason):
+                    raise DomainError(error_code, "private-provider-message", {
+                        "reason": error_reason, "endpoint": "http://127.0.0.1:18875/private",
+                        "token_name": "LGAX_PRIVATE_TOKEN", "token": "private-token-value",
+                    })
+
+                result = PublicPlanner(failed).run(self.bundle, "사용 지원 개선 기회 발견", [])
+                record = result["runtime"]["model_calls"][0]
+                self.assertEqual(record["status"], "rejected")
+                self.assertEqual(record["error_code"], code)
+                if reason.startswith("http"):
+                    self.assertNotIn("error_reason", record)
+                else:
+                    self.assertEqual(record["error_reason"], reason)
+                serialized = json.dumps(result["runtime"])
+                for private in ("private-provider-message", "127.0.0.1", "LGAX_PRIVATE_TOKEN", "private-token-value"):
+                    self.assertNotIn(private, serialized)
+                self.assertEqual(result["source_facts"], source_facts(self.bundle))
 
 
 if __name__ == "__main__":
