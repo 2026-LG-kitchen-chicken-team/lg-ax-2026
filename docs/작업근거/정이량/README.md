@@ -1,6 +1,10 @@
 # 정이량 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
+## 최신 근거 — 정이량-E049-REAL-PROTOTYPE-R5
+
+- [E049](2026-10-07/정이량-E049-REAL-PROTOTYPE-R5.md) · [원3응답/SHA](../../../evals/pm-integration/20261007/live-originals/manifest.json) · [R5 작업/검수 조건](../../pm/real-review-prototype-r5-20261007.md). 코드ran1589/skip4·launcher6·WEB548와 계약/하네스/문서/HTTP·브라우저 검사가 통과했다. 고유238후기 연구 표본·원문/분할/SHA·Excel, 실제215/216 병합·독립 재현을 연결한다. 새 실모델 최종응답은 미수신이며 통신 수정11검사는 의미 품질 증명이 아니다. 원 비용/불명 기록·Figma 제외·자동화OFF를 유지한다.
+
 ## 최신 근거 — 정이량-E048-QUALITY-CLOSEOUT
 
 - [E048](2026-10-07/정이량-E048-QUALITY-CLOSEOUT.md)·[고정 검수근거](../../../evals/pm-integration/20261007/README.md)·[실제 병합 재조회](../../../evals/pm-integration/20261007/merged-pr-readback.json)는 원17후속PR/통합212 실제병합과 모델 정상/변경/근거부족 failed/failed/held를 구분한다. 새15호출/91587토큰의 원응답·입력 SHA를 고정했으며 정상품질/CORE199 효과는 승인하지 않았다.

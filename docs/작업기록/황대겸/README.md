@@ -1,6 +1,8 @@
 # 황대겸 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-07 CORE-R5-RAW-AUDIT-01a10729-01: PM 인계 원3 SHA/15답변 대조 완료. 정상 후보의 RE008 보유와 차별점 검수 누락, 변경의 MANUAL001 반복 누락/code-only feedback, NEED006 존재에 대한 검수 오판을 분리했다. 질문 없는 held의 실제 거절·진짜 자료 부족 held 유지; 신규모델0.
+- [상세](2026-10-07/CORE-R5-RAW-AUDIT-01a10729-01.md) · [원 반례·판정·격리 대조](../../../evals/core-manual-quality/20261007/r5-independent/README.md). PM 보조 코어 파일 중복 편집0; 다음은 정확 수정 PR head 독립 검수. 실모델 품질·PM 승인/병합/통합·부모Done 미완료.
 - 2026-10-06 CORE-SEMANTIC-GROUNDING-01a10729-01: PM full-cap-v3의 새 가설 설명서 요구/현재 제품 단정 반례 대조와 실제 검토 지침 보완. INSTRUCTIONS 외 AST 동일, 새모델0·후속효과 미검증.
 - [상세](2026-10-06/CORE-SEMANTIC-GROUNDING-01a10729-01.md) · [원 반례·검사](../../../evals/core-manual-quality/20261006/semantic-grounding/README.md). PR198 CI4/4·보고수신 완료는 별도, DATA conflicting1/WEB·실모델 품질/PM 인수·부모Done 남음.
 - 2026-10-06 CORE-METADATA-01a10729-01: 중복 판단 상충 거절·불확실성 사유/질문/누락 정보 최종 hold 전달. 관련130/전체1475통과; 고정 DATA190 조합 conflicting1은 DATA 반영 전 미완료.

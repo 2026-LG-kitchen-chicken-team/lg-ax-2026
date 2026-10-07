@@ -15,7 +15,12 @@ from typing import Any
 
 from jsonschema import Draft202012Validator
 
-from .concept_lineage import build_quality_context
+from .concept_lineage import (
+    build_quality_context,
+    concept_grounding_requirements,
+    constrain_concept_grounding,
+    trace_concept_lineage,
+)
 from .correction_budget import CorrectionBudget
 from .document_store import DocumentStore
 from .errors import DomainError
@@ -24,10 +29,22 @@ from .judgement_contract import input_digest, review_judgement
 from .judgement_contract import schema_for as judgement_schema
 from .model_client import StructuredModelClient
 from .no_candidate_review import INSTRUCTIONS as NO_CANDIDATE_INSTRUCTIONS
-from .no_candidate_review import no_candidate_feedback, no_candidate_review_schema, review_no_candidate
+from .no_candidate_review import (
+    no_candidate_feedback,
+    no_candidate_review_schema,
+    review_need_presence,
+    review_no_candidate,
+)
 from .prompt_context import model_context
 from .revision_guard import RevisionSession
-from .semantic_review import INSTRUCTIONS, review_semantics, schema_for_review, semantic_feedback
+from .semantic_review import (
+    INSTRUCTIONS,
+    review_semantics,
+    schema_for_review,
+    semantic_feedback,
+    semantic_grounding_requirements,
+    semantic_model_context,
+)
 from .skill_runner import SkillRuntime
 from .skill_runner import schema_for as skill_schema
 from .source_boundary import SourceBoundary
@@ -44,7 +61,8 @@ def _digest(value: Any) -> str:
     return hashlib.sha256(raw.encode()).hexdigest()
 
 
-def generation_schema(skill_id: str, *, review_evidence_ids: list[str] | None = None) -> dict:
+def generation_schema(skill_id: str, *, review_evidence_ids: list[str] | None = None,
+                      grounding_requirements: list[dict] | None = None) -> dict:
     """Small stage contracts, reusing both existing Skill and CORE001 definitions."""
     if skill_id not in SKILLS:
         raise ValueError("Unsupported planning stage")
@@ -88,6 +106,8 @@ def generation_schema(skill_id: str, *, review_evidence_ids: list[str] | None = 
     refs(properties)
     if skill_id == "need_extract" and review_evidence_ids is not None:
         included["Need"]["properties"]["evidence_ids"]["items"] = {"enum": list(review_evidence_ids)}
+    if skill_id == "concept_draft" and grounding_requirements is not None:
+        constrain_concept_grounding(included["Concept"], grounding_requirements)
     return {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
             "properties": properties, "required": list(properties), "additionalProperties": False,
             "$defs": included}
@@ -290,18 +310,20 @@ class PlanningAgent:
                                            execution_kind=self.execution_kind, budget=budget)
         revision_session.install(runtime)
 
-        def model_call(stage: str, skill_id: str, context: dict, prompt: str, schema: dict):
+        def model_call(stage: str, skill_id: str, context: dict, prompt: str, schema: dict,
+                       *, prompt_projection: dict | None = None):
             # Raw generate transports use the same host policy as message-aware
             # callers. Source role markers remain escaped JSON data in the task.
             boundary = SourceBoundary(payload, allowed_tools=("get_evidence", "list_products"))
             prompt = boundary.messages()[0]["content"] + "\n" + prompt
+            projected = model_context(context) if prompt_projection is None else deepcopy(prompt_projection)
             record = {"stage": stage, "skill_id": skill_id, "execution_kind": self.execution_kind,
                       "input_sha256": input_digest(payload), "revision_count": payload["revision_count"],
                       "source_boundary_sha256": boundary.context_sha256,
                       "allowed_tools": list(boundary.allowed_tools),
                       "prompt": prompt, "schema": schema, "request_context": deepcopy(context),
-                      "prompt_context": model_context(context),
-                      "prompt_context_sha256": input_digest(model_context(context)),
+                      "prompt_context": projected,
+                      "prompt_context_sha256": input_digest(projected),
                       "model_id": config.model_id, "model_digest": config.expected_digest}
             calls.append(record)
             model = StructuredModelClient(_RecordingAdapter(self.client.adapter, record))
@@ -333,6 +355,7 @@ class PlanningAgent:
                            "feedback": feedback}
                 if skill_id == "concept_draft":
                     context["quality_context"] = build_quality_context(payload, output())
+                    context["candidate_grounding_requirements"] = concept_grounding_requirements(payload, output())
                 instructions = {
                     "need_extract": (
                         "이번 업무는 현재 사용 경험에서 불편과 희망 결과를 추출하는 단계입니다. "
@@ -392,6 +415,9 @@ class PlanningAgent:
                         "작동 원리를 설명한 것으로 대신하지 마세요. 사용자가 어떤 순서로 이용하며 "
                         "어떤 구조·동작이 잔여 불편을 줄이는지 적으세요.\n"
                         "4. 후보의 gap_ids와 evidence_ids는 해당 Gap과 그 근거 전체에 연결하고, "
+                        "candidate_grounding_requirements에서 선택한 각 gap_id의 required_evidence_ids를 "
+                        "원문과 대조해 빠짐없이 인용하세요. 후보의 Gap 선택과 신규성은 직접 판단하며 "
+                        "다른 Gap의 근거를 자동으로 더하지 마세요. "
                         "입력의 constraints를 반영하여 모든 features와 중복 비교한 concept_assessments를 "
                         "후보마다 한 번씩 작성하며 compared_feature_ids에는 전체 기능 ID를 넣으세요.\n"
                         "5. 고객 문제·기존 기능의 사실은 sources의 ID·모델·문서 버전을 보존하여 인용하고, "
@@ -427,8 +453,32 @@ class PlanningAgent:
                     + "\nDATA_JSON:\n"
                     + json.dumps(model_context(context), ensure_ascii=False, separators=(",", ":"))
                 )
-                generated = model_call(STAGE[skill_id], skill_id, context, prompt,
-                                       generation_schema(skill_id, review_evidence_ids=review_ids))
+                try:
+                    generated = model_call(STAGE[skill_id], skill_id, context, prompt,
+                                           generation_schema(skill_id, review_evidence_ids=review_ids,
+                                                             grounding_requirements=context.get("candidate_grounding_requirements")))
+                except DomainError as error:
+                    if (skill_id == "concept_draft" and error.code == "VALIDATION_FAILED"
+                            and error.details.get("reason") == "schema_mismatch"):
+                        # Decode only an already strictly parsed schema rejection.
+                        # It remains rejected; expose omitted edges, never repair it.
+                        raw = calls[-1].get("raw_response", "").strip()
+                        if raw.startswith("```"):
+                            raw = "\n".join(raw.splitlines()[1:-1])
+                        try:
+                            rejected = json.loads(raw)
+                            if not any(Draft202012Validator(generation_schema(skill_id)).iter_errors(rejected)):
+                                candidate_output = output()
+                                candidate_output["concepts"] = deepcopy(rejected["result"]["concepts"])
+                                candidate_output["concept_assessments"] = deepcopy(rejected["concept_assessments"])
+                                missing = [row for row in trace_concept_lineage(payload, candidate_output)["violations"]
+                                           if row["code"] == "CONCEPT_GROUNDING_MISSING"]
+                                if missing:
+                                    raise DomainError(error.code, error.message,
+                                                      {**error.details, "grounding_violations": missing}) from None
+                        except (ValueError, TypeError, KeyError):
+                            pass
+                    raise
                 declaration = prepare_stage_declaration(skill_id, generated.data)
                 state[skill_id] = deepcopy(declaration)
                 if skill_id == "concept_draft" and generated.data["hold_reasons"] != generated.data["result"]["hold_reasons"]:
@@ -577,6 +627,7 @@ class PlanningAgent:
                                "judgement": current, "input_sha256": input_digest(payload),
                                "output_sha256": input_digest(current), "feedback": feedback}
                     context["quality_context"] = quality_context
+                    context["review_need_presence"] = review_need_presence(payload, current)
                     try:
                         report = model_call("review", "no_candidate_review", context,
                                             NO_CANDIDATE_INSTRUCTIONS + json.dumps(
@@ -614,10 +665,13 @@ class PlanningAgent:
                                "input_sha256": input_digest(payload), "output_sha256": input_digest(current),
                                "skill_input": {"constraints": payload["request"]["exclusions"]}, "feedback": feedback}
                     context["quality_context"] = quality_context
+                    context["semantic_grounding_requirements"] = semantic_grounding_requirements(payload, current)
+                    projected = semantic_model_context(context)
                     try:
                         report = model_call("review", "semantic_review", context,
-                                            INSTRUCTIONS + json.dumps(model_context(context), ensure_ascii=False, separators=(",", ":")),
-                                            schema_for_review(payload, current, literal_choices=True)).data
+                                            INSTRUCTIONS + json.dumps(projected, ensure_ascii=False, separators=(",", ":")),
+                                            schema_for_review(payload, current, literal_choices=True),
+                                            prompt_projection=projected).data
                         decision = review_semantics(payload, current, report)
                         reviewed_questions = deepcopy(report["questions"])
                         retry_feedback = semantic_feedback(report)
@@ -628,6 +682,18 @@ class PlanningAgent:
                     except DomainError as error:
                         if error.code != "VALIDATION_FAILED":
                             return fail(error)
+                        if error.details.get("reason") == "schema_mismatch":
+                            raw = calls[-1].get("raw_response", "").strip()
+                            if raw.startswith("```"):
+                                raw = "\n".join(raw.splitlines()[1:-1])
+                            try:
+                                review_semantics(payload, current, json.loads(raw))
+                            except DomainError as canonical_error:
+                                # Keep the original schema rejection in model_calls,
+                                # but preserve the same per-Gap correction details.
+                                error = canonical_error
+                            except (ValueError, TypeError, KeyError):
+                                pass
                         result["errors"].append(error.response()["error"])
                         revise = payload["revision_count"] < 2
                         decision = {"valid": False, "action": "revise" if revise else "unresolved",

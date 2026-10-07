@@ -1,0 +1,13 @@
+# PM-R5-CORE-SUPPORT-20261007
+
+수행 주체: PM 정이량의 보조 AI. 사용자 후속 '모두 진행해'와 PM의 CORE R5 좁은 편집 지시를 해석해, 원 3실패를 보존한 근거 연결·검수 누락 주장·보류 형식 보완을 수행한다. 황대겸의 작업·보고·기록을 대신 작성하지 않는다. 자동화는 OFF이며 외부 게시·모델 호출은 이 보조 작업의 범위가 아니다.
+
+base `1f3f4ecb93fdd945850a1e9f790bc37766b2355c`, 브랜치 `codex/pm-core-grounding-r5-20261007`, 별도 관리 worktree에서 시작했다. 실제 원 출력 SHA3개를 metadata로 검증하고 필요한 원 필드만 새 회귀 artifact에 복사했다. 원 입력/응답/전체 출력은 수정하지 않았다.
+
+의도: 모델이 선택한 Gap의 필수 인용을 구조적으로 안내·검사하고 실제 누락 ID를 보존한다. 이미 있는 Need를 없다고 선언한 구조화된 검수 주장을 거절하며, 출력 누락을 사용자에게 추가 자료로 묻는 것과 실제 자료 부족을 구분한다. 질문 없는 hold를 생성 shape에서 거절한다. 신규성·극성·지원/해결과 제안의 의미 판단은 모델과 독립 검수에 남긴다.
+
+행동: 판단 파일 6개 및 관련 두 Skill 설명, test helper2개와 새 회귀 모듈을 변경했다. 실행 순서·공유 최대2수정·공통 계약·model_client·prompt_context·API/MCP·운영·다른 담당자 문서·개인 README는 편집하지 않는다. 저장소 host 실행 없이 고정 Docker validator에서 검사하도록 저장소 밖 metadata wrapper를 준비했고 PM이 전체 wrapper를 검토했다.
+
+현재 단계: 구현 초안과 검사 준비. 실제 검사 결과·정확한 commit/receipt는 후속 근거 기록에 연결한다. 새로운 모델 호출·성공 후보·최종 Done은 아직 없다. native 조건 스키마의 모델 지원과 실제 의미 품질은 PM의 별도 고정 모델 원3 검증으로 확인해야 한다.
+
+후속 결과: source `4f897394ae224e43dc4c7f0c9d224f4dfa92c0a2`를 readonly·network none·zero-auth Docker에서 검사해 새13/기존142 합계155건 PASS를 확인했다. 실행 ID `pm-r5-core-6f0feca554a745639853163ace2a6bbe`, source_changed[], model0이다. 새 fixture setup 오류 두 회는 근거 기록에 보존했고, 검사 기준을 낮추지 않았다. 새 질문/사유가 있어도 후보3개를 유지한 held 출력은 거절하며 원 응답을 자동으로 지우지 않는다. [고유 근거](../../../작업근거/정이량/2026-10-07/PM-R5-CORE-SUPPORT-20261007.md)와 [검사/원문 일치 근거](../../../../evals/pm-prototype/20261007/r5-core/README.md)에 연결한다. 외부 게시·push·병합·모델 호출 없이 local commit으로 root 독립 검수에 넘긴다.

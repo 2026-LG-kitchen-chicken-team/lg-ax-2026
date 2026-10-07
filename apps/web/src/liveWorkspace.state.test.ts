@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ApiError } from './api';
+import type { BootstrapData } from './domain';
 import { FIXTURE_BOOTSTRAP, FIXTURE_ORIGINAL_REQUEST, FIXTURE_RUNS } from './fixtures/planning.fixture';
 import { ServerEvidenceSearch } from './PlanningViews';
 import { useLiveWorkspace } from './liveWorkspace';
@@ -56,6 +57,7 @@ beforeEach(async () => {
   document.body.append(container);
   root = createRoot(container);
   vi.spyOn(WorkspaceClient.prototype, 'listProjects').mockResolvedValue({ projects: [a], contract_version: '0.1.0' });
+  vi.spyOn(WorkspaceClient.prototype, 'bootstrap').mockResolvedValue(FIXTURE_BOOTSTRAP);
   vi.spyOn(WorkspaceClient.prototype, 'getProject').mockImplementation(async id => id === a.project.id ? a : b);
   vi.spyOn(WorkspaceClient.prototype, 'listRuns').mockImplementation(async id => ({ runs: [run(id)], contract_version: '0.1.0' }));
   await act(async () => { root.render(createElement(Probe)); });
@@ -68,6 +70,42 @@ afterEach(async () => {
 });
 
 describe('actual React workspace state boundaries', () => {
+  it('retains this login bootstrap while selecting a project, then discards it on disconnect', async () => {
+    await connect();
+    expect(live.bootstrap).toBe(FIXTURE_BOOTSTRAP);
+    await act(async () => { await live.selectProject(b.project.id); });
+    expect(live.bootstrap).toBe(FIXTURE_BOOTSTRAP);
+    expect(WorkspaceClient.prototype.bootstrap).toHaveBeenCalledTimes(1);
+    await act(async () => live.disconnect());
+    expect(live.bootstrap).toBeNull();
+  });
+
+  it('never applies an old account bootstrap after a newer login completed', async () => {
+    const old = deferred<BootstrapData>();
+    const next = { ...FIXTURE_BOOTSTRAP, manifest: { ...FIXTURE_BOOTSTRAP.manifest, version: 'login-b-test.v1' } };
+    vi.mocked(WorkspaceClient.prototype.bootstrap).mockImplementationOnce(() => old.promise).mockResolvedValueOnce(next);
+    vi.mocked(WorkspaceClient.prototype.listProjects).mockResolvedValueOnce({ projects: [a], contract_version: '0.1.0' })
+      .mockResolvedValueOnce({ projects: [b], contract_version: '0.1.0' });
+    let first!: Promise<void>;
+    await act(async () => { first = live.connect('first-token'.repeat(4)); });
+    expect(live.bootstrap).toBeNull();
+    await act(async () => { await live.connect('second-token'.repeat(4)); });
+    expect(live.bootstrap).toBe(next);
+    await act(async () => { old.resolve(FIXTURE_BOOTSTRAP); await first; });
+    expect(live.bootstrap).toBe(next);
+    expect(live.project?.project.id).toBe(b.project.id);
+  });
+
+  it('fails the connection explicitly when authenticated bootstrap is unavailable', async () => {
+    vi.mocked(WorkspaceClient.prototype.bootstrap).mockRejectedValueOnce(new ApiError('WORKSPACE_BOOTSTRAP_UNAVAILABLE', 'old server'));
+    await act(async () => live.connect('editor-token'.repeat(4)));
+    expect(live.connection).toBe('error');
+    expect(live.error?.code).toBe('WORKSPACE_BOOTSTRAP_UNAVAILABLE');
+    expect(live.bootstrap).toBeNull();
+    expect(live.projects).toEqual([]);
+    expect(live.runs).toEqual([]);
+  });
+
   it('does not pair the new project with old runs when its run lookup fails', async () => {
     await connect();
     const lookup = deferred<{ runs: WorkspaceRun[]; contract_version: string }>();
@@ -95,6 +133,7 @@ describe('actual React workspace state boundaries', () => {
     expect(live.project).toBeNull();
     expect(live.runs).toEqual([]);
     expect(live.projects).toEqual([]);
+    expect(live.bootstrap).toBeNull();
     expect(live.busy).toBe(false);
   });
 
@@ -120,6 +159,7 @@ describe('actual React workspace state boundaries', () => {
     expect(live.projects).toEqual([]);
     expect(live.runs).toEqual([]);
     expect(live.error?.code).toBe('UNAUTHORIZED');
+    expect(live.bootstrap).toBeNull();
     expect(live.busy).toBe(false);
   });
 

@@ -106,10 +106,10 @@ def input_digest(payload: dict) -> str:
 
 def review_judgement(payload: Any, output: Any) -> dict:
     """Return a review decision; never execute tools, revise data or call models."""
-    violations: list[dict[str, str]] = []
+    violations: list[dict[str, Any]] = []
 
-    def flag(code: str, stage: str) -> None:
-        item = {"code": code, "stage": stage}
+    def flag(code: str, stage: str, **details: Any) -> None:
+        item = {"code": code, "stage": stage, **details}
         if item not in violations:
             violations.append(item)
 
@@ -236,7 +236,11 @@ def review_judgement(payload: Any, output: Any) -> dict:
             flag("NEED_COMPARISON_MISSING", "compare")
     for module in build_quality_context(payload, output).values():
         for violation in module["violations"]:
-            flag(violation["code"], violation["stage"])
+            # Preserve the exact omitted edges for correction, never repair them.
+            details = ({key: deepcopy(value) for key, value in violation.items()
+                        if key not in ("code", "stage")}
+                       if violation["code"] == "CONCEPT_GROUNDING_MISSING" else {})
+            flag(violation["code"], violation["stage"], **details)
     if not concepts and not output["no_candidate_reasons"]:
         flag("ZERO_CANDIDATES_WITHOUT_REASON", "concepts")
     if output["status"] == "completed" and (output["hold_reasons"] or output["unresolved"]):

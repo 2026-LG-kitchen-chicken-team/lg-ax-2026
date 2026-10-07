@@ -48,6 +48,31 @@ SECRET_PATTERNS = (
     rb"\bsk-(?:proj-)?[A-Za-z0-9_-]{20,}\b",
     rb"\bAKIA[A-Z0-9]{16}\b",
 )
+# These three immutable historical fields describe permission to perform work,
+# not HTTP authorization or a credential. Independent metadata review of source
+# e1a6ec794039aca6278f415bd5aaef901cf3f920 identified these exact original bytes.
+# Any path, entire-file byte, JSON pointer or serialized value change fails closed.
+# Content-level secret/database and personal identifier checks precede this rule.
+APPROVED_AUTHORIZATION_NOTES = frozenset({
+    (
+        "data/research/P2-DATA-001-stage123-20261005/execution-context.json",
+        "269edbbef899f54051575e3e0eabf32b8ced75d07f74c3c529f48c9df3e33761",
+        "/authorization",
+        "ba7fcd39b9e84570889239d310a5065c65606dacf24dee875c4f0db6289bfaaf",
+    ),
+    (
+        "docs/history/project/20261006/manifest.json",
+        "26d718fd723f3ebc7e73eb11c7d24f8be6173163bd340c052af0a7636afb5f29",
+        "/additional_sources_note/authorization",
+        "8871207a1414b8763e6de9efa89c4ab08c2a999051a16579b8d192d4a96d8896",
+    ),
+    (
+        "evals/core-manual-quality/20261006/integration-r4-audit/pm-review-correction.json",
+        "1c383018fefd37398a3c80cfd8571a6f90fbd42ed5f8c1f841447244dac97d7c",
+        "/authorization",
+        "edb349f7d197401fbef340a0e8d47ea067f5e55b0830466b2183d17b708d7a28",
+    ),
+})
 
 
 class PackageError(ValueError):
@@ -148,21 +173,36 @@ def _check_content(name: str, data: bytes) -> None:
                     or re.fullmatch(r"<[A-Za-z0-9_ -]+>|YOUR_[A-Z0-9_]+", value) is not None
                     or re.fullmatch(r"\$\{[A-Z_][A-Z0-9_]*\}|\$[A-Z_][A-Z0-9_]*|env:[A-Z_][A-Z0-9_]*", value) is not None)
 
-        def inspect(value):
+        def personal_identifiers(value):
             if isinstance(value, dict):
                 for key, child in value.items():
                     field = key.casefold()
-                    if field in SENSITIVE_FIELDS and isinstance(child, (str, int, float)) and not placeholder(child):
-                        raise PackageError(f"Literal credential field detected in JSON: {name}")
                     if field in {"student_id", "student_number", "학번"} and re.fullmatch(r"\d{8}", str(child)):
                         raise PackageError(f"Student identifier field detected in JSON: {name}")
                     if (field in {"phone", "phone_number", "mobile", "연락처"} and isinstance(child, str)
                             and re.fullmatch(r"010\d{7,8}", re.sub(r"[^0-9]", "", child))):
                         raise PackageError(f"Personal mobile number field detected in JSON: {name}")
-                    inspect(child)
+                    personal_identifiers(child)
             elif isinstance(value, list):
                 for child in value:
-                    inspect(child)
+                    personal_identifiers(child)
+
+        personal_identifiers(document)
+        file_sha256 = digest(data)
+
+        def inspect(value, pointer=""):
+            if isinstance(value, dict):
+                for key, child in value.items():
+                    child_pointer = pointer + "/" + key.replace("~", "~0").replace("/", "~1")
+                    if (key.casefold() in SENSITIVE_FIELDS and isinstance(child, (str, int, float))
+                            and not placeholder(child)):
+                        serialized = json.dumps(child, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+                        if (name, file_sha256, child_pointer, digest(serialized)) not in APPROVED_AUTHORIZATION_NOTES:
+                            raise PackageError(f"Literal credential field detected in JSON: {name}")
+                    inspect(child, child_pointer)
+            elif isinstance(value, list):
+                for index, child in enumerate(value):
+                    inspect(child, pointer + "/" + str(index))
 
         inspect(document)
     if PurePosixPath(name).name.casefold() == ".env.example":

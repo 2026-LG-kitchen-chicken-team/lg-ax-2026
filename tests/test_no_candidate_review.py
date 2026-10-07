@@ -15,8 +15,9 @@ def report_for(payload, output):
     return {"input_sha256": input_digest(payload), "output_sha256": input_digest(output),
             "assessments": [{"criterion": criterion, "verdict": "consistent", "reason": "모의 검사 선언",
                              "candidate_quote": output["no_candidate_reasons"][0],
+                             "missing_need_review_ids": [],
                              "source_quotes": [{"evidence_id": source["id"], "quote": source["text"]}]}
-                            for criterion in CRITERIA], "questions": []}
+                            for criterion in CRITERIA], "questions": [], "question_basis": []}
 
 
 class NoCandidateReviewTests(unittest.TestCase):
@@ -105,6 +106,7 @@ class NoCandidateReviewTests(unittest.TestCase):
         with self.assertRaises(DomainError):
             review_no_candidate(self.payload, self.false_output, value)
         value["questions"] = ["현재 사용 조건의 상세 설명서를 제공할 수 있나요?"]
+        value["question_basis"] = [{"question": value["questions"][0], "kind": "source_information", "review_evidence_ids": []}]
         self.assertEqual(review_no_candidate(self.payload, self.false_output, value)["action"], "hold")
 
     def test_consistent_held_declaration_never_promotes_original_hold_to_accept(self):

@@ -50,6 +50,7 @@ beforeEach(async () => {
   (globalThis as unknown as Record<string, unknown>).IS_REACT_ACT_ENVIRONMENT = true;
   container = document.createElement('div'); document.body.append(container); root = createRoot(container);
   vi.spyOn(api, 'loadBootstrap').mockResolvedValue(BOOTSTRAP);
+  vi.spyOn(WorkspaceClient.prototype, 'bootstrap').mockResolvedValue(BOOTSTRAP);
   vi.spyOn(WorkspaceClient.prototype, 'listProjects').mockResolvedValue({ projects: [FRIDGE, MICROWAVE], contract_version: '0.1.0' });
   vi.spyOn(WorkspaceClient.prototype, 'getProject').mockImplementation(async id => id === MICROWAVE.project.id ? MICROWAVE : FRIDGE);
   vi.spyOn(WorkspaceClient.prototype, 'listRuns').mockImplementation(async id => ({ runs: [run(id)], contract_version: '0.1.0' }));

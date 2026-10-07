@@ -76,10 +76,11 @@ describe('source scope and run status', () => {
       search: { ok: true, data: { query: '없는말', model_id: 'FRIDGE-A', document_version: '1.0', items: [], total: 0, contract_version: '0.1.0', search_method: 'literal_token_count' } } });
     expect(empty).toMatchObject({ total: 0, items: [], documentVersion: '1.0', method: 'literal_token_count' });
   });
-  it('continues a project only for the same product group and model set', () => {
+  it('continues a project only for the same dataset version, product group and model set', () => {
     const multi = { ...request, model_ids: ['FRIDGE-A', 'FRIDGE-B'] };
     expect(sameProjectScope(multi, { ...multi, model_ids: ['FRIDGE-B', 'FRIDGE-A'], use_situation: '다른 상황' })).toBe(true);
     expect(sameProjectScope(multi, request)).toBe(false);
+    expect(sameProjectScope(request, { ...request, dataset_version: 'lg-public-reviews.20261007.r5' })).toBe(false);
     expect(sameProjectScope(request, { ...request, product_group: 'dishwasher', model_ids: ['DISHWASHER-A'] })).toBe(false);
   });
   it('builds condition requests that stay inside the project scope', () => {

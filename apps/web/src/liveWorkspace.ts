@@ -1,7 +1,7 @@
 /** Live-mode connection to the authenticated workspace API (P2-WEB-002); credential stays in React memory only. */
 import { useEffect, useRef, useState } from 'react';
 import { ApiError } from './api';
-import type { Evidence, Product } from './domain';
+import type { BootstrapData, Evidence, Product } from './domain';
 import type { PlanningRequest, RunSnapshot } from './planning';
 import { WorkspaceClient } from './workspace';
 import type { ReviewTrendData, ReviewTrendFilters, TrendEvidenceData, WorkspaceProject } from './workspace';
@@ -21,6 +21,7 @@ const ERROR_VIEWS: Record<string, Omit<ErrorView, 'code'>> = {
   INVALID_DOCUMENT_VERSION: { title: '문서 버전을 찾을 수 없습니다', action: '선택한 모델의 문서 버전을 확인해 주세요.', tone: 'error' },
   CONNECTION_FAILED: { title: '작업실 서버에 연결할 수 없습니다', action: '18869번 작업실 서버가 실행 중인지 확인해 주세요. 저장 요청은 자동으로 다시 보내지 않으니, 목록을 먼저 확인한 뒤 다시 시도해 주세요.', tone: 'error' },
   CONTRACT_MISMATCH: { title: '서버 응답이 공통 규격과 다릅니다', action: '웹과 서버의 계약 버전이 맞는지 PM에게 확인해 주세요.', tone: 'error' },
+  WORKSPACE_BOOTSTRAP_UNAVAILABLE: { title: '작업실의 실제 자료를 불러오지 못했습니다', action: '인증된 자료 조회를 지원하는 서버와 연결해야 합니다. 서버와 웹의 버전을 PM에게 확인해 주세요. 합성 예시로 대신 표시하지 않습니다.', tone: 'error' },
   NOT_IMPLEMENTED: { title: '요청은 저장됐지만 Agent 분석은 아직 연결되지 않았습니다', action: '후보·대조 결과는 판단 Agent가 연결된 뒤 같은 실행 기록에 표시됩니다.', tone: 'notice' },
   INVALID_EVIDENCE_ID: { title: '근거 원문을 찾을 수 없습니다', action: '인용된 근거 ID가 현재 자료에 없습니다. 자료 버전과 근거 ID를 확인해 주세요.', tone: 'error' },
   VALIDATION_FAILED: { title: '검사를 통과하지 못했습니다', action: '인용 누락·모델 혼동·기능 중복 검사에서 실패했습니다. 미해결 항목과 수정 기록을 확인해 주세요.', tone: 'error' },
@@ -28,10 +29,11 @@ const ERROR_VIEWS: Record<string, Omit<ErrorView, 'code'>> = {
   MODEL_UNAVAILABLE: { title: '분석 모델을 사용할 수 없습니다', action: '모델 서버 연결 또는 응답 형식에 문제가 있습니다. 잠시 후 다시 시도하거나 PM에게 모델 상태를 확인해 주세요.', tone: 'error' },
 };
 
-/** A changed request on the same product group and model set continues the project; otherwise it starts a new one. */
+/** A project is pinned to its product scope and dataset version; new data starts a new project. */
 export function sameProjectScope(project: PlanningRequest, request: PlanningRequest): boolean {
   const models = (ids: string[]) => [...ids].sort().join('\n');
-  return project.product_group === request.product_group && models(project.model_ids) === models(request.model_ids);
+  return project.dataset_version === request.dataset_version
+    && project.product_group === request.product_group && models(project.model_ids) === models(request.model_ids);
 }
 
 export function errorView(error: unknown): ErrorView {
@@ -98,6 +100,7 @@ export type ConnectionState ='disconnected' | 'connecting' | 'connected' | 'erro
 
 export interface LiveWorkspace {
   connection: ConnectionState;
+  bootstrap: BootstrapData | null;
   error: ErrorView | null;
   projects: WorkspaceProject[];
   project: WorkspaceProject | null;
@@ -126,6 +129,7 @@ export function useLiveWorkspace(): LiveWorkspace {
   const pending = useRef(0);
   const [state, setState] = useState({
     connection: 'disconnected' as ConnectionState, error: null as ErrorView | null,
+    bootstrap: null as BootstrapData | null,
     projects: [] as WorkspaceProject[], project: null as WorkspaceProject | null,
     runs: [] as RunSnapshot[], busy: false, scopeVersion: 0,
   });
@@ -138,11 +142,11 @@ export function useLiveWorkspace(): LiveWorkspace {
     selectedProject.current = null;
   }, []);
 
-  function newScope(): number {
+  function newScope(clearBootstrap = false): number {
     const scope = ++generation.current;
     pending.current = 0;
     selectedProject.current = null;
-    setState(value => ({ ...value, project: null, runs: [], busy: false, error: null, scopeVersion: scope }));
+    setState(value => ({ ...value, ...(clearBootstrap ? { bootstrap: null } : {}), project: null, runs: [], busy: false, error: null, scopeVersion: scope }));
     return scope;
   }
 
@@ -159,7 +163,7 @@ export function useLiveWorkspace(): LiveWorkspace {
       if (!current()) return null;
       const view = errorView(failure);
       if (view.code === 'UNAUTHORIZED') {
-        newScope();
+        newScope(true);
         connected.current = false;
         client.current = null;
         setState(value => ({ ...value, connection: 'error', projects: [], error: view }));
@@ -191,30 +195,30 @@ export function useLiveWorkspace(): LiveWorkspace {
     ...state,
     clearError: () => setState(value => ({ ...value, error: null })),
     async connect(value) {
-      const scope = newScope();
+      const scope = newScope(true);
       const credential = value.trim();
       connected.current = false;
       client.current = new WorkspaceClient('', () => credential, browserFetch);
       setState(previous => ({ ...previous, connection: 'connecting', projects: [] }));
       const result = await guarded(async (api, current) => {
-        const listed = await api.listProjects();
+        const [bootstrap, listed] = await Promise.all([api.bootstrap(), api.listProjects()]);
         if (!current()) return false;
         const latest = listed.projects[listed.projects.length - 1];
         const runs = latest ? (await api.listRuns(latest.project.id)).runs as unknown as RunSnapshot[] : [];
         if (!current()) return false;
         if (latest) applyProject(latest, runs);
         connected.current = true;
-        setState(previous => ({ ...previous, connection: 'connected', projects: listed.projects }));
+        setState(previous => ({ ...previous, connection: 'connected', bootstrap, projects: listed.projects }));
         return true;
       }, scope);
       if (!result && scope === generation.current) {
         connected.current = false;
         client.current = null;
-        setState(previous => ({ ...previous, connection: 'error', projects: [], project: null, runs: [] }));
+        setState(previous => ({ ...previous, connection: 'error', bootstrap: null, projects: [], project: null, runs: [] }));
       }
     },
     disconnect() {
-      newScope();
+      newScope(true);
       connected.current = false;
       client.current = null;
       setState(value => ({ ...value, connection: 'disconnected', projects: [] }));

@@ -1,0 +1,53 @@
+{
+  "source_commit": "7da905038eb5e7dacc12340e45256801e68f4d3c",
+  "execution_id": "pm-r5-package-notes-3e4fc089d57e44c2abeeb0bb2fa9af92",
+  "archive_sha256": "679d93454335da2617dd6f23e68a0e2b4de85dc4a1b07f118c92f9eb81679f60",
+  "bootstrap_sha256": "0dbe0b21b10afe52a4309fd8120cfd616579bef8eaa28167082d32ff4f0c37a0",
+  "boundary": {
+    "backend": "docker",
+    "image_id": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+    "role": "validator",
+    "uid": 1000,
+    "readonly_root": true,
+    "caps_dropped": true,
+    "no_new_privileges": true,
+    "network": "none",
+    "mount_targets": [
+      "/artifacts",
+      "/workspace"
+    ],
+    "publisher_credentials_mounted": false,
+    "ai_profile_mounted": false
+  },
+  "returncode": 1,
+  "stopped_reason": null,
+  "validation": {
+    "returncode": 1,
+    "commands": [
+      {
+        "command": [
+          "-m",
+          "unittest",
+          "test_package_submission",
+          "-v"
+        ],
+        "returncode": 0
+      },
+      {
+        "command": [
+          "-m",
+          "ruff",
+          "check",
+          "scripts/package_submission.py",
+          "tests/test_package_submission.py"
+        ],
+        "returncode": 1
+      }
+    ],
+    "source_files": 3655,
+    "source_changed": [],
+    "source_manifest_sha256": "6ea6c15bd8e36591828f5a5d8c69a9729547116044dd38c5255fd95d4d796d5d",
+    "model_calls": 0,
+    "network_calls": 0
+  }
+}
