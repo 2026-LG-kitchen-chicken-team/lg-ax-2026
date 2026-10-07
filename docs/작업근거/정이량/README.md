@@ -1,6 +1,11 @@
 # 정이량 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
+## 최신 근거 — 정이량-E054-R6-REVIEW-CLOSEOUT
+
+- [E054](2026-10-07/정이량-E054-R6-REVIEW-CLOSEOUT.md)은 actual main1f25/CI2,221062·226067 승인, 새 known6/47,202·예산 전송전취소·중간 의미FAIL4/run0과 원SHA를 연결한다. 원8ec 완료/FAIL·불명2·비용을 보존했다.
+- [007](../../작업기록/정이량/2026-10-07/정이량-20261007-007-R6-REVIEW-CLOSEOUT.md)을 먼저 읽는다. wire 인용 보완/새 효과·최종운영/ProjectACK는 후속이며 양면요약·다른키친가전은 검토안·Figma 제외·OFF 유지다.
+
 ## 최신 근거 — 정이량-E053-UPSTREAM-WEB
 
 - [E053](2026-10-07/정이량-E053-UPSTREAM-WEB.md)은 CORE 전18행 지원검수181/Ruff7·Python1597/launcher6·WEB47/빌드와 실제217/219병합·220/222승인·221수정요청을 연결한다. 새 실모델 의미 효과·최종운영/공식ACK는 후속이다.

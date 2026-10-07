@@ -1,0 +1,44 @@
+{
+  "base_commit": "8ec1e8a51faabd6db032e52245680bef4229f93f",
+  "reused_source_digest": "eb4d69757700d19cf4d9dd6a2edbdd8d3135e5c78acc46d8f834abdd761e5327",
+  "executor_image": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+  "checks": [
+    {
+      "name": "HTTP-SQLite-integrity",
+      "argv": [
+        "python",
+        "evals/data456-r5-verification/20261007-01a10c5c-bf12d6e3/capture_integrity.py"
+      ],
+      "exit_code": 1,
+      "stopped_reason": null,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "log_sha256": "b010b495241b8783f9b894bd4ceb79d8c8e69f46e0f8fefe866e8683f98a97fa",
+      "artifact_sha256": "8516906cb372c69cbebd94792b283b703dea4590de6bbfa8823bfe1d7701a197"
+    }
+  ],
+  "program_sha256": {
+    "audit_research.py": "1ddb1d07d2c1c205a91b569309b8203cc2162f66fb8baec9f3db3fa0f72e8d17",
+    "capture_integrity.py": "6782d2dea47194b2bfbe3dad92720ac1fd3a1f24202a228a11c27aa84d2fd4cd"
+  },
+  "existing_parser_source_manifest_sha256": "426f3d6b7c716ec6e7aa51dd71303d557b7e31531e4389889faabfd1521151f1",
+  "env": {
+    "PYTHONPATH": "/workspace/_verificationdeps:/workspace/packages/core/src:/workspace/packages/contracts/src:/workspace/apps/api/src:/workspace/apps/mcp/src"
+  },
+  "new_model_calls": 0,
+  "new_OCR_calls": 0
+}

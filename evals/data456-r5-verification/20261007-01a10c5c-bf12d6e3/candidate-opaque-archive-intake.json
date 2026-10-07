@@ -1,0 +1,67 @@
+{
+  "status": "PASS",
+  "checks": {
+    "opaque_archive_SHA_matches": true,
+    "three_distinct_package_roles": true,
+    "seven_unique_input_manifest_ids": true,
+    "six_primary_one_paired_metadata": true,
+    "PM_disposition_body_SHA_matches": true,
+    "current_planning_input_schema_exact_metadata_SHA": true
+  },
+  "checks_count": 6,
+  "metadata_source_PR": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/222",
+  "metadata_source_head": "d5d33c46a5f27d7ccd805713c784ec4c9f0ace55",
+  "archives": [
+    {
+      "role": "input-only",
+      "filename": "input-only.zip",
+      "bytes": 11106,
+      "expected_sha256": "e73d3393ad43e0bb9cf5f19944cc6c23c3fa69c72a1a140d6d680037e89ffaa8",
+      "actual_sha256": "e73d3393ad43e0bb9cf5f19944cc6c23c3fa69c72a1a140d6d680037e89ffaa8",
+      "match": true,
+      "ZIP_entries_inspected": false,
+      "private_input_or_answer_content_decoded": false,
+      "entry_count_from_producer_metadata_only": 11
+    },
+    {
+      "role": "reviewer-only",
+      "filename": "reviewer-only.zip",
+      "bytes": 2730,
+      "expected_sha256": "9c992b10f0a492f5632d19935802e39a25e695d59db25b9a051e0fd9f3fe5b6b",
+      "actual_sha256": "9c992b10f0a492f5632d19935802e39a25e695d59db25b9a051e0fd9f3fe5b6b",
+      "match": true,
+      "ZIP_entries_inspected": false,
+      "private_input_or_answer_content_decoded": false,
+      "entry_count_from_producer_metadata_only": 1
+    },
+    {
+      "role": "demo-reference",
+      "filename": "demo-reference.zip",
+      "bytes": 378,
+      "expected_sha256": "bf971d99c31ffaca5ff98236e21aae3a7a41c3192d731663c41c750597ad62d7",
+      "actual_sha256": "bf971d99c31ffaca5ff98236e21aae3a7a41c3192d731663c41c750597ad62d7",
+      "match": true,
+      "ZIP_entries_inspected": false,
+      "private_input_or_answer_content_decoded": false,
+      "entry_count_from_producer_metadata_only": 1
+    }
+  ],
+  "private_archive_contents_not_read": true,
+  "no_ZIP_entry_walk_or_extraction": true,
+  "PM_old_eight_disposition_received": true,
+  "PM_disposition_body_sha256": "5a7b6a49ae09431d8bcec16918f849d4f563804a467c0ce715475b300dd6b8f9",
+  "initial_package_old_eight_flag_is_historical": true,
+  "current_old_eight_role": "development_diagnostics_and_regression_only",
+  "synthetic_candidates": 6,
+  "paired_previous_input": 1,
+  "candidate_Format_PASS_claim_source": "d5d33c46a5f27d7ccd805713c784ec4c9f0ace55",
+  "format_or_exact_overlap_is_not_independence": true,
+  "Gold_approved": false,
+  "independence_approved": false,
+  "final_scorer_fixed": false,
+  "private_channel_and_actual_delivery_approved": false,
+  "actual_paired_model_outputs_received": false,
+  "whole_model_input_delivery_verified": false,
+  "independent_score": null,
+  "this_development_session_is_not_the_final_scorer": true
+}

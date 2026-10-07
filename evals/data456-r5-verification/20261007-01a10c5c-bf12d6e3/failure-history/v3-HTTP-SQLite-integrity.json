@@ -1,0 +1,369 @@
+{
+  "checks": [
+    {
+      "check": "research DB JSON originals equal",
+      "passed": true
+    },
+    {
+      "check": "research DB source reviews",
+      "passed": true
+    },
+    {
+      "check": "research DB source page products",
+      "passed": true
+    },
+    {
+      "check": "R5 fixed execution source bytes",
+      "passed": true
+    },
+    {
+      "check": "T876MEE1H1-manual-d00942446318 exact source PDF found",
+      "passed": true
+    },
+    {
+      "check": "registration POST /api/documents/T876MEE1H1-manual-d00942446318 status",
+      "passed": true
+    },
+    {
+      "check": "DUE6BGL2E-manual-ff60f78ab832 exact source PDF found",
+      "passed": true
+    }
+  ],
+  "captures": [
+    {
+      "phase": "registration",
+      "service": "documents",
+      "method": "POST",
+      "path": "/api/documents/T876MEE1H1-manual-d00942446318",
+      "status": 200,
+      "response_bytes": 10070,
+      "response_sha256": "f8f3d95f2d04c94da70768fb9af931647255c26ffd10a254c399a758e6f8b8ca",
+      "cache_control": null,
+      "json": {
+        "ok": true,
+        "data": {
+          "document_id": "T876MEE1H1-manual-d00942446318",
+          "sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815",
+          "bytes": 1802330,
+          "product": {
+            "model_id": "T876MEE1H1",
+            "name": "LG 디오스 AI 오브제컬렉션 냉장고 (매직스페이스)",
+            "product_group": "fridge",
+            "document_version": "MFL71401557 Rev.00_032526",
+            "source_kind": "public"
+          },
+          "document_version": "MFL71401557 Rev.00_032526",
+          "source_kind": "public",
+          "url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=OKSVlmUDzoQqSyeRo6kwiw",
+          "checked_at": "2026-10-05T01:35:17+09:00",
+          "parser": "pypdf",
+          "parser_version": "6.10.0",
+          "ocr_used": false,
+          "page_count": 40,
+          "dataset": {
+            "artifact_kind": "document_dataset",
+            "dataset_version": "lg-manual-scope-20261006.3-pm-intake",
+            "products": [
+              {
+                "model_id": "T876MEE1H1",
+                "name": "LG 디오스 AI 오브제컬렉션 냉장고 (매직스페이스)",
+                "product_group": "fridge",
+                "document_version": "MFL71401557 Rev.00_032526",
+                "source_kind": "public"
+              }
+            ],
+            "reviews": [],
+            "features": [
+              {
+                "id": "T876MEE1H1-FEATURE-folding-shelf",
+                "model_id": "T876MEE1H1",
+                "document_version": "MFL71401557 Rev.00_032526",
+                "name": "접이식 선반",
+                "description": "공용 설명서의 적용 모델에서 접이식 선반으로 식품 높이·크기에 맞게 공간 활용",
+                "conditions": [
+                  "공용 설명서의 일부 적용 모델 안내; 정확 모델 적용·선반 수량은 이 인용만으로 미확인"
+                ],
+                "evidence_ids": [
+                  "T876MEE1H1-MANUAL-F08"
+                ]
+              },
+              {
+                "id": "T876MEE1H1-FEATURE-shelf-removal",
+                "model_id": "T876MEE1H1",
+                "document_version": "MFL71401557 Rev.00_032526",
+                "name": "선반 분리",
+                "description": "선반 위 식품을 치운 뒤 선반 양쪽을 받쳐 홈에서 고리를 분리",
+                "conditions": [
+                  "선반 위 식품 제거; 무거운 유리 선반 분리 시 주의"
+                ],
+                "evidence_ids": [
+                  "T876MEE1H1-MANUAL-F10",
+                  "T876MEE1H1-MANUAL-F10-P18",
+                  "T876MEE1H1-MANUAL-F10-FOOD"
+                ]
+              },
+              {
+                "id": "T876MEE1H1-FEATURE-inside-cleaning",
+                "model_id": "T876MEE1H1",
+                "document_version": "MFL71401557 Rev.00_032526",
+                "name": "내부 청소",
+                "description": "부드러운 젖은 수건으로 닦은 뒤 물기 제거",
+                "conditions": [
+                  "구성품 분리 전 식품 제거(p21); 청소 전 전원 플러그 분리(p5)"
+                ],
+                "evidence_ids": [
+                  "T876MEE1H1-MANUAL-F11",
+                  "T876MEE1H1-MANUAL-F11-P05"
+                ]
+              }
+            ],
+            "evidence": [
+              {
+                "id": "T876MEE1H1-MANUAL-F08",
+                "model_id": "T876MEE1H1",
+                "document_version": "MFL71401557 Rev.00_032526",
+                "source_kind": "public",
+                "source_type": "manual",
+                "source_id": "T876MEE1H1-manual-d00942446318",
+                "locator": {
+                  "page": 18,
+                  "section": "접이식 선반"
+                },
+                "text": "냉장실 접이식 선반 사용하기\n이 기능이 적용된 모델에만 해당하는 내용입니다.\n보관 식품의 높이와 크기에 따라 접이식 선반을 조절하여 \n공간을 활용할 수 있습니다.",
+                "feature_ids": [
+                  "T876MEE1H1-FEATURE-folding-shelf"
+                ]
+              },
+              {
+                "id": "T876MEE1H1-MANUAL-F10",
+                "model_id": "T876MEE1H1",
+                "document_version": "MFL71401557 Rev.00_032526",
+                "source_kind": "public",
+                "source_type": "manual",
+                "source_id": "T876MEE1H1-manual-d00942446318",
+                "locator": {
+                  "page": 19,
+                  "section": "선반 분리"
+                },
+                "text": "아랫부분을 받친 후 위로 살짝 들어 올리며 홈에서 선반 \n고리를 빼내세요.",
+                "feature_ids": [
+                  "T876MEE1H1-FEATURE-shelf-removal"
+                ]
+              },
+              {
+                "id": "T876MEE1H1-MANUAL-F11",
+                "model_id": "T876MEE1H1",
+                "document_version": "MFL71401557 Rev.00_032526",
+                "source_kind": "public",
+                "source_type": "manual",
+                "source_id": "T876MEE1H1-manual-d00942446318",
+                "locator": {
+                  "page": 21,
+                  "section": "내부 청소"
+                },
+                "text": "내부 청소하기\n• 제품 내 구성품 분리 시 보관된 식품을 모두 꺼내세요.  \n꺼내지 않으면 보관된 식품의 무게로 인해 다칠 수  \n있습니다.\n• 냉장고 안의 선반이나 냉장고 문에 있는 바구니, 냉장고 \n문의 고무 패킹은 부드러운 수건에 물을 묻혀서  \n닦으세요.\n• 냉장고 청소 후 물기를 완전히 닦지 않으면 냉장고 안이 \n얼 수 있으므로 물기를 완전히 제거하세요.",
+                "feature_ids": [
+                  "T876MEE1H1-FEATURE-inside-cleaning"
+                ]
+              },
+              {
+                "id": "T876MEE1H1-MANUAL-F10-P18",
+                "model_id": "T876MEE1H1",
+                "document_version": "MFL71401557 Rev.00_032526",
+                "source_kind": "public",
+                "source_type": "manual",
+                "source_id": "T876MEE1H1-manual-d00942446318",
+                "locator": {
+                  "page": 18,
+                  "section": "선반 양쪽 받치기"
+                },
+                "text": "1 냉장실 선반을 빼낼 때는 한 손으로 냉장실 선반 한쪽의 \n바깥부분을 잡고 다른 손으로 선반 다른 쪽의",
+                "feature_ids": [
+                  "T876MEE1H1-FEATURE-shelf-removal"
+                ]
+              },
+              {
+                "id": "T876MEE1H1-MANUAL-F10-FOOD",
+                "model_id": "T876MEE1H1",
+                "document_version": "MFL71401557 Rev.00_032526",
+                "source_kind": "public",
+                "source_type": "manual",
+                "source_id": "T876MEE1H1-manual-d00942446318",
+                "locator": {
+                  "page": 19,
+                  "section": "유리 선반·식품 제거"
+                },
+                "text": "유리 선반은 무거우므로 선반을 분리할때 주의하세요.\n• 선반을 분리할 때, 선반 위에 있는 식품을 치운 후  \n분리하세요.",
+                "feature_ids": [
+                  "T876MEE1H1-FEATURE-shelf-removal"
+                ]
+              },
+              {
+                "id": "T876MEE1H1-MANUAL-F11-P05",
+                "model_id": "T876MEE1H1",
+                "document_version": "MFL71401557 Rev.00_032526",
+                "source_kind": "public",
+                "source_type": "manual",
+                "source_id": "T876MEE1H1-manual-d00942446318",
+                "locator": {
+                  "page": 5,
+                  "section": "청소 전 플러그 분리"
+                },
+                "text": "청소 또는 제품 실내등 교체 시에는 전원 플러그를 빼세요.",
+                "feature_ids": [
+                  "T876MEE1H1-FEATURE-inside-cleaning"
+                ]
+              },
+              {
+                "id": "DATA003-T876MEE1H1-F12",
+                "model_id": "T876MEE1H1",
+                "document_version": "MFL71401557 Rev.00_032526",
+                "source_kind": "public",
+                "source_type": "manual",
+                "source_id": "T876MEE1H1-manual-d00942446318",
+                "locator": {
+                  "page": 22,
+                  "section": "설치할 때 알아두기"
+                },
+                "text": "• 제품과 벽면 사이는 최소 10 cm의 간격을 유지하여  \n설치하세요.\n- 냉장고와 벽 사이가 너무 가까우면 바람이 통하지  \n않아 식품이 냉각되는 힘이 떨어집니다.\n- 냉장고 겉에 이슬이 맺힐 수 있고, 전기요금이 많이  \n나올 수 있습니다.\n",
+                "feature_ids": []
+              },
+              {
+                "id": "DATA003-T876MEE1H1-F13",
+                "model_id": "T876MEE1H1",
+                "document_version": "MFL71401557 Rev.00_032526",
+                "source_kind": "public",
+                "source_type": "manual",
+                "source_id": "T876MEE1H1-manual-d00942446318",
+                "locator": {
+                  "page": 22,
+                  "section": "설치할 때 알아두기"
+                },
+                "text": "• 제품 문 위쪽과 냉장고 설치장 사이는 최소 2.5 cm의  \n간격을 유지하여 설치하세요.",
+                "feature_ids": []
+              }
+            ]
+          },
+          "origins": [
+            {
+              "evidence_id": "T876MEE1H1-MANUAL-F08",
+              "url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=OKSVlmUDzoQqSyeRo6kwiw",
+              "checked_at": "2026-10-05T01:35:17+09:00",
+              "sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815",
+              "page": 18,
+              "start_char": 441,
+              "end_char": 531,
+              "text_sha256": "e72a840312e9bbad67247b32dd3a4cf75e8526123c647b6ba96b21afcc744f29",
+              "document_version": "MFL71401557 Rev.00_032526",
+              "source_kind": "public",
+              "original_text_exact": true
+            },
+            {
+              "evidence_id": "T876MEE1H1-MANUAL-F10",
+              "url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=OKSVlmUDzoQqSyeRo6kwiw",
+              "checked_at": "2026-10-05T01:35:17+09:00",
+              "sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815",
+              "page": 19,
+              "start_char": 7,
+              "end_char": 48,
+              "text_sha256": "3847de096be4045fb94f5f36008eed30f240b34e659cd0e99176392802194643",
+              "document_version": "MFL71401557 Rev.00_032526",
+              "source_kind": "public",
+              "original_text_exact": true
+            },
+            {
+              "evidence_id": "T876MEE1H1-MANUAL-F11",
+              "url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=OKSVlmUDzoQqSyeRo6kwiw",
+              "checked_at": "2026-10-05T01:35:17+09:00",
+              "sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815",
+              "page": 21,
+              "start_char": 1310,
+              "end_char": 1514,
+              "text_sha256": "f264b681995b7f4cbcca725b9b77ae5adf009fae685ae52cff7d7b34d30ce626",
+              "document_version": "MFL71401557 Rev.00_032526",
+              "source_kind": "public",
+              "original_text_exact": true
+            },
+            {
+              "evidence_id": "T876MEE1H1-MANUAL-F10-P18",
+              "url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=OKSVlmUDzoQqSyeRo6kwiw",
+              "checked_at": "2026-10-05T01:35:17+09:00",
+              "sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815",
+              "page": 18,
+              "start_char": 628,
+              "end_char": 686,
+              "text_sha256": "e7b8762e73694c38dbad6b752697f7a2c7c3733beb9529b3daf721efa431846b",
+              "document_version": "MFL71401557 Rev.00_032526",
+              "source_kind": "public",
+              "original_text_exact": true
+            },
+            {
+              "evidence_id": "T876MEE1H1-MANUAL-F10-FOOD",
+              "url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=OKSVlmUDzoQqSyeRo6kwiw",
+              "checked_at": "2026-10-05T01:35:17+09:00",
+              "sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815",
+              "page": 19,
+              "start_char": 217,
+              "end_char": 285,
+              "text_sha256": "11212c8d4c0a986100451a8693f76ddc93b5a6de5b5b0ee2ecd502bb5cd48a5b",
+              "document_version": "MFL71401557 Rev.00_032526",
+              "source_kind": "public",
+              "original_text_exact": true
+            },
+            {
+              "evidence_id": "T876MEE1H1-MANUAL-F11-P05",
+              "url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=OKSVlmUDzoQqSyeRo6kwiw",
+              "checked_at": "2026-10-05T01:35:17+09:00",
+              "sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815",
+              "page": 5,
+              "start_char": 488,
+              "end_char": 520,
+              "text_sha256": "18e30dea81b2f7b745c1ee8f5054c624deec57065a6afde02bf64e01800b9e98",
+              "document_version": "MFL71401557 Rev.00_032526",
+              "source_kind": "public",
+              "original_text_exact": true
+            },
+            {
+              "evidence_id": "DATA003-T876MEE1H1-F12",
+              "url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=OKSVlmUDzoQqSyeRo6kwiw",
+              "checked_at": "2026-10-05T01:35:17+09:00",
+              "sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815",
+              "page": 22,
+              "start_char": 552,
+              "end_char": 690,
+              "text_sha256": "2db14cf4845dc5049ba212bd3f1ef29c841f1cf81d16e15fd3b5d229a9ea6e8d",
+              "document_version": "MFL71401557 Rev.00_032526",
+              "source_kind": "public",
+              "original_text_exact": true
+            },
+            {
+              "evidence_id": "DATA003-T876MEE1H1-F13",
+              "url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=OKSVlmUDzoQqSyeRo6kwiw",
+              "checked_at": "2026-10-05T01:35:17+09:00",
+              "sha256": "d009424463187ba55982fdc1f3ef94f4f30687758bf4f6b6dbec291e249d3815",
+              "page": 22,
+              "start_char": 690,
+              "end_char": 741,
+              "text_sha256": "e776b8690442d62776e05be9276dda90f0f48426b17494889516970d1e583fd1",
+              "document_version": "MFL71401557 Rev.00_032526",
+              "source_kind": "public",
+              "original_text_exact": true
+            }
+          ],
+          "plan_sha256": "e45055e5692e5cef876369335aaba49bc719b167978a44f69f71108964478af1",
+          "idempotent": false
+        }
+      }
+    }
+  ],
+  "owned_service_diagnostic_tails": {
+    "workspace-server.log": "INFO:     Started server process [13]\nINFO:     Waiting for application startup.\nINFO:     Application startup complete.\nINFO:     Uvicorn running on http://127.0.0.1:56757 (Press CTRL+C to quit)\nINFO:     127.0.0.1:57018 - \"GET /health HTTP/1.1\" 200 OK\nINFO:     Shutting down\nINFO:     Waiting for application shutdown.\nINFO:     Application shutdown complete.\nINFO:     Finished server process [13]\n",
+    "document-server.log": ""
+  },
+  "status": "FAIL",
+  "exception_type": "TimeoutError",
+  "reason": "timed out",
+  "source_commit": "8ec1e8a51faabd6db032e52245680bef4229f93f",
+  "operating_origin_verified": false,
+  "PM_acceptance_verified": false
+}
