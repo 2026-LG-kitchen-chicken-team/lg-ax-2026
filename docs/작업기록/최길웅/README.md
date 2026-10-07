@@ -1,29 +1,26 @@
 # 최길웅 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
-## 최신 재개 요약 (작성자 갱신, 2026-10-07 08:3x KST, 기록 050)
+## 최신 재개 요약 (작성자 갱신, 2026-10-07 10:2x KST, 기록 051)
 
-- 현재 배정: **PM-20261006-WEB-INTEGRATION-R4**([#25 원문](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25#issuecomment-6015359201)). 기한은 10/7 15:00 KST 컨설팅 전 검토본이다.
-- 상태: 자동화 OFF, 수동 진행. 작업 전 메일·의존 점검 규칙을 따른다. PM·팀원에게 알릴 것은 GitHub @멘션 댓글로 남긴다.
-- **R4 PR 병합 완료(10/7 08:26 KST):** PM 독립 검수 APPROVED → PM 통합 PR [#212](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/212)로 main `f490fc2`에 들어갔다. #188(PM 날짜팩)과 #190(DATA)도 병합됐다.
-  - #201 프로젝트 모델 범위(041), #202 U3 거절 사유·회차(042), #208 U5 토큰·시간·검증 범위(043), #209 날짜팩 검증(044), #210 오류 세부·상충 경로·회차 세부(045·049), #211 화면 배치(046)
-  - 병합 미리보기 047, 컨설팅 브리핑 048
-- **병합 뒤 main 확인(기록 050):**
-  - 날짜팩: main 기준 API·MCP 행렬·웹 재검증 통과.
-  - main `f490fc2`: 웹 529·build 통과, PM HTTP 투영 검사 3 OK.
-  - **실제 HTTP → 브라우저 오류 상세 표시 확인**(사설값·토큰 노출 없음).
-  - 049 원인 정정: `/c/` 경로 문제였다.
-- R4 남은 일:
-  1. 날짜팩 운영 주입(18867·18869)은 PM 쪽이다. 주입되면 운영 설정으로 다시 확인한다.
-  2. 정상 full-scope run을 받으면 후보 선택→조건 변경→내보내기/MCP를 검증한다.
-  3. WEB-003/005 Done은 PM 판정이다.
-- 시연 환경(컨설팅): `private/demo/start-demo.cmd`(PowerShell)를 쓴다. A 재생 5183, B 날짜팩 5184이며 모두 main 코드다. 중지는 `stop-demo.cmd`.
+- 현재 배정: **PM-20261007-WEB-PROTOTYPE-INDEPENDENT-R5**([#25 원문](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/25#issuecomment-6028759150), 메일 01:16Z). 실제 후기 새 기획·조건 변경·보류·원문/내보내기를 독립 사용자 흐름으로 검수한다.
+  - 문서: `docs/pm/real-review-prototype-r5-20261007.md`(PM 브랜치 `codex/pm-real-review-prototype-20261007-r5`).
+  - **apps/web은 PM 보조 WEB AI가 수정한다. 나는 apps/web·API·core를 편집하지 않고 `evals/web-prototype-independent/20261007`에서 독립 검수한다.**
+- 상태: 자동화 OFF, 수동 진행. PM·팀원에게 알릴 것은 GitHub @멘션으로 남긴다. **Actions 사용량 90%(10/7) → 커밋을 모아 한 번에 push한다.**
+- R5 1단계 완료(기록 051): 실모델 원 3응답(122B, 정상 failed·조건 변경 failed·설명서 부족 held)을 독립 기대값으로 계산했다. 실제 HTTP 저장·재조회와 브라우저 화면·내보내기 대조 모두 일치했다. 발견 F1(회차별 검사 코드에 설명 미적용)을 PM 보조 WEB AI에게 인계했다. 시나리오 S1~S9와 내부 사용자 테스트 체크리스트도 준비했다.
+- 다음:
+  1. PM R5 PR과 운영 release를 넘겨받으면 S1~S9를 같은 버전으로 독립 실행 검수한다.
+  2. DATA R5 실제 후기 자료팩이 나오면 S7·S8을 구체화한다.
+  3. 정상 run을 받으면 3제품 시연 흐름을 확인한다.
+- 이전 R4: 웹 PR #201·#202·#208~#211·#213 모두 main 병합. 운영 배포·운영 웹 검증은 PM이 완료했다(#28 종료 기록).
+- 시연 환경(컨설팅): `private/demo/start-demo.cmd`(PowerShell)를 쓴다. A 재생 5183, B 날짜팩 5184이며 main 코드다. 중지는 `stop-demo.cmd`.
 - 시험 요령:
-  - main의 Playwright는 5173이 아니면 기존 서버를 재사용하지 않는다. 검사는 빈 포트(예: 5185)에 `LGAX_E2E_PORT`와 `LGAX_WORKSPACE_PROXY`·`LGAX_PUBLIC_API_PROXY`를 지정해 돌린다.
+  - main Playwright는 5173이 아니면 기존 서버를 재사용하지 않는다. 빈 포트에 `LGAX_E2E_PORT`와 `LGAX_WORKSPACE_PROXY`·`LGAX_PUBLIC_API_PROXY`를 지정한다.
+  - Git Bash의 PYTHONPATH는 `C:/…` 형식으로 쓴다.
   - 사용자 5173·18867·18869는 건드리지 않는다.
-  - Git Bash에서 PYTHONPATH는 `C:/…` 형식으로 쓴다(`pwd -W`).
 - 컨설팅(10/7 15:00) 웹 설명 브리핑·시연 순서·한계·예상 질문: [기록 048](2026-10-07/최길웅-20261007-048.md)
-- 최신 기록 ID: 최길웅-20261007-050. 상세:
+- 최신 기록 ID: 최길웅-20261007-051. 상세:
+  - 051 R5 1단계: 실모델 원 3응답 실제 HTTP·브라우저 재조회, 독립 시나리오·내부 테스트 준비: [상세](2026-10-07/최길웅-20261007-051.md)
   - 050 R4 병합 뒤 main 확인(날짜팩·실제 HTTP 오류 상세·시연 main 전환): [상세](2026-10-07/최길웅-20261007-050.md)
   - 049 PR190 실제 코어 기록으로 오류 세부 표시 보완(#210): [상세](2026-10-07/최길웅-20261007-049.md)
   - 048 컨설팅용 웹 흐름 브리핑: [상세](2026-10-07/최길웅-20261007-048.md)
