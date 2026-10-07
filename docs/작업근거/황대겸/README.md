@@ -1,6 +1,8 @@
 # 황대겸 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-07 CORE-R5-PR218-AUDIT-01a10729-01: PR218 head0d920df·merge8ec1e8a의 관련166 PASS/skip0·원3/선택5호출 동일·Gap27 연결 대조 완료. 모델0; 새 실모델 품질/독립 평가/부모 인수는 미완료.
+- [상세](2026-10-07/CORE-R5-PR218-AUDIT-01a10729-01.md) · [고정 검수와 연결 근거](../../../evals/core-manual-quality/20261007/r5-independent/pr218-head-audit/README.md). 다음은 PM 전송 수정/유한 입력 조건 및 DATA 선택 input-only 팩 인계 후 실제 품질 대조.
 - 2026-10-07 CORE-R5-RAW-AUDIT-01a10729-01: 원3 SHA/바이트·기존15회91587토큰·digest/수정2/원15 raw-generated 동일과 핵심 반례 경로 대조 통과. 후보 자체 근거와 항목별 검수 인용·false missing Need·정당 hold를 구분했다.
 - [상세](2026-10-07/CORE-R5-RAW-AUDIT-01a10729-01.md) · [대조 JSON/재현기/manifest](../../../evals/core-manual-quality/20261007/r5-independent/README.md). 인증0/networknone/UID65534 고정 Docker 검사; PM 새 head·실모델 효과·최종 인수 미검증. 원6 채점/모델 반복0.
 - 2026-10-06 CORE-SEMANTIC-GROUNDING-01a10729-01: PM full-cap-v3의 새 가설 설명서 요구/현재 제품 단정 반례 대조와 실제 검토 지침 보완. INSTRUCTIONS 외 AST 동일, 새모델0·후속효과 미검증.
