@@ -120,4 +120,18 @@ describe('actual-source research screen state and revision flow', () => {
     expect(downloads[0].content).toContain('| S02 | 지금 | 장면 1 |');
     vi.restoreAllMocks();
   });
+  // A11Y-1 (record 최길웅-20261008-061): the detail opens above the list, so keyboard and screen-reader users must be
+  // taken to it, and brought back to the citation they came from when it closes.
+  it('moves focus into an opened source detail and back to the citation when it closes', async () => {
+    vi.stubGlobal('fetch', api()); await act(async () => root.render(createElement(ResearchPlanningView)));
+    await connect(); await choose();
+    const cite = host.querySelector<HTMLButtonElement>('.research-source-row .research-citations button')!;
+    await act(async () => { cite.focus(); cite.click(); });
+    const detail = host.querySelector('[aria-label="인용 원문 상세"]')!;
+    expect(detail).not.toBeNull();
+    expect(document.activeElement).toBe(detail.querySelector('h3'));
+    await click('상세 닫기');
+    expect(host.querySelector('[aria-label="인용 원문 상세"]')).toBeNull();
+    expect(document.activeElement).toBe(cite);
+  });
 });
