@@ -21,7 +21,7 @@ const review = { id: 'REVIEW-TEST-001', model_id: MODEL, text: 'UI 계약 시험
 const BOOTSTRAP: BootstrapData = {
   contract_version: '0.1.0', manifest: { dataset_id: 'public-profile-test', version: VERSION, source_kind: 'public',
     description: '공개자료 형태의 합성 계약 시험. 실제 수집·기획 효과 근거가 아님.', model_count: 18, review_count: 1, analysis_implemented: false,
-    dataset_sha256: 'a'.repeat(64), warnings: [] },
+    dataset_sha256: 'a'.repeat(64), warnings: ['시험 자료 조회는 시장 수요나 모델 기획 품질의 증거가 아닙니다.'] },
   evidence: [{ id: review.evidence_id, model_id: MODEL, document_version: DOC, source_kind: 'public', source_type: 'review',
     source_id: review.source_id, locator: review.locator, text: review.text, feature_ids: [] }], features: [], reviews: [review],
   products: Array.from({ length: 18 }, (_, index) => ({ model_id: index === 0 ? MODEL : `SKU-TEST-${index}`, name: '계약 시험 모델',
@@ -74,11 +74,13 @@ describe('new public profile uses registered SKU, document and dataset boundarie
     await setValue(host.querySelector<HTMLInputElement>('#workspace-token')!, 'test-token-not-a-credential');
     await click('연결');
     expect(host.querySelector('.hero-stats')?.textContent).toContain(VERSION);
+    expect(host.querySelector('[data-source-warnings]')?.textContent).toContain('시장 수요나 모델 기획 품질의 증거가 아닙니다');
     await click('01기획 요청');
     await setValue(host.querySelector<HTMLTextAreaElement>('#planning-prompt')!, 'private-login-test-request');
     await click('연결 해제');
     expect(host.querySelector('.hero-stats')?.textContent).toContain('합성자료');
     expect(host.querySelector('.hero-stats')?.textContent).not.toContain(VERSION);
+    expect(host.querySelector('[data-source-warnings]')).toBeNull();
     expect(host.querySelector<HTMLTextAreaElement>('#planning-prompt')?.value).not.toContain('private-login-test-request');
   });
 
