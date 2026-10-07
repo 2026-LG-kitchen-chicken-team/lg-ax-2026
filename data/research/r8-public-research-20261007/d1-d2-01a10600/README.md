@@ -41,7 +41,7 @@ FROM reviews WHERE original_review_id='860977';
 
 [d1-delivery-manifest.json](d1-delivery-manifest.json)의 `source_hashes`와 출력 파일 SHA를 확인한다. DB 안 `collection`은 생성에 필요한 원자료·분할·보류 manifest이며, 외부 delivery manifest의 생성 후 출력 SHA까지 자기 파일에 포함하는 구조는 아니다.
 
-**현재 실행 제한:** `ResearchBundleProducerSidecar`는 PM P0 정식 schema/adapter 수신 전의 생산자 묶음이다. 이를 기존 `Evidence`나 기획 API에 그대로 업로드하지 않는다. 실제 AI 실행·운영 인수는0이며 특정 SKU의 사실 판단 적격은 그대로0이다. 제품군 연구와 정확 SKU 사실 판정을 구분한 P0 소비 인수가 남는다. [구체 인계 요청](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/234#issuecomment-6038078659).
+**첫 checkpoint(6fd98c0)의 실행 제한:** `ResearchBundleProducerSidecar`는 PM P0 정식 schema/adapter 수신 전의 생산자 묶음이다. 이를 기존 `Evidence`나 기획 API에 그대로 업로드하지 않는다. 실제 AI 실행·운영 인수는0이며 특정 SKU의 사실 판단 적격은 그대로0이다. 제품군 연구와 정확 SKU 사실 판정을 구분한 P0 소비 인수가 남는다. [구체 인계 요청](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/234#issuecomment-6038078659).
 
 ## D2: 원 설명서와 새 공개 근거의 구분
 
@@ -67,8 +67,26 @@ FROM reviews WHERE original_review_id='860977';
 
 자료 출처는 고정 main58feb9c, 새 PR의 base는3e2a19d다. 자료8파일과 기존 landing writer의 바이트가 새 base에서도 같음을 대조했다. 새 builder의 실행은 GitHub 인증·네트워크 없는 Docker에서 했으며 source/code SHA와 원 명령/출력은 [실행 근거](../../../../evals/data-d1-d2/20261007-01a10600/)에 있다. 이전 실패·사용량·개인 기록·원자료는 변경하지 않았다.
 
-1. PM이 P0 ResearchBundle schema/consumer·source type 매핑을 고정한다.
+1. P0/PR245의 정식 ResearchBundle 계약을 ef29aa8에서 수신했다. 아래 현재 입력의 계약 검사를 확인하고 PM이 운영 인수한다.
 2. D4 담당 창은 이 고정 자료 manifest와238개 membership으로 표본·중복·개발/평가/시연 분리·노출을 독립 검수한다.
 3. CORE/PM은 승인한 개발 제품군 입력만 소비해 실제 기획 실행을 검증한다. 평가 후보·시연·격리 자료를 개발·튜닝에 섞지 않는다.
 
 이 자료 전달은 D1·D2 첫 인수 단위다. P0/실제 모델/독립 평가/PM 병합·통합과 #12 전체 완료는 별도다.
+
+## P0 수신 후 현재 실행 입력
+
+첫 로컬 checkpoint6fd98c0 뒤 PM PR245가 병합되어 ef29aa8의 `research-planning.schema.json`을 수신했다. 이전 producer 파일과 실행 증거는 보존하고, 실제 사용할 파일은 `agent-input/{fridge,dishwasher,microwave}/research-bundle.json` 세 개로 별도 준비했다. **`.producer.json`은 이전 checkpoint이며 기획 API 입력이 아니다.**
+
+PM R8의 개발 review Source 객체141개를 그대로 재사용·원 membership과 대조했다. 기존21설명서 Evidence와 이번 FAQ3/설치3을 같은 P0 type/role로 연결하고, DUE질문470877은 고객 질문과 LG 답변 두 Source로 분리했다. Source 수는 냉장고58/식기세척기59/전자레인지53, 리뷰는48/48/45다. 경쟁제품 자료는 D3 담당의 별도 팩으로 유지하며 이 LG 팩에 섞지 않았다.
+
+새 짧은 발췌의 원문은 현재 canonical 입력에 한 번 보관하고 D2 근거표는 `canonical_excerpt_ref`로 같은 source_id/text SHA를 연결한다. QA600/590/조건부567~600mm는 답변의 서로 다른 문단 위치·조건을 보존한다. 선택 발췌 밖에서 확인한 숫자와 조건은 별도 facts/metadata의 원 문단으로 구분하고 하나의 연속 인용이라고 표시하지 않는다. 고객 치수는 unknown fact로 유지한다.
+
+[P0 연결·파일 SHA](../../../../evals/data-d1-d2/20261007-01a10600/p0-alignment.json). 이 변경은 자료 계약 맞춤이며 서버 등록·모델 호출·운영 인수가 아니다. 실제 기획용 서버에는 승인된 환경에서 세 파일을 `--research-bundle`로 지정할 수 있다. 이번 작업에서 서버를 켜거나 설정을 바꾸지는 않았다. 원 DB/XLSX는 재생성하지 않았고 같은 SHA를 유지했다.
+
+다음은 D4의 고정 자료 독립 검수와 PM/CORE의 승인된 이 자료 버전 소비 인수다. 정확 SKU 판단 적격0·확인 리뷰 게시일0, 다른 정확모델 고객Q&A 미확인2는 유지한다. 제품군 기획과 정확 SKU 사실 판정은 별도다.
+
+최종 입력3개는 P0계약 검사와 개발141개 ID·원문·표시모델·split/null/hold 대조를 통과했다. [현재 산출물 수신증](../../../../evals/data-d1-d2/20261007-01a10600/current-delivery.json). Excel은 P0수신 안내 C26 한 칸만 갱신했고 나머지 모든 값·판본·날짜·수식·표/고정열·셀 형식은 원본과 같았다. 원 Excel/6fd98c0은 보존했다. 시작·수집은10/7, 최종 규격 검사·게시 준비는10/8 KST다.
+
+## PM 관리·냄새 절 후속 보완
+
+PM #5의6039619781과 독립 감사 PR252/78a1906을 수신해, 기존 공식 DUE6계열 PDF의 관리·냄새/문제해결14개 범위를 같은 native page·start/end·SHA로 직접 대조했다. 새 식기세척기 입력은 `-v2-care`/73 Source, 전체는58+73+53=184이며 개발141개는 그대로다. [연속 범위·판본·쪽·SHA](d2-care-evidence-index.json)를 사용한다. 내부/필터39–40, 세척조41–42, 노즐42–43, 보관43, 냄새49, 성능50과 안전5/진단48을 연결했다. 43쪽 native `50 7`은 그대로 두고 감사의 시각50℃ 확인을 별도 표시했다. 범위/원문 대조를 새 자동 표 구조·OCR 성능이나 고객의 실제 원인/호전으로 처리하지 않는다. 정확 구매SKU·구매시점판과 선택 코스 적용은 미확인이다.
