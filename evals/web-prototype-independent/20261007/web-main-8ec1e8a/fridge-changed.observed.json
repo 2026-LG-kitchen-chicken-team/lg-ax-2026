@@ -1,0 +1,44 @@
+{
+ "case": "fridge-changed",
+ "run_id": "run-d66b2ba0134040188d37aeb0c1db4090",
+ "head": "실제 모델 실행 기록(저장된 결과)실패 · 내부 수정 2/2",
+ "head_class": "run-status error",
+ "model_calls": "5회 · 모델 시간 135.2초",
+ "tokens": "입력 19,420 · 출력 8,349 · 합 27,769",
+ "rounds_line": "요청 회차 0(기획자 조건 변경) · Agent 내부 수정 2/2(같은 요청 안 자동 수정)",
+ "check_rounds": [
+  "1회차(내부 수정 0회 뒤) · 수정 필요 · 위반 모델 응답이 단계 규격에 맞지 않습니다 (VALIDATION_FAILED)",
+  "2회차(내부 수정 1회 뒤) · 수정 필요 · 위반 후보가 대조 항목의 근거를 인용하지 않았습니다 (CONCEPT_GROUNDING_MISSING)",
+  "3회차(내부 수정 2회 뒤) · 미해결 종료 · 위반 후보가 대조 항목의 근거를 인용하지 않았습니다 (CONCEPT_GROUNDING_MISSING) · 이전 회차와 같은 위반 반복"
+ ],
+ "scope": [
+  "검증 범위 이 실행이 확인하지 않은 것의미 검토 0회 · 후보 없음 검토 0회: 이 실행에서는 규칙·계약 검사만 했습니다. 리뷰 판단·기능 대조·후보는 판단 모델의 선언이며 의미 정확성은 검증되지 않았습니다.규칙 모듈 마지막 검사: 기능 지원 위반 0건 · 잔여 불편 행렬 위반 0건 · 콘셉트 계보 위반 2건 · 의미 정확성 미검증(semantic_accuracy_verified=false). 규칙 통과는 불편·간극·남은 불편의 내용이 맞다는 뜻이 아니며 최종 결정은 위 코어 결정을 따릅니다.신뢰 수집기 검증 안 됨(trusted_collector_verified=false): 이 기록은 PM의 신뢰 수집기가 검증한 제품 증거가 아닙니다.입력 자료에 합성자료가 있습니다. 동작 확인용이며 실제 고객 수요·제품 성능의 근거가 아닙니다."
+ ],
+ "errors": [
+  "VALIDATION_FAILED 판단 결과 검사를 통과하지 못했습니다."
+ ],
+ "rejected": [
+  "CONCEPT-001",
+  "CONCEPT-002",
+  "CONCEPT-003"
+ ],
+ "accepted_claim": false,
+ "concept_cards": 0,
+ "checks": {
+  "head_not_success": true,
+  "head_status": true,
+  "calls": true,
+  "tokens": true,
+  "internal_revisions": true,
+  "check_rounds": true,
+  "rejected": true,
+  "no_success_claim": true,
+  "synthetic_shown": true,
+  "lists_shown": true,
+  "export_status": true,
+  "export_tokens": true,
+  "export_errors": true,
+  "markdown_tokens": true,
+  "markdown_internal": true
+ }
+}

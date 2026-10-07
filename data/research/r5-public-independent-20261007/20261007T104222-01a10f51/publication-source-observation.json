@@ -1,0 +1,63 @@
+{
+  "main": "2d2b27c87d8d536e1c8f7219bfbaf74f64eb8f2b",
+  "handoffs": [
+    {
+      "issue": 12,
+      "new_team_comments": []
+    },
+    {
+      "issue": 14,
+      "new_team_comments": [
+        {
+          "author": "unknownamed",
+          "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/14#issuecomment-6029193144",
+          "body": "@ginaginaring @jeongiryang 요청6029129674에 대한 **CORE 현재 소비 경계 확인**입니다. 기준은 실제 main `8b41fd4785bc149593f04d913ef974f29fb341fe`입니다. 해당 7파일의 GitHub 고정 blob과 읽은 코드 바이트를 대조했습니다. 새 모델/OCR·공통 계약/제품 코드 수정은0입니다.\n\n| 구분 | 현재 소비되는 값/검사 |\n|---|---|\n| 근거 ID | canonical `Evidence.id`; Need/Gap/Concept 및 검수의 `evidence_ids`/`source_quotes.evidence_id`가 이 ID를 참조합니다. 새 `cell_id`를 자동으로 근거 ID로 해석하는 경로는 없습니다 |\n| 모델·판본 | `model_id`는 **가전 제품 모델**이고 `document_version`은 문서 판본입니다. OCR/추론 모델명·revision과 별개입니다. 현재 Agent 입력은 선택된 단일 제품 모델/문서 판본의 원 `evidence`/`features`만 받습니다 |\n| 원문 출처·위치 | `source_id`(등록 PDF는 `document_id`), `source_kind`, `source_type=manual`, 원문 `text`, `locator.page/row/section`. `row`는 원문 텍스트의 줄이며 표의 행·열/병합셀 관계가 아닙니다 |\n| 기능 연결 | `Evidence.feature_ids` ↔ `Feature.evidence_ids`의 양방향 ID/모델/판본 연결을 검사합니다. 텍스트를 설명서에 넣었다는 이유로 기능 지원을 자동 확정하지 않습니다 |\n| 별도 원문 검증 근거 | 등록/검증 경로에서 PDF SHA256, `evidence_id`, `text_sha256`, 판본, page/`start_char`/`end_char`를 대조합니다. 인용은 같은 추출 페이지의 정확한 연속 substring이어야 합니다. 이는 Evidence 본문 필드와 별도입니다 |\n\n근거: [Evidence/Locator 계약](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/blob/8b41fd4785bc149593f04d913ef974f29fb341fe/packages/contracts/schemas/lgax.schema.json#L25), [ID·판본·양방향 연결](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/blob/8b41fd4785bc149593f04d913ef974f29fb341fe/packages/core/src/lgax_core/document_store.py#L17), [PDF 등록/근거 생성](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/blob/8b41fd4785bc149593f04d913ef974f29fb341fe/packages/core/src/lgax_core/documents.py#L111), [판단 입력 scope](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/blob/8b41fd4785bc149593f04d913ef974f29fb341fe/packages/core/src/lgax_core/workspace_planning.py#L24), [원문 범위 검증](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/blob/8b41fd4785bc149593f04d913ef974f29fb341fe/packages/core/src/lgax_core/source_ranges.py#L133), [source_quote 검사](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/blob/8b41fd4785bc149593f04d913ef974f29fb341fe/packages/core/src/lgax_core/semantic_review.py#L182).\n\n**아직 소비하지 않는 구조:** bbox, table/cell ID, row/column 그래프, rowspan/colspan, 헤더/모델·단위 상속, 각주 marker→본문→적용셀 관계는 현재 canonical Evidence/Locator 및 Agent 입력에 없습니다. `additionalProperties:false`이므로 그 그래프를 Evidence에 추가해 현재 경로에 넣을 수 없습니다. `capture_source`의 외부 PDF 추출은 `caller_supplied_extraction`으로 표시되고 원문 범위 수신증의 `pdf_or_ocr_verified=false`가 유지됩니다. SHA/substring 검사 통과는 표 구조·OCR 정확도 확인이 아닙니다.\n\n**생산 담당과 고정할 첫 인계 단위:** producer commit/설정·OCR 모델/revision(사용 시)·원 PDF SHA/문서 판본/제품 모델, 원 구조 출력+SHA 및 `cell_id→Evidence.id` 대응을 먼저 별도 산출물로 인계해 주세요. 기존 canoni"
+        }
+      ]
+    }
+  ],
+  "PR_states": [
+    {
+      "number": 190,
+      "state": "closed",
+      "merged": true,
+      "head": "28e4431e702e099871d84c813515fca5bcac5097"
+    },
+    {
+      "number": 200,
+      "state": "closed",
+      "merged": true,
+      "head": "a26b6458118157fa0513218414f24abd6eae4b2a"
+    },
+    {
+      "number": 203,
+      "state": "closed",
+      "merged": true,
+      "head": "d96d69147a6542fae3af107720cec7aaa38f0be2"
+    },
+    {
+      "number": 204,
+      "state": "closed",
+      "merged": true,
+      "head": "c3cb9c483ef571063eb2ad414b35d154ad67fb34"
+    },
+    {
+      "number": 205,
+      "state": "closed",
+      "merged": true,
+      "head": "5ec3c2e009317372ee1757998e19123ddd5de960"
+    },
+    {
+      "number": 206,
+      "state": "closed",
+      "merged": true,
+      "head": "7b22ff6f059f759bb9a5fb8c22a0932ddfec242d"
+    },
+    {
+      "number": 207,
+      "state": "closed",
+      "merged": true,
+      "head": "4bd96da1220d9e41f166d517eccc6ff1f84a3cbe"
+    }
+  ]
+}
