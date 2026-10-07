@@ -1,0 +1,258 @@
+{
+  "record_id": "DATA-REMAINING-QA-REVIEW-CANDIDATES-20261008-01a1100e",
+  "record_date_kst": "2026-10-08",
+  "artifact_kind": "read_only_source_candidate_reference",
+  "source_main_commit": "ef29aa8ff80e9ca3f4e344c48c9acec62ad8769f",
+  "status": "candidate_only_not_registered",
+  "summary": {
+    "candidate_count": 5,
+    "official_usage_qa_candidates": 3,
+    "review_holds": 1,
+    "affiliate_exclusions": 1,
+    "new_confirmed_dated_usage_reviews": 0,
+    "new_registered_reviews": 0,
+    "fixed_238_or_r8_bundle_modified": false
+  },
+  "date_rules": [
+    "Official Q&A article dates are separate from customer review published_at.",
+    "An unlabelled article header date does not establish first publication rather than modification.",
+    "Search-engine published/crawled dates, capture dates and purchase dates do not substitute for review publication dates.",
+    "The Enuri date mentioned in an earlier handoff was not independently confirmed as a review writing date here.",
+    "No Q&A article or excluded affiliate post is added to the customer review denominator."
+  ],
+  "inspection_scope": {
+    "method": "web search and read-only primary-page reading; no collector execution",
+    "originals_compared_path": "data/research/r8-public-research-20261007/records.json",
+    "originals_compared_commit": "ef29aa8ff80e9ca3f4e344c48c9acec62ad8769f",
+    "existing_review_rows_read": 238,
+    "comparison_method": "NFKC and whitespace normalization, then substring search of only three short excerpts",
+    "excerpt_checks": [
+      {
+        "candidate_id": "QA-C01",
+        "excerpt_ref": "candidates[QA-C01].excerpt",
+        "matching_existing_review_ids": []
+      },
+      {
+        "candidate_id": "QA-C02",
+        "excerpt_ref": "candidates[QA-C02].excerpt",
+        "matching_existing_review_ids": []
+      },
+      {
+        "candidate_id": "QA-C03",
+        "excerpt_ref": "substring of candidates[QA-C03].excerpt identifying the hook shelf",
+        "matching_existing_review_ids": []
+      }
+    ],
+    "official_source_url_id_checks": [
+      {
+        "path": "data/research/r8-public-research-20261007/official-sources.json",
+        "checked_article_ids": [
+          "20151643444900",
+          "20154401449571",
+          "20154444766874"
+        ],
+        "matching_article_ids": []
+      },
+      {
+        "path": "data/research/r8-public-official-expansion-20261007/sources.json",
+        "checked_article_ids": [
+          "20151643444900",
+          "20154401449571",
+          "20154444766874"
+        ],
+        "matching_article_ids": []
+      }
+    ],
+    "limits": [
+      "The three short-excerpt checks are not complete article deduplication.",
+      "Older packs, other remote outputs and the Enuri original review have not been fully deduplicated.",
+      "Root acquired immutable raw HTML response bytes/SHA for these3 candidates; production registration and approved model linkage remain pending."
+    ]
+  },
+  "candidates": [
+    {
+      "candidate_id": "QA-C01",
+      "source_type": "manufacturer_public_usage_qa",
+      "title": "[LG 디오스 식기세척기] 식기세척기에서 냄새가 나는 이유와 해결 방법은?",
+      "source_url": "https://www.lge.co.kr/support/solutions-20151643444900",
+      "document_id": "20151643444900",
+      "original_review_id": null,
+      "related_model_support_url": "https://www.lge.co.kr/support/product-DUE6BGL2E",
+      "observed_model_context_url": "https://www.lge.co.kr/support/solutions-20151643444900?cstFlag=Y&mktModelCd=DUE6BGL2E&svcqr=",
+      "related_catalog_models": [
+        "DUE6BGL2E"
+      ],
+      "explicit_sku_in_article_body": [],
+      "sku_basis": "The DUE6BGL2E official support page actually links this article; the article body itself is shared, not exact-SKU text.",
+      "displayed_date": "2026.08.04",
+      "displayed_date_basis": "Date beneath the article heading and the date beside this title in the official DUE6BGL2E Q&A list.",
+      "displayed_date_kind": "official_article_displayed_date",
+      "first_publication_vs_modification": "unconfirmed",
+      "customer_review_published_at": null,
+      "excerpt": "식기세척기 전용 세제마다 고유한 냄새가 있는데",
+      "excerpt_location": "Second troubleshooting question, concerning the detergent-change condition",
+      "recheck_status": "Article body, official DUE6BGL2E support list and actual article link read successfully on 2026-10-08 KST.",
+      "sponsor_or_selection_bias": "Manufacturer-selected troubleshooting content; not an individual customer's experience or a frequency sample.",
+      "duplicate_status": "Selected article ID absent from the two inspected R8 official-source files; this short excerpt has no match in the inspected 238 review rows. Full-body deduplication is unconfirmed.",
+      "decision": "general_usage_qa_candidate",
+      "decision_ko": "공용 사용 Q&A 채택 후보",
+      "exact_sku_application": "unconfirmed",
+      "application_caveat": "The source declares shared content. Do not convert all procedures, features or values into exact DUE6BGL2E claims without its pinned manual and model applicability review.",
+      "eligible_for_review_denominator": false,
+      "eligible_for_automatic_append": false,
+      "unverified_discovery_excerpt": "식기세척기 전용 세제마다 고유한 냄새가 있습니다.",
+      "excerpt_correction": "Root raw HTML recheck found that the initial discovery wording was shortened into a paraphrase. Use this continuous exact fragment instead; original observation retained."
+    },
+    {
+      "candidate_id": "QA-C02",
+      "source_type": "manufacturer_public_usage_qa",
+      "title": "[LG 광파오븐레인지/전자레인지] 사용 불가 용기 및 청소 방법이 궁금해요",
+      "source_url": "https://www.lge.co.kr/support/solutions-20154401449571",
+      "document_id": "20154401449571",
+      "original_review_id": null,
+      "related_model_support_url": "https://www.lge.co.kr/support/product-MW25B",
+      "observed_model_context_url": "https://www.lge.co.kr/support/solutions-20154401449571?category=CT50019695&cstFlag=Y&mktModelCd=MW25B&page=0&seq=1&sort=update&subCategory=CT50019709",
+      "related_catalog_models": [
+        "MW25B"
+      ],
+      "explicit_sku_in_article_body": [],
+      "sku_basis": "Primary search results show this article with MW25B context and in the MW25B official support list. Body text does not specify an exact SKU.",
+      "displayed_date": "2026.05.29",
+      "displayed_date_basis": "Date beneath the successfully read article heading; also displayed beside the title in the indexed MW25B support list.",
+      "displayed_date_kind": "official_article_displayed_date",
+      "first_publication_vs_modification": "unconfirmed",
+      "customer_review_published_at": null,
+      "excerpt": "조리실 내부 주기적 청소",
+      "excerpt_location": "Periodic-cleaning section heading, after the container table",
+      "recheck_status": "Generic article body read successfully. MW25B support-list content was inspected via primary-source search results; a later direct support-page fetch timed out.",
+      "sponsor_or_selection_bias": "Manufacturer-selected shared guidance covering multiple appliance types; not an individual customer's experience.",
+      "duplicate_status": "Selected article ID absent from the two inspected R8 official-source files; this short excerpt has no match in the inspected 238 review rows. Full-body deduplication is unconfirmed.",
+      "decision": "hold_exact_model_application",
+      "decision_ko": "정확 모델 적용 보류",
+      "exact_sku_application": "unconfirmed",
+      "application_caveat": "This shared article contains oven, steam and MultiClean procedures as well as microwave guidance. Do not attribute its complete feature set or cleaning instructions to MW25B or MW23FDI. A model-specific manual is required before applicable sections are selected.",
+      "eligible_for_review_denominator": false,
+      "eligible_for_automatic_append": false
+    },
+    {
+      "candidate_id": "QA-C03",
+      "source_type": "manufacturer_public_usage_qa",
+      "title": "[LG 양문형 냉장고] 손쉬운 설명 – LG 양문형 냉장고 선반 분리/조립 방법",
+      "source_url": "https://www.lge.co.kr/support/solutions-20154444766874",
+      "document_id": "20154444766874",
+      "original_review_id": null,
+      "related_model_support_url": null,
+      "observed_model_context_url": "https://www.lge.co.kr/support/solutions-20154444766874?category=CT50019441&cstFlag=Y&mktModelCd=R-T759MBHGP&page=0&seq=33&sort=update&subCategory=CT50019468",
+      "related_catalog_models": [],
+      "observed_external_model_context": "R-T759MBHGP",
+      "explicit_sku_in_article_body": [],
+      "sku_basis": "The observed search-result model context is outside the fixed 18-model catalogue. No fixed-18 support-page linkage was established.",
+      "displayed_date": "2026.05.29",
+      "displayed_date_basis": "Date beneath the article heading.",
+      "displayed_date_kind": "official_article_displayed_date",
+      "first_publication_vs_modification": "unconfirmed",
+      "customer_review_published_at": null,
+      "excerpt": "[고리형 선반] 분리 방법",
+      "excerpt_location": "First detachment subsection heading, concerning the hook shelf",
+      "recheck_status": "Generic primary article body read successfully on 2026-10-08 KST. Exact fixed-18 applicability remains unconfirmed.",
+      "sponsor_or_selection_bias": "Manufacturer-selected shared guidance; accessory shop promotion also appears in the article. Not an individual customer's experience.",
+      "duplicate_status": "Selected article ID absent from the two inspected R8 official-source files; the phrase 고리형 선반 has no match in the inspected 238 review rows. Full-body deduplication is unconfirmed.",
+      "decision": "hold_exact_model_application",
+      "decision_ko": "정확 모델 적용 보류",
+      "exact_sku_application": "unconfirmed",
+      "application_caveat": "Keep as a general question reference only. Do not attach this side-by-side refrigerator procedure to T876MEE1H1 or another fixed-18 model without proof of matching shelf structure and model scope.",
+      "eligible_for_review_denominator": false,
+      "eligible_for_automatic_append": false
+    },
+    {
+      "candidate_id": "REVIEW-H01",
+      "source_type": "third_party_shopping_review_redisplay_unconfirmed",
+      "title": "LG전자 오브제컬렉션 MW23FDI - 에누리 가격비교",
+      "source_url": "https://www.enuri.com/detail.jsp?modelno=142945540",
+      "observed_redirect_url": "https://price.enuri.com/catalog/142945540",
+      "document_id": "catalog-142945540",
+      "original_review_id": null,
+      "related_model_support_url": "https://www.lge.co.kr/support/product-MW23FDI",
+      "related_model_support_status": "Direct support-page reading was unavailable in this inspection; not used as review evidence.",
+      "related_catalog_models": [
+        "MW23FDI"
+      ],
+      "explicit_sku_in_article_body": [],
+      "sku_basis": "Product catalogue title names MW23FDI. An individual review's actual purchased SKU and original ID were not received.",
+      "displayed_date": null,
+      "unverified_date_from_prior_handoff": "2026.03.29",
+      "displayed_date_basis": "The earlier handoff date was not located in the current readable page response. Its original field meaning is not confirmed.",
+      "displayed_date_kind": "not_verified",
+      "first_publication_vs_modification": "unconfirmed",
+      "customer_review_published_at": null,
+      "excerpt": null,
+      "excerpt_location": null,
+      "recheck_status": "Initial product-page reading was partial and did not verify review ID/date. A later read failed at the catalog redirect. No access restriction was bypassed.",
+      "sponsor_or_selection_bias": "Shopping aggregator redisplay and ordering may select seller reviews; individual sponsorship and original provenance are unconfirmed.",
+      "duplicate_status": "Original LGE review ID/text not received. Could be a redisplay of an existing fixed-238 review; no new unique-review claim.",
+      "decision": "hold_original_review_and_date_provenance",
+      "decision_ko": "원 후기·작성일 근거 수신까지 보류",
+      "exact_sku_application": "unconfirmed",
+      "application_caveat": "Obtain the original review ID, primary URL/text and explicit writing-date field. Do not reuse LGE purchase_date or a shopping-site redisplay date as published_at.",
+      "eligible_for_review_denominator": false,
+      "eligible_for_automatic_append": false
+    },
+    {
+      "candidate_id": "REVIEW-X01",
+      "source_type": "affiliate_promotional_post",
+      "title": "T876MEE1H1 계란 보관 장단점 찾아서 정리했어요",
+      "source_url": "https://www.ezday.co.kr/bbs/view_board.html?q_id_info=1312&q_sq_board=9250620",
+      "document_id": "board-9250620",
+      "original_review_id": null,
+      "related_model_support_url": "https://www.lge.co.kr/support/product-T876MEE1H1",
+      "related_model_support_status": "Direct support-page reading was unavailable in this inspection; not used to approve the post.",
+      "related_catalog_models": [
+        "T876MEE1H1"
+      ],
+      "explicit_sku_in_article_body": [
+        "T876MEE1H1"
+      ],
+      "sku_basis": "Exact model string appears in the title and body. This does not prove purchase or use.",
+      "displayed_date": "2026.09.25 15:13:20",
+      "displayed_date_basis": "Timestamp beside the anonymous author beneath the post title; the forum also labels its listing date column 작성일.",
+      "displayed_date_kind": "forum_author_timestamp_timezone_unspecified",
+      "first_publication_vs_modification": "original_post_history_unconfirmed",
+      "customer_review_published_at": null,
+      "excerpt": "퍄트너스 활동으로 수수료를 지급받습니다.",
+      "excerpt_location": "Affiliate disclosure at the beginning of the post body",
+      "recheck_status": "Title, displayed timestamp, exact model string, disclosure and shopping links directly read successfully on 2026-10-08 KST.",
+      "sponsor_or_selection_bias": "Explicit affiliate commission disclosure and outbound purchase links; author describes considering the product rather than documented first-hand use.",
+      "duplicate_status": "No complete 238-text comparison was performed for this excluded promotional post. Exclusion does not imply a new unique review.",
+      "decision": "exclude_affiliate_without_verified_first_hand_use",
+      "decision_ko": "제휴 홍보·직접 사용 미확인으로 제외",
+      "exact_sku_application": "not_accepted_as_usage_evidence",
+      "application_caveat": "A dated promotional post is not a verified usage review and is not eligible for the dated-review denominator.",
+      "eligible_for_review_denominator": false,
+      "eligible_for_automatic_append": false
+    }
+  ],
+  "next_handoff": {
+    "owner": "PM @jeongiryang coordinates with the existing D1/D2 production window",
+    "official_qa": "Supply approved immutable source capture/hash and applicable section/model scope without converting manufacturer guidance into customer experience.",
+    "dated_reviews": "Supply original review ID, primary URL/text, explicit writing-date field meaning, actual-SKU evidence, promotion status and fixed-238 deduplication lineage."
+  },
+  "execution_boundaries": {
+    "existing_file_edits": 0,
+    "collector_runs": 0,
+    "new_model_calls": 0,
+    "new_ocr_calls": 0,
+    "production_downloads": 0,
+    "github_posts": 0,
+    "changes_in_this_agent": [
+      "qa-review-candidates.json",
+      "qa-review-candidates.md"
+    ]
+  },
+  "root_recheck": {
+    "reference": "qa-excerpt-audit.json",
+    "corrected_candidate_ids": [
+      "QA-C01"
+    ],
+    "corrected_excerpt_fixed_238_matches": []
+  }
+}

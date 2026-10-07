@@ -1,0 +1,52 @@
+{
+  "record_id": "DATA-REMAINING-INTAKE-20261008-01a1100e",
+  "attempts": [
+    {
+      "sequence": 1,
+      "command": "python -X utf8 evals/data-remaining-intake/20261008-01a1100e/audit_care_bridge.py",
+      "exit_code": 1,
+      "error_type": "TypeError",
+      "error": "list indices must be integers or slices, not str",
+      "failing_expression": "old[\"excerpts\"]",
+      "cause": "The new audit reader assumed an object, but pinned PR252 manual-native-excerpts.json is a list of 14 records.",
+      "scope": "New independent audit reader input format; original/producer files were not changed.",
+      "source_or_model_failure": false
+    },
+    {
+      "sequence": 2,
+      "command": "python -X utf8 evals/data-remaining-intake/20261008-01a1100e/audit_care_bridge.py",
+      "exit_code": 0,
+      "correction": "Read the original list and its actual audit_evidence_id/native_exact_excerpt/native_excerpt_sha256 fields.",
+      "care_sources": 14,
+      "source_matches": 14,
+      "source_errors": 0,
+      "continuation_warnings": 5,
+      "model_calls": 0,
+      "OCR_runs": 0
+    },
+    {
+      "sequence": 3,
+      "command": "python -X utf8 evals/data-remaining-intake/20261008-01a1100e/audit_care_bridge.py",
+      "exit_code": 0,
+      "scope": "Same fixed care files; add explicit metadata semantics/runtime limitations only",
+      "source_matches": 14,
+      "continuation_warnings": 5,
+      "model_calls": 0,
+      "OCR_runs": 0
+    }
+  ],
+  "note": "Original failure is retained. Later output timestamps and source pins are in care-bridge-result.json and care-source-pins.json. Re-reading the fixed files does not repeat the producer/model/OCR execution.",
+  "public_reference_acquisition": {
+    "original_web_reader_errors": 3,
+    "public_PDF_URL_GETs": 16,
+    "http_200_PDF_responses": 16,
+    "distinct_original_PDF_SHA": 15,
+    "native_cover_extractions": 16,
+    "derived_cover_visual_inspections": 15,
+    "official_QA_HTML_GETs": 3,
+    "registered_sources": 0,
+    "model_calls": 0,
+    "OCR_runs": 0,
+    "note": "First manual receipt counted unique URL captures16. Later metadata-only finalization records distinct full content SHA15; original source bytes were preserved and not refetched."
+  }
+}

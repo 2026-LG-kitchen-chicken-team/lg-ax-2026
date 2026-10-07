@@ -1,0 +1,229 @@
+{
+  "record_id": "DATA-R8-RUNTIME-INTAKE-20261008-01a1100e",
+  "recorded_date_kst": "2026-10-08",
+  "github_observation_at_kst": "2026-10-08T00:38:18+09:00",
+  "repository": "2026-LG-kitchen-chicken-team/lg-ax-2026",
+  "issue": 13,
+  "independent_operating_integrity_status": "UNCONFIRMED",
+  "reason": "Fixed producer inputs and PM execution reports are available; operating raw responses, related DB exports and restart pairs have not been handed over to this audit.",
+  "pm_execution_report": {
+    "pull_request": 245,
+    "head_commit": "5fdb3ad55349726fbe03c9f69651f895d73e8f10",
+    "merged_main_commit": "ef29aa8ff80e9ca3f4e344c48c9acec62ad8769f",
+    "reported_model_calls": 12,
+    "reported_saved_flows": 5,
+    "reported_other_core_flow": "one official-source deliberately omitted case",
+    "reported_api_mcp_saved_retrieval": true,
+    "raw_operating_artifacts_received_by_this_audit": false,
+    "independent_operating_restart_comparison_completed": false,
+    "interpretation": "PM reports actual execution and retrieval. Missing raw handoff does not mean that execution did not happen. Prototype merge acceptance is distinct from this DATA audit and parent Done.",
+    "sources": [
+      "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/245",
+      "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/245#issuecomment-6039652489",
+      "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/blob/5fdb3ad55349726fbe03c9f69651f895d73e8f10/docs/pm/manual-resume-r8-20261007.md"
+    ]
+  },
+  "producer_intake": {
+    "pull_request": 254,
+    "head_commit": "94b560de72f91795cfd50aada9e17d6773383ae1",
+    "data_pin": "58feb9c30fc5faae1cc8acfb0ff409106a6d7174",
+    "p0_contract_commit": "ef29aa8ff80e9ca3f4e344c48c9acec62ad8769f",
+    "p0_contract_received": true,
+    "producer_receipt_runtime_and_model_execution_performed": false,
+    "producer_receipt_canonical_inputs_runtime_registered": false,
+    "producer_receipt_care_supplement_runtime_registered": false,
+    "operating_loaded_bundle_set_independently_observed": false,
+    "total_source_count": 184,
+    "total_development_review_count": 141,
+    "source": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/blob/94b560de72f91795cfd50aada9e17d6773383ae1/evals/data-d1-d2/20261007-01a10600/current-delivery.json",
+    "hash_check_method": "Read pinned GitHub Contents API base64 content; decode to original bytes; calculate SHA256 using Python hashlib. No producer or D4 program was executed.",
+    "bundles": [
+      {
+        "product_group": "fridge",
+        "bundle_id": "LGE-D1-D2-fridge-20261007-01a10600-v1",
+        "path": "data/research/r8-public-research-20261007/d1-d2-01a10600/agent-input/fridge/research-bundle.json",
+        "sha256": "75423a9844a468ad5e64e9086e43b68649335faf0c7c68b82f3a949ebf6bf4dc",
+        "git_blob_sha": "d76abc746f428f793f940bc3261851240cc766bb",
+        "bytes": 140685,
+        "source_count": 58,
+        "review_count": 48,
+        "care_source_count": 0
+      },
+      {
+        "product_group": "dishwasher",
+        "bundle_id": "LGE-D1-D2-dishwasher-20261007-01a10600-v2-care",
+        "path": "data/research/r8-public-research-20261007/d1-d2-01a10600/agent-input/dishwasher/research-bundle.json",
+        "sha256": "e922c51dd7f1f805953fd8e4df4ea1a75479ad8da0e2ba500b541acd720e84d0",
+        "git_blob_sha": "b06a5484ba06bdf021990a1e371513e1e32553b6",
+        "bytes": 174117,
+        "source_count": 73,
+        "review_count": 48,
+        "care_source_count": 14,
+        "care_source_id_prefix": "D2-DUE-CARE-DW-",
+        "care_document_version": "MFL71959117 Rev.07_030626",
+        "care_pdf_sha256": "ff60f78ab8326c40b9a3446f11b49531b8f0c823a310ba98366716b633ba63f5",
+        "care_scope_note": "Native excerpt ranges and full source IDs are producer inputs. Runtime consumption, exact purchased SKU and customer cause or recovery are not confirmed by their presence in a bundle."
+      },
+      {
+        "product_group": "microwave",
+        "bundle_id": "LGE-D1-D2-microwave-20261007-01a10600-v1",
+        "path": "data/research/r8-public-research-20261007/d1-d2-01a10600/agent-input/microwave/research-bundle.json",
+        "sha256": "457461ebd8cf13a1be6b171ed1a80802d33ed3b5714118179afef11ce1b87a5d",
+        "git_blob_sha": "18d46717181c71bf1afd2f3c06bdd8dd4c6f19d7",
+        "bytes": 127767,
+        "source_count": 53,
+        "review_count": 45,
+        "care_source_count": 0
+      }
+    ]
+  },
+  "storage_boundaries": [
+    {
+      "kind": "producer_research_landing_database",
+      "producer_reported_filename": "research-238.sqlite3",
+      "producer_reported_sha256": "6a01e8e3e2a18b7325abf068e15cf8d17f5e72a6b4a8f3ec4776a3c4065ab8fd",
+      "declared_scope": "new 238-row research landing; local/private; not app or operating DB",
+      "database_binary_received_by_this_audit": false,
+      "source": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/blob/94b560de72f91795cfd50aada9e17d6773383ae1/data/research/r8-public-research-20261007/d1-d2-01a10600/d1-delivery-manifest.json"
+    },
+    {
+      "kind": "file_backed_research_bundles",
+      "consumer_code_commit": "ef29aa8ff80e9ca3f4e344c48c9acec62ad8769f",
+      "consumer_component": "ResearchWorkspace",
+      "behavior_observed_in_source": "Read each bundle file's bytes, validate it, retain the bundle in memory and calculate its raw file SHA256. Return copied bundle data from GET.",
+      "read_routes": [
+        "/api/research/bundles",
+        "/api/research/bundles/{bundle_id}"
+      ],
+      "read_mcp_tools": [
+        "list_research_bundles",
+        "get_research_bundle"
+      ],
+      "scope_interface_note": "Bundle GET is keyed by bundle_id; it does not expose model/document-version query filters. Do not invent rejection evidence for unsupported parameters.",
+      "source": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/blob/ef29aa8ff80e9ca3f4e344c48c9acec62ad8769f/apps/api/src/lgax_api/research_planning.py"
+    },
+    {
+      "kind": "operating_research_run_database",
+      "consumer_code_commit": "ef29aa8ff80e9ca3f4e344c48c9acec62ad8769f",
+      "tables": [
+        "research_runs",
+        "research_attempts"
+      ],
+      "stored_run_fields": [
+        "run_id",
+        "owner_id",
+        "bundle_id",
+        "bundle_sha256",
+        "brief"
+      ],
+      "read_route": "/api/research/planning-runs/{run_id}",
+      "read_mcp_tool": "get_research_run",
+      "behavior_observed_in_source": "Store principal-owned run/attempt snapshots; get_run projects the saved brief for public response without rewriting the private row.",
+      "related_export_received_by_this_audit": false,
+      "restart_pairs_received_by_this_audit": false
+    },
+    {
+      "kind": "legacy_registered_documents_and_evidence",
+      "scope_note": "Only if PM identifies this as an actual part of the chosen operating path, compare document record/metadata/original/evidence/scoped-search captures too. Legacy route evidence alone does not demonstrate delivery of new care14 ResearchSources."
+    }
+  ],
+  "historical_isolated_evidence": {
+    "capture_pull_request": 226,
+    "capture_commit": "06701a5979920abb6d18da039056b64af6c84df9",
+    "capture_runtime_source_commit": "8ec1e8a51faabd6db032e52245680bef4229f93f",
+    "independent_cross_audit_pull_request": 227,
+    "cross_audit_final_commit": "bc7a164fe6687a0d6303a289c4301aab11536c82",
+    "recorded_http_requests": 109,
+    "recorded_json_responses": 103,
+    "recorded_pdf_responses": 6,
+    "recorded_restart_pairs": 51,
+    "new_operating_r8_proof": false,
+    "limitation": "PR227 compares saved isolated records. Raw JSON wire files and SQLite binary were not newly handed over to that cross audit. These records cannot be inherited as current R8 operating success.",
+    "source": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/13#issuecomment-6030700759"
+  },
+  "required_operating_handoff": [
+    {
+      "id": "R13-01",
+      "owner": "jeongiryang",
+      "artifact": "Operating intake pin and approved read/export scope",
+      "needed_content": "Actual producer and deployed consumer commit; loaded bundle IDs/raw file SHA256; safe server/read/export scope; whether PR254 v2-care is selected or still unregistered.",
+      "raw_response_status": "NOT_RECEIVED",
+      "restart_status": "configuration_and_same_DB_binding_required",
+      "pm_intake_status": "new_care_pack_operating_scope_UNCONFIRMED"
+    },
+    {
+      "id": "R13-02",
+      "owner": "jeongiryang",
+      "artifact": "ResearchBundle API original response captures",
+      "needed_content": "GET bundle list and chosen bundle raw response files, method/path/parameters/status, capture time and byte SHA256. Preserve all source IDs/text/page_model/purchased_model/document_version/locator/facts/metadata and unknown values. Include care14 if loaded.",
+      "raw_response_status": "NOT_RECEIVED",
+      "restart_status": "same_queries_before_after_pairs_required",
+      "pm_intake_status": "capture_range_and_loaded_pack_confirmation_required"
+    },
+    {
+      "id": "R13-03",
+      "owner": "jeongiryang",
+      "artifact": "Same-server MCP original responses",
+      "needed_content": "Existing list_research_bundles/get_research_bundle and relevant get_research_run response exports, tools/arguments/status/body files and SHA; map to the same HTTP bundle/run IDs and source range.",
+      "raw_response_status": "NOT_RECEIVED",
+      "restart_status": "paired_reads_or_explicit_unconfirmed_scope_required",
+      "pm_intake_status": "same_server_and_result_mapping_required"
+    },
+    {
+      "id": "R13-04",
+      "owner": "jeongiryang",
+      "artifact": "Loaded originals and storage-boundary mapping",
+      "needed_content": "Safe inventory of loaded bundle files and original PDF/CSV inputs with full hashes and ID/version mapping; distinguish file-backed sources, the research landing database and the operating run database. If legacy document registration is used, include its metadata/original/evidence/scoped-search raw pairs.",
+      "raw_response_status": "NOT_RECEIVED",
+      "restart_status": "same_original_files_and_ids_before_after_required",
+      "pm_intake_status": "actual_registered_paths_and_coverage_required"
+    },
+    {
+      "id": "R13-05",
+      "owner": "jeongiryang",
+      "artifact": "Related operating DB record/snapshot exports",
+      "needed_content": "Exports from the actual chosen DB that bind run_id, bundle_id and bundle_sha256 to saved brief/source references, plus necessary record/schema snapshot hashes. Use a consistent safe owner alias if required; identify redactions and keep private material in the approved private path.",
+      "raw_response_status": "NOT_RECEIVED",
+      "restart_status": "same_DB_logical_snapshot_before_after_required",
+      "pm_intake_status": "DB_identity_and_export_scope_required"
+    },
+    {
+      "id": "R13-06",
+      "owner": "jeongiryang",
+      "artifact": "Restart receipt and preservation pairs",
+      "needed_content": "Existing restart receipt for the same operating DB and loaded input configuration; timestamps/safe source pins and paired response paths/SHA. Bind originals, source IDs, versions, body hashes and run IDs to before/after snapshots. Distinguish file-byte hashes from logical DB row hashes.",
+      "raw_response_status": "NOT_RECEIVED",
+      "restart_status": "NOT_RECEIVED",
+      "pm_intake_status": "actual_restart_and_preservation_acceptance_required"
+    },
+    {
+      "id": "R13-07",
+      "owner": "jeongiryang",
+      "artifact": "Actual scope-selection and mismatch behavior",
+      "needed_content": "Identify supported model/product/document-version selection interface and provide existing normal/wrong-product/wrong-version outcomes with query and raw response. For file-backed bundle GET, compare bundle_id to product_group and source model/version values; do not claim a nonexistent filter rejection.",
+      "raw_response_status": "NOT_RECEIVED",
+      "restart_status": "repeat_same_supported_scope_queries_before_after_required",
+      "pm_intake_status": "scope_contract_and_observed_outcomes_required"
+    }
+  ],
+  "non_overlap": {
+    "producer_and_d4_files_modified": false,
+    "producer_and_d4_programs_executed": false,
+    "deferred_other_window_scope": "#14 automatic structure and #148 trend verification/sidecars are deferred because other user chats are already working on them."
+  },
+  "activity": {
+    "new_files": [
+      "runtime-intake-requirements.json",
+      "runtime-intake.md"
+    ],
+    "existing_files_modified": 0,
+    "models_called": 0,
+    "ocr_called": 0,
+    "operating_http_calls": 0,
+    "services_started_or_restarted": 0,
+    "databases_created_or_modified": 0,
+    "github_posts": 0,
+    "read_only_github_api_used": true,
+    "parent_done_claimed": false
+  }
+}
