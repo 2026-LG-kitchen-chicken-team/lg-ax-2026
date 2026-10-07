@@ -6,6 +6,7 @@ from copy import deepcopy
 from lgax_core.guides import (
     build_concept_guide,
     build_official_guide,
+    build_official_reference_guide,
     render_guide_html,
     render_guide_markdown,
 )
@@ -98,6 +99,54 @@ class ResearchGuideTests(unittest.TestCase):
             self.assertIn("&lt;img src=x", output)
             self.assertIn("&lt;/article&gt;&lt;script&gt;", output)
         self.assertEqual(guide["sources"], self.bundle["sources"])
+
+    def test_unconfirmed_model_can_be_an_official_reference_without_becoming_an_exact_model_guide(self):
+        changed = deepcopy(self.bundle)
+        source = changed["sources"][1]
+        source["page_model"] = None
+        source["metadata"] = {"applicability": "shared manual; exact SKU unconfirmed",
+                              "continuation_pages": [43], "native_unit_caution": "50 7 is not a verified unit"}
+        with self.assertRaises(ValueError):
+            build_official_guide(changed, "MW23FDI")
+        guide = build_official_reference_guide(changed, [source["source_id"]])
+        self.assertIsNone(guide["sources"][0]["page_model"])
+        self.assertEqual(guide["sources"], [source])
+        self.assertFalse(guide["exact_sku_applicability_confirmed"])
+        for output in (render_guide_html(guide), render_guide_markdown(guide)):
+            self.assertIn("페이지 모델 미확인", output)
+            self.assertIn("shared manual; exact SKU unconfirmed", output)
+            self.assertIn("연속 페이지", output)
+            self.assertIn("50 7 is not a verified unit", output)
+
+    def test_official_question_answer_roles_and_selection_are_not_silently_substituted(self):
+        changed = deepcopy(self.bundle)
+        source = changed["sources"][1]
+        source.update({"source_type": "qa", "source_role": "customer_question"})
+        with self.assertRaises(ValueError):
+            build_official_reference_guide(changed, [source["source_id"]])
+        source["source_role"] = "official_answer"
+        guide = build_official_reference_guide(changed, [source["source_id"]])
+        self.assertEqual(guide["sources"], [source])
+        self.assertIn("작성 역할: 공식 답변", render_guide_markdown(guide))
+        for ids in ([], ["missing"], [source["source_id"], "missing"], [source["source_id"]] * 2,
+                    [changed["sources"][0]["source_id"]]):
+            with self.subTest(ids=ids), self.assertRaises(ValueError):
+                build_official_reference_guide(changed, ids)
+
+    def test_official_reference_domain_and_escaped_metadata_are_checked(self):
+        changed = deepcopy(self.bundle)
+        source = changed["sources"][1]
+        source["url"] = "https://lge.com.example.com/manual"
+        with self.assertRaises(ValueError):
+            build_official_reference_guide(changed, [source["source_id"]])
+        source["url"] = self.bundle["sources"][1]["url"]
+        source["metadata"] = {"applicability": "<script>alert(2)</script>"}
+        guide = build_official_reference_guide(changed, [source["source_id"]])
+        for output in (render_guide_html(guide), render_guide_markdown(guide)):
+            self.assertNotIn("<script>", output)
+            self.assertIn("&lt;script&gt;", output)
+        guide["sources"][0]["metadata"]["applicability"] = "local edit"
+        self.assertEqual(source["metadata"]["applicability"], "<script>alert(2)</script>")
 
 
 if __name__ == "__main__":

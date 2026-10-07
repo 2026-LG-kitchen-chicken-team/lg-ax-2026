@@ -1,6 +1,9 @@
 # 황대겸 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-08 CORE-X1-D2-CONSUMER-01a10729-01: DATA254 canonical3/184source·기존 후기141·관리14원문을 소비하고, 모델 미확인·역할·조건을 보존하는 공식 참고자료42source 출력을 구현했다. 관련7검사/Ruff·화면3/인쇄33쪽 PASS, 실모델0.
+- [근거](2026-10-08/CORE-X1-D2-CONSUMER-01a10729-01.md) · [고정 검증·출력](../../../evals/core-manual-quality/20261008/d2-reference-consumer/README.md). 새 DATA 생산 전달은 수신했고 PM native/raw·실제기획/적용 인수는 미완료.
+
 - 2026-10-08 CORE-X1-REFERENCE-01a10729-01: 후기 참고자료 버전의 HTML/Markdown 표시를 원 값 보존으로 보완하고 DATA 관리 절의 생산 등록 전 소비 경계를 고정했다. 실모델0·기존 공식 인쇄 근거 재사용.
 - [근거](2026-10-08/CORE-X1-REFERENCE-01a10729-01.md) · [검증·인수 경계](../../../evals/core-manual-quality/20261008/x1-reference-intake/README.md). 실제27B/기획 원응답·PM/DATA 인수는 미완료.
 
