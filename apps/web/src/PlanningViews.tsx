@@ -8,6 +8,8 @@ import { buildEvidenceTrace, EvidenceTracePanel, subjectFromGap } from './Eviden
 import { buildRevisionTimeline, isIntermediateRun, RevisionTimeline } from './RevisionTimeline';
 import { ClarificationPanel } from './ClarificationPanel';
 import { PendingJudgement } from './PendingJudgement';
+import { ConceptScenes } from './ConceptScenes';
+import { conceptSceneView } from './planningScenes';
 import { exportJudgement, judgedNotes, planningExecutionView, reasonText, rejectedCandidateCount, rerunBaseNotice, selectableConcepts, terminalReason } from './judgement';
 import { runStatusView, stageLabel } from './liveWorkspace';
 import { editSummary, END_RULE, START_RULE } from './measurement';
@@ -315,7 +317,7 @@ export function ConceptsView({ mode, runs, selected, onSelect, features, evidenc
       {selected.run.unresolved.length ? <div className="unresolved"><strong>보류·미해결</strong><ul>{selected.run.unresolved.map(item => <li key={item}>{reasonText(item)}</li>)}</ul></div> : null}
     </section>
     {selected.run.concepts.length > 1 ? <section className="panel planning-panel"><div className="planning-head"><div><p className="eyebrow">SIDE BY SIDE</p><h3>후보 비교표</h3></div></div><CandidateMatrix snapshot={selected} /></section> : null}
-    {reviewed ? <section className="panel planning-panel" aria-label="후보 상세 검토"><div className="planning-head"><div><p className="eyebrow">REVIEW</p><h3>{reviewed.title} <span className="count">원문·판단·가정·보류</span></h3></div><span className={`status-pill ${reviewed.status}`}>{statusLabel(reviewed.status)}</span></div><CandidateReview snapshot={selected} concept={reviewed} features={features} evidence={evidenceById} currentEvidence={mode === 'fixture' ? evidence : currentEvidence} /></section> : null}
+    {reviewed ? <section className="panel planning-panel" aria-label="후보 상세 검토"><div className="planning-head"><div><p className="eyebrow">REVIEW</p><h3>{reviewed.title} <span className="count">원문·판단·가정·보류</span></h3></div><span className={`status-pill ${reviewed.status}`}>{statusLabel(reviewed.status)}</span></div><ConceptScenes view={conceptSceneView(reviewed, selected.output, evidenceById.keys())} features={features} refs={ids => <Refs ids={ids} evidence={evidenceById} />} /><CandidateReview snapshot={selected} concept={reviewed} features={features} evidence={evidenceById} currentEvidence={mode === 'fixture' ? evidence : currentEvidence} /></section> : null}
   </div>;
 }
 
