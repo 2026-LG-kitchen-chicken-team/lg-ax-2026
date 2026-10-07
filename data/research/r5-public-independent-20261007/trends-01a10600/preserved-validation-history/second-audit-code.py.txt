@@ -1,0 +1,151 @@
+"""Independent fixed-pack arithmetic and exposure audit; no topic/AI labels."""
+from collections import Counter, defaultdict
+from hashlib import sha256
+from itertools import combinations
+from pathlib import Path
+import argparse
+import json
+import re
+import unicodedata
+
+def load(p):return json.loads(p.read_bytes())
+def normalized(text):return re.sub(r'\s+',' ',unicodedata.normalize('NFKC',text)).strip()
+def digest(text):return sha256(text.encode('utf-8')).hexdigest()
+def walk(value):
+    if isinstance(value,dict):
+        yield value
+        for sub in value.values():yield from walk(sub)
+    elif isinstance(value,list):
+        for sub in value:yield from walk(sub)
+def save(p,data):p.write_bytes((json.dumps(data,ensure_ascii=False,indent=2)+'\n').encode('utf-8'))
+def main():
+    p=argparse.ArgumentParser();p.add_argument('--input',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
+    args=p.parse_args();root,out=args.input,args.output
+    meta=load(root/'audit-inputs.json');base=load(root/'fixed18/records.json')
+    sidecar=load(root/'balanced-pilot-v2/records.json');new=load(root/'balanced-pilot-v2/new_unique_records.json')
+    m1=load(root/'fixed18/manifest.json');m2=load(root/'balanced-pilot-v2/manifest.json')
+    oldids={r['original_review_id'] for r in base};sideids={r['original_review_id'] for r in sidecar}
+    overlap=oldids&sideids
+    assert len(base)==179 and len(oldids)==179 and len(sidecar)==60 and len(sideids)==60
+    assert len(overlap)==1 and len(new)==59
+    assert {r['original_review_id'] for r in new}==sideids-oldids
+    records=base+new;assert len({r['original_review_id'] for r in records})==238
+    counts=dict(Counter(r['split'] for r in records))
+    assert counts==m2['collection']['combined_split_counts']
+    assert dict(Counter(r['split'] for r in base))==m1['collection']['split_counts']
+    for split,filename in [('development','development.records.json'),('independent_evaluation','independent_evaluation.records.json'),
+                           ('demonstration','demonstration.records.json'),('quarantine','quarantine.records.json')]:
+        saved=load(root/'fixed18'/filename)
+        assert saved==[r for r in base if r['split']==split]
+    all_file_hashes={}
+    for rel,expected in meta['frozen_file_sha256'].items():
+        actual=sha256((root/rel).read_bytes()).hexdigest();assert actual==expected,rel
+        all_file_hashes[rel]=actual
+    declared_unreceived=[]
+    for dirname in ('fixed18','balanced-pilot-v2'):
+        for rel,expected in load(root/dirname/'files.json').items():
+            if not (root/dirname/rel).exists():
+                assert Path(rel).suffix in ('.sqlite3','.xlsx'),('required_public_JSON_missing',dirname,rel)
+                declared_unreceived.append({'path':dirname+'/'+rel,'declared_sha256':expected,
+                    'status':'not_received_not_verified','artifact_kind':'producer_DB_or_Excel'})
+                continue
+            assert sha256((root/dirname/rel).read_bytes()).hexdigest()==expected,(dirname,rel)
+    byid={r['original_review_id']:r for r in records}
+    group_splits=defaultdict(set);split_sets=defaultdict(lambda:defaultdict(set))
+    provenance=[];errors=[];nonexclusive=Counter()
+    for r in records:
+        rid=r['original_review_id'];text_sha=digest(r['text']);body_sha=digest(normalized(r['text']))
+        if text_sha!=r['text_sha256']:errors.append({'id':rid,'error':'text_SHA_mismatch'})
+        for key in ('source_url','source_locator'):
+            if not r.get(key):errors.append({'id':rid,'error':'missing_'+key})
+        capture=r.get('collected_at') or r.get('observed_at')
+        if not capture:errors.append({'id':rid,'error':'missing_capture_time'})
+        split=r['split'];group_splits[body_sha].add(split)
+        for field,value in [('original_review_id',rid),('normalized_body_sha256',body_sha)]:
+            split_sets[split][field].add(value)
+        if r.get('actual_purchased_model_id') is None:nonexclusive['purchased_SKU_unknown']+=1
+        if r.get('published_at') is None:nonexclusive['publication_date_unknown']+=1
+        if split=='quarantine':nonexclusive['quarantine']+=1
+        if not r.get('eligible_for_model_input'):nonexclusive['model_input_ineligible']+=1
+        if r.get('manual_version') is None:nonexclusive['manual_revision_unknown']+=1
+        if rid in oldids:
+            sources=m1['sources']
+            if not any(s.get('sha256')==r['source_sha256'] and s.get('source_url')==r['source_url'] for s in sources):
+                errors.append({'id':rid,'error':'v1_source_capture_binding_mismatch'})
+        else:
+            if not any(c['original_private_capture_sha256']==r['private_capture_file_sha256']
+                       and c['source_url']==r['source_url'] and c['sort']==r['sort']
+                       and c['observed_at']==r['observed_at'] and c['file']==r['DOM_snapshot_location']
+                       for c in m2['capture_proofs']):
+                errors.append({'id':rid,'error':'v2_capture_binding_mismatch'})
+        provenance.append({'original_review_id':rid,'displayed_page_model':r['displayed_model_id'],
+            'actual_purchased_model_id':r.get('actual_purchased_model_id'),'sku_binding':r['sku_binding'],
+            'split':split,'normalized_body_sha256':body_sha,'text_sha256':text_sha,
+            'document_version':r.get('document_version') or r.get('manual_version'),
+            'published_at':r.get('published_at'),'publication_date_basis':r['date_basis'],
+            'source_url':r['source_url'],'source_locator':r['source_locator'],'observed_at':capture,
+            'source_head':meta['head'],'eligible_for_model_input':r.get('eligible_for_model_input',False)})
+    assert not errors,errors
+    usable=['development','independent_evaluation','demonstration'];intersections={}
+    for a,b in combinations(usable,2):
+        intersections[a+'__'+b]={field:sorted(split_sets[a][field]&split_sets[b][field])
+            for field in ('original_review_id','normalized_body_sha256')}
+    internal_zero=all(not ids for pair in intersections.values() for ids in pair.values())
+    # Prior known full-body hashes bind excerpts to originals; internal split safety does not erase prior exposure.
+    lineage=load(root/'prior-exposure-lineage.json')
+    known_groups={r['original_body_sha256'] for r in lineage['representations'] if r.get('developer_exposure_known')}
+    references=[load(root/r['staged_name']) for r in meta['references']]
+    ref_sources=[v for data in references for v in walk(data) if isinstance(v.get('text'),str) and isinstance(v.get('id'),str)]
+    ref_ids={v['id'] for v in ref_sources};ref_texts={normalized(v['text']) for v in ref_sources}
+    exposure=[]
+    for r in records:
+        raw_hashes={r.get('original_text_sha256'),r.get('original_visible_text_sha256'),r['text_sha256']}
+        historical=sorted(raw_hashes&known_groups)
+        exact_text=normalized(r['text']) in ref_texts
+        id_match=bool({r['original_review_id'],r.get('review_id')} & ref_ids)
+        # Report substantial known excerpt containment separately from exact-text equality.
+        excerpts=[digest(t) for t in ref_texts if len(t)>=20 and t in normalized(r['text'])]
+        if historical or exact_text or id_match or excerpts:
+            exposure.append({'original_review_id':r['original_review_id'],'split':r['split'],
+                'historical_original_body_sha256_matches':historical,'exact_normalized_reference_text_match':exact_text,
+                'source_id_match':id_match,'known_reference_excerpt_sha256_matches':sorted(excerpts),
+                'must_not_count_as_new_independent_input':True})
+    eval_rows=[r for r in provenance if r['split']=='independent_evaluation']
+    eval_exposed=[r for r in exposure if r['split']=='independent_evaluation']
+    equal_body_groups=defaultdict(list)
+    for r in provenance:equal_body_groups[r['normalized_body_sha256']].append(r['original_review_id'])
+    duplicate_groups=[{'normalized_body_sha256':h,'original_review_ids':ids,
+                      'splits':sorted(group_splits[h])} for h,ids in equal_body_groups.items() if len(ids)>1]
+    raw_input_total=179+60;quarantine=counts['quarantine'];research_denominator=238-quarantine
+    summary={'status':'fixed_public_JSON_arithmetic_and_provenance_checks_PASS','source_head':meta['head'],
+        'observations_before_ID_dedup':raw_input_total,'cross_pack_repeated_IDs':sorted(overlap),
+        'unique_original_review_IDs':238,'split_counts':counts,'internal_usable_split_intersections_zero':internal_zero,
+        'unique_normalized_bodies':len(equal_body_groups),'duplicate_body_groups':duplicate_groups,
+        'source_and_text_binding_errors':errors,'source_URL_locator_time_text_checked':len(provenance),
+        'declared_DB_Excel_artifacts_not_received_or_verified':declared_unreceived,
+        'nonexclusive_exclusion_counts':dict(nonexclusive),'quarantined_exclusive':quarantine,
+        'research_nonquarantine_ID_denominator':research_denominator,
+        'research_denominator_is_not_market_or_confirmed_SKU_population':True,
+        'published_date_known_count':sum(r['published_at'] is not None for r in provenance),
+        'monthly_nonquarantine_posting_date_denominator':sum(r['published_at'] is not None and r['split']!='quarantine' for r in provenance),
+        'monthly_trend':None,'approved_topic_definition_or_labels_received':False,'topic_numerators_or_shares':None,
+        'model_eligible_review_count':sum(r['eligible_for_model_input'] for r in provenance),
+        'known_historical_or_reference_exposure_rows':len(exposure),'known_exposed_evaluation_rows':len(eval_exposed),
+        'independence_approved':False,'new_model_OCR_calls':0,'operating_API_DB_changes':False,
+        'scope_limit':'Fixed published manifest/source pointers checked; private DOM and past tuning history not reconstructed.'}
+    save(out/'fixed-pack-source-pins.json',{'source_head':meta['head'],'file_sha256':all_file_hashes,
+        'prior_exposure_head':meta['prior_exposure_head'],'reference_pins':meta['references']})
+    save(out/'fixed-pack-audit.json',summary)
+    save(out/'review-source-joins.json',{'rows':provenance,'raw_review_text_republished':False})
+    save(out/'split-and-exposure-check.json',{'internal_split_intersections':intersections,
+        'known_exposure_matches':exposure,'old_public_8_inputs_independence_resolved':False,
+        'old_public_8_disposition':'development_diagnostics_and_regression_only_per_PM_6029601114',
+        'independence_approval':False,'absence_of_observed_overlap_is_not_unseen_history_proof':True})
+    save(out/'evaluation-36-intake.json',{'candidate_review_source_count':len(eval_rows),'rows':eval_rows,
+        'known_exposed_rows':eval_exposed,'Gold_approved':False,'confirmed_SKU_date_eligible_rows':0,
+        'reviewer_assigned':False,'private_final_review_channel_approved':False,
+        'raw_review_text_or_expected_answers_published':False,'model_execution':False})
+    print(json.dumps({k:summary[k] for k in ('status','unique_original_review_IDs','split_counts',
+        'internal_usable_split_intersections_zero','research_nonquarantine_ID_denominator',
+        'monthly_nonquarantine_posting_date_denominator','known_exposed_evaluation_rows')},ensure_ascii=False))
+if __name__=='__main__':main()
