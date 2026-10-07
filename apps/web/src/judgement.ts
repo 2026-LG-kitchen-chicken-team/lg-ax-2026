@@ -163,6 +163,12 @@ const VIOLATION_LABELS: Record<string, string> = {
   // no_candidate_review.py builds "NO_CANDIDATE_" + verdict; "consistent" is not fed back, so only these two occur.
   NO_CANDIDATE_VIOLATION: '후보 없음 판단이 원자료와 맞지 않습니다',
   NO_CANDIDATE_UNCERTAIN: '후보 없음 판단을 확인할 자료가 부족합니다',
+  // upstream_semantics.py (PR #225) builds "UPSTREAM_" + entity_kind + "_" + verdict; "consistent" is not fed back.
+  // Wording handed over by 황대겸 (#25 comment 6030433759, record 053).
+  UPSTREAM_NEED_VIOLATION: '고객 니즈의 해석이 연결 원문과 맞지 않습니다',
+  UPSTREAM_NEED_UNCERTAIN: '고객 니즈의 해석을 확인할 자료가 부족합니다',
+  UPSTREAM_GAP_VIOLATION: '기존 기능과 잔여 불편의 판단이 원자료와 맞지 않습니다',
+  UPSTREAM_GAP_UNCERTAIN: '기존 기능과 잔여 불편의 판단을 확인할 자료가 부족합니다',
 };
 
 const BARE_CODE = /^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+$/;
