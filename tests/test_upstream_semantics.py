@@ -23,6 +23,8 @@ from test_r5_semantic_prompt import DIGEST, MODEL, PreparationCapture, PreparedW
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "evals/pm-prototype/20261007/r5-core/normal-8ec-upstream-counterexample.json"
 PIN = "e2c5539485a8e4d62d7284cfeca12bd00b607be4ea150c6344a4a9c881d9dd6b"
+LITERAL_FIXTURE = ROOT / "evals/pm-prototype/20261007/r6-core/normal-1f25-upstream-literal-counterexample.json"
+LITERAL_PIN = "3ca94273f3829df13899a677608c92467305d6f47afbe80da3fde4fa8021a00b"
 
 
 class UpstreamSemanticTests(unittest.TestCase):
@@ -172,6 +174,101 @@ class UpstreamSemanticTests(unittest.TestCase):
         print(json.dumps({"upstream_active_formatted_prompt_chars": len(formatted),
                           "utf8_bytes": len(formatted.encode("utf-8")), "unchanged_limits": [24000, 45000],
                           "needs_gaps_concepts": [9, 9, 3], "model_calls": 0}))
+
+
+class UpstreamLiteralSchemaTests(unittest.TestCase):
+    """Observed copy/provenance failures; schema success is not meaning acceptance."""
+
+    def setUp(self):
+        self.raw = LITERAL_FIXTURE.read_bytes()
+        self.assertEqual(hashlib.sha256(self.raw).hexdigest(), LITERAL_PIN)
+        self.case = json.loads(self.raw)
+        self.payload, self.output = self.case["payload"], self.case["output"]
+        self.original_report = self.case["original_report"]
+        self.report = deepcopy(self.original_report)
+        self.schema = schema_for_review(self.payload, self.output, literal_choices=True, include_upstream=True)
+
+    def tearDown(self):
+        self.assertEqual(LITERAL_FIXTURE.read_bytes(), self.raw)
+
+    def copy_judgement_literals(self):
+        needs = {row["id"]: row for row in self.output["needs"]}
+        reasons = {row["gap_id"]: row["reason"] for row in self.output["gap_assessments"]}
+        for row in self.report["upstream_assessments"]:
+            row["judgement_quote"] = (needs[row["entity_id"]]["pain"] if row["entity_kind"] == "need"
+                                      else reasons[row["entity_id"]])
+
+    def test_exact_observed_18row_report_rejects_all9_review_copies_before_generation(self):
+        self.assertEqual(self.case["source_commit"], "1f25e547f46ef155798fbc27f35aa2c7098ae912")
+        self.assertEqual(input_digest(self.payload), self.original_report["input_sha256"])
+        self.assertEqual(input_digest(self.output), self.original_report["output_sha256"])
+        self.assertEqual(input_digest(self.original_report), self.case["original_report_sha256"])
+        self.assertEqual(len(self.original_report["upstream_assessments"]), 18)
+        self.assertTrue(all(row["verdict"] == "consistent" for row in self.original_report["upstream_assessments"]))
+        Draft202012Validator(schema_for_review(self.payload, self.output, include_upstream=True)).validate(self.original_report)
+        errors = list(Draft202012Validator(self.schema).iter_errors(self.original_report))
+        self.assertEqual({tuple(error.path) for error in errors},
+                         {("upstream_assessments", i) for i in range(9)})
+        with self.assertRaises(DomainError) as caught:
+            review_semantics(self.payload, self.output, self.original_report, require_upstream=True)
+        self.assertEqual(caught.exception.details,
+                         {"reason": "upstream_judgement_quote_not_literal", "entity_id": "NEED-001"})
+
+    def test_native_literals_bind_to_entity_and_canonical_substrings_remain_compatible(self):
+        self.copy_judgement_literals()
+        Draft202012Validator(self.schema).validate(self.report)
+        row = self.report["upstream_assessments"][0]
+        row["judgement_quote"] = self.output["needs"][1]["pain"]
+        self.assertTrue(list(Draft202012Validator(self.schema).iter_errors(self.report)))
+        row["judgement_quote"] = self.output["needs"][0]["pain"][:12]
+        self.assertTrue(list(Draft202012Validator(self.schema).iter_errors(self.report)))
+        # Canonical recorded reports still accept literal substrings. The active
+        # native schema uses whole fields to prevent model copying another text.
+        legacy = schema_for_review(self.payload, self.output, include_upstream=True)
+        self.assertFalse(list(Draft202012Validator(legacy).iter_errors(self.report)))
+        with self.assertRaises(DomainError) as caught:
+            review_semantics(self.payload, self.output, self.report, require_upstream=True)
+        self.assertEqual(caught.exception.details["reason"], "upstream_requires_linked_review")
+        self.assertEqual(caught.exception.details["entity_id"], "GAP-004")
+
+    def test_resolved_empty_pain_keeps_actual_assessment_reason_and_rejects_empty_copy(self):
+        self.copy_judgement_literals()
+        row = next(row for row in self.report["upstream_assessments"] if row["entity_id"] == "GAP-004")
+        gap = next(row for row in self.output["gaps"] if row["id"] == "GAP-004")
+        self.assertEqual(gap["remaining_pain"], "")
+        self.assertEqual(row["judgement_quote"], self.output["gap_assessments"][3]["reason"])
+        Draft202012Validator(self.schema).validate(self.report)
+        row["judgement_quote"] = ""
+        self.assertTrue(list(Draft202012Validator(self.schema).iter_errors(self.report)))
+
+    def test_native_source_id_and_quote_are_bound_without_selecting_semantic_verdict(self):
+        self.copy_judgement_literals()
+        row = self.report["upstream_assessments"][0]
+        row["source_quotes"][0]["evidence_id"] = "REVIEW-EVIDENCE-002"
+        self.assertTrue(list(Draft202012Validator(self.schema).iter_errors(self.report)))
+        row["source_quotes"] = deepcopy(self.original_report["upstream_assessments"][0]["source_quotes"])
+        row["source_quotes"][0]["quote"] = row["source_quotes"][0]["quote"][:10]
+        self.assertTrue(list(Draft202012Validator(self.schema).iter_errors(self.report)))
+        row["source_quotes"] = deepcopy(self.original_report["upstream_assessments"][0]["source_quotes"])
+        for verdict in ("consistent", "violation", "uncertain"):
+            row["verdict"] = verdict
+            Draft202012Validator(self.schema).validate(self.report)
+
+    def test_literal_schema_pass_does_not_claim_three_observed_meaning_failures_fixed(self):
+        self.copy_judgement_literals()
+        Draft202012Validator(self.schema).validate(self.report)
+        self.assertFalse(self.case["original_semantic_quality_accepted"])
+        by_id = {row["entity_id"]: row for row in self.report["upstream_assessments"]}
+        self.assertIn("설명서 존재 자체는 해결 근거", by_id["GAP-004"]["reason"])
+        self.assertIn("바구니 세척 시", by_id["GAP-005"]["judgement_quote"])
+        self.assertIn("전체를 옮겨야", by_id["NEED-007"]["judgement_quote"])
+        self.assertEqual([by_id[key]["verdict"] for key in ("GAP-004", "GAP-005", "NEED-007")],
+                         ["consistent"] * 3)
+        # The missing linked review stays a rejection even after quote formatting
+        # is repaired; no automatic evidence insertion or forced meaning PASS.
+        with self.assertRaises(DomainError) as caught:
+            review_semantics(self.payload, self.output, self.report, require_upstream=True)
+        self.assertEqual(caught.exception.details["reason"], "upstream_requires_linked_review")
 
 
 if __name__ == "__main__":

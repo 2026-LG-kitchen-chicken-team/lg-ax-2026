@@ -179,7 +179,8 @@ def schema_for_review(payload: dict, output: dict, *, literal_choices: bool = Fa
         "questions": {"type": "array", "items": text, "uniqueItems": True},
     }
     if include_upstream:
-        properties["upstream_assessments"] = upstream_semantics.assessment_schema(payload, output)
+        properties["upstream_assessments"] = upstream_semantics.assessment_schema(
+            payload, output, literal_choices=literal_choices, source_quote_schema=source_quote)
     if literal_choices and ids:
         clauses = []
         for candidate in semantic_grounding_requirements(payload, output):

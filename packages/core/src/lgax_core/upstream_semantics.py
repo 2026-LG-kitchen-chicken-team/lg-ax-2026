@@ -25,18 +25,37 @@ INSTRUCTIONS = (
 )
 
 
-def assessment_schema(payload: dict, output: dict) -> dict:
+def assessment_schema(payload: dict, output: dict, *, literal_choices: bool = False,
+                      source_quote_schema: dict | None = None) -> dict:
     text = {"type": "string", "minLength": 1, "pattern": r"\S"}
     ids = [row["id"] for field in ("needs", "gaps") for row in output[field]]
     citation = {"type": "object", "properties": {
         "evidence_id": {"enum": [row["id"] for row in payload["sources"]]}, "quote": text},
         "required": ["evidence_id", "quote"], "additionalProperties": False}
+    if literal_choices and source_quote_schema is not None:
+        citation = source_quote_schema
     fields = {"entity_kind": {"enum": ["need", "gap"]}, "entity_id": {"enum": ids or ["_no_upstream"]},
               "verdict": {"enum": ["consistent", "violation", "uncertain"]}, "reason": text,
               "judgement_quote": text, "source_quotes": {"type": "array", "minItems": 1, "items": citation}}
-    return {"type": "array", "minItems": len(ids), "maxItems": len(ids),
-            "items": {"type": "object", "properties": fields, "required": list(fields),
-                      "additionalProperties": False}}
+    item = {"type": "object", "properties": fields, "required": list(fields),
+            "additionalProperties": False}
+    if literal_choices:
+        assessments = {row["gap_id"]: row for row in output["gap_assessments"]}
+        choices = []
+        for kind, entities in (("need", output["needs"]), ("gap", output["gaps"])):
+            for entity in entities:
+                wording = ([entity["pain"], entity["situation"]] if kind == "need" else
+                           [entity["remaining_pain"], assessments[entity["id"]]["reason"]])
+                # A resolved Gap may have empty remaining_pain. Its assessment
+                # reason remains a valid judgment quote; an empty quote does not.
+                literals = list(dict.fromkeys(value for value in wording if value.strip()))
+                choices.append({"properties": {
+                    "entity_kind": {"const": kind}, "entity_id": {"const": entity["id"]},
+                    "judgement_quote": {"enum": literals}},
+                    "required": ["entity_kind", "entity_id", "judgement_quote"]})
+        if choices:
+            item["allOf"] = [{"oneOf": choices}]
+    return {"type": "array", "minItems": len(ids), "maxItems": len(ids), "items": item}
 
 
 def feedback(report: dict) -> list[dict]:
