@@ -5,7 +5,51 @@ import sys
 from copy import deepcopy
 from pathlib import Path
 
-sys.path[:0] = ['/source/packages/core/src', '/source/packages/contracts/src']
+SOURCE = Path('/source')
+MANIFEST_SHA256 = '0ff3ff3e36a68d22d1303870c74e19891191ae7f4851d1197d80365dd6cb717a'
+
+
+def reject_source(reason):
+    print(json.dumps({'error': 'SOURCE_BINDING_MISMATCH', 'reason': reason,
+                      'project_imports_started': False}), file=sys.stderr)
+    raise SystemExit(2)
+
+
+def verify_source():
+    """Bind the source ref to frozen Git-derived bytes before project imports."""
+    manifest_bytes = Path(__file__).with_name('source-manifest.json').read_bytes()
+    manifest_sha = hashlib.sha256(manifest_bytes).hexdigest()
+    if manifest_sha != MANIFEST_SHA256:
+        reject_source('source manifest digest')
+    manifest = json.loads(manifest_bytes)
+    expected = manifest['files']
+    actual_paths = set()
+    for package in ['packages/core/src/lgax_core', 'packages/contracts/src/lgax_contracts']:
+        actual_paths.update(p.relative_to(SOURCE).as_posix() for p in (SOURCE / package).rglob('*.py'))
+    actual_paths.add('packages/contracts/schemas/lgax.schema.json')
+    if actual_paths != set(expected):
+        reject_source('project source inventory')
+    digests = {}
+    for relative, pin in expected.items():
+        path = SOURCE / relative
+        if not path.is_file() or path.is_symlink() or path.resolve() != path.absolute():
+            reject_source('missing or redirected source: ' + relative)
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        if digest != pin['sha256']:
+            reject_source('source bytes: ' + relative)
+        digests[relative] = digest
+    actual_digest = hashlib.sha256(json.dumps(digests, sort_keys=True,
+                                             separators=(',', ':')).encode()).hexdigest()
+    if actual_digest != manifest['source_digest_sha256']:
+        reject_source('aggregate source digest')
+    return {'source_ref': manifest['source_ref'], 'source_manifest_sha256': manifest_sha,
+            'source_digest_sha256': actual_digest, 'verified_source_files': len(digests),
+            'ref_kind': 'Git-derived source content pin; not a runtime Git HEAD query',
+            'verified_before_project_import': True}
+
+
+source_binding = verify_source()
+sys.path[:0] = [str(SOURCE / 'packages/core/src'), str(SOURCE / 'packages/contracts/src')]
 from lgax_core.concept_lineage import build_quality_context
 from lgax_core.no_candidate_review import review_need_presence
 
@@ -56,7 +100,7 @@ for name, case in cases.items():
                      'violations': {key: value['violations'] for key, value in context.items()},
                      'semantic_accuracy_verified': False}
 assert artifact.read_bytes() == raw
-print(json.dumps({'head': '0d920df7d1afd09490e91cd40bf9c6cb9dfaf75d',
+print(json.dumps({'source_binding': source_binding,
                   'kind': 'preserved_original_id_support_residual_question_mapping',
                   'cases': results, 'mapped_gap_rows': sum(len(r['rows']) for r in results.values()),
                   'inputs_and_outputs_unchanged': True, 'new_model_calls': 0,

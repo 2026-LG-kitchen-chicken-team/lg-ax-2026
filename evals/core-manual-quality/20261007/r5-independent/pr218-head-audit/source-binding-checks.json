@@ -1,0 +1,73 @@
+{
+  "at": "2026-10-07T03:23:48.716177+00:00",
+  "review": 5437222152,
+  "original_audit_head": "7ecda6a1f4539ecbad211416be16d0f49d72df2f",
+  "image": "sha256:36ad082dbccf05bc9cff7c4dc5766e9ab7ed8c42198b0b731cf3831c546aaaf0",
+  "uid": 65534,
+  "network": "none",
+  "credential_mounts": false,
+  "read_only_source": true,
+  "new_model_calls": 0,
+  "source_ref": "0d920df7d1afd09490e91cd40bf9c6cb9dfaf75d",
+  "source_manifest_sha256": "0ff3ff3e36a68d22d1303870c74e19891191ae7f4851d1197d80365dd6cb717a",
+  "source_digest_sha256": "52a30b8a9efe24cb1a090019a8fd2aadeed0480fd2631d4e5a020c714cd64a67",
+  "source_files": 38,
+  "script_sha256": "8ab196ebac4d12a8cffbadbdeaf473c7447424b95610f7f0b25c78e5d1cbe878",
+  "checks": [
+    {
+      "kind": "clean",
+      "exit_code": 0,
+      "stdout_sha256": "bac158a701d237f2f4759e27345e04fded57a8bcc0d10f3e0ec3192c5f57621a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "",
+      "pass": true,
+      "source_binding": {
+        "source_ref": "0d920df7d1afd09490e91cd40bf9c6cb9dfaf75d",
+        "source_manifest_sha256": "0ff3ff3e36a68d22d1303870c74e19891191ae7f4851d1197d80365dd6cb717a",
+        "source_digest_sha256": "52a30b8a9efe24cb1a090019a8fd2aadeed0480fd2631d4e5a020c714cd64a67",
+        "verified_source_files": 38,
+        "ref_kind": "Git-derived source content pin; not a runtime Git HEAD query",
+        "verified_before_project_import": true
+      },
+      "mapped_gap_rows": 27,
+      "original_mapping_cases_exactly_equal": true,
+      "inputs_outputs_unchanged": true
+    },
+    {
+      "kind": "changed_core_before_import",
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "ee547be4e931916ae25a0ebf38cd1354279d9ae0fbfa78c9deb2ab0ed6d401bb",
+      "stderr": "{\"error\": \"SOURCE_BINDING_MISMATCH\", \"reason\": \"source bytes: packages/core/src/lgax_core/__init__.py\", \"project_imports_started\": false}\n",
+      "pass": true,
+      "rejected_before_project_import": true
+    },
+    {
+      "kind": "unexpected_project_source",
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "ba178a6210fa2d4050a2f5067246627a41bc02084ec3079f4045cb57a52414e9",
+      "stderr": "{\"error\": \"SOURCE_BINDING_MISMATCH\", \"reason\": \"project source inventory\", \"project_imports_started\": false}\n",
+      "pass": true,
+      "rejected_before_project_import": true
+    },
+    {
+      "kind": "changed_manifest",
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "ce2f4d3902b29d4e21df897282dcb09160e64a05d45594cbc8cc205b17bf2db4",
+      "stderr": "{\"error\": \"SOURCE_BINDING_MISMATCH\", \"reason\": \"source manifest digest\", \"project_imports_started\": false}\n",
+      "pass": true,
+      "rejected_before_project_import": true
+    }
+  ],
+  "original_results_preserved": [
+    "mapping.json",
+    "counterexample-data-check.json",
+    "checks.json",
+    "core-regression.txt"
+  ],
+  "source_unchanged": true,
+  "new_semantic_quality_pass": false,
+  "old_six_regraded": false
+}
