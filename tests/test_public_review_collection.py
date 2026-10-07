@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from lgax_core.public_review_collection import group_and_split, parse_public_review_html, save_landing_db
+from lgax_core.public_review_collection import group_and_split, parse_public_review_html, save_landing_db, verify_public_product_page
 
 
 class PublicReviewCollectionTests(unittest.TestCase):
@@ -66,6 +66,29 @@ class PublicReviewCollectionTests(unittest.TestCase):
     def test_conflicting_original_id_fails_closed(self):
         with self.assertRaisesRegex(ValueError, 'conflicting text'):
             group_and_split([self.parse('식세기 좋아요'), self.parse('식세기 불편해요')])
+
+    def test_later_shared_page_quality_flag_cannot_be_lost(self):
+        first = self.parse('식기세척기 만족합니다')
+        later = first | {'quality_flags': ['review_list_model_differs'], 'quarantined': True}
+        for rows in ([first, later], [later, first]):
+            result, summary = group_and_split(rows)
+            self.assertEqual(result[0]['split'], 'quarantine')
+            self.assertEqual(result[0]['quality_flags'], ['review_list_model_differs'])
+            self.assertEqual(summary['group_intersection_count'], 0)
+
+    def test_product_page_identity_is_checked_and_not_purchased_identity(self):
+        raw = ('<title>LG 식기세척기 | DUE6BGL2E | 식기세척기</title>'
+               '<link rel="canonical" href="https://www.lge.co.kr/product/dishwashers/due6bgl2e">').encode()
+        product = {'model_id': 'DUE6BGL2E', 'lge_model_id': 'MD10492836',
+                   'category': 'dishwashers', 'product_group': 'dishwasher'}
+        source = {'sha256': hashlib.sha256(raw).hexdigest(),
+                  'source_url': 'https://www.lge.co.kr/product/dishwashers/due6bgl2e?modelId=MD10492836&pdpType=PURCHASE'}
+        result = verify_public_product_page(raw, product=product, source=source)
+        self.assertNotIn('actual_purchased_model_id', result)
+        for wrong in (product | {'model_id': 'DFE5BGE'}, product | {'lge_model_id': 'MD00000000'},
+                      product | {'product_group': 'microwave'}):
+            with self.assertRaisesRegex(ValueError, 'identity mismatch'):
+                verify_public_product_page(raw, product=wrong, source=source)
 
     def test_html_scripts_are_not_review_text(self):
         row = self.parse('식세기<script>stealCredential()</script> 좋아요')

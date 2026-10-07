@@ -78,6 +78,37 @@ def sha256(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
+def verify_public_product_page(raw: bytes, *, product: dict, source: dict) -> dict:
+    """Verify the displayed PDP identity, without asserting purchased SKU."""
+    from urllib.parse import urlsplit, parse_qs
+    if not 0 < len(raw) <= MAX_HTML_BYTES or sha256(raw) != source["sha256"]:
+        raise ValueError("Public product capture hash or byte limit mismatch")
+    html = raw.decode("utf-8", errors="strict")
+    parser = _PublicHTML()
+    parser.feed(html)
+    nodes = []
+
+    def walk(node):
+        nodes.append(node)
+        for child in node.children:
+            if isinstance(child, _Node):
+                walk(child)
+
+    walk(parser.root)
+    titles = [n.text().strip() for n in nodes if n.tag == "title"]
+    canonicals = [n.attrs.get("href") for n in nodes if n.tag == "link" and n.attrs.get("rel") == "canonical"]
+    expected = "https://www.lge.co.kr/product/" + product["category"] + "/" + product["model_id"].lower()
+    url = urlsplit(source["source_url"])
+    group_name = {"fridge": "냉장고", "microwave": "전자레인지", "dishwasher": "식기세척기"}[product["product_group"]]
+    if (len(titles) != 1 or len(canonicals) != 1 or canonicals[0] != expected
+            or product["model_id"] not in titles[0] or group_name not in titles[0]
+            or url.scheme + "://" + url.netloc + url.path != expected
+            or parse_qs(url.query) != {"modelId": [product["lge_model_id"]], "pdpType": ["PURCHASE"]}):
+        raise ValueError("Official displayed product identity mismatch")
+    return {"title": titles[0], "canonical_url": expected,
+            "lge_model_id_basis": "normal_UI_confirmed_displayed_model_and_closed_source_URL"}
+
+
 def _date(node):
     if node is None:
         return None
@@ -197,6 +228,9 @@ def group_and_split(records: list[dict]) -> tuple[list[dict], dict]:
             prior["page_associations"].append({"model_id": record["displayed_model_id"],
                                                 "source_url": record["source_url"],
                                                 "source_sha256": record["source_sha256"]})
+            prior["quality_flags"] = sorted(set(prior["quality_flags"] + record["quality_flags"]))
+            prior["quarantined"] = prior["quarantined"] or record["quarantined"]
+            prior["eligible_for_model_input"] = prior["eligible_for_model_input"] and record["eligible_for_model_input"]
             duplicates.append({"original_review_id": rid,
                                "additional_display_model": record["displayed_model_id"]})
         else:
@@ -235,10 +269,15 @@ def group_and_split(records: list[dict]) -> tuple[list[dict], dict]:
             record["split"] = "quarantine"
             record["eligible_for_model_input"] = False
             record["quality_flags"].append("quarantined_related_review")
+    split_groups = {name: {r["dedup_group_id"] for r in rows if r["split"] == name} for name in counts}
+    intersections = sum(len(split_groups[a] & split_groups[b]) for i, a in enumerate(counts)
+                        for b in list(counts)[i + 1:])
+    if intersections:
+        raise ValueError("A related review group crossed a fixed split")
     return rows, {"captured_page_rows": len(records), "unique_original_ids": len(rows),
                   "duplicate_page_rows": duplicates, "split_counts": counts,
                   "assignment": "sha256(group+fixed_version)%100; 60/20/20 targets, not forced counts",
-                  "group_intersection_count": 0,
+                  "group_intersection_count": intersections,
                   "split_version": SPLIT_VERSION}
 
 
