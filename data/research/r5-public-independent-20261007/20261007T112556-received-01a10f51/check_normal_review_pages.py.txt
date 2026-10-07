@@ -1,0 +1,88 @@
+"""Independent bounded GET of the three explicitly handed-off normal public review-list pages."""
+import hashlib,json,re,sys,unicodedata
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime,timezone
+from pathlib import Path
+from urllib.request import Request,urlopen
+from html.parser import HTMLParser
+sys.stdout.reconfigure(encoding="utf-8")
+CONTROL=Path(__file__).resolve().parent
+WORK=Path("C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data-remaining-recovery-20261007T112556-01a10f51")
+fixed=json.loads((WORK/"data/research/r5-public-reviews-20261007/fixed18/records.json").read_text("utf-8"))
+models=("T876MEE1H1","DUE6BGL2E","MW23FDI")
+def normalize(t):return " ".join(unicodedata.normalize("NFKC",t).split())
+def sha(b):return hashlib.sha256(b).hexdigest()
+class Node:
+    def __init__(self,tag,attrs,parent=None):self.tag=tag;self.attrs=dict(attrs);self.parent=parent;self.children=[]
+    def get(self,k):return self.attrs.get(k)
+    def all(self):
+        for child in self.children:
+            if isinstance(child,Node):yield child;yield from child.all()
+    def select(self,selector):
+        def matches(n):
+            if selector.startswith('#'):return n.get('id')==selector[1:]
+            if selector.startswith('.'):return selector[1:] in (n.get('class') or '').split()
+            if selector=='li[data-review-id]':return n.tag=='li' and n.get('data-review-id') is not None
+            if selector=='[class*=date]':return 'date' in (n.get('class') or '')
+            return False
+        return [n for n in self.all() if matches(n)]
+    def select_one(self,selector):return next(iter(self.select(selector)),None)
+    def get_text(self,sep=' ',strip=False):
+        parts=[]
+        for child in self.children:
+            if isinstance(child,str):parts.append(child.strip() if strip else child)
+            elif child.tag not in ('script','style'):parts.append(child.get_text(sep,strip))
+        return sep.join(p for p in parts if p)
+class Tree(HTMLParser):
+    def __init__(self):super().__init__(convert_charrefs=True);self.root=Node('root',[]);self.current=self.root
+    def handle_starttag(self,tag,attrs):
+        n=Node(tag,attrs,self.current);self.current.children.append(n)
+        if tag not in ('br','hr','img','input','meta','link','area','base','embed','param','source','track','wbr'):self.current=n
+    def handle_endtag(self,tag):
+        n=self.current
+        while n.parent:
+            if n.tag==tag:self.current=n.parent;return
+            n=n.parent
+    def handle_data(self,data):self.current.children.append(data)
+def capture(model):
+    expected=[r for r in fixed if r["displayed_model_id"]==model]
+    url=expected[0]["source_url"]
+    assert url.startswith("https://www.lge.co.kr/mkt/review/") and url.endswith("/pdpReviewListPopup")
+    out={"model_id":model,"url":url,"at":datetime.now(timezone.utc).isoformat(),"cookie_sent":False,"auth_sent":False,"checks":[]}
+    try:
+        with urlopen(Request(url,headers={"User-Agent":"LGAX-independent-review-audit/1.0"}),timeout=35) as response:
+            data=response.read(8*1024*1024+1);out["HTTP_status"]=response.status
+        assert len(data)<=8*1024*1024
+        path=CONTROL/"private-original-checks"/(model+".html");path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(data)
+        out["HTML_sha256"]=sha(data)
+        parser=Tree();parser.feed(data.decode('utf-8','replace'));root=parser.root.select_one("#divReviewList")
+        observed={str(li.get("data-review-id")):li for li in root.select("li[data-review-id]")} if root else {}
+        out["visible_list_ids_count"]=len(observed)
+        for r in expected:
+            rid=str(r["original_review_id"]);li=observed.get(rid);message=li.select_one(".message") if li else None
+            if message is None:
+                out["checks"].append({"id":rid,"status":"unconfirmed_not_in_current_first_page"});continue
+            text=message.get_text(" ",strip=True)
+            date_nodes=[x.get_text(" ",strip=True) for x in li.select("[class*=date]")]
+            dates=[s for t in date_nodes for s in re.findall(r"20\d{2}[.\-/]\d{1,2}[.\-/]\d{1,2}",t)]
+            normalized_dates=[]
+            for value in dates:
+                parts=re.split(r"[.\-/]",value);normalized_dates.append("-".join([parts[0],parts[1].zfill(2),parts[2].zfill(2)]))
+            whole=li.get_text(" ",strip=True)
+            out["checks"].append({"id":rid,"message_normalized_text_equal":normalize(text)==normalize(r["text"]),
+                "live_normalized_text_sha256":sha(normalize(text).encode()),"declared_normalized_text_sha256":sha(normalize(r["text"]).encode()),
+                "row_MD":li.get("data-model-id"),"declared_row_MD":r["review_list_model_id"],
+                "row_MD_match":li.get("data-model-id")==r["review_list_model_id"],
+                "declared_purchase_date":r["purchase_date"],"date_tokens_in_date_nodes":normalized_dates,
+                "purchase_date_matches_date_node":r["purchase_date"] in normalized_dates,
+                "purchase_label_visible":"구매" in " ".join(date_nodes),"date_label_context_unconfirmed":"구매" not in " ".join(date_nodes),
+                "published_at_declared":r["published_at"],"private_body_not_in_result":True})
+    except Exception as e:out.update({"unconfirmed":True,"error_type":type(e).__name__,"HTTP_status":getattr(e,"code",out.get("HTTP_status"))})
+    return out
+with ThreadPoolExecutor(max_workers=3) as pool:result=list(pool.map(capture,models))
+(CONTROL/"received-audit/live-original-page-check.json").write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+print(json.dumps([{"model":r["model_id"],"status":r.get("HTTP_status"),"rows":r.get("visible_list_ids_count"),
+ "checked":len(r["checks"]),"text_matches":sum(x.get("message_normalized_text_equal",False) for x in r["checks"]),
+ "MD_matches":sum(x.get("row_MD_match",False) for x in r["checks"]),
+ "purchase_date_matches":sum(x.get("purchase_date_matches_date_node",False) for x in r["checks"]),
+ "first_safe_check":r["checks"][:1],"error":r.get("error_type")} for r in result],ensure_ascii=False))

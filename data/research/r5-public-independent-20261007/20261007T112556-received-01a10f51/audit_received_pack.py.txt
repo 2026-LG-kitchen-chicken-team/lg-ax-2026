@@ -1,0 +1,120 @@
+"""Independent hash/scope/lineage audit of received immutable R5 pack; no producer execution."""
+import csv,hashlib,html,json,re,subprocess,sys,unicodedata
+from collections import Counter,defaultdict
+from pathlib import Path
+sys.stdout.reconfigure(encoding="utf-8")
+CONTROL=Path(__file__).resolve().parent
+WORK=Path("C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data-remaining-recovery-20261007T112556-01a10f51")
+ROOT=Path("C:\\Users\\user\\Documents\\ChatGPT\\LG공모전")
+PIN="0d920df7d1afd09490e91cd40bf9c6cb9dfaf75d"
+SOURCE="data/research/r5-public-reviews-20261007"
+OUT=CONTROL/"received-audit"
+OUT.mkdir(exist_ok=True)
+def sha(b):return hashlib.sha256(b).hexdigest()
+def raw(path):
+    return subprocess.run(["git","show",PIN+":"+SOURCE+"/"+path],cwd=WORK,capture_output=True,check=True).stdout
+def load(path):return json.loads(raw(path))
+def norm(t):return " ".join(unicodedata.normalize("NFKC",html.unescape(re.sub(r"<[^>]+>"," ",t))).split())
+v1=load("fixed18/records.json");v2=load("balanced-pilot-v2/records.json");new=load("balanced-pilot-v2/new_unique_records.json")
+products=load("fixed18/products.json");m1=load("fixed18/manifest.json");m2=load("balanced-pilot-v2/manifest.json")
+checks=[];issues=[];rows=[]
+def check(id,e,a):
+    ok=e==a;checks.append({"id":id,"expected":e,"actual":a,"match":ok});return ok
+check("v1-records-pin","98830d3078d5c14443ee672a4fd6d5ae7fbafe6c77ea15ab6b14828ad2d5ad6f",sha(raw("fixed18/records.json")))
+check("v1-manifest-pin","3a35518787c1959d29dd11f6a651194f7b7a6be971e392a470cff3da240c895d",sha(raw("fixed18/manifest.json")))
+check("v2-records-pin","d8ac06a75f53eac2fc2db469d78fa967bbc20883048aa44190217fd19d26fb7d",sha(raw("balanced-pilot-v2/records.json")))
+check("v2-manifest-pin","9ceb23e5b02e9541091a15673d6d1f161462bfd79c421eed5ddc652093aff37d",sha(raw("balanced-pilot-v2/manifest.json")))
+filepins=[]
+for sub in ("fixed18","balanced-pilot-v2"):
+    for name,expected in load(sub+"/files.json").items():
+        if name.endswith(".sqlite3"):
+            filepins.append({"path":sub+"/"+name,"status":"external_generated_DB_not_in_source_tree","declared_sha256":expected})
+            continue
+        try:b=raw(sub+"/"+name)
+        except subprocess.CalledProcessError:
+            filepins.append({"path":sub+"/"+name,"status":"not_present_at_fixed_head","declared_sha256":expected});continue
+        check("file:"+sub+"/"+name,expected,sha(b));filepins.append({"path":sub+"/"+name,"sha256":sha(b),"status":"match" if sha(b)==expected else "mismatch"})
+by_product={p["model_id"]:p for p in products}
+for label,rs in (("v1",v1),("v2",v2)):
+    for r in rs:
+        ident=str(r["original_review_id"]);textsha=sha(r["text"].encode())
+        check(label+":"+ident+":text_SHA",r["text_sha256"],textsha)
+        check(label+":"+ident+":buyer_SKU",None,r["actual_purchased_model_id"])
+        check(label+":"+ident+":posting_date",None,r["published_at"])
+        check(label+":"+ident+":model_eligibility",False,r["eligible_for_model_input"])
+        prod=by_product[r["displayed_model_id"]]
+        check(label+":"+ident+":manual_version",prod["manual_version"],r["manual_version"])
+        if label=="v2":
+            snap=load("balanced-pilot-v2/"+r["DOM_snapshot_location"])
+            node=next(x for x in snap["rows"] if str(x["id"])==ident)
+            check(label+":"+ident+":snapshot_body",sha(node["body"].encode()),textsha)
+            check(label+":"+ident+":snapshot_rating",node["rating"],r["rating"])
+            check(label+":"+ident+":snapshot_purchase_date",node["purchase_date"],r["purchase_date"])
+            check(label+":"+ident+":snapshot_row_MD",node["md"],r["review_row_MD"])
+            check(label+":"+ident+":snapshot_fragment",sha(node["fragment"].encode()),r["public_message_DOM_fragment_sha256"])
+        rows.append({"pack":label,"original_review_id":ident,"model_id":r["displayed_model_id"],"text_sha256":textsha,
+            "normalized_body_sha256":sha(norm(r["text"]).encode()),"source_url":r["source_url"],"locator":r["source_locator"],
+            "purchase_date":r["purchase_date"],"published_at":r["published_at"],"actual_purchased_model_id":r["actual_purchased_model_id"],
+            "sku_binding":r["sku_binding"],"manual_version":r["manual_version"],"manual_time_alignment":r["manual_time_alignment"],
+            "split":r["split"],"quarantined":r.get("quarantined",r["split"]=="quarantine"),
+            "redaction_count":len(r["redactions"]),"quality_flags":r["quality_flags"],"eligible":r["eligible_for_model_input"]})
+check("v1_rows",179,len(v1));check("v2_screen_rows",60,len(v2));check("v2_new_rows",59,len(new))
+v1ids={str(r["original_review_id"]) for r in v1};overlap=[r for r in v2 if str(r["original_review_id"]) in v1ids]
+check("old_id_overlap",1,len(overlap))
+combined=v1+new
+check("combined_unique",238,len({str(r["original_review_id"]) for r in combined}))
+counts=dict(Counter(r["split"] for r in combined))
+check("split_counts",{"development":141,"independent_evaluation":36,"demonstration":49,"quarantine":12},counts)
+sets={};intersections={}
+for split in ("development","independent_evaluation","demonstration"):
+    rs=[r for r in combined if r["split"]==split]
+    sets[split]={"IDs":{str(r["original_review_id"]) for r in rs},"text_hashes":{sha(norm(r["text"]).encode()) for r in rs}}
+names=list(sets)
+for i,a in enumerate(names):
+    for b in names[i+1:]:
+        for k in ("IDs","text_hashes"):
+            both=sorted(sets[a][k]&sets[b][k]);intersections[a+"__"+b+":"+k]=both
+            check("split_intersection:"+a+":"+b+":"+k,[],both)
+# Connect independent observation IDs from PR217 to the producer's actual source IDs.
+old=json.loads((ROOT/"publication/data-real-review-audit-20261007T104222-01a10f51/official-page-observations-private.json").read_text("utf-8"))
+devorig=json.loads((ROOT/"publication/data001-r06-r08-20261006-01a10f51/frozen-source-a5/data/research/P2-DATA-001-r03-r05-20261006-01a10f51/source-proof.json").read_text("utf-8"))
+known_dev={s["original_body_sha256"] for s in devorig["samples"]}
+exposure=[]
+for page in old:
+    p=next(x for x in page["json_ld_blocks"] if isinstance(x,dict) and x.get("@type")=="Product")
+    for idx,r in enumerate(p["review"]):
+        h=sha(r["reviewBody"].encode())
+        for target in combined:
+            if norm(r["reviewBody"])==norm(target["text"]):
+                exposure.append({"old_observation_model":page["model_id"],"old_body_sha256":h,"old_JSONLD_index":idx,
+                    "new_original_review_id":str(target["original_review_id"]),"new_model":target["displayed_model_id"],"split":target["split"],
+                    "known_old_model_development":h in known_dev,"prior_auditor_source_seen":True,
+                    "purchase_date_equals_reported_old_datePublished":target["purchase_date"]==r.get("datePublished"),
+                    "publication_date_inferred":False,
+                    "independence":"reject_old_model_exposure" if h in known_dev and target["split"]=="independent_evaluation" else
+                      "reviewer_visibility_needs_blind-route_decision" if target["split"]=="independent_evaluation" else "not_eval"})
+counts_by_model=[]
+for p in products:
+    model=p["model_id"];base=[r for r in v1 if r["displayed_model_id"]==model]
+    pilot=[r for r in v2 if r["displayed_model_id"]==model]
+    allr=[r for r in combined if r["displayed_model_id"]==model]
+    counts_by_model.append({"model_id":model,"product_group":p["product_group"],"fixed_v1":len(base),"balanced_pilot_rows":len(pilot),
+      "combined_unique":len(allr),"quarantine":sum(r["split"]=="quarantine" for r in allr),"purchased_SKU_confirmed":0,
+      "posting_dates_known":0,"model_input_eligible":0,"manual_version":p["manual_version"],
+      "manual_status":p["manual_verification"],"missing_to10_v1":max(0,10-len(base)),
+      "source_model_roster":"PM fixed18 at exact head; source handoff, not whole-product acceptance"})
+metrics={"source_head":PIN,"fixed18_rows":len(v1),"pilot_rows":len(v2),"pilot_each":dict(Counter(r["displayed_model_id"] for r in v2)),
+ "combined_unique":len(combined),"split_counts":counts,"split_intersections":intersections,
+ "purchased_SKU_confirmed":sum(r["actual_purchased_model_id"] is not None for r in combined),
+ "posting_dates_known":sum(r["published_at"] is not None for r in combined),"model_input_eligible":sum(r["eligible_for_model_input"] for r in combined),
+ "old_model_exposed_ids":[r["new_original_review_id"] for r in exposure if r["known_old_model_development"]],
+ "old_model_exposure_in_eval":[r["new_original_review_id"] for r in exposure if r["known_old_model_development"] and r["split"]=="independent_evaluation"],
+ "prior_reviewer_seen_eval":[r["new_original_review_id"] for r in exposure if r["split"]=="independent_evaluation"],
+ "manual_verified_models":sum(p["manual_version"] is not None for p in products),
+ "monthly_published_date_denominator":sum(r["published_at"] is not None and r["split"]!="quarantine" for r in combined),
+ "monthly_ratio":None,"comparison_checks":len(checks),"mismatches":sum(not c["match"] for c in checks),
+ "original_HTML_or_private_DOM_recheck":"pending independent normal UI capture; public source snapshots checked","new_models_OCR":0}
+for name,obj in (("source-checks.json",{"checks":checks,"file_pins":filepins}),("received-summary.json",metrics),
+ ("received-18-models.json",counts_by_model),("old-exposure-crosswalk.json",exposure),("record-field-audit.json",rows)):
+    (OUT/name).write_text(json.dumps(obj,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+print(json.dumps({"summary":metrics,"exposure":exposure,"mismatch_preview":[c for c in checks if not c["match"]][:8]},ensure_ascii=False))

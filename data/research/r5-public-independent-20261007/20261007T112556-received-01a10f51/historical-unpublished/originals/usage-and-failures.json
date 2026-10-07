@@ -1,0 +1,187 @@
+{
+  "attempts": [
+    {
+      "attempt": "a4",
+      "summary_sha256": "b30ec838011218eb1f2e3024adf9ee71118e86114e1305b4d532e85e26d90e20",
+      "cases": [
+        {
+          "case_id": "fridge",
+          "mode": "live",
+          "process_exit": 0,
+          "relay_error": null,
+          "source_readonly": true,
+          "network": "none",
+          "host_auth_mounted": false,
+          "generations": 2,
+          "tokens": 9276,
+          "unknown_usage": false,
+          "status": "held",
+          "r06": true,
+          "input_digest": "1fba5444960c7c1683d0c53ffcf32c6ee9892c5d18957f18e837ea754646dd4e",
+          "r07": null
+        },
+        {
+          "case_id": "dishwasher",
+          "mode": "live",
+          "process_exit": 0,
+          "relay_error": null,
+          "source_readonly": true,
+          "network": "none",
+          "host_auth_mounted": false,
+          "generations": 3,
+          "tokens": 11794,
+          "unknown_usage": false,
+          "status": "failed",
+          "r06": true,
+          "input_digest": "f3c530545ca942344c863777e83084ec6e2899307ebe133822751afd94954592",
+          "r07": null
+        },
+        {
+          "case_id": "microwave",
+          "mode": "live",
+          "process_exit": 137,
+          "relay_error": "RPCError",
+          "source_readonly": true,
+          "network": "none",
+          "host_auth_mounted": false,
+          "generations": 3,
+          "tokens": 30000,
+          "unknown_usage": true
+        },
+        {
+          "case_id": "dishwasher-fresh-replay",
+          "mode": "live",
+          "process_exit": 0,
+          "relay_error": null,
+          "source_readonly": true,
+          "network": "none",
+          "host_auth_mounted": false,
+          "generations": 3,
+          "tokens": 11796,
+          "unknown_usage": false,
+          "status": "failed",
+          "r06": true,
+          "input_digest": "f3c530545ca942344c863777e83084ec6e2899307ebe133822751afd94954592",
+          "r07": null
+        }
+      ],
+      "reservation_released": true
+    },
+    {
+      "attempt": "a5b",
+      "summary_sha256": "94a5cc76f4263ad4da2dc6d0180843e324c8436e6b8ba2afdeb794475a1a3146",
+      "cases": [
+        {
+          "case_id": "fridge",
+          "mode": "live",
+          "process_exit": 0,
+          "relay_error": null,
+          "source_readonly": true,
+          "network": "none",
+          "host_auth_mounted": false,
+          "generations": 5,
+          "tokens": 24864,
+          "unknown_usage": false,
+          "status": "failed",
+          "r06": true,
+          "input_digest": "1fba5444960c7c1683d0c53ffcf32c6ee9892c5d18957f18e837ea754646dd4e",
+          "r07": null
+        },
+        {
+          "case_id": "dishwasher",
+          "mode": "live",
+          "process_exit": 0,
+          "relay_error": null,
+          "source_readonly": true,
+          "network": "none",
+          "host_auth_mounted": false,
+          "generations": 2,
+          "tokens": 9193,
+          "unknown_usage": false,
+          "status": "held",
+          "r06": true,
+          "input_digest": "f3c530545ca942344c863777e83084ec6e2899307ebe133822751afd94954592",
+          "r07": null
+        },
+        {
+          "case_id": "microwave",
+          "mode": "live",
+          "process_exit": 0,
+          "relay_error": null,
+          "source_readonly": true,
+          "network": "none",
+          "host_auth_mounted": false,
+          "generations": 3,
+          "tokens": 10122,
+          "unknown_usage": false,
+          "status": "failed",
+          "r06": true,
+          "input_digest": "714cd9453ce3314b3b63ba6b536446b74f94446e9a2d6a5d802267fb01d55377",
+          "r07": null
+        },
+        {
+          "case_id": "dishwasher-fresh-replay",
+          "mode": "live",
+          "process_exit": 0,
+          "relay_error": null,
+          "source_readonly": true,
+          "network": "none",
+          "host_auth_mounted": false,
+          "generations": 2,
+          "tokens": 8868,
+          "unknown_usage": false,
+          "status": "held",
+          "r06": true,
+          "input_digest": "f3c530545ca942344c863777e83084ec6e2899307ebe133822751afd94954592",
+          "r07": null
+        }
+      ],
+      "reservation_released": true
+    }
+  ],
+  "new_generations_reserved": 23,
+  "new_generations_with_verified_response": 22,
+  "unknown_generations": 1,
+  "known_reported_tokens": 92522,
+  "accounted_tokens_including_unknown_quarantine": 115913,
+  "finite_cap": {
+    "generations": 26,
+    "tokens": 170000
+  },
+  "initial_generation_cap": 17,
+  "finite_amendment_reason": "document metadata gate, no-need reason projection and malformed comparison repair",
+  "old_stage4_preserved": {
+    "generations": 41,
+    "tokens": 210978
+  },
+  "unknown_request_replayed": false,
+  "early_failures": [
+    {
+      "attempt": "a1",
+      "generations": 0,
+      "reason": "Relay journal parent missing before constructor; own reservation released."
+    },
+    {
+      "attempt": "a2",
+      "generations": 0,
+      "reason": "Verifier compared private diagnostics to redacted HTTP snapshot; projection comparison fixed."
+    },
+    {
+      "attempt": "a3",
+      "generations": 0,
+      "reason": "Public document metadata rejected as synthetic Manifest; feature_scope integration fixed."
+    },
+    {
+      "attempt": "a5",
+      "generations": 0,
+      "reason": "Own reservation assertion saw pre-reservation cached status; cache invalidated after receipt."
+    }
+  ],
+  "a4_microwave_unknown": {
+    "generations": 3,
+    "known_responses": 2,
+    "accounted_tokens": 30000,
+    "process_exit": 137,
+    "reason": "Third dispatch response/usage unavailable; case allowance quarantined, no duplicate dispatch."
+  }
+}
