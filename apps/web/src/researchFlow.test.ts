@@ -6,6 +6,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ResearchPlanningView } from './ResearchPlanningView';
 import App from './App';
 import { heldBrief, REAL_RESEARCH_BUNDLE } from './fixtures/research-test-data';
+import * as views from './PlanningViews';
+import type { PlanningBrief } from './research';
 
 describe('actual-source research screen state and revision flow', () => {
   let host: HTMLDivElement; let root: Root;
@@ -87,5 +89,78 @@ describe('actual-source research screen state and revision flow', () => {
     expect(host.querySelectorAll('.research-source-row')).toHaveLength(1);
     expect(host.textContent).toContain(REAL_RESEARCH_BUNDLE.sources[0].text);
     expect(host.querySelector('[aria-label="실제 자료 기획 결과"]')).toBeNull();
+  });
+  // V1 first stage (record 최길웅-20261008-060). The brief is a hand-written contract object, not model output.
+  it('exports a concept as a future-concept storyboard from the result card without another request', async () => {
+    const source = REAL_RESEARCH_BUNDLE.sources[0].source_id;
+    const withConcept: PlanningBrief = { ...heldBrief(), status: 'complete',
+      problems: [{ id: 'PROBLEM-T1', title: '안쪽 식품 확인', description: '깊은 칸 안쪽이 잘 보이지 않는다', source_ids: [source], counter_source_ids: [], scope_caveat: '제품군 탐색' }],
+      concepts: [{ id: 'CONCEPT-T1', title: '깊은 칸 안쪽 보기', problem_ids: ['PROBLEM-T1'], target_user: '맞벌이 가구', use_context: '주말 장보기 뒤 정리',
+        before_steps: ['안쪽 식품을 꺼내 확인한다'], after_steps: ['문을 열면 안쪽 칸을 비춘다'], mechanism: '문 열림 감지로 안쪽 조명을 켠다', proposed_changes: [],
+        source_ids: [source], assumptions: [], validation_questions: ['안쪽 확인 빈도는?'], status: 'draft',
+        visual_scenes: [{ title: '장면 1', before: '안쪽을 들여다본다', after: '조명으로 바로 보인다' }] }] };
+    const downloads: Array<{ name: string; content: string }> = [];
+    vi.spyOn(views, 'download').mockImplementation((name, _type, content) => { downloads.push({ name, content }); });
+    const fetch = vi.fn().mockImplementation(async (url: string, options?: RequestInit) => {
+      if (url.endsWith('/bundles')) return response({ bundles: [{ bundle_id: REAL_RESEARCH_BUNDLE.bundle_id, product_group: 'fridge', analysis_scope: 'product_group', source_count: 1, review_count: 1 }] });
+      if (url.includes('/bundles/')) return response(REAL_RESEARCH_BUNDLE);
+      if (url.endsWith('/planning-runs') && options?.method === 'POST') return response(withConcept);
+      return response({ error: { code: 'NOT_FOUND' } }, 404);
+    });
+    vi.stubGlobal('fetch', fetch); await act(async () => root.render(createElement(ResearchPlanningView)));
+    await connect(); await choose(); await click('새 기획 생성');
+    expect(host.querySelector('[aria-label="깊은 칸 안쪽 보기 콘셉트 스토리보드"]')?.textContent).toContain('실제 성능 증거가 아닙니다');
+    const requests = fetch.mock.calls.length;
+    await click('스토리보드 Markdown');
+    expect(fetch.mock.calls).toHaveLength(requests);
+    expect(downloads).toHaveLength(1);
+    expect(downloads[0].name).toBe('storyboard-TEST-held-run-r0-CONCEPT-T1.md');
+    expect(downloads[0].content).toContain('미래 콘셉트 시안입니다');
+    expect(downloads[0].content).toContain("개선안 상태가 '제안 초안'입니다");
+    expect(downloads[0].content).toContain('| S02 | 지금 | 장면 1 |');
+    vi.restoreAllMocks();
+  });
+  // A11Y-1 (record 최길웅-20261008-061): the detail opens above the list, so keyboard and screen-reader users must be
+  // taken to it, and brought back to the citation they came from when it closes.
+  it('moves focus into an opened source detail and back to the citation when it closes', async () => {
+    // jsdom has no scrollIntoView; the screen scrolls the source panel into view when a citation opens.
+    const scroll = vi.fn(); Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', { value: scroll, configurable: true, writable: true });
+    vi.stubGlobal('fetch', api()); await act(async () => root.render(createElement(ResearchPlanningView)));
+    await connect(); await choose();
+    const cite = host.querySelector<HTMLButtonElement>('.research-source-row .research-citations button')!;
+    await act(async () => { cite.focus(); cite.click(); });
+    const detail = host.querySelector('[aria-label="인용 원문 상세"]')!;
+    expect(detail).not.toBeNull();
+    expect(document.activeElement).toBe(detail.querySelector('h3'));
+    await click('상세 닫기');
+    expect(host.querySelector('[aria-label="인용 원문 상세"]')).toBeNull();
+    expect(document.activeElement).toBe(cite);
+    expect(scroll).toHaveBeenCalledTimes(1);
+    delete (HTMLElement.prototype as unknown as { scrollIntoView?: unknown }).scrollIntoView;
+  });
+  // Record 최길웅-20261008-067: summary citation coverage is shown only from a consistent runtime block; absent stays absent.
+  it('shows summary citation coverage from the brief and says so when it is not provided', async () => {
+    const source = REAL_RESEARCH_BUNDLE.sources[0].source_id;
+    const coverage = { basis: 'returned_summary_references_on_successful_discovery', sample_unit: 'unique_deduplicated_customer_source',
+      summary_item_counts: { positive: 1, negative: 0, mixed: 0 }, polarity_source_counts: { positive: 1, negative: 0, mixed: 0 },
+      polarity_source_ids: { positive: [source], negative: [], mixed: [] }, input_customer_source_count: 1, denominator_customer_source_count: 1,
+      denominator_source_ids: [source], covered_customer_source_count: 1, covered_source_ids: [source], unreferenced_processed_source_count: 0,
+      unprocessed_input_source_count: 0, overlapping_polarity_source_count: 0, coverage_ratio: 1, classification_approved: false, market_frequency_estimated: false };
+    const withCoverage: PlanningBrief = { ...heldBrief(), source_facts: [{ source_id: source, facts: [] }], runtime: { summary_reference_coverage: coverage } };
+    const fetch = vi.fn().mockImplementation(async (url: string, options?: RequestInit) => {
+      if (url.endsWith('/bundles')) return response({ bundles: [{ bundle_id: REAL_RESEARCH_BUNDLE.bundle_id, product_group: 'fridge', analysis_scope: 'product_group', source_count: 1, review_count: 1 }] });
+      if (url.includes('/bundles/')) return response(REAL_RESEARCH_BUNDLE);
+      if (url.endsWith('/planning-runs') && options?.method === 'POST') return response(withCoverage);
+      return response({ error: { code: 'NOT_FOUND' } }, 404);
+    });
+    vi.stubGlobal('fetch', fetch); await act(async () => root.render(createElement(ResearchPlanningView)));
+    await connect(); await choose(); await click('새 기획 생성');
+    expect(host.querySelector('[data-summary-coverage="ok"]')?.textContent).toContain('처리된 고객 원문 1건 중 1건 인용(인용률 100%)');
+    expect(host.querySelector('[data-summary-polarity-coverage="positive"]')?.textContent).toBe('고객 원문 1건 인용 · 요약 1개');
+    await act(async () => root.render(createElement('div')));
+    vi.stubGlobal('fetch', api()); await act(async () => root.render(createElement(ResearchPlanningView)));
+    await connect(); await choose(); await click('새 기획 생성');
+    expect(host.querySelector('[data-summary-coverage="not_provided"]')?.textContent).toContain('제공되지 않았습니다');
+    expect(host.querySelector('[data-summary-polarity-coverage]')).toBeNull();
   });
 });
