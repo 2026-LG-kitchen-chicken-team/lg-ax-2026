@@ -1,6 +1,12 @@
 # 황대겸 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-08 CORE-C2-TEMPORAL-CONTEXT-01a10729-01: 원문752651의 사용/발생/복귀 시점·행위자 지침 보완. 부분 snapshot 대조와 실제 원raw/효과 검증을 구분; 모델0·PM 인수 미완료. 36검사/Ruff/규칙/문서 PASS.
+- [상세](2026-10-08/CORE-C2-TEMPORAL-CONTEXT-01a10729-01.md) · [고정 원문 대조](../../../evals/core-manual-quality/20261008/temporal-source-context/README.md).
+
+- 2026-10-08 CORE-C4-SUMMARY-REUSE-01a10729-01: 국소 수리에서 불변 요약의 유효 집계 보존; legacy 미확인/잘못된 metadata/caller 덮어쓰기 구분. 실모델0·PM API 전달/인수 미완료. 36검사/Ruff/규칙/문서 PASS.
+- [상세](2026-10-08/CORE-C4-SUMMARY-REUSE-01a10729-01.md) · [설계·검사](../../../evals/core-manual-quality/20261008/summary-reference-reuse/README.md).
+
 - 2026-10-08 CORE-C4-SUMMARY-COVERAGE-01a10729-01: 반환 요약 출처의 건수/성공 분모·겹침·미인용/미처리를 코드로 분리. 분류·기간/시장빈도·실제모델 품질/PM 인수 미검증, 모델0. 관련23검사/Ruff/규칙/문서 PASS.
 - [상세/근거](2026-10-08/CORE-C4-SUMMARY-COVERAGE-01a10729-01.md) · [설계·격리 수신](../../../evals/core-manual-quality/20261008/summary-reference-coverage/README.md).
 

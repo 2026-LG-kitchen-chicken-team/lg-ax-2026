@@ -29,6 +29,7 @@ from .public_planning import (
     claim_issues,
     is_customer_source,
     source_facts,
+    summary_reference_coverage,
 )
 
 ITEM_COLLECTIONS = {"Problem": "problems", "Comparison": "comparisons", "Concept": "concepts"}
@@ -116,6 +117,26 @@ def _patch_issues(kind: str, candidate: dict, fields: set[str], catalog: dict, c
                     and not re.search(r"없이|하지\s*않|변경\s*불가|추가\s*불가|제어\s*불가", text)):
                 issues.append({"code": "explicit_no_hardware_constraint", "field": field})
     return issues
+
+
+def _inherited_summary_coverage(bundle: dict, previous: dict) -> dict | None:
+    """Retain only exact reference math; missing legacy metadata stays unknown."""
+    raw = previous["runtime"].get("summary_reference_coverage")
+    if not isinstance(raw, dict):
+        return None
+    denominator = raw.get("denominator_source_ids")
+    if not isinstance(denominator, list) or any(not isinstance(eid, str) for eid in denominator):
+        return None
+    customer_ids, groups = set(), set()
+    for source in bundle["sources"]:
+        group = source.get("duplicate_group") or source["source_id"]
+        if is_customer_source(source) and group not in groups:
+            customer_ids.add(source["source_id"])
+            groups.add(group)
+    expected = summary_reference_coverage(previous["summaries"], customer_ids, set(denominator))
+    if _digest(raw) != _digest(expected):
+        return None
+    return deepcopy(raw)
 
 
 def repair_public_brief(model_caller, bundle: dict, previous: dict, feedback: list[dict], *,
@@ -225,5 +246,15 @@ def repair_public_brief(model_caller, bundle: dict, previous: dict, feedback: li
                          "selected_source_ids": sorted(selected_ids), "omitted_source_count": len(catalog) - len(selected_ids),
                          "max_model_calls": max_model_calls, "max_repairs_per_item": 1,
                          "correction_budget": corrections.snapshot}
+    # Summary fields are immutable in this path. A new repair call does not
+    # establish a new discovery denominator, including when that call fails.
+    result["runtime"].pop("summary_reference_coverage", None)
+    result["runtime"].pop("summary_reference_coverage_inheritance", None)
+    if "summary_reference_coverage" in previous["runtime"]:
+        coverage = _inherited_summary_coverage(bundle, previous)
+        result["runtime"]["summary_reference_coverage_inheritance"] = (
+            "preserved" if coverage is not None else "invalid_previous_metadata")
+        if coverage is not None:
+            result["runtime"]["summary_reference_coverage"] = coverage
     validate_planning_brief(result)
     return result
