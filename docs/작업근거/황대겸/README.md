@@ -1,6 +1,9 @@
 # 황대겸 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-07 CORE-R8-CONSUMER-AUDIT-01a10729-01: 고정 R8 e04에서 공유수정3회/정상 wire 형제 소실을 재현해 PM245에 인계했다. 실제 고객 원문·기존 Qwen 오류만 재사용했으며 새모델/콘셉트0이다. C1 실제27B 지원 실행은 중복하지 않는다.
+- [상세](2026-10-07/CORE-R8-CONSUMER-AUDIT-01a10729-01.md) · [고정 근거](../../../evals/core-manual-quality/20261007/r8-consumer-audit/README.md). 다음은 담당 수정/원 모델 결과 인수 후 같은 버전 검수. 의미 품질·전체 Done을 대신하지 않는다.
+
 - 2026-10-07 CORE-D3-CONSUMER-INTAKE-01a10729-01: DATA PR244 고정 경쟁근거와 원 후기848850의 설치 제약·긍정/잔여 불편4구간을 소비 준비로 대조. manifest8/발췌12/hash·상태 확인, 새모델0.
 - [상세](2026-10-07/CORE-D3-CONSUMER-INTAKE-01a10729-01.md) · [소비 조건·격리 수신](../../../evals/core-manual-quality/20261007/d3-consumer-intake/README.md). 키친핏 대안의 설치 제약·비교 불일치·미확인 상태 보존; P0/첫 문제/실제 흐름 인수는 대기.
 
