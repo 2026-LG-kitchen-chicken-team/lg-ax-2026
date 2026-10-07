@@ -82,7 +82,7 @@ def main() -> int:
             raise SystemExit(f"{name}: status/model_calls differ from the PM manifest")
         result["cases"][name] = {"sha256": digest, **case}
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(result, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    args.out.write_text(json.dumps(result, ensure_ascii=False, indent=1) + "\n", encoding="utf-8", newline="\n")
     for name, case in result["cases"].items():
         print(name, case["status"], case["decision_action"], f"rev {case['revision_count']}/{case['max_revisions']}", case["terminal_reason"],
               "errors", [e["code"] + str(e["public_detail_codes"] or "") for e in case["errors"]], "calls", case["model_calls"],

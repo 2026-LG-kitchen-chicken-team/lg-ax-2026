@@ -83,11 +83,11 @@ def main() -> int:
         if token in text:
             raise SystemExit("token leaked into a snapshot")
         args.out.mkdir(parents=True, exist_ok=True)
-        (args.out / f"{name}.public.json").write_text(json.dumps(snapshot, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        (args.out / f"{name}.public.json").write_text(json.dumps(snapshot, ensure_ascii=False, indent=1) + "\n", encoding="utf-8", newline="\n")
         summary["cases"][name] = {"port": port, "project_id": pid, "run_id": rid, "run_status": snapshot["run"]["status"],
                                   "public_sha256": hashlib.sha256((args.out / f"{name}.public.json").read_bytes()).hexdigest()}
         print(name, port, snapshot["run"]["status"], pid, rid, flush=True)
-    (args.out / "http-replay.json").write_text(json.dumps(summary, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    (args.out / "http-replay.json").write_text(json.dumps(summary, ensure_ascii=False, indent=1) + "\n", encoding="utf-8", newline="\n")
     print("ready", flush=True)
     for _, thread in servers:
         thread.join()
