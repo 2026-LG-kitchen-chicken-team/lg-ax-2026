@@ -24,12 +24,12 @@ class SelectedSourceTests(unittest.TestCase):
         self.bundle = json.loads(PACK.read_text('utf-8'))
         self.planner = ContractOnlyPlanner()
         registry = TokenRegistry([{'principal_id': 'selection-wire-test', 'role': 'editor',
-                                  'token_sha256': sha256(b'test-selection-boundary').hexdigest()}])
+                                  'token_sha256': sha256(b'test-selection-boundary-credential-20261008').hexdigest()}])
         self.workspace = ResearchWorkspace(root / 'research.sqlite3', [PACK], self.planner)
         self.client = TestClient(create_workspace_app(root / 'workspace.sqlite3', registry,
                                                      research_workspace=self.workspace), base_url='http://127.0.0.1')
         self.addCleanup(self.client.close)
-        self.headers = {'Authorization': 'Bearer test-selection-boundary', 'Origin': 'http://127.0.0.1:5175'}
+        self.headers = {'Authorization': 'Bearer test-selection-boundary-credential-20261008', 'Origin': 'http://127.0.0.1:5175'}
         self.payload = {'bundle_id': self.bundle['bundle_id'], 'goal': 'TEST ONLY: 원문 선택 전송 경계', 'constraints': []}
         self.ids = [source['source_id'] for source in self.bundle['sources'][:2]]
 
