@@ -148,7 +148,7 @@ ${trendNote}` : base; });
     <label className="field-label" htmlFor="planning-prompt">기획 요청</label><textarea id="planning-prompt" rows={4} value={prompt} onChange={event => setPrompt(event.target.value)} />
     <label className="field-label" htmlFor="planning-customer">대상 고객</label><input id="planning-customer" value={customer} onChange={event => setCustomer(event.target.value)} />
     <fieldset className="model-picker"><legend className="field-label">검토 모델 <small>기존 기능을 대조할 모델을 하나 이상 고르세요</small></legend>
-      {unavailablePreviousModels.length ? <p className="scope-notice" role="note" data-missing-project-models>이전 프로젝트의 모델 {unavailablePreviousModels.join(', ')}은 현재 자료에 없습니다. 현재 자료에서 검토할 모델을 직접 선택해 주세요.</p> : null}
+      {unavailablePreviousModels.length ? <p className="scope-notice" role="note" data-missing-project-models>이전 프로젝트의 모델 {unavailablePreviousModels.join(', ')}은 현재 선택 범위에서 사용할 수 없습니다. 이 범위에서 검토할 모델을 직접 선택해 주세요.</p> : null}
       {groupModels.length ? groupModels.map(id => <label key={id} className={models.includes(id) ? 'checked' : ''}><input type="checkbox" checked={models.includes(id)} onChange={() => toggleModel(id)} />{id}<small>{productName(data!.products.find(product => product.model_id === id)!)}</small></label>) : <div className="readonly-field">자료가 연결되면 모델을 선택할 수 있습니다</div>}
     </fieldset>
     <label className="field-label" htmlFor="planning-situation">사용 상황</label><textarea id="planning-situation" rows={2} value={situation} onChange={event => setSituation(event.target.value)} />
