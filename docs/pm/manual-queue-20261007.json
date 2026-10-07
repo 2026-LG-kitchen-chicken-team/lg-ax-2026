@@ -3,8 +3,8 @@
   "mode": "manual",
   "automation_enabled": false,
   "user_directive": "자동화 OFF. 중단된 미완료만 이어서 진행하고 완료 작업은 재사용한다. 기존·새 작업을 배정하고 현재 대화의 수동 진행 중 큐·검수·통합을 관리한다.",
-  "updated_at": "2026-10-07T22:10:00+09:00",
-  "base_commit": "58feb9c30fc5faae1cc8acfb0ff409106a6d7174",
+  "updated_at": "2026-10-07T22:55:00+09:00",
+  "base_commit": "e933c0230abd71f78fd9659de0866931046fa21f",
   "queue_issue": 234,
   "original_completed_tasks": [
     "P2-CORE-001",
@@ -35,7 +35,7 @@
         152
       ],
       "depends": [],
-      "state": "implemented_pending_integration",
+      "state": "implemented_pending_pr245_integration",
       "executor": "current_chat",
       "paths": [
         "packages/contracts/schemas/research-planning.schema.json",
@@ -61,7 +61,7 @@
       "depends": [
         "P0"
       ],
-      "state": "implemented_pending_integration",
+      "state": "implemented_delivered_pending_pr245_integration",
       "executor": "local_support/remaining_and_data",
       "paths": [
         "scripts/build_public_review_db.py",
@@ -104,12 +104,13 @@
       "owner": "ginaginaring",
       "priority": 0,
       "issues": [
-        235
+        235,
+        244
       ],
       "depends": [
         "P0"
       ],
-      "state": "implemented_pending_integration",
+      "state": "implemented_adapted_preview_registered_quality_pending",
       "executor": "local_support/remaining_and_data",
       "paths": [
         "data/research/r8-public-research-20261007/competitors/"
@@ -119,7 +120,8 @@
         "용량/설치/시기/시험조건 차이와 미확인을 기록한다.",
         "공식자료에 안보인다는 이유로 기능부재를 단정하지 않는다."
       ],
-      "implementation_commit": "7503429c443bfca0e847b93e85e476f83fccd657"
+      "implementation_commit": "7503429c443bfca0e847b93e85e476f83fccd657",
+      "follow_up": "PR244 official12 converted into separate66-source fridge ResearchBundle; preview registration only, no new fridge model run or quality/parent Done."
     },
     {
       "id": "D4",
@@ -129,12 +131,13 @@
       "issues": [
         14,
         15,
-        148
+        148,
+        246
       ],
       "depends": [
         "D1"
       ],
-      "state": "ready",
+      "state": "audit_prepared_format_and_findings_pending",
       "executor": null,
       "paths": [
         "data/research/r8-public-research-20261007/"
@@ -144,7 +147,8 @@
         "새독립자료의 노출·중복·표본 편향을 기록한다.",
         "실제게시일 없는 자료에 월/계절 추세를 생성하지 않는다.",
         "검색·재정렬·OCR 실제 비교와 FR01 원자료 정답 인수의 중단된 잔여는 기존 도구로 이어가고 완료된 실험은 반복하지 않는다."
-      ]
+      ],
+      "follow_up": "PR246 independent audit has not run: producer paths/fields adapter + unknown extra Excel ID and fixed product-map findings must be addressed first. No old collection rerun."
     },
     {
       "id": "C1",
@@ -157,7 +161,7 @@
       "depends": [
         "P0"
       ],
-      "state": "in_progress",
+      "state": "current_27b_route_tested_original_model_identity_pending",
       "executor": "local_support/failure_scope_review",
       "paths": [
         "packages/core/src/lgax_core/public_planning.py",
@@ -177,6 +181,19 @@
         "facts_exact": true,
         "http_mcp_saved_result_equal": true,
         "semantic_scope": "five positive reviews only; no problem generated; sampling follow-up"
+      },
+      "model_test": {
+        "model_id": "qwen3.8:27b-q4_K_M",
+        "model_digest": "25b843619e944cd0ae6069f94ff4e5e26a16e109ccbc0a66a0f05979ed70098e",
+        "historical_id": "qwen3.5:27b",
+        "historical_digest": "64ae5b1d651fb2709d5928ccb8dcfb4bb2cc9c2c8001ac34497e36a6cf905b59",
+        "same_weights_verified": false,
+        "integrated_cases": 5,
+        "core_only_official_omitted_cases": 1,
+        "total_new_calls": 12,
+        "synthetic_reviews": 0,
+        "model_service": "owned finite sessions stopped; manual preview generation disabled",
+        "protected_gpu_changed": false
       }
     },
     {
@@ -193,7 +210,7 @@
       "depends": [
         "P0"
       ],
-      "state": "in_progress",
+      "state": "partially_fixed_semantic_followup_pending",
       "executor": "local_support/failure_scope_review",
       "paths": [
         "packages/core/src/lgax_core/public_planning.py",
@@ -205,7 +222,7 @@
         "기능존재를 고객불편 해결로 바꾸지 않는다.",
         "틀린항목에 좁은수정을 하고 유효후보를 보존한다."
       ],
-      "follow_up": "Interleave actual low-rating/mixed/positive reviews; bounded extra discovery batch if no problems. Preserve first result."
+      "follow_up": "Focused review-only field repair preserves healthy items and fixes actor/function/hypothesis errors; onset/use-end chronology precision still needs work. Legacy exact-model global deletion remains separate residual."
     },
     {
       "id": "C3",
@@ -224,7 +241,7 @@
         "C1",
         "C2"
       ],
-      "state": "implemented_pending_integration",
+      "state": "draft_flow_and_revisions_tested_quality_partial",
       "executor": "local_support/failure_scope_review",
       "paths": [
         "packages/core/src/lgax_core/public_planning.py",
@@ -249,7 +266,7 @@
         "D1",
         "C3"
       ],
-      "state": "implemented_pending_integration",
+      "state": "implemented_summary_semantics_pending",
       "executor": "local_support/failure_scope_review",
       "paths": [
         "packages/core/src/lgax_core/public_planning.py"
@@ -258,7 +275,8 @@
         "긍정/부정/혼합 및 제품/배송/설치/케어 맥락을 구분한다.",
         "건수·분모는코드, 의미해석은LLM으로 구분한다.",
         "근거·반대사례·추론관계를 후속기획에 전달한다."
-      ]
+      ],
+      "follow_up": "853593 positive→mixed classification and official-omitted 861559 burden→pain-relief expansion remain localized semantic findings; no market frequency estimate."
     },
     {
       "id": "W1",
@@ -274,7 +292,7 @@
       "depends": [
         "P0"
       ],
-      "state": "implemented_pending_integration",
+      "state": "implemented_actual_run_restore_and_revision_tested",
       "executor": "local_support/qwen_test_route",
       "paths": [
         "apps/web/"
@@ -298,7 +316,7 @@
         "C4",
         "W1"
       ],
-      "state": "implemented_pending_integration",
+      "state": "implemented_filter_export_download_unconfirmed",
       "executor": "local_support/qwen_test_route",
       "paths": [
         "apps/web/"
@@ -308,7 +326,8 @@
         "키워드/동의어/주제/제품/확인된기간/조건으로 좁힌다.",
         "선택근거를 다른제품/UX/사용안내/서비스기획에 넣는다."
       ],
-      "implementation_commit": "b29dc62541c1602a6558d73473e379c4065d0f53"
+      "implementation_commit": "b29dc62541c1602a6558d73473e379c4065d0f53",
+      "follow_up": "Keyword/related terms/posted-date and selected evidence serialization tested. Actual Chrome JSON download event/file still unconfirmed after one narrow helper fix."
     },
     {
       "id": "W3",
@@ -323,7 +342,7 @@
         "C4",
         "W1"
       ],
-      "state": "implemented_pending_integration",
+      "state": "implemented_actual_source_graph_tested",
       "executor": "local_support/qwen_test_route",
       "paths": [
         "apps/web/"
@@ -347,7 +366,7 @@
         "D2",
         "C3"
       ],
-      "state": "implemented_pending_integration",
+      "state": "implemented_official_guides_concept_draft_pending",
       "executor": "local_support/failure_scope_review",
       "paths": [
         "packages/core/src/lgax_core/",
@@ -370,7 +389,7 @@
         152
       ],
       "depends": [],
-      "state": "in_progress",
+      "state": "integration_pr245_ci_pending",
       "executor": "current_chat",
       "paths": [
         "docs/pm/",
@@ -404,7 +423,7 @@
         "W1",
         "P1"
       ],
-      "state": "queued_dependency",
+      "state": "internal_draft_prototype_test_ready_final_acceptance_pending",
       "executor": null,
       "paths": [
         "docs/pm/",
@@ -416,7 +435,8 @@
         "첫테스트뒤 실제자료 독립평가·일반LLM기준선·전체호출측정을 이어한다.",
         "발표/시연영상/소스ZIP·README·실행Skill을 같은버전으로 재현한다.",
         "최종 단계에서 세 제품군·두 AI 호스트 연결의 미완료를 확인하고 이전 인수 증거는 재사용한다."
-      ]
+      ],
+      "follow_up": "Actual-source internal draft walkthrough can begin. Broad independent quality, three-product live run, two host integration, five Skills, paired baseline and final submission remain."
     },
     {
       "id": "V1",
@@ -1049,27 +1069,46 @@
     },
     {
       "pr": 241,
-      "state": "pending_review",
+      "state": "merged_O2_fix_only",
       "owner": "choigilung",
-      "scope": "legacy O2 new fix; avoid redoing earlier completed UI"
+      "scope": "legacy O2 new fix; avoid redoing earlier completed UI",
+      "model_quality_verified": false,
+      "merge_commit": "46792268fa0453b2c615cfaa392872318a012b4f"
     },
     {
       "pr": 242,
-      "state": "pending_review",
+      "state": "merged_historical_and_D3_intake_records_only",
       "owner": "unknownamed",
-      "scope": "manual handoff/code record, reuse exact model"
+      "scope": "manual handoff/code record, reuse exact model",
+      "model_quality_verified": false,
+      "merge_commit": "e933c0230abd71f78fd9659de0866931046fa21f"
     },
     {
       "pr": 243,
-      "state": "pending_review",
+      "state": "reviewed_held_legacy_contract_mismatch",
       "owner": "choigilung",
-      "scope": "pre-P0 W1 view model; compare current integrated implementation to avoid duplication"
+      "scope": "pre-P0 W1 view model; compare current integrated implementation to avoid duplication",
+      "model_quality_verified": false
     },
     {
       "pr": 244,
-      "state": "pending_review",
+      "state": "merged_official_partial_pack_adapter_added",
       "owner": "ginaginaring",
-      "scope": "new competitor official source partial handoff"
+      "scope": "new competitor official source partial handoff",
+      "model_quality_verified": false,
+      "merge_commit": "f7c60d7cc26efc595ac7681216cc26fe5879b9f5"
+    },
+    {
+      "pr": 245,
+      "state": "draft_current_integration_ci_pending",
+      "scope": "public data/CORE/API/MCP/WEB/source-preserving manual repair",
+      "model_quality_verified": false
+    },
+    {
+      "pr": 246,
+      "state": "reviewed_changes_requested_audit_not_executed",
+      "head": "d4f7ec5267672e33eb7b09c4d45820f0e86a5b56",
+      "scope": "manual D4 audit preparation; producer format adapter and two P2 findings"
     }
   ],
   "events": [
@@ -1077,6 +1116,25 @@
       "type": "manual_resume",
       "at": "2026-10-07T21:15:00+09:00",
       "detail": "P0/P1 root 수동 진행; CORE/DATA/WEB 지원 에이전트 격리분기 착수. 자동화와 원remote pending jobs는 OFF 유지."
+    },
+    {
+      "type": "manual_progress",
+      "at": "2026-10-07T22:55:00+09:00",
+      "detail": "Unfinished scope only: actual238 data/141 development, model-planning/revisions/field repair, WEB source graph and guides implemented; PR231/232/233/241/242/244 merged within reviewed scope. Automations OFF, no background worker. Incoming246 reviewed and queued."
     }
-  ]
+  ],
+  "implementation_head_before_status_docs": "898bc02",
+  "manual_preview": {
+    "url": "http://127.0.0.1:5175",
+    "api": "http://127.0.0.1:18969",
+    "model_generation_enabled": false,
+    "registered_bundle_counts": [
+      61,
+      54,
+      51,
+      66
+    ],
+    "latest_stored_run": "run-75a7fb27665f4070b75482e732ce579d",
+    "quality": "draft only; semantic and source follow-ups remain"
+  }
 }
