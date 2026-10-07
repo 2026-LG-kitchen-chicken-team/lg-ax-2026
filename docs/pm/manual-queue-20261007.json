@@ -1,0 +1,1140 @@
+{
+  "schema_version": 1,
+  "mode": "manual",
+  "automation_enabled": false,
+  "user_directive": "자동화 OFF. 중단된 미완료만 이어서 진행하고 완료 작업은 재사용한다. 기존·새 작업을 배정하고 현재 대화의 수동 진행 중 큐·검수·통합을 관리한다.",
+  "updated_at": "2026-10-07T22:55:00+09:00",
+  "base_commit": "e933c0230abd71f78fd9659de0866931046fa21f",
+  "queue_issue": 234,
+  "original_completed_tasks": [
+    "P2-CORE-001",
+    "P2-PM-001",
+    "P2-PM-002",
+    "P2-WEB-001",
+    "P2-WEB-002"
+  ],
+  "human_owners": {
+    "unknownamed": "황대겸",
+    "ginaginaring": "신진하",
+    "choigilung": "최길웅",
+    "jeongiryang": "정이량"
+  },
+  "remote_workers": {
+    "mode": "off",
+    "running": 0,
+    "current_online_status": "not_verified"
+  },
+  "tasks": [
+    {
+      "id": "P0",
+      "title": "실제 연구자료·시각 기획 공통 계약",
+      "owner": "jeongiryang",
+      "priority": 0,
+      "issues": [
+        28,
+        152
+      ],
+      "depends": [],
+      "state": "implemented_pending_pr245_integration",
+      "executor": "current_chat",
+      "paths": [
+        "packages/contracts/schemas/research-planning.schema.json",
+        "packages/contracts/src/lgax_contracts/research.py"
+      ],
+      "acceptance": [
+        "review/qa/faq/manual/spec/installation을 구분하고 실제 공개 자료만 새 흐름에 허용한다.",
+        "제품군/정확모델, 구매모델 미상, 게시일/구매일, 발췌/전체, 관찰/기대/문서사실을 분리한다.",
+        "기획·비교·사용 전후 장면·조건 수정·버전 계약을 API/MCP/WEB이 공유한다."
+      ]
+    },
+    {
+      "id": "D1",
+      "title": "중단된 실제 리뷰 179+59건 통합과 실행 입력",
+      "owner": "ginaginaring",
+      "priority": 0,
+      "issues": [
+        12,
+        13,
+        16,
+        148
+      ],
+      "depends": [
+        "P0"
+      ],
+      "state": "implemented_delivered_pending_pr245_integration",
+      "executor": "local_support/remaining_and_data",
+      "paths": [
+        "scripts/build_public_review_db.py",
+        "scripts/build_research_bundle.py",
+        "data/research/r8-public-research-20261007/"
+      ],
+      "acceptance": [
+        "기존238건의 원문/중복/기존split를 보존한 통합 DB·Excel·제품군 ResearchBundle을 만든다.",
+        "SKU·게시일 미상은 null, 추천순·별점 편향과 분모를 표시한다.",
+        "기존CSV/BM25/파서 완료 기능을 다시 만들지 않는다."
+      ]
+    },
+    {
+      "id": "D2",
+      "title": "설명서·공개 질문·FAQ·설치 자료 첫 제품군 팩",
+      "owner": "ginaginaring",
+      "priority": 0,
+      "issues": [
+        12,
+        13
+      ],
+      "depends": [
+        "P0"
+      ],
+      "state": "partially_implemented",
+      "executor": "local_support/remaining_and_data",
+      "paths": [
+        "scripts/build_research_bundle.py",
+        "data/research/r8-public-research-20261007/"
+      ],
+      "acceptance": [
+        "기존설명서3개를 재사용하고 적용모델·판본·쪽을 보존한다.",
+        "정상공개FAQ/설치/확인가능Q&A를 별도source_type으로 추가한다.",
+        "Q&A 접근미확인을 질문없음으로 표시하거나 합성으로 채우지 않는다."
+      ]
+    },
+    {
+      "id": "D3",
+      "title": "문제 중심 경쟁제품 공식 근거 확보",
+      "owner": "ginaginaring",
+      "priority": 0,
+      "issues": [
+        235,
+        244
+      ],
+      "depends": [
+        "P0"
+      ],
+      "state": "implemented_adapted_preview_registered_quality_pending",
+      "executor": "local_support/remaining_and_data",
+      "paths": [
+        "data/research/r8-public-research-20261007/competitors/"
+      ],
+      "acceptance": [
+        "첫문제의 비교가능 경쟁제품1개 이상을 공식자료로 대조한다.",
+        "용량/설치/시기/시험조건 차이와 미확인을 기록한다.",
+        "공식자료에 안보인다는 이유로 기능부재를 단정하지 않는다."
+      ],
+      "implementation_commit": "7503429c443bfca0e847b93e85e476f83fccd657",
+      "follow_up": "PR244 official12 converted into separate66-source fridge ResearchBundle; preview registration only, no new fridge model run or quality/parent Done."
+    },
+    {
+      "id": "D4",
+      "title": "실제 자료 표본·중복·독립 평가 구분",
+      "owner": "ginaginaring",
+      "priority": 0,
+      "issues": [
+        14,
+        15,
+        148,
+        246
+      ],
+      "depends": [
+        "D1"
+      ],
+      "state": "audit_prepared_format_and_findings_pending",
+      "executor": null,
+      "paths": [
+        "data/research/r8-public-research-20261007/"
+      ],
+      "acceptance": [
+        "중복·재게시 계보와 기존격리/개발/평가/시연 구분을 보존한다.",
+        "새독립자료의 노출·중복·표본 편향을 기록한다.",
+        "실제게시일 없는 자료에 월/계절 추세를 생성하지 않는다.",
+        "검색·재정렬·OCR 실제 비교와 FR01 원자료 정답 인수의 중단된 잔여는 기존 도구로 이어가고 완료된 실험은 반복하지 않는다."
+      ],
+      "follow_up": "PR246 independent audit has not run: producer paths/fields adapter + unknown extra Excel ID and fixed product-map findings must be addressed first. No old collection rerun."
+    },
+    {
+      "id": "C1",
+      "title": "LG Qwen27B의 실제 기획 경로 연결",
+      "owner": "unknownamed",
+      "priority": 0,
+      "issues": [
+        8
+      ],
+      "depends": [
+        "P0"
+      ],
+      "state": "current_27b_route_tested_original_model_identity_pending",
+      "executor": "local_support/failure_scope_review",
+      "paths": [
+        "packages/core/src/lgax_core/public_planning.py",
+        "scripts/run_public_planning.py"
+      ],
+      "acceptance": [
+        "기존LGModelClient/OllamaAdapter를 재사용하고 정확모델/digest/실행정보를 기록한다.",
+        "다른프로젝트endpoint·보호GPU에 영향없도록 LG별도설정으로 실행한다.",
+        "직접모델진단과 전체기획흐름의 결과를 구분한다."
+      ],
+      "resource_note": "GPU3 snapshot free42,220MiB/util0%; permitted shared headroom. Own pinned Ollama18875 + loopback SSH forward18975; foreign processes unchanged. Context16384/output4096/manual max4calls case in progress.",
+      "first_run": {
+        "id": "run-da92676280a7477988cd388980c10355",
+        "status": "needs_sources",
+        "model_calls": 1,
+        "successful_native_json": true,
+        "facts_exact": true,
+        "http_mcp_saved_result_equal": true,
+        "semantic_scope": "five positive reviews only; no problem generated; sampling follow-up"
+      },
+      "model_test": {
+        "model_id": "qwen3.8:27b-q4_K_M",
+        "model_digest": "25b843619e944cd0ae6069f94ff4e5e26a16e109ccbc0a66a0f05979ed70098e",
+        "historical_id": "qwen3.5:27b",
+        "historical_digest": "64ae5b1d651fb2709d5928ccb8dcfb4bb2cc9c2c8001ac34497e36a6cf905b59",
+        "same_weights_verified": false,
+        "integrated_cases": 5,
+        "core_only_official_omitted_cases": 1,
+        "total_new_calls": 12,
+        "synthetic_reviews": 0,
+        "model_service": "owned finite sessions stopped; manual preview generation disabled",
+        "protected_gpu_changed": false
+      }
+    },
+    {
+      "id": "C2",
+      "title": "남아 있는 원문 오독과 전체 후보 삭제 수정",
+      "owner": "unknownamed",
+      "priority": 0,
+      "issues": [
+        9,
+        10,
+        11,
+        150
+      ],
+      "depends": [
+        "P0"
+      ],
+      "state": "partially_fixed_semantic_followup_pending",
+      "executor": "local_support/failure_scope_review",
+      "paths": [
+        "packages/core/src/lgax_core/public_planning.py",
+        "packages/core/src/lgax_core/claim_support.py",
+        "packages/core/src/lgax_core/semantic_review.py"
+      ],
+      "acceptance": [
+        "수치/기대vs실제/발췌범위를 원문사실로 고정보존한다.",
+        "기능존재를 고객불편 해결로 바꾸지 않는다.",
+        "틀린항목에 좁은수정을 하고 유효후보를 보존한다."
+      ],
+      "follow_up": "Focused review-only field repair preserves healthy items and fixes actor/function/hypothesis errors; onset/use-end chronology precision still needs work. Legacy exact-model global deletion remains separate residual."
+    },
+    {
+      "id": "C3",
+      "title": "실제 자료의 문제 발견→비교→구체적 기획",
+      "owner": "unknownamed",
+      "priority": 0,
+      "issues": [
+        8,
+        10,
+        108
+      ],
+      "depends": [
+        "P0",
+        "D1",
+        "D2",
+        "C1",
+        "C2"
+      ],
+      "state": "draft_flow_and_revisions_tested_quality_partial",
+      "executor": "local_support/failure_scope_review",
+      "paths": [
+        "packages/core/src/lgax_core/public_planning.py",
+        "scripts/run_public_planning.py"
+      ],
+      "acceptance": [
+        "불편사전입력 없이 자료에서 문제/반대근거를 발견한다.",
+        "대상사용자·상황·개선전후단계·구체작동방식·기획장면을 생성한다.",
+        "조건변경이 같은자료의 새revision에 반영된다."
+      ],
+      "implementation_commit": "4d5f46cfb552dd58d3029017d28653a16a87549e"
+    },
+    {
+      "id": "C4",
+      "title": "양면 요약·관계·기획 재사용 근거",
+      "owner": "unknownamed",
+      "priority": 1,
+      "issues": [
+        150
+      ],
+      "depends": [
+        "D1",
+        "C3"
+      ],
+      "state": "implemented_summary_semantics_pending",
+      "executor": "local_support/failure_scope_review",
+      "paths": [
+        "packages/core/src/lgax_core/public_planning.py"
+      ],
+      "acceptance": [
+        "긍정/부정/혼합 및 제품/배송/설치/케어 맥락을 구분한다.",
+        "건수·분모는코드, 의미해석은LLM으로 구분한다.",
+        "근거·반대사례·추론관계를 후속기획에 전달한다."
+      ],
+      "follow_up": "853593 positive→mixed classification and official-omitted 861559 burden→pain-relief expansion remain localized semantic findings; no market frequency estimate."
+    },
+    {
+      "id": "W1",
+      "title": "텍스트를 넘는 실제 기획 화면과 조건 변경",
+      "owner": "choigilung",
+      "priority": 0,
+      "issues": [
+        25,
+        26,
+        117,
+        120
+      ],
+      "depends": [
+        "P0"
+      ],
+      "state": "implemented_actual_run_restore_and_revision_tested",
+      "executor": "local_support/qwen_test_route",
+      "paths": [
+        "apps/web/"
+      ],
+      "acceptance": [
+        "실자료선택→문제·근거·비교→개선전후장면→조건변경→내보내기를 연결한다.",
+        "근거원문·반대사례·미확인·버전을 확인할 수 있다.",
+        "가짜정상run이나 하드코딩 기획을 시연하지 않는다."
+      ]
+    },
+    {
+      "id": "W2",
+      "title": "긍정·부정·혼합 요약, 키워드/의미검색, 기획 재사용",
+      "owner": "choigilung",
+      "priority": 1,
+      "issues": [
+        236
+      ],
+      "depends": [
+        "D1",
+        "C4",
+        "W1"
+      ],
+      "state": "implemented_filter_export_download_unconfirmed",
+      "executor": "local_support/qwen_test_route",
+      "paths": [
+        "apps/web/"
+      ],
+      "acceptance": [
+        "좋은후기와불편후기를 함께 요약하고 원문으로 이동한다.",
+        "키워드/동의어/주제/제품/확인된기간/조건으로 좁힌다.",
+        "선택근거를 다른제품/UX/사용안내/서비스기획에 넣는다."
+      ],
+      "implementation_commit": "b29dc62541c1602a6558d73473e379c4065d0f53",
+      "follow_up": "Keyword/related terms/posted-date and selected evidence serialization tested. Actual Chrome JSON download event/file still unconfirmed after one narrow helper fix."
+    },
+    {
+      "id": "W3",
+      "title": "경쟁 비교와 문제별 관계 그래프",
+      "owner": "choigilung",
+      "priority": 1,
+      "issues": [
+        237
+      ],
+      "depends": [
+        "D3",
+        "C4",
+        "W1"
+      ],
+      "state": "implemented_actual_source_graph_tested",
+      "executor": "local_support/qwen_test_route",
+      "paths": [
+        "apps/web/"
+      ],
+      "acceptance": [
+        "출처→요구/조건→기존/경쟁해결→기회→기획의 작은그래프를 연결한다.",
+        "관계의 지지/반대 근거와 추론표시를 볼 수 있다.",
+        "동시언급을 인과로 표시하지 않는다."
+      ],
+      "implementation_commit": "accedad95dfe0e956d5e163a327738de011f73fe"
+    },
+    {
+      "id": "X1",
+      "title": "실제 제품 안내와 신규 기획 설명서 생성",
+      "owner": "unknownamed",
+      "priority": 1,
+      "issues": [
+        238
+      ],
+      "depends": [
+        "D2",
+        "C3"
+      ],
+      "state": "implemented_official_guides_concept_draft_pending",
+      "executor": "local_support/failure_scope_review",
+      "paths": [
+        "packages/core/src/lgax_core/",
+        "apps/web/"
+      ],
+      "acceptance": [
+        "실제품의 쉬운안내/FAQ는 정확모델과 공식원문범위로 작성한다.",
+        "신규기획설명서는 제안기능/사용흐름/미확정을 표시한다.",
+        "공식제품기능과 미래기획을 구분한다."
+      ],
+      "implementation_commit": "5b364d81027e0e25d9ad40269407dc133faf9dc8"
+    },
+    {
+      "id": "P1",
+      "title": "중단된 PR·로컬 기록 인수와 동일 버전 통합",
+      "owner": "jeongiryang",
+      "priority": 0,
+      "issues": [
+        28,
+        152
+      ],
+      "depends": [],
+      "state": "integration_pr245_ci_pending",
+      "executor": "current_chat",
+      "paths": [
+        "docs/pm/",
+        "apps/api/src/lgax_api/",
+        "apps/mcp/src/lgax_mcp/"
+      ],
+      "acceptance": [
+        "PR231/232 기록인수와233 구조수정의 범위를 구분한다.",
+        "완료된과거병합/검사를 반복하지 않고 필요한현재변경만 확인한다.",
+        "로컬미커밋/원실패/역사를 보존하고 새WEB/API/MCP의run/version을 맞춘다."
+      ]
+    },
+    {
+      "id": "P2",
+      "title": "첫 사용자 테스트와 최종 시연·제출 결과",
+      "owner": "jeongiryang",
+      "priority": 0,
+      "issues": [
+        19,
+        20,
+        21,
+        22,
+        124,
+        125,
+        126
+      ],
+      "depends": [
+        "D1",
+        "D2",
+        "C3",
+        "W1",
+        "P1"
+      ],
+      "state": "internal_draft_prototype_test_ready_final_acceptance_pending",
+      "executor": null,
+      "paths": [
+        "docs/pm/",
+        "evals/",
+        "skills/"
+      ],
+      "acceptance": [
+        "첫제품군에서 실제문제→기획→시각결과→조건변경을 완주한다.",
+        "첫테스트뒤 실제자료 독립평가·일반LLM기준선·전체호출측정을 이어한다.",
+        "발표/시연영상/소스ZIP·README·실행Skill을 같은버전으로 재현한다.",
+        "최종 단계에서 세 제품군·두 AI 호스트 연결의 미완료를 확인하고 이전 인수 증거는 재사용한다."
+      ],
+      "follow_up": "Actual-source internal draft walkthrough can begin. Broad independent quality, three-product live run, two host integration, five Skills, paired baseline and final submission remain."
+    },
+    {
+      "id": "V1",
+      "title": "기획 기반 콘셉트 영상 생성",
+      "owner": "choigilung",
+      "priority": 2,
+      "issues": [
+        239
+      ],
+      "depends": [
+        "C3",
+        "W1"
+      ],
+      "state": "queued_dependency",
+      "executor": null,
+      "paths": [
+        "apps/web/",
+        "scripts/",
+        "docs/video/"
+      ],
+      "acceptance": [
+        "기획→스토리보드→참조이미지→장면→자막/음성편집으로 연결한다.",
+        "30~45초 미래콘셉트임을 표시하고 실제성능증거로 쓰지 않는다.",
+        "장비/모델라이선스/기획버전을 확인하고 첫프로토타입을 막지 않는다."
+      ]
+    },
+    {
+      "id": "X2",
+      "title": "다른 키친 가전의 실제 자료·기획 확장",
+      "owner": "ginaginaring",
+      "priority": 2,
+      "issues": [
+        240
+      ],
+      "depends": [
+        "P2"
+      ],
+      "state": "queued_dependency",
+      "executor": null,
+      "paths": [
+        "data/research/",
+        "packages/core/src/lgax_core/",
+        "apps/web/"
+      ],
+      "acceptance": [
+        "기존3제품군 이후 김치냉장고/광파오븐부터 실제자료·문서·사용조건을 연결한다.",
+        "인덕션/전기레인지/정수기를 순차확대한다.",
+        "메뉴만 늘려 구현완료로 표시하지 않는다."
+      ]
+    }
+  ],
+  "legacy_open_issues": [
+    {
+      "number": 152,
+      "title": "리뷰 동향 PM: 공통 집계 계약·API/MCP·웹 통합",
+      "owner": [
+        "jeongiryang"
+      ],
+      "linked_work": [
+        "P0",
+        "P1"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 150,
+      "title": "[리뷰 동향 CORE] 통합 판단 품질 회귀와 동향 기반 기획 가설 검사",
+      "owner": [
+        "unknownamed"
+      ],
+      "linked_work": [
+        "C2",
+        "C4"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 149,
+      "title": "[리뷰 동향 WEB] 월·계절 그래프와 원문 드릴다운 기획 흐름",
+      "owner": [
+        "choigilung"
+      ],
+      "linked_work": [
+        "W2",
+        "W3"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 148,
+      "title": "[리뷰 동향 DATA] 날짜·주제·중복을 보존한 리뷰 동향 집계",
+      "owner": [
+        "ginaginaring"
+      ],
+      "linked_work": [
+        "D1",
+        "D4"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 126,
+      "title": "[dev-pm-submission-replay-verifier] 제출 ZIP·Skill 재실행 입력 일치 검사 구현",
+      "owner": [
+        "jeongiryang"
+      ],
+      "linked_work": [
+        "P2"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 125,
+      "title": "[dev-pm-paired-baseline-runner] 같은 입력 일반 LLM·Agent 비교 실행기 구현",
+      "owner": [
+        "jeongiryang"
+      ],
+      "linked_work": [
+        "P2"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 124,
+      "title": "[dev-pm-whole-request-measurement] 전체 요청 호출·토큰·재시도 측정 집계 구현",
+      "owner": [
+        "jeongiryang"
+      ],
+      "linked_work": [
+        "P2"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 122,
+      "title": "[dev-pm-mcp-workspace-workflow] 채팅 MCP의 작업실 실행·조건 변경·조회 연결",
+      "owner": [
+        "jeongiryang"
+      ],
+      "linked_work": [
+        "P1"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 121,
+      "title": "[dev-pm-api-run-failure-contract] 웹 공통 실행 API의 오류·재조회 계약 구현",
+      "owner": [
+        "jeongiryang"
+      ],
+      "linked_work": [
+        "P1"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 120,
+      "title": "[dev-web-workspace-components-integration] 다섯 검토 UI를 실제 기획 작업실에 연결",
+      "owner": [
+        "choigilung"
+      ],
+      "linked_work": [
+        "W1"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 119,
+      "title": "[dev-web-run-progress-errors] 실행·보류·오류·오래된 결과 안내 UI",
+      "owner": [
+        "choigilung"
+      ],
+      "linked_work": [
+        "W1"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 118,
+      "title": "[dev-web-revision-timeline] 사용자 변경·Agent 내부 수정 이력 UI",
+      "owner": [
+        "choigilung"
+      ],
+      "linked_work": [
+        "W1"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 117,
+      "title": "[dev-web-concept-comparison] 후보별 작동 방식·차별점·요구사항 비교 UI",
+      "owner": [
+        "choigilung"
+      ],
+      "linked_work": [
+        "W1"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 116,
+      "title": "[dev-web-clarification-panel] 부족한 조건·보류 질문 입력 UI",
+      "owner": [
+        "choigilung"
+      ],
+      "linked_work": [
+        "W1"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 115,
+      "title": "[dev-web-evidence-trace-panel] 제품·버전·원문을 한눈에 보는 근거 패널",
+      "owner": [
+        "choigilung"
+      ],
+      "linked_work": [
+        "W1"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 114,
+      "title": "[dev-data-upload-query-integration] 실제 자료 등록·검색 경로에 새 모듈 연결",
+      "owner": [
+        "ginaginaring"
+      ],
+      "linked_work": [
+        "D1",
+        "D2"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 113,
+      "title": "[dev-data-retrieval-comparison] 동일 입력 검색 기준선·재정렬 비교 도구 구현",
+      "owner": [
+        "ginaginaring"
+      ],
+      "linked_work": [
+        "D4"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 112,
+      "title": "[dev-data-bm25-grounded-search] 근거 위치를 유지하는 BM25 검색 구현",
+      "owner": [
+        "ginaginaring"
+      ],
+      "linked_work": [
+        "D4"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 111,
+      "title": "[dev-data-evidence-catalog] 버전별 자료·근거 조회 카탈로그 구현",
+      "owner": [
+        "ginaginaring"
+      ],
+      "linked_work": [
+        "D2"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 110,
+      "title": "[dev-data-original-source-ranges] 페이지·행·문단 원문 범위 검증 구현",
+      "owner": [
+        "ginaginaring"
+      ],
+      "linked_work": [
+        "D2"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 109,
+      "title": "[dev-data-review-import] 새 리뷰 CSV의 검증·원문 보존 구현",
+      "owner": [
+        "ginaginaring"
+      ],
+      "linked_work": [
+        "D1"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 108,
+      "title": "[dev-core-planning-quality-integration] 새 판단 모듈을 실제 Agent 흐름에 연결",
+      "owner": [
+        "unknownamed"
+      ],
+      "linked_work": [
+        "C3"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 107,
+      "title": "[dev-core-source-instruction-boundary] 자료 내 지시문 권한 경계 구현",
+      "owner": [
+        "unknownamed"
+      ],
+      "linked_work": [
+        "C2"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 106,
+      "title": "[dev-core-concept-evidence-lineage] 후보 근거·차별점·보류 연결 구현",
+      "owner": [
+        "unknownamed"
+      ],
+      "linked_work": [
+        "C3"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 105,
+      "title": "[dev-core-residual-discomfort-matrix] 기능 존재와 남은 불편 대조 구현",
+      "owner": [
+        "unknownamed"
+      ],
+      "linked_work": [
+        "C3"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 104,
+      "title": "[dev-core-feature-support-states] 기능 지원·미언급·상충 판단 구현",
+      "owner": [
+        "unknownamed"
+      ],
+      "linked_work": [
+        "C2"
+      ],
+      "state": "reuse_existing_implementation_verify_remaining_integration_only"
+    },
+    {
+      "number": 28,
+      "title": "팀 역할·작업 규칙·현재 배정",
+      "owner": [
+        "jeongiryang"
+      ],
+      "linked_work": [
+        "P0",
+        "P1"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 27,
+      "title": "P2-WEB-005: 리뷰 동향·사용성 시각 기획 확장",
+      "owner": [
+        "choigilung"
+      ],
+      "linked_work": [
+        "W1",
+        "W2",
+        "W3"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 26,
+      "title": "[P2-WEB-004] 회의용 JSON/문서 내보내기·웹 E2E·수정 시간 측정",
+      "owner": [
+        "choigilung"
+      ],
+      "linked_work": [
+        "W1"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 25,
+      "title": "[P2-WEB-003] 후보 비교·조건 교정·변경 전후·수정 이력",
+      "owner": [
+        "choigilung"
+      ],
+      "linked_work": [
+        "W1"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 22,
+      "title": "[P2-PM-006] 발표·영상·코드 ZIP·깨끗한 환경 재현",
+      "owner": [
+        "jeongiryang"
+      ],
+      "linked_work": [
+        "P2"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 21,
+      "title": "[P2-PM-005] 독립 평가·강한 기준선·가린 검토·측정 실행",
+      "owner": [
+        "jeongiryang"
+      ],
+      "linked_work": [
+        "P2"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 20,
+      "title": "[P2-PM-004] 다섯 Skill·실행 README·재실행 경로 구성",
+      "owner": [
+        "jeongiryang"
+      ],
+      "linked_work": [
+        "P2"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 19,
+      "title": "[P2-PM-003] MCP·웹 동일 프로젝트·자료·실행 이력 연결",
+      "owner": [
+        "jeongiryang"
+      ],
+      "linked_work": [
+        "P2"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 16,
+      "title": "P2-DATA-005: 리뷰 동향 자료·기술 탐색 확장",
+      "owner": [
+        "ginaginaring"
+      ],
+      "linked_work": [
+        "D1"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 15,
+      "title": "[P2-DATA-004] 자료 충돌·명세 변경·근거 정답과 평가 자료 검수",
+      "owner": [
+        "ginaginaring"
+      ],
+      "linked_work": [
+        "D4"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 14,
+      "title": "[P2-DATA-003] 공개 모델 검색·재정렬·OCR 실제 비교",
+      "owner": [
+        "ginaginaring"
+      ],
+      "linked_work": [
+        "D4"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 13,
+      "title": "[P2-DATA-002] 문서 등록·파싱·조회·모델/버전 필터 구현",
+      "owner": [
+        "ginaginaring"
+      ],
+      "linked_work": [
+        "D1",
+        "D2"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 12,
+      "title": "[P2-DATA-001] 세 제품 자료팩·원문·모델·버전 계약 준비",
+      "owner": [
+        "ginaginaring"
+      ],
+      "linked_work": [
+        "D1",
+        "D2"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 11,
+      "title": "[P2-CORE-005] 여섯 유형 독립 평가와 의미 판단 회귀 검증",
+      "owner": [
+        "unknownamed"
+      ],
+      "linked_work": [
+        "C2"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 10,
+      "title": "[P2-CORE-004] 명세·조건 변경 영향 재검토 및 세 제품 실제 사례",
+      "owner": [
+        "unknownamed"
+      ],
+      "linked_work": [
+        "C2",
+        "C3"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 9,
+      "title": "[P2-CORE-003] 인용·모델·중복·문서 지시문 검사와 최대 2회 수정",
+      "owner": [
+        "unknownamed"
+      ],
+      "linked_work": [
+        "C2"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 8,
+      "title": "[P2-CORE-002] 실제 모델로 니즈→기능 대조→잔여 불편→콘셉트 완주",
+      "owner": [
+        "unknownamed"
+      ],
+      "linked_work": [
+        "C1",
+        "C3"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 6,
+      "title": "[담당 Epic] 최길웅 — 웹 기획 검토 작업실·교정·이력·내보내기",
+      "owner": [
+        "choigilung"
+      ],
+      "linked_work": [
+        "W1",
+        "W2",
+        "W3",
+        "V1"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 5,
+      "title": "[담당 Epic] 신진하 — 자료 처리·검색·원문/제품/버전 근거·공개 모델 비교",
+      "owner": [
+        "ginaginaring"
+      ],
+      "linked_work": [
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "X2"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 4,
+      "title": "[담당 Epic] 황대겸 — 핵심 판단·불편/기능 대조·콘셉트·검사·수정",
+      "owner": [
+        "unknownamed"
+      ],
+      "linked_work": [
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "X1"
+      ],
+      "state": "continue_unfinished_scope_only"
+    },
+    {
+      "number": 3,
+      "title": "[담당 Epic] 정이량 — PM·연결·통합·검수·병합·제출",
+      "owner": [
+        "jeongiryang"
+      ],
+      "linked_work": [
+        "P0",
+        "P1",
+        "P2"
+      ],
+      "state": "continue_unfinished_scope_only"
+    }
+  ],
+  "review_queue": [
+    {
+      "pr": 231,
+      "scope": "historical evidence records",
+      "head": "fb9847f1a74288a5f9d7fe720ce49a006de2b86c",
+      "state": "merged_records_only",
+      "model_quality_verified": false,
+      "merge_commit": "c2d840ab13140809c404ee239b3c08d01cbe771c"
+    },
+    {
+      "pr": 232,
+      "scope": "WEB independent evidence records",
+      "head": "37a0434f02c219d188f1f1485c19893ac927deff",
+      "state": "merged_records_only",
+      "model_quality_verified": false,
+      "merge_commit": "d3e044ac88bcb592b3a54cb2349dcbfb4663ab98"
+    },
+    {
+      "pr": 233,
+      "scope": "structural claim checks and stage routing",
+      "head": "5533e08118c8ba83c2b0312fb532184137880a7d",
+      "state": "merged_structural_foundation_semantics_pending",
+      "model_quality_verified": false,
+      "merge_commit": "3e2a19d304d83a1cc7405277ec7ae89b64ee92f2"
+    },
+    {
+      "pr": 140,
+      "scope": "historical worker draft",
+      "state": "preserved_not_reexecuted"
+    },
+    {
+      "pr": 168,
+      "scope": "historical DATA handoff",
+      "state": "preserved_not_reexecuted"
+    },
+    {
+      "pr": 241,
+      "state": "merged_O2_fix_only",
+      "owner": "choigilung",
+      "scope": "legacy O2 new fix; avoid redoing earlier completed UI",
+      "model_quality_verified": false,
+      "merge_commit": "46792268fa0453b2c615cfaa392872318a012b4f"
+    },
+    {
+      "pr": 242,
+      "state": "merged_historical_and_D3_intake_records_only",
+      "owner": "unknownamed",
+      "scope": "manual handoff/code record, reuse exact model",
+      "model_quality_verified": false,
+      "merge_commit": "e933c0230abd71f78fd9659de0866931046fa21f"
+    },
+    {
+      "pr": 243,
+      "state": "reviewed_held_legacy_contract_mismatch",
+      "owner": "choigilung",
+      "scope": "pre-P0 W1 view model; compare current integrated implementation to avoid duplication",
+      "model_quality_verified": false
+    },
+    {
+      "pr": 244,
+      "state": "merged_official_partial_pack_adapter_added",
+      "owner": "ginaginaring",
+      "scope": "new competitor official source partial handoff",
+      "model_quality_verified": false,
+      "merge_commit": "f7c60d7cc26efc595ac7681216cc26fe5879b9f5"
+    },
+    {
+      "pr": 245,
+      "state": "draft_current_integration_ci_pending",
+      "scope": "public data/CORE/API/MCP/WEB/source-preserving manual repair",
+      "model_quality_verified": false
+    },
+    {
+      "pr": 246,
+      "state": "reviewed_changes_requested_audit_not_executed",
+      "head": "d4f7ec5267672e33eb7b09c4d45820f0e86a5b56",
+      "scope": "manual D4 audit preparation; producer format adapter and two P2 findings"
+    }
+  ],
+  "events": [
+    {
+      "type": "manual_resume",
+      "at": "2026-10-07T21:15:00+09:00",
+      "detail": "P0/P1 root 수동 진행; CORE/DATA/WEB 지원 에이전트 격리분기 착수. 자동화와 원remote pending jobs는 OFF 유지."
+    },
+    {
+      "type": "manual_progress",
+      "at": "2026-10-07T22:55:00+09:00",
+      "detail": "Unfinished scope only: actual238 data/141 development, model-planning/revisions/field repair, WEB source graph and guides implemented; PR231/232/233/241/242/244 merged within reviewed scope. Automations OFF, no background worker. Incoming246 reviewed and queued."
+    }
+  ],
+  "implementation_head_before_status_docs": "898bc02",
+  "manual_preview": {
+    "url": "http://127.0.0.1:5175",
+    "api": "http://127.0.0.1:18969",
+    "model_generation_enabled": false,
+    "registered_bundle_counts": [
+      61,
+      54,
+      51,
+      66
+    ],
+    "latest_stored_run": "run-75a7fb27665f4070b75482e732ce579d",
+    "quality": "draft only; semantic and source follow-ups remain"
+  }
+}

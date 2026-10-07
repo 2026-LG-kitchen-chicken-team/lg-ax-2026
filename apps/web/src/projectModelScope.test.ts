@@ -9,6 +9,7 @@ import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
+import { enterLegacyEvidence } from './fixtures/legacy-test-navigation';
 import * as api from './api';
 import type { BootstrapData } from './domain';
 import { FIXTURE_ORIGINAL_REQUEST, FIXTURE_RUNS } from './fixtures/planning.fixture';
@@ -54,7 +55,7 @@ beforeEach(async () => {
   vi.spyOn(WorkspaceClient.prototype, 'listProjects').mockResolvedValue({ projects: [FRIDGE, MICROWAVE], contract_version: '0.1.0' });
   vi.spyOn(WorkspaceClient.prototype, 'getProject').mockImplementation(async id => id === MICROWAVE.project.id ? MICROWAVE : FRIDGE);
   vi.spyOn(WorkspaceClient.prototype, 'listRuns').mockImplementation(async id => ({ runs: [run(id)], contract_version: '0.1.0' }));
-  await act(async () => { root.render(createElement(App)); });
+  await act(async () => { root.render(createElement(App)); }); await act(async () => { enterLegacyEvidence(container); });
 });
 afterEach(async () => { await act(async () => root.unmount()); container.remove(); vi.restoreAllMocks(); });
 
