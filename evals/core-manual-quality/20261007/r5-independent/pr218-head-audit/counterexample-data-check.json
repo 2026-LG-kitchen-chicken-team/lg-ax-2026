@@ -1,0 +1,167 @@
+{
+  "at": "2026-10-07T02:37:06.406796+00:00",
+  "head": "0d920df7d1afd09490e91cd40bf9c6cb9dfaf75d",
+  "counterexamples_sha256": "a1c25f1c405c2da887d52dd4b56639b6d7eddb7c9deb33a92a6d9bb29129e9cf",
+  "raw_counterexample_crosscheck": {
+    "normal": {
+      "original_output_sha256": "5625c0ff13d7e4282cbe7e6eb3ea0aa43d848cec8bf3d47c45845cf32d670f3d",
+      "original_source_commit_declared": "de09b64ca72d5ae918cc0a95f244b0e0562761b0",
+      "original_input_exact": true,
+      "selected_calls": [
+        {
+          "selected_call_index": 0,
+          "skill_id": "semantic_review",
+          "fields": {
+            "data": {
+              "sha256": "5bda51865bc0d5b097a936e671a6ea84772ed132ff9673ca1388a40a492f0155",
+              "raw_original_paths": [
+                "$.model_calls[4].generated.data"
+              ]
+            },
+            "request_context": {
+              "sha256": "24121f20c981896dcbaeca2c0ee1ab4bf17020a17726cf5b2a9cd8b95cce6fca",
+              "raw_original_paths": [
+                "$.trace[23].inputs",
+                "$.model_calls[4].request_context"
+              ]
+            }
+          }
+        },
+        {
+          "selected_call_index": 1,
+          "skill_id": "review_revision",
+          "fields": {
+            "data": {
+              "sha256": "c178b5c83294d74b3835ba18101fd0dcc08d92fc896222aa414edf5d97044b4b",
+              "raw_original_paths": [
+                "$.model_calls[5].generated.data",
+                "$.revision_session.audit[0].generated.data"
+              ]
+            },
+            "request_context": {
+              "sha256": "40eff49583139cb787b024afa431afaf0e009309bfadf1475af23a504be7f9ea",
+              "raw_original_paths": [
+                "$.model_calls[5].request_context",
+                "$.revision_session.audit[0].request_context"
+              ]
+            }
+          }
+        }
+      ],
+      "rejected_output_sha256": "3f2a6f116dde60fd0414ff3be68640e9030b5e0bc861281896f52c1310c8f589",
+      "rejected_output_original_paths": [
+        "$.rejected_output"
+      ],
+      "derivation": "Selected literal fields for zero-model regression; not a newly generated or accepted run"
+    },
+    "changed": {
+      "original_output_sha256": "95833e754b034d7f0ec6749c549fb3f2f80ca3fa240d5bc1c98d80b49c8046e5",
+      "original_source_commit_declared": "de09b64ca72d5ae918cc0a95f244b0e0562761b0",
+      "original_input_exact": true,
+      "selected_calls": [
+        {
+          "selected_call_index": 0,
+          "skill_id": "concept_draft",
+          "fields": {
+            "data": {
+              "sha256": "764435d8b398db052b2e3130a0d2187d0fb224d2ab1d4219fab328d94597318b",
+              "raw_original_paths": [
+                "$.model_calls[3].generated.data"
+              ]
+            },
+            "request_context": {
+              "sha256": "a816f84bf8ce21a195fb237eb5d49ab156151e804e88af10b31c77f4a521e2f0",
+              "raw_original_paths": [
+                "$.model_calls[3].request_context"
+              ]
+            }
+          }
+        },
+        {
+          "selected_call_index": 1,
+          "skill_id": "concept_draft",
+          "fields": {
+            "data": {
+              "sha256": "08a8365f9beb8db0d0a819d2d163c403ead89212a103a4df1a691ce1b442def0",
+              "raw_original_paths": [
+                "$.model_calls[4].generated.data"
+              ]
+            },
+            "request_context": {
+              "sha256": "3a48d2b5a7dcd362c231cb5cb9e984d8088474c09fef34d20d0b848df6eefcaa",
+              "raw_original_paths": [
+                "$.model_calls[4].request_context"
+              ]
+            }
+          }
+        }
+      ],
+      "rejected_output_sha256": "676894317f93a32750ad0e4d60a39d7bf9cfedca61778775db2b2d07b56bacc5",
+      "rejected_output_original_paths": [
+        "$.rejected_output"
+      ],
+      "derivation": "Selected literal fields for zero-model regression; not a newly generated or accepted run"
+    },
+    "missing-manual": {
+      "original_output_sha256": "d4a7af4f3a881256e0af779174518c1e3e0176ed86a0b9e923bcf6f833ebb688",
+      "original_source_commit_declared": "de09b64ca72d5ae918cc0a95f244b0e0562761b0",
+      "original_input_exact": true,
+      "selected_calls": [
+        {
+          "selected_call_index": 0,
+          "skill_id": "no_candidate_review",
+          "fields": {
+            "data": {
+              "sha256": "7bb38263abfad21e8338982451d6e3a3f7269adf9154d1af348d5beeb1921126",
+              "raw_original_paths": [
+                "$.trace[22].outputs.report",
+                "$.model_calls[3].generated.data",
+                "$.no_candidate_reviews[0].report"
+              ]
+            },
+            "request_context": {
+              "sha256": "4a5cfc1a67780222416c9b4fc51e8822af7c04b291722acf9e3ffd9cd2428427",
+              "raw_original_paths": [
+                "$.trace[22].inputs",
+                "$.model_calls[3].request_context"
+              ]
+            }
+          }
+        }
+      ],
+      "rejected_output_sha256": "d5d5b0b6f36c53700431c1109e7fa741076d9f497eb831e2b1ea471932e6abb8",
+      "rejected_output_original_paths": [
+        "$.trace[22].inputs.judgement",
+        "$.model_calls[3].request_context.judgement",
+        "$.model_calls[3].prompt_context.judgement",
+        "$.no_candidate_reviews[0].reviewed_output",
+        "$.rejected_output"
+      ],
+      "derivation": "Selected literal fields for zero-model regression; not a newly generated or accepted run"
+    }
+  },
+  "raw_selected_calls_exact": 5,
+  "fixed_data_sha256_exact": {
+    "fixed18/records.json": "98830d3078d5c14443ee672a4fd6d5ae7fbafe6c77ea15ab6b14828ad2d5ad6f",
+    "fixed18/manifest.json": "3a35518787c1959d29dd11f6a651194f7b7a6be971e392a470cff3da240c895d",
+    "balanced-pilot-v2/records.json": "d8ac06a75f53eac2fc2db469d78fa967bbc20883048aa44190217fd19d26fb7d",
+    "balanced-pilot-v2/manifest.json": "9ceb23e5b02e9541091a15673d6d1f161462bfd79c421eed5ddc652093aff37d"
+  },
+  "execution_dataset_sha256": "aee2b54b80b5d48559cab4d45eed1e3c3a3d2cb7d9f087542a820a22cf5e69a7",
+  "execution_dataset_counts": {
+    "products": 3,
+    "reviews": 0,
+    "evidence": 21,
+    "features": 9
+  },
+  "feature_manual_ids_model_version_reciprocal": true,
+  "source_types": [
+    "manual"
+  ],
+  "independent_evaluation_review_texts_read": false,
+  "reviewer_only_answers_read": false,
+  "research_records_body_semantics_scored": false,
+  "model_input_customer_evidence_ready": false,
+  "new_model_calls": 0,
+  "original_response_changed": false
+}
