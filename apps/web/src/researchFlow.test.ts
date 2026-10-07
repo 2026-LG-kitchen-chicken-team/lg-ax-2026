@@ -79,4 +79,13 @@ describe('actual-source research screen state and revision flow', () => {
     await click('연결 해제'); await act(async () => finish(response(heldBrief())));
     expect(host.querySelector('[aria-label="실제 자료 기획 결과"]')).toBeNull(); expect(host.textContent).toContain('자료 연결을 기다리고');
   });
+  it('keeps actual source browsing available when model generation is not activated', async () => {
+    const fetch = api(); vi.stubGlobal('fetch', fetch); await act(async () => root.render(createElement(ResearchPlanningView))); await connect(); await choose();
+    fetch.mockImplementation(() => Promise.resolve(response({ error: { code: 'NOT_IMPLEMENTED' } }, 501)));
+    await click('새 기획 생성');
+    expect(host.textContent).toContain('실제 자료 조회는 연결됐습니다. 모델 실행 활성화를 기다리고 있습니다.');
+    expect(host.querySelectorAll('.research-source-row')).toHaveLength(1);
+    expect(host.textContent).toContain(REAL_RESEARCH_BUNDLE.sources[0].text);
+    expect(host.querySelector('[aria-label="실제 자료 기획 결과"]')).toBeNull();
+  });
 });

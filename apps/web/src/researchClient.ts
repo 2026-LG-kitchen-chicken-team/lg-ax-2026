@@ -21,14 +21,17 @@ export class ResearchClient {
     }
     const body: unknown = await response.json().catch(() => null);
     if (!response.ok) {
+      const pendingMessage = input && path === 'planning-runs'
+        ? '실제 자료 조회는 연결됐습니다. 모델 실행 활성화를 기다리고 있습니다.'
+        : '실제 자료 기획 API 연결 대기 중입니다. 연결이 준비되면 자료 조회와 기획 실행을 사용할 수 있습니다.';
       if (body && typeof body === 'object' && 'error' in body && body.error && typeof body.error === 'object') {
         const error = body.error as Record<string, unknown>;
         if (error.code === 'NOT_IMPLEMENTED' || error.code === 'RESEARCH_NOT_READY') {
-          throw new ApiError('RESEARCH_PENDING', '실제 자료 기획 API 연결 대기 중입니다. 연결이 준비되면 자료 조회와 기획 실행을 사용할 수 있습니다.');
+          throw new ApiError(input ? 'MODEL_PENDING' : 'RESEARCH_PENDING', pendingMessage);
         }
         throw new ApiError(typeof error.code === 'string' ? error.code : 'RESEARCH_FAILED', typeof error.message === 'string' ? error.message : '기획 요청을 처리하지 못했습니다.');
       }
-      if ([404, 501, 503].includes(response.status)) throw new ApiError('RESEARCH_PENDING', '실제 자료 기획 API 연결 대기 중입니다. 연결이 준비되면 자료 조회와 기획 실행을 사용할 수 있습니다.');
+      if ([404, 501, 503].includes(response.status)) throw new ApiError(input ? 'MODEL_PENDING' : 'RESEARCH_PENDING', pendingMessage);
       throw new ApiError('RESEARCH_FAILED', `기획 요청이 HTTP ${response.status} 오류로 종료됐습니다.`);
     }
     if (body === null) throw new ApiError('CONTRACT_MISMATCH', '실제 자료 기획 응답을 JSON으로 읽을 수 없습니다.');

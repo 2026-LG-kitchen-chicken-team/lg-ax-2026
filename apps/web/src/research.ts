@@ -1,6 +1,7 @@
 import Ajv2020 from 'ajv/dist/2020';
 import schema from '../../../packages/contracts/schemas/research-planning.schema.json';
 import { ApiError } from './api';
+import { sourceDateDisplay } from './researchSourceDates';
 
 export interface SourceFact {
   fact_id: string; kind: 'observed' | 'expectation' | 'document_fact' | 'unknown'; text: string;
@@ -156,7 +157,7 @@ export function exportResearchPlan(bundle: ResearchBundle, brief: PlanningBrief)
   for (const source of bundle.sources) {
     lines.push(`### ${source.source_id} · ${source.title}`, `유형: ${RESEARCH_TYPE_LABEL[source.source_type]} / 범위: ${source.coverage}`,
       `페이지 모델: ${source.page_model ?? '미확인'} / 구매 모델: ${source.purchased_model ?? '미확인'}`,
-      `${source.date_kind === 'purchase' ? '구매일' : source.date_kind === 'posting' ? '게시일' : '날짜 기준 미확인'}: ${source.published_at ?? '미확인'}`,
+      sourceDateDisplay(source),
       `출처: ${source.url}`, source.text, ...source.facts.map(fact => `- ${FACT_KIND_LABEL[fact.kind]}: ${fact.text}`), '');
   }
   return { json: `${JSON.stringify({ bundle, brief }, null, 2)}\n`, markdown: `${lines.join('\n')}\n` };
