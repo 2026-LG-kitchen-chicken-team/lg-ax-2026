@@ -1,6 +1,9 @@
 # 황대겸 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-08 CORE-C4-CONTEXT-GUARD-01a10729-01: 혼합16 원문 문맥을 검토하고 부담→통증/지원→해결 보장 확대 지침을 보완했다. 실제 모델 효과/분류/PM 인수 미완료, 실모델0.
+- [상세/근거](2026-10-08/CORE-C4-CONTEXT-GUARD-01a10729-01.md) · [고정 메모·검사](../../../evals/core-manual-quality/20261008/c4-context-guard/README.md). 독립 준비와 인계 의존 검증을 구분한다.
+
 - 2026-10-07 CORE-R8-C2-CORRECTIONS-01a10729-01: 공유 수정 최대2(실패/후속 수리 포함), 반환 응답의 정상 이웃 보존과 반대 출처 슬롯 보완. 관련58검사/Ruff PASS, 실모델0. native 클라이언트의 전체 응답 거절 복구는 PM 전달 경계 미완료.
 - [근거](2026-10-07/CORE-R8-C2-CORRECTIONS-01a10729-01.md) · [고정 경계·해시·수신](../../../evals/core-manual-quality/20261007/r8-c2-corrections/README.md). 기존 실제 응답/usage 인계와 C1~C4/X1 의미 검수는 계속 필요.
 
