@@ -129,7 +129,7 @@ function CheckRounds({ facts, terminal }: { facts: TraceFacts; terminal: string 
   return <section className="check-rounds" aria-label="회차별 검사 결과">
     <h4 className="sub">회차별 검사 결과 <small>Agent 내부 수정 회차 · 사용자 조건 변경 회차와 다름</small></h4>
     <ol>{facts.rounds.map(round => <li key={round.round} data-round={round.round}>{round.round}회차(내부 수정 {round.revision_count}회 뒤) · {DECISION_LABEL[round.action] ?? round.action}
-      {round.codes.length ? <small> · 위반 {round.codes.join(', ')}</small> : <small> · 위반 없음</small>}{round.details.length ? <small data-field="round-details"> · 세부: {round.details.join(' / ')}</small> : null}{round.repeated ? <span className="scope-flag" data-field="repeated"> · 이전 회차와 같은 위반 반복</span> : null}</li>)}</ol>
+      {round.codes.length ? <small> · 위반 {round.codes.map(reasonText).join(', ')}</small> : <small> · 위반 없음</small>}{round.details.length ? <small data-field="round-details"> · 세부: {round.details.join(' / ')}</small> : null}{round.repeated ? <span className="scope-flag" data-field="repeated"> · 이전 회차와 같은 위반 반복</span> : null}</li>)}</ol>
     {terminal ? <p className="muted" data-field="terminal">종료 사유: {TERMINAL_TEXT[terminal] ?? terminal} ({terminal})</p> : null}
   </section>;
 }
