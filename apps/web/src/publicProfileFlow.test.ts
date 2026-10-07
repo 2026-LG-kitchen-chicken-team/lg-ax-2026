@@ -54,7 +54,7 @@ async function mountAndConnect() {
 beforeEach(() => {
   vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true);
   host = document.createElement('div'); document.body.append(host); root = createRoot(host);
-  vi.spyOn(api, 'loadBootstrap').mockResolvedValue(BOOTSTRAP);
+  vi.spyOn(api, 'loadBootstrap').mockResolvedValue(api.parseBootstrap({ ok: true, data: BOOTSTRAP }));
   vi.spyOn(WorkspaceClient.prototype, 'listProjects').mockResolvedValue({ projects: [], contract_version: '0.1.0' });
 });
 afterEach(async () => { await act(async () => root.unmount()); host.remove(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });

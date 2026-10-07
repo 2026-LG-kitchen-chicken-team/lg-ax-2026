@@ -386,6 +386,36 @@ export interface SemanticReview {
 /** One check the core reported inside an error's details: the specific code, and which review/field it points at. */
 export interface ErrorDetail { code: string; evidence_id: string | null; path: string | null }
 
+export interface GroundingDetail {
+  concept_id: string;
+  missing_links: { gap_id: string; need_id: string; required_evidence_ids: string[]; missing_evidence_ids: string[] }[];
+}
+
+/** Reads only the R5 ID fields. API authorization of those IDs remains the server's responsibility. */
+export function groundingDetails(error: { details?: unknown }): GroundingDetail[] {
+  if (!isObject(error.details)) return [];
+  const details = error.details;
+  const id = (value: unknown): value is string => typeof value === 'string' && /^[A-Za-z0-9._:-]{1,160}$/.test(value);
+  const ids = (value: unknown): value is string[] => Array.isArray(value) && value.length <= 64 && value.every(id);
+  const rows = [...(Array.isArray(details.violations) ? details.violations : []),
+    ...(Array.isArray(details.grounding_violations) ? details.grounding_violations : []), details];
+  const found: GroundingDetail[] = [];
+  for (const row of rows.slice(0, 65)) {
+    if (!isObject(row) || row.code !== 'CONCEPT_GROUNDING_MISSING' || !id(row.concept_id)
+      || !Array.isArray(row.missing_links) || row.missing_links.length > 32) continue;
+    const missing_links = row.missing_links.flatMap(link => {
+      if (!isObject(link) || !id(link.gap_id) || !id(link.need_id) || !ids(link.required_evidence_ids)
+        || !ids(link.missing_evidence_ids) || !link.missing_evidence_ids.length) return [];
+      const required = link.required_evidence_ids;
+      const missing = link.missing_evidence_ids;
+      if (!missing.every(evidence => required.includes(evidence))) return [];
+      return [{ gap_id: link.gap_id, need_id: link.need_id, required_evidence_ids: [...required], missing_evidence_ids: [...missing] }];
+    });
+    if (missing_links.length) found.push({ concept_id: row.concept_id, missing_links });
+  }
+  return found.filter((row, index) => found.findIndex(other => JSON.stringify(other) === JSON.stringify(row)) === index);
+}
+
 /**
  * The specific check codes inside an error (R4, PR #190): need_extract puts REVIEW_ and UNCERTAINTY_ codes in
  * details.violations and EMPTY_NEEDS_WITHOUT_JUDGEMENT in details.code, while the error itself is only VALIDATION_FAILED.
@@ -419,6 +449,9 @@ export function errorNotes(error: { details?: unknown }): string[] {
   if (paths.length) notes.push(`서로 다른 두 선언: ${paths.join(' ↔ ')}`);
   if (typeof record.reason === 'string' && record.reason) notes.push(`사유: ${record.reason}`);
   if (typeof record.evidence_id === 'string' && record.evidence_id) notes.push(`리뷰 ${record.evidence_id}${typeof record.declared_polarity === 'string' ? `(선언 극성 ${record.declared_polarity})` : ''}`);
+  for (const row of groundingDetails(error)) for (const link of row.missing_links) {
+    notes.push(`후보 ${row.concept_id} · 대조 ${link.gap_id} → 불편 ${link.need_id} · 필요한 인용 ${link.required_evidence_ids.join(', ')} · 누락 인용 ${link.missing_evidence_ids.join(', ')}`);
+  }
   return notes;
 }
 
