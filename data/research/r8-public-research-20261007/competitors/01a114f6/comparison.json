@@ -1,0 +1,90 @@
+{
+  "schema_version": "d3-problem-comparison.research.1",
+  "task_issue": 235,
+  "base_commit": "58feb9c30fc5faae1cc8acfb0ff409106a6d7174",
+  "producer": "ginaginaring/01a114f6",
+  "problem": {
+    "candidate_id": "D3-CANDIDATE-FRIDGE-DEPTH-REACH",
+    "label": "냉장고의 주방 돌출과 깊은 저장공간 접근 부담",
+    "first_problem_id": null,
+    "binding_status": "pending PM P0/C3 selected first problem",
+    "basis": "A pre-existing development review, not a new market survey or an approved first problem.",
+    "review_path": "data/research/r5-public-reviews-20261007/fixed18/development.records.json",
+    "original_review_id": "848850",
+    "original_text_sha256": "f7c96d4b8243c18ce33b6b3f4bf6a030b7c3004d3c75facf1d38df8f66853d0a",
+    "excerpt": "안쪽 깊숙한 곳은 팔이 잘 닿지 않아 공간을 다 활용하기 어렵다는 아쉬움",
+    "displayed_model_id": "T876MEE1H1",
+    "actual_purchased_model_id": null,
+    "published_at": null,
+    "purchase_date": "2026-09-19",
+    "model_defect_confirmed": false,
+    "model_input_eligible": false,
+    "existing_split": "development"
+  },
+  "models": [
+    {
+      "manufacturer": "LG Electronics",
+      "model_id": "T876MEE1H1",
+      "role": "LG page-associated research comparator; buyer SKU unconfirmed",
+      "capacity_l": 870,
+      "capacity_evidence": "LG-CAP",
+      "dimensions_mm": {"width": 914, "height": 1787, "depth": 918},
+      "dimensions_basis": "Manufacturer labels product WxHxD; rear-handle inclusion not separately specified in captured excerpt.",
+      "dimensions_evidence": "LG-DIMS",
+      "installation_type": "freestanding",
+      "installation_evidence": "LG-INSTALL",
+      "release_month": "2026-04",
+      "release_evidence": "LG-LAUNCH",
+      "folding_shelf": {"status": "illustrated on product page", "evidence": "LG-FOLD", "exact_condition_verification": "manual/model reconciliation pending"},
+      "pull_out_shelf": {"status": "unknown", "absence_confirmed": false}
+    },
+    {
+      "manufacturer": "Samsung Electronics",
+      "model_id": "RM70F63R231",
+      "role": "official Korean competitor; same broad four-door fridge category, different capacity/installation",
+      "capacity_l": 640,
+      "capacity_evidence": "SS-CAP",
+      "dimensions_mm": {"width": 912, "height": 1853, "depth_with_rear_handle": 697, "depth_without_rear_handle": 683},
+      "dimensions_basis": "Two explicitly different rear-handle inclusion bases; neither is internal usable depth or measured arm reach.",
+      "dimensions_evidence": "SS-DIMS",
+      "installation_type": "KitchenFit Max",
+      "installation_evidence": "SS-INSTALL",
+      "side_clearance_mm_per_side": 4,
+      "side_clearance_evidence": "SS-GAP",
+      "marketing_counter_depth_basis_mm": 700,
+      "counter_depth_evidence": "SS-COUNTER",
+      "release_month": null,
+      "release_month_status": "not established for exact SKU by captured official sources",
+      "folding_shelf": {"status": "documented", "count": 1, "evidence": "SS-FOLD"},
+      "pull_out_shelf": {"status": "unknown", "absence_confirmed": false}
+    }
+  ],
+  "comparability": {
+    "category": "same broad household four-door fridge category",
+    "same_capacity": false,
+    "nominal_capacity_difference_l": 230,
+    "same_installation": false,
+    "same_dimension_basis_verified": false,
+    "same_release_period": false,
+    "same_test_conditions_verified": false,
+    "reach_or_cleaning_test_performed": false,
+    "capacity_basis_cross_manufacturer_verified": false,
+    "price_comparison_performed": false
+  },
+  "interpretation": {
+    "type": "researcher inference requiring PM review",
+    "existing_approach": "A shallower kitchen-fit installation is a documented commercial alternative relevant to protrusion; the lower nominal capacity and different installation envelope must be retained.",
+    "remaining_uncertainty": "External depth and product-page illustrations do not establish internal reach, reduced cleaning effort, or customer satisfaction. A capacity-preserving access concept still needs measurements and user evaluation.",
+    "feature_presence_rule": "Documented folding shelves are existing capabilities; unmentioned pull-out mechanisms remain unknown rather than absent.",
+    "test_conditions": "No common physical experiment or user test was found or performed. Manufacturer installation illustrations are not measured reach results.",
+    "illustration_disclaimer_evidence": "SS-ILLUSTRATION"
+  },
+  "handoff": {
+    "official_competitor_source_unit_ready": true,
+    "first_problem_binding_ready": false,
+    "p0_researchbundle_adapter_ready": false,
+    "agent_input_approved": false,
+    "parent_done": false,
+    "next_inputs": ["PM-selected first_problem_id and scope", "fixed P0 ResearchBundle/evidence contract", "D1 exact producer/version/manifest for the selected problem"]
+  }
+}
