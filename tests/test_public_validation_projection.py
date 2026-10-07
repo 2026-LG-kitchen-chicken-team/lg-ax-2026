@@ -85,6 +85,30 @@ class PublicValidationProjectionTests(unittest.TestCase):
         result = public_validation_details(error, {"REVIEW-001"}, {"needs": {"NEED-001"}})
         self.assertEqual(result, {"grounding_violations": [{"code": "CONCEPT_GROUNDING_MISSING"}]})
 
+    def test_public_run_authorizes_model_free_concept_from_its_gap_and_source_graph(self):
+        import test_planning_agent as fixtures
+        from lgax_api.workspace_server import public_run
+        payload = fixtures.read('normal.input.json')
+        output = fixtures.read('normal.fixture-output.json')
+        concept = output['concepts'][0]
+        gap = next(row for row in output['gaps'] if row['id'] in concept['gap_ids'])
+        self.assertNotIn('model_id', concept)
+        facts = {'code': 'CONCEPT_GROUNDING_MISSING', 'concept_id': concept['id'],
+                 'missing_links': [{'gap_id': gap['id'], 'need_id': gap['need_id'],
+                                    'required_evidence_ids': gap['evidence_ids'],
+                                    'missing_evidence_ids': [gap['evidence_ids'][0]]}]}
+        snapshot = {'output': {'planning_execution': {'input': payload, 'output': output,
+                    'model_calls': [], 'trace': [], 'errors': [{'code': 'VALIDATION_FAILED',
+                    'message': PRIVATE, 'details': {'grounding_violations': [facts]}}]}}}
+        public = public_run(snapshot)
+        actual = public['output']['planning_execution']['errors'][0]['details']['grounding_violations'][0]
+        self.assertEqual(actual['concept_id'], concept['id'])
+        self.assertEqual(actual['missing_links'][0]['gap_id'], gap['id'])
+        self.assertEqual(snapshot['output']['planning_execution']['errors'][0]['message'], PRIVATE)
+        snapshot['output']['planning_execution']['output']['concepts'][0]['gap_ids'] = ['UNAUTHORIZED-GAP']
+        actual = public_run(snapshot)['output']['planning_execution']['errors'][0]['details']['grounding_violations'][0]
+        self.assertNotIn('concept_id', actual)
+
     def test_malformed_sensitive_fields_are_not_public_validation_facts(self):
         for details in (None, [PRIVATE], {"code": [PRIVATE], "violations": "not-list"},
                         {"reason": PRIVATE, "evidence_id": PRIVATE, "declared_polarity": "uncertain",

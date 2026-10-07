@@ -81,11 +81,18 @@ def public_run(snapshot: dict) -> dict:
             for collection, definition in (("needs", "Need"), ("gaps", "Gap"), ("concepts", "Concept")):
                 items = declaration.get(collection)
                 for item in items[:100] if isinstance(items, list) else []:
-                    if not isinstance(item, dict) or model_id is None or item.get("model_id") != model_id:
+                    if (not isinstance(item, dict) or model_id is None
+                            or collection != "concepts" and item.get("model_id") != model_id):
                         continue
                     try:
                         validate(definition, item)
                     except ValidationError:
+                        continue
+                    if not set(item["evidence_ids"]) <= evidence_ids:
+                        continue
+                    # Concept has no model_id in the shared contract. Its scope
+                    # is the already authorized Gap graph and original sources.
+                    if collection == "concepts" and not set(item["gap_ids"]) <= entities["gaps"]:
                         continue
                     entities[collection].add(item["id"])
 
