@@ -1,6 +1,9 @@
 # 황대겸 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-08 CORE-X1-REFERENCE-01a10729-01: 후기 참고자료 버전의 HTML/Markdown 표시를 원 값 보존으로 보완하고 DATA 관리 절의 생산 등록 전 소비 경계를 고정했다. 실모델0·기존 공식 인쇄 근거 재사용.
+- [상세](2026-10-08/CORE-X1-REFERENCE-01a10729-01.md) · [검증·인수 경계](../../../evals/core-manual-quality/20261008/x1-reference-intake/README.md). 실제27B/기획 원응답·PM/DATA 인수는 미완료.
+
 - 2026-10-07 CORE-X1-GUIDE-PRINT-01a10729-01: 공식 안내 print CSS를 보완했다. 실제3모델·15발췌의 원문/ID와 JSON·MD·화면본문 동일, A4 3/4/4쪽 판독 완료. 정확모델 FAQ·실제 콘셉트 설명서와 PM 인수는 별도 미완료다.
 - [상세](2026-10-07/CORE-X1-GUIDE-PRINT-01a10729-01.md) · [고정 근거](../../../evals/core-manual-quality/20261007/x1-guide-print/README.md). 다음은 담당 수정/원 모델 결과 인수 후 같은 버전 검수. 의미 품질·전체 Done을 대신하지 않는다.
 

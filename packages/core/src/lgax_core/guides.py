@@ -86,6 +86,13 @@ def _list_html(values: list) -> str:
     return "<ul>" + "".join(f"<li>{_escape(value)}</li>" for value in values) + "</ul>"
 
 
+def _version_label(source: dict) -> str:
+    return "페이지 모델의 연결 참고자료 버전" if source["source_type"] == "review" else "문서판"
+
+
+_REVIEW_VERSION_NOTE = "후기 판본·구매 당시 설명서 판 확인과는 구분되는 참고값입니다."
+
+
 def render_guide_html(guide: dict) -> str:
     """Self-contained HTML; every external string is escaped, with no scripts or remote assets."""
     kind = _kind(guide)
@@ -106,15 +113,18 @@ def render_guide_html(guide: dict) -> str:
                         f"{_list_html(guide.get('uncertainties', []))}</section>")
     cards = []
     for source in guide["sources"]:
+        version_note = (f"<p class='meta'>{_REVIEW_VERSION_NOTE}</p>"
+                        if source["source_type"] == "review" else "")
         facts = "".join(f"<li>{_escape(fact['kind'])} · {_escape(fact['text'])}"
                         f"<pre>{_escape(json.dumps(fact, ensure_ascii=False, indent=2))}</pre></li>" for fact in source["facts"])
         cards.append(f"<article class='source'><span class='tag'>{_escape(_SOURCE_TYPES[source['source_type']])}</span>"
                      f"<h3>{_escape(source['title'])}</h3><p class='meta'>{_escape(source['source_id'])} · "
                      f"페이지 모델 {_escape(source['page_model'] or '미확인')} · "
                      f"{_escape(_COVERAGE[source['coverage']])}</p><blockquote>{_escape(source['text'])}</blockquote>"
-                     f"<p class='meta'>문서판 {_escape(source.get('document_version') or '미확인')} · "
+                     f"<p class='meta'>{_version_label(source)} {_escape(source.get('document_version') or '미확인')} · "
                      f"구매 모델 {_escape(source['purchased_model'] or '미확인')} · "
                      f"게시일 {_escape(source['published_at'] or '미확인')}</p>"
+                     f"{version_note}"
                      f"<a href='{_escape(source['url'])}' rel='noopener noreferrer'>공개 원문 출처 ↗</a>"
                      f"<p class='meta'>원문 위치 {_escape(json.dumps(source['locator'], ensure_ascii=False))}</p>"
                      f"<h4>보존한 원문 사실</h4><ul>{facts}</ul></article>")
@@ -165,8 +175,10 @@ def render_guide_markdown(guide: dict) -> str:
     for source in guide["sources"]:
         lines += [f"### {_markdown(source['title'])}", "", f"출처 ID: {_markdown(source['source_id'])}", "",
                   f"자료 범위: {_markdown(_COVERAGE[source['coverage']])} · 페이지 모델: {_markdown(source['page_model'] or '미확인')}",
-                  f"문서판: {_markdown(source.get('document_version') or '미확인')} · 구매 모델: {_markdown(source['purchased_model'] or '미확인')}",
+                  f"{_version_label(source)}: {_markdown(source.get('document_version') or '미확인')} · 구매 모델: {_markdown(source['purchased_model'] or '미확인')}",
                   f"게시일: {_markdown(source['published_at'] or '미확인')}", ""]
+        if source["source_type"] == "review":
+            lines += [_REVIEW_VERSION_NOTE, ""]
         lines += ["> " + _markdown(line) for line in source["text"].splitlines()] + [""]
         destination = quote(source["url"], safe=":/?=&%+#")
         lines += [f"[공개 원문 출처]({destination})", "", "원문 위치: " + _markdown(json.dumps(source["locator"], ensure_ascii=False)),
