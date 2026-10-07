@@ -1,0 +1,188 @@
+{
+  "purpose": "synthetic comparison-validator checks only; not DB/API/runtime tests",
+  "validator_sha256": "350f07f2f6c18aaf2869fd12cb80c9cd27c46d12b14008fcc5e3435c7d13dbc5",
+  "cases": [
+    {
+      "case": "synthetic full pair",
+      "expected": "MATCH",
+      "observed": "MATCH",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    },
+    {
+      "case": "after DB text changed",
+      "expected": "MISMATCH",
+      "observed": "MISMATCH",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    },
+    {
+      "case": "after API foreign model",
+      "expected": "MISMATCH",
+      "observed": "MISMATCH",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    },
+    {
+      "case": "after API wrong document version",
+      "expected": "MISMATCH",
+      "observed": "MISMATCH",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    },
+    {
+      "case": "after API wrong canonical ID",
+      "expected": "MISMATCH",
+      "observed": "MISMATCH",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    },
+    {
+      "case": "after original bytes changed",
+      "expected": "MISMATCH",
+      "observed": "MISMATCH",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    },
+    {
+      "case": "NFC to NFD text substitution",
+      "expected": "MISMATCH",
+      "observed": "MISMATCH",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    },
+    {
+      "case": "bool replaces count 1",
+      "expected": "MISMATCH",
+      "observed": "MISMATCH",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    },
+    {
+      "case": "foreign model search leak",
+      "expected": "MISMATCH",
+      "observed": "MISMATCH",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    },
+    {
+      "case": "wrong-version error code",
+      "expected": "MISMATCH",
+      "observed": "MISMATCH",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    },
+    {
+      "case": "local version status incorrectly 404",
+      "expected": "MISMATCH",
+      "observed": "MISMATCH",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    },
+    {
+      "case": "absent DB-after capture",
+      "expected": "UNCONFIRMED",
+      "observed": "UNCONFIRMED",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    },
+    {
+      "case": "absent original-after capture",
+      "expected": "UNCONFIRMED",
+      "observed": "UNCONFIRMED",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    },
+    {
+      "case": "absent evidence-after capture",
+      "expected": "UNCONFIRMED",
+      "observed": "UNCONFIRMED",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    },
+    {
+      "case": "absent restart receipt",
+      "expected": "UNCONFIRMED",
+      "observed": "UNCONFIRMED",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    },
+    {
+      "case": "empty positive control",
+      "expected": "UNCONFIRMED",
+      "observed": "UNCONFIRMED",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    },
+    {
+      "case": "public API version error 404",
+      "expected": "MATCH",
+      "observed": "MATCH",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    },
+    {
+      "case": "restart query scope changed",
+      "expected": "MISMATCH",
+      "observed": "MISMATCH",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    },
+    {
+      "case": "duplicate capture ID",
+      "expected": "MISMATCH",
+      "observed": "MISMATCH",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    },
+    {
+      "case": "missing producer pin",
+      "expected": "UNCONFIRMED",
+      "observed": "UNCONFIRMED",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    },
+    {
+      "case": "metadata request is a write",
+      "expected": "MISMATCH",
+      "observed": "MISMATCH",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    },
+    {
+      "case": "wrong original GET document",
+      "expected": "MISMATCH",
+      "observed": "MISMATCH",
+      "passed": true,
+      "operating_origin_verified": false,
+      "pm_approval_verified": false
+    }
+  ],
+  "passed": 22,
+  "total": 22,
+  "new_product_network_calls": 0,
+  "new_model_calls": 0,
+  "new_OCR_calls": 0,
+  "service_restart_calls": 0
+}
