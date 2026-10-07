@@ -1,0 +1,97 @@
+{
+  "annotation_version": "r8-development-topic-draft.20261008.01a114f6.v1",
+  "status": "draft",
+  "data_commit": "94b560de72f91795cfd50aada9e17d6773383ae1",
+  "pm_implementation_commit": "ef29aa8ff80e9ca3f4e344c48c9acec62ad8769f",
+  "original_dataset_version": "r8-public-research.20261007.v1",
+  "delivery_manifest_version": "lg-public-research.20261007.d1-01a10600.v1",
+  "annotation_file_sha256": "871c4618737f380e24725854aa8f37c665c3a8de8eca9775c3e65ca679211409",
+  "date_sidecar_file_sha256": "d34c2bd32b89f96718ad4ab278e797c004611c88b4107780ee23e9dbc34239ee",
+  "date_sidecar_canonical_annotation_sha256": "d387b3a02c366d04a0b1afb3e1f41436b782a70d687b2a7d464dc19d6e17dded",
+  "source_snapshot_file_sha256": "e47f77303b83597a9c146e96f10cd1ff505d480e9f53abb80448178e481a1162",
+  "source_pins_file_sha256": "f3b7a8d510988c954bfea965384562688567be74855dfca0481f0409a5614bd1",
+  "sample": {
+    "observations": 239,
+    "unique_original_review_ids": 238,
+    "reobserved_original_review_ids": [
+      "860977"
+    ],
+    "pre_split_observation_accounting_basis": "pinned D1 delivery manifest; no raw collection repeated",
+    "pre_split_duplicate_observations": 1,
+    "partition_counts": {
+      "demonstration": 49,
+      "development": 141,
+      "independent_evaluation": 36,
+      "quarantine": 12
+    },
+    "development_selected": 141,
+    "excluded_nondevelopment_unique_ids": 97,
+    "development_group_counts": {
+      "fridge": 48,
+      "dishwasher": 48,
+      "microwave": 45
+    },
+    "development_unknown_publication_date_count": 141,
+    "development_monthly_eligible_denominator": 0,
+    "development_seasonal_eligible_denominator": 0,
+    "time_eligible_original_review_ids": [],
+    "ratio": null,
+    "draft_annotation_count": 141,
+    "confirmed_purchased_sku_count": 0
+  },
+  "bundles": {
+    "fridge": {
+      "bundle_id": "LGE-D1-D2-fridge-20261007-01a10600-v1",
+      "source_count": 58,
+      "development_reviews_used": 48,
+      "nonreview_sources_annotated": 0
+    },
+    "dishwasher": {
+      "bundle_id": "LGE-D1-D2-dishwasher-20261007-01a10600-v2-care",
+      "source_count": 73,
+      "development_reviews_used": 48,
+      "nonreview_sources_annotated": 0
+    },
+    "microwave": {
+      "bundle_id": "LGE-D1-D2-microwave-20261007-01a10600-v1",
+      "source_count": 53,
+      "development_reviews_used": 45,
+      "nonreview_sources_annotated": 0
+    }
+  },
+  "approval": {
+    "topic_draft_pm_approved": false,
+    "independent_evaluation_gold": false,
+    "exact_model_runtime_projection_approved": false,
+    "runtime_registered": false,
+    "web_receipt_confirmed": false,
+    "parent_done": false
+  },
+  "limitations": [
+    "추천순/별점순/최신순의 목적 표본, 모집단/시장 수요 비율 아님",
+    "개발141만 주제 초안 작성; 평가36/시연49/격리12는 ID membership만 확인",
+    "날짜미상141은 선택 후 시간분모 제외; scope제외97과 중복 합산하지 않음",
+    "입력 관측중복1과 collector 기간내 duplicate_count0는 다른 계산 단계",
+    "문서버전은 페이지 모델의 연결 참고자료; 후기판/구매당시 설명서 아님",
+    "PAGE namespace 및 OBS Evidence IDs는 별도검수용 기대 대응이며 canonical 신규 등록 성공 아님",
+    "cleaning 필터의 빈 count0은 승인된 토픽 언급0의 증거가 아니라 미상 날짜 분모0 결과"
+  ],
+  "execution": {
+    "new_product_model_calls": 0,
+    "new_ocr_calls": 0,
+    "network_access": false,
+    "operating_db_api_restarts": 0,
+    "production_files_modified": 0
+  },
+  "files": {
+    "source-pins.json": "f3b7a8d510988c954bfea965384562688567be74855dfca0481f0409a5614bd1",
+    "development-sources.json": "e47f77303b83597a9c146e96f10cd1ff505d480e9f53abb80448178e481a1162",
+    "annotation.draft.json": "871c4618737f380e24725854aa8f37c665c3a8de8eca9775c3e65ca679211409",
+    "draft-memberships.json": "b461fefaf6c4f2beabb408661c4a277e6b4715ee9c22294ecde74ce9ae05bc93",
+    "partition-memberships.json": "8ed12333cd9309aa10780b4588270242c20036e9ee1023c2731f8c107ed6316e",
+    "projection.date-only.dataset.json": "0b65f25db9ca9ecaccbbb4d0b3b4bd6f48a6cb16767a9a3647e03dad74a07aa1",
+    "date-only.metadata.json": "d34c2bd32b89f96718ad4ab278e797c004611c88b4107780ee23e9dbc34239ee",
+    "review-id-map.json": "83cefaf6a2c22562495c9e1090ac9b2567c5b9146b1b6e0d01ba03f6059933fd",
+    "empty-collector-checks.json": "764d0df6670e811be0f1e6caf29134124a67176791a0ac88c2e58f3db0cdf503"
+  }
+}

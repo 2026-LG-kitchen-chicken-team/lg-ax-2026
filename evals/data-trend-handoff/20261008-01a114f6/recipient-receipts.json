@@ -1,0 +1,44 @@
+{
+  "checked_at_utc": "2026-10-07T17:30:57.581960+00:00",
+  "task_id": "DATA-TABLE-TREND-20261008-01a114f6",
+  "status": "CORE and WEB actual file-read receipts confirmed",
+  "receipts": [
+    {
+      "comment_id": 6042666462,
+      "author": "unknownamed",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/258#issuecomment-6042666462",
+      "created_at": "2026-10-07T17:00:55Z",
+      "updated_at": "2026-10-07T17:00:55Z",
+      "fixed_head": "d58c23b7d3c299a3bf6392709e4f387df6cb0076",
+      "confirmed_receipt_scope": "actual_file_read_and_manual_preconsumption_review",
+      "body_sha256": "bd29a66c1a7d1a287bf715e9cf816048f3aead4474eb5b9202c30694700a663a",
+      "body": "@ginaginaring @jeongiryang\n\nCORE-TABLE-INTAKE-20261008-01a10729-01\n\n[DATA14 요청6042601275](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/14#issuecomment-6042601275)의 고정 head `d58c23b7d3c299a3bf6392709e4f387df6cb0076`에서 sidecar를 실제 읽어 수신했습니다. `table-grounding.20261008.01a114f6.v1`, 9,977 bytes, SHA256 `7b0d6ae500aeabc093600cdd950df4fe9903e2f1d0800234ea7526c7c559af99`가 인계값과 같습니다.\n\nCORE에서 고정 PDF2·native2·기존 전체쪽 render2·canonical dataset1의 실제 byte/SHA를 대조하고 두 표 이미지를 직접 읽었습니다. 별도 source-only/read-only 입력·network none·credentials mount0 Docker에서 셀5/각주1의 원 문자 범위·SHA·anchor와 기존 Evidence3의 연속 인용·model/version/locator·빈 `feature_ids`를 검증해 PASS를 받았습니다. DATA의 5개 변조 검사는 재실행하지 않았습니다.\n\n| CORE 수동 소비 사전검토 범위 | Evidence ID | 모델 / 판본 | 보존 조건 |\n| --- | --- | --- | --- |\n| DUE 빌트인 치수 셀 `DUE-BUILTIN` | `DATA003-DUE6BGL2E-D03` | DUE6BGL2E / MFL71959117 Rev.07_030626, p57 | 598×815×567mm. DFE 일반845mm와 DFE 상판제거 조건을 DUE에 전이하지 않음 |\n| 정격 전기 소비전력1570W | `DATA003-MW23FDI-M06`, `DATA003-MW23FDI-M07` | MW23FDI / MFL68822538 Rev.00_120925, p37 | 전기입력이며 고주파 출력과 구분 |\n| 최대 고주파 출력1000W와 `MW-FN1` 시간 주석 | `DATA003-MW23FDI-M06`만 | 같은 MW 판본 / p37 | 짧은 시간 출력·조리시간 경과에 따라 변동 가능. M07에는 출력/각주 없음 |\n\n소비 사전검토 packet에서 원 canonical Evidence를 수정하지 않고 해당 셀과 각주를 별도 관계로 유지했습니다. 떨어진 셀/각주를 합쳐 새 연속 인용으로 만들지 않았습니다. 구매자 SKU는 미확인, `feature_ids=[]`는 그대로이며 기능 승인으로 처리하지 않았습니다.\n\n이번 수신은 **CORE의 실제 파일 읽기·원문 및 수동 관계 소비 사전검토**입니다. 승인된 production adapter/자동 table graph는 아직 미수신이고 실제 planning prompt/HTTP·MCP runtime에는 적용하지 않았습니다. 실제 모델 호출0, 모델판본·usage/자동정확도·오류건수 `null`, OCR0입니다. 파일 수신을 실제 모델 의미품질·PM 승인/병합/Done으로 기록하지 않습니다. 다음 연결은 PM/DATA의 승인 adapter pin과 동일 Evidence/model/version을 사용하는 실제 CORE 입력 인계입니다. DATA16/148 후속은 같은 PR의 새 고정 산출물이 오면 별도로 대조하겠습니다.\n",
+      "authenticated_recipient_reply": true,
+      "runtime_or_pm_approval_claimed": false,
+      "verification_basis": "authenticated recipient reply; recipient local verifier artifacts not yet received"
+    },
+    {
+      "comment_id": 6043200182,
+      "author": "choigilung",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/16#issuecomment-6043200182",
+      "created_at": "2026-10-07T17:28:22Z",
+      "updated_at": "2026-10-07T17:28:22Z",
+      "fixed_head": "e52cd06dc790328dd29f1e4c0d2ba3498fe7c63b",
+      "confirmed_receipt_scope": "actual_file_read_and_source_quote_membership_integrity_report",
+      "body_sha256": "8578d1f0cf0c97aa4557b6210c9e04aa6df447b20cba1d315e835d3390818b46",
+      "body": "@ginaginaring @jeongiryang **WEB 읽기 수신 확인 — DATA16/148-DEVELOPMENT-HANDOFF-20261008-01a114f6**\n\nPR #258 고정 head `e52cd06`의 파일을 실제로 읽고, 웹 코드와 무관한 검증 스크립트로 대조했습니다. 모델 호출 0, 코드·화면 변경 0입니다.\n\n| 확인 항목 | 결과 |\n|---|---|\n| `annotation.draft.json` SHA-256 | `871c4618…211409` 일치 |\n| `development-sources.json` SHA-256 | `e47f7730…1a1162` 일치 |\n| annotation_version | 두 파일 모두 `r8-development-topic-draft.20261008.01a114f6.v1` |\n| 상태 | draft · pm_approved false · gold false(행 141개 모두 draft/미승인) |\n| ID | 행 141 = 원문 141, 중복 없음. 냉장고 48 / 식기세척기 48 / 전자레인지 45 |\n| 원 객체 보존 | 원문 141건이 원천 commit `94b560de`의 `bundles/*.development.research-bundle.json` 개발 리뷰 141건과 **객체 단위로 완전히 같음** |\n| 인용 | 292개 모두 `text_range` 위치의 원문 = quote, quote_sha256 일치(불일치 0) |\n| 주제 | 행·인용의 topic_id가 모두 taxonomy 24개 안에 있음 |\n| 반례 | 12쌍 모두 행에 있는 원 ID를 가리키고, 인과·동일 SKU 결론은 false |\n| 분할 | development 141만 있음(평가·시연·격리 혼입 0) |\n| 날짜·SKU | published_at·구매 모델 모두 null |\n| 의견 분포(초안) | 긍정 106 / 부정 13 / 혼합 16 / 미확인 3 / 중립 3 |\n\n- 이것은 **파일 읽기 수신과 무결성 확인**입니다. PM 분류 승인, 웹 화면·차트 소비, 운영 반영과는 별개입니다.\n- 웹에서는 승인 전 초안 주제로 비율이나 차트를 만들지 않겠습니다. 월·계절 분모 0과 ratio null도 그대로 보여 주겠습니다.\n- 검증 스크립트와 결과(`receipt.json`)는 기록 064로 로컬에 commit해 두었고, 다음 push 때 올리겠습니다.\n",
+      "authenticated_recipient_reply": true,
+      "runtime_or_pm_approval_claimed": false,
+      "verification_basis": "authenticated recipient reply; recipient local verifier artifacts not yet received"
+    }
+  ],
+  "source_units_unchanged_after_e52cd06": true,
+  "pending_external_acceptance": [
+    "PM semantic classification review/merge",
+    "approved automatic table graph/production adapter and actual CORE runtime",
+    "approved R8 product-group trend adapter and actual WEB/runtime consumption",
+    "confirmed publication dates before any dated trend"
+  ],
+  "parent_done": false,
+  "immediate_user_action_required": false
+}

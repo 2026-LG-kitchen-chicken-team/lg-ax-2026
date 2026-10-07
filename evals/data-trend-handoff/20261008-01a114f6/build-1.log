@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/code/build_development_handoff.py", line 402, in <module>
+    main()
+  File "/code/build_development_handoff.py", line 280, in main
+    pins, records, members, selected, bundles, sources = inputs(args.source)
+                                                         ^^^^^^^^^^^^^^^^^^^
+  File "/code/build_development_handoff.py", line 111, in inputs
+    assert item["metadata"]["original_text_sha256"] == record["original_text_sha256"]
+                                                       ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'original_text_sha256'
