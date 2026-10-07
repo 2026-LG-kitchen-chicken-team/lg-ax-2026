@@ -1,6 +1,12 @@
 # 정이량 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
+## 최신 재개 요약 — 정이량-20261007-007-R6-REVIEW-CLOSEOUT
+
+- PR220/222/225와 원223/224가 실제 main1f25에 병합·mainCI2 통과했다. 작성자 수정221062와 자료226067을 독립 재검수해 실제 승인하고 원 head를 통합 branch에 보존했다.
+- 새 정상1은 실제6회/47,202 뒤 다음 호출 예약 여유 부족으로 취소·finalstatusnull/run0이다. 중간 의미FAIL4와 잘못된 판단문 인용9개를 보존하며 wire 인용 보완·최종 source/운영/공식ACK를 진행한다. Figma 제외·자동화OFF 유지.
+- [007](2026-10-07/정이량-20261007-007-R6-REVIEW-CLOSEOUT.md) · [E054](../../작업근거/정이량/2026-10-07/정이량-E054-R6-REVIEW-CLOSEOUT.md). 아래006은 당시 checkpoint다.
+
 ## 최신 재개 요약 — 정이량-20261007-006-UPSTREAM-WEB
 
 - 요구·Gap 전18행의 원문/설명서 범위 검수와 시작 단계 수정 피드백을 구현했다. CORE181/Ruff7·통합Python1597(4skip)/launcher6, WEB 안내47/빌드 통과이며 실모델 효과는 후속 실제 검사다.
