@@ -22,4 +22,6 @@ wire 판단 인용 첫 보완 source80cf8b259db034e97fe5a0273335794eae43a67b의 
 
 최종 wire 보완 source6e65f4584ba60ceafe9dfe700c98cd1a2f3fa275의 실제 격리188검사·Ruff7PASS를 원 영수증 pm-r6-upstream-core-84fab1da08644d28b208b408f84cf7ed에 보존했다. 실제 native schema15648/상한16384, 실제 formatted prompt22856문자/33140UTF8바이트·기존24000/45000상한, source_changed[]/모델0/네트워크0을 확인했다. source/candidate의 동일 전체 인용 schema 공유와 이미 공통 required가 강제하는18분기의 반복 required 제거이며, 해당 Need/Gap의 ID/전체 판단문 enum·필수 필드·원문·verdict·공유 수정2회는 유지한다.
 
+해당 실제188영수증 SHA는 e05c0c0087ce0417e9c6d1e9866fab936e36c354029fcf26d1e44f0af6f42e9a다. 독립 final source 검수 SHA6493252652bf894ee9ba603f5cd8ec58dbf182be3506accf0f47c4cddb28c6a0는 findings[]/SOURCE_APPROVE이며 원 fixture·source/후보 전체 인용·필수6필드·원 canonical/legacy·기존 예산과 model_client 상한 불변을 대조했다. 실제 운영·새 모델 의미 품질 인수와 구분한다.
+
 wire 판단 인용 보완의 독립 검수·최종 main/운영·공식 ACK는 수행007의 후속 gate다. 형태 검사 통과를 의미 성능·실제 수요·신규성·완성 시연으로 확대하지 않는다.
