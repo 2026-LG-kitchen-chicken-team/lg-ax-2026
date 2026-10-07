@@ -1,0 +1,836 @@
+{
+  "status": "PASS",
+  "scope": "C3 source-grounded prompt-only comparison limits; existing fixtures and byte preservation, not generated comparison acceptance",
+  "planning_logic_AST_equal": true,
+  "before_sha256": "34072ebcf789c153c2d01dfe256e30adb7ca84fa96fa919aeb88ffd9ec99ed8d",
+  "after_sha256": "a364014c29e48e47c0791c60f7110b9dc8da3081f33866018746d0d469f149bb",
+  "checks": [
+    {
+      "name": "public-core",
+      "command": [
+        "python",
+        "-B",
+        "-c",
+        "import unittest; l=unittest.TestLoader(); s=unittest.TestSuite([l.discover('tests',pattern='test_public_planning*.py'),l.discover('tests',pattern='test_public_repair*.py')]); r=unittest.TextTestRunner(verbosity=2).run(s); raise SystemExit(not r.wasSuccessful())"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "test_actual_qwen_expectation_to_action_error_is_rejected (test_public_planning.PublicPlanningTests.test_actual_qwen_expectation_to_action_error_is_rejected) ... ok\ntest_actual_qwen_full_manual_absence_claim_is_rejected (test_public_planning.PublicPlanningTests.test_actual_qwen_full_manual_absence_claim_is_rejected) ... ok\ntest_actual_qwen_numeric_error_is_not_certified_by_customer_suspicion (test_public_planning.PublicPlanningTests.test_actual_qwen_numeric_error_is_not_certified_by_customer_suspicion) ... ok\ntest_actual_repair_excerpt_caveat_is_preserved (test_public_planning.PublicPlanningTests.test_actual_repair_excerpt_caveat_is_preserved) ... ok\ntest_field_patch_cannot_change_healthy_fields_or_identifier (test_public_planning.PublicPlanningTests.test_field_patch_cannot_change_healthy_fields_or_identifier) ... ok\ntest_input_facts_and_numeric_sequence_are_preserved_by_code (test_public_planning.PublicPlanningTests.test_input_facts_and_numeric_sequence_are_preserved_by_code) ... ok\ntest_model_domain_error_retains_safe_cause_without_private_details (test_public_planning.PublicPlanningTests.test_model_domain_error_retains_safe_cause_without_private_details) ... ok\ntest_unavailable_model_returns_valid_insufficient_brief_without_inventing_concepts (test_public_planning.PublicPlanningTests.test_unavailable_model_returns_valid_insufficient_brief_without_inventing_concepts) ... ok\ntest_wrong_exact_model_scope_stops_before_call_and_revision_is_linked (test_public_planning.PublicPlanningTests.test_wrong_exact_model_scope_stops_before_call_and_revision_is_linked) ... ok\ntest_empty_successful_discovery_denominator_is_null_not_zero_sentiment (test_public_planning_coverage.SummaryReferenceCoverageTests.test_empty_successful_discovery_denominator_is_null_not_zero_sentiment) ... ok\ntest_empty_successful_summary_is_distinct_from_failed_discovery (test_public_planning_coverage.SummaryReferenceCoverageTests.test_empty_successful_summary_is_distinct_from_failed_discovery) ... ok\ntest_failed_real_source_discovery_keeps_zero_denominator_and_original_facts (test_public_planning_coverage.SummaryReferenceCoverageTests.test_failed_real_source_discovery_keeps_zero_denominator_and_original_facts) ... ok\ntest_official_document_reference_never_becomes_customer_denominator (test_public_planning_coverage.SummaryReferenceCoverageTests.test_official_document_reference_never_becomes_customer_denominator) ... ok\ntest_repeated_and_cross_polarity_references_do_not_inflate_source_denominator (test_public_planning_coverage.SummaryReferenceCoverageTests.test_repeated_and_cross_polarity_references_do_not_inflate_source_denominator) ... ok\ntest_unreferenced_processed_source_is_not_automatically_negative_or_positive (test_public_planning_coverage.SummaryReferenceCoverageTests.test_unreferenced_processed_source_is_not_automatically_negative_or_positive) ... ok\ntest_actual_structured_client_still_rejects_whole_response_before_core_receives_items (test_public_planning_isolation.PublicPlanningIsolationTests.test_actual_structured_client_still_rejects_whole_response_before_core_receives_items) ... ok\ntest_missing_title_neighbor_does_not_erase_valid_source_copy_or_loosen_caller_schema (test_public_planning_isolation.PublicPlanningIsolationTests.test_missing_title_neighbor_does_not_erase_valid_source_copy_or_loosen_caller_schema) ... ok\ntest_nonobject_and_unhashable_ids_are_isolated_but_envelope_cardinality_is_not (test_public_planning_isolation.PublicPlanningIsolationTests.test_nonobject_and_unhashable_ids_are_isolated_but_envelope_cardinality_is_not) ... ok\ntest_shared_limit_also_holds_through_actual_structured_client (test_public_planning_isolation.PublicPlanningIsolationTests.test_shared_limit_also_holds_through_actual_structured_client) ... ok\ntest_three_observed_bad_wordings_share_two_corrections_including_failures (test_public_planning_isolation.PublicPlanningIsolationTests.test_three_observed_bad_wordings_share_two_corrections_including_failures) ... ok\ntest_empty_discovery_reads_at_most_one_more_actual_batch_and_keeps_planning_repair_budget (test_public_planning_sampling.PublicPlanningSamplingTests.test_empty_discovery_reads_at_most_one_more_actual_batch_and_keeps_planning_repair_budget) ... ok\ntest_small_actual_sample_includes_low_rating_mixed_text_and_other_model_without_mutation (test_public_planning_sampling.PublicPlanningSamplingTests.test_small_actual_sample_includes_low_rating_mixed_text_and_other_model_without_mutation) ... ok\ntest_two_source_window_keeps_supplied_counter_role_without_rewriting_actual_records (test_public_planning_sampling.PublicPlanningSamplingTests.test_two_source_window_keeps_supplied_counter_role_without_rewriting_actual_records) ... ok\ntest_bad_patch_is_never_retried_and_never_deletes_the_original_item (test_public_repair.PublicRepairTests.test_bad_patch_is_never_retried_and_never_deletes_the_original_item) ... ok\ntest_complete_feedback_and_snapshot_validation_precede_every_model_call (test_public_repair.PublicRepairTests.test_complete_feedback_and_snapshot_validation_precede_every_model_call) ... ok\ntest_generation_correction_count_is_carried_into_feedback_and_cannot_discard_old_attempts (test_public_repair.PublicRepairTests.test_generation_correction_count_is_carried_into_feedback_and_cannot_discard_old_attempts) ... ok\ntest_one_failed_item_does_not_undo_another_patch_or_expose_provider_causes (test_public_repair.PublicRepairTests.test_one_failed_item_does_not_undo_another_patch_or_expose_provider_causes) ... ok\ntest_patch_preserves_unrequested_items_fields_facts_and_parent_while_filtering_only_removed_relations (test_public_repair.PublicRepairTests.test_patch_preserves_unrequested_items_fields_facts_and_parent_while_filtering_only_removed_relations) ... ok\ntest_repair_context_uses_only_item_sources_and_explicit_named_catalog_source (test_public_repair.PublicRepairTests.test_repair_context_uses_only_item_sources_and_explicit_named_catalog_source) ... ok\ntest_three_feedback_items_cannot_spend_more_than_two_failed_corrections_or_reset_on_next_repair (test_public_repair.PublicRepairTests.test_three_feedback_items_cannot_spend_more_than_two_failed_corrections_or_reset_on_next_repair) ... ok\ntest_failed_field_repair_does_not_reset_summary_denominator (test_public_repair_coverage.SummaryCoverageReuseTests.test_failed_field_repair_does_not_reset_summary_denominator) ... ok\ntest_missing_legacy_coverage_is_not_inferred_or_injected_by_caller (test_public_repair_coverage.SummaryCoverageReuseTests.test_missing_legacy_coverage_is_not_inferred_or_injected_by_caller) ... ok\ntest_same_summary_reuse_never_resets_shared_two_repair_budget (test_public_repair_coverage.SummaryCoverageReuseTests.test_same_summary_reuse_never_resets_shared_two_repair_budget) ... ok\ntest_successful_field_repair_preserves_original_discovery_counts_and_snapshot (test_public_repair_coverage.SummaryCoverageReuseTests.test_successful_field_repair_preserves_original_discovery_counts_and_snapshot) ... ok\ntest_valid_zero_denominator_stays_null_and_is_distinct_from_missing_metadata (test_public_repair_coverage.SummaryCoverageReuseTests.test_valid_zero_denominator_stays_null_and_is_distinct_from_missing_metadata) ... ok\ntest_wrong_count_source_or_approval_is_not_inherited_or_reclassified (test_public_repair_coverage.SummaryCoverageReuseTests.test_wrong_count_source_or_approval_is_not_inherited_or_reclassified) ... ok\n\n----------------------------------------------------------------------\nRan 36 tests in 0.429s\n\nOK\n"
+    },
+    {
+      "name": "ruff",
+      "command": [
+        "python",
+        "-m",
+        "ruff",
+        "check",
+        "--no-cache",
+        "packages/core/src/lgax_core/public_planning.py"
+      ],
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "name": "agent-rules",
+      "command": [
+        "python",
+        "-B",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "PASS: AGENTS.md and CLAUDE.md are byte-identical\n",
+      "stderr": ""
+    },
+    {
+      "name": "doc-navigation",
+      "command": [
+        "python",
+        "-B",
+        "scripts/check_document_navigation.py",
+        "--root",
+        "/tmp/work"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"source_commit\": \"0078975ef4579008eb7c5921541122a8f569ce3a\",\n  \"original_byte_archives\": 5,\n  \"original_bytes_preserved\": 161753,\n  \"original_headings_preserved\": 104,\n  \"source_relative_links_checked\": 169,\n  \"current_entries_checked\": 6,\n  \"protected_files_checked\": 0,\n  \"pinned_git_source_checked\": false,\n  \"previous_stage_proof_preserved\": true,\n  \"product_execution\": false,\n  \"network_calls\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "original-D3-pins",
+      "command": [
+        "python",
+        "-B",
+        "evals/core-manual-quality/20261007/d3-consumer-intake/verify_intake.py",
+        "--pack",
+        "data/research/r8-public-research-20261007/competitors/01a114f6",
+        "--reviews",
+        "data/research/r5-public-reviews-20261007/fixed18/development.records.json",
+        "--intake",
+        "evals/core-manual-quality/20261007/d3-consumer-intake/consumer-intake.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"status\": \"PASS\",\n  \"scope\": \"new D3 consumer byte pins and literal context only\",\n  \"manifest_files\": 8,\n  \"official_sources\": 3,\n  \"excerpt_hashes\": 12,\n  \"original_review_id\": \"848850\",\n  \"literal_contexts\": 4,\n  \"model_calls\": 0,\n  \"network_calls\": 0,\n  \"raw_html_reverification\": false,\n  \"meaning_or_customer_effect_approved\": false,\n  \"checker_sha256\": \"f4a6557b2e95f0fec9dfaf234dbc46fd4750a2ab0a67413839ddaa591ce300da\"\n}\n",
+      "stderr": ""
+    }
+  ],
+  "test_count": 36,
+  "source_pin_checks": {
+    "data/research/r5-public-reviews-20261007/fixed18/development.records.json": "f82cfe2ef8ee8f0873c250e6d82918a81d215e449187d9ee1644957cd907831a",
+    "evals/core-manual-quality/20261007/d3-consumer-intake/consumer-intake.json": "d10aa369ce2e9d2eb77c0c63ac49664ebf78885324be384cadfdd82d725a84c5",
+    "data/research/r8-public-research-20261007/competitors/01a114f6/comparison.json": "1b419e881762d791e198d4bc78d5baf15bac26210fe945866a624312fd33d403",
+    "data/research/r8-public-research-20261007/competitors/01a114f6/official-sources.json": "51a687aa32c3edfaab11826692a7a88f6720b50c073ec4d47e6e027115894557",
+    "data/research/r8-public-research-20261007/competitors/01a114f6/manifest.json": "535c08e6009e873c3d09fc92b5fcb68b47f88bad562e34c33f15bca97bc9de6d"
+  },
+  "original_source_text_sha256": "f7c96d4b8243c18ce33b6b3f4bf6a030b7c3004d3c75facf1d38df8f66853d0a",
+  "original_anchors_exact": true,
+  "migration": {
+    "source_files": 8,
+    "sections": 231,
+    "session_files": 28,
+    "body_bytes": 818663,
+    "relative_links": 128
+  },
+  "links": [
+    {
+      "source": "evals/core-manual-quality/20261008/c3-comparison-guard/README.md",
+      "link": "context.json",
+      "exists": true
+    },
+    {
+      "source": "evals/core-manual-quality/20261008/c3-comparison-guard/README.md",
+      "link": "verification.json",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/2026-10-08/CORE-C3-COMPARISON-GUARD-01a10729-01.md",
+      "link": "../../../../evals/core-manual-quality/20261008/c3-comparison-guard/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-08/CORE-C3-COMPARISON-GUARD-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261008/c3-comparison-guard/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-08/CORE-C4-WEB-CONSUMER-BOUNDARY-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261008/web261-coverage-boundary/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-08/CORE-C4-PUBLIC-HANDOFF-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261008/summary-public-handoff/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-08/CORE-C2-TEMPORAL-CONTEXT-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261008/temporal-source-context/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-08/CORE-C4-SUMMARY-REUSE-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261008/summary-reference-reuse/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-08/CORE-C4-SUMMARY-COVERAGE-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261008/summary-reference-coverage/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-08/CORE-C4-CONTEXT-GUARD-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261008/c4-context-guard/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-07/CORE-R8-C2-CORRECTIONS-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261007/r8-c2-corrections/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-07/CORE-D3-CONSUMER-INTAKE-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261007/d3-consumer-intake/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-07/CORE-MANUAL-QUEUE-PREFLIGHT-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261007/manual-queue-preflight/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-07/CORE-R5-PR218-AUDIT-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261007/r5-independent/pr218-head-audit/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-07/CORE-R5-RAW-AUDIT-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261007/r5-independent/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-06/CORE-SEMANTIC-GROUNDING-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261006/semantic-grounding/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-06/CORE-METADATA-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261006/metadata-consistency/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../../작업근거/황대겸/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../황대겸.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "archive/84844b86-original.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "legacy/0002-최신-수동-재개-요약-2026-10-06.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../세션/황대겸/manual-quality-r1-20261006.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../../작업근거/세션/황대겸/manual-quality-r1-20261006.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261006/checks/manifest.json",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "legacy/0001-소개-공통-참조.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "legacy/0002-최신-수동-재개-요약-2026-10-06.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "legacy/0003-과거-재개-요약-2026-10-05-03-03.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "legacy/0004-상세-기록.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-04/0005-황대겸-20261004-001.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-04/0006-황대겸-20261004-002.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-04/0007-황대겸-20261004-003.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-04/0008-황대겸-20261004-004.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-04/0009-황대겸-20261004-005.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-05/0010-황대겸-20261005-006.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-05/0011-황대겸-20261005-007.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-05/0012-황대겸-20261005-008.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-05/0013-황대겸-20261005-009.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-05/0014-황대겸-20261005-010.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-05/0015-황대겸-20261005-011.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-05/0016-황대겸-20261005-012.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-05/0017-황대겸-20261005-013.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-05/0018-황대겸-20261005-014.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-05/0019-황대겸-20261005-015.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-04/0005-황대겸-20261004-001.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-04/0006-황대겸-20261004-002.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-04/0007-황대겸-20261004-003.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-04/0008-황대겸-20261004-004.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-04/0009-황대겸-20261004-005.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-05/0010-황대겸-20261005-006.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-05/0011-황대겸-20261005-007.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-05/0012-황대겸-20261005-008.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-05/0013-황대겸-20261005-009.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-05/0014-황대겸-20261005-010.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-05/0015-황대겸-20261005-011.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-05/0016-황대겸-20261005-012.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-05/0017-황대겸-20261005-013.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-05/0018-황대겸-20261005-014.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "2026-10-05/0019-황대겸-20261005-015.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../세션/황대겸/auto-34edc61151834e4731a695cc2baabb0a2864765a.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../세션/황대겸/auto-de46e545bcc3e38293743bc63c9cb584c9af83a7.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../세션/황대겸/manual-quality-r1-20261006.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업기록/황대겸/README.md",
+      "link": "../세션/황대겸/manual-quality-r1-ci-followup-20261006.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/2026-10-08/CORE-C3-COMPARISON-GUARD-01a10729-01.md",
+      "link": "../../../../evals/core-manual-quality/20261008/c3-comparison-guard/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "2026-10-08/CORE-C3-COMPARISON-GUARD-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261008/c3-comparison-guard/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "2026-10-08/CORE-C4-WEB-CONSUMER-BOUNDARY-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261008/web261-coverage-boundary/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "2026-10-08/CORE-C4-PUBLIC-HANDOFF-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261008/summary-public-handoff/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "2026-10-08/CORE-C2-TEMPORAL-CONTEXT-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261008/temporal-source-context/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "2026-10-08/CORE-C4-SUMMARY-REUSE-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261008/summary-reference-reuse/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "2026-10-08/CORE-C4-SUMMARY-COVERAGE-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261008/summary-reference-coverage/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "2026-10-08/CORE-C4-CONTEXT-GUARD-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261008/c4-context-guard/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "2026-10-07/CORE-R8-C2-CORRECTIONS-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261007/r8-c2-corrections/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "2026-10-07/CORE-D3-CONSUMER-INTAKE-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261007/d3-consumer-intake/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "2026-10-07/CORE-MANUAL-QUEUE-PREFLIGHT-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261007/manual-queue-preflight/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "2026-10-07/CORE-R5-PR218-AUDIT-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261007/r5-independent/pr218-head-audit/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "2026-10-07/CORE-R5-RAW-AUDIT-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261007/r5-independent/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "2026-10-06/CORE-SEMANTIC-GROUNDING-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261006/semantic-grounding/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "2026-10-06/CORE-METADATA-01a10729-01.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "../../../evals/core-manual-quality/20261006/metadata-consistency/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "../../작업기록/황대겸/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "../황대겸.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "archive/84844b86-original.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0001-소개-공통-참조.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0002-최신-수동-근거-2026-10-06.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0003-과거-상태.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0004-근거-기록.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0005-황대겸-E001.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0006-황대겸-E002.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0007-황대겸-E003.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0008-황대겸-E004.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0009-황대겸-E005.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0010-황대겸-E006.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0011-황대겸-E007.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0012-황대겸-E008.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0013-황대겸-E009.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0014-황대겸-E010.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0015-황대겸-E011.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0016-황대겸-E012.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0017-황대겸-E013.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0018-황대겸-E014.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0019-황대겸-E015.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0005-황대겸-E001.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0006-황대겸-E002.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0007-황대겸-E003.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0008-황대겸-E004.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0009-황대겸-E005.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0010-황대겸-E006.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0011-황대겸-E007.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0012-황대겸-E008.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0013-황대겸-E009.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0014-황대겸-E010.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0015-황대겸-E011.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0016-황대겸-E012.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0017-황대겸-E013.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0018-황대겸-E014.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "legacy/0019-황대겸-E015.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "../세션/황대겸/auto-34edc61151834e4731a695cc2baabb0a2864765a.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "../세션/황대겸/auto-de46e545bcc3e38293743bc63c9cb584c9af83a7.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "../세션/황대겸/manual-quality-r1-20261006.md",
+      "exists": true
+    },
+    {
+      "source": "docs/작업근거/황대겸/README.md",
+      "link": "../세션/황대겸/manual-quality-r1-ci-followup-20261006.md",
+      "exists": true
+    }
+  ],
+  "new_tests": 0,
+  "new_model_calls": 0,
+  "raw_HTML_reverification": false,
+  "agent_input_approved": false,
+  "actual_model_quality_verified": false,
+  "PM_acceptance": false,
+  "network": "none",
+  "readonly_root": true,
+  "uid": 65534,
+  "credentials_mounted": false
+}
