@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/input/audit_fixed_r5.py", line 144, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/input/audit_fixed_r5.py", line 46, in main
+    assert sha256((root/dirname/rel).read_bytes()).hexdigest()==expected,(dirname,rel)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/pathlib.py", line 1050, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/pathlib.py", line 1044, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/input/fixed18/public-reviews.sqlite3'
