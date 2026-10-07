@@ -1,0 +1,304 @@
+"""Hash-only, zero-network inspection of input-only candidate transport.
+
+Stops the real Planner at its first fixture model POST and inspects a baseline
+POST through the same client. No model response, Gold, or score is produced.
+Run only in the pinned validator; never import this on an authenticated host.
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import re
+import stat
+import zipfile
+from copy import deepcopy
+from pathlib import Path, PurePosixPath
+
+import httpx
+from jsonschema import Draft202012Validator
+from lgax_contracts import load_schema
+from lgax_core.document_store import DocumentStore
+from lgax_core.errors import DomainError
+from lgax_core.judgement_contract import input_digest, review_judgement, schema_for
+from lgax_core.model_client import ModelConfig, OllamaAdapter, StructuredModelClient
+from lgax_core.planning_agent import PlanningAgent
+from lgax_core.store import DemoStore
+
+ROOT = Path.cwd()
+OUT = Path('/artifacts/result.json')
+MODEL = 'audit-fixture:no-generation'
+DIGEST = '1' * 64
+CHECKS: list[dict] = []
+DIAGNOSTICS: list[dict] = []
+
+
+def sha(raw: bytes) -> str:
+    return hashlib.sha256(raw).hexdigest()
+
+
+def canonical(value: object) -> str:
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(',', ':'), allow_nan=False)
+
+
+def check(name: str, value: bool) -> None:
+    CHECKS.append({'name': name, 'passed': bool(value)})
+    if not value:
+        raise AssertionError(name)
+
+
+def unique(pairs: list[tuple]) -> dict:
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError('duplicate JSON key')
+        result[key] = value
+    return result
+
+
+def candidates(path: Path, expected: str) -> list[dict]:
+    check('input-only archive SHA', sha(path.read_bytes()) == expected)
+    validator = Draft202012Validator(schema_for('input'))
+    selected = []
+    with zipfile.ZipFile(path) as archive:
+        entries = archive.infolist()
+        check('input-only entry count', len(entries) == 11)
+        check('bounded decompressed bytes', sum(e.file_size for e in entries) <= 8_000_000)
+        for entry in entries:
+            name = PurePosixPath(entry.filename)
+            check('safe entry path', not name.is_absolute() and '..' not in name.parts and '\\' not in entry.filename)
+            check('ordinary unencrypted entry', not stat.S_ISLNK(entry.external_attr >> 16) and not entry.flag_bits & 1)
+            check('bounded entry', entry.file_size <= 2_000_000)
+            if not entry.filename.endswith('.json'):
+                continue
+            value = json.loads(archive.read(entry), object_pairs_hook=unique)
+            if validator.is_valid(value):
+                selected.append(value)
+    check('seven complete schema-valid inputs', len(selected) == 7)
+    check('seven distinct complete inputs', len({input_digest(p) for p in selected}) == 7)
+    check('synthetic input sources only', all(p['product']['source_kind'] == 'synthetic'
+          and all(s['source_kind'] == 'synthetic' for s in p['sources']) for p in selected))
+    return sorted(selected, key=input_digest)
+
+
+def fixture_store(payload: dict) -> DocumentStore:
+    # Build only a read-only canonical fixture around the unchanged input.
+    dataset = {'artifact_kind': 'document_dataset', 'dataset_version': payload['request']['dataset_version']}
+    properties = load_schema()['$defs']['Review']['properties']
+    required = load_schema()['$defs']['Review']['required']
+    reviews = []
+    for index, source in enumerate(payload['sources']):
+        if source['source_type'] != 'review':
+            continue
+        row = {key: deepcopy(source[key]) for key in properties if key in source}
+        row.update(id=f'AUDIT-REVIEW-{index}', evidence_id=source['id'])
+        for key in required:
+            if key in row:
+                continue
+            if 'null' in properties[key].get('type', []):
+                row[key] = None
+            else:
+                raise ValueError('fixture requires unavailable review metadata')
+        reviews.append(row)
+    dataset.update(products=[deepcopy(payload['product'])], features=deepcopy(payload['features']),
+                   evidence=deepcopy(payload['sources']), reviews=reviews)
+    return DocumentStore(dataset)
+
+
+class StopBeforeGeneration:
+    """In-memory httpx transport; produces no model completion."""
+
+    def __init__(self) -> None:
+        self.posts: list[dict] = []
+        self.raw_post_bindings: list[dict] = []
+        self.pin_reads = 0
+
+    def __call__(self, request: httpx.Request) -> httpx.Response:
+        if request.method == 'GET' and request.url.path == '/api/tags':
+            self.pin_reads += 1
+            body = json.dumps({'models': [{'name': MODEL, 'digest': DIGEST}]}).encode()
+            return httpx.Response(200, stream=httpx.ByteStream(body))
+        if request.method == 'POST' and request.url.path in {'/api/generate', '/api/chat'}:
+            self.raw_post_bindings.append({'sha256': sha(request.content), 'bytes': len(request.content)})
+            self.posts.append(json.loads(request.content))
+            raise DomainError('MODEL_UNAVAILABLE', 'Transport audit stops before generation.',
+                              {'reason': 'audit_stopped_before_generation'})
+        raise AssertionError('Unexpected in-memory transport operation')
+
+
+def config(api_mode: str) -> ModelConfig:
+    # Fixture settings, not a PM-approved model budget or token-fit conclusion.
+    return ModelConfig('http://127.0.0.1:1', MODEL, DIGEST, context_tokens=16384,
+                       max_output_tokens=2048, api_mode=api_mode)
+
+
+def wire_prompt(body: dict, mode: str) -> str:
+    return body['prompt'] if mode == 'generate' else body['messages'][0]['content']
+
+
+def summaries(payload: dict, projected: dict) -> list[dict]:
+    actual = {s['id']: s for s in projected['sources']}
+    check('complete source ID set', set(actual) == {s['id'] for s in payload['sources']})
+    rows = []
+    for source in payload['sources']:
+        found = actual[source['id']]
+        check('exact complete source text', found['text'] == source['text'])
+        for key in ('model_id', 'document_version', 'source_kind', 'source_type', 'locator'):
+            check('source scope and locator retained', found[key] == source[key])
+        rows.append({'source_id_sha256': sha(source['id'].encode()),
+                     'source_text_sha256': sha(source['text'].encode()),
+                     'text_characters': len(source['text']), 'text_utf8_bytes': len(source['text'].encode())})
+    return rows
+
+
+def record_wire(body: dict, expected_prompt: str, schema: dict, cfg: ModelConfig) -> dict:
+    mode = cfg.api_mode
+    actual_prompt = wire_prompt(body, mode)
+    check('unmodified complete formatted prompt at POST', actual_prompt == expected_prompt)
+    check('complete native output schema at POST', body['format'] == schema)
+    check('identical declared sampling/context/output options', body['options'] == cfg.ollama_options())
+    check('fixture model and stream controls', body['model'] == MODEL and body['stream'] is False)
+    return {'formatted_prompt_sha256': sha(actual_prompt.encode()),
+            'formatted_prompt_characters': len(actual_prompt), 'formatted_prompt_utf8_bytes': len(actual_prompt.encode()),
+            'wire_body_canonical_sha256': sha(canonical(body).encode()),
+            'format_schema_canonical_sha256': sha(canonical(schema).encode()),
+            'wire_options': body['options'], 'real_server_received': False,
+            'token_fit_verified': None, 'model_output': None}
+
+
+def baseline_prompt(payload: dict) -> str:
+    template = (ROOT / 'evals/phase2/baseline-prompt.md').read_text('utf-8').split('```text\n', 1)[1].split('```', 1)[0]
+    replacements = {
+        '{{REQUEST_JSON}}': canonical(payload),
+        '{{MODEL_SCOPE_JSON}}': canonical({'product': payload['product'], 'features': payload['features']}),
+        '{{EVIDENCE_POOL_JSON}}': canonical(payload['sources']),
+        '{{RESULT_SCHEMA_JSON}}': 'The complete common output schema is supplied losslessly in this request native format field.',
+    }
+    template = re.sub(r'\{\{(?:REQUEST_JSON|MODEL_SCOPE_JSON|EVIDENCE_POOL_JSON|RESULT_SCHEMA_JSON)\}\}',
+                      lambda match: replacements[match.group(0)], template)
+    check('original baseline template placeholders filled', '{{REQUEST_JSON}}' not in template.split('요청/이전 결과:', 1)[0])
+    check('entire canonical input in baseline', canonical(payload) in template)
+    check('entire source pool in baseline', canonical(payload['sources']) in template)
+    return template
+
+
+def run_pair(payload: dict, mode: str) -> dict:
+    cfg = config(mode)
+    stopper = StopBeforeGeneration()
+    preflight = [item for item in review_judgement(payload, {})['violations'] if item['code'] != 'OUTPUT_SCHEMA']
+    if preflight:
+        # Actual Planner rejects this source graph before reading any store.
+        with StructuredModelClient(OllamaAdapter(cfg, transport=httpx.MockTransport(stopper))) as client:
+            result = PlanningAgent(client, DemoStore(), execution_kind='fixture').run(payload)
+        check('invalid source graph rejected before wire', not stopper.posts and not result['model_calls']
+              and result['status'] == 'held' and result['errors'][0]['code'] == 'VALIDATION_FAILED')
+        return {'input_sha256': input_digest(payload), 'api_mode': mode,
+                'input_delivery': 'NOT_APPLICABLE_INPUT_REJECTED',
+                'input_guard_violation_codes': sorted({item['code'] for item in preflight}),
+                'actual_Planner_status': result['status'],
+                'Agent_wire_POSTs': 0, 'baseline_wire_POSTs': 0,
+                'baseline_uses_same_host_input_guard': True,
+                'semantic_Gold_judgement': None, 'real_generation_calls': 0}
+    with StructuredModelClient(OllamaAdapter(cfg, transport=httpx.MockTransport(stopper))) as client:
+        result = PlanningAgent(client, fixture_store(payload), execution_kind='fixture').run(payload)
+    DIAGNOSTICS.append({'input_sha256': input_digest(payload), 'api_mode': mode,
+                        'status': result['status'], 'wire_POSTs': len(stopper.posts),
+                        'model_trace_entries': len(result['model_calls']),
+                        'error_codes': [e['code'] for e in result['errors']],
+                        'error_reasons': [e.get('details', {}).get('reason') for e in result['errors']],
+                        'call_keys': [sorted(c) for c in result['model_calls']],
+                        'original_prompt_characters': [len(c['prompt']) for c in result['model_calls']]})
+    check('Planner stopped at first POST without generated response', len(stopper.posts) == 1
+          and len(result['model_calls']) == 1 and result['output'] is None)
+    call = result['model_calls'][0]
+    check('real first stage is needs', call['skill_id'] == 'need_extract')
+    check('Planner input digest agrees', call['input_sha256'] == input_digest(payload))
+    check('no model response created', 'raw_response' not in call and 'generated' not in call)
+    data = json.loads(call['prompt'].rsplit('\nDATA_JSON:\n', 1)[1])
+    check('complete projected DATA_JSON retained in prompt', data == call['prompt_context'])
+    sources = summaries(payload, data)
+    check('complete original prompt included', call['prompt'] in call['formatted_prompt'])
+    agent_wire = record_wire(stopper.posts[0], call['formatted_prompt'], call['schema'], cfg)
+    agent_wire['raw_wire_body'] = stopper.raw_post_bindings[0]
+    shortened = deepcopy(stopper.posts[0])
+    if mode == 'generate':
+        shortened['prompt'] = shortened['prompt'][:-1]
+    else:
+        shortened['messages'][0]['content'] = shortened['messages'][0]['content'][:-1]
+    check('shortened wire prompt detected', wire_prompt(shortened, mode) != call['formatted_prompt'])
+    baseline = baseline_prompt(payload)
+    baseline_stop = StopBeforeGeneration()
+    output_schema = schema_for('output')
+    with StructuredModelClient(OllamaAdapter(cfg, transport=httpx.MockTransport(baseline_stop))) as client:
+        try:
+            client.generate(baseline, output_schema, MODEL)
+        except DomainError as error:
+            check('baseline intentionally stops before generation', error.details.get('reason') == 'audit_stopped_before_generation')
+        else:
+            raise AssertionError('No model completion is permitted')
+    check('one baseline POST', len(baseline_stop.posts) == 1)
+    baseline_body = baseline_stop.posts[0]
+    actual_baseline = wire_prompt(baseline_body, mode)
+    check('complete baseline prompt at POST', baseline in actual_baseline)
+    baseline_wire = record_wire(baseline_body, actual_baseline, output_schema, cfg)
+    baseline_wire['raw_wire_body'] = baseline_stop.raw_post_bindings[0]
+    check('same options across methods', agent_wire['wire_options'] == baseline_wire['wire_options'])
+    return {'input_sha256': input_digest(payload), 'api_mode': mode, 'source_hashes': sources,
+            'input_delivery': 'CLIENT_FIXTURE_POST_VERIFIED',
+            'agent_first_stage': agent_wire, 'baseline_single_prompt': baseline_wire,
+            'all_Agent_later_stages_verified': False, 'real_generation_calls': 0}
+
+
+def oversized_guards() -> list[dict]:
+    rows = []
+    for label, prompt in [('characters', 'a' * 25000), ('utf8_bytes', '가' * 16000)]:
+        stopper = StopBeforeGeneration()
+        with StructuredModelClient(OllamaAdapter(config('generate'), transport=httpx.MockTransport(stopper))) as client:
+            try:
+                client.generate(prompt, schema_for('output'), MODEL)
+            except DomainError as error:
+                check('oversize rejected without silent shortening', error.code == 'INVALID_ARGUMENT'
+                      and error.details.get('reason') == 'prompt_too_large')
+                check('oversize rejected before any wire operation', not stopper.posts and stopper.pin_reads == 0)
+                rows.append({'limit': label, 'error_code': error.code, 'reason': error.details['reason'],
+                             'wire_POSTs': 0, 'silent_truncation': False})
+            else:
+                raise AssertionError('Oversize input unexpectedly accepted')
+    return rows
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--archive', type=Path, required=True)
+    parser.add_argument('--archive-sha256', required=True)
+    args = parser.parse_args()
+    output = {'status': 'FAIL', 'kind': 'fixture_transport_only_hash_audit',
+              'Gold_read': False, 'reviewer_archive_mounted': False, 'private_input_text_published': False,
+              'new_product_model_calls': 0, 'new_OCR_calls': 0, 'actual_independent_evaluation_complete': False}
+    try:
+        inputs = candidates(args.archive, args.archive_sha256)
+        output.update(input_archive_sha256=args.archive_sha256, schema_valid_inputs=len(inputs),
+                      input_schema_sha256=sha((json.dumps(schema_for('input'), ensure_ascii=False, indent=2) + '\n').encode()),
+                      pairs=[run_pair(payload, mode) for mode in ('generate', 'chat') for payload in inputs],
+                      oversized_guards=oversized_guards(), status='PASS')
+    except (AssertionError, KeyError, ValueError, TypeError, OSError, DomainError, zipfile.BadZipFile) as error:
+        output['failure'] = {'class': type(error).__name__, 'last_check': CHECKS[-1] if CHECKS else None}
+        if isinstance(error, DomainError):
+            output['failure'].update(error_code=error.code, detail_names=sorted(error.details),
+                                     reason=error.details.get('reason'))
+        elif str(error) in {'fixture requires unavailable review metadata', 'Expected explicit document_dataset',
+                            'Evidence/product version mismatch', 'Evidence/product source kind mismatch',
+                            'Cross-model/version or missing feature', 'Feature/evidence link must be reciprocal',
+                            'Unknown feature model', 'Unknown evidence model', 'Feature/product version mismatch',
+                            'Cross-model/version or missing evidence', 'Missing review original', 'Review original mismatch'}:
+            output['failure']['safe_static_reason'] = str(error)
+    output['checks'] = CHECKS
+    output['diagnostics'] = DIAGNOSTICS
+    output['check_count'] = len(CHECKS)
+    OUT.write_text(json.dumps(output, ensure_ascii=False, indent=2) + '\n', 'utf-8')
+    print(json.dumps({key: output[key] for key in ('status', 'check_count', 'new_product_model_calls')}, ensure_ascii=False))
+    return 0 if output['status'] == 'PASS' else 1
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())
