@@ -33,6 +33,8 @@
 
 Codex가 이 작업의 개발 원문을 읽어 작성했다. 별도의 참가작 모델/OCR 호출은 없으며 **사람의 정답/독립 평가 Gold/PM 승인된 분류**가 아니다. 별점은 분류 규칙으로 사용하지 않았다. 본문 기준 종합 의견 초안은 긍정106/부정13/혼합16/판단미확인3/중립3이다. 의미 정확도는 null이며 승인 전이다.
 
+중요 문맥을 골라 인용했으며 모든 주제 언급의 포괄성/누락률은 검증하지 않았다. [인수 검토 지점](approval-checklist.md)에 구체 원ID·판단 범위·WEB 인수 기준을 연결했다.
+
 |검토 사례|보존할 양면/한계|
 |---|---|
 |848850, 별점5|냉장실 접근/용량 만족과 깊숙한 수납 접근·전면 돌출의 아쉬움. 같은815mm처럼 맥락을 합치지 않는다.|
@@ -60,3 +62,9 @@ PM 고정 코드의 `lgax_api.review_trends.build_review_trend_collection`을 im
 - date sidecar의 canonical annotation SHA: `d387b3a02c366d04a0b1afb3e1f41436b782a70d687b2a7d464dc19d6e17dded`.
 
 파일 바이트 SHA와 canonical annotation SHA는 다른 값이다. 원 입력 출처/SHA·null·ID membership과 같은 version을 WEB에 인계하며, 실제 파일 읽기 수신과 실제 운영/화면 소비 검증은 별도로 기록한다.
+
+## 실제 WEB 읽기 수신
+
+[choigilung 수신 회신6043200182](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/16#issuecomment-6043200182): 고정 e52cd06의 위 두 파일을 실제 읽고 version/SHA·141Source 원 객체·292인용·12반례·24taxonomy·development분리/null·의견 분포를 대조했다고 보고했다. 작성자/대상head/본문을 인증된 GH조회로 확인했다. WEB의 검수 스크립트/receipt.json은 로컬commit이며 공개파일은 아직 미수신이다.
+
+이는 **파일 읽기 수신**이며 PM분류승인/운영/차트/실화면소비가 아니다. [실제 수신 근거](../../../../../evals/data-trend-handoff/20261008-01a114f6/recipient-receipts.json)에 CORE/WEB 회신과 범위를 함께 고정했다. handoff-summary.json의 `web_receipt_confirmed=false`는 e52cd06 산출 생성 시점의 snapshot 상태이며 현재 수신 결과는 별도 이 파일에 있다. 고정 원문/annotation/version/SHA는 수신 뒤 수정하지 않았다.

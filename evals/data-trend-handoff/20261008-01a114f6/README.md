@@ -11,6 +11,13 @@
 - [고정 출력 재검수](fixed-output-verification.json): pin65와141원 Source의 byte/canonical equality·본문/URL/selector/hold·분할238·비개발제외97·292인용 범위·membership 재계산 및 기존 집계기36replay PASS. 각 granularity의 미상 날짜 제외 합계141, 시간 분모0·비율null.
 - 이 검사는 작성자의 source binding/계산 자기 검수다. 독립 의미 채점/Gold/PM 승인/운영 웹 소비/부모 Done이 아니다.
 
+## 게시·수신 확인
+
+- 완료 단위B를e52cd06dc790328dd29f1e4c0d2ba3498fe7c63b로추가했다. [원격 게시 검증](remote-publication-e52cd06.json):31개변경file Git blob이원격tree와일치, 표sidecar/annotation/source/date sidecar4파일은GitHub실제byte를읽어고정SHA와대조PASS.
+- e52cd06의필수CI Python/WEB4SUCCESS를조회했다. PMreview요청을남겼으며검토승인/병합은아니다.
+- [CORE/WEB 실제 수신증](recipient-receipts.json):CORE의d58c23b표sidecar수신/수동소비사전검토, WEB의e52cd06후기sidecar/source수신·무결성확인회신을인증된GH로읽었다. WEB로컬검수코드/receipt파일은공개미수신이므로새독립자동실행증거로세지않는다.
+- source/draft/artifact파일SHA는그대로이고, 이번후속은문서/수신기록만추가한다. 원summary의승인필드는생성시점snapshot이며현재실제읽기수신상태는별도수신증을따른다. 자동graph/승인adapter·운영화면/PM의미승인/부모Done은미완료다.
+
 ## 원 실패와 수정
 
 1. [build-1.log](build-1.log), exit1: 원v2에는 `original_text_sha256` 등이 없었다. 원 필드를 채우지 않고 record/bundle의 선언과 부재를 분리했다. source record의 후기ID/HTML SHA/문서버전 부재도 null로 보존했다.
