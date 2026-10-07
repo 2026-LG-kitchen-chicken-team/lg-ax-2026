@@ -31,7 +31,7 @@ class BoundedPrototypePlanner:
     def run(self, bundle, goal, constraints, previous=None):
         with StructuredModelClient.from_env() as client:
             return PublicPlanner.from_model_client(client, max_model_calls=4, max_problems=1,
-                max_prompt_characters=6500, max_source_characters=1000).run(bundle, goal, constraints, previous)
+                max_prompt_characters=9000, max_source_characters=1000).run(bundle, goal, constraints, previous)
 
     def repair(self, bundle, previous, feedback):
         with StructuredModelClient.from_env() as client:

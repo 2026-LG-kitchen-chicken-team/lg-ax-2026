@@ -7,6 +7,7 @@ import unittest
 from copy import deepcopy
 from hashlib import sha256
 from pathlib import Path
+from unittest.mock import MagicMock, patch, sentinel
 
 from lgax_contracts.research import validate_research_bundle
 
@@ -135,6 +136,61 @@ class ManualReferenceInputTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Frozen manual excerpt pack hash changed"):
             adapter.prepare_manual_reference_bundle(altered, self.output)
         self.assertFalse(self.output.exists())
+
+
+class BoundedPrototypeConfigurationTests(unittest.TestCase):
+    """CLI routing only: no model client, network, service or quality evaluation is run."""
+
+    def setUp(self):
+        cli_spec = importlib.util.spec_from_file_location(
+            "bounded_research_cli", ROOT / "scripts/serve_research_prototype.py"
+        )
+        self.cli = importlib.util.module_from_spec(cli_spec)
+        cli_spec.loader.exec_module(self.cli)
+        original = json.loads((ROOT / adapter.OUTPUT / "dishwasher.research-bundle.json").read_bytes())
+        # Keep six real sources, in frozen bundle order, including the longest original excerpts.
+        selected = {row["source_id"] for row in sorted(original["sources"], key=lambda row: len(row["text"]), reverse=True)[:6]}
+        self.bundle = deepcopy(original)
+        self.bundle["sources"] = [row for row in self.bundle["sources"] if row["source_id"] in selected]
+        self.assertEqual(len(self.bundle["sources"]), 6)
+        # Provenance/facts make the input object larger than the prompt cap. It must remain intact;
+        # the planner owns prompt construction, so serialized bundle length is not a prompt/token measurement.
+        self.assertGreater(len(json.dumps(self.bundle, ensure_ascii=False)), 9000)
+        self.goal = "공식 원문과 고객 자료의 남은 사용 부담을 검토하기"
+        self.constraints = ["기존 기능을 새로운 발명으로 제안하지 않기", "하드웨어 변경 없이 개선"]
+
+    def assert_bounded_forwarding(self, previous):
+        before = deepcopy((self.bundle, self.constraints, previous))
+        context = MagicMock()
+        context.__enter__.return_value = sentinel.model_client
+        planner = MagicMock()
+        planner.run.return_value = sentinel.planning_result
+        with (
+            patch.object(self.cli.StructuredModelClient, "from_env", return_value=context) as from_env,
+            patch.object(self.cli.PublicPlanner, "from_model_client", return_value=planner) as factory,
+        ):
+            result = self.cli.BoundedPrototypePlanner().run(self.bundle, self.goal, self.constraints, previous)
+        from_env.assert_called_once_with()
+        factory.assert_called_once_with(sentinel.model_client, max_model_calls=4, max_problems=1,
+                                       max_prompt_characters=9000, max_source_characters=1000)
+        planner.run.assert_called_once_with(self.bundle, self.goal, self.constraints, previous)
+        self.assertIs(planner.run.call_args.args[0], self.bundle)
+        self.assertIs(planner.run.call_args.args[2], self.constraints)
+        self.assertIs(planner.run.call_args.args[3], previous)
+        self.assertEqual((self.bundle, self.constraints, previous), before)
+        self.assertIs(result, sentinel.planning_result)
+        context.__enter__.assert_called_once_with()
+        context.__exit__.assert_called_once_with(None, None, None)
+
+    def test_cli_new_9000_budget_keeps_six_original_sources_without_pretruncating(self):
+        self.assert_bounded_forwarding(None)
+
+    def test_cli_new_9000_revision_keeps_previous_and_constraints_without_input_loss(self):
+        previous = {"run_id": "TEST-saved-run", "revision": 2,
+                    "source_facts": [{"source_id": row["source_id"], "facts": deepcopy(row["facts"])}
+                                     for row in self.bundle["sources"]],
+                    "constraints": ["기존 기능을 새로운 발명으로 제안하지 않기"]}
+        self.assert_bounded_forwarding(previous)
 
 
 if __name__ == "__main__":

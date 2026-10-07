@@ -56,6 +56,12 @@ export interface ResearchPlanningInput {
   bundle_id: string; goal: string; constraints: string[]; previous_run_id?: string | null;
   selected_source_ids?: string[]; bundle_sha256?: string;
 }
+export interface ResearchGuideInput { bundle_id: string; source_ids: string[]; bundle_sha256?: string }
+export interface ResearchGuideExport {
+  bundle_id: string; bundle_sha256: string; source_ids: string[]; markdown: string; html: string;
+  guide: { guide_version: '1.0'; guide_kind: 'official_reference'; bundle_id: string; title: string; notice: string;
+    sources: ResearchSource[]; proposal: null; exact_sku_applicability_confirmed: false };
+}
 
 const ajv = new Ajv2020({ allErrors: true, strict: false });
 ajv.addFormat('uri', { type: 'string', validate: value => {

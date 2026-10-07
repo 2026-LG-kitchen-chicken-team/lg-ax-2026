@@ -1,11 +1,12 @@
 # 정이량 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
-## 최신 근거 — 정이량-E055-OPERATING58
+## 최신 재개 요약 — 정이량-E056-FUNCTIONAL-PROTOTYPE
 
-- [E055](2026-10-07/정이량-E055-OPERATING58.md)는 main58fe/CI·5달러 예산 실제 읽기·ZIP6명령·운영8 보존·API88·화면/내보내기·MCP80·R7 구조199의 원 SHA와 미완료 gate를 연결한다. 준비-only·실제 실행·독립 읽기를 구분한다.
-- [008 상세](../../작업기록/정이량/2026-10-07/정이량-20261007-008-OPERATING58.md)을 먼저 읽는다. 원 의미 FAIL4/최종 run0·불명 비용·품질 보류는 [E054](2026-10-07/정이량-E054-R6-REVIEW-CLOSEOUT.md)에 보존돼 있다.
-- 이전 입구 본문은 [원바이트 snapshot](2026-10-07/008-prior-resume-58fe.txt)에 보존했다. 원 README 경로 기준 상대 링크·commit/SHA는 [manifest](2026-10-07/008-prior-resume-58fe.manifest.json)를 따른다.
+- 자동화 OFF·수동 R9. PR246~261 원 commit을 로컬 통합하고 선택 원문 API/MCP/WEB·native 항목 경계·관리14·추가15모델 설명서 수신을 연결했다. 실모델 정상·조건 수정은 저장됐고 API/MCP 동일 결과를 확인했다.
+- 실제 답변의 원문 없는 증상·시점·감성 확대를 보완 중이다. 새 통합 PR/CI·병합·사용자 검토·영상은 별도 확인하며 부모 전체 Done을 주장하지 않는다.
+- [E056 상세](2026-10-08/정이량-E056-FUNCTIONAL-PROTOTYPE.md) · [현재 수동 큐](../../pm/manual-queue-20261008.json).
+- 직전 입구 본문은 [원바이트 snapshot](2026-10-08/009-prior-resume.txt)에 보존했다. 아래 원문 분할 구간과 과거 고정 근거는 그대로 유지한다.
 
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.

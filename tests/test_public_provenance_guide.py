@@ -28,8 +28,13 @@ class PublicProvenanceGuideTests(unittest.TestCase):
             self.assertIn("별점이나 구매 동기·기대만으로", guide)
             self.assertIn("둘이 동시에 명시된 경험", guide)
             self.assertEqual(schema, before)
-        for fragment in ("총 사용 기간을 추가 사용 기간으로", "고객의 추측은 고객의 추측",
-                         "가상 before는 그 자리에서 가정", "발췌에 없는 실행 절차"):
+        for fragment in ("지침·예시는 고객 자료가 아니며 출력에 복사하지",
+                         "원문 주체·증상·신체 부위·행동·총 사용 기간·추측 범위를 보존",
+                         "추측을 확정하거나 기간을 합산하지",
+                         "가상 before는 해당 자리와 assumptions에 가정",
+                         "이번 문제 원문의 미확인 사항만 1~2문장",
+                         "공용 자료는 원인·해결 증거가 아니며",
+                         "적용 모델·조건 미확인을 표시", "발췌 밖 절차를 만들지"):
             self.assertIn(fragment, INSTRUCTIONS)
         self.assertNotIn("752651", INSTRUCTIONS)
         self.assertNotIn("853593", INSTRUCTIONS)
