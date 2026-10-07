@@ -27,7 +27,7 @@ function project(id: string, input: PlanningRequest): WorkspaceProject {
     owner_id: 'test-planner', document_versions: { [MODEL]: DOC }, dataset_sha256: 'a'.repeat(64), created_at: '2026-10-07T00:00:00Z' };
 }
 function snapshot(projectId: string, input: PlanningRequest, status: 'held' | 'failed', previous: string | null = null): RunSnapshot & WorkspaceRun {
-  return { ...FIXTURE_RUNS[0], request: input, run: { ...FIXTURE_RUNS[0].run, id: previous ? 'run-changed-test' : 'run-new-test', project_id: projectId,
+  return { ...FIXTURE_RUNS[0], request: { ...input }, run: { ...FIXTURE_RUNS[0].run, id: previous ? 'run-changed-test' : 'run-new-test', project_id: projectId,
     dataset_version: input.dataset_version, status, stage: 'finished', concepts: [], evidence_ids: [], unresolved: ['시험용 판단 확인 필요'], events: [] },
   previous_run_id: previous, request_revision: previous ? 1 : 0, actor_id: 'test-planner', client: 'web', document_versions: { [MODEL]: DOC }, output: null };
 }
