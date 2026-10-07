@@ -1,0 +1,32 @@
+{
+  "scope": "C4 PM-WEB handoff documents only",
+  "results": [
+    {
+      "name": "doc-navigation",
+      "command": [
+        "python",
+        "-B",
+        "scripts/check_document_navigation.py",
+        "--root",
+        "/tmp/work"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"source_commit\": \"0078975ef4579008eb7c5921541122a8f569ce3a\",\n  \"original_byte_archives\": 5,\n  \"original_bytes_preserved\": 161753,\n  \"original_headings_preserved\": 104,\n  \"source_relative_links_checked\": 169,\n  \"current_entries_checked\": 6,\n  \"protected_files_checked\": 0,\n  \"pinned_git_source_checked\": false,\n  \"previous_stage_proof_preserved\": true,\n  \"product_execution\": false,\n  \"network_calls\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "agent-rules",
+      "command": [
+        "python",
+        "-B",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "PASS: AGENTS.md and CLAUDE.md are byte-identical\n",
+      "stderr": ""
+    }
+  ],
+  "new_model_calls": 0,
+  "existing_unit_checks_reused": true
+}

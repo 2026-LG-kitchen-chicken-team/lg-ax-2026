@@ -1,6 +1,9 @@
 # 황대겸 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-08 CORE-C4-PUBLIC-HANDOFF-01a10729-01: WEB API 누락 수신과 성공 분모/인용/미처리·미제공 구분 인계; 제품·모델0, 실제 HTTP/MCP/PM 인수 미완료.
+- [상세](2026-10-08/CORE-C4-PUBLIC-HANDOFF-01a10729-01.md) · [전달 정의/수신](../../../evals/core-manual-quality/20261008/summary-public-handoff/README.md).
+
 - 2026-10-08 CORE-C2-TEMPORAL-CONTEXT-01a10729-01: 원문752651의 사용/발생/복귀 시점·행위자 지침 보완. 부분 snapshot 대조와 실제 원raw/효과 검증을 구분; 모델0·PM 인수 미완료. 36검사/Ruff/규칙/문서 PASS.
 - [상세](2026-10-08/CORE-C2-TEMPORAL-CONTEXT-01a10729-01.md) · [고정 원문 대조](../../../evals/core-manual-quality/20261008/temporal-source-context/README.md).
 
