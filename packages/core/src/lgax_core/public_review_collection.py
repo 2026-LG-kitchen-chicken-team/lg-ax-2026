@@ -168,7 +168,9 @@ def parse_public_review_html(raw: bytes, *, product: dict, source: dict,
             "document_version": product["document_version"],
             "manual_time_alignment": "current_reference_only_not_purchase_time_verified",
             "quality_flags": flags,
-            "eligible_for_model_input": not flags and not redactions,
+            "eligible_for_model_input": False,
+            "input_hold_reasons": ["purchased_sku_not_independently_verified"],
+            "quarantined": bool(flags or redactions),
         })
         if len(rows) >= limit:
             break
@@ -220,7 +222,7 @@ def group_and_split(records: list[dict]) -> tuple[list[dict], dict]:
         group = "LGE-R5-GROUP-" + group_of[record["original_review_id"]]
         slot = int(sha256((SPLIT_VERSION + "\n" + group).encode()), 16) % 100
         split = "development" if slot < 60 else "independent_evaluation" if slot < 80 else "demonstration"
-        if not record["eligible_for_model_input"]:
+        if record["quarantined"]:
             split = "quarantine"
         record.update(dedup_group_id=group, split=split, split_version=SPLIT_VERSION)
         counts[split] += 1

@@ -45,6 +45,8 @@ def main():
                 'selection': 'First 10 normal public recommendation-order review rows per pilot model',
                 'collection_time': receipt['requests'][0]['captured_at'], 'sources': receipt['requests'],
                 'actual_purchased_model_verified_count': 0, 'publication_date_known_count': 0,
+                'exact_sku_execution_status': 'held',
+                'exact_sku_execution_hold_reason': 'Purchased SKU is not independently verified by page association.',
                 'model_calls': 0, 'synthetic_reviews': 0,
                 'limitations': ['Official page association is not independently verified purchased SKU.',
                                 'Visible purchase date is not posting date; published_at remains null.',
@@ -61,7 +63,8 @@ def main():
     origins = []
     csv_sources = []
     for product in original['products']:
-        rows = [r for r in records if r['displayed_model_id'] == product['model_id'] and r['split'] == 'development']
+        rows = [r for r in records if r['displayed_model_id'] == product['model_id']
+                and r['split'] == 'development' and r['eligible_for_model_input']]
         if not rows:
             continue
         source_id = 'LGE-R5-' + product['model_id'] + '-pilot1'
