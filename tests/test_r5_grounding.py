@@ -108,6 +108,14 @@ class RecordedR5GroundingTests(unittest.TestCase):
         value = deepcopy(next(c for c in self.cases['normal']['calls'] if c['skill_id'] == 'review_revision')['data'])
         value['questions'] = ['Authored fixture question; actual semantic necessity is not verified']
         value['hold_reasons'] = ['Authored fixture missing source; actual semantic necessity is not verified']
+        # The preserved held revision still proposed three candidates. Questions
+        # alone cannot bypass that existing canonical held invariant.
+        self.assertTrue(value['result']['concepts'])
+        self.assertTrue(list(Draft202012Validator(revision_schema(2)).iter_errors(value)))
+        # Explicit authored fixture for a correctly shaped empty hold, not a
+        # rewritten real output or a production auto-clear operation.
+        value['result']['concepts'] = []
+        value['concept_assessments'] = []
         self.assertFalse(list(Draft202012Validator(revision_schema(2)).iter_errors(value)))
         self.assertEqual(value['status'], 'held')
         self.assertEqual(value['result']['concepts'], [])

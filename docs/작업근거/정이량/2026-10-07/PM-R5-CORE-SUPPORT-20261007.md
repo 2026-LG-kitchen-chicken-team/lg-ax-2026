@@ -9,3 +9,5 @@
 155검사 중 153통과, 새 fixture setup2개 실패를 보존한다. semantic fixture의 `output_sha256` 누락과 질문 있는 hold shape fixture의 `hold_reasons` 누락이었다. 원3 실제 반례 거절·원 입력/출력 digest·기존 회귀는 통과했다. 제품 판단 코드를 느슨하게 바꾸지 않고 두 fixture의 의도한 입력을 명시해 고쳤다. 검사 재실행은 이 수정에만 따른 것이며 결과는 후속으로 기록한다. 첫 shell 인자에서 잘못 복사한 SHA는 wrapper의 인자 검증에서 거절되었고 archive/제품 실행 전에 종료했다.
 
 이 검사는 원 모델 응답 재현과 MockTransport 회귀이며 실모델 의미 품질 PASS가 아니다. 조건 JSONSchema의 Python 검사와 Ollama native 지원은 다르다. 새 no-candidate 선언의 구조화된 누락 주장은 코드가 대조하지만, 자유문장의 주장이나 잘못 분류한 질문 의미까지 자동 증명하지 않는다. 기존 shared2수정·raw response/trace·failed/held·독립 의미 검수를 유지한다. 원 15generations/91587tokens와 이전53/193708 및 unknown 이력은 수정하지 않는다.
+
+두 번째 검사 source `8be443c4c89bee31d94122040fe62225d9609015`, 실행 ID `pm-r5-core-e4dffa5a8f3241c394ee473edc0aad42`, 155건 중154통과·1실패였다. 남은 새 fixture가 원 held revision의 후보가 비었다고 잘못 가정했다. 원 응답은 held 상태에 후보3개·질문0·hold_reasons0을 함께 제시했으므로 기존 `HOLD_WITHOUT_QUESTIONS`는 이 보류 일관성 문제를 거절한다. 생성 shape도 기존 canonical의 held→빈 후보 규칙을 반영하고, 질문·사유만 추가해도 원 후보3개 보류는 여전히 거절되는 회귀로 수정했다. 빈 보류의 성공 shape는 명시적으로 작성한 fixture이며 실제 원 응답을 고친 결과가 아니다. 두 번째 검사도 network none·credentials/profile 없음·source_changed[]·model0으로 수행되었고 실패 receipt를 보존한다.
