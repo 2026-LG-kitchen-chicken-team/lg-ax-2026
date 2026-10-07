@@ -93,7 +93,11 @@ class RecordedSemanticPromptTests(unittest.TestCase):
         self.assertIn('zip(columns, values_row)', projected['quality_context']['reference'])
         for key in context:
             if key != 'quality_context':
-                self.assertEqual(projected[key], expected[key])
+                value = projected[key]
+                restored = ([dict(zip(value['columns'], row, strict=True)) for row in value['values']]
+                            if key in ('needs', 'desired_outcomes', 'gaps', 'review_assessments', 'gap_assessments')
+                            and isinstance(value, dict) else value)
+                self.assertEqual(restored, expected[key])
         self.assertEqual(projected['sources'], self.case['payload']['sources'])
         self.assertEqual(projected['semantic_grounding_requirements'], semantic_grounding_requirements(
             self.case['payload'], self.case['current_output']))

@@ -666,13 +666,14 @@ class PlanningAgent:
                                "skill_input": {"constraints": payload["request"]["exclusions"]}, "feedback": feedback}
                     context["quality_context"] = quality_context
                     context["semantic_grounding_requirements"] = semantic_grounding_requirements(payload, current)
+                    context["upstream_review_required"] = True
                     projected = semantic_model_context(context)
                     try:
                         report = model_call("review", "semantic_review", context,
                                             INSTRUCTIONS + json.dumps(projected, ensure_ascii=False, separators=(",", ":")),
-                                            schema_for_review(payload, current, literal_choices=True),
+                                            schema_for_review(payload, current, literal_choices=True, include_upstream=True),
                                             prompt_projection=projected).data
-                        decision = review_semantics(payload, current, report)
+                        decision = review_semantics(payload, current, report, require_upstream=True)
                         reviewed_questions = deepcopy(report["questions"])
                         retry_feedback = semantic_feedback(report)
                         result["semantic_reviews"].append({"report": deepcopy(report), "decision": deepcopy(decision),
@@ -687,7 +688,7 @@ class PlanningAgent:
                             if raw.startswith("```"):
                                 raw = "\n".join(raw.splitlines()[1:-1])
                             try:
-                                review_semantics(payload, current, json.loads(raw))
+                                review_semantics(payload, current, json.loads(raw), require_upstream=True)
                             except DomainError as canonical_error:
                                 # Keep the original schema rejection in model_calls,
                                 # but preserve the same per-Gap correction details.
