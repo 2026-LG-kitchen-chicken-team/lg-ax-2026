@@ -1,6 +1,11 @@
 # 정이량 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
+## 최신 근거 — 정이량-E053-UPSTREAM-WEB
+
+- [E053](2026-10-07/정이량-E053-UPSTREAM-WEB.md)은 CORE 전18행 지원검수181/Ruff7·Python1597/launcher6·WEB47/빌드와 실제217/219병합·220/222승인·221수정요청을 연결한다. 새 실모델 의미 효과·최종운영/공식ACK는 후속이다.
+- [006](../../작업기록/정이량/2026-10-07/정이량-20261007-006-UPSTREAM-WEB.md)을 먼저 읽고 원 raw·실패/비용·역사 checkpoint는 아래E052/E049로 대조한다. Figma 제외·전원OFF 유지.
+
 ## 최신 근거 — 정이량-E052-R5-NATIVE-QUALITY
 
 - [E052](2026-10-07/정이량-E052-R5-NATIVE-QUALITY.md) · [원문 대조 품질](../../../evals/pm-prototype/20261007/r5-live-quality/normal-8ec-independent-quality.json)는 source8ec의 실제5회/33237·native 기록 PASS와 독립 의미 FAIL3개를 구분한다. 원 raw/자체 completed·기존 비용·Done5/21/요구0/31을 보존한다.
