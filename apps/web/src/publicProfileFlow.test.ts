@@ -20,7 +20,8 @@ const review = { id: 'REVIEW-TEST-001', model_id: MODEL, text: 'UI 계약 시험
   document_version: DOC, source_kind: 'public', source_id: 'SOURCE-TEST-001', locator: { row: 1 }, evidence_id: 'EVIDENCE-TEST-001' };
 const BOOTSTRAP: BootstrapData = {
   contract_version: '0.1.0', manifest: { dataset_id: 'public-profile-test', version: VERSION, source_kind: 'public',
-    description: '공개자료 형태의 합성 계약 시험. 실제 수집·기획 효과 근거가 아님.', model_count: 18, review_count: 1, analysis_implemented: false },
+    description: '공개자료 형태의 합성 계약 시험. 실제 수집·기획 효과 근거가 아님.', model_count: 18, review_count: 1, analysis_implemented: false,
+    dataset_sha256: 'a'.repeat(64), warnings: [] },
   evidence: [{ id: review.evidence_id, model_id: MODEL, document_version: DOC, source_kind: 'public', source_type: 'review',
     source_id: review.source_id, locator: review.locator, text: review.text, feature_ids: [] }], features: [], reviews: [review],
   products: Array.from({ length: 18 }, (_, index) => ({ model_id: index === 0 ? MODEL : `SKU-TEST-${index}`, name: '계약 시험 모델',
