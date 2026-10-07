@@ -22,3 +22,9 @@
 - 기존 upstream 실제 formatted prompt/모든 선언의 손실 없는 복원·공유 수정2회·원3 replay·semantic/recorded 회귀를 같은 고정 zero-auth/networknone/readonly source Docker에서 검사할 예정이다. 부모의 소스/validator 검토 전 제품 검사 실행0이며 검사를 통과했다고 미리 기록하지 않는다.
 
 독립 메타데이터 진단은 별도 private scratch `r6-normal-1f25-canonical-routing-review-v2.json`, SHA256 `26b9891a0e61d250fa58cc3fa72372c4997da697f05366dd9b11d3b219a076d3`로 고정했다. 본인의 메타데이터 대조43항목 PASS는 제품 코드 테스트나 새 의미 품질 인수가 아니다. 자기 수정의 독립 소스 검수와 실제 격리 회귀 인수는 부모 PM/별도 AI가 맡는다.
+
+## 첫 격리 검사와 wire 압축 보완
+
+원 draft `80cf8b259db034e97fe5a0273335794eae43a67b`의 고정 Docker186검사 중 기존 실제 formatted prompt 준비1개가 `schema_too_large`로 실패했다. Ruff7은 PASS, source_changed[]/networknone/authnone/모델0이었다. 원 영수증 `private/runtime/pm-r6-upstream-core-a6ca3ae7305542ccadba743b13174be5/receipt.json`과 실패 로그는 보존한다. 기존 schema UTF8바이트 한도16384를 변경하지 않는다.
+
+세 평가 배열에 반복한 evidence_id/원문 전체의 동일 schema를 한 local `$defs/literal_source_quote`와 세 `$ref`로 묶는 후속 수정만 준비했다. entity별 판단 원문 enum·18coverage·실제 source ID/text·모든 verdict/reason·canonical guard는 유지한다. 기존 native 단계의 계약에도 local `$defs/$ref`가 사용되며 원 모델 응답은 완전 수신됐지만, 이 새 schema의 실모델 효과를 검증했다고 표시하지 않는다. 실제1f25 정상9Need·9Gap·3후보에서 직렬화 schema≤16384와 native preparation guard, 한 source definition의 모든 원문 쌍·세 reference를 검증하는6번째 회귀를 추가했다. 부모가 후속 정확 source를 읽기 전 새 검사 실행0이며 의미 FAIL 세 건은 미해결이다.

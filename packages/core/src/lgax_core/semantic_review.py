@@ -149,6 +149,12 @@ def schema_for_review(payload: dict, output: dict, *, literal_choices: bool = Fa
                 "evidence_id": {"const": source["id"]}, "quote": {"const": source["text"]}},
              "required": ["evidence_id", "quote"], "additionalProperties": False}
             for source in payload["sources"]]}
+    definitions = {}
+    if literal_choices and include_upstream:
+        # The same ID/text pairs are used by three assessment arrays. Keep one
+        # local definition so native wire size remains within the existing cap.
+        definitions["literal_source_quote"] = source_quote
+        source_quote = {"$ref": "#/$defs/literal_source_quote"}
     shared = {"concept_id": {"type": "string", "enum": ids or ["_no_candidate"]},
               "verdict": {"enum": ["satisfied", "violation", "uncertain"],
                           "description": "satisfied=아래 criterion 충족, violation=설명 누락/기준 위반, uncertain=원 자료가 없어 판단 불가"}, "reason": text,
@@ -197,8 +203,11 @@ def schema_for_review(payload: dict, output: dict, *, literal_choices: bool = Fa
                     "then": {"properties": {"source_quotes": {"allOf": groups}}}})
         if clauses:
             properties["quality_assessments"]["items"]["allOf"] = clauses
-    return {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
-            "properties": properties, "required": list(properties), "additionalProperties": False}
+    result = {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
+              "properties": properties, "required": list(properties), "additionalProperties": False}
+    if definitions:
+        result["$defs"] = definitions
+    return result
 
 
 def _strings(value: Any):

@@ -270,6 +270,28 @@ class UpstreamLiteralSchemaTests(unittest.TestCase):
             review_semantics(self.payload, self.output, self.report, require_upstream=True)
         self.assertEqual(caught.exception.details["reason"], "upstream_requires_linked_review")
 
+    def test_actual_normal9_need9_gap_native_wire_schema_fits_existing_byte_cap(self):
+        self.assertEqual([len(self.output[field]) for field in ("needs", "gaps", "concepts")], [9, 9, 3])
+        encoded = json.dumps(self.schema, ensure_ascii=False, allow_nan=False, sort_keys=True,
+                             separators=(",", ":")).encode("utf-8")
+        self.assertLessEqual(len(encoded), 16384)
+        quote_definition = self.schema["$defs"]["literal_source_quote"]
+        self.assertEqual([(choice["properties"]["evidence_id"]["const"],
+                           choice["properties"]["quote"]["const"]) for choice in quote_definition["oneOf"]],
+                         [(source["id"], source["text"]) for source in self.payload["sources"]])
+        for field in ("exclusion_assessments", "quality_assessments", "upstream_assessments"):
+            citation = self.schema["properties"][field]["items"]["properties"]["source_quotes"]["items"]
+            self.assertEqual(citation, {"$ref": "#/$defs/literal_source_quote"})
+        adapter = PreparationCapture(ModelConfig("http://127.0.0.1:11434", MODEL, DIGEST,
+                                                 max_output_tokens=8192, context_tokens=16384))
+        self.addCleanup(adapter.close)
+        with self.assertRaises(PreparedWithoutGeneration):
+            StructuredModelClient(adapter).generate("Pinned normal schema preparation; no generation.", self.schema, MODEL)
+        self.assertEqual(adapter.prepared[1], self.schema)
+        print(json.dumps({"normal1f25_upstream_native_schema_bytes": len(encoded),
+                          "unchanged_schema_byte_limit": 16384, "needs_gaps_concepts": [9, 9, 3],
+                          "local_source_quote_definitions": 1, "model_calls": 0}))
+
 
 if __name__ == "__main__":
     unittest.main()
