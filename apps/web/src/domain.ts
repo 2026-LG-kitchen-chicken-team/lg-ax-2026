@@ -1,5 +1,5 @@
 export type ProductGroup = 'fridge' | 'dishwasher' | 'microwave';
-export type View = 'request' | 'evidence' | 'concepts' | 'history' | 'trends';
+export type View = 'research' | 'request' | 'evidence' | 'concepts' | 'history' | 'trends';
 
 export interface Product {
   id?: string;
