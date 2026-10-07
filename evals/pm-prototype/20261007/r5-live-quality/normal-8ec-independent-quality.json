@@ -1,0 +1,401 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_read_only_semantic_quality",
+  "reviewer_role": "PM 정이량 보조 AI; CORE author 기록/공식 상태 갱신 없음",
+  "source_commit": "8ec1e8a51faabd6db032e52245680bef4229f93f",
+  "scope": "one original synthetic development fridge-normal case; full 10 reviews",
+  "runtime_status_preserved": "completed",
+  "transport_and_record_integrity": "PASS",
+  "independent_semantic_quality": "FAIL",
+  "quality_acceptance_blocked": true,
+  "findings": [
+    {
+      "id": "R5-NORMAL-8EC-Q01",
+      "priority": "P1",
+      "category": "unsupported_gap_resolution",
+      "stage_first_observed": "product_compare",
+      "generation_sequence": 8,
+      "affected_ids": [
+        "NEED-004",
+        "GAP-004",
+        "REVIEW-EVIDENCE-004",
+        "MANUAL-001"
+      ],
+      "pointers": [
+        "/output/gap_assessments/3/resolution",
+        "/output/gaps/3/remaining_pain"
+      ],
+      "actual": {
+        "gap_id": "GAP-004",
+        "reason": "현재 기능은 선반 분리 방법 안내에 대한 언급이 있어, 희망 결과인 '분리 방법 쉽게 찾기'를 충족함.",
+        "resolution": "resolved",
+        "support_basis": "explicit_supported"
+      },
+      "source_quotes": [
+        {
+          "evidence_id": "REVIEW-EVIDENCE-004",
+          "quote": "선반 분리 방법이 설명서 어디 있는지 모르겠어요."
+        },
+        {
+          "evidence_id": "MANUAL-001",
+          "quote": "선반은 분리하여 세척할 수 있습니다. 선반을 분리하기 전에 위의 식품을 모두 옮겨 주세요."
+        }
+      ],
+      "reason_ko": "방법 설명문의 존재는 사용자가 설명서에서 해당 방법을 쉽게 발견한다는 근거가 아니다. 발견성 불편을 resolved로 지우고 질문도 남기지 않았으므로 전체 기획 품질 승인에 필요한 불편 보존 조건을 충족하지 않는다.",
+      "semantic_review_coverage": "12 candidate-only criteria all satisfied; no direct Need/Gap resolution criterion"
+    },
+    {
+      "id": "R5-NORMAL-8EC-Q02",
+      "priority": "P1",
+      "category": "manual_object_and_provenance_scope_mismatch",
+      "stage_first_observed": "product_compare",
+      "generation_sequence": 8,
+      "affected_ids": [
+        "GAP-005",
+        "CONCEPT-003",
+        "FEATURE-001",
+        "MANUAL-001",
+        "REVIEW-EVIDENCE-005"
+      ],
+      "pointers": [
+        "/output/gap_assessments/4/support_basis",
+        "/output/concept_assessments/2/compared_feature_ids",
+        "/semantic_reviews/0/report/quality_assessments/11"
+      ],
+      "actual_gap_assessment": {
+        "gap_id": "GAP-005",
+        "reason": "현재 기능은 바구니 세척 시 내용물 모두 꺼내야 한다고 명시되어 있어, 희망 결과인 '내용물 모두 꺼내지 않고 세척'을 충족하지 못함.",
+        "resolution": "remaining",
+        "support_basis": "explicit_supported"
+      },
+      "actual_semantic_assessment": {
+        "candidate_quote": "바구니 내용물 이동 없이 세척 가능한 분리형 트레이",
+        "concept_id": "CONCEPT-003",
+        "criterion": "unsupported_factual_claims",
+        "reason": "새 가설(분리형 트레이 도입) 과 기존 제품 사실(내용물 모두 꺼내야 함) 을 구분하여, 현재 제품의 기능 부재를 확정 사실로 단정하지 않고 개선 제안으로 제시함.",
+        "source_quotes": [
+          {
+            "evidence_id": "MANUAL-001",
+            "quote": "선반은 분리하여 세척할 수 있습니다. 선반을 분리하기 전에 위의 식품을 모두 옮겨 주세요."
+          }
+        ],
+        "verdict": "satisfied"
+      },
+      "source_quotes": [
+        {
+          "evidence_id": "REVIEW-EVIDENCE-005",
+          "quote": "바구니가 있어서 정리는 편하지만 세척할 때 내용물을 모두 꺼내야 해요."
+        },
+        {
+          "evidence_id": "MANUAL-001",
+          "quote": "선반은 분리하여 세척할 수 있습니다. 선반을 분리하기 전에 위의 식품을 모두 옮겨 주세요."
+        }
+      ],
+      "reason_ko": "바구니 비움은 RE005 사용자 경험으로는 지지되지만, FEATURE001/MANUAL001은 선반 분리만 설명한다. 이를 바구니의 명시된 현 기능 및 매뉴얼 지원으로 바꾸고 unsupported_factual_claims=satisfied로 승인한 근거 유형/대상 대조는 부정확하다. 바구니 개선 가설 자체의 가능성을 부정하는 판단은 아니다."
+    },
+    {
+      "id": "R5-NORMAL-8EC-Q03",
+      "priority": "P2",
+      "category": "desire_to_experienced_constraint_invention",
+      "stage_first_observed": "need_extract_retry",
+      "generation_sequence": 5,
+      "affected_ids": [
+        "NEED-007",
+        "GAP-007",
+        "REVIEW-EVIDENCE-008"
+      ],
+      "pointers": [
+        "/output/needs/6/pain",
+        "/output/review_assessments/7/reason"
+      ],
+      "actual_need": {
+        "evidence_ids": [
+          "REVIEW-EVIDENCE-008"
+        ],
+        "id": "NEED-007",
+        "model_id": "FRIDGE-A",
+        "pain": "우유를 흘린 구역만 빠르게 청소하고 싶으나 전체를 옮겨야 함",
+        "situation": "국소 오염 청소 시",
+        "uncertainties": []
+      },
+      "actual_review_assessment": {
+        "evidence_id": "REVIEW-EVIDENCE-008",
+        "polarity": "complaint",
+        "reason": "우유 흘린 구역만 빠르게 청소하고 싶으나 전체를 옮겨야 함 명시"
+      },
+      "source_quotes": [
+        {
+          "evidence_id": "REVIEW-EVIDENCE-008",
+          "quote": "우유를 흘린 구역만 빠르게 청소하고 싶어요."
+        }
+      ],
+      "reason_ko": "RE008은 국소 청소를 원한다는 욕구만 말한다. 전체 식품을 옮겨야 한다는 실제 제약을 명시했다는 설명은 원문에 없다. MANUAL001의 식품 이동 조건도 선반을 분리할 때이므로 모든 국소 청소에 확대할 수 없다. 욕구를 Need로 보존하는 것은 가능하지만 경험된 제약을 발명하면 안 된다."
+    }
+  ],
+  "observations": {
+    "need_count": 9,
+    "gap_count": 9,
+    "concept_count": 3,
+    "first_need_attempt_missing_four_complaints_then_retry_restored": [
+      "REVIEW-EVIDENCE-003",
+      "REVIEW-EVIDENCE-004",
+      "REVIEW-EVIDENCE-007",
+      "REVIEW-EVIDENCE-009"
+    ],
+    "revision_count": 1,
+    "max_revisions": 2,
+    "all_semantic_verdicts_satisfied_count": 12,
+    "questions_count": 0,
+    "hold_reasons_count": 0,
+    "no_candidate_reviews_count": 0,
+    "existing_NEED006_is_present": true,
+    "original_RE008_missing_difference_quote_not_reproduced": true,
+    "concept_required_grounding_ids_and_exact_source_quotes_checked": [
+      {
+        "concept_id": "CONCEPT-001",
+        "required_evidence_ids": [
+          "MANUAL-001",
+          "REVIEW-EVIDENCE-001",
+          "REVIEW-EVIDENCE-008"
+        ],
+        "actual_source_quote_ids": {
+          "mechanism": [
+            "MANUAL-001",
+            "REVIEW-EVIDENCE-001",
+            "REVIEW-EVIDENCE-008"
+          ],
+          "difference_from_current_features": [
+            "MANUAL-001",
+            "REVIEW-EVIDENCE-001",
+            "REVIEW-EVIDENCE-008"
+          ]
+        }
+      },
+      {
+        "concept_id": "CONCEPT-002",
+        "required_evidence_ids": [
+          "MANUAL-001",
+          "REVIEW-EVIDENCE-002",
+          "REVIEW-EVIDENCE-010"
+        ],
+        "actual_source_quote_ids": {
+          "mechanism": [
+            "MANUAL-001",
+            "REVIEW-EVIDENCE-002",
+            "REVIEW-EVIDENCE-010"
+          ],
+          "difference_from_current_features": [
+            "MANUAL-001",
+            "REVIEW-EVIDENCE-002",
+            "REVIEW-EVIDENCE-010"
+          ]
+        }
+      },
+      {
+        "concept_id": "CONCEPT-003",
+        "required_evidence_ids": [
+          "MANUAL-001",
+          "REVIEW-EVIDENCE-005"
+        ],
+        "actual_source_quote_ids": {
+          "mechanism": [
+            "MANUAL-001",
+            "REVIEW-EVIDENCE-005"
+          ],
+          "difference_from_current_features": [
+            "MANUAL-001",
+            "REVIEW-EVIDENCE-005"
+          ]
+        }
+      }
+    ],
+    "exact_quote_substring_checks_count": 19,
+    "new_mechanisms_proposed_not_measured_performance": true,
+    "source_unchanged": {
+      "value": true,
+      "basis": "frozen executor summary; audit did not rerun product or independently monitor live source filesystem"
+    },
+    "native_POST_GET_equal": {
+      "value": true,
+      "basis": "hash-pinned native runner asserts POST==GET; only one response file retained, no independent second API read"
+    },
+    "public_history_snapshot_equal_directly_checked": true,
+    "raw_execution_equals_stored_and_SQLite_row_directly_checked": true,
+    "public_projection_is_distinct_from_private_raw": true,
+    "public_projection_preserves_canonical_planning_output_directly_checked": true,
+    "SQLite_counts": {
+      "workspace_projects": 1,
+      "workspace_runs": 1,
+      "workspace_review_trends": 0
+    },
+    "project_id": "project-572a15dd9f084e61bfc17c4dc3cb5888",
+    "run_id": "run-fda0210b175a4affa294cb59d027f2e4",
+    "model_id": "qwen3.5:122b-a10b-q4_K_M",
+    "model_digest": "8b9d11d807c57feb1e2ecb0d6cbf40334c37dcc3523bed5540af4f927f112a37",
+    "actual_calls": 5,
+    "new_actual_tokens": 33237,
+    "new_usage_unknown": false,
+    "previous_conservative_tokens": 226603,
+    "previous_ambiguous_generations_preserved": 2,
+    "cumulative_conservative_or_actual_tokens": 259840,
+    "cumulative_ceiling": 326603,
+    "old_53_193708_and_15_91587_ledgers_remain_separate": true,
+    "automatic_repeat": false,
+    "IncompleteRead_replay": false,
+    "raw_complete_generation_response_proofs": [
+      {
+        "sequence": 2,
+        "stage": "needs",
+        "skill_id": "need_extract",
+        "response_body_sha256": "a430189236a49cc3cabddba556d8e379967c1da88c42ea423e38d4c63a829a9d",
+        "raw_model_json_sha256": "abab6e37b354d5386b901f52d0400d73bae4f12aaff27c60e2064e8d332035e2",
+        "actual_tokens": 3594,
+        "prompt_eval_count": 2283,
+        "eval_count": 1311,
+        "formatted_prompt_chars": 6393,
+        "formatted_prompt_utf8_bytes": 9322,
+        "formatted_prompt_sha256": "9084059edc3dcf33ebfaa33007835367d0a28b9954d953836020496099ba4b6f"
+      },
+      {
+        "sequence": 5,
+        "stage": "needs",
+        "skill_id": "need_extract",
+        "response_body_sha256": "ef178c851ce30aac2093d8b4b4378851a845a37049ff2e51c729e1c907b80555",
+        "raw_model_json_sha256": "2b3233bcf758c0d640c389910e6a28826fe1c4b3441994fa2b875fafdfbe5592",
+        "actual_tokens": 5138,
+        "prompt_eval_count": 2700,
+        "eval_count": 2438,
+        "formatted_prompt_chars": 7496,
+        "formatted_prompt_utf8_bytes": 10678,
+        "formatted_prompt_sha256": "2c299558d759b0ccf249c461deb6dc93f3edc16c78b2225c353539fd40223a93"
+      },
+      {
+        "sequence": 8,
+        "stage": "compare",
+        "skill_id": "product_compare",
+        "response_body_sha256": "425ab9f02798f603a471245aa9f5358670aa5c15cae69bad7b14a17c81e96cc0",
+        "raw_model_json_sha256": "1b59a6a2c976682a6b43a3a9069cbf1258ae6049ff8f098eb2b323b49b6d6c13",
+        "actual_tokens": 6163,
+        "prompt_eval_count": 4194,
+        "eval_count": 1969,
+        "formatted_prompt_chars": 11777,
+        "formatted_prompt_utf8_bytes": 16792,
+        "formatted_prompt_sha256": "27dab1b8f14f7861708f32185aa748745e42bf2b2e772590f4ff698359151b1e"
+      },
+      {
+        "sequence": 11,
+        "stage": "concepts",
+        "skill_id": "concept_draft",
+        "response_body_sha256": "425dddff343ae079e0d0fbf7229150265d1b286b043bedc23ed424337edb3237",
+        "raw_model_json_sha256": "eebeb75ae169fd3720c813a2891ae200ec9faac15665db66a1d593b0afd01696",
+        "actual_tokens": 7294,
+        "prompt_eval_count": 6080,
+        "eval_count": 1214,
+        "formatted_prompt_chars": 17693,
+        "formatted_prompt_utf8_bytes": 22944,
+        "formatted_prompt_sha256": "0fa62541800ac46141a15fb8289868bd8661a706c97b304be8b86fcf26eaf380"
+      },
+      {
+        "sequence": 14,
+        "stage": "review",
+        "skill_id": "semantic_review",
+        "response_body_sha256": "275be199652bab831aa712e9fd8b7ab306879c293782389990402e8e18d81e76",
+        "raw_model_json_sha256": "78b7489ed96ae25110945503068184fa6fc854efa42322009ef5f9458d012c35",
+        "actual_tokens": 11048,
+        "prompt_eval_count": 8408,
+        "eval_count": 2640,
+        "formatted_prompt_chars": 23793,
+        "formatted_prompt_utf8_bytes": 33142,
+        "formatted_prompt_sha256": "ed5f9dc866b84d8ba31d85da5e952e75dfdc833a05afddf636303a6e7559db20"
+      }
+    ]
+  },
+  "limitations": [
+    "현재 정상 1개만 직접 의미 검토했다. changed/missing-manual 재평가나 원 3개 전체 품질 통과를 주장하지 않는다.",
+    "같은 개발 표본을 사용했으므로 독립 평가 표본 성능이나 실제 사용자 수요/특정 공개 구매 SKU 근거가 아니다.",
+    "이번 전달 완주는 관찰 사실이며 개별 코드 수정의 인과 효과/모델 단독 역량 원인으로 단정하지 않는다.",
+    "runtime completed/semantic self-report satisfied와 독립 품질 FAIL은 별개다. 원 파일·공식 Done·기존 비용·31요구 상태는 변경하지 않았다.",
+    "실제 운영 배포/브라우저 클릭 증명이 아니다. 원 native TestClient HTTP 경로와 보존 파일/SQLite만 대조했다."
+  ],
+  "actions_performed": {
+    "stdlib_metadata_reads": true,
+    "SQLite_mode_ro": true,
+    "project_imports": 0,
+    "model_calls": 0,
+    "network_calls": 0,
+    "product_API_calls": 0,
+    "project_mutations": 0,
+    "raw_artifact_mutations": 0,
+    "external_publications": 0
+  },
+  "source_artifacts": [
+    {
+      "bytes": 2260,
+      "sha256": "98710517d5a98425bc90acca25644e9dd6ab9b121f5342349ac2e4fc1aae0637",
+      "artifact_name": "summary.json"
+    },
+    {
+      "bytes": 4325,
+      "sha256": "c0ef91013cf120e27e4bc79202467bba6f40d294ea24ae0d83ba6b59919cb534",
+      "artifact_name": "study-budget.json"
+    },
+    {
+      "bytes": 406756,
+      "sha256": "bc46ef0df47cd8a9581d51ebe939b1baa049c957d2f28c43d43663f049a748af",
+      "artifact_name": "study-budget-events.jsonl"
+    },
+    {
+      "bytes": 983819,
+      "sha256": "276e774a69eeae1fb24c414a003335b837be2d7fde64b16bd60168a3f0af418a",
+      "artifact_name": "output.json"
+    },
+    {
+      "bytes": 439270,
+      "sha256": "b224c339f60dcc685c3d41e0fd374a698a86c7ad280ca039fd033974c411ef1e",
+      "artifact_name": "relay.json"
+    },
+    {
+      "bytes": 1038,
+      "sha256": "5dc57847ba0ed24a9e23b6126cddde47ba165488a0bc55a0c4a050490dfe6ada",
+      "artifact_name": "native-http-proof.json"
+    },
+    {
+      "bytes": 679380,
+      "sha256": "bad74461f5bb77e7e6be10adea0549280345ae2c170b3ad09ce944f2dd457c09",
+      "artifact_name": "native-http-response.json"
+    },
+    {
+      "bytes": 679421,
+      "sha256": "86eaa6dcf7abca11c78ab6841defedeebf61cf632984b1a301812131a7e7407e",
+      "artifact_name": "native-http-history.json"
+    },
+    {
+      "bytes": 693611,
+      "sha256": "f6ee5e4a9ae0c41bbbda63395c43f40ae5167e8d6cefbadfda1321a948c79e66",
+      "artifact_name": "native-stored-snapshot.json"
+    },
+    {
+      "bytes": 704512,
+      "sha256": "8778af4d822de66affe63c2c16b2b06f15c74042a7114f130a56da7c303171db",
+      "artifact_name": "native-workspace.sqlite"
+    },
+    {
+      "bytes": 681905,
+      "sha256": "b75797e72837f20186f6b5f95ac66a15d67bc1da41197076528332abbf75c6b9",
+      "artifact_name": "result.json"
+    },
+    {
+      "bytes": 5439,
+      "sha256": "d07e0e18ccf9b12bbed92fc71205bec7e38fb5094a91b902ef3d22b56dc11f91",
+      "artifact_name": "fridge-normal.input.json"
+    },
+    {
+      "bytes": 33297,
+      "sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+      "artifact_name": "synthetic.dataset.json"
+    }
+  ],
+  "review_script_sha256": "0587f65bd3cfb7529dd8fe795f79a08f469aabc399326fa50d5cd6cf3ecd5e77",
+  "full_independent_metadata_review_sha256": "7a88f5055ddf7c7678388fd8a6f8fcac69c014f462285d09b88763d979e95cac",
+  "projection_kind": "public metadata; original private review and raw execution remain unchanged"
+}
