@@ -59,4 +59,17 @@ describe('summaryCoverageView', () => {
     expect(view.state).toBe('malformed');
     expect(coverageText(view)).toContain('형식 불일치');
   });
+
+  // CORE boundary review on #234 (comment 6046183340): a ratio within 1e-9 of C/M but outside 0–1 must still be rejected.
+  it.each([
+    ['below 0 (C=0, M=1)', { covered: [] as string[], ratio: -5e-10 }],
+    ['above 1 (C=M=1)', { covered: ['S-A'], ratio: 1 + 5e-10 }],
+  ])('rejects a ratio just outside 0–1: %s', (_name, { covered, ratio }) => {
+    const single = block({ summary_item_counts: { positive: covered.length, negative: 0, mixed: 0 }, polarity_source_counts: { positive: covered.length, negative: 0, mixed: 0 },
+      polarity_source_ids: { positive: covered, negative: [], mixed: [] }, input_customer_source_count: 1, denominator_customer_source_count: 1,
+      denominator_source_ids: ['S-A'], covered_customer_source_count: covered.length, covered_source_ids: covered,
+      unreferenced_processed_source_count: 1 - covered.length, unprocessed_input_source_count: 0, overlapping_polarity_source_count: 0, coverage_ratio: ratio });
+    expect(summaryCoverageView(brief({ summary_reference_coverage: single })).state).toBe('malformed');
+    expect(summaryCoverageView(brief({ summary_reference_coverage: { ...single, coverage_ratio: covered.length } })).state).toBe('ok');
+  });
 });

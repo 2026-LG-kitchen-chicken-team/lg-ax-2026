@@ -56,7 +56,7 @@ export function summaryCoverageView(brief: PlanningBrief): CoverageState {
   if (m > n || denominatorIds.size !== m || covered !== coveredIds.length || unreferenced !== m - covered || unprocessed !== n - m) return fail('분모·인용·미인용·미처리 건수가 서로 맞지 않습니다');
   if (overlapping !== [...seen.values()].filter(count => count > 1).length) return fail('극성 겹침 건수가 ID와 맞지 않습니다');
   const ratio = c.coverage_ratio;
-  if (m === 0 ? ratio !== null : !(typeof ratio === 'number' && Number.isFinite(ratio) && Math.abs(ratio - covered / m) < 1e-9)) return fail('인용률이 C/M(분모 0이면 null)과 다릅니다');
+  if (m === 0 ? ratio !== null : !(typeof ratio === 'number' && Number.isFinite(ratio) && ratio >= 0 && ratio <= 1 && Math.abs(ratio - covered / m) < 1e-9)) return fail('인용률이 0~1 범위의 C/M(분모 0이면 null)이 아닙니다');
   return { state: 'ok', value: { input: n, denominator: m, covered, unreferenced, unprocessed, ratio: ratio as number | null, overlapping,
     polaritySources: { positive: polarityCounts.positive as number, negative: polarityCounts.negative as number, mixed: polarityCounts.mixed as number },
     summaryItems: { positive: itemCounts.positive as number, negative: itemCounts.negative as number, mixed: itemCounts.mixed as number } } };
