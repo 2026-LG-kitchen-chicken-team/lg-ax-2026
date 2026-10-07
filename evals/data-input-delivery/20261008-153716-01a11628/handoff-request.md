@@ -12,4 +12,4 @@ DATA-INPUT-DELIVERY-20261008-153716-01a11628 — 기존 input-only 인계 확인
 
 동일 7입력의 Agent/일반 LLM 원출력·full-input/실패·재시도·사용량은 확인한 인계 기록에서 미수신입니다. 이미 생성된 결과만 해당 입력 canonical SHA에 연결해 인계해 주세요. 아직 생성되지 않았다면 그 상태만 회신하며 **이 요청은 기존 모델 재호출 지시가 아닙니다.** 원 입력/ZIP/답안/비밀은 이 댓글에 첨부하지 않습니다.
 
-이번 범위는 `evals/data-input-delivery/20261008-153716-01a11628/`와 자기 고유 기록만입니다. D1/D2·공통 계약·CORE·WEB·기존 outbox는 보존했습니다. 다음 작은 PR에 발신 검증과 미완료 인수 조건을 연결합니다.
+이번 범위는 `evals/data-input-delivery/20261008-153716-01a11628/`와 자기 고유 기록만입니다. D1/D2·공통 계약·CORE·WEB·기존 outbox는 보존했습니다. [PR257](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/257) 최초 head `ff0e6eeac40945500e2214114a084f0548f62f59`에 발신 검증과 미완료 인수 조건을 연결했습니다.

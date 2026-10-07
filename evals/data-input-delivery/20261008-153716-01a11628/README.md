@@ -28,3 +28,7 @@
 다음은 기존 승인 endpoint/client 또는 공유경로·양쪽PC·read범위 확인 → 동일ZIP/metadata전송 → CORE 자체파일 대조수신증 → 원문매핑 → 기존 동일입력 raw/usage인수다. 미생성 결과는 그상태로 보고하고 이번작업에서 모델을 실행하지 않는다. PM의 후보/분할·Gold·독립성·최종scorer와 별도검토경로 승인은 남아 있다.
 
 원ZIP·사례본문·Gold/답안·방식키는 이폴더/PR에 포함하지 않는다. `schemas/output.json`은 출력형태 계약이며 답안이 아니다. Docker network-none/zero-auth/readonly환경에 입력파일만 마운트했다. 파일allowlist/키 검사는 의미Gold 분리나 독립성 최종승인이 아니다. 고유evals와 자기고유기록만 변경하며 공용README·D1/D2·CORE·WEB·계약·기존outbox를 보존했다. 이PR은 인계감사 단위이고 실제전송/부모Done/독립평가완료가 아니다.
+
+## 게시와 다음 인계
+
+[PR257](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/257)을 main 대상 non-draft로 게시하고 [Issue15 인계요청](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/15#issuecomment-6042391019)의 작성자·본문을 재조회해 일치 확인했다. [게시 수신증](publication-receipt.json)은 GitHub에 메타데이터 요청이 게시됐다는 증거이며 input-only 실전송/CORE 파일수신증이 아니다. 기존 실행 결과가 있다면 재실행 없이 받도록 요청했다. 자동 Project ACCEPTED나 PM 승인·병합을 주장하지 않는다.
