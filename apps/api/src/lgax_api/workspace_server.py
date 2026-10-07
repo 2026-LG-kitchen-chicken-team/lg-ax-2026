@@ -22,12 +22,13 @@ from lgax_core.workspace_planning import EnvPlanningRunner, PlanningRunner
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from .public_validation import public_validation_details
+from .research_planning import EnvResearchPlanner, ResearchWorkspace, research_router
 from .trend_configuration import load_trend_runtime
 from .workspace_auth import TokenRegistry
 from .workspace_bootstrap import workspace_bootstrap
 from .workspace_trends import TrendCollector, WorkspaceTrends
 
-ORIGINS = {"http://127.0.0.1:5173", "http://localhost:5173"}
+ORIGINS = {"http://127.0.0.1:5173", "http://localhost:5173", "http://127.0.0.1:5175", "http://localhost:5175"}
 
 _ERROR_MESSAGES = {
     "UNAUTHORIZED": "작업실 인증을 확인해 주세요.",
@@ -181,13 +182,16 @@ def _load_document_store(path: Path, expected_sha256: str):
 def create_workspace_app(db_path: Path, registry: TokenRegistry, *,
                          planning_runner: PlanningRunner | None = None,
                          evidence_store: DemoStore | None = None,
-                         trend_collector: TrendCollector | None = None) -> FastAPI:
+                         trend_collector: TrendCollector | None = None,
+                         research_workspace: ResearchWorkspace | None = None) -> FastAPI:
     evidence = default_store() if evidence_store is None else evidence_store
     workspace = WorkspaceStore(db_path, evidence_store=evidence, planning_runner=planning_runner)
     trends = WorkspaceTrends(workspace, trend_collector)
     app = FastAPI(title="LG AX authenticated local workspace", version=CONTRACT_VERSION)
     app.state.workspace = workspace
     app.state.review_trends = trends
+    app.state.research_workspace = research_workspace
+    app.include_router(research_router(research_workspace))
     app.add_middleware(
         CORSMiddleware,
         allow_origins=sorted(ORIGINS),
@@ -204,7 +208,7 @@ def create_workspace_app(db_path: Path, registry: TokenRegistry, *,
                 status_code=403,
                 content=public_error("FORBIDDEN"), headers={"Cache-Control": "no-store"},
             )
-        if request.method != "OPTIONS" and request.url.path.startswith("/api/workspace"):
+        if request.method != "OPTIONS" and request.url.path.startswith(("/api/workspace", "/api/research")):
             try:
                 request.state.principal = registry.authenticate(request.headers.get("authorization"))
                 if request.method != "GET":
@@ -259,6 +263,8 @@ def create_workspace_app(db_path: Path, registry: TokenRegistry, *,
             "access_boundary": "loopback-only",
             "analysis_implemented": planning_runner is not None,
             "planning_enabled": planning_runner is not None,
+            "research_connected": research_workspace is not None,
+            "research_planning_enabled": research_workspace is not None and research_workspace.planner is not None,
         }
 
     @app.get("/api/workspace/projects")
@@ -415,9 +421,15 @@ def main():
                         help="Preview pinned synthetic topic candidates only; does not approve customer data.")
     parser.add_argument("--enable-planning", action="store_true",
                         help="Explicitly allow configured model calls when an authorized run is submitted.")
+    parser.add_argument("--research-bundle", action="append", type=Path, default=[],
+                        help="Operator-selected actual public ResearchBundle; may be repeated.")
+    parser.add_argument("--enable-research-planning", action="store_true",
+                        help="Allow manual research planning requests with the configured LG model.")
     parser.add_argument("--host", choices=["127.0.0.1"], default="127.0.0.1")
     parser.add_argument("--port", type=int, default=18869)
     args = parser.parse_args()
+    if args.enable_research_planning and not args.research_bundle:
+        parser.error("Actual research bundles are required for research planning.")
     if (args.document_dataset is None) != (args.document_dataset_sha256 is None):
         parser.error("A document dataset path and its exact SHA256 are required together.")
     if args.document_dataset is not None and any((
@@ -438,7 +450,11 @@ def main():
     uvicorn.run(
         create_workspace_app(args.db, TokenRegistry.from_file(args.credentials),
                              evidence_store=evidence, trend_collector=collector,
-                             planning_runner=EnvPlanningRunner() if args.enable_planning else None),
+                             planning_runner=EnvPlanningRunner() if args.enable_planning else None,
+                             research_workspace=ResearchWorkspace(
+                                 args.db.with_name(args.db.stem + ".research.sqlite3"), args.research_bundle,
+                                 EnvResearchPlanner() if args.enable_research_planning else None,
+                             ) if args.research_bundle else None),
         host=args.host,
         port=args.port,
     )

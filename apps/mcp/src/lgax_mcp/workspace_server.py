@@ -41,6 +41,31 @@ def create_workspace_mcp(client: WorkspaceClient) -> FastMCP:
         """List only projects permitted by the configured workspace account."""
         return call(client.list_projects)
 
+    @mcp.tool(annotations=read)
+    def list_research_bundles() -> dict:
+        """List operator-loaded actual public-source packs; never substitute synthetic reviews."""
+        return call(client.list_research_bundles)
+
+    @mcp.tool(annotations=read)
+    def get_research_bundle(bundle_id: str) -> dict:
+        """Read source originals, scope, missing SKU/dates and document coverage for a public research pack."""
+        return call(client.get_research_bundle, bundle_id)
+
+    @mcp.tool(annotations=write)
+    def create_research_run(bundle_id: str, goal: str, constraints: list[str] | None = None,
+                            previous_run_id: str | None = None) -> dict:
+        """Discover problems and draft visual planning from actual sources. Manual opt-in backend only.
+
+        Inspect partial/needs_sources states, retain facts and uncertainties, and never retry automatically.
+        previous_run_id revises the same owner and exact bundle version; it does not mutate the old result.
+        """
+        return call(client.create_research_run, bundle_id, goal, constraints, previous_run_id)
+
+    @mcp.tool(annotations=read)
+    def get_research_run(run_id: str) -> dict:
+        """Read the same immutable research planning brief displayed/exported by the web workspace."""
+        return call(client.get_research_run, run_id)
+
     @mcp.tool(annotations=write)
     def create_workspace_project(name: str, request: dict, document_versions: dict[str, str]) -> dict:
         """Save a project and freeze selected model/document/data versions; requires write permission."""

@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 import httpx
 from jsonschema import ValidationError
 from lgax_contracts import validate
+from lgax_contracts.research import validate_research
 from lgax_core.errors import DomainError
 
 
@@ -52,13 +53,44 @@ class WorkspaceClient:
                 )
             raise DomainError("CONNECTION_FAILED", "공통 작업실 서버 요청에 실패했습니다.")
         try:
-            validate(definition, result)
+            if definition in {"ResearchBundle", "PlanningBrief"}:
+                validate_research(definition, result)
+            elif definition == "ResearchBundleList":
+                if not isinstance(result, dict) or not isinstance(result.get("bundles"), list):
+                    raise ValidationError("Invalid research bundle list")
+                for item in result["bundles"]:
+                    if (not isinstance(item, dict) or not isinstance(item.get("bundle_id"), str)
+                            or not isinstance(item.get("source_count"), int)
+                            or not isinstance(item.get("review_count"), int)
+                            or not 0 <= item["review_count"] <= item["source_count"]):
+                        raise ValidationError("Invalid research bundle summary")
+            else:
+                validate(definition, result)
         except ValidationError:
             raise DomainError("CONTRACT_MISMATCH", "작업실 응답이 공통 규격과 다릅니다.") from None
         return result
 
     def list_projects(self):
         return self._request("GET", "/api/workspace/projects", "WorkspaceProjectsResponse")
+
+    def list_research_bundles(self):
+        return self._request("GET", "/api/research/bundles", "ResearchBundleList")
+
+    def get_research_bundle(self, bundle_id):
+        self._identifier(bundle_id)
+        return self._request("GET", f"/api/research/bundles/{bundle_id}", "ResearchBundle")
+
+    def create_research_run(self, bundle_id, goal, constraints=None, previous_run_id=None):
+        self._identifier(bundle_id)
+        if previous_run_id is not None:
+            self._identifier(previous_run_id)
+        return self._request("POST", "/api/research/planning-runs", "PlanningBrief",
+                             {"bundle_id": bundle_id, "goal": goal, "constraints": constraints or [],
+                              "previous_run_id": previous_run_id}, timeout=600)
+
+    def get_research_run(self, run_id):
+        self._identifier(run_id)
+        return self._request("GET", f"/api/research/planning-runs/{run_id}", "PlanningBrief")
 
     def create_project(self, name, request, document_versions):
         payload = {"name": name, "request": request, "document_versions": document_versions}

@@ -1,6 +1,7 @@
 """Additive public-source research contracts; legacy contracts stay unchanged."""
 
 from functools import lru_cache
+from importlib.resources import files
 import json
 from pathlib import Path
 from typing import Any
@@ -16,7 +17,9 @@ def load_research_schema() -> dict[str, Any]:
             schema = json.loads(candidate.read_text(encoding="utf-8"))
             Draft202012Validator.check_schema(schema)
             return schema
-    raise FileNotFoundError("research-planning.schema.json is not packaged")
+    schema = json.loads(files("lgax_bootstrap_data").joinpath("research-planning.schema.json").read_text("utf-8"))
+    Draft202012Validator.check_schema(schema)
+    return schema
 
 
 def validate_research(definition: str, value: Any) -> None:
