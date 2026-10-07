@@ -123,6 +123,8 @@ describe('actual-source research screen state and revision flow', () => {
   // A11Y-1 (record 최길웅-20261008-061): the detail opens above the list, so keyboard and screen-reader users must be
   // taken to it, and brought back to the citation they came from when it closes.
   it('moves focus into an opened source detail and back to the citation when it closes', async () => {
+    // jsdom has no scrollIntoView; the screen scrolls the source panel into view when a citation opens.
+    const scroll = vi.fn(); Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', { value: scroll, configurable: true, writable: true });
     vi.stubGlobal('fetch', api()); await act(async () => root.render(createElement(ResearchPlanningView)));
     await connect(); await choose();
     const cite = host.querySelector<HTMLButtonElement>('.research-source-row .research-citations button')!;
@@ -133,5 +135,7 @@ describe('actual-source research screen state and revision flow', () => {
     await click('상세 닫기');
     expect(host.querySelector('[aria-label="인용 원문 상세"]')).toBeNull();
     expect(document.activeElement).toBe(cite);
+    expect(scroll).toHaveBeenCalledTimes(1);
+    delete (HTMLElement.prototype as unknown as { scrollIntoView?: unknown }).scrollIntoView;
   });
 });
