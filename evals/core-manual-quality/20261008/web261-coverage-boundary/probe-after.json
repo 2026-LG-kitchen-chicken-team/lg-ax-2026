@@ -1,0 +1,481 @@
+{
+  "kind": "actual_fixed_WEB_module_protocol_boundary",
+  "head": "c0116fb026eabd24a6d2276451cea86070205ee4",
+  "module_sha256": "1b121467d0a92552f6c4e54d80f4938b341cf54f5ebefd3fae7f3565db2fac4e",
+  "node": "v22.23.3",
+  "new_model_calls": 0,
+  "actual_UI_HTTP_MCP_run_verified": false,
+  "cases": [
+    {
+      "name": "valid_zero_ratio",
+      "runtime": {
+        "summary_reference_coverage": {
+          "basis": "returned_summary_references_on_successful_discovery",
+          "sample_unit": "unique_deduplicated_customer_source",
+          "summary_item_counts": {
+            "positive": 0,
+            "negative": 0,
+            "mixed": 0
+          },
+          "polarity_source_counts": {
+            "positive": 0,
+            "negative": 0,
+            "mixed": 0
+          },
+          "polarity_source_ids": {
+            "positive": [],
+            "negative": [],
+            "mixed": []
+          },
+          "input_customer_source_count": 1,
+          "denominator_customer_source_count": 1,
+          "denominator_source_ids": [
+            "LGE-R8-REVIEW-752651"
+          ],
+          "covered_customer_source_count": 0,
+          "covered_source_ids": [],
+          "unreferenced_processed_source_count": 1,
+          "unprocessed_input_source_count": 0,
+          "overlapping_polarity_source_count": 0,
+          "coverage_ratio": 0,
+          "classification_approved": false,
+          "market_frequency_estimated": false
+        }
+      },
+      "required_state": "ok",
+      "actual_state": "ok",
+      "result": {
+        "state": "ok",
+        "value": {
+          "input": 1,
+          "denominator": 1,
+          "covered": 0,
+          "unreferenced": 1,
+          "unprocessed": 0,
+          "ratio": 0,
+          "overlapping": 0,
+          "polaritySources": {
+            "positive": 0,
+            "negative": 0,
+            "mixed": 0
+          },
+          "summaryItems": {
+            "positive": 0,
+            "negative": 0,
+            "mixed": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "negative_near_zero",
+      "runtime": {
+        "summary_reference_coverage": {
+          "basis": "returned_summary_references_on_successful_discovery",
+          "sample_unit": "unique_deduplicated_customer_source",
+          "summary_item_counts": {
+            "positive": 0,
+            "negative": 0,
+            "mixed": 0
+          },
+          "polarity_source_counts": {
+            "positive": 0,
+            "negative": 0,
+            "mixed": 0
+          },
+          "polarity_source_ids": {
+            "positive": [],
+            "negative": [],
+            "mixed": []
+          },
+          "input_customer_source_count": 1,
+          "denominator_customer_source_count": 1,
+          "denominator_source_ids": [
+            "LGE-R8-REVIEW-752651"
+          ],
+          "covered_customer_source_count": 0,
+          "covered_source_ids": [],
+          "unreferenced_processed_source_count": 1,
+          "unprocessed_input_source_count": 0,
+          "overlapping_polarity_source_count": 0,
+          "coverage_ratio": -5e-10,
+          "classification_approved": false,
+          "market_frequency_estimated": false
+        }
+      },
+      "required_state": "malformed",
+      "actual_state": "malformed",
+      "result": {
+        "state": "malformed",
+        "reason": "인용률이 0~1 범위의 C/M(분모 0이면 null)이 아닙니다"
+      }
+    },
+    {
+      "name": "valid_one_ratio",
+      "runtime": {
+        "summary_reference_coverage": {
+          "basis": "returned_summary_references_on_successful_discovery",
+          "sample_unit": "unique_deduplicated_customer_source",
+          "summary_item_counts": {
+            "positive": 1,
+            "negative": 0,
+            "mixed": 0
+          },
+          "polarity_source_counts": {
+            "positive": 1,
+            "negative": 0,
+            "mixed": 0
+          },
+          "polarity_source_ids": {
+            "positive": [
+              "LGE-R8-REVIEW-752651"
+            ],
+            "negative": [],
+            "mixed": []
+          },
+          "input_customer_source_count": 1,
+          "denominator_customer_source_count": 1,
+          "denominator_source_ids": [
+            "LGE-R8-REVIEW-752651"
+          ],
+          "covered_customer_source_count": 1,
+          "covered_source_ids": [
+            "LGE-R8-REVIEW-752651"
+          ],
+          "unreferenced_processed_source_count": 0,
+          "unprocessed_input_source_count": 0,
+          "overlapping_polarity_source_count": 0,
+          "coverage_ratio": 1,
+          "classification_approved": false,
+          "market_frequency_estimated": false
+        }
+      },
+      "required_state": "ok",
+      "actual_state": "ok",
+      "result": {
+        "state": "ok",
+        "value": {
+          "input": 1,
+          "denominator": 1,
+          "covered": 1,
+          "unreferenced": 0,
+          "unprocessed": 0,
+          "ratio": 1,
+          "overlapping": 0,
+          "polaritySources": {
+            "positive": 1,
+            "negative": 0,
+            "mixed": 0
+          },
+          "summaryItems": {
+            "positive": 1,
+            "negative": 0,
+            "mixed": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "above_one_near_one",
+      "runtime": {
+        "summary_reference_coverage": {
+          "basis": "returned_summary_references_on_successful_discovery",
+          "sample_unit": "unique_deduplicated_customer_source",
+          "summary_item_counts": {
+            "positive": 1,
+            "negative": 0,
+            "mixed": 0
+          },
+          "polarity_source_counts": {
+            "positive": 1,
+            "negative": 0,
+            "mixed": 0
+          },
+          "polarity_source_ids": {
+            "positive": [
+              "LGE-R8-REVIEW-752651"
+            ],
+            "negative": [],
+            "mixed": []
+          },
+          "input_customer_source_count": 1,
+          "denominator_customer_source_count": 1,
+          "denominator_source_ids": [
+            "LGE-R8-REVIEW-752651"
+          ],
+          "covered_customer_source_count": 1,
+          "covered_source_ids": [
+            "LGE-R8-REVIEW-752651"
+          ],
+          "unreferenced_processed_source_count": 0,
+          "unprocessed_input_source_count": 0,
+          "overlapping_polarity_source_count": 0,
+          "coverage_ratio": 1.0000000005,
+          "classification_approved": false,
+          "market_frequency_estimated": false
+        }
+      },
+      "required_state": "malformed",
+      "actual_state": "malformed",
+      "result": {
+        "state": "malformed",
+        "reason": "인용률이 0~1 범위의 C/M(분모 0이면 null)이 아닙니다"
+      }
+    },
+    {
+      "name": "negative_outside_tolerance",
+      "runtime": {
+        "summary_reference_coverage": {
+          "basis": "returned_summary_references_on_successful_discovery",
+          "sample_unit": "unique_deduplicated_customer_source",
+          "summary_item_counts": {
+            "positive": 0,
+            "negative": 0,
+            "mixed": 0
+          },
+          "polarity_source_counts": {
+            "positive": 0,
+            "negative": 0,
+            "mixed": 0
+          },
+          "polarity_source_ids": {
+            "positive": [],
+            "negative": [],
+            "mixed": []
+          },
+          "input_customer_source_count": 1,
+          "denominator_customer_source_count": 1,
+          "denominator_source_ids": [
+            "LGE-R8-REVIEW-752651"
+          ],
+          "covered_customer_source_count": 0,
+          "covered_source_ids": [],
+          "unreferenced_processed_source_count": 1,
+          "unprocessed_input_source_count": 0,
+          "overlapping_polarity_source_count": 0,
+          "coverage_ratio": -1e-8,
+          "classification_approved": false,
+          "market_frequency_estimated": false
+        }
+      },
+      "required_state": "malformed",
+      "actual_state": "malformed",
+      "result": {
+        "state": "malformed",
+        "reason": "인용률이 0~1 범위의 C/M(분모 0이면 null)이 아닙니다"
+      }
+    },
+    {
+      "name": "above_one_outside_tolerance",
+      "runtime": {
+        "summary_reference_coverage": {
+          "basis": "returned_summary_references_on_successful_discovery",
+          "sample_unit": "unique_deduplicated_customer_source",
+          "summary_item_counts": {
+            "positive": 1,
+            "negative": 0,
+            "mixed": 0
+          },
+          "polarity_source_counts": {
+            "positive": 1,
+            "negative": 0,
+            "mixed": 0
+          },
+          "polarity_source_ids": {
+            "positive": [
+              "LGE-R8-REVIEW-752651"
+            ],
+            "negative": [],
+            "mixed": []
+          },
+          "input_customer_source_count": 1,
+          "denominator_customer_source_count": 1,
+          "denominator_source_ids": [
+            "LGE-R8-REVIEW-752651"
+          ],
+          "covered_customer_source_count": 1,
+          "covered_source_ids": [
+            "LGE-R8-REVIEW-752651"
+          ],
+          "unreferenced_processed_source_count": 0,
+          "unprocessed_input_source_count": 0,
+          "overlapping_polarity_source_count": 0,
+          "coverage_ratio": 1.00000001,
+          "classification_approved": false,
+          "market_frequency_estimated": false
+        }
+      },
+      "required_state": "malformed",
+      "actual_state": "malformed",
+      "result": {
+        "state": "malformed",
+        "reason": "인용률이 0~1 범위의 C/M(분모 0이면 null)이 아닙니다"
+      }
+    },
+    {
+      "name": "valid_zero_denominator_null",
+      "runtime": {
+        "summary_reference_coverage": {
+          "basis": "returned_summary_references_on_successful_discovery",
+          "sample_unit": "unique_deduplicated_customer_source",
+          "summary_item_counts": {
+            "positive": 0,
+            "negative": 0,
+            "mixed": 0
+          },
+          "polarity_source_counts": {
+            "positive": 0,
+            "negative": 0,
+            "mixed": 0
+          },
+          "polarity_source_ids": {
+            "positive": [],
+            "negative": [],
+            "mixed": []
+          },
+          "input_customer_source_count": 1,
+          "denominator_customer_source_count": 0,
+          "denominator_source_ids": [],
+          "covered_customer_source_count": 0,
+          "covered_source_ids": [],
+          "unreferenced_processed_source_count": 0,
+          "unprocessed_input_source_count": 1,
+          "overlapping_polarity_source_count": 0,
+          "coverage_ratio": null,
+          "classification_approved": false,
+          "market_frequency_estimated": false
+        }
+      },
+      "required_state": "ok",
+      "actual_state": "ok",
+      "result": {
+        "state": "ok",
+        "value": {
+          "input": 1,
+          "denominator": 0,
+          "covered": 0,
+          "unreferenced": 0,
+          "unprocessed": 1,
+          "ratio": null,
+          "overlapping": 0,
+          "polaritySources": {
+            "positive": 0,
+            "negative": 0,
+            "mixed": 0
+          },
+          "summaryItems": {
+            "positive": 0,
+            "negative": 0,
+            "mixed": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "metadata_absent",
+      "runtime": {},
+      "required_state": "not_provided",
+      "actual_state": "not_provided",
+      "result": {
+        "state": "not_provided",
+        "reason": "absent"
+      }
+    },
+    {
+      "name": "invalid_inherited_metadata",
+      "runtime": {
+        "summary_reference_coverage": {
+          "basis": "returned_summary_references_on_successful_discovery",
+          "sample_unit": "unique_deduplicated_customer_source",
+          "summary_item_counts": {
+            "positive": 1,
+            "negative": 0,
+            "mixed": 0
+          },
+          "polarity_source_counts": {
+            "positive": 1,
+            "negative": 0,
+            "mixed": 0
+          },
+          "polarity_source_ids": {
+            "positive": [
+              "LGE-R8-REVIEW-752651"
+            ],
+            "negative": [],
+            "mixed": []
+          },
+          "input_customer_source_count": 1,
+          "denominator_customer_source_count": 1,
+          "denominator_source_ids": [
+            "LGE-R8-REVIEW-752651"
+          ],
+          "covered_customer_source_count": 1,
+          "covered_source_ids": [
+            "LGE-R8-REVIEW-752651"
+          ],
+          "unreferenced_processed_source_count": 0,
+          "unprocessed_input_source_count": 0,
+          "overlapping_polarity_source_count": 0,
+          "coverage_ratio": 1,
+          "classification_approved": false,
+          "market_frequency_estimated": false
+        },
+        "summary_reference_coverage_inheritance": "invalid_previous_metadata"
+      },
+      "required_state": "not_provided",
+      "actual_state": "not_provided",
+      "result": {
+        "state": "not_provided",
+        "reason": "inheritance_invalid"
+      }
+    },
+    {
+      "name": "boolean_count",
+      "runtime": {
+        "summary_reference_coverage": {
+          "basis": "returned_summary_references_on_successful_discovery",
+          "sample_unit": "unique_deduplicated_customer_source",
+          "summary_item_counts": {
+            "positive": 1,
+            "negative": 0,
+            "mixed": 0
+          },
+          "polarity_source_counts": {
+            "positive": 1,
+            "negative": 0,
+            "mixed": 0
+          },
+          "polarity_source_ids": {
+            "positive": [
+              "LGE-R8-REVIEW-752651"
+            ],
+            "negative": [],
+            "mixed": []
+          },
+          "input_customer_source_count": true,
+          "denominator_customer_source_count": 1,
+          "denominator_source_ids": [
+            "LGE-R8-REVIEW-752651"
+          ],
+          "covered_customer_source_count": 1,
+          "covered_source_ids": [
+            "LGE-R8-REVIEW-752651"
+          ],
+          "unreferenced_processed_source_count": 0,
+          "unprocessed_input_source_count": 0,
+          "overlapping_polarity_source_count": 0,
+          "coverage_ratio": 1,
+          "classification_approved": false,
+          "market_frequency_estimated": false
+        }
+      },
+      "required_state": "malformed",
+      "actual_state": "malformed",
+      "result": {
+        "state": "malformed",
+        "reason": "건수가 0 이상의 정수가 아닙니다"
+      }
+    }
+  ],
+  "strict_range_mismatch_count": 0
+}
