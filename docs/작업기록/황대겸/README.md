@@ -1,6 +1,9 @@
 # 황대겸 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-08 CORE-X1-CONTINUATION-SCOPE-01a10729-01: DATA259의5참조 쪽 경고를 받아 CORE 라벨/안내를 보완했다. 24source/관리14·쪽값 보존, 관련7검사/Ruff·소비 PASS, 실모델0.
+- [상세](2026-10-08/CORE-X1-CONTINUATION-SCOPE-01a10729-01.md) · [고정 검증·새 출력](../../../evals/core-manual-quality/20261008/continuation-scope/README.md). 생산 metadata 정의와 실제27B/기획/PM 인수는 미완료.
+
 - 2026-10-08 CORE-X1-D2-CONSUMER-01a10729-01: DATA254 canonical3/184source·기존 후기141·관리14원문을 소비하고, 모델 미확인·역할·조건을 보존하는 공식 참고자료42source 출력을 구현했다. 관련7검사/Ruff·화면3/인쇄33쪽 PASS, 실모델0.
 - [상세](2026-10-08/CORE-X1-D2-CONSUMER-01a10729-01.md) · [고정 검증·출력](../../../evals/core-manual-quality/20261008/d2-reference-consumer/README.md). 새 DATA 생산 전달은 수신했고 PM native/raw·실제기획/적용 인수는 미완료.
 

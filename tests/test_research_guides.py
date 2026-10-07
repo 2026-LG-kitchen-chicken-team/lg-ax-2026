@@ -115,7 +115,9 @@ class ResearchGuideTests(unittest.TestCase):
         for output in (render_guide_html(guide), render_guide_markdown(guide)):
             self.assertIn("페이지 모델 미확인", output)
             self.assertIn("shared manual; exact SKU unconfirmed", output)
-            self.assertIn("연속 페이지", output)
+            self.assertIn("자료에 표시된 참조 쪽 · 같은 절/단계 미확인", output)
+            self.assertNotIn("연속 페이지:", output)
+            self.assertIn("같은 작업의 순서나 이어지는 단계로 확정하지 않습니다", output)
             self.assertIn("50 7 is not a verified unit", output)
 
     def test_official_question_answer_roles_and_selection_are_not_silently_substituted(self):

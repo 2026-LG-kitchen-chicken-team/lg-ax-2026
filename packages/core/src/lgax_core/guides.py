@@ -58,7 +58,8 @@ def build_official_reference_guide(bundle: dict, source_ids: list[str]) -> dict:
             "title": "공식 참고자료 발췌 안내 · 적용 범위 확인 필요",
             "notice": "공식 원문과 답변을 모은 참고자료입니다. 전체 정식 설명서를 대체하지 않습니다. "
                       "페이지 모델 미확인·공용 자료는 특정 구매 제품의 사용법으로 확정하지 않습니다. "
-                      "문서판·연속 페이지·조건과 원문 추출 한계를 확인하세요. 경우별 안내는 고객의 원인이나 "
+                      "문서판·참조 쪽·조건과 원문 추출 한계를 확인하세요. 참조 쪽에는 다른 절이 포함될 수 있어 "
+                      "같은 작업의 순서나 이어지는 단계로 확정하지 않습니다. 경우별 안내는 고객의 원인이나 "
                       "실제 호전 보장이 아니며, 새 설정이나 절차를 생성하지 않았습니다.",
             "sources": deepcopy(selected), "proposal": None, "exact_sku_applicability_confirmed": False}
 
@@ -118,7 +119,8 @@ def _reference_details(source: dict) -> list[str]:
     metadata = source.get("metadata", {})
     for key, label in (("applicability", "적용 범위"), ("sku_applicability", "SKU 적용 확인"),
                        ("optional_sku_applicability", "선택 기능 적용 확인"), ("sku_binding", "모델 대응 근거"),
-                       ("conditions_and_limitations", "조건과 한계"), ("continuation_pages", "연속 페이지"),
+                       ("conditions_and_limitations", "조건과 한계"),
+                       ("continuation_pages", "자료에 표시된 참조 쪽 · 같은 절/단계 미확인"),
                        ("context_conditions", "조건별 치수·대응 · 단일 연속 발췌와 구분"),
                        ("scope_caveats", "적용 유의"),
                        ("native_unit_caution", "원문 숫자·단위 주의"), ("source_scope_notes", "출처 사용 범위")):
