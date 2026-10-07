@@ -9,3 +9,5 @@
 후보별 요구표는 선택한 Gap의 근거만 요구한다. 차이 판정의 인용 그룹은 기존 canonical 의미 검수와 같은 각 Gap 리뷰·설명서·연결 기능 설명서 대조를 요구한다. 신규성·극성·작동 방식·지원/해결·불확실성은 모델 판단으로 남으며 자동 인용, forced accept, 검사 완화는 없다. 실행 순서·공유 최대 2수정·모델 설정·공유 계약·API/MCP·운영은 변경하지 않는다.
 
 검사는 고정 source proof를 대조한 `DockerExecutor`, image `sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5`, validator 역할, auth/profile 없음, network none, readonly source에서 수행한다. 실행 wrapper는 저장소 밖의 PM metadata wrapper다. host에서 저장소 코드·테스트·빌드·설치를 실행하지 않는다. 검사 결과는 이후 고정 commit/receipt로 기록한다. Ollama native 조건 스키마 지원과 실모델 원3 품질 인수는 아직 검증 전이며 새 모델 호출은 0이다.
+
+고정 source `4f897394ae224e43dc4c7f0c9d224f4dfa92c0a2`에서 target155건 PASS(새 회귀13 + 기존142)를 확인했다. [validation-receipt.json](validation-receipt.json)은 실행 ID·image·실제 경계·archive/source manifest SHA와 returncode0/source_changed[]/model_calls0을 기록한다. [provenance-proof.json](provenance-proof.json)은 원 commit814fe2f의 전체 JSON bytes와 선택 literal fields의 직접 일치를 기록한다. 앞선 setup 실패 두 회는 개인 근거 기록에 보존하며, 검사 통과는 실모델 품질 PASS·native 지원·최종 Done·운영 반영을 의미하지 않는다. 공개/push/병합·독립 검수·실모델 원3 검증은 PM root에게 인계한다.
