@@ -20,6 +20,7 @@ from .public_planning import (
     _MODEL_ERROR_REASONS,
     INSTRUCTIONS,
     PublicPlanner,
+    _correction_budget,
     _definition_schema,
     _digest,
     _output_schema,
@@ -136,6 +137,7 @@ def repair_public_brief(model_caller, bundle: dict, previous: dict, feedback: li
     result.update(brief_id=f"brief-{uuid4().hex}", run_id=f"run-{uuid4().hex}",
                   revision=previous["revision"] + 1, previous_brief_id=previous["brief_id"])
     trace, issues, outcomes, selected_ids = [], [], [], set()
+    corrections = _correction_budget(previous)
     context_builder = PublicPlanner(model_caller, max_source_characters=max_source_characters)._source_context
     definitions = load_research_schema()["$defs"]
     removed_by_item = {}
@@ -164,11 +166,16 @@ def repair_public_brief(model_caller, bundle: dict, previous: dict, feedback: li
             failure = "prompt_too_large"
         elif len(trace) >= max_model_calls:
             failure = "repair_call_budget_exhausted"
+        elif corrections.snapshot["closed"]:
+            failure = "shared_correction_budget_exhausted"
         if failure is not None:
             issues.append({"kind": kind, "item_id": item_id, "code": failure})
             outcomes.append({"item_kind": kind, "item_id": item_id, "status": "failed"})
             continue
+        correction_count = corrections.claim(expected_revision_count=corrections.snapshot["revision_count"],
+                                             operation="review_revision")
         record = {"stage": "repair_fields", "item_kind": kind, "item_id": item_id,
+                  "correction_count": correction_count,
                   "prompt_sha256": _digest(prompt), "prompt_characters": len(prompt), "status": "attempted"}
         trace.append(record)
         selected_ids.update(source_ids)
@@ -216,6 +223,7 @@ def repair_public_brief(model_caller, bundle: dict, previous: dict, feedback: li
                          "parent_run_id": previous["run_id"], "source_bundle_sha256": _digest(bundle),
                          "source_facts_sha256": _digest(result["source_facts"]), "input_source_count": len(catalog),
                          "selected_source_ids": sorted(selected_ids), "omitted_source_count": len(catalog) - len(selected_ids),
-                         "max_model_calls": max_model_calls, "max_repairs_per_item": 1}
+                         "max_model_calls": max_model_calls, "max_repairs_per_item": 1,
+                         "correction_budget": corrections.snapshot}
     validate_planning_brief(result)
     return result

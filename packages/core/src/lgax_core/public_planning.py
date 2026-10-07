@@ -21,7 +21,9 @@ from lgax_contracts.research import (
     validate_research_bundle,
 )
 
+from .correction_budget import CorrectionBudget
 from .errors import DomainError
+from .judgement_contract import MAX_REVISIONS
 from .model_client import StructuredModelResult
 from .retrieval import tokenize
 
@@ -190,6 +192,51 @@ def _strings(value: Any, path: str = ""):
             yield from _strings(child, f"{path}/{key}")
 
 
+def _correction_budget(previous: dict | None = None) -> CorrectionBudget:
+    """Carry the stored run's corrections into field repair, including failures.
+
+    A condition-change run has its own budget. Repairing that run does not reset
+    it. Older over-limit traces remain intact and have no further allowance.
+    """
+    runtime = {} if previous is None else previous["runtime"]
+    trace = runtime.get("model_calls", [])
+    snapshot = runtime.get("correction_budget", {})
+    if not isinstance(trace, list) or any(not isinstance(row, dict) for row in trace) or not isinstance(snapshot, dict):
+        raise ValueError("Stored correction trace must be an object list with a budget object")
+    observed = sum(row.get("stage") == "repair_fields"
+                   or runtime.get("execution_kind") == "public_research_field_repair" for row in trace)
+    recorded = snapshot.get("revision_count", observed)
+    if type(recorded) is not int or recorded < observed or recorded < 0:
+        raise ValueError("Stored correction count cannot discard attempted repairs")
+    return CorrectionBudget(initial_count=min(recorded, MAX_REVISIONS))
+
+
+def _item_schema_error(stage: str, path: list) -> bool:
+    """Only errors inside a candidate are isolated; envelope limits stay strict."""
+    if stage == "discover":
+        prefixes = [("problems",), *(('summaries', polarity) for polarity in ("positive", "negative", "mixed"))]
+    elif stage == "plan":
+        prefixes = [("comparisons",), ("concepts",)]
+    else:
+        return False
+    return any(len(path) > len(prefix) and tuple(path[:len(prefix)]) == prefix
+               and type(path[len(prefix)]) is int for prefix in prefixes)
+
+
+def _planning_customer_context(problem: dict, catalog: dict[str, dict]) -> list[dict]:
+    """Keep an identified counter source within the existing two-source window.
+
+    These are the supplied problem's evidence roles, not a sentiment assignment
+    or endorsement of the model's problem. Source records are never rewritten.
+    """
+    support = list(dict.fromkeys(problem["source_ids"]))
+    counter = list(dict.fromkeys(problem["counter_source_ids"]))
+    selected = support[:1]
+    selected.extend(eid for eid in counter if eid not in selected)
+    selected.extend(eid for eid in support if eid not in selected)
+    return [catalog[eid] for eid in selected[:2]]
+
+
 class PublicPlanner:
     """The injectable public entry point: run(bundle, goal, constraints, previous)."""
 
@@ -258,6 +305,7 @@ class PublicPlanner:
         sources = deepcopy(bundle["sources"])
         catalog = {source["source_id"]: source for source in sources}
         trace, warnings, seen_sources, issues, selected_sources = [], [], set(), [], set()
+        corrections = _correction_budget()
         facts = source_facts(bundle)
         brief = {"schema_version": "1.0", "brief_id": f"brief-{uuid4().hex}", "bundle_id": bundle["bundle_id"],
                  "run_id": f"run-{uuid4().hex}", "revision": 0 if previous is None else previous["revision"] + 1,
@@ -275,9 +323,19 @@ class PublicPlanner:
             if len(prompt) > self.max_prompt_characters:
                 warnings.append(f"{stage}: 문맥 크기를 줄여 다시 실행해야 합니다.")
                 return None
+            correction_count = None
+            if stage == "repair_fields":
+                snapshot = corrections.snapshot
+                if snapshot["closed"]:
+                    warnings.append("공유 내부 수정 두 회를 소진해 남은 잘못된 항목을 보류했습니다.")
+                    return None
+                correction_count = corrections.claim(expected_revision_count=snapshot["revision_count"],
+                                                     operation="stage_retry")
             record = {"stage": stage, "prompt_sha256": sha256(prompt.encode()).hexdigest(),
                       "prompt_characters": len(prompt), "status": "attempted"}
             trace.append(record)
+            if correction_count is not None:
+                record["correction_count"] = correction_count
             selected_sources.update(source["source_id"] for source in context.get("sources", []))
             try:
                 returned = self.model_caller(prompt, deepcopy(schema))
@@ -287,8 +345,16 @@ class PublicPlanner:
                     data, metadata = returned, {}
                 record["response"] = deepcopy(data)
                 record["metadata"] = deepcopy(metadata)
-                Draft202012Validator(schema).validate(data)
-                record["status"] = "returned"
+                schema_errors = list(Draft202012Validator(schema).iter_errors(data))
+                for error in schema_errors:
+                    if not _item_schema_error(stage, list(error.path)):
+                        raise error
+                # The caller still receives the complete, unchanged schema.
+                # Every retained item is validated below against its full schema.
+                record["status"] = "items_require_validation" if schema_errors else "returned"
+                if schema_errors:
+                    record["item_schema_errors"] = [{"path": list(error.path), "validator": error.validator}
+                                                   for error in schema_errors]
                 return deepcopy(data)
             except (ValidationError, ValueError, TypeError, RuntimeError, DomainError, OSError) as error:
                 record["status"], record["error_type"] = "rejected", type(error).__name__
@@ -307,9 +373,11 @@ class PublicPlanner:
             schema = _definition_schema(definition)
             for error in Draft202012Validator(schema).iter_errors(item):
                 field = next(iter(error.path), None)
-                if field is None and error.validator == "required":
+                if field is None and error.validator == "required" and isinstance(item, dict):
                     field = next((name for name in root["$defs"][definition]["required"] if name not in item), None)
                 result.append({"field": field, "code": "item_schema", "message": error.message})
+            if result:
+                return result
             cited = item.get("source_ids", [])
             if not isinstance(cited, list):
                 return result
@@ -343,16 +411,18 @@ class PublicPlanner:
 
         def checked(item, definition, context_sources):
             errors = item_issues(item, definition)
+            item_id = item.get("id") if isinstance(item, dict) else None
             allowed = {source["source_id"] for source in context_sources}
             for field in ("source_ids", "counter_source_ids"):
-                if isinstance(item.get(field), list) and not set(item[field]) <= allowed:
+                cited = item.get(field) if isinstance(item, dict) else None
+                if isinstance(cited, list) and all(isinstance(eid, str) for eid in cited) and not set(cited) <= allowed:
                     errors.append({"field": field, "code": "source_not_in_call_context"})
             if not errors:
                 return deepcopy(item)
-            issues.append({"kind": definition, "item_id": item.get("id"), "issues": deepcopy(errors)})
+            issues.append({"kind": definition, "item_id": item_id, "issues": deepcopy(errors)})
             fields = {error["field"] for error in errors}
             properties = load_research_schema()["$defs"][definition]["properties"]
-            if None in fields or "id" in fields or not fields <= properties.keys():
+            if None in fields or fields & {"id", "problem_id", "problem_ids"} or not fields <= properties.keys():
                 warnings.append(f"{definition} 항목 구조를 확인해야 합니다.")
                 return None
             patch_schema = _output_schema({"patch": {"type": "object", "properties": {
@@ -372,7 +442,7 @@ class PublicPlanner:
                 if not remaining:
                     return candidate
                 issues.append({"kind": definition, "item_id": item.get("id"), "after_repair": remaining})
-            warnings.append(f"{definition} {item.get('id', '')}: 이 항목만 제외하고 정상 결과를 보존했습니다.")
+            warnings.append(f"{definition} {item_id or ''}: 이 항목만 제외하고 정상 결과를 보존했습니다.")
             return None
 
         customer_sources, documents, duplicate_groups = [], [], set()
@@ -425,6 +495,10 @@ class PublicPlanner:
                     brief["problems"].append(item)
             for polarity, rows in output["summaries"].items():
                 for row in rows:
+                    if list(Draft202012Validator(_definition_schema("SummaryItem")).iter_errors(row)):
+                        issues.append({"kind": "SummaryItem", "polarity": polarity, "code": "item_schema"})
+                        warnings.append("잘못된 요약 항목만 제외했습니다.")
+                        continue
                     if set(row["source_ids"]) <= {source["source_id"] for source in batch}:
                         available = [catalog[eid] for eid in row["source_ids"]]
                         if not claim_issues("summary", row["text"], available):
@@ -447,7 +521,7 @@ class PublicPlanner:
                 source["source_id"] not in paired_answers,
                 -len(query & set(tokenize(source["text"]))), source["source_id"],
             ))
-            selected = customer_context[:2] + ranked[:2]
+            selected = _planning_customer_context(problem, catalog) + ranked[:2]
             # Include a brand comparison only if actual competitor material exists.
             brands = {source.get("brand") for source in selected if source.get("brand")}
             competitor = next((source for source in ranked[2:] if source.get("brand") and source["brand"] not in brands), None)
@@ -467,18 +541,22 @@ class PublicPlanner:
             seen_sources.update(source["source_id"] for source in selected)
             allowed_ids = {source["source_id"] for source in selected}
             for item in output["comparisons"]:
+                item = checked(item, "Comparison", selected)
+                if item is None:
+                    continue
                 if item["problem_id"] != problem["id"] or not set(item["source_ids"]) <= allowed_ids:
                     warnings.append("비교의 문제/출처 연결이 달라 해당 비교를 제외했습니다.")
                     continue
-                item = checked(item, "Comparison", selected)
                 if item is not None:
                     item["id"] = f"comparison-{len(brief['comparisons']) + 1}"
                     brief["comparisons"].append(item)
             for item in output["concepts"]:
+                item = checked(item, "Concept", selected)
+                if item is None:
+                    continue
                 if set(item["problem_ids"]) != {problem["id"]} or not set(item["source_ids"]) <= allowed_ids:
                     warnings.append("기획의 문제/출처 연결이 달라 해당 기획을 제외했습니다.")
                     continue
-                item = checked(item, "Concept", selected)
                 if item is not None:
                     item["id"] = f"concept-{len(brief['concepts']) + 1}"
                     if not documents:
@@ -514,6 +592,7 @@ class PublicPlanner:
                             "source_type_counts": dict(Counter(source["source_type"] for source in sources)),
                             "selection_method": "interleaved_rating_expression_page_model_v1",
                             "item_issues": issues, "max_model_calls": self.max_model_calls,
+                            "correction_budget": corrections.snapshot,
                             "max_repairs_per_item": 1, "market_frequency_estimated": False}
         validate_planning_brief(brief)
         return brief

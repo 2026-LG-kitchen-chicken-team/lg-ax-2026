@@ -1,6 +1,9 @@
 # 황대겸 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-07 CORE-R8-C2-CORRECTIONS-01a10729-01: 공유 수정 최대2(실패/후속 수리 포함), 반환 응답의 정상 이웃 보존과 반대 출처 슬롯 보완. 관련58검사/Ruff PASS, 실모델0. native 클라이언트의 전체 응답 거절 복구는 PM 전달 경계 미완료.
+- [근거](2026-10-07/CORE-R8-C2-CORRECTIONS-01a10729-01.md) · [고정 경계·해시·수신](../../../evals/core-manual-quality/20261007/r8-c2-corrections/README.md). 기존 실제 응답/usage 인계와 C1~C4/X1 의미 검수는 계속 필요.
+
 - 2026-10-07 CORE-D3-CONSUMER-INTAKE-01a10729-01: DATA PR244 고정 경쟁근거와 원 후기848850의 설치 제약·긍정/잔여 불편4구간을 소비 준비로 대조. manifest8/발췌12/hash·상태 확인, 새모델0.
 - [상세](2026-10-07/CORE-D3-CONSUMER-INTAKE-01a10729-01.md) · [소비 조건·격리 수신](../../../evals/core-manual-quality/20261007/d3-consumer-intake/README.md). 키친핏 대안의 설치 제약·비교 불일치·미확인 상태 보존; P0/첫 문제/실제 흐름 인수는 대기.
 
