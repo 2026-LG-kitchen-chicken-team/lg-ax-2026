@@ -188,6 +188,9 @@ def _schema_field_guide(schema: dict[str, Any]) -> tuple[str, tuple[str, ...]]:
     )
     if semantic_citations:
         fields += ("difference_source_quotes",)
+    public_generation = public_generation_stage(schema) is not None
+    if public_generation:
+        fields += ("public_source_provenance", "public_opinion_classification")
     if not fields:
         return "", fields
     lines = ["판정값 안내: 값과 reason의 의미를 일치시키고 제공된 원문으로 판단하세요."]
@@ -196,6 +199,20 @@ def _schema_field_guide(schema: dict[str, Any]) -> tuple[str, tuple[str, ...]]:
         lines.append("features나 설명서가 비어 있거나 기능이 미언급이면 기능 부재의 증거가 아닙니다. "
                      "unmentioned/conflicting은 insufficient_evidence로 판단하고 현재 기능·사용 조건을 확인할 구체 질문을 남기세요.")
     lines.extend(_SCHEMA_FIELD_GUIDES[name][1] for name in fields if name in _SCHEMA_FIELD_GUIDES)
+    if public_generation:
+        lines.extend((
+            (
+                "제목·요약·비교의 현황·before 장면은 원문 관찰 범위입니다. 증상·신체 부위·행동·기간·"
+                "고객 의도를 확대하지 말고, 원문 밖 가상 경험·대상·조치 결과는 해당 필드와 assumptions에 "
+                "가정으로 명시하세요. after와 개선 효과도 제안이며 검증 사실이 아닙니다."
+            ),
+            (
+                "요약 분류는 본문의 실제 경험 평가로 합니다. 별점이나 구매 동기·기대만으로 "
+                "positive·negative·mixed를 정하지 마세요. positive는 명시적 칭찬, negative는 명시적 불편, "
+                "mixed는 둘이 동시에 명시된 경험입니다. 칭찬과 초기 불편이 공존하면 둘을 보존하고 "
+                "mixed에도 표현하세요. 평가가 없는 질문·구매 희망은 칭찬으로 요약하지 마세요."
+            ),
+        ))
     if stage_control:
         lines.extend((
             "unresolved: 원문에서 확인할 수 없어 현재 판단을 막는 사실을 문장으로 적습니다. "
@@ -636,7 +653,8 @@ class StructuredModelClient:
             **output["metadata"], "schema_sha256": schema_digest,
             "schema_prompt_embedded": not native_schema,
             "schema_field_guide": {
-                "version": ("enum_and_lineage_meanings_v4" if "candidate_gap_gate" in guide_fields
+                "version": ("public_provenance_and_opinion_v1" if "public_source_provenance" in guide_fields
+                            else "enum_and_lineage_meanings_v4" if "candidate_gap_gate" in guide_fields
                             else "enum_and_citation_meanings_v3" if "difference_source_quotes" in guide_fields
                             else "enum_and_hold_meanings_v2" if "unresolved" in guide_fields
                             else "enum_meanings_v1"),

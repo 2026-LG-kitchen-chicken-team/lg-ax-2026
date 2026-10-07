@@ -86,5 +86,56 @@ class ResearchRuntimeInputTests(unittest.TestCase):
             self.assertEqual(sha256((ROOT / reference["path"]).read_bytes()).hexdigest(), reference["sha256"])
 
 
+class ManualReferenceInputTests(unittest.TestCase):
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.output = Path(temporary.name) / "manual-reference"
+        self.pack_path = ROOT / adapter.OUTPUT / "manual-excerpts.json"
+
+    def test_document_only_bundle_keeps_the_five_complete_source_objects_and_live_inputs(self):
+        live_paths = [ROOT / adapter.OUTPUT / f"{group}.research-bundle.json" for group in adapter.GROUPS]
+        before = {path: path.read_bytes() for path in live_paths}
+        manifest = adapter.prepare_manual_reference_bundle(self.pack_path, self.output)
+        bundle = json.loads((self.output / adapter.MANUAL_REFERENCE_FILE).read_bytes())
+        validate_research_bundle(bundle)
+        self.assertEqual(bundle["sources"], json.loads(self.pack_path.read_bytes())["sources"])
+        self.assertEqual(bundle["bundle_id"], adapter.MANUAL_REFERENCE_ID)
+        self.assertEqual(bundle["collection_manifest"]["review_count"], 0)
+        self.assertEqual(bundle["collection_manifest"]["customer_experience_count"], 0)
+        self.assertEqual(bundle["collection_manifest"]["purpose"], "manual_draft_reference")
+        self.assertFalse(bundle["collection_manifest"]["semantic_quality_verified"])
+        self.assertEqual(manifest["review_count"], 0)
+        for path, raw in before.items():
+            self.assertEqual(path.read_bytes(), raw)
+
+    def test_manual_cli_registry_preserves_seven_existing_inputs_and_lists_one_reference(self):
+        from lgax_api.research_planning import ResearchWorkspace
+
+        cli_spec = importlib.util.spec_from_file_location("manual_research_cli", ROOT / "scripts/serve_research_prototype.py")
+        cli = importlib.util.module_from_spec(cli_spec)
+        cli_spec.loader.exec_module(cli)
+        paths = cli.research_bundle_paths()
+        self.assertEqual(len(paths), 8)
+        self.assertEqual(paths[-1], ROOT / adapter.OUTPUT / adapter.MANUAL_REFERENCE_FILE)
+        self.assertEqual(len(set(paths)), 8)
+        workspace = ResearchWorkspace(self.output.parent / "list-only.sqlite3", paths, planner=None)
+        rows = workspace.list_bundles()["bundles"]
+        self.assertEqual(len(rows), 8)
+        references = [row for row in rows if row["bundle_id"] == adapter.MANUAL_REFERENCE_ID]
+        self.assertEqual(len(references), 1)
+        self.assertEqual(references[0]["source_count"], 5)
+        self.assertEqual(references[0]["review_count"], 0)
+        self.assertEqual(references[0]["collection_manifest"]["purpose"], "manual_draft_reference")
+        self.assertEqual(workspace.planner, None)
+
+    def test_unpinned_manual_pack_is_rejected_before_writing(self):
+        altered = self.output.parent / "changed-manual-excerpts.json"
+        altered.write_bytes(self.pack_path.read_bytes() + b" ")
+        with self.assertRaisesRegex(ValueError, "Frozen manual excerpt pack hash changed"):
+            adapter.prepare_manual_reference_bundle(altered, self.output)
+        self.assertFalse(self.output.exists())
+
+
 if __name__ == "__main__":
     unittest.main()

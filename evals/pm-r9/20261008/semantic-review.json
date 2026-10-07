@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0",
+  "review_kind": "independent_read_only_source_semantic_review",
+  "review_date": "2026-10-08",
+  "scope": "Two retained R9 dishwasher development runs only; no market-wide or independent-evaluation approval.",
+  "bundle_id": "LGE-R9-dishwasher-development-20261008-v1",
+  "bundle_sha256": "fbc233a429c6ec1ceeb1571ce509ecad7d9494fe5388a0524fd3e64bfa0639ff",
+  "reviewer_model_calls": 0,
+  "source_facts_exact_in_both_runs": true,
+  "condition_parent_brief_exact": true,
+  "independent_semantic_quality_verified": false,
+  "overall_verdict": "requires_targeted_semantic_repair",
+  "source_observations": [
+    {"source_id": "LGE-R8-REVIEW-752651", "observed": "The buyer says their wife has sore legs and wanted easier dishwashing. Around one month of use, cleaning the rotating arms is mentioned; odor starts at an unspecified time. After approximately three months of total use they return to handwashing. The review does not report residue, reduced cleaning performance, reading the manual, verified cleaning failure, joint/back pain or pain relief.", "page_model": "DUE6BGL2E", "purchased_model": null, "url": "https://www.lge.co.kr/mkt/review/MD10492836/pdpReviewListPopup"},
+    {"source_id": "LGE-R8-REVIEW-853593", "observed": "Explicit convenience/performance praise coexists with surprise about adding rinse, detergent and salt. Five stars do not remove this mixed wording.", "url": "https://www.lge.co.kr/mkt/review/MD10804836/pdpReviewListPopup"},
+    {"source_id": "LGE-R8-REVIEW-800073", "observed": "Low noise, good cleaning, saved housework time and friendly installation are explicitly praised. No initial-use period is specified.", "url": "https://www.lge.co.kr/mkt/review/MD10492840/pdpReviewListPopup"},
+    {"source_id": "LGE-R8-REVIEW-645400", "observed": "The customer reports a unilateral schedule change and absent discussion/explanation, and says the installer seemed unwilling. That intention is the customer's inference, not independently confirmed refusal.", "url": "https://www.lge.co.kr/mkt/review/MD10492836/pdpReviewListPopup"},
+    {"source_ids": ["D2-DUE-CARE-DW-ODOR-FISHY-P49", "D2-DUE-CARE-DW-ODOR-DEVICE-P49"], "observed": "Official page 49 lists condition-specific odor possibilities and guidance: detergent scent, certain foods, initial use, non-use/storage, residual water and food debris. Some actions refer to the separate tub/filter maintenance sections. These are shared DUE6 manual excerpts; purchased SKU and purchase-time revision remain unverified. They do not diagnose this customer or prove recovery.", "document_version": "MFL71959117 Rev.07_030626", "url": "https://gscs-b2c.lge.com/open/downloadFile?fileId=47eEeOZ5yQ3pVzw1uosMxg"}
+  ],
+  "runs": [
+    {
+      "run_id": "run-a4d943ee4a75463c9fdcc206d8e0d0a2",
+      "public_output_sha256": "710d049187292580b0388b6a9efabc513877b11ea57d690e384e7395ddc1a614",
+      "revision": 0,
+      "verdict": "requires_targeted_semantic_repair",
+      "scope": {"input_sources": 73, "input_customer_sources": 49, "processed_customer_sources": 4, "selected_official_sources": 2, "model_calls": 2, "repair_calls": 0, "coverage_is_reference_count_not_approved_classification": true},
+      "improvements_observed": [
+        "Manual page 49 is relevant to odor, unlike the earlier basket-placement citation.",
+        "Customer cleaning is described as an action, not an automatic cleaning feature.",
+        "Manual existence is not asserted to mean the customer is resolved.",
+        "Customer support is an escalation path, without an explicit guaranteed diagnosis or recovery claim.",
+        "Mixed wording in review 853593 is retained and separately represented; installation and product contexts stay distinct.",
+        "Missing competitor evidence is explicitly disclosed; no superiority is invented."
+      ],
+      "findings": [
+        {"id": "R9-N-01", "priority": "P1", "code": "unreported_symptom_expansion", "source_ids": ["LGE-R8-REVIEW-752651"], "fields": ["problems[problem-1].title", "problems[problem-1].description", "comparisons[comparison-1].remaining_burden", "concepts[concept-1].title", "concepts[concept-1].use_context", "concepts[concept-1].after_steps", "concepts[concept-1].mechanism", "concepts[concept-1].proposed_changes", "concepts[concept-1].validation_questions", "concepts[concept-1].visual_scenes", "summaries.negative[0].text"], "output_examples": ["세척력 저하", "세척 후 잔여물이 느껴지는 상황"], "assessment": "Odor alone does not establish reduced cleaning performance or residue. A broader proposed use case is possible only as a separate, explicit planning assumption; it must not rewrite the observed problem or review summary."},
+        {"id": "R9-N-02", "priority": "P1", "code": "unverified_action_outcome_and_timeline", "source_ids": ["LGE-R8-REVIEW-752651"], "fields": ["comparisons[comparison-1].remaining_burden", "concepts[concept-1].use_context", "concepts[concept-1].before_steps", "concepts[concept-1].visual_scenes"], "output_examples": ["청소 후에도 지속된 냄새", "고객이 3개월간 식기세척기 사용 지속", "설명서를 찾아보지만"], "assessment": "The source mentions cleaning, later unspecified odor and about three months of total use. It does not show a verified odor-treatment failure, another three months after earlier steps, or manual-search confusion. Avoid asserting an exact causal/order relationship beyond the original wording; hypothetical before scenes must be labeled at the scene and in assumptions."},
+        {"id": "R9-N-03", "priority": "P2", "code": "unmarked_persona_anatomy_expansion", "source_ids": ["LGE-R8-REVIEW-752651"], "fields": ["concepts[concept-1].target_user", "concepts[concept-1].assumptions"], "output_examples": ["특히 관절/허리 통증 등"], "assessment": "The observed beneficiary is the buyer's wife with sore legs. Joint/back conditions and a larger target group are unverified proposals. This output does not claim measured pain improvement, but the target expansion is not labeled as an assumption."},
+        {"id": "R9-N-04", "priority": "P2", "code": "manual_applicability_and_procedure_scope", "source_ids": ["D2-DUE-CARE-DW-ODOR-FISHY-P49", "D2-DUE-CARE-DW-ODOR-DEVICE-P49"], "fields": ["comparisons[comparison-1].comparison_limits", "concepts[concept-1].assumptions", "concepts[concept-1].after_steps", "concepts[concept-1].visual_scenes"], "assessment": "SKU uncertainty is disclosed but the shared-manual and purchase-time revision limit needs to carry into the proposed guidance. The excerpts list conditional guidance and refer elsewhere for procedures. Confirm applicability before presenting executable instructions, keep symptom intake distinct from verified diagnosis, and link missing procedure originals instead of inventing their steps."}
+      ]
+    },
+    {
+      "run_id": "run-1313f2b8d99e4ef4828a4db875015709",
+      "public_output_sha256": "a56547b38c2f593687fb5271016509d9f3bd577a11314fd8254a05c1e2f5bac4",
+      "revision": 1,
+      "previous_brief_id": "brief-cdc73e1c07af4960ac70a18a0904cb04",
+      "verdict": "condition_flow_operates_but_semantic_errors_persist",
+      "condition_assessment": "The draft moves to app/web intake, guidance, recording and support without adding sensors or parts. proposed_changes still says app/product UI whereas the active constraint says existing app/web only; clarify that item. This is behavior/integration evidence, not semantic approval.",
+      "findings": [
+        {"id": "R9-C-01", "priority": "P1", "code": "unreported_symptom_and_manual_use_failure", "source_ids": ["LGE-R8-REVIEW-752651"], "fields": ["problems[problem-1].title", "problems[problem-1].description", "comparisons[comparison-1].remaining_burden", "concepts[concept-1].target_user", "concepts[concept-1].use_context", "concepts[concept-1].before_steps", "concepts[concept-1].visual_scenes"], "assessment": "Reduced performance/residue remains fabricated. The changed before steps assert odor, then cleaning, then persistent odor and unsuccessful manual reading; the source does not establish that treatment sequence or manual use. The model has reversed and strengthened the action chronology while preserving a superficial cause-unknown caveat."},
+        {"id": "R9-C-02", "priority": "P1", "code": "purchase_expectation_is_not_positive_outcome_or_pain_relief", "source_ids": ["LGE-R8-REVIEW-752651"], "fields": ["summaries.mixed[0].text"], "output_examples": ["가족의 다리 통증 완화(편리함)", "제품 만족도와 관리/성능 불만이 공존"], "assessment": "The hoped-for convenience at purchase is not an explicit positive use outcome, nor a pain-relief motive stated by the reviewer. This review has explicit disappointment/odor/handwashing and no explicit product-satisfaction report, so the given mixed rationale is unsupported. Do not classify a wish as praise."},
+        {"id": "R9-C-03", "priority": "P2", "code": "mixed_wording_hidden_in_positive_only_category", "source_ids": ["LGE-R8-REVIEW-853593"], "fields": ["summaries.positive[0]", "summaries.mixed"], "assessment": "The text preserves both praise and the explicitly stated initial surprise, but positive-only classification loses the combined opinion. Five-star rating is not a substitute for wording-based classification. Component praise may also appear in positive, but the coexisting burden should remain represented in mixed."},
+        {"id": "R9-C-04", "priority": "P1", "code": "customer_inference_promoted_to_confirmed_intent", "source_ids": ["LGE-R8-REVIEW-645400"], "fields": ["summaries.negative[0].text"], "output_examples": ["기사님의 설치 거부 의지"], "assessment": "The source says the installer seemed unwilling. Preserve it as a customer's perception, separate from the reported schedule/discussion problems; do not assert a verified refusal motive."}
+      ]
+    }
+  ],
+  "minimum_item_feedback": [
+    {"item_kind": "Problem", "item_id": "problem-1", "fields": ["title", "description"], "message": "후기는 물비린내와 손설거지 전환만 보고합니다. 세척력 저하·잔여물·성능 저하를 관찰 사실로 추가하지 마세요. 약 한 달 사용 후 회전날개 청소 언급, 어느 순간 냄새 시작, 총 약 세 달 사용 후 손설거지 전환이라는 원문 범위를 보존하세요. 원인을 추정하거나 청소로 냄새를 치료했지만 실패했다고 단정하지 마세요."},
+    {"item_kind": "Comparison", "item_id": "comparison-1", "fields": ["remaining_burden", "comparison_limits"], "message": "확인된 잔여 부담은 물비린내 때문에 손설거지로 돌아온 경험입니다. 세척력 저하, 청소 후 냄새 지속, 설명서 열람·안내 실행 실패는 미확인입니다. 청소 언급만으로 치료 실패를 만들지 마세요. 공용 DUE6 설명서의 조건별 참고 안내이며 정확한 구매 SKU와 구매시점 문서 버전은 확인되지 않았습니다. 설명서 존재는 이 고객의 원인 규명·해결 증거가 아닙니다."},
+    {"item_kind": "Concept", "item_id": "concept-1", "fields": ["title", "target_user", "use_context", "before_steps", "after_steps", "mechanism", "proposed_changes", "assumptions", "validation_questions", "visual_scenes"], "message": "물비린내·손설거지 전환만 원관찰로 쓰세요. 관절/허리 통증·세척력 저하·잔여물은 미확인이고 배우자의 다리 불편을 구매자 질환으로 바꾸지 마세요. 총 약 세 달 사용을 추가 세 달로 만들지 마세요. before에는 설명서 열람·청소 실패를 관찰처럼 넣지 마세요. 가상 장면은 그 자리와 assumptions에 표시하세요. 정확한 SKU/문서 버전·조건 확인→공식 원문 참고→확인 기록→미해결 문의의 웹/앱 제안이며 진단·회복 보장이 아닙니다. 발췌에 없는 청소 절차는 만들지 말고 원문 연결로 남기세요."}
+  ],
+  "repair_budget_note": "There are three affected mutable items, but this lineage's shared correction budget allows two attempts. Prioritize Problem and Concept for an immediate draft repair; Comparison and summary corrections remain explicitly pending. Do not silently reset the budget or claim all findings fixed.",
+  "summary_feedback_pending": "Summary polarity/content is outside the current item-only repair contract. Correct unsupported cleaning-loss wording, purchase-expectation/pain-relief expansion and installer-intent certainty; preserve mixed wording in 853593. Keep summary_reference_coverage counts as reference bookkeeping, not approved sentiment or market frequency.",
+  "guidance_change_plan": "Add generic provenance rules for every title/summary/comparison/concept/scene: explicit symptom/anatomy/action/time only; hypotheses and hypothetical before scenes separately marked; hope is not a positive outcome; customer inference is not verified fact. No source-specific hardcoding, rejection keyword gate, public contract change or extra model calls.",
+  "original_outputs_immutable": true
+}

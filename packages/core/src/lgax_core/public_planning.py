@@ -25,6 +25,7 @@ from .correction_budget import CorrectionBudget
 from .errors import DomainError
 from .judgement_contract import MAX_REVISIONS
 from .model_client import StructuredModelResult
+from .prompt_context import PUBLIC_PROVENANCE_GUIDE
 from .retrieval import tokenize
 
 ModelCaller = Callable[[str, dict], dict | StructuredModelResult]
@@ -80,6 +81,7 @@ INSTRUCTIONS = (
     "안전 사용은 공식 원문 범위의 안내로 연결하고 가열시간/출력 등 검증하지 않은 설정을 추천하지 "
     "마세요. source_ids는 이번 호출에서 제공된 ID만 사용합니다. 모든 제안은 draft 또는 "
     "needs_sources이며 독립 품질 승인을 주장하지 않습니다."
+    + PUBLIC_PROVENANCE_GUIDE
 )
 
 def summary_reference_coverage(summaries: dict, input_customer_ids: set[str],

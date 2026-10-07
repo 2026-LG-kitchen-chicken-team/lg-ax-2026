@@ -15,6 +15,18 @@ from lgax_core.public_planning import PublicPlanner
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def research_bundle_paths(root: Path = ROOT) -> list[Path]:
+    """Keep seven existing run inputs and add one document-only manual reference."""
+    edition = root / 'data/research/r9-public-runtime-20261008'
+    paths = [edition / f'{group}.research-bundle.json' for group in ('dishwasher', 'fridge', 'microwave')]
+    paths += sorted((root / 'data/research/r8-public-official-expansion-20261007/bundles').glob('*.json'))
+    paths.append(root / 'data/research/r8-public-competitor-adapter-20261007/fridge.development.research-bundle.json')
+    paths.append(edition / 'microwave.manual-reference.research-bundle.json')
+    if len(paths) != 8 or any(not path.is_file() for path in paths):
+        raise ValueError('Prepare the three R9 actual-source bundles and the separate manual reference.')
+    return paths
+
+
 class BoundedPrototypePlanner:
     def run(self, bundle, goal, constraints, previous=None):
         with StructuredModelClient.from_env() as client:
@@ -43,12 +55,10 @@ def main():
         parser.error('Choose a non-privileged loopback port.')
     registry = TokenRegistry([{'principal_id': credential.get('principal_id', 'manual-research-prototype'),
                               'role': 'editor', 'token_sha256': sha256(token.encode()).hexdigest()}])
-    paths = sorted((ROOT / 'data/research/r9-public-runtime-20261008').glob('*.research-bundle.json'))
-    # Keep prior immutable run inputs addressable; the new edition has separate IDs.
-    paths += sorted((ROOT / 'data/research/r8-public-official-expansion-20261007/bundles').glob('*.json'))
-    paths.append(ROOT / 'data/research/r8-public-competitor-adapter-20261007/fridge.development.research-bundle.json')
-    if len(paths) != 7:
-        parser.error('Prepare the three R9 actual-source bundles before starting.')
+    try:
+        paths = research_bundle_paths()
+    except ValueError as error:
+        parser.error(str(error))
     workspace = ResearchWorkspace(args.state_dir / 'r8-preview.research.sqlite3', paths,
                                   BoundedPrototypePlanner() if args.enable_model else None)
     app = create_workspace_app(args.state_dir / 'r8-preview.workspace.sqlite3', registry,

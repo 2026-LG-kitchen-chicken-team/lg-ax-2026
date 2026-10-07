@@ -9,6 +9,23 @@ This does not alter any acceptance rule or infer support from customer pain.
 from copy import deepcopy
 
 
+PUBLIC_PROVENANCE_GUIDE = (
+    "모든 제목·요약·비교·콘셉트·장면에서 관찰로 쓰는 증상·신체 부위·대상·원인·행동·기간은 "
+    "인용 원문이 직접 입증한 범위까지만 적습니다. 연관되거나 그럴듯하다는 이유로 다른 증상·부위·"
+    "원인으로 확대하지 않습니다. 고객의 추측은 고객의 추측으로 남기고 확정 사실로 바꾸지 않습니다. "
+    "새 대상·상황 확장은 해당 필드에서 기획 가정이라고 명시하고 assumptions에 기록합니다. "
+    "반복 관리 언급을 단일 치료 시점으로 바꾸거나 총 사용 기간을 추가 사용 기간으로 합산하지 "
+    "않습니다. before_steps와 visual_scenes.before도 원문에서 확인된 행동만 관찰로 씁니다. "
+    "원문에 없는 설명서 열람·안내 실행·조치 실패를 추가한 가상 before는 그 자리에서 가정이라고 "
+    "명시하고 assumptions에 기록합니다. 구매 희망·기대는 실제 만족이나 효과를 입증하지 않습니다. "
+    "긍정·부정·혼합은 별점이 아니라 본문에 명시된 실제 경험으로 분류하고, 혼합은 명시적 칭찬과 "
+    "불편이 함께 있을 때만 사용합니다. 칭찬과 초기 불편이 공존하면 둘을 보존합니다. "
+    "공용 문서의 조건별 참고 안내는 고객의 원인·해결 증거가 아닙니다. 정확한 모델·문서 버전과 "
+    "적용 조건이 미확인이면 그 한계를 표시하고, 발췌에 없는 실행 절차는 만들지 말고 공식 원문 "
+    "연결 또는 추가 확인으로 남깁니다."
+)
+
+
 def public_generation_stage(schema: dict) -> str | None:
     """Recognize only the planner's complete, trusted generation schemas.
 

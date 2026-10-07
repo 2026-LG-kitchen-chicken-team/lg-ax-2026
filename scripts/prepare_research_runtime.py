@@ -40,6 +40,9 @@ AUDIT_REFERENCES = [
         "pull_request": 252,
     },
 ]
+MANUAL_SOURCE_PACK_SHA256 = "1b12c9c557ca29a867f427c63ed801f54b7f9accec3cb41749b919a14395dc33"
+MANUAL_REFERENCE_FILE = "microwave.manual-reference.research-bundle.json"
+MANUAL_REFERENCE_ID = "LGE-R9-microwave-manual-reference-20261008-v1"
 
 
 def json_bytes(value):
@@ -141,14 +144,97 @@ def prepare_runtime_inputs(source_paths: Mapping[str, Path], output_dir: Path):
     return manifest
 
 
+def prepare_manual_reference_bundle(source_pack: Path, output_dir: Path):
+    """Prepare a separate document-only reference; never rewrite the three live R9 inputs."""
+    source_pack = Path(source_pack)
+    source_raw = source_pack.read_bytes()
+    source_digest = sha256(source_raw).hexdigest()
+    if source_digest != MANUAL_SOURCE_PACK_SHA256:
+        raise ValueError("Frozen manual excerpt pack hash changed")
+    pack = json.loads(source_raw)
+    sources = deepcopy(pack["sources"])
+    if len(sources) != 5 or any(
+        source["source_type"] != "manual" or source["source_role"] != "official_document"
+        or source["product_group"] != "microwave" for source in sources
+    ):
+        raise ValueError("The reference must contain the five official microwave manual excerpts")
+    bundle = {
+        "schema_version": "1.0",
+        "bundle_id": MANUAL_REFERENCE_ID,
+        "product_group": "microwave",
+        "analysis_scope": "product_group",
+        "sources": sources,
+        "collection_manifest": {
+            "version": "r9-manual-reference.20261008.v1",
+            "display_name": "전자레인지 설명서 초안 참고",
+            "purpose": "manual_draft_reference",
+            "source_pack_path": "data/research/r9-public-runtime-20261008/manual-excerpts.json",
+            "source_pack_sha256": source_digest,
+            "source_count": 5,
+            "review_count": 0,
+            "customer_experience_count": 0,
+            "unique_pdf_count": 4,
+            "verified_purchased_sku_count": 0,
+            "known_posting_date_count": 0,
+            "limitations": [
+                "실제 고객 리뷰가 없는 공식 설명서 발췌 5건입니다.",
+                "설명서는 여러 모델을 함께 다룰 수 있으며 MW25B는 MW25B.CKOR 표지 후보입니다.",
+                "실제 구매 SKU, 구매 시점 설명서 버전과 게시일은 미확인입니다.",
+                "사용설명서 초안의 참고자료이며 전체 설명서나 고객 불편 발견 결과가 아닙니다.",
+            ],
+            "customer_problem_discovery_verified": False,
+            "semantic_quality_verified": False,
+            "model_calls": 0,
+        },
+    }
+    validate_research_bundle(bundle)
+    raw = json_bytes(bundle)
+    manifest = {
+        "version": "r9-manual-reference.20261008.v1",
+        "producer": "scripts/prepare_research_runtime.py --manual-excerpts",
+        "source_pack_path": "data/research/r9-public-runtime-20261008/manual-excerpts.json",
+        "source_pack_sha256": source_digest,
+        "output_path": MANUAL_REFERENCE_FILE,
+        "output_sha256": sha256(raw).hexdigest(),
+        "bundle_id": MANUAL_REFERENCE_ID,
+        "source_objects_and_facts_preserved": sources == pack["sources"],
+        "source_count": 5,
+        "review_count": 0,
+        "schema_valid": True,
+        "three_live_r9_bundle_files_not_written": True,
+        "runtime_registered": False,
+        "model_calls": 0,
+        "network_calls": 0,
+        "semantic_quality_verified": False,
+        "implementation_provenance": "Current chat manual support implementation; not an owner's direct execution record",
+    }
+    payloads = {MANUAL_REFERENCE_FILE: raw, "manual-reference.manifest.json": json_bytes(manifest)}
+    output_dir = Path(output_dir)
+    for name, payload in payloads.items():
+        destination = output_dir / name
+        if destination.exists() and destination.read_bytes() != payload:
+            raise ValueError(f"Preserve prior output: {name}")
+    output_dir.mkdir(parents=True, exist_ok=True)
+    for name, payload in payloads.items():
+        destination = output_dir / name
+        if not destination.exists():
+            destination.write_bytes(payload)
+    return manifest
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for group in GROUPS:
         parser.add_argument(f"--{group}", type=Path, default=ROOT / INPUT_BASE / group / "research-bundle.json")
     parser.add_argument("--output-dir", type=Path, default=ROOT / OUTPUT)
+    parser.add_argument("--manual-excerpts", type=Path, help="Prepare only the separate document reference bundle")
     args = parser.parse_args()
-    manifest = prepare_runtime_inputs({group: getattr(args, group) for group in GROUPS}, args.output_dir)
-    print(json.dumps({"groups": manifest["groups"], "metadata_corrections": len(manifest["metadata_corrections"])}))
+    if args.manual_excerpts is not None:
+        manifest = prepare_manual_reference_bundle(args.manual_excerpts, args.output_dir)
+        print(json.dumps(manifest))
+    else:
+        manifest = prepare_runtime_inputs({group: getattr(args, group) for group in GROUPS}, args.output_dir)
+        print(json.dumps({"groups": manifest["groups"], "metadata_corrections": len(manifest["metadata_corrections"])}))
 
 
 if __name__ == "__main__":
