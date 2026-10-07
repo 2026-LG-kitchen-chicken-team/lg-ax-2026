@@ -101,6 +101,7 @@ class PublicRepairTests(unittest.TestCase):
             return {"patch": {"source_ids": new_sources, "status": "needs_sources"}}
 
         feedback = [request("Concept", ["source_ids", "status"])]
+        feedback[0]["message"] += " 출처 선택 경계 검사에 LGE-R8-REVIEW-800073을 명시적으로 포함합니다."
         result = PublicPlanner(contract_patch).repair(self.bundle, self.previous, feedback)
         self.assertEqual(len(calls), 1)
         self.assertEqual(result["problems"], before["problems"])
@@ -178,6 +179,36 @@ class PublicRepairTests(unittest.TestCase):
         for private in ("private-provider-message", "127.0.0.1", "private-token"):
             self.assertNotIn(private, json.dumps(result))
         validate_feedback(self.bundle, self.previous, feedback)
+
+    def test_repair_context_uses_only_item_sources_and_explicit_named_catalog_source(self):
+        # The actual repaired concept cites only the smell review; the earlier
+        # run also selected D12 and an unrelated positive review. Reusing that
+        # old selection must not silently reintroduce those sources.
+        previous = deepcopy(self.previous)
+        previous["concepts"][0]["source_ids"] = [REVIEW]
+        previous["relations"][1]["source_ids"] = [REVIEW]
+        self.assertIn(MANUAL, previous["runtime"]["selected_source_ids"])
+        for explicit in (False, True):
+            calls = []
+
+            def context_probe(prompt, schema, observed=calls):
+                observed.append(json.loads(prompt.split("분석할 데이터(JSON):\n", 1)[1]))
+                return {"patch": {"status": "needs_sources"}}
+
+            feedback = [request("Concept", ["status"])]
+            if explicit:
+                feedback[0]["message"] += f" 공식 발췌 {MANUAL}도 함께 확인하세요."
+            with self.subTest(explicit=explicit):
+                result = repair_public_brief(context_probe, self.bundle, previous, feedback)
+                expected = [REVIEW, MANUAL] if explicit else [REVIEW]
+                self.assertEqual([source["source_id"] for source in calls[0]["sources"]], expected)
+                self.assertEqual(result["runtime"]["selected_source_ids"], sorted(expected))
+                self.assertEqual(result["runtime"]["repair_outcomes"][0]["status"], "accepted")
+                self.assertEqual(result["source_facts"], source_facts(self.bundle))
+                for source in calls[0]["sources"]:
+                    original = next(row for row in self.bundle["sources"] if row["source_id"] == source["source_id"])
+                    self.assertEqual(source["text"], original["text"])
+                    self.assertEqual(source["facts"], original["facts"])
 
 
 if __name__ == "__main__":

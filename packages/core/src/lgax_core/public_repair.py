@@ -137,9 +137,6 @@ def repair_public_brief(model_caller, bundle: dict, previous: dict, feedback: li
                   revision=previous["revision"] + 1, previous_brief_id=previous["brief_id"])
     trace, issues, outcomes, selected_ids = [], [], [], set()
     context_builder = PublicPlanner(model_caller, max_source_characters=max_source_characters)._source_context
-    previous_selected = previous["runtime"].get("selected_source_ids", [])
-    previous_selected = ([eid for eid in previous_selected if isinstance(eid, str) and eid in catalog]
-                         if isinstance(previous_selected, list) else [])
     definitions = load_research_schema()["$defs"]
     removed_by_item = {}
     for request in feedback:
@@ -148,8 +145,7 @@ def repair_public_brief(model_caller, bundle: dict, previous: dict, feedback: li
         position = next(index for index, item in enumerate(result[collection]) if item["id"] == item_id)
         original = previous[collection][position]
         fields = set(request["fields"])
-        source_ids = list(dict.fromkeys(previous_selected + original["source_ids"]
-                                        + original.get("counter_source_ids", [])
+        source_ids = list(dict.fromkeys(original["source_ids"] + original.get("counter_source_ids", [])
                                         + [eid for eid in catalog if eid in request["message"]]))
         sources = [context_builder(catalog[eid]) for eid in source_ids]
         properties = {field: deepcopy(definitions[kind]["properties"][field]) for field in sorted(fields)}
