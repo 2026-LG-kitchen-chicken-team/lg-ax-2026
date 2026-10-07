@@ -1,0 +1,14 @@
+check_id,subject,required_input,owner,expected_R5_value,observed_before,observed_after,status,reason,actual_capture_count
+C01,생산자/소비 commit·팩 버전,정확 head와 승인/후보 버전,PM/PM 보조 DATA,,,,미확인,고정 R5 등록/소비 인계 미수신,0
+C02,원 CSV/PDF bytes,등록문서 ID별 source path·SHA,PM 보조 DATA,,,,미확인,고정 R5 등록/소비 인계 미수신,0
+C03,expected dataset/origins,원문·ID·모델·판본·locator·text SHA,PM 보조 DATA / 1·2번 원문 검수,,,,미확인,고정 R5 등록/소비 인계 미수신,0
+C04,DB documents record,저장 record의 전/후 export,PM/PM 보조 DATA,,,,미확인,고정 R5 등록/소비 인계 미수신,0
+C05,metadata GET,동일 문서 GET/200 원 JSON 전/후,PM/PM 보조 DATA,,,,미확인,고정 R5 등록/소비 인계 미수신,0
+C06,original GET,원 binary/CSV 응답 전/후 SHA,PM/PM 보조 DATA,,,,미확인,고정 R5 등록/소비 인계 미수신,0
+C07,개별 evidence GET,모든 원 evidence ID별 원 JSON 전/후,PM/PM 보조 DATA,,,,미확인,고정 R5 등록/소비 인계 미수신,0
+C08,정상 scope GET,selected model/version 원문 양성 대조,PM/PM 보조 DATA,,,,미확인,고정 R5 등록/소비 인계 미수신,0
+C09,다른 유효 제품 scope GET,다른 제품의 근거만 반환하는 양성 대조,PM/PM 보조 DATA,,,,미확인,고정 R5 등록/소비 인계 미수신,0
+C10,미등록 모델 GET,INVALID_MODEL_ID와 해당 profile HTTP status,PM/PM 보조 DATA,,,,미확인,고정 R5 등록/소비 인계 미수신,0
+C11,틀린 문서 판본 GET,INVALID_DOCUMENT_VERSION; local400/public404 구분,PM/PM 보조 DATA,,,,미확인,고정 R5 등록/소비 인계 미수신,0
+C12,실제 재시작 수신증,같은 DB/자료 범위와 전/후 응답,PM,,,,미확인,고정 R5 등록/소비 인계 미수신,0
+C13,운영 출처/계약 호환성/인수,원 실행/배포 source 및 PM 검수 원 증거,PM,,,,미확인,고정 R5 등록/소비 인계 미수신,0

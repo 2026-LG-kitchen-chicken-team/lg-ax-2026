@@ -1,0 +1,25 @@
+{
+  "scope": "prepublication audit helper development; no product/operating/model execution",
+  "runs": [
+    {
+      "kind": "synthetic validator initial",
+      "cases": 20,
+      "passed": 20,
+      "validator_sha256": "f80ff83bc4102f772350c46b2b5ad0b5b783f0a3749ffa896877eecf470af22e"
+    },
+    {
+      "kind": "unreceived readiness",
+      "expected_native_exit": 2,
+      "observed_status": "UNCONFIRMED",
+      "actual_captures": 0,
+      "initial_shell_wrapper_exit": 1,
+      "note": "native exit2 guard passed; later wrapper/result guard explicit exit0"
+    },
+    {
+      "kind": "final synthetic validator",
+      "cases": 22,
+      "passed": 22,
+      "validator_sha256": "350f07f2f6c18aaf2869fd12cb80c9cd27c46d12b14008fcc5e3435c7d13dbc5"
+    }
+  ]
+}

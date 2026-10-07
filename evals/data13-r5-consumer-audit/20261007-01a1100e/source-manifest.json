@@ -1,0 +1,124 @@
+{
+  "source_commit": "8b41fd4785bc149593f04d913ef974f29fb341fe",
+  "method": "static source inspection only; no producer or endpoint run",
+  "sources": [
+    {
+      "path": "packages/contracts/schemas/lgax.schema.json",
+      "source_commit": "8b41fd4785bc149593f04d913ef974f29fb341fe",
+      "git_blob": "9f55ee9b4685a13e8ee6962bc00bcded53b9cdba",
+      "sha256": "cf85c6119551a5cea30af2b6d9368bba43475a1ccc503cb72fdaaaaf4a6db666",
+      "lines": [
+        92,
+        154
+      ],
+      "observation": "canonical Evidence/Review; dataset version and SHA are outside entity fields"
+    },
+    {
+      "path": "packages/core/src/lgax_core/review_csv.py",
+      "source_commit": "8b41fd4785bc149593f04d913ef974f29fb341fe",
+      "git_blob": "47b162d51ea648b5ea5a3b23eb11ee51968d17eb",
+      "sha256": "43b7faf9dd92c1cfe935d41644f1be96e852e5145c9d111e1ce076bca617b4bc",
+      "lines": [
+        15,
+        149,
+        194,
+        211
+      ],
+      "observation": "eight original CSV columns, DB documents record; store reparses original CSV"
+    },
+    {
+      "path": "packages/core/src/lgax_core/review_import.py",
+      "source_commit": "8b41fd4785bc149593f04d913ef974f29fb341fe",
+      "git_blob": "203e61ed96e693958966ebf2462093920f96b107",
+      "sha256": "545e77aa15b112d4ad67838c026f8915d2c6a367cd70b65273cbdfee2aec245c",
+      "lines": [
+        127,
+        166
+      ],
+      "observation": "physical CSV row/end_row, original text and UTF8 SHA origins"
+    },
+    {
+      "path": "packages/core/src/lgax_core/documents.py",
+      "source_commit": "8b41fd4785bc149593f04d913ef974f29fb341fe",
+      "git_blob": "fee5b0c8ee7e128b6451c5349c1933f930a0daef",
+      "sha256": "ba95e517c2cc0e5c05b8ba49a5e6cc02318c1f8abf98710c3f36afaf7ccb7bf9",
+      "lines": [
+        111,
+        141
+      ],
+      "observation": "PDF original SHA, expected excerpts, origins character ranges"
+    },
+    {
+      "path": "packages/core/src/lgax_core/documents_server.py",
+      "source_commit": "8b41fd4785bc149593f04d913ef974f29fb341fe",
+      "git_blob": "5c1f238eea68c8af6a5560ea3003a92790339ca7",
+      "sha256": "eee20d2afbbe1fa2c720ac7440f9c3348964a4e0ac42160731ddedafbbbc5d99",
+      "lines": [
+        35,
+        55,
+        76
+      ],
+      "observation": "GET metadata/original/evidence/search; local error status mapping"
+    },
+    {
+      "path": "packages/core/src/lgax_core/retrieval.py",
+      "source_commit": "8b41fd4785bc149593f04d913ef974f29fb341fe",
+      "git_blob": "34d63049afe274ec61fdcd57ca97184ac351bacb",
+      "sha256": "8d73b5d83ffb9843c775309d96211ca4a451877ba3abd5e201d47601f2381523",
+      "lines": [
+        81,
+        100,
+        106
+      ],
+      "observation": "current literal_token_count response and full evidence payload"
+    },
+    {
+      "path": "packages/core/src/lgax_core/evidence_catalog.py",
+      "source_commit": "8b41fd4785bc149593f04d913ef974f29fb341fe",
+      "git_blob": "5f169e75c2f901543801502fd3c71eb461fba97d",
+      "sha256": "b33ca8edd0ed262e1e97aa11de0025301a3971fadb6001fa1b776126bbb951d1",
+      "lines": [
+        118,
+        139
+      ],
+      "observation": "model/version scopes and scoped ID SOURCE_MISMATCH"
+    },
+    {
+      "path": "packages/core/src/lgax_core/source_ranges.py",
+      "source_commit": "8b41fd4785bc149593f04d913ef974f29fb341fe",
+      "git_blob": "c5a55bb03ffaa4396c4a2cef73ea038dd52557b1",
+      "sha256": "30c823f83bc2fd7c568f4fd4e9f6ce74fe0b79e029829d74409419f5b48b6758",
+      "lines": [
+        133
+      ],
+      "observation": "source byte and range verification are separate from table/OCR structure"
+    },
+    {
+      "path": "apps/api/src/lgax_api/server.py",
+      "source_commit": "8b41fd4785bc149593f04d913ef974f29fb341fe",
+      "git_blob": "6598349ec6503722d939de04ce9c0da49fef3a10",
+      "sha256": "d752c53101769473e51aa72164c7c22e16f9d56a82798fa98fbb637e5ebcd96a",
+      "lines": [
+        36
+      ],
+      "observation": "public API invalid document version uses404 rather than local400"
+    },
+    {
+      "path": "evals/data003-compare/20261006-01a10834/prepared/13-handoff-contract.json",
+      "source_commit": "8b41fd4785bc149593f04d913ef974f29fb341fe",
+      "git_blob": "0cd229599c347a33bed2937e6aa18288bac4846b",
+      "sha256": "2e507532e82c5eaa56c6de5e07eca921fc6b599408e007dbf18d05b3ac11b5e7",
+      "lines": [
+        6
+      ],
+      "observation": "historical handoff preparation, not an R5 capture"
+    }
+  ],
+  "R5_data_path": "data/research/r5-public-reviews-20261007",
+  "R5_data_present_in_fixed_main": false,
+  "R5_handoff_received": false,
+  "actual_product_requests": 0,
+  "models": 0,
+  "OCR": 0,
+  "restart_calls": 0
+}
