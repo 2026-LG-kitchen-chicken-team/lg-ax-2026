@@ -19,7 +19,7 @@ D1·D2의238건과 실제FAQ/설치 생산은 LGAX #12 창의 고정 결과를 �
 ## 현재 인계와 역할 경계
 
 조정 창은 P0/R8의 review/qa/faq/manual/spec/installation 소비 규격·등록/조회/운영 재시작을 맡는다고 전달했다.
-CORE와 WEB의 구현 파일을 DATA에서 수정하지 않는다. API에서 아직 소비하지 못하는 source_type은 PM P0의 mapping/pin 인계 대기라고 기록한다.
+CORE와 WEB의 구현 파일을 DATA에서 수정하지 않는다. PM PR245는 새 ResearchBundle/PlanningBrief 계약·source mapping·소비와 D3 발췌12개의 adapter를 구현했다고 보고했다. 최신 고정 head/병합/운영/인계 상태를 조정 창에서 확인하고 기존 구현을 재사용한다. 옛 legacy source_type 제한을 공통 계약 재개발 요청으로 바꾸지 않는다.
 D4는 생산자와 별도 source에서 원문·분할·날짜/SKU·표본·Excel 내용 검수를 수행한다. 이를 실모델 의미 평가나 전체제품 완료로 승격하지 않는다.
 
 권장 후속3창은 입력 실제 전달(A), PDF 표 근거(C), 개발 주제/WEB sidecar(B)다.

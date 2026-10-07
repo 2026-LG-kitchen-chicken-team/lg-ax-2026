@@ -37,7 +37,7 @@ class Audit:
             self.findings.append({"code": code, "detail": detail})
 
 
-def inspect_xlsx(path, expected, audit):
+def inspect_xlsx(path, expected, model_groups, audit):
     ns = {"m": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
     rel_ns = "{http://schemas.openxmlformats.org/package/2006/relationships}"
     rel_attr = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id"
@@ -97,6 +97,8 @@ def inspect_xlsx(path, expected, audit):
                 continue
             rid = r["cells"].get(id_col, "")
             if rid not in expected:
+                if rid or any(r["cells"].get(c, "") for c in body_cols):
+                    audit.check(False, "xlsx_unregistered_review_row", {"row": r["row"], "id_sha256": digest(rid.encode())})
                 continue
             audit.check(rid not in found, "xlsx_duplicate_review_id", rid)
             text = "".join(r["cells"].get(c, "") for c in body_cols)
@@ -114,6 +116,13 @@ def inspect_xlsx(path, expected, audit):
             if value and re.fullmatch(r"\d+(?:\.\d+)?", value):
                 value = (date_origin + timedelta(days=float(value))).date().isoformat()
             audit.check(value == (expected[rid]["purchase_date"] or ""), "xlsx_purchase_date_changed", rid)
+            model_col = next((c for c, v in labels.items() if v == "표시모델"), None)
+            group_col = next((c for c, v in labels.items() if v == "제품군"), None)
+            source_model = expected[rid]["displayed_model_id"]
+            audit.check(model_col is not None and r["cells"].get(model_col) == source_model,
+                        "xlsx_displayed_model_changed", rid)
+            audit.check(group_col is not None and r["cells"].get(group_col) == model_groups.get(source_model),
+                        "xlsx_product_group_changed", rid)
             found[rid] = text
             verified += 1
         audit.check(set(found) == set(expected), "xlsx_id_coverage", {"seen": len(found), "expected": len(expected)})
@@ -163,6 +172,8 @@ def main():
     v1 = load(old_root / "fixed18/records.json")
     v2_new = load(old_root / "balanced-pilot-v2/new_unique_records.json")
     v2_all = load(old_root / "balanced-pilot-v2/records.json")
+    products = load(old_root / "fixed18/products.json")
+    model_groups = {r["model_id"]: r["product_group"] for r in products}
     expected = {r["original_review_id"]: r for r in v1 + v2_new}
     records = load(args.producer / "original-records.json")
     actual = {r["original_review_id"]: r for r in records}
@@ -179,8 +190,12 @@ def main():
         if not member:
             audit.check(False, "membership_missing", rid)
             continue
-        for field in ("split", "text_sha256", "source_url", "source_locator", "rating", "purchase_date", "published_at", "actual_purchased_model_id", "quarantined"):
+        for field in ("split", "text_sha256", "source_url", "source_locator", "rating", "purchase_date", "published_at", "actual_purchased_model_id", "displayed_model_id"):
             audit.check(member.get(field) == original.get(field), "membership_field_changed", {"id": rid, "field": field})
+        audit.check(original["displayed_model_id"] in model_groups and member.get("product_group") == model_groups.get(original["displayed_model_id"]),
+                    "membership_product_group_changed", rid)
+        quarantine = original.get("quarantined", original["split"] == "quarantine")
+        audit.check(member.get("quarantined") == quarantine, "membership_quarantine_changed", rid)
         group_field = "dedup_group_id" if "dedup_group_id" in original else "body_group_id"
         audit.check(member.get("original_group_field") == group_field and member.get("original_group_id") == original[group_field], "original_group_changed", rid)
         audit.check(member.get("independent_use_approved") is False, "independent_approval_fabricated", rid)
@@ -229,8 +244,22 @@ def main():
         record_col = next((c for c in ("original_record_json", "record_json", "metadata_json", "original_json") if c in columns), None)
         audit.check(record_col is not None, "research_db_record_column", sorted(columns))
         db_rows = [json.loads(r[0]) for r in db.execute("SELECT " + record_col + " FROM reviews")] if record_col else []
-        audit.check({r["original_review_id"]: r for r in db_rows} == expected and len(db_rows) == len(expected), "research_db_original_rows_changed")
-    workbook = inspect_xlsx(args.xlsx, expected, audit) if args.xlsx else {"status": "not received"}
+        db_map = {r["original_review_id"]: r for r in db_rows}
+        audit.check(set(db_map) == set(expected) and len(db_rows) == len(expected), "research_db_id_coverage")
+        db_aliases = 0
+        for rid, original in expected.items():
+            stored = db_map.get(rid, {})
+            audit.check(all(k in stored and stored[k] == v for k, v in original.items()), "research_db_original_fields_changed", rid)
+            extras = set(stored) - set(original)
+            audit.check(extras <= {"dedup_group_id"}, "research_db_undeclared_extra_fields", {"id": rid, "fields": sorted(extras)})
+            if "dedup_group_id" in extras:
+                db_aliases += 1
+                audit.check(stored["dedup_group_id"] == original["body_group_id"], "research_db_group_alias_changed", rid)
+    if args.xlsx:
+        raw_workbook = args.xlsx.read_bytes()
+        audit.check(digest(raw_workbook) == receipt["workbook"]["sha256"] and len(raw_workbook) == receipt["workbook"]["bytes"],
+                    "workbook_receipt_changed")
+    workbook = inspect_xlsx(args.xlsx, expected, model_groups, audit) if args.xlsx else {"status": "not received"}
     result = {
         "scope": "D4 independent source/membership/split/bundle/research-file/Excel content audit",
         "status": "PASS" if not audit.findings and args.xlsx else "FAIL" if audit.findings else "PARTIAL",
@@ -241,8 +270,10 @@ def main():
         "split_counts": counts, "split_intersections": intersections,
         "known_publication_dates": sum(r["published_at"] is not None for r in records),
         "verified_buyer_sku": sum(r["actual_purchased_model_id"] is not None for r in records),
-        "research_rows_excluding_quarantine": sum(not r["quarantined"] for r in records),
+        "research_rows_excluding_quarantine": sum(r["split"] != "quarantine" for r in records),
         "development_only_bundle_counts": bundle_counts, "verified_output_files": verified_outputs,
+        "research_db_preserved_original_fields": len(expected), "explicit_group_aliases_checked": db_aliases,
+        "source_registry_models": len(model_groups), "product_group_mapping_checked": len(expected),
         "workbook": workbook, "findings": audit.findings, "warnings": audit.warnings,
         "network_requests": 0, "model_calls": 0,
         "limitations": ["structural/source verification; no semantic Gold or LLM comparison approval",

@@ -1,4 +1,4 @@
-# D4 독립 검수 — D1 고정 인계 대기
+# D4 고정 원문·분할·Excel 독립 검수
 
 담당 신진하/ginaginaring, 세션01a114f6. 생산자는 LGAX #12의 D1·D2 창이며 이 디렉터리는 생산 코드/자료를 편집하지 않는다.
 
@@ -8,7 +8,13 @@ audit_delivery.py는 생산자 함수를 import하지 않는 별도 표준 라�
 238개 원 기록·관측239개·추가 관측860977·기존 분할/그룹·게시일/SKU null·개발전용3Bundle·연구 SQLite의 원 기록·읽기 전용 Excel 내용을 대조한다.
 운영 DB/API/MCP 배포·재시작, 새 모델/OCR 호출, 실제 의미 Gold 채점과 독립 사용 승인은 이 검수의 범위가 아니다.
 
-현재는 실제 producer head/manifest 수신 대기다. 코드의 격리 AST 구문 확인만 수행했고 입력 수신/내용 검수/통과로 기록하지 않는다.
+고정 producer commit6fd98c01b3c6f1abf4741df2130a485142eeeae4의 version lg-public-research.20261007.d1-01a10600.v1을 읽기 전용으로 인수했다.
+result.json의 검수는238고유·239관측·원문/분할·개발전용48/48/45입력·Excel238원문과 날짜/SKU null·원소스/manifest를 통과했다.
+원 키 누락/변경 없이 DB에 추가된59건의 dedup_group_id는 원 body_group_id의 명시적 별칭으로 대조했다.
+원 metadata dict 전체동일 가정/누락 quarantine 필드의 첫 두 실패는 history/와 기록에 보존했다. 생산 파일은 수정하지 않았다.
+
+이 결과는 로컬 고정 commit의 인수다. 생산자의 이후 P0 canonical 실행입력 변경·원격 PR 인수·운영/API/MCP·실모델 의미 품질·Gold 승인·독립사용 승인과 부모 Done은 별도다.
+result.json, producer-receipt.json, execution.json이 실제 고정 입력·검사·격리 설정의 근거다.
 
 ## 인수 조건·재현
 
