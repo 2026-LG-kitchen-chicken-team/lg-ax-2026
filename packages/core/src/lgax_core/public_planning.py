@@ -78,6 +78,42 @@ INSTRUCTIONS = (
     "needs_sources이며 독립 품질 승인을 주장하지 않습니다."
 )
 
+def summary_reference_coverage(summaries: dict, input_customer_ids: set[str],
+                               successful_discovery_ids: set[str]) -> dict:
+    """Count retained summary references, never infer a source's opinion.
+
+    Customer IDs are already deduplicated by the planner's existing input
+    selection. A failed discovery contributes no usable denominator. A source
+    may occur in several opinion summaries; their counts are not additive.
+    """
+    denominator = input_customer_ids & successful_discovery_ids
+    polarities = ("positive", "negative", "mixed")
+    references = {
+        polarity: {eid for row in summaries[polarity] for eid in row["source_ids"]} & denominator
+        for polarity in polarities
+    }
+    covered = set().union(*references.values())
+    memberships = Counter(eid for values in references.values() for eid in values)
+    return {
+        "basis": "returned_summary_references_on_successful_discovery",
+        "sample_unit": "unique_deduplicated_customer_source",
+        "summary_item_counts": {polarity: len(summaries[polarity]) for polarity in polarities},
+        "polarity_source_counts": {polarity: len(references[polarity]) for polarity in polarities},
+        "polarity_source_ids": {polarity: sorted(references[polarity]) for polarity in polarities},
+        "input_customer_source_count": len(input_customer_ids),
+        "denominator_customer_source_count": len(denominator),
+        "denominator_source_ids": sorted(denominator),
+        "covered_customer_source_count": len(covered),
+        "covered_source_ids": sorted(covered),
+        "unreferenced_processed_source_count": len(denominator - covered),
+        "unprocessed_input_source_count": len(input_customer_ids - denominator),
+        "overlapping_polarity_source_count": sum(count > 1 for count in memberships.values()),
+        "coverage_ratio": len(covered) / len(denominator) if denominator else None,
+        "classification_approved": False,
+        "market_frequency_estimated": False,
+    }
+
+
 _QUANTITY = re.compile(r"(?<![0-9.])([0-9]+(?:\.[0-9]+)?)\s*(kW|W|mm|cm|ml|mL|kg|분|초|시간|℃|%)", re.IGNORECASE)
 _UNCERTAIN = re.compile(r"미확인|확인.{0,8}(?:필요|불가|않)|불명|알\s*수\s*없|가능성|가설|추정|수\s*있")
 _ACTUAL_TIME = re.compile(r"(?:[0-9]+\s*분\s*(?:후|간|으로|설정)|시간\s*\([0-9]+\s*분\)|실제.{0,12}[0-9]+\s*분)")
@@ -309,6 +345,7 @@ class PublicPlanner:
         sources = deepcopy(bundle["sources"])
         catalog = {source["source_id"]: source for source in sources}
         trace, warnings, seen_sources, issues, selected_sources = [], [], set(), [], set()
+        discovery_sources: set[str] = set()
         corrections = _correction_budget()
         facts = source_facts(bundle)
         brief = {"schema_version": "1.0", "brief_id": f"brief-{uuid4().hex}", "bundle_id": bundle["bundle_id"],
@@ -492,6 +529,7 @@ class PublicPlanner:
             if output is None:
                 continue
             seen_sources.update(source["source_id"] for source in batch)
+            discovery_sources.update(source["source_id"] for source in batch)
             for item in output["problems"]:
                 item = checked(item, "Problem", batch)
                 if item is not None:
@@ -594,6 +632,9 @@ class PublicPlanner:
                             "omitted_source_count": len(sources) - len(selected_sources),
                             "unique_customer_source_count": len(customer_sources),
                             "source_type_counts": dict(Counter(source["source_type"] for source in sources)),
+                            "summary_reference_coverage": summary_reference_coverage(
+                                brief["summaries"], {source["source_id"] for source in customer_sources},
+                                discovery_sources),
                             "selection_method": "interleaved_rating_expression_page_model_v1",
                             "item_issues": issues, "max_model_calls": self.max_model_calls,
                             "correction_budget": corrections.snapshot,

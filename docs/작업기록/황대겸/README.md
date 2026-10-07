@@ -1,6 +1,9 @@
 # 황대겸 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-08 CORE-C4-SUMMARY-COVERAGE-01a10729-01: 반환 요약 출처의 건수/성공 분모·겹침·미인용/미처리를 코드로 분리. 분류·기간/시장빈도·실제모델 품질/PM 인수 미검증, 모델0. 관련23검사/Ruff/규칙/문서 PASS.
+- [상세/근거](2026-10-08/CORE-C4-SUMMARY-COVERAGE-01a10729-01.md) · [설계·격리 수신](../../../evals/core-manual-quality/20261008/summary-reference-coverage/README.md).
+
 - 2026-10-08 CORE-C4-CONTEXT-GUARD-01a10729-01: 혼합16 원문 문맥을 검토하고 부담→통증/지원→해결 보장 확대 지침을 보완했다. 실제 모델 효과/분류/PM 인수 미완료, 실모델0.
 - [상세/근거](2026-10-08/CORE-C4-CONTEXT-GUARD-01a10729-01.md) · [고정 메모·검사](../../../evals/core-manual-quality/20261008/c4-context-guard/README.md). 독립 준비와 인계 의존 검증을 구분한다.
 
