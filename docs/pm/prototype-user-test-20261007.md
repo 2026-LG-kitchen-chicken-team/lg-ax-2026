@@ -59,4 +59,12 @@
 
 ## 진행 결과
 
-코드 변경과 격리 검증 결과는 아래에 실제 commit·명령·receipt와 함께 추가한다. 현재는 착수/준비 기록이며 완료 보고가 아니다.
+첫 WEB 증분 `4e76cf0271a5ceb1277ccc0c6086625ce59a1236`은 읽기 전용 source archive, zero-auth/network-none Docker에서 UI 537개·safe-CI 4개·TypeScript/빌드·격리 API/MCP 날짜 집계 10개·브라우저 3종과 strict CI 브라우저 3종이 통과했다. 새 SKU 18개 시험의 로딩/중복 방지/failed·held/조건 변경/다른 자료 버전 새 프로젝트가 포함된다. 이 단계는 loadBootstrap을 mock한 UI 회귀이며 실제 public bootstrap 계약이나 실제 추천 품질 증거가 아니다. receipt는 비공개 `private/runtime/pm-four-fast-3ef3dce3b0e5445482ffa5a07e29ec47/receipt.json`, source_changed=[], 모델 호출0이다.
+
+첫 시도 `2aae0f1eac5fde47553edd97350dfb5cad3d3572`은 UI 시험 후 새 시험 snapshot의 TypeScript 교차 타입 오류로 빌드가 중단됐다. 원 receipt `pm-four-fast-14d0ac5fa2644d12afe749f9d0fe9506`를 보존하고 spread 객체로 수정했다. 호스트 검증기 마지막 로그 출력에도 cp949 문자 오류가 발생했으나 제품 실행은 격리된 Docker 안에서만 이루어졌다. 한 번 잘못 입력한 짧은 source SHA는 고정 검증기의 인수 검사에서 제품 실행 전에 거절되었고, 이후 실제 40자리 commit을 사용했다.
+
+후속 `a27882a589b24b4227537f6114f187b9b77739a4`은 R5 grounding 진단의 고정된 ID 필드만 읽어 UI와 JSON/Markdown notes에 같은 연결을 표시한다. 진단 회귀 3개는 통과했다. 하지만 public 예시를 mock 반환 대신 실제 parseBootstrap에 넣자 공통 Manifest 계약이 source_kind=synthetic만 허용하는 것을 확인했다. 해당 3개 요청 흐름 시험은 bootstrap에서 실패했고 `pm-four-fast-78dc8e2413a642d784ec81546f2bffcc`에 원 실패를 보존했다. 가짜 합성 출처나 계약 우회로 통과시키지 않는다.
+
+현재 인계 blocker는 공통 `$defs.Manifest.source_kind`의 const synthetic 및 `DemoStore`의 합성자료 전용 정책이다. PM root가 명시적 public 자료 계약/loader를 검수한 commit을 전달한 뒤 실제 public bootstrap 시험을 다시 실행해야 한다. 시험용 public manifest에는 필수 dataset_id/description/model_count/review_count/analysis_implemented와 연결된 Review/Evidence를 채운다. API가 공개하도록 검수한 concept/Gap/Need/evidence ID만 실제 전시 대상으로 삼으며 private 문장·provider ID·파일 경로를 옮기지 않는다. 기존 default 합성자료의 경계를 완화했다고 주장하지 않는다.
+
+React 품질 검토에서는 기존 hook 순서·요청 세대 취소·동기 중복 클릭 lock을 유지했고, 새 상태/effect·외부 의존성·네트워크 호출을 추가하지 않았다. 자료 버전 경고는 role=note이며 실제 source 라벨과 별도로 출처 종류/혼합을 표시한다. source_kind 라벨은 상속된 객체 키를 해석하지 않는다. 사용성 관찰·추천의 실현 가능성·시장 수요·수정 효과·OS 재부팅/자동 시작은 여전히 미검증이다.
