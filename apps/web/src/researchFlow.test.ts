@@ -6,6 +6,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ResearchPlanningView } from './ResearchPlanningView';
 import App from './App';
 import { heldBrief, REAL_RESEARCH_BUNDLE } from './fixtures/research-test-data';
+import * as views from './PlanningViews';
+import type { PlanningBrief } from './research';
 
 describe('actual-source research screen state and revision flow', () => {
   let host: HTMLDivElement; let root: Root;
@@ -87,5 +89,35 @@ describe('actual-source research screen state and revision flow', () => {
     expect(host.querySelectorAll('.research-source-row')).toHaveLength(1);
     expect(host.textContent).toContain(REAL_RESEARCH_BUNDLE.sources[0].text);
     expect(host.querySelector('[aria-label="실제 자료 기획 결과"]')).toBeNull();
+  });
+  // V1 first stage (record 최길웅-20261008-060). The brief is a hand-written contract object, not model output.
+  it('exports a concept as a future-concept storyboard from the result card without another request', async () => {
+    const source = REAL_RESEARCH_BUNDLE.sources[0].source_id;
+    const withConcept: PlanningBrief = { ...heldBrief(), status: 'complete',
+      problems: [{ id: 'PROBLEM-T1', title: '안쪽 식품 확인', description: '깊은 칸 안쪽이 잘 보이지 않는다', source_ids: [source], counter_source_ids: [], scope_caveat: '제품군 탐색' }],
+      concepts: [{ id: 'CONCEPT-T1', title: '깊은 칸 안쪽 보기', problem_ids: ['PROBLEM-T1'], target_user: '맞벌이 가구', use_context: '주말 장보기 뒤 정리',
+        before_steps: ['안쪽 식품을 꺼내 확인한다'], after_steps: ['문을 열면 안쪽 칸을 비춘다'], mechanism: '문 열림 감지로 안쪽 조명을 켠다', proposed_changes: [],
+        source_ids: [source], assumptions: [], validation_questions: ['안쪽 확인 빈도는?'], status: 'draft',
+        visual_scenes: [{ title: '장면 1', before: '안쪽을 들여다본다', after: '조명으로 바로 보인다' }] }] };
+    const downloads: Array<{ name: string; content: string }> = [];
+    vi.spyOn(views, 'download').mockImplementation((name, _type, content) => { downloads.push({ name, content }); });
+    const fetch = vi.fn().mockImplementation(async (url: string, options?: RequestInit) => {
+      if (url.endsWith('/bundles')) return response({ bundles: [{ bundle_id: REAL_RESEARCH_BUNDLE.bundle_id, product_group: 'fridge', analysis_scope: 'product_group', source_count: 1, review_count: 1 }] });
+      if (url.includes('/bundles/')) return response(REAL_RESEARCH_BUNDLE);
+      if (url.endsWith('/planning-runs') && options?.method === 'POST') return response(withConcept);
+      return response({ error: { code: 'NOT_FOUND' } }, 404);
+    });
+    vi.stubGlobal('fetch', fetch); await act(async () => root.render(createElement(ResearchPlanningView)));
+    await connect(); await choose(); await click('새 기획 생성');
+    expect(host.querySelector('[aria-label="깊은 칸 안쪽 보기 콘셉트 스토리보드"]')?.textContent).toContain('실제 성능 증거가 아닙니다');
+    const requests = fetch.mock.calls.length;
+    await click('스토리보드 Markdown');
+    expect(fetch.mock.calls).toHaveLength(requests);
+    expect(downloads).toHaveLength(1);
+    expect(downloads[0].name).toBe('storyboard-TEST-held-run-r0-CONCEPT-T1.md');
+    expect(downloads[0].content).toContain('미래 콘셉트 시안입니다');
+    expect(downloads[0].content).toContain("개선안 상태가 '제안 초안'입니다");
+    expect(downloads[0].content).toContain('| S02 | 지금 | 장면 1 |');
+    vi.restoreAllMocks();
   });
 });
