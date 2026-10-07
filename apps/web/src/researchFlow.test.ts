@@ -138,4 +138,29 @@ describe('actual-source research screen state and revision flow', () => {
     expect(scroll).toHaveBeenCalledTimes(1);
     delete (HTMLElement.prototype as unknown as { scrollIntoView?: unknown }).scrollIntoView;
   });
+  // Record 최길웅-20261008-067: summary citation coverage is shown only from a consistent runtime block; absent stays absent.
+  it('shows summary citation coverage from the brief and says so when it is not provided', async () => {
+    const source = REAL_RESEARCH_BUNDLE.sources[0].source_id;
+    const coverage = { basis: 'returned_summary_references_on_successful_discovery', sample_unit: 'unique_deduplicated_customer_source',
+      summary_item_counts: { positive: 1, negative: 0, mixed: 0 }, polarity_source_counts: { positive: 1, negative: 0, mixed: 0 },
+      polarity_source_ids: { positive: [source], negative: [], mixed: [] }, input_customer_source_count: 1, denominator_customer_source_count: 1,
+      denominator_source_ids: [source], covered_customer_source_count: 1, covered_source_ids: [source], unreferenced_processed_source_count: 0,
+      unprocessed_input_source_count: 0, overlapping_polarity_source_count: 0, coverage_ratio: 1, classification_approved: false, market_frequency_estimated: false };
+    const withCoverage: PlanningBrief = { ...heldBrief(), source_facts: [{ source_id: source, facts: [] }], runtime: { summary_reference_coverage: coverage } };
+    const fetch = vi.fn().mockImplementation(async (url: string, options?: RequestInit) => {
+      if (url.endsWith('/bundles')) return response({ bundles: [{ bundle_id: REAL_RESEARCH_BUNDLE.bundle_id, product_group: 'fridge', analysis_scope: 'product_group', source_count: 1, review_count: 1 }] });
+      if (url.includes('/bundles/')) return response(REAL_RESEARCH_BUNDLE);
+      if (url.endsWith('/planning-runs') && options?.method === 'POST') return response(withCoverage);
+      return response({ error: { code: 'NOT_FOUND' } }, 404);
+    });
+    vi.stubGlobal('fetch', fetch); await act(async () => root.render(createElement(ResearchPlanningView)));
+    await connect(); await choose(); await click('새 기획 생성');
+    expect(host.querySelector('[data-summary-coverage="ok"]')?.textContent).toContain('처리된 고객 원문 1건 중 1건 인용(인용률 100%)');
+    expect(host.querySelector('[data-summary-polarity-coverage="positive"]')?.textContent).toBe('고객 원문 1건 인용 · 요약 1개');
+    await act(async () => root.render(createElement('div')));
+    vi.stubGlobal('fetch', api()); await act(async () => root.render(createElement(ResearchPlanningView)));
+    await connect(); await choose(); await click('새 기획 생성');
+    expect(host.querySelector('[data-summary-coverage="not_provided"]')?.textContent).toContain('제공되지 않았습니다');
+    expect(host.querySelector('[data-summary-polarity-coverage]')).toBeNull();
+  });
 });
