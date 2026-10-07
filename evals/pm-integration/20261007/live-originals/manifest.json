@@ -1,0 +1,56 @@
+{
+  "purpose": "Exact original three live-model failures for independent CORE replay",
+  "original_source_commit": "de09b64ca72d",
+  "handoff_base_commit": "1f3f4ecb93fdd945850a1e9f790bc37766b2355c",
+  "model": "qwen3.5:122b-a10b-q4_K_M",
+  "dataset_kind": "synthetic",
+  "new_model_calls": 0,
+  "original_results_unchanged": true,
+  "files": [
+    {
+      "path": "fridge-normal.output.json",
+      "sha256": "5625c0ff13d7e4282cbe7e6eb3ea0aa43d848cec8bf3d47c45845cf32d670f3d",
+      "bytes": 1309041,
+      "redacted": false,
+      "execution_kind": "live_model",
+      "status": "failed",
+      "model_calls": 6,
+      "boundary_scan": {
+        "credential": 0,
+        "email": 0,
+        "private_path": 0,
+        "credential_query": 0
+      }
+    },
+    {
+      "path": "fridge-changed.output.json",
+      "sha256": "95833e754b034d7f0ec6749c549fb3f2f80ca3fa240d5bc1c98d80b49c8046e5",
+      "bytes": 831174,
+      "redacted": false,
+      "execution_kind": "live_model",
+      "status": "failed",
+      "model_calls": 5,
+      "boundary_scan": {
+        "credential": 0,
+        "email": 0,
+        "private_path": 0,
+        "credential_query": 0
+      }
+    },
+    {
+      "path": "fridge-missing-manual.output.json",
+      "sha256": "d4a7af4f3a881256e0af779174518c1e3e0176ed86a0b9e923bcf6f833ebb688",
+      "bytes": 607986,
+      "redacted": false,
+      "execution_kind": "live_model",
+      "status": "held",
+      "model_calls": 4,
+      "boundary_scan": {
+        "credential": 0,
+        "email": 0,
+        "private_path": 0,
+        "credential_query": 0
+      }
+    }
+  ]
+}
