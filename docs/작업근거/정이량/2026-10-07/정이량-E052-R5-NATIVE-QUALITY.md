@@ -10,7 +10,7 @@
 | native 기록 proof | `5dc57847ba0ed24a9e23b6126cddde47ba165488a0bc55a0c4a050490dfe6ada`, public response `bad74461f5bb77e7e6be10adea0549280345ae2c170b3ad09ce944f2dd457c09`, SQLite `8778af4d822de66affe63c2c16b2b06f15c74042a7114f130a56da7c303171db` |
 | 유한 실행 closure | `f1c52a1c4093f08ca7e9b0c3f285d31a31e605966cfc3add3d287d5890a86350`, wrapper `de27e21f7156a871645eb19ea6a90b4052a9e2ec7496bb6f5f00fd465be01263` |
 | metadata closeout | `1637faa62a9eead0a654bd9c5b9e4c330f23e36087b1ac62709d3afe36374433`; 원25+58파일 보존·추가model/remote0 |
-| 독립 의미 audit | private 원 metadata `7a88f5055ddf7c7678388fd8a6f8fcac69c014f462285d09b88763d979e95cac`; 공개 경로 제거 projection `0dc967bfe3d5e02056d180ee11f45f41e83dcd44fb22f88f293653edde4829c7`; 원13파일 SHA/크기 직접 확인 |
+| 독립 의미 audit | private 원 metadata `7a88f5055ddf7c7678388fd8a6f8fcac69c014f462285d09b88763d979e95cac`; 공개 Git LF projection `fd2eeb2c93d0893092163b0ce5a423b12404a867e4817d66ddb8f7821c7a1296`; 최초 private CRLF projection `0dc967bfe3d5e02056d180ee11f45f41e83dcd44fb22f88f293653edde4829c7` 별도 보존·JSON객체 동일; 원13파일 SHA/크기 직접 확인 |
 | 품질 판정 | transport/기록 PASS; 의미 FAIL: Q01/Q02 P1·Q03 P2; runtime completed와 자체12 satisfied 원본 유지 |
 | 사용량 | 신규5회/33237tokens·revision1·new unknown0; 이전 보수226603/unknown2 보존; 새 cumulative259840/ceiling326603 |
 | PR217 독립 metadata | exacthead `1b865dc430c6c8318d88f9af01f37f7c373256d7`; source proof `3b1a70b9e1f5e5ff909e835a2b7c0f4eef3fdc83a042a59e2eb9f044dc0a48da`; 21ADD/원문9/표현12/노출3; 신규 authorization필드4곳 최소 수정 요청 |
