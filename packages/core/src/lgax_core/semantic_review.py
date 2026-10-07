@@ -149,6 +149,12 @@ def schema_for_review(payload: dict, output: dict, *, literal_choices: bool = Fa
                 "evidence_id": {"const": source["id"]}, "quote": {"const": source["text"]}},
              "required": ["evidence_id", "quote"], "additionalProperties": False}
             for source in payload["sources"]]}
+    definitions = {}
+    if literal_choices and include_upstream:
+        # The same ID/text pairs are used by three assessment arrays. Keep one
+        # local definition so native wire size remains within the existing cap.
+        definitions["literal_source_quote"] = source_quote
+        source_quote = {"$ref": "#/$defs/literal_source_quote"}
     shared = {"concept_id": {"type": "string", "enum": ids or ["_no_candidate"]},
               "verdict": {"enum": ["satisfied", "violation", "uncertain"],
                           "description": "satisfied=아래 criterion 충족, violation=설명 누락/기준 위반, uncertain=원 자료가 없어 판단 불가"}, "reason": text,
@@ -157,6 +163,9 @@ def schema_for_review(payload: dict, output: dict, *, literal_choices: bool = Fa
         shared["candidate_quote"]["enum"] = list(dict.fromkeys(
             [""] + [text for candidate in output["concepts"]
                     for text in _candidate_strings(output, candidate["id"]) if text.strip()]))
+        if include_upstream:
+            definitions["literal_candidate_quote"] = shared["candidate_quote"]
+            shared["candidate_quote"] = {"$ref": "#/$defs/literal_candidate_quote"}
 
     def rows(extra: dict, count: int) -> dict:
         fields = {**shared, **extra}
@@ -179,7 +188,8 @@ def schema_for_review(payload: dict, output: dict, *, literal_choices: bool = Fa
         "questions": {"type": "array", "items": text, "uniqueItems": True},
     }
     if include_upstream:
-        properties["upstream_assessments"] = upstream_semantics.assessment_schema(payload, output)
+        properties["upstream_assessments"] = upstream_semantics.assessment_schema(
+            payload, output, literal_choices=literal_choices, source_quote_schema=source_quote)
     if literal_choices and ids:
         clauses = []
         for candidate in semantic_grounding_requirements(payload, output):
@@ -196,8 +206,11 @@ def schema_for_review(payload: dict, output: dict, *, literal_choices: bool = Fa
                     "then": {"properties": {"source_quotes": {"allOf": groups}}}})
         if clauses:
             properties["quality_assessments"]["items"]["allOf"] = clauses
-    return {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
-            "properties": properties, "required": list(properties), "additionalProperties": False}
+    result = {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
+              "properties": properties, "required": list(properties), "additionalProperties": False}
+    if definitions:
+        result["$defs"] = definitions
+    return result
 
 
 def _strings(value: Any):

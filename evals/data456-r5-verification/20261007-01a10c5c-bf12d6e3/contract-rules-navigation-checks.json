@@ -1,0 +1,106 @@
+{
+  "checks": [
+    {
+      "name": "input-schema-binding",
+      "exit_code": 0,
+      "argv": [
+        "python",
+        "-c",
+        "import hashlib,json,pathlib\nfrom lgax_core.judgement_contract import schema_for\nschema=schema_for('input')\nvariants={str(indent)+'/'+str(final):hashlib.sha256((json.dumps(schema,ensure_ascii=False,indent=indent)+('\\n' if final else '')).encode()).hexdigest() for indent in (None,2,4) for final in (False,True)}\nexpected='0a01bf54ca597a04905a13875cddd630572f858943913406a4ca95e6568b492d'\nresult={'current_source_commit':'8ec1e8a51faabd6db032e52245680bef4229f93f','schema_producer':'lgax_core.judgement_contract.schema_for(input)','expected_candidate_schema_SHA':expected,'variants':variants,'matching_serialization_forms':[k for k,v in variants.items() if v==expected],'schema_match':expected in variants.values()}\npathlib.Path('/artifacts/result.json').write_text(json.dumps(result,indent=2)+'\\n','utf-8')\nprint(json.dumps(result))\n"
+      ],
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "log_sha256": "1e9779c1d1c2d08797a8e9d441a2f5afb70f87e80807bd9a49254265ac2c66b3"
+    },
+    {
+      "name": "contracts",
+      "exit_code": 0,
+      "argv": [
+        "python",
+        "scripts/check_contracts.py"
+      ],
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "log_sha256": "22bf05315c9e1ff16830537c04567ffc1a02cf90aa5daf7583c8c7d8707dcf00"
+    },
+    {
+      "name": "rules",
+      "exit_code": 0,
+      "argv": [
+        "python",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "log_sha256": "56b21f915cb5a695479359f4ca6063582b0b9bcbdaee1869782a2a805a2a82cd"
+    },
+    {
+      "name": "document-navigation",
+      "exit_code": 0,
+      "argv": [
+        "python",
+        "scripts/check_document_navigation.py"
+      ],
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "log_sha256": "e59c0ee2e1ffd6095ad8892429c4c6ce2e7fbaae77b0dda7fc7a36b24b1f3965"
+    }
+  ]
+}

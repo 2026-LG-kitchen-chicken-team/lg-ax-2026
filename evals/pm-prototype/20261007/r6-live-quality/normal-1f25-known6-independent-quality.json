@@ -1,0 +1,641 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_read_only_known_six_intermediate_meaning",
+  "source_commit": "1f25e547f46ef155798fbc27f35aa2c7098ae912",
+  "reviewed_core_commit": "297c65a48c81137adddd317e194a68b335ae27c1",
+  "original_pm188_commit": "e7bc486f748f9776e7055f498fa0e3985853a7e7",
+  "case_scope": "one original synthetic development fridge-normal/full10 reviews; public238/exactSKU data not used",
+  "decision": "INTERMEDIATE_MEANING_FAIL_FINAL_NOT_AVAILABLE",
+  "final_quality_acceptance": false,
+  "runtime_status": null,
+  "runtime_exit": 137,
+  "native_final_run_available": false,
+  "stored_run_count": 0,
+  "findings": [
+    {
+      "id": "R6-NORMAL-1F25-KNOWN6-Q01",
+      "priority": "P1",
+      "category": "unsupported_gap_resolution",
+      "stage_first_observed": "product_compare",
+      "generation_sequence": 8,
+      "affected_ids": [
+        "NEED-004",
+        "GAP-004",
+        "REVIEW-EVIDENCE-004",
+        "MANUAL-001"
+      ],
+      "actual": {
+        "gap_id": "GAP-004",
+        "reason": "현재 기능은 선반 분리 방법 안내에 대한 언급이 있어, 희망 결과인 '분리 방법 쉽게 찾기'를 충족함.",
+        "resolution": "resolved",
+        "support_basis": "explicit_supported"
+      },
+      "source_quotes": [
+        {
+          "evidence_id": "REVIEW-EVIDENCE-004",
+          "quote": "선반 분리 방법이 설명서 어디 있는지 모르겠어요."
+        },
+        {
+          "evidence_id": "MANUAL-001",
+          "quote": "선반은 분리하여 세척할 수 있습니다. 선반을 분리하기 전에 위의 식품을 모두 옮겨 주세요."
+        }
+      ],
+      "reason_ko": "방법 설명문의 존재는 사용자가 설명서에서 해당 방법을 쉽게 발견한다는 근거가 아니다. 발견성 불편을 resolved로 지우고 질문도 남기지 않았으므로 전체 기획 품질 승인에 필요한 불편 보존 조건을 충족하지 않는다.",
+      "scope": "actual intermediate responses; no final Agent result or saved run",
+      "prior_finding_id": "R5-NORMAL-8EC-Q01",
+      "actual_intermediate_pointers": [
+        "sequence08/result/gaps/3/remaining_pain",
+        "sequence08/gap_assessments/3/resolution",
+        "sequence14/upstream_assessments/12",
+        "sequence17/gap_assessments/3"
+      ],
+      "actual_upstream_review": {
+        "entity_id": "GAP-004",
+        "entity_kind": "gap",
+        "judgement_quote": "현재 기능은 선반 분리 방법 안내에 대한 언급이 있어, 희망 결과인 '분리 방법 쉽게 찾기'를 충족함.",
+        "reason": "설명서(MANUAL-001)에 선반 분리 방법이 명시되어 있어, 사용자가 이를 찾을 수 있다는 점에서 Gap이 해결됨. 리뷰(REVIEW-EVIDENCE-004)는 찾기 어려움의 경험을 나타내지만, 설명서 존재 자체는 해결 근거가 됨.",
+        "source_quotes": [
+          {
+            "evidence_id": "MANUAL-001",
+            "quote": "선반은 분리하여 세척할 수 있습니다. 선반을 분리하기 전에 위의 식품을 모두 옮겨 주세요."
+          }
+        ],
+        "verdict": "consistent"
+      },
+      "new_semantic_review_coverage": {
+        "candidate_only_criteria": 12,
+        "all_need_gap_rows": 18,
+        "approved": false
+      }
+    },
+    {
+      "id": "R6-NORMAL-1F25-KNOWN6-Q02",
+      "priority": "P1",
+      "category": "manual_object_and_provenance_scope_mismatch",
+      "stage_first_observed": "product_compare",
+      "generation_sequence": 8,
+      "affected_ids": [
+        "GAP-005",
+        "CONCEPT-003",
+        "FEATURE-001",
+        "MANUAL-001",
+        "REVIEW-EVIDENCE-005"
+      ],
+      "actual_gap_assessment": {
+        "gap_id": "GAP-005",
+        "reason": "현재 기능은 바구니 세척 시 내용물 모두 꺼내야 한다고 명시되어 있어, 희망 결과인 '내용물 모두 꺼내지 않고 세척'을 충족하지 못함.",
+        "resolution": "remaining",
+        "support_basis": "explicit_supported"
+      },
+      "source_quotes": [
+        {
+          "evidence_id": "REVIEW-EVIDENCE-005",
+          "quote": "바구니가 있어서 정리는 편하지만 세척할 때 내용물을 모두 꺼내야 해요."
+        },
+        {
+          "evidence_id": "MANUAL-001",
+          "quote": "선반은 분리하여 세척할 수 있습니다. 선반을 분리하기 전에 위의 식품을 모두 옮겨 주세요."
+        }
+      ],
+      "reason_ko": "바구니 비움은 RE005 사용자 경험으로는 지지되지만, FEATURE001/MANUAL001은 선반 분리만 설명한다. 이를 바구니의 명시된 현 기능 및 매뉴얼 지원으로 바꾸고 unsupported_factual_claims=satisfied로 승인한 근거 유형/대상 대조는 부정확하다. 바구니 개선 가설 자체의 가능성을 부정하는 판단은 아니다.",
+      "scope": "actual intermediate responses; no final Agent result or saved run",
+      "prior_finding_id": "R5-NORMAL-8EC-Q02",
+      "actual_intermediate_pointers": [
+        "sequence08/gap_assessments/4",
+        "sequence11/concept_assessments/2",
+        "sequence14/upstream_assessments/13",
+        "sequence17/concept_assessments/2"
+      ],
+      "actual_upstream_review": {
+        "entity_id": "GAP-005",
+        "entity_kind": "gap",
+        "judgement_quote": "현재 기능은 바구니 세척 시 내용물 모두 꺼내야 한다고 명시되어 있어, 희망 결과인 '내용물 모두 꺼내지 않고 세척'을 충족하지 못함.",
+        "reason": "설명서(MANUAL-001)와 리뷰(REVIEW-EVIDENCE-005)가 일치하여 현재 기능이 내용물 이동을 필수로 요구함을 확인함. Gap의 remaining_pain이 정확히 반영됨.",
+        "source_quotes": [
+          {
+            "evidence_id": "MANUAL-001",
+            "quote": "선반은 분리하여 세척할 수 있습니다. 선반을 분리하기 전에 위의 식품을 모두 옮겨 주세요."
+          },
+          {
+            "evidence_id": "REVIEW-EVIDENCE-005",
+            "quote": "바구니가 있어서 정리는 편하지만 세척할 때 내용물을 모두 꺼내야 해요."
+          }
+        ],
+        "verdict": "consistent"
+      },
+      "actual_candidate_semantic_review": {
+        "candidate_quote": "바구니 내용물 이동 없이 세척 가능한 분리형 트레이",
+        "concept_id": "CONCEPT-003",
+        "criterion": "unsupported_factual_claims",
+        "reason": "새 가설(분리형 트레이 도입)과 확인된 제품 사실(현재는 내용물 이동 필수)을 명확히 구분하여, 근거 없는 수치나 실현 가능성을 사실로 단정하지 않음.",
+        "source_quotes": [],
+        "verdict": "satisfied"
+      }
+    },
+    {
+      "id": "R6-NORMAL-1F25-KNOWN6-Q03",
+      "priority": "P2",
+      "category": "desire_to_experienced_constraint_invention",
+      "stage_first_observed": "need_extract_initial",
+      "generation_sequence": 2,
+      "affected_ids": [
+        "NEED-007",
+        "GAP-007",
+        "REVIEW-EVIDENCE-008"
+      ],
+      "actual_need": {
+        "evidence_ids": [
+          "REVIEW-EVIDENCE-008"
+        ],
+        "id": "NEED-007",
+        "model_id": "FRIDGE-A",
+        "pain": "우유를 흘린 구역만 빠르게 청소하고 싶으나 전체를 옮겨야 함",
+        "situation": "국소 오염 청소 시",
+        "uncertainties": []
+      },
+      "actual_review_assessment": {
+        "evidence_id": "REVIEW-EVIDENCE-008",
+        "polarity": "complaint",
+        "reason": "우유 흘린 구역만 빠르게 청소하고 싶으나 전체를 옮겨야 함 명시"
+      },
+      "source_quotes": [
+        {
+          "evidence_id": "REVIEW-EVIDENCE-008",
+          "quote": "우유를 흘린 구역만 빠르게 청소하고 싶어요."
+        }
+      ],
+      "reason_ko": "RE008은 국소 청소를 원한다는 욕구만 말한다. 전체 식품을 옮겨야 한다는 실제 제약을 명시했다는 설명은 원문에 없다. MANUAL001의 식품 이동 조건도 선반을 분리할 때이므로 모든 국소 청소에 확대할 수 없다. 욕구를 Need로 보존하는 것은 가능하지만 경험된 제약을 발명하면 안 된다.",
+      "initial_same_error_entity_id": "NEED-004",
+      "initial_same_error_quote": "우유를 흘린 구역만 빠르게 청소하고 싶으나 전체를 옮겨야 하는 번거로움",
+      "scope": "actual intermediate responses; no final Agent result or saved run",
+      "prior_finding_id": "R5-NORMAL-8EC-Q03",
+      "actual_intermediate_pointers": [
+        "sequence02/result/needs/3/pain",
+        "sequence05/result/needs/6/pain",
+        "sequence14/upstream_assessments/6",
+        "sequence14/upstream_assessments/15",
+        "sequence17/result/needs/6/pain"
+      ],
+      "actual_upstream_review": {
+        "entity_id": "NEED-007",
+        "entity_kind": "need",
+        "judgement_quote": "우유를 흘린 구역만 빠르게 청소하고 싶어요.",
+        "reason": "리뷰에서 명시된 불편(국소 오염 시 전체 이동 필요)과 희망 결과(국소 오염만 빠르게 청소)가 일치하며, 현재 제품의 기능 부재를 정확히 반영함.",
+        "source_quotes": [
+          {
+            "evidence_id": "REVIEW-EVIDENCE-008",
+            "quote": "우유를 흘린 구역만 빠르게 청소하고 싶어요."
+          }
+        ],
+        "verdict": "consistent"
+      },
+      "expanded_NEED007_first_generation_sequence": 5
+    },
+    {
+      "id": "R6-NORMAL-1F25-KNOWN6-Q04",
+      "priority": "P2",
+      "category": "unmentioned_to_proven_product_absence",
+      "scope": "actual intermediate CONCEPT-002 and self-review, not final saved run",
+      "affected_ids": [
+        "GAP-002",
+        "GAP-009",
+        "CONCEPT-002"
+      ],
+      "actual_intermediate_pointers": [
+        "sequence11/concept_assessments/1/reason",
+        "sequence14/quality_assessments/7/reason",
+        "sequence17/concept_assessments/1/reason"
+      ],
+      "actual": "기존 기능은 선반 분리 시 임시 보관 공간이 없으나",
+      "source_quotes": [
+        {
+          "evidence_id": "MANUAL-001",
+          "quote": "선반은 분리하여 세척할 수 있습니다. 선반을 분리하기 전에 위의 식품을 모두 옮겨 주세요."
+        },
+        {
+          "evidence_id": "REVIEW-EVIDENCE-002",
+          "quote": "선반을 분리할 수 있지만 식품을 꺼내는 동안 둘 곳이 부족해요."
+        },
+        {
+          "evidence_id": "REVIEW-EVIDENCE-010",
+          "quote": "선반 높이를 바꾸는 동안 식품 임시 보관 공간이 필요해요."
+        }
+      ],
+      "reason_ko": "자료는 해당 사용자의 임시 보관 공간 부족/필요와 선반 분리 전 식품 이동을 말한다. 현재 제품에 임시 보관 공간이 없다는 제품 구조의 확정 사실은 입증하지 않는다. 확장형 받침대 제안의 가능성을 부정하는 판단은 아니다."
+    }
+  ],
+  "upstream_formal_read_checks": [
+    {
+      "entity_kind": "need",
+      "entity_id": "NEED-001",
+      "coverage_once": true,
+      "judgement_quote_literal": false,
+      "source_quotes_scoped_literal": true,
+      "linked_review_cited": true,
+      "source_ids": [
+        "REVIEW-EVIDENCE-001"
+      ]
+    },
+    {
+      "entity_kind": "need",
+      "entity_id": "NEED-002",
+      "coverage_once": true,
+      "judgement_quote_literal": false,
+      "source_quotes_scoped_literal": true,
+      "linked_review_cited": true,
+      "source_ids": [
+        "REVIEW-EVIDENCE-002"
+      ]
+    },
+    {
+      "entity_kind": "need",
+      "entity_id": "NEED-003",
+      "coverage_once": true,
+      "judgement_quote_literal": false,
+      "source_quotes_scoped_literal": true,
+      "linked_review_cited": true,
+      "source_ids": [
+        "REVIEW-EVIDENCE-003"
+      ]
+    },
+    {
+      "entity_kind": "need",
+      "entity_id": "NEED-004",
+      "coverage_once": true,
+      "judgement_quote_literal": false,
+      "source_quotes_scoped_literal": true,
+      "linked_review_cited": true,
+      "source_ids": [
+        "REVIEW-EVIDENCE-004"
+      ]
+    },
+    {
+      "entity_kind": "need",
+      "entity_id": "NEED-005",
+      "coverage_once": true,
+      "judgement_quote_literal": false,
+      "source_quotes_scoped_literal": true,
+      "linked_review_cited": true,
+      "source_ids": [
+        "REVIEW-EVIDENCE-005"
+      ]
+    },
+    {
+      "entity_kind": "need",
+      "entity_id": "NEED-006",
+      "coverage_once": true,
+      "judgement_quote_literal": false,
+      "source_quotes_scoped_literal": true,
+      "linked_review_cited": true,
+      "source_ids": [
+        "REVIEW-EVIDENCE-007"
+      ]
+    },
+    {
+      "entity_kind": "need",
+      "entity_id": "NEED-007",
+      "coverage_once": true,
+      "judgement_quote_literal": false,
+      "source_quotes_scoped_literal": true,
+      "linked_review_cited": true,
+      "source_ids": [
+        "REVIEW-EVIDENCE-008"
+      ]
+    },
+    {
+      "entity_kind": "need",
+      "entity_id": "NEED-008",
+      "coverage_once": true,
+      "judgement_quote_literal": false,
+      "source_quotes_scoped_literal": true,
+      "linked_review_cited": true,
+      "source_ids": [
+        "REVIEW-EVIDENCE-009"
+      ]
+    },
+    {
+      "entity_kind": "need",
+      "entity_id": "NEED-009",
+      "coverage_once": true,
+      "judgement_quote_literal": false,
+      "source_quotes_scoped_literal": true,
+      "linked_review_cited": true,
+      "source_ids": [
+        "REVIEW-EVIDENCE-010"
+      ]
+    },
+    {
+      "entity_kind": "gap",
+      "entity_id": "GAP-001",
+      "coverage_once": true,
+      "judgement_quote_literal": true,
+      "source_quotes_scoped_literal": true,
+      "linked_review_cited": true,
+      "source_ids": [
+        "MANUAL-001",
+        "REVIEW-EVIDENCE-001"
+      ]
+    },
+    {
+      "entity_kind": "gap",
+      "entity_id": "GAP-002",
+      "coverage_once": true,
+      "judgement_quote_literal": true,
+      "source_quotes_scoped_literal": true,
+      "linked_review_cited": true,
+      "source_ids": [
+        "MANUAL-001",
+        "REVIEW-EVIDENCE-002"
+      ]
+    },
+    {
+      "entity_kind": "gap",
+      "entity_id": "GAP-003",
+      "coverage_once": true,
+      "judgement_quote_literal": true,
+      "source_quotes_scoped_literal": true,
+      "linked_review_cited": true,
+      "source_ids": [
+        "MANUAL-001",
+        "REVIEW-EVIDENCE-003"
+      ]
+    },
+    {
+      "entity_kind": "gap",
+      "entity_id": "GAP-004",
+      "coverage_once": true,
+      "judgement_quote_literal": true,
+      "source_quotes_scoped_literal": true,
+      "linked_review_cited": false,
+      "source_ids": [
+        "MANUAL-001"
+      ]
+    },
+    {
+      "entity_kind": "gap",
+      "entity_id": "GAP-005",
+      "coverage_once": true,
+      "judgement_quote_literal": true,
+      "source_quotes_scoped_literal": true,
+      "linked_review_cited": true,
+      "source_ids": [
+        "MANUAL-001",
+        "REVIEW-EVIDENCE-005"
+      ]
+    },
+    {
+      "entity_kind": "gap",
+      "entity_id": "GAP-006",
+      "coverage_once": true,
+      "judgement_quote_literal": true,
+      "source_quotes_scoped_literal": true,
+      "linked_review_cited": true,
+      "source_ids": [
+        "MANUAL-001",
+        "REVIEW-EVIDENCE-007"
+      ]
+    },
+    {
+      "entity_kind": "gap",
+      "entity_id": "GAP-007",
+      "coverage_once": true,
+      "judgement_quote_literal": true,
+      "source_quotes_scoped_literal": true,
+      "linked_review_cited": true,
+      "source_ids": [
+        "MANUAL-001",
+        "REVIEW-EVIDENCE-008"
+      ]
+    },
+    {
+      "entity_kind": "gap",
+      "entity_id": "GAP-008",
+      "coverage_once": true,
+      "judgement_quote_literal": true,
+      "source_quotes_scoped_literal": true,
+      "linked_review_cited": true,
+      "source_ids": [
+        "MANUAL-001",
+        "REVIEW-EVIDENCE-009"
+      ]
+    },
+    {
+      "entity_kind": "gap",
+      "entity_id": "GAP-009",
+      "coverage_once": true,
+      "judgement_quote_literal": true,
+      "source_quotes_scoped_literal": true,
+      "linked_review_cited": true,
+      "source_ids": [
+        "MANUAL-001",
+        "REVIEW-EVIDENCE-010"
+      ]
+    }
+  ],
+  "source_quote_literal_scoped_checks": 42,
+  "upstream_coverage_18_once": true,
+  "upstream_all_self_consistent": true,
+  "quality_coverage_12_once": true,
+  "quality_all_self_satisfied": true,
+  "self_report_is_not_acceptance": true,
+  "canonical_feedback_observed": {
+    "code": "INVALID_SEMANTIC_REVIEW",
+    "stage": "concepts",
+    "message": "Need·Gap 의미 검토의 원문·범위를 확인해야 합니다.",
+    "details": {
+      "reason": "upstream_judgement_quote_not_literal",
+      "entity_id": "NEED-001"
+    }
+  },
+  "canonical_first_error": "NEED-001 judgement_quote is source-review wording, absent from actual Need pain/situation",
+  "deterministic_rejection_not_meaning_detection": true,
+  "manual_GAP004_missing_linked_review_also_observed": true,
+  "revision": {
+    "first_attempt_missing_complaints": [
+      "REVIEW-EVIDENCE-003",
+      "REVIEW-EVIDENCE-004",
+      "REVIEW-EVIDENCE-007",
+      "REVIEW-EVIDENCE-009"
+    ],
+    "stage_retry_revision": 1,
+    "installed_revision_attempt": 2,
+    "max_revision_count_observed": 2,
+    "earliest_upstream_semantic_feedback_not_observed": true,
+    "actual_feedback_path": "invalid semantic report→review_revision(count2)→semantic recheck(sequence20) not dispatched",
+    "semantic_violation_expected_routing_only_in_source": "valid Need violation→needs; valid Gap violation→compare; not exercised here",
+    "all_analysis_and_declarations_unchanged_after_revision_response": true
+  },
+  "old8ec": {
+    "independent_quality": "FAIL",
+    "raw_sha256": "276e774a69eeae1fb24c414a003335b837be2d7fde64b16bd60168a3f0af418a",
+    "review_v2_sha256": "54ad821c03c00c1058d176a5c63dba1d9654a02c9e0b49aa274f777924b8cebf",
+    "first_four_raw_model_declarations_same": {
+      "2": true,
+      "5": true,
+      "8": true,
+      "11": true
+    },
+    "preserved": true
+  },
+  "integrity": {
+    "original_input_and_dataset_PM188_bytes_equal": true,
+    "input_sha256": "d07e0e18ccf9b12bbed92fc71205bec7e38fb5094a91b902ef3d22b56dc11f91",
+    "dataset_file_sha256": "4ed91b01c8effb827bd09b01c3690daa5abc5c14e8adfbe8e4101276f420f5df",
+    "stage_input_canonical_sha256": "6ecdf80f37318948b7c99e90ccb500ba25fbdec3700bfdda87db07a99965b601",
+    "stage_output_canonical_sha256": "1b5662a54e8c5771473a99184922f00e1efec3f321e2dccaf235216f386255a8",
+    "all_payload_source_product_feature_original_equal": true,
+    "SQLite_mode_ro_counts": {
+      "workspace_projects": 1,
+      "workspace_review_trends": 0,
+      "workspace_runs": 0
+    },
+    "SQLite_bytes_unchanged": true,
+    "native_final_artifacts_present": {
+      "native-http-history.json": false,
+      "native-http-proof.json": false,
+      "native-http-response.json": false,
+      "native-stored-snapshot.json": false,
+      "result.json": false
+    },
+    "source_unchanged": {
+      "value": true,
+      "basis": "frozen execution summary, not independent live filesystem monitor"
+    }
+  },
+  "model": {
+    "id": "qwen3.5:122b-a10b-q4_K_M",
+    "digest": "8b9d11d807c57feb1e2ecb0d6cbf40334c37dcc3523bed5540af4f927f112a37",
+    "settings": {
+      "num_ctx": 16384,
+      "num_predict": 8192,
+      "seed": 42,
+      "temperature": 0
+    },
+    "records": [
+      {
+        "sequence": 2,
+        "model": "qwen3.5:122b-a10b-q4_K_M",
+        "done": true,
+        "done_reason": "stop",
+        "response_body_sha256": "79e8462a72a56f85d097c180f5da234430847d67cd10dc8a32e62f5c93cc647b",
+        "model_json_sha256": "abab6e37b354d5386b901f52d0400d73bae4f12aaff27c60e2064e8d332035e2",
+        "prompt_eval_count": 2283,
+        "eval_count": 1311,
+        "actual_tokens": 3594,
+        "prompt_characters": 6393,
+        "prompt_utf8_bytes": 9322,
+        "prompt_sha256": "9084059edc3dcf33ebfaa33007835367d0a28b9954d953836020496099ba4b6f"
+      },
+      {
+        "sequence": 5,
+        "model": "qwen3.5:122b-a10b-q4_K_M",
+        "done": true,
+        "done_reason": "stop",
+        "response_body_sha256": "edf6af40faf782aa2ced3c816d016eb4602ef29f1ec36f50cfa80e107222bde6",
+        "model_json_sha256": "2b3233bcf758c0d640c389910e6a28826fe1c4b3441994fa2b875fafdfbe5592",
+        "prompt_eval_count": 2700,
+        "eval_count": 2438,
+        "actual_tokens": 5138,
+        "prompt_characters": 7496,
+        "prompt_utf8_bytes": 10678,
+        "prompt_sha256": "2c299558d759b0ccf249c461deb6dc93f3edc16c78b2225c353539fd40223a93"
+      },
+      {
+        "sequence": 8,
+        "model": "qwen3.5:122b-a10b-q4_K_M",
+        "done": true,
+        "done_reason": "stop",
+        "response_body_sha256": "a6eb86cad3b429aa05e82940fbfa395ca7718e4333d8d9a00e0b7fa54e454aee",
+        "model_json_sha256": "1b59a6a2c976682a6b43a3a9069cbf1258ae6049ff8f098eb2b323b49b6d6c13",
+        "prompt_eval_count": 4194,
+        "eval_count": 1969,
+        "actual_tokens": 6163,
+        "prompt_characters": 11777,
+        "prompt_utf8_bytes": 16792,
+        "prompt_sha256": "27dab1b8f14f7861708f32185aa748745e42bf2b2e772590f4ff698359151b1e"
+      },
+      {
+        "sequence": 11,
+        "model": "qwen3.5:122b-a10b-q4_K_M",
+        "done": true,
+        "done_reason": "stop",
+        "response_body_sha256": "db1156a088eea9fff40d5ba6f14fcca62d950c256eaa142735796a92143b89a2",
+        "model_json_sha256": "eebeb75ae169fd3720c813a2891ae200ec9faac15665db66a1d593b0afd01696",
+        "prompt_eval_count": 6080,
+        "eval_count": 1214,
+        "actual_tokens": 7294,
+        "prompt_characters": 17693,
+        "prompt_utf8_bytes": 22944,
+        "prompt_sha256": "0fa62541800ac46141a15fb8289868bd8661a706c97b304be8b86fcf26eaf380"
+      },
+      {
+        "sequence": 14,
+        "model": "qwen3.5:122b-a10b-q4_K_M",
+        "done": true,
+        "done_reason": "stop",
+        "response_body_sha256": "8071645b3a737255bf1dbb4d735104b2fc86991ae5860b5d975944b6c5f03c1b",
+        "model_json_sha256": "215596218995d965216dd6816f1ba087cb27c67cfd1fbf97023d66d0b8d97573",
+        "prompt_eval_count": 8335,
+        "eval_count": 6103,
+        "actual_tokens": 14438,
+        "prompt_characters": 22856,
+        "prompt_utf8_bytes": 33140,
+        "prompt_sha256": "a0c17af7059397e7110e85ed4f8171725669a8f26c2964a69cc57da344bb1f28"
+      },
+      {
+        "sequence": 17,
+        "model": "qwen3.5:122b-a10b-q4_K_M",
+        "done": true,
+        "done_reason": "stop",
+        "response_body_sha256": "53a68c8fa0d20cd6a15c207504b69a91b6095cea4f82f0aae8da268dfd7e303a",
+        "model_json_sha256": "ca5f0120542e0325cecedf7413737cfc5050c75faae5ba0ced2fb811f4149d7a",
+        "prompt_eval_count": 5589,
+        "eval_count": 4986,
+        "actual_tokens": 10575,
+        "prompt_characters": 15637,
+        "prompt_utf8_bytes": 22486,
+        "prompt_sha256": "ec0a40961cdc46cbfcf0606ce8df864bcfbc728b6d96f8012cad2083feea512e"
+      }
+    ]
+  },
+  "projection": {
+    "private_meaning_review_sha256": "891450cba7d4db3ac984bcf738340a5d69ea21620a1367f3b7262991eaa69449",
+    "private_routing_review_sha256": "26b9891a0e61d250fa58cc3fa72372c4997da697f05366dd9b11d3b219a076d3",
+    "source_scope": "original synthetic development case; public customer research corpus not used",
+    "private_absolute_paths": "basenames only",
+    "unselected_private_metadata": "omitted; original complete reviews remain immutable"
+  },
+  "closed_budget": {
+    "new_reserved_generations": 7,
+    "new_completed_generations": 6,
+    "new_cancelled_before_dispatch": 1,
+    "new_known_tokens": 47202,
+    "new_usage_unknown": false,
+    "prior_reserved_generations": 22,
+    "prior_known_generations": 19,
+    "prior_ambiguous_generations": 2,
+    "prior_cancelled_before_dispatch": 1,
+    "prior_known_tokens": 111180,
+    "prior_conservative_tokens": 259840,
+    "cumulative_reserved_generations": 29,
+    "cumulative_known_generations": 25,
+    "cumulative_ambiguous_generations": 2,
+    "cumulative_cancelled_before_dispatch": 2,
+    "cumulative_known_tokens": 158382,
+    "cumulative_conservative_tokens": 307042,
+    "existing_ceiling": 326603,
+    "per_generation_reservation": 24576,
+    "remaining_conservative_room": 19561,
+    "old_unknown_recovered_or_refunded": false,
+    "automatic_retry": false,
+    "stop_cause": "next request20 cancelled before dispatch for insufficient reservation room",
+    "generic_OFF_stop_message_is_not_evidence_of_mode_change": true
+  },
+  "private_capture_sha256": {
+    "summary.json": "5b34647ac138f4ef52de05e0044c18ea9bc4d604b5312019c7140c0a5e074eef",
+    "study-budget.json": "373eb14e9017db56b129957e18ef2fb52389960919afaa58ba359ba22deb7dbf",
+    "study-budget-events.jsonl": "4fabeef0789c9158188f5723686998d77d83c8f110f7bb1e3f8bde52a9857635",
+    "fridge-normal/relay.json": "1905cb0d3f55af40c36aa927b9baf0b06c8a5c843f4c4490c28e5b1d9d472e78",
+    "fridge-normal/executor.log": "054ed4fdec2fc3f93387af36efbf0536b3cbf3cafe99f0b4cee26b5c397c6430"
+  }
+}
