@@ -19,6 +19,8 @@
 
 독립 [공개 품질 검수](../../../../evals/pm-prototype/20261007/r5-live-quality/normal-8ec-independent-quality.json)의 quote/pointer/source hash를 따른다. 정확 원문은 합성 개발 입력이고 공개 구매 SKU 평가가 아니다. native POST=GET은 고정 runner의 assert/receipt이며 보관된 response는1개라 독립 두 번째 API 호출 검증과 구분했다. history/SQLite raw/공개 projection은 직접 파일·읽기전용 DB로 대조했다.
 
+[시간축 정정](../../../../evals/pm-prototype/20261007/r5-live-quality/normal-8ec-quality-time-axis-correction.json): Q03의 최종 NEED007은 generation5지만 같은 제약 발명은 초기 generation2의 NEED004에도 있다. 최초 관찰 단계만 정정했고 원 audit·실제 응답·품질 FAIL3건·사용량은 보존했다.
+
 실제 PM 인계: [Issue12](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/12#issuecomment-6029599916), [Issue16](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/16#issuecomment-6029600260), [Issue14 FR01](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/14#issuecomment-6029600741), [Issue15](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/15#issuecomment-6029601114). [PR217 최소 수정 검수](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/217#pullrequestreview-5436914219)와 [추가219](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/219)는 후속 원 head/실제 CI·병합으로 판정한다.
 
 LG [Notion](https://app.notion.com/p/3e7b3295f8cb81fdb730f6ef105a927c)와 [대시보드](https://app.notion.com/p/3e7b3295f8cb8165a146d70ab4c0e8d6) 11:35 checkpoint를 insert한 뒤 실제 fetch에서 새 header·238건·기존 content전체 보존을 확인했다. 11:48 KST 새 정상1의 기록 PASS·의미 FAIL3건을 해당 단락만 update한 뒤 재조회에서 새문장과 다른 content전체 불변을 확인했다. 응답의 as-of 수정시각은 본문 비교와 구분했다. 운영8/공식 새 snapshot 적용은 아직0이며 전원OFF/원 비용/기존 DB·auth를 유지한다.
