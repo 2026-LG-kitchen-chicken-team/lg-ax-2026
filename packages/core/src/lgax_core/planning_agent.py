@@ -43,6 +43,7 @@ from .semantic_review import (
     schema_for_review,
     semantic_feedback,
     semantic_grounding_requirements,
+    semantic_model_context,
 )
 from .skill_runner import SkillRuntime
 from .skill_runner import schema_for as skill_schema
@@ -309,18 +310,20 @@ class PlanningAgent:
                                            execution_kind=self.execution_kind, budget=budget)
         revision_session.install(runtime)
 
-        def model_call(stage: str, skill_id: str, context: dict, prompt: str, schema: dict):
+        def model_call(stage: str, skill_id: str, context: dict, prompt: str, schema: dict,
+                       *, prompt_projection: dict | None = None):
             # Raw generate transports use the same host policy as message-aware
             # callers. Source role markers remain escaped JSON data in the task.
             boundary = SourceBoundary(payload, allowed_tools=("get_evidence", "list_products"))
             prompt = boundary.messages()[0]["content"] + "\n" + prompt
+            projected = model_context(context) if prompt_projection is None else deepcopy(prompt_projection)
             record = {"stage": stage, "skill_id": skill_id, "execution_kind": self.execution_kind,
                       "input_sha256": input_digest(payload), "revision_count": payload["revision_count"],
                       "source_boundary_sha256": boundary.context_sha256,
                       "allowed_tools": list(boundary.allowed_tools),
                       "prompt": prompt, "schema": schema, "request_context": deepcopy(context),
-                      "prompt_context": model_context(context),
-                      "prompt_context_sha256": input_digest(model_context(context)),
+                      "prompt_context": projected,
+                      "prompt_context_sha256": input_digest(projected),
                       "model_id": config.model_id, "model_digest": config.expected_digest}
             calls.append(record)
             model = StructuredModelClient(_RecordingAdapter(self.client.adapter, record))
@@ -663,10 +666,12 @@ class PlanningAgent:
                                "skill_input": {"constraints": payload["request"]["exclusions"]}, "feedback": feedback}
                     context["quality_context"] = quality_context
                     context["semantic_grounding_requirements"] = semantic_grounding_requirements(payload, current)
+                    projected = semantic_model_context(context)
                     try:
                         report = model_call("review", "semantic_review", context,
-                                            INSTRUCTIONS + json.dumps(model_context(context), ensure_ascii=False, separators=(",", ":")),
-                                            schema_for_review(payload, current, literal_choices=True)).data
+                                            INSTRUCTIONS + json.dumps(projected, ensure_ascii=False, separators=(",", ":")),
+                                            schema_for_review(payload, current, literal_choices=True),
+                                            prompt_projection=projected).data
                         decision = review_semantics(payload, current, report)
                         reviewed_questions = deepcopy(report["questions"])
                         retry_feedback = semantic_feedback(report)

@@ -11,6 +11,7 @@ from jsonschema import Draft202012Validator
 from .concept_lineage import trace_concept_lineage
 from .errors import DomainError
 from .judgement_contract import input_digest
+from .prompt_context import model_context
 
 QUALITY = ("mechanism", "difference_from_current_features", "unverified_assumptions", "unsupported_factual_claims")
 INSTRUCTIONS = (
@@ -83,6 +84,41 @@ def semantic_grounding_requirements(payload: dict, output: dict) -> list[dict]:
                           for feature in link["features"])
         rows.append({"concept_id": candidate["concept_id"], "citation_groups": groups})
     return rows
+
+
+def semantic_model_context(context: dict) -> dict:
+    """Losslessly encode repeated lineage keys; never remove review information.
+
+    Canonical sources and declarations remain unchanged, as does the full
+    request_context retained by PlanningAgent. A table is used only when every
+    link has the same fields, so zip(columns, values_row) restores the exact
+    original link. Future heterogeneous link shapes retain their original form.
+    """
+    result = model_context(context)
+    quality = result.get("quality_context")
+    if not isinstance(quality, dict):
+        return result
+    lineage = quality.get("concept_lineage")
+    if not isinstance(lineage, dict):
+        return result
+    encoded = False
+    for candidate in lineage.get("candidates", []):
+        links = candidate.get("links")
+        if not isinstance(links, list) or not links or not all(isinstance(link, dict) for link in links):
+            continue
+        columns = list(links[0])
+        if not all(set(link) == set(columns) for link in links):
+            continue
+        candidate["links"] = {"columns": columns,
+                              "values": [[link[column] for column in columns] for link in links]}
+        encoded = True
+    if encoded:
+        quality["representation"] = "derived_annotations_column_table_v2_semantic_links_v1"
+        quality["reference"] += (
+            " Candidate links also use columns/values; gap_id identifies each row. "
+            "zip(columns, values_row) restores all link fields and wording exactly."
+        )
+    return result
 
 
 def schema_for_review(payload: dict, output: dict, *, literal_choices: bool = False) -> dict:

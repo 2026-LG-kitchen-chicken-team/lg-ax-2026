@@ -11,3 +11,9 @@
 검사는 고정 source proof를 대조한 `DockerExecutor`, image `sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5`, validator 역할, auth/profile 없음, network none, readonly source에서 수행한다. 실행 wrapper는 저장소 밖의 PM metadata wrapper다. host에서 저장소 코드·테스트·빌드·설치를 실행하지 않는다. 검사 결과는 이후 고정 commit/receipt로 기록한다. Ollama native 조건 스키마 지원과 실모델 원3 품질 인수는 아직 검증 전이며 새 모델 호출은 0이다.
 
 고정 source `4f897394ae224e43dc4c7f0c9d224f4dfa92c0a2`에서 target155건 PASS(새 회귀13 + 기존142)를 확인했다. [validation-receipt.json](validation-receipt.json)은 실행 ID·image·실제 경계·archive/source manifest SHA와 returncode0/source_changed[]/model_calls0을 기록한다. [provenance-proof.json](provenance-proof.json)은 원 commit814fe2f의 전체 JSON bytes와 선택 literal fields의 직접 일치를 기록한다. 앞선 setup 실패 두 회는 개인 근거 기록에 보존하며, 검사 통과는 실모델 품질 PASS·native 지원·최종 Done·운영 반영을 의미하지 않는다. 공개/push/병합·독립 검수·실모델 원3 검증은 PM root에게 인계한다.
+
+## 후속 실제 요청 준비 회귀
+
+root의 유한 원3 실모델 실행 뒤 정상9Need/9Gap/3후보의 semantic_review 요청이24,000자 상한을 넘은 실제 로컬 실패를 확인했다. [semantic-prompt-counterexample.json](semantic-prompt-counterexample.json)은 그 요청의 원 필드를 그대로 보존하며 새 의미 검수 응답이나 품질 승인 자료가 아니다. [semantic-prompt-proof.json](semantic-prompt-proof.json)과 [semantic-prompt-validation-receipt.json](semantic-prompt-validation-receipt.json)은 source `0df1f384ebb1f44d13744b8f3b35df821bcfd00e`의197 PASS·실제 formatter23,793자/33,142UTF8바이트·동일 상한·모델0을 기록한다.
+
+semantic_review 전용 links column-table은 원19필드 모든 값을 정확히 복원한다. 원문·선언·필수 인용 그룹·native schema·원 request_context/trace는 그대로 유지한다. 문자 여유207이며 더 큰 문맥과 실제 모델의 표 해석·의미 정확성은 검증하지 않았다. 원 정상·변경·부족 실행, 중단 transport와 unknown 예약, 과거 대장과 실패를 변경하지 않는다.
