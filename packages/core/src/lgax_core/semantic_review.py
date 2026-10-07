@@ -60,8 +60,29 @@ INSTRUCTIONS = (
     "조건 준수와 조건 위반은 반대입니다. 어떤 대상을 사용하지 않는다는 문장을 그 대상을 사용했다는 선언으로 읽지 마세요. "
     "questions에는 현재 판단에 꼭 필요한 누락 정보의 구체적인 질문만 씁니다. "
     "출력 문구의 수정만 필요한 violation은 수정 근거를 reason에 기록하며 사용자 질문으로 바꾸지 않습니다. "
+    "semantic_grounding_requirements에는 후보·Gap별 차이 판정의 필수 인용 그룹이 있습니다. "
+    "difference를 satisfied로 선언할 때 각 그룹에서 원문을 적어도 하나 인용해야 하며 "
+    "인용 존재만으로 의미 충족을 선언하지 마세요. "
     "uncertain이면 필요한 질문을 questions에 남기세요. JSON 한 개만 출력하세요.\nDATA_JSON:\n"
 )
+
+
+def semantic_grounding_requirements(payload: dict, output: dict) -> list[dict]:
+    """The same per-Gap citation alternatives required by review_semantics."""
+    rows = []
+    for candidate in trace_concept_lineage(payload, output)["candidates"]:
+        groups = []
+        for link in candidate["links"]:
+            groups.extend([{"gap_id": link["gap_id"], "kind": "review",
+                            "evidence_ids": link["review_evidence_ids"]},
+                           {"gap_id": link["gap_id"], "kind": "manual",
+                            "evidence_ids": link["manual_evidence_ids"]}])
+            groups.extend({"gap_id": link["gap_id"], "kind": "feature_manual",
+                           "feature_id": feature["feature_id"],
+                           "evidence_ids": sorted(set(link["manual_evidence_ids"]) & set(feature["manual_evidence_ids"]))}
+                          for feature in link["features"])
+        rows.append({"concept_id": candidate["concept_id"], "citation_groups": groups})
+    return rows
 
 
 def schema_for_review(payload: dict, output: dict, *, literal_choices: bool = False) -> dict:
@@ -107,6 +128,22 @@ def schema_for_review(payload: dict, output: dict, *, literal_choices: bool = Fa
             "unsupported_factual_claims=후보 본문/판정 사유의 기존 제품 사실·성능·효과·실현성을 근거 없이 단정하지 않음"}}, len(ids) * len(QUALITY)),
         "questions": {"type": "array", "items": text, "uniqueItems": True},
     }
+    if literal_choices and ids:
+        clauses = []
+        for candidate in semantic_grounding_requirements(payload, output):
+            groups = [{"contains": {"type": "object", "properties": {
+                "evidence_id": {"enum": group["evidence_ids"]}}, "required": ["evidence_id"]}}
+                if group["evidence_ids"] else {"minItems": 1, "maxItems": 0}
+                for group in candidate["citation_groups"]]
+            if groups:
+                clauses.append({"if": {"properties": {
+                    "concept_id": {"const": candidate["concept_id"]},
+                    "criterion": {"const": "difference_from_current_features"},
+                    "verdict": {"const": "satisfied"}},
+                    "required": ["concept_id", "criterion", "verdict"]},
+                    "then": {"properties": {"source_quotes": {"allOf": groups}}}})
+        if clauses:
+            properties["quality_assessments"]["items"]["allOf"] = clauses
     return {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
             "properties": properties, "required": list(properties), "additionalProperties": False}
 
