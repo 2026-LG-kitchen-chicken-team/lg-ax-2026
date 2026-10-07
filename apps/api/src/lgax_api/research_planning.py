@@ -81,7 +81,7 @@ def public_research_brief(brief: dict, bundle_sha256: str) -> dict:
         runtime["selected_source_ids"] = list(dict.fromkeys(value for value in selected
                                                           if isinstance(value, str) and value in source_ids))
         runtime["omitted_source_count"] = len(source_ids) - len(runtime["selected_source_ids"])
-    if raw.get("selection_method") == "round_robin_page_model_rating_sort":
+    if raw.get("selection_method") in {"round_robin_page_model_rating_sort", "interleaved_rating_expression_page_model_v1"}:
         runtime["selection_method"] = raw["selection_method"]
     calls = raw.get("model_calls", [])
     calls = [call for call in calls if isinstance(call, dict)] if isinstance(calls, list) else []
