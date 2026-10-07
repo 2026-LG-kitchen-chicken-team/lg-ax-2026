@@ -1,8 +1,8 @@
 """Additive public-source research contracts; legacy contracts stay unchanged."""
 
+import json
 from functools import lru_cache
 from importlib.resources import files
-import json
 from pathlib import Path
 from typing import Any
 
@@ -33,6 +33,13 @@ def validate_research(definition: str, value: Any) -> None:
         if len(ids) != len(set(ids)):
             raise ValidationError("Research source IDs must be unique")
         for source in sources:
+            allowed_roles = {
+                "review": {"customer_experience"}, "qa": {"customer_question", "official_answer"},
+                "faq": {"official_document", "official_answer"}, "manual": {"official_document"},
+                "spec": {"official_specification"}, "installation": {"official_document"},
+            }
+            if source["source_role"] not in allowed_roles[source["source_type"]]:
+                raise ValidationError("Source type and author role must be consistent")
             if source["product_group"] != value["product_group"]:
                 raise ValidationError("Bundle and source product groups must match")
             if source["published_at"] is not None and source["date_kind"] != "posting":

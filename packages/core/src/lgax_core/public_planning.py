@@ -28,6 +28,14 @@ from .retrieval import tokenize
 ModelCaller = Callable[[str, dict], dict | StructuredModelResult]
 CUSTOMER_TYPES = {"review", "qa"}
 DOCUMENT_TYPES = {"manual", "faq", "spec", "installation"}
+
+
+def is_customer_source(source: dict) -> bool:
+    """A manufacturer's Q&A answer is document context, not another customer's pain."""
+    return (source["source_type"] == "review" and source["source_role"] == "customer_experience"
+            or source["source_type"] == "qa" and source["source_role"] == "customer_question")
+
+
 # Only fixed adapter identifiers are diagnostics. Never copy exception messages,
 # arbitrary detail values, endpoints, credential names or provider responses.
 _MODEL_ERROR_CODES = {"INVALID_ARGUMENT", "MODEL_UNAVAILABLE", "VALIDATION_FAILED"}
@@ -290,7 +298,7 @@ class PublicPlanner:
                 for _, text in _strings(value):
                     result.extend(claim_issues(field, text, available))
             if definition == "Problem":
-                if not any(source["source_type"] in CUSTOMER_TYPES for source in available):
+                if not any(is_customer_source(source) for source in available):
                     result.append({"field": "source_ids", "code": "problem_requires_customer_source"})
                 if any(eid not in catalog for eid in item.get("counter_source_ids", [])):
                     result.append({"field": "counter_source_ids", "code": "unknown_counter_source"})
@@ -343,7 +351,7 @@ class PublicPlanner:
         customer_sources, documents, duplicate_groups = [], [], set()
         for source in sources:
             group = source.get("duplicate_group") or source["source_id"]
-            if source["source_type"] in CUSTOMER_TYPES:
+            if is_customer_source(source):
                 if group not in duplicate_groups:
                     customer_sources.append(source)
                     duplicate_groups.add(group)
