@@ -50,6 +50,41 @@ class DiagnosticRunner(FixtureRunner):
 
 
 class PublicValidationProjectionTests(unittest.TestCase):
+    def test_grounding_projection_authorizes_every_id_and_discards_private_nested_fields(self):
+        facts = {"code": "CONCEPT_GROUNDING_MISSING", "concept_id": "CONCEPT-001",
+                 "missing_links": [{"gap_id": "GAP-001", "need_id": "NEED-001",
+                                    "required_evidence_ids": ["REVIEW-001", "MANUAL-001"],
+                                    "missing_evidence_ids": ["MANUAL-001"], "private_provider": PRIVATE}],
+                 "private": PRIVATE}
+        error = {"code": "VALIDATION_FAILED", "message": PRIVATE,
+                 "details": {"reason": "schema_mismatch", "grounding_violations": [facts], "private": PRIVATE}}
+        entities = {"concepts": {"CONCEPT-001"}, "gaps": {"GAP-001"}, "needs": {"NEED-001"}}
+        result = public_validation_details(error, {"REVIEW-001", "MANUAL-001"}, entities)
+        self.assertEqual(result["grounding_violations"][0]["missing_links"][0]["missing_evidence_ids"], ["MANUAL-001"])
+        self.assertNotIn(PRIVATE, json.dumps(result))
+        unscoped = public_validation_details(error, {"REVIEW-001"}, {})
+        self.assertEqual(unscoped["grounding_violations"], [{"code": "CONCEPT_GROUNDING_MISSING"}])
+        facts["missing_links"][0]["missing_evidence_ids"] = ["REVIEW-001", PRIVATE]
+        result = public_validation_details(error, {"REVIEW-001", "MANUAL-001"}, entities)
+        self.assertNotIn("missing_links", result["grounding_violations"][0])
+
+    def test_need_presence_claims_are_scoped_and_non_validation_errors_stay_closed(self):
+        error = {"code": "VALIDATION_FAILED", "details": {"reason": "reviewer_reports_existing_need",
+                 "contradictions": [{"review_evidence_id": "REVIEW-001", "existing_need_ids": ["NEED-001"], "private": PRIVATE},
+                                    {"review_evidence_id": PRIVATE, "existing_need_ids": ["NEED-001"]}]}}
+        result = public_validation_details(error, {"REVIEW-001"}, {"needs": {"NEED-001"}})
+        self.assertEqual(result['contradictions'], [{"review_evidence_id": "REVIEW-001", "existing_need_ids": ["NEED-001"]}])
+        error['code'] = 'MODEL_UNAVAILABLE'
+        self.assertEqual(public_validation_details(error, {"REVIEW-001"}, {"needs": {"NEED-001"}}), {})
+
+    def test_malformed_new_diagnostic_ids_are_dropped_without_type_errors(self):
+        error = {"code": "VALIDATION_FAILED", "details": {
+            "grounding_violations": [{"code": "CONCEPT_GROUNDING_MISSING", "concept_id": [PRIVATE],
+                                      "missing_links": [{"gap_id": [PRIVATE], "need_id": {"private": PRIVATE}}]}],
+            "contradictions": [{"review_evidence_id": [PRIVATE], "existing_need_ids": [PRIVATE]}]}}
+        result = public_validation_details(error, {"REVIEW-001"}, {"needs": {"NEED-001"}})
+        self.assertEqual(result, {"grounding_violations": [{"code": "CONCEPT_GROUNDING_MISSING"}]})
+
     def test_malformed_sensitive_fields_are_not_public_validation_facts(self):
         for details in (None, [PRIVATE], {"code": [PRIVATE], "violations": "not-list"},
                         {"reason": PRIVATE, "evidence_id": PRIVATE, "declared_polarity": "uncertain",

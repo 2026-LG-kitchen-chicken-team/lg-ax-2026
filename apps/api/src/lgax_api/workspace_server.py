@@ -19,6 +19,7 @@ from lgax_core.workspace_planning import EnvPlanningRunner, PlanningRunner
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from .workspace_auth import TokenRegistry
+from .workspace_bootstrap import workspace_bootstrap
 from .public_validation import public_validation_details
 from .trend_configuration import load_trend_runtime
 from .workspace_trends import TrendCollector, WorkspaceTrends
@@ -65,11 +66,33 @@ def public_run(snapshot: dict) -> dict:
     sources = input_record.get("sources") if isinstance(input_record, dict) else None
     evidence_ids = {item["id"] for item in sources if isinstance(item, dict)
                     and isinstance(item.get("id"), str)} if isinstance(sources, list) else set()
+    entities = {"needs": set(), "gaps": set(), "concepts": set()}
+    product = input_record.get("product") if isinstance(input_record, dict) else None
+    model_id = product.get("model_id") if isinstance(product, dict) else None
+    if isinstance(execution, dict):
+        declarations = [execution.get("output"), execution.get("rejected_output")]
+        for call in execution.get("model_calls", []) if isinstance(execution.get("model_calls"), list) else []:
+            data = call.get("data") if isinstance(call, dict) else None
+            if isinstance(data, dict):
+                declarations.append(data.get("result"))
+        for declaration in declarations:
+            if not isinstance(declaration, dict):
+                continue
+            for collection, definition in (("needs", "Need"), ("gaps", "Gap"), ("concepts", "Concept")):
+                items = declaration.get(collection)
+                for item in items[:100] if isinstance(items, list) else []:
+                    if not isinstance(item, dict) or model_id is None or item.get("model_id") != model_id:
+                        continue
+                    try:
+                        validate(definition, item)
+                    except ValidationError:
+                        continue
+                    entities[collection].add(item["id"])
 
     def diagnostic_error(value):
         code = value.get("code") if isinstance(value, dict) else None
         projected = public_error(code if isinstance(code, str) else "CONTRACT_MISMATCH")["error"]
-        details = public_validation_details(value, evidence_ids) if isinstance(value, dict) else {}
+        details = public_validation_details(value, evidence_ids, entities) if isinstance(value, dict) else {}
         if details:
             projected["details"] = details
         return projected
@@ -206,6 +229,12 @@ def create_workspace_app(db_path: Path, registry: TokenRegistry, *,
                 "contract_version": CONTRACT_VERSION,
             },
         )
+
+    @app.get("/api/workspace/bootstrap")
+    def bootstrap(request: Request):
+        # The middleware authenticates GET and returns no-store responses.
+        # Do not expose this source store through the synthetic public API.
+        return workspace_bootstrap(evidence)
 
     @app.post("/api/workspace/projects", status_code=201)
     def create_project(request: Request, payload: Annotated[dict, Body()]):

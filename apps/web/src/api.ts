@@ -4,7 +4,7 @@ import type { BootstrapData } from './domain';
 
 const ajv = new Ajv2020({ allErrors: true, strict: false });
 ajv.addSchema(schema, 'lgax');
-const validateBootstrap = ajv.compile({ $ref: 'lgax#/$defs/BootstrapResponse' });
+const validateBootstrap = ajv.compile({ $ref: 'lgax#/$defs/WorkspaceBootstrapResponse' });
 const validatePlanningRequest = ajv.compile({ $ref: 'lgax#/$defs/PlanningRequest' });
 
 export class ApiError extends Error {
