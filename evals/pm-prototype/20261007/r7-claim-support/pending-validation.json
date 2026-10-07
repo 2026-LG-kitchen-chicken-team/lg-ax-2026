@@ -1,0 +1,76 @@
+{
+  "kind": "PM_SUPPORT_AI_ACTIVE_CLAIM_FIELD_AND_ROLE_CANDIDATE",
+  "base_commit": "58feb9c30fc5faae1cc8acfb0ff409106a6d7174",
+  "source_commit": null,
+  "source_commit_scope": "This receipt binds the tested pre-commit overlay by exact raw SHA; publishing does not retroactively change the receipt.",
+  "actor": "정이량 PM 보조 AI; 타 담당자의 자기보고 아님",
+  "pending_source_sha256": {
+    "packages/core/src/lgax_core/claim_support.py": "222b4757a55153f863a3df0a0711686e26938c3e8103b59190ebb9c90e31ff0a",
+    "packages/core/src/lgax_core/semantic_review.py": "5c7cf1aa1ea8ffd7e5b8cc0d1d7ceae66dae3e20f4783e133b7fcecc2e9512e6",
+    "packages/core/src/lgax_core/planning_agent.py": "01d6d1ae665310f2379408adb4f26daddc52b6633fad08fdb17bdf7a88f11708",
+    "tests/test_claim_support.py": "d6000974bb38843453756a5325ca9e31237b551d75e96031f17aad464bfbb860",
+    "tests/test_planning_agent.py": "e01e1aa368d48a54458413274af62735860877ad86b8d02a2e2fb07a2f3fa79d",
+    "tests/test_semantic_review.py": "7465b234d379beee8dbdefc887c7f6a56b9b625fd30f5bbdf260d0c5c0dabad1"
+  },
+  "actual_validation": {
+    "execution_id": "pm-r7-claim-core-4eb24cef290940bc9b9e7ceaf84bdee3",
+    "receipt_sha256": "194e582287a9839c4bf317696c9b8434625179c2b23927772f1bb0c6bdfe15ae",
+    "returncode": 0,
+    "unittest_count": 199,
+    "ruff_files": 10,
+    "new_claim_regressions": 11,
+    "source_files": 4020,
+    "source_changed": [],
+    "pending_overlay_after_unchanged": true,
+    "image": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+    "uid": 1000,
+    "network": "none",
+    "publisher_credentials_mounted": false,
+    "ai_profile_mounted": false,
+    "model_calls": 0,
+    "network_calls": 0
+  },
+  "original_error_preserved": {
+    "execution_id": "pm-r7-claim-core-3a5ed88b3a534571b40808976dd249e6",
+    "receipt_sha256": "d68ffabbdb7fe34ee5de55171ae17b8443470957971e3117e70798a3939932e4",
+    "unittest_count": 199,
+    "errors": 2,
+    "reason": "Two active-report replay tests selected the unchanged legacy schema; only the two callers now explicitly require active claims."
+  },
+  "native_request_preparation": {
+    "public_development_fixture_sha256": "3ca94273f3829df13899a677608c92467305d6f47afbe80da3fde4fa8021a00b",
+    "needs": 9,
+    "gaps": 9,
+    "concepts": 3,
+    "schema_bytes": 16197,
+    "schema_cap_bytes": 16384,
+    "formatted_prompt_chars": 22592,
+    "prompt_cap_chars": 24000,
+    "formatted_prompt_utf8_bytes": 33134,
+    "prompt_cap_utf8_bytes": 45000,
+    "context_tokens": 16384,
+    "output_tokens": 8192,
+    "shared_max_revisions": 2,
+    "actual_generation_performed": false
+  },
+  "semantic_quality_verified": false,
+  "independent_source_review": {
+    "decision": "SOURCE_APPROVE_EXACT_SIX_FROZEN_OVERLAY_FILES",
+    "findings": [],
+    "proof_sha256": "f107e5823b3e8a304852fb1b9bc6a42300bd5463e368fc5bad21fed609cfb1cc",
+    "reviewer_original_raw_sha256": "31a727db90d89918ad316fa9082f68ff6372abcb5988a8ee9c039cac37253240",
+    "proof_serialization": "Git LF-normalized copy; original reviewer raw bytes remain preserved separately.",
+    "proof_file": "independent-source-review.json",
+    "live_quality_approved": false
+  },
+  "operating_adopted": false,
+  "parent_Done": false,
+  "limitations": [
+    "The code verifies declared field coverage and linked/quoted source roles; object and condition meaning remains a model judgement.",
+    "Misclassification of desire versus experience or fact versus hypothesis can still permit a semantic error.",
+    "Human-labelled public development counterexamples test correction routing, not automatic recognition of all four original live-model errors.",
+    "scope=unconfirmed remains hold-plus-question under the existing uncertainty policy.",
+    "No-candidate review, public contracts, original four Skills, private Gold and cost ledgers were not changed.",
+    "Web/API presentation of new CLAIM codes needs separate closed projection and label integration."
+  ]
+}

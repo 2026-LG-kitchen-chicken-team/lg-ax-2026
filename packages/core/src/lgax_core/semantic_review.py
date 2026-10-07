@@ -8,7 +8,7 @@ from typing import Any
 
 from jsonschema import Draft202012Validator
 
-from . import upstream_semantics
+from . import claim_support, upstream_semantics
 from .concept_lineage import trace_concept_lineage
 from .errors import DomainError
 from .judgement_contract import input_digest
@@ -68,6 +68,9 @@ INSTRUCTIONS = (
     "uncertain이면 필요한 질문을 questions에 남기세요. "
     + upstream_semantics.INSTRUCTIONS
     + "JSON 한 개만 출력하세요.\nDATA_JSON:\n"
+)
+ACTIVE_INSTRUCTIONS = INSTRUCTIONS.removesuffix("JSON 한 개만 출력하세요.\nDATA_JSON:\n") + (
+    claim_support.INSTRUCTIONS + "JSON 한 개만 출력하세요.\nDATA_JSON:\n"
 )
 
 
@@ -135,7 +138,9 @@ def semantic_model_context(context: dict) -> dict:
 
 
 def schema_for_review(payload: dict, output: dict, *, literal_choices: bool = False,
-                      include_upstream: bool = False) -> dict:
+                      include_upstream: bool = False, include_claims: bool = False) -> dict:
+    if include_claims and not include_upstream:
+        raise ValueError("Active claim review requires complete upstream review")
     ids = [c["id"] for c in output["concepts"]]
     text = {"type": "string", "minLength": 1, "pattern": r"\S"}
     source_quote = {"type": "object", "properties": {
@@ -190,6 +195,25 @@ def schema_for_review(payload: dict, output: dict, *, literal_choices: bool = Fa
     if include_upstream:
         properties["upstream_assessments"] = upstream_semantics.assessment_schema(
             payload, output, literal_choices=literal_choices, source_quote_schema=source_quote)
+    if include_claims:
+        definitions["claim_check"] = claim_support.item_schema([source["id"] for source in payload["sources"]])
+        upstream_item = properties["upstream_assessments"]["items"]
+        upstream_item["properties"]["claims"] = claim_support.array_schema()
+        upstream_item["required"].append("claims")
+        quality_item = properties["quality_assessments"]["items"]
+        quality_item["properties"]["claims"] = claim_support.array_schema(minimum=0)
+        quality_item["required"].append("claims")
+        quality_item.setdefault("allOf", []).append({
+            "if": {"properties": {"criterion": {"const": "unsupported_factual_claims"}},
+                   "required": ["criterion"]},
+            "then": {"properties": {"claims": {"minItems": 2}}},
+            "else": {"properties": {"claims": {"maxItems": 0}}}})
+        if literal_choices:
+            # These descriptions repeat the unchanged instructions above. The
+            # private role schema replaces no meaning rule or native size cap.
+            for name in ("exclusion_assessments", "quality_assessments"):
+                properties[name]["items"]["properties"]["verdict"].pop("description", None)
+            quality_item["properties"]["criterion"].pop("description", None)
     if literal_choices and ids:
         clauses = []
         for candidate in semantic_grounding_requirements(payload, output):
@@ -205,7 +229,7 @@ def schema_for_review(payload: dict, output: dict, *, literal_choices: bool = Fa
                     "required": ["concept_id", "criterion", "verdict"]},
                     "then": {"properties": {"source_quotes": {"allOf": groups}}}})
         if clauses:
-            properties["quality_assessments"]["items"]["allOf"] = clauses
+            properties["quality_assessments"]["items"].setdefault("allOf", []).extend(clauses)
     result = {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
               "properties": properties, "required": list(properties), "additionalProperties": False}
     if definitions:
@@ -242,21 +266,44 @@ def semantic_feedback(report: dict) -> list[dict]:
             for category, items, passed in (("exclusion", report["exclusion_assessments"], "compliant"),
                                             ("quality", report["quality_assessments"], "satisfied"))
             for row in items if row["verdict"] != passed]
+    for row in report.get("upstream_assessments", []):
+        rows.extend(claim_support.feedback(row, row["entity_kind"], row["entity_id"]))
+    for row in report["quality_assessments"]:
+        if row["criterion"] == "unsupported_factual_claims":
+            rows.extend(claim_support.feedback(row, "concept", row["concept_id"]))
     if report["questions"] and not rows:
         rows.append({"code": "SEMANTIC_QUESTION", "stage": "concepts", "details": {"questions": report["questions"]}})
     return rows
 
 
-def review_semantics(payload: dict, output: dict, report: Any, *, require_upstream: bool = False) -> dict:
+def review_semantics(payload: dict, output: dict, report: Any, *, require_upstream: bool = False,
+                     require_claims: bool = False) -> dict:
     """Bind the review to exact inputs/candidates; decide hold/retry within the same budget."""
     def invalid(reason: str, details: dict | None = None):
         raise DomainError("VALIDATION_FAILED", "의미 검토의 원문·범위·완전성을 확인해야 합니다.",
                           {"reason": reason, **(details or {})})
 
-    if any(Draft202012Validator(schema_for_review(payload, output, include_upstream=require_upstream)).iter_errors(report)):
-        invalid("semantic_review_schema")
+    errors = list(Draft202012Validator(schema_for_review(
+        payload, output, include_upstream=require_upstream, include_claims=require_claims)).iter_errors(report))
+    if errors:
+        details = {}
+        if require_claims and isinstance(report, dict):
+            path = list(errors[0].path)
+            if len(path) > 1 and path[0] == "upstream_assessments" and isinstance(path[1], int):
+                row = report.get("upstream_assessments", [])[path[1]]
+                details["stage"] = ({"need": "needs", "gap": "compare"}.get(row.get("entity_kind"), "concepts")
+                                    if isinstance(row, dict) else "concepts")
+            else:
+                details["stage"] = "concepts"
+        invalid("semantic_review_schema", details)
     if require_upstream:
         upstream_semantics.validate(payload, output, report["upstream_assessments"])
+    if require_claims:
+        for row in report["upstream_assessments"]:
+            claim_support.validate(payload, output, row, row["entity_kind"], row["entity_id"])
+        for row in report["quality_assessments"]:
+            if row["criterion"] == "unsupported_factual_claims":
+                claim_support.validate(payload, output, row, "concept", row["concept_id"])
     concepts = {c["id"]: c for c in output["concepts"]}
     sources = {s["id"]: s["text"] for s in payload["sources"]}
     product = payload["product"]
