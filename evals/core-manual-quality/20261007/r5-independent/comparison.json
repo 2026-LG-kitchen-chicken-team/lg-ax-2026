@@ -1,0 +1,723 @@
+{
+  "audit_id": "CORE-R5-RAW-AUDIT-01a10729-01",
+  "original_handoff_commit": "814fe2fbcd3b752ff6400d8a08671dce7bdd2d80",
+  "original_model_source": "de09b64ca72d5ae918cc0a95f244b0e0562761b0",
+  "data_kind": "synthetic",
+  "artifact_checks": [
+    {
+      "case": "fridge-normal",
+      "sha256": "5625c0ff13d7e4282cbe7e6eb3ea0aa43d848cec8bf3d47c45845cf32d670f3d",
+      "bytes": 1309041,
+      "status": "failed",
+      "original_calls": 6,
+      "original_tokens": 42626,
+      "raw_generated_equal_calls": 6,
+      "original_input_revision": 0,
+      "final_input_revision": 2,
+      "correction_budget": {
+        "revision_count": 2,
+        "max_revisions": 2,
+        "closed": true,
+        "terminal_reason": "revision_limit",
+        "attempts": [
+          {
+            "operation": "stage_retry",
+            "revision_count": 1
+          },
+          {
+            "operation": "review_revision",
+            "revision_count": 2
+          }
+        ]
+      }
+    },
+    {
+      "case": "fridge-changed",
+      "sha256": "95833e754b034d7f0ec6749c549fb3f2f80ca3fa240d5bc1c98d80b49c8046e5",
+      "bytes": 831174,
+      "status": "failed",
+      "original_calls": 5,
+      "original_tokens": 27769,
+      "raw_generated_equal_calls": 5,
+      "original_input_revision": 0,
+      "final_input_revision": 2,
+      "correction_budget": {
+        "revision_count": 2,
+        "max_revisions": 2,
+        "closed": true,
+        "terminal_reason": "revision_limit",
+        "attempts": [
+          {
+            "operation": "stage_retry",
+            "revision_count": 1
+          },
+          {
+            "operation": "stage_retry",
+            "revision_count": 2
+          }
+        ]
+      }
+    },
+    {
+      "case": "fridge-missing-manual",
+      "sha256": "d4a7af4f3a881256e0af779174518c1e3e0176ed86a0b9e923bcf6f833ebb688",
+      "bytes": 607986,
+      "status": "held",
+      "original_calls": 4,
+      "original_tokens": 21192,
+      "raw_generated_equal_calls": 4,
+      "original_input_revision": 0,
+      "final_input_revision": 1,
+      "correction_budget": {
+        "revision_count": 1,
+        "max_revisions": 2,
+        "closed": true,
+        "terminal_reason": "hold",
+        "attempts": [
+          {
+            "operation": "stage_retry",
+            "revision_count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "new_model_calls": 0,
+  "original_total_calls": 15,
+  "original_total_tokens": 91587,
+  "facts": {
+    "normal": {
+      "provided_need": {
+        "evidence_ids": [
+          "REVIEW-EVIDENCE-008"
+        ],
+        "id": "NEED-007",
+        "model_id": "FRIDGE-A",
+        "pain": "우유를 흘린 구역만 빠르게 청소하고 싶으나 전체를 옮겨야 함",
+        "situation": "국소 오염 청소 시",
+        "uncertainties": []
+      },
+      "provided_gap": {
+        "evidence_ids": [
+          "REVIEW-EVIDENCE-008",
+          "MANUAL-001"
+        ],
+        "feature_ids": [
+          "FEATURE-001"
+        ],
+        "id": "GAP-007",
+        "model_id": "FRIDGE-A",
+        "need_id": "NEED-007",
+        "questions": [],
+        "remaining_pain": "우유를 흘린 구역만 빠르게 청소하고 싶으나 전체를 옮겨야 함",
+        "support_status": "supported"
+      },
+      "provided_concept": {
+        "assumptions": [
+          "후속 검증: 선반 하단 슬라이드 레일 구조가 식품 무게를 견딜 수 있는지 확인 필요",
+          "후속 검증: 국소 오염 제거 시 냉기 손실이 허용 범위 내인지 확인 필요"
+        ],
+        "differentiation": "기존 기능은 선반을 분리하기 위해 위쪽 식품을 모두 옮겨야 하지만, 본 제안은 선반을 분리하지 않고도 국소 오염만 청소할 수 있는 슬라이드형 덮개 구조를 제공하여 사용 흐름이 다름",
+        "evidence_ids": [
+          "REVIEW-EVIDENCE-001",
+          "REVIEW-EVIDENCE-008",
+          "MANUAL-001"
+        ],
+        "gap_ids": [
+          "GAP-001",
+          "GAP-007"
+        ],
+        "id": "CONCEPT-001",
+        "kind": "feature",
+        "requirements": [
+          "사용자가 선반 덮개를 슬라이드하여 오염 구역만 노출시킴",
+          "슬라이드 덮개는 식품이 떨어지지 않도록 고정 장치를 포함해야 함",
+          "사용자는 덮개를 열고 젖은 천으로 오염 구역만 닦아냄"
+        ],
+        "status": "proposed",
+        "title": "국소 오염 전용 슬라이드 덮개"
+      },
+      "difference_review": {
+        "candidate_quote": "기존 기능은 선반을 분리하기 위해 위쪽 식품을 모두 옮겨야 하지만, 본 제안은 선반을 분리하지 않고도 국소 오염만 청소할 수 있는 슬라이드형 덮개 구조를 제공하여 사용 흐름이 다름",
+        "concept_id": "CONCEPT-001",
+        "criterion": "difference_from_current_features",
+        "reason": "현재 기능은 선반 분리 시 식품 이동을 필수로 하지만, 제안된 슬라이드 덮개는 분리 없이 국소 청소가 가능하여 차이가 명확히 설명됨.",
+        "source_quotes": [
+          {
+            "evidence_id": "REVIEW-EVIDENCE-001",
+            "quote": "음료를 쏟으면 선반 위 식품을 모두 옮겨 청소해야 해서 번거로워요."
+          },
+          {
+            "evidence_id": "MANUAL-001",
+            "quote": "선반은 분리하여 세척할 수 있습니다. 선반을 분리하기 전에 위의 식품을 모두 옮겨 주세요."
+          }
+        ],
+        "verdict": "satisfied"
+      },
+      "mechanism_review": {
+        "candidate_quote": "기존 기능은 선반을 분리하기 위해 위쪽 식품을 모두 옮겨야 하지만, 본 제안은 선반을 분리하지 않고도 국소 오염만 청소할 수 있는 슬라이드형 덮개 구조를 제공하여 사용 흐름이 다름",
+        "concept_id": "CONCEPT-001",
+        "criterion": "mechanism",
+        "reason": "슬라이드형 덮개 구조를 통해 선반을 분리하지 않고 국소 오염만 청소하는 구체적인 작동 방식이 명시되어 있음.",
+        "source_quotes": [
+          {
+            "evidence_id": "REVIEW-EVIDENCE-008",
+            "quote": "우유를 흘린 구역만 빠르게 청소하고 싶어요."
+          },
+          {
+            "evidence_id": "MANUAL-001",
+            "quote": "선반은 분리하여 세척할 수 있습니다. 선반을 분리하기 전에 위의 식품을 모두 옮겨 주세요."
+          }
+        ],
+        "verdict": "satisfied"
+      },
+      "semantic_error": {
+        "code": "VALIDATION_FAILED",
+        "message": "의미 검토의 원문·범위·완전성을 확인해야 합니다.",
+        "details": {
+          "reason": "difference_requires_review_and_manual",
+          "concept_id": "CONCEPT-001",
+          "gap_id": "GAP-007",
+          "need_id": "NEED-007",
+          "required_review_evidence_ids": [
+            "REVIEW-EVIDENCE-008"
+          ],
+          "linked_manual_evidence_ids": [
+            "MANUAL-001"
+          ]
+        }
+      },
+      "revision_previous_violations": [
+        "{\"code\":\"INVALID_SEMANTIC_REVIEW\",\"stage\":\"concepts\",\"message\":\"의미 검토의 원문·범위·완전성을 확인해야 합니다.\",\"details\":{\"reason\":\"difference_requires_review_and_manual\",\"concept_id\":\"CONCEPT-001\",\"gap_id\":\"GAP-007\",\"need_id\":\"NEED-007\",\"required_review_evidence_ids\":[\"REVIEW-EVIDENCE-008\"],\"linked_manual_evidence_ids\":[\"MANUAL-001\"]}}"
+      ],
+      "revision_previous_declarations": {
+        "input_sha256": "6ecdf80f37318948b7c99e90ccb500ba25fbdec3700bfdda87db07a99965b601",
+        "model_id": "FRIDGE-A",
+        "document_version": "1.0",
+        "revision_count": 1,
+        "status": "completed",
+        "desired_outcomes": [
+          {
+            "desired_outcome": "선반을 분리하여 세척할 때 위에 있는 식품을 모두 옮기지 않고도 청소할 수 있는 구조",
+            "need_id": "NEED-001"
+          },
+          {
+            "desired_outcome": "선반을 분리하거나 정리할 때 임시로 식품을 보관할 수 있는 공간 확보",
+            "need_id": "NEED-002"
+          },
+          {
+            "desired_outcome": "수납 구역 정리 시 안쪽 식품을 쉽게 찾을 수 있는 구조",
+            "need_id": "NEED-003"
+          },
+          {
+            "desired_outcome": "선반 분리 방법을 쉽게 찾을 수 있는 안내",
+            "need_id": "NEED-004"
+          },
+          {
+            "desired_outcome": "바구니 내용물을 모두 꺼내지 않고도 세척할 수 있는 구조",
+            "need_id": "NEED-005"
+          },
+          {
+            "desired_outcome": "가족 간 정리 표시 이해 차이로 인한 중복 찾기 문제 해결",
+            "need_id": "NEED-006"
+          },
+          {
+            "desired_outcome": "우유가 흘린 구역만 빠르게 청소할 수 있는 구조",
+            "need_id": "NEED-007"
+          },
+          {
+            "desired_outcome": "냉장고 안 식품이 많을 때 청소 미루지 않고 쉽게 청소할 수 있는 구조",
+            "need_id": "NEED-008"
+          },
+          {
+            "desired_outcome": "선반 높이 조절 시 식품 임시 보관 공간 제공",
+            "need_id": "NEED-009"
+          }
+        ],
+        "review_assessments": [
+          {
+            "evidence_id": "REVIEW-EVIDENCE-001",
+            "polarity": "complaint",
+            "reason": "음료 쏟음 시 선반 위 식품을 모두 옮겨야 하는 번거로움 명시"
+          },
+          {
+            "evidence_id": "REVIEW-EVIDENCE-002",
+            "polarity": "complaint",
+            "reason": "선반 분리 시 식품을 둘 곳이 부족함 명시"
+          },
+          {
+            "evidence_id": "REVIEW-EVIDENCE-003",
+            "polarity": "complaint",
+            "reason": "수납 구역 정리 시 안쪽 식품 찾기 어려움 명시"
+          },
+          {
+            "evidence_id": "REVIEW-EVIDENCE-004",
+            "polarity": "complaint",
+            "reason": "선반 분리 방법 설명서 찾기 어려움 명시"
+          },
+          {
+            "evidence_id": "REVIEW-EVIDENCE-005",
+            "polarity": "complaint",
+            "reason": "바구니 세척 시 내용물 모두 꺼내야 함 명시"
+          },
+          {
+            "evidence_id": "REVIEW-EVIDENCE-006",
+            "polarity": "positive",
+            "reason": "선반을 쉽게 꺼내 청소하고 있어 크게 불편하지 않음 명시"
+          },
+          {
+            "evidence_id": "REVIEW-EVIDENCE-007",
+            "polarity": "complaint",
+            "reason": "가족 간 정리 표시 이해 차이로 인한 중복 찾기 문제 명시"
+          },
+          {
+            "evidence_id": "REVIEW-EVIDENCE-008",
+            "polarity": "complaint",
+            "reason": "우유 흘린 구역만 빠르게 청소하고 싶으나 전체를 옮겨야 함 명시"
+          },
+          {
+            "evidence_id": "REVIEW-EVIDENCE-009",
+            "polarity": "complaint",
+            "reason": "식품이 많을 때 청소 미루게 됨 명시"
+          },
+          {
+            "evidence_id": "REVIEW-EVIDENCE-010",
+            "polarity": "complaint",
+            "reason": "선반 높이 조절 시 임시 보관 공간 필요 명시"
+          }
+        ],
+        "gap_assessments": [
+          {
+            "gap_id": "GAP-001",
+            "reason": "현재 기능은 선반 분리 시 위쪽 식품을 모두 옮겨야 한다고 명시되어 있어, 희망 결과인 '식품을 옮기지 않고 청소'를 충족하지 못함.",
+            "resolution": "remaining",
+            "support_basis": "explicit_supported"
+          },
+          {
+            "gap_id": "GAP-002",
+            "reason": "현재 기능은 선반 분리 시 임시 보관 공간 제공에 대한 언급이 없어, 희망 결과인 '임시 보관 공간 확보'를 충족하지 못함.",
+            "resolution": "remaining",
+            "support_basis": "explicit_supported"
+          },
+          {
+            "gap_id": "GAP-003",
+            "reason": "현재 기능은 안쪽 식품 찾기 어려움 해결에 대한 언급이 없어, 희망 결과인 '안쪽 식품 쉽게 찾기'를 충족하지 못함.",
+            "resolution": "remaining",
+            "support_basis": "explicit_supported"
+          },
+          {
+            "gap_id": "GAP-004",
+            "reason": "현재 기능은 선반 분리 방법 안내에 대한 언급이 있어, 희망 결과인 '분리 방법 쉽게 찾기'를 충족함.",
+            "resolution": "resolved",
+            "support_basis": "explicit_supported"
+          },
+          {
+            "gap_id": "GAP-005",
+            "reason": "현재 기능은 바구니 세척 시 내용물 모두 꺼내야 한다고 명시되어 있어, 희망 결과인 '내용물 모두 꺼내지 않고 세척'을 충족하지 못함.",
+            "resolution": "remaining",
+            "support_basis": "explicit_supported"
+          },
+          {
+            "gap_id": "GAP-006",
+            "reason": "현재 기능은 가족 간 정리 표시 이해 차이 해결에 대한 언급이 없어, 희망 결과인 '중복 찾기 문제 해결'을 충족하지 못함.",
+            "resolution": "remaining",
+            "support_basis": "explicit_supported"
+          },
+          {
+            "gap_id": "GAP-007",
+            "reason": "현재 기능은 국소 오염 시 전체를 옮겨야 한다고 명시되어 있어, 희망 결과인 '우유 흘린 구역만 빠르게 청소'를 충족하지 못함.",
+            "resolution": "remaining",
+            "support_basis": "explicit_supported"
+          },
+          {
+            "gap_id": "GAP-008",
+            "reason": "현재 기능은 식품이 많을 때 청소 미루지 않고 쉽게 청소할 수 있는 구조에 대한 언급이 없어, 희망 결과인 '청소 미루지 않고 쉽게 청소'를 충족하지 못함.",
+            "resolution": "remaining",
+            "support_basis": "explicit_supported"
+          },
+          {
+            "gap_id": "GAP-009",
+            "reason": "현재 기능은 선반 높이 조절 시 임시 보관 공간 제공에 대한 언급이 없어, 희망 결과인 '임시 보관 공간 제공'을 충족하지 못함.",
+            "resolution": "remaining",
+            "support_basis": "explicit_supported"
+          }
+        ],
+        "concept_assessments": [
+          {
+            "compared_feature_ids": [
+              "FEATURE-001"
+            ],
+            "concept_id": "CONCEPT-001",
+            "duplication": "distinct",
+            "reason": "기존 기능은 선반 분리 시 위쪽 식품을 모두 옮겨야 하지만, 본 제안은 선반을 분리하지 않고도 국소 오염만 청소할 수 있는 구조를 제공하여 작동 방식이 근본적으로 다름"
+          },
+          {
+            "compared_feature_ids": [
+              "FEATURE-001"
+            ],
+            "concept_id": "CONCEPT-002",
+            "duplication": "distinct",
+            "reason": "기존 기능은 선반 분리 시 임시 보관 공간이 없으나, 본 제안은 선반 높이 조절 시 식품을 임시 보관할 수 있는 확장형 구조를 제공하여 작동 방식이 다름"
+          },
+          {
+            "compared_feature_ids": [
+              "FEATURE-001"
+            ],
+            "concept_id": "CONCEPT-003",
+            "duplication": "distinct",
+            "reason": "기존 기능은 바구니 내용물을 모두 꺼내야 세척 가능하나, 본 제안은 바구니 내부 격리 구조를 통해 내용물을 이동하지 않고 세척할 수 있는 방식을 제안하여 작동 방식이 다름"
+          }
+        ],
+        "questions": [],
+        "hold_reasons": [],
+        "unresolved": [],
+        "no_candidate_reasons": []
+      },
+      "revision_response_status": "held",
+      "revision_response_questions": [],
+      "revision_response_hold_reasons": [],
+      "revision_guard_decision": {
+        "valid": false,
+        "action": "unresolved",
+        "revision_count": 2,
+        "next_revision_count": 2,
+        "rerun_from": null,
+        "violations": [
+          {
+            "code": "HOLD_WITHOUT_QUESTIONS",
+            "stage": "review"
+          }
+        ]
+      },
+      "interpretation": "Candidate already cites RE008. The difference criterion omits that quote; the mechanism criterion has it. Questionless held revision was rejected, not accepted."
+    },
+    "changed": {
+      "attempts": [
+        {
+          "call_index": 3,
+          "revision_count": 1,
+          "concepts": [
+            {
+              "assumptions": [
+                "후속 검증: 접이식 랙이 냉기 순환에 방해되지 않도록 재질과 구조 설계 검증 필요",
+                "후속 검증: 랙이 선반 분리 시 자동으로 펼쳐지고, 선반 재장착 시 자동으로 접히는 메커니즘의 내구성 확인 필요"
+              ],
+              "differentiation": "기존 기능은 선반 분리 시 임시 보관 공간이 없으나, 본 제안은 선반 하단에 접이식 임시 보관 랙을 추가하여 분리 중 식품을 보관할 수 있게 함",
+              "evidence_ids": [
+                "REVIEW-EVIDENCE-002",
+                "REVIEW-EVIDENCE-010"
+              ],
+              "gap_ids": [
+                "GAP-002",
+                "GAP-009"
+              ],
+              "id": "CONCEPT-002",
+              "kind": "feature",
+              "requirements": [
+                "선반을 분리할 때 선반 하단에 접이식 랙이 자동으로 펼쳐져 식품을 임시 보관할 수 있어야 함",
+                "선반을 재장착할 때 랙이 자동으로 접혀서 선반 내부 공간에 방해가 되지 않아야 함"
+              ],
+              "status": "proposed",
+              "title": "접이식 임시 보관 랙"
+            },
+            {
+              "assumptions": [
+                "후속 검증: 분리형 트레이가 식품 위생 기준을 충족하는지 및 세척 후 재장착 시 밀폐성 유지 여부 확인 필요",
+                "후속 검증: 트레이가 바구니 하단에 쉽게 분리 및 장착될 수 있는 구조인지 확인 필요"
+              ],
+              "differentiation": "기존 기능은 바구니 내용물 전체를 꺼내야 세척 가능하나, 본 제안은 바구니 하단에 분리형 세척 트레이를 도입하여 내용물을 이동하지 않고도 트레이만 분리 세척 가능하게 함",
+              "evidence_ids": [
+                "REVIEW-EVIDENCE-005"
+              ],
+              "gap_ids": [
+                "GAP-005"
+              ],
+              "id": "CONCEPT-003",
+              "kind": "feature",
+              "requirements": [
+                "바구니 하단에 분리형 트레이가 내장되어 있어야 하며, 사용자가 트레이만 분리하여 세척할 수 있어야 함",
+                "트레이 분리 시 바구니 내부의 식품이 떨어지지 않도록 고정 장치가 포함되어야 함"
+              ],
+              "status": "proposed",
+              "title": "분리형 세척 트레이"
+            }
+          ],
+          "feedback": [
+            {
+              "code": "VALIDATION_FAILED",
+              "stage": "needs",
+              "message": "현재 단계의 근거·평가 선언이 결과와 일치하지 않습니다.",
+              "details": {
+                "violations": [
+                  {
+                    "code": "COMPLAINT_NOT_EXTRACTED",
+                    "stage": "needs"
+                  }
+                ],
+                "entity_field": "needs",
+                "duplicate_entity_ids": [],
+                "non_complaint_links": [],
+                "unextracted_complaint_ids": [
+                  "REVIEW-EVIDENCE-003",
+                  "REVIEW-EVIDENCE-004",
+                  "REVIEW-EVIDENCE-007",
+                  "REVIEW-EVIDENCE-009"
+                ],
+                "assessment_coverage": {
+                  "field": "review_assessments",
+                  "expected_ids": [
+                    "REVIEW-EVIDENCE-001",
+                    "REVIEW-EVIDENCE-002",
+                    "REVIEW-EVIDENCE-003",
+                    "REVIEW-EVIDENCE-004",
+                    "REVIEW-EVIDENCE-005",
+                    "REVIEW-EVIDENCE-006",
+                    "REVIEW-EVIDENCE-007",
+                    "REVIEW-EVIDENCE-008",
+                    "REVIEW-EVIDENCE-009",
+                    "REVIEW-EVIDENCE-010"
+                  ],
+                  "actual_ids": [
+                    "REVIEW-EVIDENCE-001",
+                    "REVIEW-EVIDENCE-002",
+                    "REVIEW-EVIDENCE-003",
+                    "REVIEW-EVIDENCE-004",
+                    "REVIEW-EVIDENCE-005",
+                    "REVIEW-EVIDENCE-006",
+                    "REVIEW-EVIDENCE-007",
+                    "REVIEW-EVIDENCE-008",
+                    "REVIEW-EVIDENCE-009",
+                    "REVIEW-EVIDENCE-010"
+                  ],
+                  "missing_ids": [],
+                  "unexpected_ids": [],
+                  "duplicate_ids": []
+                },
+                "instruction": "원문과 해당 ID를 다시 대조해 극성 선언과 니즈 근거를 일치시키고, 누락된 불편 리뷰의 니즈를 추출하거나 필요한 누락 정보의 구체 질문과 보류 사유를 남기세요. 실제 결과 ID마다 평가를 정확히 한 번 작성하세요. 코드가 극성·니즈·후보를 대신 고치지 않습니다."
+              }
+            }
+          ],
+          "provided_gaps": [
+            {
+              "evidence_ids": [
+                "REVIEW-EVIDENCE-002",
+                "MANUAL-001"
+              ],
+              "feature_ids": [
+                "FEATURE-001"
+              ],
+              "id": "GAP-002",
+              "model_id": "FRIDGE-A",
+              "need_id": "NEED-002",
+              "questions": [],
+              "remaining_pain": "선반 분리 시 식품 임시 보관 공간 부족",
+              "support_status": "supported"
+            },
+            {
+              "evidence_ids": [
+                "REVIEW-EVIDENCE-005",
+                "MANUAL-001"
+              ],
+              "feature_ids": [
+                "FEATURE-001"
+              ],
+              "id": "GAP-005",
+              "model_id": "FRIDGE-A",
+              "need_id": "NEED-005",
+              "questions": [],
+              "remaining_pain": "바구니 내용물 모두 꺼내야 세척 가능",
+              "support_status": "supported"
+            },
+            {
+              "evidence_ids": [
+                "REVIEW-EVIDENCE-010",
+                "MANUAL-001"
+              ],
+              "feature_ids": [
+                "FEATURE-001"
+              ],
+              "id": "GAP-009",
+              "model_id": "FRIDGE-A",
+              "need_id": "NEED-009",
+              "questions": [],
+              "remaining_pain": "선반 높이 조절 시 임시 보관 공간 부족",
+              "support_status": "supported"
+            }
+          ]
+        },
+        {
+          "call_index": 4,
+          "revision_count": 2,
+          "concepts": [
+            {
+              "assumptions": [
+                "후속 검증: 접이식 랙이 선반 분리 시 자동으로 펼쳐지고 재장착 시 자동으로 접히는 메커니즘의 내구성 검증 필요",
+                "후속 검증: 랙이 추가된 선반의 무게 증가로 인한 선반 지지대 부하 검증 필요"
+              ],
+              "differentiation": "기존 기능은 선반 분리 시 임시 보관 공간이 없으나, 본 제안은 선반 하단에 접이식 임시 보관 랙을 추가하여 분리 중 식품을 보관할 수 있게 함",
+              "evidence_ids": [
+                "REVIEW-EVIDENCE-002",
+                "REVIEW-EVIDENCE-010"
+              ],
+              "gap_ids": [
+                "GAP-002",
+                "GAP-009"
+              ],
+              "id": "CONCEPT-002",
+              "kind": "feature",
+              "requirements": [
+                "선반을 분리할 때 선반 하단에 접혀있던 랙이 자동으로 펼쳐져 임시 보관 공간 제공",
+                "선반을 다시 장착하면 랙이 자동으로 접혀서 원래 공간으로 복귀",
+                "랙은 식품이 떨어지지 않도록 측면 경사 구조를 가짐"
+              ],
+              "status": "proposed",
+              "title": "선반 분리 시 자동 전개되는 임시 보관 랙"
+            },
+            {
+              "assumptions": [
+                "후속 검증: 분리형 트레이가 바구니 내부에 안정적으로 고정되어 식품 이동 시 흔들리지 않는지 검증 필요",
+                "후속 검증: 트레이 재질이 식품 오염을 방지하고 세척 시 변형되지 않는지 확인 필요"
+              ],
+              "differentiation": "기존 기능은 바구니 내용물 전체를 꺼내야 세척 가능하나, 본 제안은 바구니 하단에 분리형 세척 트레이를 도입하여 내용물을 이동하지 않고도 트레이만 분리 세척 가능하게 함",
+              "evidence_ids": [
+                "REVIEW-EVIDENCE-005"
+              ],
+              "gap_ids": [
+                "GAP-005"
+              ],
+              "id": "CONCEPT-003",
+              "kind": "feature",
+              "requirements": [
+                "바구니 하단에 분리 가능한 트레이가 내장되어 있어 내용물을 이동하지 않고 트레이만 분리 가능",
+                "트레이는 식품이 넘어지지 않도록 가장자리가 높게 설계됨",
+                "트레이 분리 시 바구니 본체는 냉장고에 고정된 상태 유지"
+              ],
+              "status": "proposed",
+              "title": "내용물 이동 없이 세척 가능한 분리형 바구니 트레이"
+            }
+          ],
+          "feedback": [
+            {
+              "code": "CONCEPT_GROUNDING_MISSING",
+              "stage": "concepts"
+            }
+          ],
+          "provided_gaps": [
+            {
+              "evidence_ids": [
+                "REVIEW-EVIDENCE-002",
+                "MANUAL-001"
+              ],
+              "feature_ids": [
+                "FEATURE-001"
+              ],
+              "id": "GAP-002",
+              "model_id": "FRIDGE-A",
+              "need_id": "NEED-002",
+              "questions": [],
+              "remaining_pain": "선반 분리 시 식품 임시 보관 공간 부족",
+              "support_status": "supported"
+            },
+            {
+              "evidence_ids": [
+                "REVIEW-EVIDENCE-005",
+                "MANUAL-001"
+              ],
+              "feature_ids": [
+                "FEATURE-001"
+              ],
+              "id": "GAP-005",
+              "model_id": "FRIDGE-A",
+              "need_id": "NEED-005",
+              "questions": [],
+              "remaining_pain": "바구니 내용물 모두 꺼내야 세척 가능",
+              "support_status": "supported"
+            },
+            {
+              "evidence_ids": [
+                "REVIEW-EVIDENCE-010",
+                "MANUAL-001"
+              ],
+              "feature_ids": [
+                "FEATURE-001"
+              ],
+              "id": "GAP-009",
+              "model_id": "FRIDGE-A",
+              "need_id": "NEED-009",
+              "questions": [],
+              "remaining_pain": "선반 높이 조절 시 임시 보관 공간 부족",
+              "support_status": "supported"
+            }
+          ]
+        }
+      ],
+      "semantic_review_calls": 0,
+      "interpretation": "Both draft attempts omit MANUAL001 for CONCEPT002/003; retry feedback names only code/stage, not missing IDs. No semantic review was reached."
+    },
+    "missing_manual": {
+      "provided_need": {
+        "evidence_ids": [
+          "REVIEW-EVIDENCE-007"
+        ],
+        "id": "NEED-006",
+        "model_id": "FRIDGE-A",
+        "pain": "가족이 냉장고 정리 표시를 다르게 이해해서 같은 식품을 다시 찾음",
+        "situation": "식품 정리 및 검색 시",
+        "uncertainties": []
+      },
+      "false_missing_need_assessment": {
+        "candidate_quote": "제공된 DATA_JSON 의 features 배열이 비어 있어, 각 Need 의 희망 결과와 대조할 현재 기능의 문서상 지원 여부를 확인할 수 없음",
+        "criterion": "review_polarity",
+        "reason": "REVIEW-EVIDENCE-007(가족이 냉장고 정리 표시를 다르게 이해해서 같은 식품을 다시 찾아요) 는 명확한 불편 사항이지만, 현재 judgement 의 needs 배열에 해당 증거나 이를 반영한 니즈가 누락되어 극성 평가와 니즈 추출이 불일치합니다.",
+        "source_quotes": [
+          {
+            "evidence_id": "REVIEW-EVIDENCE-007",
+            "quote": "가족이 냉장고 정리 표시를 다르게 이해해서 같은 식품을 다시 찾아요."
+          }
+        ],
+        "verdict": "violation"
+      },
+      "review_questions": [
+        "REVIEW-EVIDENCE-007(가족이 냉장고 정리 표시를 다르게 이해해서 같은 식품을 다시 찾아요) 에 대한 니즈(NEED) 가 현재 judgement.needs 배열에 누락되어 있습니다. 해당 불편 사항을 반영한 니즈를 추가해야 합니까?",
+        "현재 features 배열이 비어 있어 제품 기능의 존재 여부를 확인할 수 없습니다. 제품 설명서나 기능 명세에서 선반 분리, 임시 보관 공간, 국소 청소, 정리 표시 시스템 등 관련 기능이 명시되어 있는지 확인이 필요합니다."
+      ],
+      "review_decision": {
+        "valid": false,
+        "action": "hold",
+        "revision_count": 1,
+        "next_revision_count": 1,
+        "rerun_from": null,
+        "violations": [
+          {
+            "code": "NO_CANDIDATE_VIOLATION",
+            "stage": "needs"
+          },
+          {
+            "code": "NO_CANDIDATE_UNCERTAIN",
+            "stage": "compare"
+          },
+          {
+            "code": "NO_CANDIDATE_UNCERTAIN",
+            "stage": "concepts"
+          }
+        ]
+      },
+      "final_questions": [
+        "REVIEW-EVIDENCE-007(가족이 냉장고 정리 표시를 다르게 이해해서 같은 식품을 다시 찾아요) 에 대한 니즈(NEED) 가 현재 judgement.needs 배열에 누락되어 있습니다. 해당 불편 사항을 반영한 니즈를 추가해야 합니까?",
+        "현재 features 배열이 비어 있어 제품 기능의 존재 여부를 확인할 수 없습니다. 제품 설명서나 기능 명세에서 선반 분리, 임시 보관 공간, 국소 청소, 정리 표시 시스템 등 관련 기능이 명시되어 있는지 확인이 필요합니다."
+      ],
+      "final_hold_reasons": [
+        "제공된 DATA_JSON 의 features 배열이 비어 있어, 각 Need 의 희망 결과와 대조할 현재 기능의 문서상 지원 여부를 확인할 수 없음",
+        "NO_CANDIDATE_VIOLATION",
+        "NO_CANDIDATE_UNCERTAIN"
+      ],
+      "feature_count": 0,
+      "interpretation": "RE007 is already linked to NEED006 in exact model input, reviewed output and final output. Missing-feature hold is appropriate; missing-Need assertion and associated question are false."
+    }
+  },
+  "new_pm_fix_head": null,
+  "new_head_verdict": "pending exact head handoff",
+  "quality_pass": false,
+  "original_six_regraded": false,
+  "pm_approval": false
+}

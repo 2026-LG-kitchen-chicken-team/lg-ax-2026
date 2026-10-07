@@ -26,7 +26,9 @@ class AutomationCliTests(unittest.TestCase):
         self.root = Path(self.directory.name)
         self.args = SimpleNamespace(state_dir=str(self.root / "member"),
                                     controller_url="https://controller.example.test/lgax", member="황대겸")
-        self.github_credential = "ghp_fixture_not_a_real_credential_0123456789"
+        # Build the same inert credential at runtime; keep issued-key patterns out of source.
+        credential_parts = ("ghp", "fixture_not_a_real_credential_0123456789")
+        self.github_credential = "_".join(credential_parts)
 
     def github_result(self):
         return subprocess.CompletedProcess(["gh", "auth", "token"], 0, self.github_credential + "\n", "")

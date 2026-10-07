@@ -123,9 +123,9 @@ describe('fixture and live view scope', () => {
 
   it('ends the authenticated live session when entering fixture, without making a workspace request', async () => {
     vi.spyOn(api, 'loadBootstrap').mockResolvedValue(liveBootstrap);
-    const workspaceFetch = vi.fn().mockResolvedValue(new Response(JSON.stringify({
-      ok: true, data: { projects: [], contract_version: '0.1.0' },
-    })));
+    const workspaceFetch = vi.fn((url: string) => Promise.resolve(new Response(JSON.stringify({
+      ok: true, data: url.endsWith('/bootstrap') ? liveBootstrap : { projects: [], contract_version: '0.1.0' },
+    }))));
     vi.stubGlobal('fetch', workspaceFetch);
     await mount();
     const token = host.querySelector<HTMLInputElement>('#workspace-token')!;
@@ -135,11 +135,11 @@ describe('fixture and live view scope', () => {
     });
     await act(async () => host.querySelector<HTMLFormElement>('.workspace-actions')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })));
     expect(host.querySelector('.workspace-state small')!.textContent).toContain('연결됨');
-    expect(workspaceFetch).toHaveBeenCalledTimes(1);
+    expect(workspaceFetch).toHaveBeenCalledTimes(2);
     await click('.mode-switch button', '계약 fixture');
     await click('.mode-switch button', '실제 서버');
     expect(host.querySelector('.workspace-state small')!.textContent).toContain('미연결');
-    expect(workspaceFetch).toHaveBeenCalledTimes(1);
+    expect(workspaceFetch).toHaveBeenCalledTimes(2);
   });
 });
 

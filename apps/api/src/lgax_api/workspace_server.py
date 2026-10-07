@@ -1,6 +1,9 @@
 """Authenticated loopback workspace API; separate from the public evidence demo."""
 
 import argparse
+import hashlib
+import json
+import re
 from copy import deepcopy
 from pathlib import Path
 from typing import Annotated
@@ -18,9 +21,10 @@ from lgax_core.workspace import WorkspaceStore
 from lgax_core.workspace_planning import EnvPlanningRunner, PlanningRunner
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from .workspace_auth import TokenRegistry
 from .public_validation import public_validation_details
 from .trend_configuration import load_trend_runtime
+from .workspace_auth import TokenRegistry
+from .workspace_bootstrap import workspace_bootstrap
 from .workspace_trends import TrendCollector, WorkspaceTrends
 
 ORIGINS = {"http://127.0.0.1:5173", "http://localhost:5173"}
@@ -65,11 +69,40 @@ def public_run(snapshot: dict) -> dict:
     sources = input_record.get("sources") if isinstance(input_record, dict) else None
     evidence_ids = {item["id"] for item in sources if isinstance(item, dict)
                     and isinstance(item.get("id"), str)} if isinstance(sources, list) else set()
+    entities = {"needs": set(), "gaps": set(), "concepts": set()}
+    product = input_record.get("product") if isinstance(input_record, dict) else None
+    model_id = product.get("model_id") if isinstance(product, dict) else None
+    if isinstance(execution, dict):
+        declarations = [execution.get("output"), execution.get("rejected_output")]
+        for call in execution.get("model_calls", []) if isinstance(execution.get("model_calls"), list) else []:
+            data = call.get("data") if isinstance(call, dict) else None
+            if isinstance(data, dict):
+                declarations.append(data.get("result"))
+        for declaration in declarations:
+            if not isinstance(declaration, dict):
+                continue
+            for collection, definition in (("needs", "Need"), ("gaps", "Gap"), ("concepts", "Concept")):
+                items = declaration.get(collection)
+                for item in items[:100] if isinstance(items, list) else []:
+                    if (not isinstance(item, dict) or model_id is None
+                            or collection != "concepts" and item.get("model_id") != model_id):
+                        continue
+                    try:
+                        validate(definition, item)
+                    except ValidationError:
+                        continue
+                    if not set(item["evidence_ids"]) <= evidence_ids:
+                        continue
+                    # Concept has no model_id in the shared contract. Its scope
+                    # is the already authorized Gap graph and original sources.
+                    if collection == "concepts" and not set(item["gap_ids"]) <= entities["gaps"]:
+                        continue
+                    entities[collection].add(item["id"])
 
     def diagnostic_error(value):
         code = value.get("code") if isinstance(value, dict) else None
         projected = public_error(code if isinstance(code, str) else "CONTRACT_MISMATCH")["error"]
-        details = public_validation_details(value, evidence_ids) if isinstance(value, dict) else {}
+        details = public_validation_details(value, evidence_ids, entities) if isinstance(value, dict) else {}
         if details:
             projected["details"] = details
         return projected
@@ -111,6 +144,38 @@ def error_status(error: DomainError) -> int:
         "DATASET_MISMATCH": 409,
         "NOT_IMPLEMENTED": 501,
     }.get(error.code, 422)
+
+
+def _load_document_store(path: Path, expected_sha256: str):
+    """Pin public canonical snapshot bytes before creating the workspace DB."""
+    if not re.fullmatch(r"[0-9a-f]{64}", expected_sha256):
+        raise ValueError("An exact document dataset SHA256 is required")
+    raw = path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != expected_sha256:
+        raise ValueError("Document dataset SHA256 mismatch")
+
+    def unique_object(pairs):
+        value = {}
+        for key, item in pairs:
+            if key in value:
+                raise ValueError("Duplicate document dataset field")
+            value[key] = item
+        return value
+
+    def invalid_constant(value):
+        raise ValueError("Non-finite document dataset value")
+
+    dataset = json.loads(raw.decode("utf-8-sig"), object_pairs_hook=unique_object,
+                         parse_constant=invalid_constant)
+    if not isinstance(dataset, dict):
+        raise TypeError("Document dataset must be an object")
+    # Import after this module has initialized: the legacy document CLI uses
+    # create_workspace_app from here and must keep its existing entry point.
+    from lgax_core.document_workspace import WorkspaceDocumentStore
+
+    store = WorkspaceDocumentStore(dataset)
+    workspace_bootstrap(store)  # Public-only canonical entities and shared wire contract.
+    return store
 
 
 def create_workspace_app(db_path: Path, registry: TokenRegistry, *,
@@ -206,6 +271,12 @@ def create_workspace_app(db_path: Path, registry: TokenRegistry, *,
                 "contract_version": CONTRACT_VERSION,
             },
         )
+
+    @app.get("/api/workspace/bootstrap")
+    def bootstrap(request: Request):
+        # The middleware authenticates GET and returns no-store responses.
+        # Do not expose this source store through the synthetic public API.
+        return workspace_bootstrap(evidence)
 
     @app.post("/api/workspace/projects", status_code=201)
     def create_project(request: Request, payload: Annotated[dict, Body()]):
@@ -332,6 +403,10 @@ def main():
     parser.add_argument("--db", type=Path, required=True)
     parser.add_argument("--credentials", type=Path, required=True)
     parser.add_argument("--dataset", type=Path, help="Trusted server-side synthetic dataset; never a request field.")
+    parser.add_argument("--document-dataset", type=Path,
+                        help="Trusted server-side public document snapshot; never an upload or request field.")
+    parser.add_argument("--document-dataset-sha256",
+                        help="Exact SHA256 of the document snapshot file bytes, required with its path.")
     parser.add_argument("--trend-metadata", type=Path,
                         help="Explicit server-side sidecar file; never an HTTP/MCP upload or request field.")
     parser.add_argument("--trend-metadata-sha256",
@@ -343,15 +418,26 @@ def main():
     parser.add_argument("--host", choices=["127.0.0.1"], default="127.0.0.1")
     parser.add_argument("--port", type=int, default=18869)
     args = parser.parse_args()
+    if (args.document_dataset is None) != (args.document_dataset_sha256 is None):
+        parser.error("A document dataset path and its exact SHA256 are required together.")
+    if args.document_dataset is not None and any((
+            args.dataset is not None, args.trend_metadata is not None,
+            args.trend_metadata_sha256 is not None, args.allow_candidate_trend_metadata)):
+        parser.error("Public document snapshots cannot be combined with synthetic dataset/trend options.")
     try:
-        runtime = load_trend_runtime(dataset_path=args.dataset, metadata_path=args.trend_metadata,
-                                     metadata_sha256=args.trend_metadata_sha256,
-                                     allow_candidate=args.allow_candidate_trend_metadata)
-    except (OSError, UnicodeError, ValueError, ValidationError):
+        if args.document_dataset is not None:
+            evidence = _load_document_store(args.document_dataset, args.document_dataset_sha256)
+            collector = None
+        else:
+            runtime = load_trend_runtime(dataset_path=args.dataset, metadata_path=args.trend_metadata,
+                                         metadata_sha256=args.trend_metadata_sha256,
+                                         allow_candidate=args.allow_candidate_trend_metadata)
+            evidence, collector = runtime.evidence_store, runtime.collector
+    except (OSError, UnicodeError, ValueError, TypeError, KeyError, ValidationError, DomainError):
         parser.error("Invalid server-side dataset/sidecar configuration; verify hashes and candidate preview scope.")
     uvicorn.run(
         create_workspace_app(args.db, TokenRegistry.from_file(args.credentials),
-                             evidence_store=runtime.evidence_store, trend_collector=runtime.collector,
+                             evidence_store=evidence, trend_collector=collector,
                              planning_runner=EnvPlanningRunner() if args.enable_planning else None),
         host=args.host,
         port=args.port,

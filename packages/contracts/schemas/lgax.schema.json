@@ -1600,6 +1600,163 @@
         "data"
       ],
       "additionalProperties": false
+    },
+    "PublicManifest": {
+      "type": "object",
+      "properties": {
+        "dataset_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_kind": {
+          "const": "public"
+        },
+        "model_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "review_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "analysis_implemented": {
+          "const": false
+        },
+        "dataset_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "warnings": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        }
+      },
+      "required": [
+        "dataset_id",
+        "version",
+        "description",
+        "source_kind",
+        "model_count",
+        "review_count",
+        "analysis_implemented",
+        "dataset_sha256",
+        "warnings"
+      ],
+      "additionalProperties": false
+    },
+    "PublicBootstrapResponse": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "manifest": {
+              "$ref": "#/$defs/PublicManifest"
+            },
+            "products": {
+              "type": "array",
+              "items": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/Product"
+                  },
+                  {
+                    "properties": {
+                      "source_kind": {
+                        "const": "public"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "reviews": {
+              "type": "array",
+              "items": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/Review"
+                  },
+                  {
+                    "properties": {
+                      "source_kind": {
+                        "const": "public"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "features": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Feature"
+              }
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/Evidence"
+                  },
+                  {
+                    "properties": {
+                      "source_kind": {
+                        "const": "public"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "contract_version": {
+              "const": "0.1.0"
+            }
+          },
+          "required": [
+            "manifest",
+            "products",
+            "reviews",
+            "features",
+            "evidence",
+            "contract_version"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    "WorkspaceBootstrapResponse": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/BootstrapResponse"
+        },
+        {
+          "$ref": "#/$defs/PublicBootstrapResponse"
+        }
+      ]
     }
   }
 }

@@ -1,0 +1,48 @@
+{
+  "source_commit": "4f897394ae224e43dc4c7f0c9d224f4dfa92c0a2",
+  "execution_id": "pm-r5-core-6f0feca554a745639853163ace2a6bbe",
+  "archive_sha256": "b6218e406c17125d512e477d44bd9e533db825270b82b19102578d654e6bb0ec",
+  "bootstrap_sha256": "47b07b4840ff3766f7a7d1ebdafdc0f6700ed05c3e739f26176225254bdfbaf0",
+  "boundary": {
+    "backend": "docker",
+    "image_id": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+    "role": "validator",
+    "uid": 1000,
+    "readonly_root": true,
+    "caps_dropped": true,
+    "no_new_privileges": true,
+    "network": "none",
+    "mount_targets": [
+      "/artifacts",
+      "/workspace"
+    ],
+    "publisher_credentials_mounted": false,
+    "ai_profile_mounted": false
+  },
+  "returncode": 0,
+  "stopped_reason": null,
+  "validation": {
+    "returncode": 0,
+    "command": [
+      "-m",
+      "unittest",
+      "test_r5_grounding",
+      "test_concept_lineage",
+      "test_planning_agent",
+      "test_no_candidate_review",
+      "test_no_candidate_termination",
+      "test_semantic_review",
+      "test_semantic_recorded_reviews",
+      "test_revision_guard",
+      "test_recorded_hold_feedback",
+      "test_recorded_stage_alignment",
+      "test_stage_metadata",
+      "-v"
+    ],
+    "source_files": 3646,
+    "source_changed": [],
+    "source_manifest_sha256": "8ccfb0cc29cb2135db11d4bcd8be0c3768e81a9aa62e02d49400eff13e9de0af",
+    "model_calls": 0,
+    "network_calls": 0
+  }
+}

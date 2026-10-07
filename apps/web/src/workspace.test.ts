@@ -1,13 +1,26 @@
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { WorkspaceClient } from './workspace';
-import { FIXTURE_RUNS } from './fixtures/planning.fixture';
+import { FIXTURE_BOOTSTRAP, FIXTURE_RUNS } from './fixtures/planning.fixture';
 
 const token = 't'.repeat(48);
 const request = { product_group: 'fridge', target_customer: '1인 가구', use_situation: '음료를 쏟은 뒤 청소',
   improvement_task: '선반 청소 부담 감소', exclusions: [], model_ids: ['FRIDGE-A'], dataset_version: '0.1.0' };
 
 describe('shared workspace client boundaries', () => {
+  it('reads bootstrap through the same authenticated no-store adapter', async () => {
+    const network = vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true, data: FIXTURE_BOOTSTRAP })));
+    await expect(new WorkspaceClient('', () => token, network).bootstrap()).resolves.toEqual(FIXTURE_BOOTSTRAP);
+    expect(network.mock.calls[0]).toEqual(['/api/workspace/bootstrap', expect.objectContaining({ method: 'GET', cache: 'no-store', redirect: 'error',
+      headers: expect.objectContaining({ Authorization: `Bearer ${token}` }) })]);
+  });
+
+  it('explicitly rejects a missing private bootstrap endpoint without a demo fallback', async () => {
+    const network = vi.fn().mockResolvedValue(new Response('not found', { status: 404 }));
+    await expect(new WorkspaceClient('', () => token, network).bootstrap()).rejects.toMatchObject({ code: 'WORKSPACE_BOOTSTRAP_UNAVAILABLE' });
+    expect(network).toHaveBeenCalledTimes(1);
+  });
+
   it('rejects a valid envelope with malformed analysis before views use it', async () => {
     for (const output of [{}, { needs: 'bad', gaps: [] }, { needs: [], gaps: [{ support_status: 'invented' }] }]) {
       const snapshot = { ...FIXTURE_RUNS[0], output };

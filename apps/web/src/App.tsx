@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { ApiError, loadBootstrap, parseBootstrap, requestPlanning } from './api';
-import { evidenceLocation, filterEvidence, friendlyError, productName, SCENARIOS } from './domain';
+import { bootstrapSourceSummary, evidenceLocation, filterEvidence, friendlyError, productName, SCENARIOS } from './domain';
 import type { BootstrapData, Evidence, ProductGroup, View } from './domain';
 import { FIXTURE_BOOTSTRAP, FIXTURE_ORIGINAL_REQUEST, FIXTURE_PROJECT_ID, FIXTURE_RUNS } from './fixtures/planning.fixture';
 import { ApplianceIcon, ArrowIcon, SearchIcon } from './icons';
@@ -87,6 +87,7 @@ ${trendNote}` : base; });
   // Without a project, the first request in this form is the original; later edits are change requests with a new revision.
   const [firstRequest] = useState<PlanningRequest>(() => request);
   const continueProject = !!(live && projectRequest && sameProjectScope(projectRequest, request));
+  const datasetChanged = !!(live && projectRequest && datasetVersion && projectRequest.dataset_version !== datasetVersion);
   const original = continueProject ? projectRequest! : { ...firstRequest, model_ids: request.model_ids, dataset_version: request.dataset_version };
   const parent = continueProject ? live!.latest : null;
   // A live save that starts a new project is that project's original request: the server records revision 0.
@@ -136,12 +137,13 @@ ${trendNote}` : base; });
   }
 
   const footer = live
-    ? unchanged ? `이전 실행과 같은 요청입니다. 저장하면 같은 요청 회차(${revision})로 다시 기록됩니다.` : continueProject ? `“${live.project!.project.name}” 프로젝트에 변경 요청(요청 회차 ${revision})으로 저장합니다. 서버의 실행 결과는 저장 후 확인하세요.` : '새 프로젝트와 첫 실행으로 저장합니다. 제품군이나 검토 모델이 바뀌면 새 프로젝트가 됩니다.'
+    ? unchanged ? `이전 실행과 같은 요청입니다. 저장하면 같은 요청 회차(${revision})로 다시 기록됩니다.` : continueProject ? `“${live.project!.project.name}” 프로젝트에 변경 요청(요청 회차 ${revision})으로 저장합니다. 서버의 실행 결과는 저장 후 확인하세요.` : '새 프로젝트와 첫 실행으로 저장합니다. 제품군·검토 모델·자료 버전이 바뀌면 새 프로젝트가 됩니다.'
     : mode === 'live' ? '작업실에 연결하면 요청을 저장할 수 있습니다. 지금은 연결 확인만 합니다.' : '현재 요청은 Agent 분석 결과를 생성하지 않습니다.';
 
   return <div className="request-layout"><form className="request-form panel" onSubmit={submit}>
     <div className="panel-header"><div><p className="eyebrow">PLANNING BRIEF</p><h2>어떤 불편을 개선할까요?</h2></div><span className="state-badge">{mode === 'fixture' ? '화면 확인용 예시' : live ? '작업실 연결됨' : '작업실 연결 필요'}</span></div>
     <p className="section-description">고객과 사용 상황을 구체적으로 입력해 기획의 출발점을 정하세요.</p>
+    {datasetChanged ? <p className="scope-notice" role="note" data-dataset-change>자료 버전이 {projectRequest!.dataset_version}에서 {datasetVersion}로 바뀌었습니다. 현재 자료로 새 프로젝트를 만들며, 이전 프로젝트와 실행 기록은 원 버전 그대로 보존합니다.</p> : null}
     <label className="field-label" htmlFor="planning-prompt">기획 요청</label><textarea id="planning-prompt" rows={4} value={prompt} onChange={event => setPrompt(event.target.value)} />
     <label className="field-label" htmlFor="planning-customer">대상 고객</label><input id="planning-customer" value={customer} onChange={event => setCustomer(event.target.value)} />
     <fieldset className="model-picker"><legend className="field-label">검토 모델 <small>기존 기능을 대조할 모델을 하나 이상 고르세요</small></legend>
@@ -204,9 +206,22 @@ export default function App() {
     return () => { current = false; controller.abort(); };
   }, [mode, reload]);
 
-  const active = mode === 'fixture' ? fixtureState : state;
-  const data = active.status === 'ready' ? active.data : undefined;
   const workspace = useLiveWorkspace();
+  // Authenticated sources belong to this login. A missing/private bootstrap is never replaced by the public demo.
+  const active: DataState = mode === 'fixture' ? fixtureState
+    : workspace.connection === 'connected' && workspace.bootstrap ? { status: 'ready', data: workspace.bootstrap }
+    : workspace.connection === 'connecting' ? { status: 'loading' }
+    : workspace.connection === 'error' ? { status: 'error', message: workspace.error?.action ?? '작업실 자료 연결을 다시 확인해 주세요.', code: workspace.error?.code ?? 'CONNECTION_FAILED' }
+    : state;
+  const data = active.status === 'ready' ? active.data : undefined;
+  const sourceWarnings = Array.isArray(data?.manifest.warnings) ? data.manifest.warnings.filter((item): item is string => typeof item === 'string' && !!item) : [];
+  const visibleQuery = mode === 'live' && (workspace.connection === 'connecting' || workspace.connection === 'error') ? '' : query;
+  const visibleTrendNote = mode === 'live' && workspace.connection === 'connected' ? trendNote : '';
+  useEffect(() => {
+    if (mode === 'live' && workspace.connection !== 'connected') {
+      setTrendNote(''); setQuery(''); setSelectedId(''); setModelChoice('');
+    }
+  }, [mode, workspace.connection]);
   const runs = mode === 'fixture' ? [...FIXTURE_RUNS, ...drafts] : workspace.runs;
   const selectedRun = runs.find(item => item.run.id === runChoice) ?? runs[runs.length - 1];
   // A stored planning run quotes the sources and features its judgement actually received, ahead of the bootstrap data.
@@ -271,9 +286,9 @@ export default function App() {
   // Invalidate before waiting for the hook's asynchronous operations, rather than after their response arrives.
   const scopedWorkspace = {
     ...workspace,
-    async connect(token: string) { invalidateMeasurements(true); setRunChoice(''); await workspace.connect(token); },
-    disconnect() { invalidateMeasurements(true); setRunChoice(''); workspace.disconnect(); },
-    async selectProject(id: string) { invalidateMeasurements(); setRunChoice(''); await workspace.selectProject(id); },
+    async connect(token: string) { invalidateMeasurements(true); setRunChoice(''); setTrendNote(''); await workspace.connect(token); },
+    disconnect() { invalidateMeasurements(true); setRunChoice(''); setTrendNote(''); workspace.disconnect(); },
+    async selectProject(id: string) { invalidateMeasurements(); setRunChoice(''); setTrendNote(''); await workspace.selectProject(id); },
   };
 
   const measure: MeasureControls = {
@@ -329,7 +344,7 @@ export default function App() {
   const products = data?.products.filter(product => product.product_group === group) ?? [];
   const modelId = products.some(product => product.model_id === modelChoice) ? modelChoice : products[0]?.model_id ?? '';
   const allModelEvidence = data?.evidence.filter(item => item.model_id === modelId) ?? [];
-  const visibleEvidence = modelId ? filterEvidence(data?.evidence ?? [], { modelId, query, type }) : [];
+  const visibleEvidence = modelId ? filterEvidence(data?.evidence ?? [], { modelId, query: visibleQuery, type }) : [];
   const selected = visibleEvidence.find(item => item.id === selectedId) ?? visibleEvidence[0];
   const currentNav = NAV.find(item => item.id === view)!;
 
@@ -348,6 +363,7 @@ export default function App() {
     setGroup(next === 'fixture' ? FIXTURE_ORIGINAL_REQUEST.product_group : 'fridge');
     setModelChoice(next === 'fixture' ? FIXTURE_ORIGINAL_REQUEST.model_ids[0] : '');
     setSelectedId(''); setQuery(''); setType('all'); setRunChoice('');
+    setTrendNote('');
     setFormSeed(value => value + 1);
     // Cached live data is not displayed as the result of a fresh connection check.
     if (next === 'live') setState({ status: 'loading' });
@@ -362,18 +378,19 @@ export default function App() {
       <div className="sidebar-lower"><p>고객의 말에서<br /><strong>새로운 기회의 근거로.</strong></p><div className="sidebar-stage"><span className="status-dot" />개발 프레임워크 · v0.1</div></div>
     </aside>
     <div className="main-shell">
-      <header className="topbar"><div className="breadcrumb">상품기획 작업실<span>/</span><strong>{currentNav.label}</strong></div><div className="topbar-right"><ModeSwitch mode={mode} onChange={changeMode} /><div className="connection-status">{mode === 'fixture' ? <><span className="status-dot loading" />fixture 사용 · 공통 API 요청 안 함</> : <><span className={`status-dot ${state.status}`} />{state.status === 'ready' ? '공통 API 연결됨' : state.status === 'loading' ? 'API 연결 확인 중' : 'API 연결 오류'}</>}</div></div></header>
+      <header className="topbar"><div className="breadcrumb">상품기획 작업실<span>/</span><strong>{currentNav.label}</strong></div><div className="topbar-right"><ModeSwitch mode={mode} onChange={changeMode} /><div className="connection-status">{mode === 'fixture' ? <><span className="status-dot loading" />fixture 사용 · 공통 API 요청 안 함</> : <><span className={`status-dot ${active.status}`} />{active.status === 'ready' ? workspace.connection === 'connected' ? '인증된 작업실 자료 연결됨' : '공통 API 연결됨' : active.status === 'loading' ? '자료 API 연결 확인 중' : '자료 API 연결 오류'}</>}</div></div></header>
       <main id="main-content">
-        <section className="hero"><div><p className="eyebrow">EVIDENCE-LED KITCHEN PLANNING</p><h1>근거에서 시작하는<br />키친 기획.</h1><p>고객의 불편과 제품의 기능을 함께 살펴보고,<br className="desktop-break" /> 아직 해결되지 않은 기회를 검토하는 작업실입니다.</p></div><div className="hero-stats"><div><strong>{data?.products.length ?? '—'}</strong><span>등록된 모델</span></div><div><strong>{data?.evidence.length ?? '—'}</strong><span>조회 가능한 근거</span></div><p>{mode === 'fixture' ? `계약 fixture · FRIDGE-A 예시만 포함` : data ? `공통 계약 ${data.contract_version} · 시연용 합성자료` : '공통 API에서 자료를 불러옵니다'}</p></div></section>
+        <section className="hero"><div><p className="eyebrow">EVIDENCE-LED KITCHEN PLANNING</p><h1>근거에서 시작하는<br />키친 기획.</h1><p>고객의 불편과 제품의 기능을 함께 살펴보고,<br className="desktop-break" /> 아직 해결되지 않은 기회를 검토하는 작업실입니다.</p></div><div className="hero-stats"><div><strong>{data?.products.length ?? '—'}</strong><span>등록된 모델</span></div><div><strong>{data?.evidence.length ?? '—'}</strong><span>조회 가능한 근거</span></div><p>{mode === 'fixture' ? `계약 fixture · FRIDGE-A 예시만 포함` : data ? `공통 계약 ${data.contract_version} · ${bootstrapSourceSummary(data)}` : '공통 API에서 자료를 불러옵니다'}</p></div></section>
+        {mode === 'live' && sourceWarnings.length ? <div className="scope-notice" role="note" data-source-warnings><strong>현재 자료의 확인 범위</strong><ul>{sourceWarnings.map((warning, index) => <li key={index}>{warning}</li>)}</ul></div> : null}
         {mode === 'fixture' ? <FixtureBanner /> : <WorkspaceBar workspace={scopedWorkspace} onScopeChange={() => setFormSeed(value => value + 1)} />}
         <section className="scenario-grid" aria-label="제품군 선택">{SCENARIOS.map(scenario => {
           const unavailable = mode === 'fixture' && scenario.group !== FIXTURE_ORIGINAL_REQUEST.product_group;
           return <button key={scenario.group} disabled={unavailable} onClick={() => selectGroup(scenario.group)} className={`scenario-card ${group === scenario.group ? 'selected' : ''}`} aria-pressed={group === scenario.group}><ApplianceIcon kind={scenario.group} /><span className="scenario-copy"><strong>{scenario.title}</strong><span>{scenario.subtitle}</span></span><span className="scenario-count">{unavailable ? 'fixture 미제공' : data ? `${data.products.filter(product => product.product_group === scenario.group).length}개 모델` : '연결 대기'}</span></button>;
         })}</section>
-        {active.status === 'error' ? <div className="api-error" role="alert"><div><strong>자료를 불러오지 못했습니다</strong><p>{active.message}</p><code>{active.code}</code></div><button className="secondary-button" onClick={() => setReload(value => value + 1)}>다시 연결</button></div> : null}
+        {active.status === 'error' ? <div className="api-error" role="alert"><div><strong>자료를 불러오지 못했습니다</strong><p>{active.message}</p><code>{active.code}</code></div>{workspace.connection === 'error' ? <button className="secondary-button" onClick={() => { scopedWorkspace.disconnect(); setFormSeed(value => value + 1); }}>작업실 연결 초기화</button> : <button className="secondary-button" onClick={() => setReload(value => value + 1)}>다시 연결</button>}</div> : null}
         <div className="section-top"><div><p className="eyebrow">{currentNav.number} / WORKSPACE</p><h2>{currentNav.label}</h2></div><div className="model-select"><label htmlFor="product-model">검토 모델</label><select id="product-model" value={modelId} disabled={!products.length} onChange={event => { setModelChoice(event.target.value); setSelectedId(''); }}>{products.length ? products.map(product => <option key={product.model_id} value={product.model_id}>{product.model_id} · {productName(product)}</option>) : <option value="">자료 연결 대기</option>}</select></div></div>
         {view === 'evidence' ? <section className="evidence-workspace panel">
-          <div className="evidence-toolbar"><div className="evidence-types" aria-label="근거 유형 필터">{[{ value: 'all', label: '전체' }, { value: 'review', label: '고객 리뷰' }, { value: 'manual', label: '제품 설명서' }].map(option => <button key={option.value} className={type === option.value ? 'active' : ''} aria-pressed={type === option.value} onClick={() => { setType(option.value); setSelectedId(''); }}>{option.label}<span>{option.value === 'all' ? allModelEvidence.length : allModelEvidence.filter(item => item.source_type === option.value).length}</span></button>)}</div><label className="search-field"><SearchIcon /><span className="sr-only">근거 검색</span><input type="search" placeholder="근거에서 검색" value={query} onChange={event => { setQuery(event.target.value); setSelectedId(''); }} /></label></div>
+          <div className="evidence-toolbar"><div className="evidence-types" aria-label="근거 유형 필터">{[{ value: 'all', label: '전체' }, { value: 'review', label: '고객 리뷰' }, { value: 'manual', label: '제품 설명서' }].map(option => <button key={option.value} className={type === option.value ? 'active' : ''} aria-pressed={type === option.value} onClick={() => { setType(option.value); setSelectedId(''); }}>{option.label}<span>{option.value === 'all' ? allModelEvidence.length : allModelEvidence.filter(item => item.source_type === option.value).length}</span></button>)}</div><label className="search-field"><SearchIcon /><span className="sr-only">근거 검색</span><input type="search" placeholder="근거에서 검색" value={visibleQuery} onChange={event => { setQuery(event.target.value); setSelectedId(''); }} /></label></div>
           <div className="evidence-columns"><div className="evidence-list"><div className="list-caption"><span>원문과 제품 기능</span><span>{visibleEvidence.length}개 근거</span></div>
             {active.status === 'loading' ? <div className="loading-state" role="status"><div className="skeleton" /><div className="skeleton" /><div className="skeleton" /><p>공통 API에서 근거를 불러오는 중입니다…</p></div> : !data ? <EmptyState title="API 연결이 필요합니다" text="서버가 연결되면 실제 자료와 근거를 확인할 수 있습니다." /> : !visibleEvidence.length ? <EmptyState title={allModelEvidence.length ? '검색 결과가 없습니다' : '등록된 근거가 없습니다'} text={allModelEvidence.length ? '검색어 또는 자료 유형을 바꿔 보세요.' : '이 모델에 리뷰와 제품 문서를 등록하면 여기에 표시됩니다.'} /> : <ul>{visibleEvidence.map(item => <li key={item.id}><button className={`evidence-card ${selected?.id === item.id ? 'selected' : ''}`} aria-pressed={selected?.id === item.id} onClick={() => setSelectedId(item.id)}><div className="evidence-card-top"><SourceBadge type={item.source_type} /><span>{evidenceLocation(item)}</span></div><p>{item.text}</p><div className="evidence-card-bottom"><span>{item.model_id} · {item.document_version}</span><ArrowIcon /></div></button></li>)}</ul>}
           </div><EvidenceDetail selected={selected} features={data?.features ?? []} /></div>
@@ -382,7 +399,7 @@ export default function App() {
           const product = data?.products.find(item => item.model_id === model);
           if (product && product.product_group !== group) { setGroup(product.product_group as ProductGroup); setModelChoice(model); }
           setTrendNote(note); setFormSeed(value => value + 1); setView('request');
-        }} /> : view === 'request' ? <RequestView key={`${group}-${mode}-${formSeed}-${requestConnectionKey}`} data={data} group={group} modelId={modelId} mode={mode} trendNote={trendNote} live={mode === 'live' && workspace.connection === 'connected' ? { project: workspace.project, latest: workspace.runs[workspace.runs.length - 1] ?? null, busy: workspace.busy, save: (request, continueProject) => {
+        }} /> : view === 'request' ? <RequestView key={`${group}-${mode}-${formSeed}-${requestConnectionKey}`} data={data} group={group} modelId={modelId} mode={mode} trendNote={mode === 'fixture' ? trendNote : visibleTrendNote} live={mode === 'live' && workspace.connection === 'connected' ? { project: workspace.project, latest: workspace.runs[workspace.runs.length - 1] ?? null, busy: workspace.busy, save: (request, continueProject) => {
           invalidateMeasurements(); setRunChoice('');
           return continueProject ? workspace.addRun(request, workspace.runs[workspace.runs.length - 1]?.run.id ?? null) : workspace.saveRequest(request, data?.products ?? []);
         } } : undefined} /> : selectedRun && originalRequest && view === 'concepts' ? <ConceptsView {...planningProps} selected={selectedRun} /> : selectedRun && originalRequest ? <HistoryView {...planningProps} selected={selectedRun} original={originalRequest} onRerun={rerun} busy={workspace.busy} measure={measure} /> : view === 'concepts' ? <section className="panel future-panel"><EmptyState type="future" title="근거를 갖춘 콘셉트를 이곳에서 검토합니다" text="작업실에 연결하고 기획 요청을 저장하면 실행 결과를 확인할 수 있습니다. 요청만 저장됐거나 분석이 보류된 경우에는 후보를 표시하지 않습니다." /><div className="future-columns"><div><strong>콘셉트 비교</strong><span>최대 3개 타당한 후보 · 근거 부족 시 보류</span></div><div><strong>요구사항 확인</strong><span>연결된 원문 · 남은 불편 · 검토할 조건</span></div><div><strong>기획자 검토</strong><span>선택 · 수정 요청 · 추가 조건</span></div></div></section> : <section className="panel future-panel"><EmptyState type="future" title="아직 실행·수정 이력이 없습니다" text="작업실에 연결하면 동일 기획의 저장된 실행과 변경 전후, 사용한 자료 버전을 확인할 수 있습니다." /><div className="history-plan"><span>기획 요청</span><ArrowIcon /><span>근거·판단 기록</span><ArrowIcon /><span>새 자료로 재검토</span><ArrowIcon /><span>변경 전후 비교</span></div></section>}

@@ -1,0 +1,514 @@
+{
+  "schema_version": 1,
+  "record_id": "PM-R5-INTEGRATION-METADATA-20261007-F563-FDA",
+  "author_role": "PM 정이량 보조 AI /root/frontend_data_audit",
+  "checked_at_UTC": "2026-10-07T02:24:03.138554+00:00",
+  "review_kind": "independent_metadata_readback_no_product_execution",
+  "findings": [],
+  "integration_source_commit": "f5634ff050e5dc70e2d88d40ec24a3dd7c833951",
+  "previous_independently_read_source": "92ee404f491d610e12fb302fe5dab502e3dde8a3",
+  "canonical_test_source_commit": "605bb6e2e0dd7bd79eb7a5861396eb9abcd77429",
+  "source_identity": {
+    "git_tree_scope": [
+      "apps",
+      "packages",
+      "scripts",
+      "tests",
+      "skills",
+      "pyproject.toml",
+      "uv.lock",
+      "package.json",
+      "pnpm-lock.yaml",
+      "requirements.txt"
+    ],
+    "git_tree_entries": 338,
+    "git_tree_entry_manifest_sha256": "faa1bc27590ed0b08cbd25fc4425b1574afbe42bf415da40fc3e1b013e671c2e",
+    "tested_and_f563_byte_identical": true,
+    "changed_scope_paths": [],
+    "no_claim_all_repository_files_identical": true
+  },
+  "canonical_validation": {
+    "full": {
+      "source_commit": "605bb6e2e0dd7bd79eb7a5861396eb9abcd77429",
+      "receipt_sha256": "cc65bc2d3aa60ea7dee428f27ca4c9772c8d6927cc2244f9d58c58d46692e784",
+      "log_sha256": "a56f493f0109cb2b419bb8ba5cc4d360f8ebe964421e1fb5430160fa343e8c05",
+      "archive_sha256": "91a0ce0b3d0b67913122076b5f2f26bd26c8292e1be49a83fb6bf680503615f0",
+      "bootstrap_sha256": "9473de212595ecd6c17a5da2275eafb654b3fc217abf35d8cab5b3f6303d912b",
+      "returncode": 0,
+      "source_files_checked": 3737,
+      "source_changed": [],
+      "model_calls": 0,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "checks": {
+        "python_ran": 1589,
+        "python_passed": 1585,
+        "python_skipped": 4,
+        "python_failures": 0,
+        "launcher_passed": 6,
+        "launcher_skipped": 0
+      }
+    },
+    "gates": {
+      "source_commit": "605bb6e2e0dd7bd79eb7a5861396eb9abcd77429",
+      "receipt_sha256": "7372fd82cf2248aace1bd2317aaeeb9eea2a6202c3d9abfc0deb1238e0e2d5e0",
+      "log_sha256": "f766ed0d91215c63671aab7b1c8510b1fc0b83b123d8b7532fad35934bdfae22",
+      "archive_sha256": "91a0ce0b3d0b67913122076b5f2f26bd26c8292e1be49a83fb6bf680503615f0",
+      "bootstrap_sha256": "9473de212595ecd6c17a5da2275eafb654b3fc217abf35d8cab5b3f6303d912b",
+      "returncode": 0,
+      "source_files_checked": 3737,
+      "source_changed": [],
+      "model_calls": 0,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "checks": {
+        "canonical_gates_returncode": 0,
+        "synthetic_models": 5,
+        "synthetic_reviews": 36,
+        "contract_definitions_reported_by_gate": 51,
+        "stdio_tools": 3,
+        "stdio_calls": 5,
+        "candidate_skill_probes_passed": 9,
+        "space_cases": 8,
+        "schedule_cases": 6,
+        "documentation_structure_and_evidence_integrity": "pass"
+      }
+    },
+    "web": {
+      "source_commit": "605bb6e2e0dd7bd79eb7a5861396eb9abcd77429",
+      "receipt_sha256": "c96f817a343111d5cd36b8cd8e2397b6615f732ba3db6904479dd8c85dad9657",
+      "log_sha256": "1563c75d98a732a24e2e2875db66facac7d9bc72e8520c38f4ec1fec865bec6e",
+      "archive_sha256": "91a0ce0b3d0b67913122076b5f2f26bd26c8292e1be49a83fb6bf680503615f0",
+      "bootstrap_sha256": "9473de212595ecd6c17a5da2275eafb654b3fc217abf35d8cab5b3f6303d912b",
+      "returncode": 0,
+      "source_files_checked": 3737,
+      "source_changed": [],
+      "model_calls": 0,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "checks": {
+        "vitest_passed": 548,
+        "vitest_skipped": 5,
+        "python_focused_passed": 32,
+        "safe_CI_node_passed": 4,
+        "typescript_build": "pass",
+        "vite_build": "pass",
+        "isolated_API_MCP_date_matrix_passed": 10,
+        "stack_browser_cases_passed": 3,
+        "strict_CI_browser_passed": 3,
+        "strict_CI_browser_skipped": 0,
+        "strict_CI_browser_unexpected": 0,
+        "bundle_warning_kB_threshold": 500
+      }
+    }
+  },
+  "public_data": {
+    "v1": {
+      "version": "lg-public-reviews.20261007.r5-fixed18.v1",
+      "models": 18,
+      "reviews": 179,
+      "source_commit": "539959aef557ba953c60a557f2b3310b131a2c70",
+      "focused_tests_passed": 19,
+      "split_counts": {
+        "development": 105,
+        "independent_evaluation": 26,
+        "demonstration": 38,
+        "quarantine": 10
+      },
+      "verified_manuals": 3,
+      "unverified_manuals_PDP_only": 15,
+      "input_reviews": 0,
+      "original_JSON_files_byte_preserved_from_8f052e": 21,
+      "validation": {
+        "path": "evals/pm-prototype/20261007/r5-data/validation.json",
+        "git_blob": "2bcfff04cf11e6197b2f9a6b726230c2da11c374",
+        "sha256": "b9f439a4deae4cb65675ce4a36e4be3a3800bd3e64a56a9a2b6006dfacbf60a2"
+      }
+    },
+    "v2": {
+      "version": "lg-public-reviews.20261007.r5-balanced-pilot.v2-research-held",
+      "screen_rows": 60,
+      "new_IDs": 59,
+      "v1_overlap_IDs": [
+        "860977"
+      ],
+      "overlap_original_split_preserved": true,
+      "source_commit": "12d27f2c3d196536ea1bd15cfdda09ae44218abb",
+      "new_split_counts": {
+        "development": 36,
+        "independent_evaluation": 10,
+        "demonstration": 11,
+        "quarantine": 2
+      },
+      "builder_receipt_sha256": "f3ee7ee20154f88998b313198aead73f44534157096ca74637c08fa4e1fc30de",
+      "final_generated_artifact_files_equal_prior_sanitized_bytes": 11,
+      "source_changed": [],
+      "input_changed": [],
+      "model_calls": 0,
+      "new_DBs": 0,
+      "validation": {
+        "path": "evals/pm-prototype/20261007/r5-data/balanced-pilot-v2-validation.json",
+        "git_blob": "2c75fb02ca8880f4b3bbeaeeb16275dbd89dc45a",
+        "sha256": "a380eea4c96e36cea5a962aa2a5ca73fceda3e2280dfa554430b7577a21f6b37"
+      }
+    },
+    "combined": {
+      "unique_IDs": 238,
+      "split_counts": {
+        "development": 141,
+        "independent_evaluation": 36,
+        "demonstration": 49,
+        "quarantine": 12
+      },
+      "pairwise_intersections": [
+        {
+          "left": "development",
+          "right": "independent_evaluation",
+          "original_ID_intersections": 0,
+          "NFKC_whitespace_body_SHA_intersections": 0
+        },
+        {
+          "left": "development",
+          "right": "demonstration",
+          "original_ID_intersections": 0,
+          "NFKC_whitespace_body_SHA_intersections": 0
+        },
+        {
+          "left": "independent_evaluation",
+          "right": "demonstration",
+          "original_ID_intersections": 0,
+          "NFKC_whitespace_body_SHA_intersections": 0
+        }
+      ],
+      "verified_purchase_SKUs": 0,
+      "known_publication_dates": 0,
+      "eligible_model_input_reviews": 0,
+      "original_synthetic_pack_and_three_public_manuals_unchanged": true,
+      "research_only_not_model_evaluation_or_demo_input": true
+    },
+    "canonical_execution_dataset": {
+      "path": "data/research/r5-public-reviews-20261007/fixed18/development.dataset.json",
+      "git_blob": "87d6de9a1992fa85c1c4ef242b78b76fcfef61d0",
+      "sha256": "aee2b54b80b5d48559cab4d45eed1e3c3a3d2cb7d9f087542a820a22cf5e69a7"
+    },
+    "canonical_execution_scope": {
+      "models_with_manuals": 3,
+      "reviews": 0,
+      "manual_evidence": 21,
+      "features": 9
+    },
+    "source_JSON_hashes": [
+      {
+        "path": "data/research/r5-public-reviews-20261007/fixed18/records.json",
+        "git_blob": "ecb84e7e0d69397411d11f5da17f97fc5af6b941",
+        "sha256": "98830d3078d5c14443ee672a4fd6d5ae7fbafe6c77ea15ab6b14828ad2d5ad6f"
+      },
+      {
+        "path": "data/research/r5-public-reviews-20261007/fixed18/products.json",
+        "git_blob": "4c6b3e41ab3dc08e37e43263e2306004272e9328",
+        "sha256": "5575df7a988d919eedc16a050914d192e30fc8eff1e0ad7b5a97c6328adb9d8b"
+      },
+      {
+        "path": "data/research/r5-public-reviews-20261007/fixed18/manifest.json",
+        "git_blob": "da3ef950f17d3f645e602b7ba44dd78c47049879",
+        "sha256": "3a35518787c1959d29dd11f6a651194f7b7a6be971e392a470cff3da240c895d"
+      },
+      {
+        "path": "data/research/r5-public-reviews-20261007/balanced-pilot-v2/records.json",
+        "git_blob": "1928a41cce0b8b86a83d6daf73b292bf81be35da",
+        "sha256": "d8ac06a75f53eac2fc2db469d78fa967bbc20883048aa44190217fd19d26fb7d"
+      },
+      {
+        "path": "data/research/r5-public-reviews-20261007/balanced-pilot-v2/manifest.json",
+        "git_blob": "9636a01cf5aee16c48362dfa8b80b97f7ba629a5",
+        "sha256": "9ceb23e5b02e9541091a15673d6d1f161462bfd79c421eed5ddc652093aff37d"
+      }
+    ],
+    "workbooks": [
+      {
+        "filename": "LG_공개후기_18모델_179건_R5.xlsx",
+        "sha256": "802af5c40be94d92a05985ec1802e431130cd9c5e7bb7012eedcbdd1455cc1ac",
+        "sheets_rendered": 2,
+        "formula_errors": 0,
+        "native_Excel_opened": false
+      },
+      {
+        "filename": "LG_공개후기_최신순_낮은별점순_60행_R5V2.xlsx",
+        "sha256": "1dba0e00cc9ed4e0b780859efa557a676b09913149622e686ca51db5e8f89dba",
+        "sheets_rendered": 3,
+        "formula_cells": 38,
+        "formula_errors": 0,
+        "native_Excel_opened": false
+      }
+    ],
+    "SQLite_source_policy": {
+      "tracked_SQLite_files_in_current_research_tree": 0,
+      "preserved_DB_origin_commit": "8f052e086b4066f181be317fae770badbe18bad1",
+      "package_DB_rejection_unchanged": true,
+      "new_review_DB_builder": {
+        "path": "scripts/build_public_review_db.py",
+        "git_blob": "dc1a90014205e21668fef3dde463fc6cf0702672",
+        "sha256": "6c9e5f5df153b632c3edc03fece6d9bc0019a00b66afdbebc48c05db0e0912fa"
+      },
+      "same_SQLite_byte_comparison_separate_from_row_equality": true
+    }
+  },
+  "independent_PR_reproductions": [
+    {
+      "number": 215,
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/215",
+      "reviewed_head": "2e8f678933e22d794063999c84dd29717b1dd496",
+      "merge_commit": "8b41fd4785bc149593f04d913ef974f29fb341fe",
+      "merge_reachable_from_f563": true,
+      "reproduction": {
+        "source_commit": "2e8f678933e22d794063999c84dd29717b1dd496",
+        "receipt_sha256": "2c2143ad4aad0f2b0fdcb5c72a2f821efcc21f85e1d64b053336718431e490d1",
+        "log_sha256": "797815f85a78bec1178f99fe51a125b7ae186a5e305dfc0eeaca977d31d9526b",
+        "archive_sha256": "9e773f804dfc2bad3f5c0480957fe58afd8a1b3ed4190c08612f0cd8564d6962",
+        "bootstrap_sha256": "02cb4cb06f629af4e3d1ce2b696c5f0c3c907e297f0e2d15516e6a95e2637a37",
+        "returncode": 0,
+        "source_files_checked": 3661,
+        "source_changed": [],
+        "model_calls": 0,
+        "boundary": {
+          "backend": "docker",
+          "image_id": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+          "role": "validator",
+          "uid": 1000,
+          "readonly_root": true,
+          "caps_dropped": true,
+          "no_new_privileges": true,
+          "network": "none",
+          "mount_targets": [
+            "/artifacts",
+            "/workspace"
+          ],
+          "publisher_credentials_mounted": false,
+          "ai_profile_mounted": false
+        }
+      },
+      "cases": 3,
+      "original_bytes_oracle_and_HTTP_POST_GET_history_equal": true,
+      "public_expectations": {
+        "path": "evals/web-prototype-independent/20261007/expected-originals.json",
+        "git_blob": "8c0608e636fb7d54af13e0c22743db17c4b2b1eb",
+        "sha256": "ccbd9c124c75e9f4e515d47edb1986817552ae956c8abfdb4c95538f7f4f2396"
+      },
+      "browser_evidence_path": "evals/web-prototype-independent/20261007/web",
+      "browser_rerun_by_this_metadata_task": false,
+      "prior_assertion_failure_preserved": true,
+      "status_scope": "original_failed_failed_held_replay_not_new_model_generation"
+    },
+    {
+      "number": 216,
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/216",
+      "merged_head": "bad7c4e25e33736665df06594b4f27891a1e7776",
+      "merge_commit": "2d2b27c87d8d536e1c8f7219bfbaf74f64eb8f2b",
+      "merge_reachable_from_f563": true,
+      "reproduction": {
+        "source_commit": "7435fea492f664cf500f3eebc2a93b1b816011e2",
+        "receipt_sha256": "02d703383ae41b5c269a15394b812a1e08710c1ebaf1e0f3d4eaedd563fd61e3",
+        "log_sha256": "14cb7bb7db7a480b3ed07bad79f5c0c31df8855f47acb0461bdf960ee795b54a",
+        "archive_sha256": "2178965d988eab6844369130a2f26b5e7d52a87993454b81ef29e6035c1c1212",
+        "bootstrap_sha256": "02da5d6aafa7e6ef6a610b4cd99608b46745a264485b6e01f51cb6b7265a7666",
+        "returncode": 0,
+        "source_files_checked": 3647,
+        "source_changed": [],
+        "model_calls": 0,
+        "boundary": {
+          "backend": "docker",
+          "image_id": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+          "role": "validator",
+          "uid": 1000,
+          "readonly_root": true,
+          "caps_dropped": true,
+          "no_new_privileges": true,
+          "network": "none",
+          "mount_targets": [
+            "/artifacts",
+            "/workspace"
+          ],
+          "publisher_credentials_mounted": false,
+          "ai_profile_mounted": false
+        }
+      },
+      "public_comparison": {
+        "path": "evals/core-manual-quality/20261007/r5-independent/comparison.json",
+        "git_blob": "f31a9a55801b6d77bea7020d84c6954301eeffd8",
+        "sha256": "1a0eb0e71c1a1742773c981bb4aee1303e27b0d9d50490cdfb7eefff72c205af"
+      },
+      "comparison_bytes_equal_tested_source": true,
+      "new_quality_verified": false
+    }
+  ],
+  "preserved_original_study": {
+    "input_kind": "synthetic_fridge_cases",
+    "cases": 3,
+    "statuses": [
+      "failed",
+      "failed",
+      "held"
+    ],
+    "original_model_calls": 15,
+    "original_tokens": 91587,
+    "native_HTTP_generation": false,
+    "accepted_normal_full_run_available": false
+  },
+  "common_API_contract_CLI_read_review": {
+    "findings": [],
+    "public_workspace_authenticated_no_store": true,
+    "public_synthetic_API_preserved": true,
+    "viewer_write_and_other_owner_denied": true,
+    "closed_scoped_diagnostic_ids_only": true,
+    "original_storage_snapshot_preserved": true,
+    "document_path_hash_paired_and_verified_before_JSON_and_DB": true,
+    "planning_default_OFF": true,
+    "zero_review_fixture_hold_is_not_real_model_success": true
+  },
+  "latest_scope_documents": [
+    {
+      "path": "docs/pm/real-review-prototype-r5-20261007.md",
+      "git_blob": "0e3e5ed92207fb447efd33c74ef0dbbabcc94c14",
+      "sha256": "2498a109640df9a3fd8374be3efe25a90b54ba6f662ff62a73b2f501db58c780"
+    },
+    {
+      "path": "docs/pm/public-corpus-contract-r5-20261007.md",
+      "git_blob": "5d85e2ee7f09db078977ef2e0a5c312f0548af71",
+      "sha256": "2faa13699b236bb05fc8da984dbd69aae34027a9bb8ff53861b2421c8e0f9901"
+    },
+    {
+      "path": "docs/bootstrap/public-workspace-cli.md",
+      "git_blob": "b71aeb74f94be00df2e8e8a3ea5f36be7bdc4ee7",
+      "sha256": "e5c9c92e192c270fa7e77c2ae4156792f810417c2cdbab3cc0e3eced55b7e932"
+    },
+    {
+      "path": "docs/pm/prototype-user-test-20261007.md",
+      "git_blob": "c41470f0ec16a5148a01d7352180889ff739cfea",
+      "sha256": "686797267869b0433356f3e68f3478963ae79832ff7b539545ce27349cb761c9"
+    },
+    {
+      "path": "evals/pm-prototype/20261007/r5-data/review-summary-and-category-feasibility.json",
+      "git_blob": "8e0914ffc4ec5034d3d9f4523c5e8d0ca0985723",
+      "sha256": "fd31c6c2126d686b3cf19a64bb88813b83d714a5ba97788aeb620dc332062b75"
+    }
+  ],
+  "extension_status": {
+    "bidirectional_review_summary": "review_proposal_only",
+    "planning_reuse": "review_proposal_only",
+    "supported_ProductGroups": [
+      "fridge",
+      "dishwasher",
+      "microwave"
+    ],
+    "additional_kitchen_groups": "documented_candidates_not_implemented_not_collected",
+    "rating_not_sentiment": true,
+    "mixed_opinion_not_judgement_conflicting": true
+  },
+  "later_fixture_only_read_review": {
+    "root_source_commit": "02652fdbe0e4056b3888674364b3a41e41f76b39",
+    "changed_paths_from_f563": [
+      "tests/test_automation_cli.py"
+    ],
+    "insertions": 3,
+    "deletions": 1,
+    "runtime_fixture_bytes_equal": true,
+    "runtime_fixture_sha256": "a843096bb7c7129b6972fdaa8f70227203ffdfdaaa6f29a5dd11016cd771911d",
+    "guard_and_product_changes": 0,
+    "source_blob_equal_tested_fix": true,
+    "focused_tested_source_commit": "48211614e504d66bf7f34c4c174363306654bcb8",
+    "focused_receipt": {
+      "source_commit": "48211614e504d66bf7f34c4c174363306654bcb8",
+      "receipt_sha256": "861805328c91d6dbdd6b74337d13202ed0202f8436039ca8f060b4379147795e",
+      "log_sha256": "98d4420abfbb42ff39acb97bf22652de05dac9cb63dd8f2577c5994da6afb576",
+      "archive_sha256": "33a8d1df19f8e68e00715727ea55d7e89bdb78719e6dbfde91502bc59a1fbc53",
+      "bootstrap_sha256": "50f69d7916035ddef4bd51d1c92fbe47e48ac4378008670773e603cb0b51ef6e",
+      "returncode": 0,
+      "source_files_checked": 3663,
+      "source_changed": [],
+      "model_calls": 0,
+      "boundary": {
+        "backend": "docker",
+        "image_id": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      }
+    },
+    "focused_tests_passed": 27,
+    "ruff_passed": true,
+    "findings": [],
+    "later_PM_record_changes_not_yet_reviewed": true
+  },
+  "this_metadata_task": {
+    "repository_imports": 0,
+    "product_executions": 0,
+    "new_test_runs": 0,
+    "new_collection_requests": 0,
+    "model_calls": 0,
+    "new_DBs": 0,
+    "remote_publications": 0,
+    "only_new_proof_record_written": "evals/pm-prototype/20261007/r5-integration/PM-R5-INTEGRATION-METADATA-20261007-F563-FDA.json"
+  },
+  "limitations": [
+    "Fixture and isolated browser passes do not establish real-model semantic quality or user benefit.",
+    "Purchase SKU and review publication dates remain unknown; no automatic actual-product planning input promotion.",
+    "Purposive recent/low-rating samples are not population demand, defect frequency, or market-share measurements.",
+    "Existing imported failed/held model history is not new native HTTP generation or an accepted normal full run.",
+    "No new R5 deployment, restart, OS reboot, autostart, account MCP discovery, external submission, or Figma verification was performed.",
+    "PR merge reachability was read from local Git objects; this task made no fresh GitHub CI or publication claim.",
+    "605 test counts apply to that exact archive and the stated identical source scope; later fixture tests are separately bound.",
+    "The Vite 500kB bundle warning remains; native Microsoft Excel was not opened.",
+    "Privacy/secret pattern absence is not a comprehensive privacy guarantee; private raw DOM and credentials are omitted."
+  ]
+}
