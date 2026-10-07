@@ -54,6 +54,16 @@ def main():
         assert len(rows) <= 10
         page_counts[sku] = len(rows)
         records.extend(rows)
+    annotations = json.loads((HERE / 'human-review-flags.json').read_bytes())
+    for annotation in annotations:
+        matching = [r for r in records if r['original_review_id'] == annotation['original_review_id']
+                    and r['displayed_model_id'] == annotation['displayed_model_id']]
+        assert len(matching) == 1
+        row = matching[0]
+        assert row['source_sha256'] == annotation['source_sha256'] and row['text_sha256'] == annotation['text_sha256']
+        assert annotation['quality_flag'] == 'displayed_capacity_and_installation_text_conflict'
+        row['quality_flags'].append(annotation['quality_flag'])
+        row['quarantined'] = True
     records, summary = group_and_split(records)
     known_dates = [r['purchase_date'] for r in records if r['purchase_date']]
     manifest = {
@@ -70,13 +80,17 @@ def main():
         'verified_manual_model_count': len(manuals),
         'exact_sku_execution_status': 'held',
         'exact_sku_execution_hold_reason': 'Purchased SKU is not independently verified by page association.',
+        'human_review_flags': annotations,
+        'manual_privacy_review': {'record_count': len(records), 'direct_names_addresses_contacts_found': 0,
+                                  'author_household_media_not_extracted': True},
+        'rating_counts': dict(Counter(str(r['rating']) for r in records)),
         'model_calls': 0, 'synthetic_reviews': 0,
         'limitations': [
             'Official page association is not independently verified purchased SKU; all exact-model inputs held.',
             'Visible purchase date is not posting date; no publication-year, month or season inference.',
             'Only the existing 3 public manuals have verified revisions; 15 PDP snapshots are not manuals.',
             'Current manual reference is not verified purchase-time manual revision.',
-            'Recommendation-order bounded nonrandom sample; missing dates and fewer rows are not filled.',
+            'Recommendation-order bounded nonrandom sample; all observed ratings 5/5. Missing dates and fewer rows are not filled.',
             'Related page pools are globally deduplicated before fixed group split; positive reviews retained.',
             'No automatic complaint labels, customer-population estimates or market-demand conclusions.',
             'Pilot splits were never used for training, independent model evaluation or model input.'
