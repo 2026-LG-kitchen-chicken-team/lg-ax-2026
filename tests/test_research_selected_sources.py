@@ -56,7 +56,7 @@ class SelectedSourceTests(unittest.TestCase):
     def test_invalid_scope_is_rejected_before_any_model_or_attempt(self):
         for selection in ([], [self.ids[0], self.ids[0]], ['foreign-source'], None, [True]):
             with self.subTest(selection=selection):
-                self.assertEqual(self.post(selected_source_ids=selection).status_code, 400)
+                self.assertEqual(self.post(selected_source_ids=selection).status_code, 422)
         self.assertEqual(self.post(selected_source_ids=self.ids, bundle_sha256='0' * 64).status_code, 409)
         self.assertEqual(self.planner.calls, [])
         with self.workspace.connect() as connection:
