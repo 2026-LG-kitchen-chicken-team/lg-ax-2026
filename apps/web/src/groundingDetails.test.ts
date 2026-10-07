@@ -31,6 +31,13 @@ it('does not invent links from malformed, unrelated or private-path values', () 
   }
 });
 
+it('keeps authorized gap/need/source links when the API omits an unconfirmed candidate ID', () => {
+  const projected = { code: violation.code, missing_links: violation.missing_links };
+  expect(groundingDetails({ details: { grounding_violations: [projected] } })).toEqual([{ concept_id: null, missing_links: violation.missing_links }]);
+  expect(errorNotes({ details: { grounding_violations: [projected] } })[0]).toContain('후보 ID 미공개');
+  expect(errorNotes({ details: { grounding_violations: [projected] } })[0]).toContain('REVIEW-TEST-001');
+});
+
 it('displays the same stored missing IDs in the execution panel and JSON/Markdown without changing the run', async () => {
   const record = JSON.parse(readFileSync(resolve(process.cwd(), '../../evals/pm-review/20261005-round2/api-live/workspace-live.json'), 'utf8'));
   const snapshot = structuredClone(record.first) as RunSnapshot;
