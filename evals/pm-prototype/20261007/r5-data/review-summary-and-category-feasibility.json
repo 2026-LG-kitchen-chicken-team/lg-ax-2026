@@ -1,0 +1,63 @@
+{
+  "review_kind": "PM_assistant_readonly_feasibility_no_feature_implementation",
+  "model_calls": 0,
+  "additional_category_collection": 0,
+  "input_version": "lg-public-reviews.20261007.r5-balanced-pilot.v2-research-held",
+  "facts": {
+    "LGE_visible_summary": "Existing three pilot pages show three positive summary topics. No evidence was obtained about LGE summary generation method, precise source roster, or negative-review coverage.",
+    "current_reference_parser": "packages/core/src/lgax_core/public_review_collection.py verify_public_product_page maps fridge/microwave/dishwasher to exact Korean title keywords. Review list parsing separately uses public visible list rows and explicit unknown purchased SKU/publication date.",
+    "page_model_not_purchase_proof": "Fridge displayed MD10758826 has recent row861640 MD10758828; original DUE page has a v1 induction-related review800398. Matching or shared MD is not independent purchased SKU evidence.",
+    "rating_not_sentiment": "5-star861281 reports a scratch and freezer-door closing expectation. 3-star807886 and773516 contain satisfaction text. Low rating is not an automatic negative label.",
+    "v2_limit": "60 purposively selected UI rows; verified purchased SKU0, posting date unknown, no real-model evaluation or demo input eligibility."
+  },
+  "summary_reuse_proposal": {
+    "status": "proposal_only",
+    "possible_scope_now": "Human research summary at the observed page-group level, explicitly retaining purchase-SKU uncertainty and purposive-sample limits.",
+    "recommended_sections": ["reported_strengths", "reported_pain_points", "mixed_or_ambiguous_experiences", "delivery_installation_service_experiences"],
+    "evidence_requirements": ["original_review_ID", "source_URL", "observed_subset_version", "original_or_redacted_body_hash", "sort_and_rank", "purchase_date_not_publication_date", "displayed_model_and_purchase_SKU_uncertainty"],
+    "reuse_unit": "A source-linked evidence item and its scope/uncertainty, rather than a detached summary sentence. The same item can be linked by product UX, service onboarding, installation, or positioning hypotheses without copying it into another split.",
+    "guardrails": ["do_not_convert_rating_to_sentiment", "do_not_treat_LGE_positive_summary_as_our_generated_summary", "frequency_only_with_exact_subset_denominator", "no_market_share_or_population_demand_claim", "no_fixed_SKU_requirement_until_binding_gate", "do_not_invoke_a_model_for_this_review"]
+  },
+  "human_read_examples": [
+    {
+      "original_review_id": "851786",
+      "displayed_model_id": "MW23FDI",
+      "source_url": "https://www.lge.co.kr/mkt/review/MD10738847/pdpReviewListPopup",
+      "rating": 1,
+      "purchase_date": "2026-09-24",
+      "published_at": null,
+      "actual_purchased_model_id": null,
+      "observation": "The reviewer reports slow heating, attempted service/part replacement and a refund, and dissatisfaction with power-setting guidance.",
+      "hypothesis_only": "Investigate heating reproducibility and how power settings and service guidance are explained. This is not verified defect evidence or an exact-SKU product requirement."
+    },
+    {
+      "original_review_id": "503624",
+      "displayed_model_id": "DUE6BGL2E",
+      "source_url": "https://www.lge.co.kr/mkt/review/MD10492836/pdpReviewListPopup",
+      "rating": 2,
+      "purchase_date": "2025-10-06",
+      "published_at": null,
+      "actual_purchased_model_id": null,
+      "observation": "The reviewer reports missing installation handoff for hardness testing, rinse aid and salt initialization.",
+      "hypothesis_only": "Reuse the same evidence in installation-service onboarding/checklist research, with ownership and actual setup requirements verified separately."
+    },
+    {
+      "original_review_id": "861627",
+      "displayed_model_id": "T876MEE1H1",
+      "source_url": "https://www.lge.co.kr/mkt/review/MD10758826/pdpReviewListPopup",
+      "rating": 5,
+      "purchase_date": "2026-10-06",
+      "published_at": null,
+      "actual_purchased_model_id": null,
+      "observation": "The reviewer says the front access area makes frequently retrieving drinks convenient.",
+      "hypothesis_only": "Preserve this reported strength while considering frequent-use item access UX. No quantified preference or verified purchased-SKU claim."
+    }
+  ],
+  "additional_category_feasibility": [
+    {"candidate": "김치냉장고", "inference": "If the official title contains 냉장고, the current fridge title keyword could superficially match. That does not establish correct category, storage function scope, manual version, or review purchased SKU; a separately verified registry and manual scope are required."},
+    {"candidate": "인덕션", "inference": "Current title/group mapping has no induction entry. A normal public review UI may share the row structure, but no new product page/MD or collection success was verified. The observed induction-related text on a dishwasher page is a concrete warning against page-level SKU attribution."},
+    {"candidate": "광파오븐", "inference": "The existing microwave URL category is microwaves-and-ovens, but the title check requires 전자레인지. An oven title cannot be assumed to pass. Oven-specific functions, manual and exact page identity need explicit scope verification."},
+    {"candidate": "정수기", "inference": "No current group/title mapping, purchased-model mapping, care-service versus product-review separation or independent source sample was verified. Treat as a later bounded research candidate, not a supported input today."}
+  ],
+  "implementation_conclusion": "Existing source-linked research evidence can support review-summary/UI planning and other planning hypotheses. Additional source adapters, schemas or model generation were neither edited nor executed in this review."
+}
