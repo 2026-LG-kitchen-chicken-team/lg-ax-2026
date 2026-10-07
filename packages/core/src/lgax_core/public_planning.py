@@ -26,7 +26,6 @@ from .model_client import StructuredModelResult
 from .retrieval import tokenize
 
 ModelCaller = Callable[[str, dict], dict | StructuredModelResult]
-CUSTOMER_TYPES = {"review", "qa"}
 DOCUMENT_TYPES = {"manual", "faq", "spec", "installation"}
 
 
@@ -59,6 +58,8 @@ INSTRUCTIONS = (
     "설명서 발췌에 없다는 사실은 전체 문서에 없다는 뜻이 아닙니다. 기능/설명서 존재는 불편 해결의 "
     "증거가 아닙니다. 구매 SKU 미확인 후기를 페이지 모델의 결함으로 확정하지 마세요. 긍정·부정·"
     "혼합 의견과 초기 불편 뒤 적응을 구별하고 반대 자료도 보존하세요. 빈도·성능·설정·안전 수치를 "
+    "추정하지 마세요. 구매·재입고 문의를 사용 중 불편 표본으로 바꾸지 않고 공식 답변을 고객 불만으로 "
+    "분류하지 마세요. experience_scope와 usage_problem_sample_eligible을 보존하세요. 새 수치를 "
     "만들지 마세요. 가설은 가설로 표시하고, 자료가 부족해도 확인된 문제를 바탕으로 유용한 임시 "
     "개선안과 필요한 최소 확인 정보를 만드세요. 조사 계획만으로 기획을 대신하지 마세요. "
     "기획에는 사용자, 사용 상황, 실제 보게 될 안내/행동의 전후 단계와 시각 장면을 포함하세요. "
@@ -136,19 +137,28 @@ def apply_field_patch(item: dict, patch: dict, fields: set[str]) -> dict:
 
 
 def _balanced_sources(sources: list[dict]) -> list[dict]:
-    """Preserve several page models and available low-rating sorts within a budget.
+    """Interleave rating/expression strata before rotating page models and sorts.
 
-    Rating is a sampling stratum, never a sentiment label or prevalence estimate.
+    Expressions only widen sampling: neither they nor rating assign sentiment,
+    establish a problem, or estimate prevalence. Source records stay unchanged.
     """
-    buckets = {}
+    expression_hint = re.compile(r"당황|낯설|익숙|불편|아쉽|하지만|다만|그런데|부담|어렵")
+    strata = {"low": {}, "expression_hint": {}, "other": {}}
     for source in sources:
         rating = source.get("rating")
-        key = (source.get("page_model") or "", "low" if isinstance(rating, (int, float)) and rating <= 2 else "other",
-               source.get("sort_order") or "")
-        buckets.setdefault(key, []).append(source)
+        stratum = ("low" if isinstance(rating, (int, float)) and rating <= 3 else
+                   "expression_hint" if expression_hint.search(source["text"]) else "other")
+        key = (source.get("page_model") or "", source.get("sort_order") or "")
+        strata[stratum].setdefault(key, []).append(source)
+    interleaved = []
+    for buckets in strata.values():
+        rows = []
+        for index in range(max((len(bucket) for bucket in buckets.values()), default=0)):
+            rows.extend(buckets[key][index] for key in sorted(buckets) if index < len(buckets[key]))
+        interleaved.append(rows)
     ordered = []
-    for index in range(max((len(bucket) for bucket in buckets.values()), default=0)):
-        ordered.extend(buckets[key][index] for key in sorted(buckets) if index < len(buckets[key]))
+    for index in range(max((len(rows) for rows in interleaved), default=0)):
+        ordered.extend(rows[index] for rows in interleaved if index < len(rows))
     return ordered
 
 
@@ -213,6 +223,11 @@ class PublicPlanner:
                                  else source["coverage"])
         row["original_text_sha256"] = sha256(source["text"].encode()).hexdigest()
         row["url"], row["locator"] = source["url"], deepcopy(source["locator"])
+        metadata = source.get("metadata", {})
+        row["scope_metadata"] = {key: deepcopy(metadata[key]) for key in (
+            "experience_scope", "usage_problem_sample_eligible", "customer_question_sample_eligible",
+            "scope_caveat", "paired_source_id", "registry_scope", "topic_tags",
+        ) if key in metadata}
         return row
 
     def run(self, bundle: dict, goal: str, constraints: list[str], previous: dict | None = None) -> dict:
@@ -376,7 +391,14 @@ class PublicPlanner:
         if batch:
             batches.append(batch)
         max_batches = max(1, min(4, self.max_model_calls - self.max_problems - 2))
-        for index, batch in enumerate(batches[:max_batches]):
+        first_batch_empty = False
+        for index, batch in enumerate(batches[:max(2, max_batches)]):
+            if index >= max_batches and not (index == 1 and first_batch_empty):
+                break
+            # One extra discovery batch after an empty first result; retain at
+            # least one planning and one repair call even at the smallest budget.
+            if index and (first_batch_empty and index >= 2 or len(trace) + 2 >= self.max_model_calls):
+                break
             output = call("discover", {"task": "문제 후보와 긍정·부정·혼합 요약을 발견하세요. 문제 없는 후기에서 문제를 발명하지 마세요.",
                           "batch": index, "goal": goal, "constraints": constraints,
                           "analysis_scope": bundle["analysis_scope"],
@@ -395,8 +417,10 @@ class PublicPlanner:
                         available = [catalog[eid] for eid in row["source_ids"]]
                         if not claim_issues("summary", row["text"], available):
                             brief["summaries"][polarity].append(deepcopy(row))
+            if index == 0:
+                first_batch_empty = not brief["problems"]
         brief["problems"] = sorted(brief["problems"], key=lambda item: (-len(set(item["source_ids"])), item["id"]))[:self.max_problems]
-        if len(batches) > max_batches or len(seen_sources) < len(customer_sources):
+        if len(seen_sources) < len(customer_sources):
             warnings.append("일부 고객 자료만 이번 실행에서 읽었습니다. 전체 표본이나 빈도 분석으로 확대하지 않습니다.")
         planning_schema = _output_schema({
             "comparisons": {"type": "array", "maxItems": 3, "items": {"$ref": "#/$defs/Comparison"}},
@@ -405,8 +429,12 @@ class PublicPlanner:
         }, ("Comparison", "Concept"))
         for problem in brief["problems"]:
             query = set(tokenize(problem["title"] + " " + problem["description"]))
-            ranked = sorted(documents, key=lambda source: (-len(query & set(tokenize(source["text"]))), source["source_id"]))
             customer_context = [catalog[eid] for eid in dict.fromkeys(problem["source_ids"] + problem["counter_source_ids"])]
+            paired_answers = {source.get("metadata", {}).get("paired_source_id") for source in customer_context}
+            ranked = sorted(documents, key=lambda source: (
+                source["source_id"] not in paired_answers,
+                -len(query & set(tokenize(source["text"]))), source["source_id"],
+            ))
             selected = customer_context[:2] + ranked[:2]
             # Include a brand comparison only if actual competitor material exists.
             brands = {source.get("brand") for source in selected if source.get("brand")}
@@ -472,7 +500,7 @@ class PublicPlanner:
                             "omitted_source_count": len(sources) - len(selected_sources),
                             "unique_customer_source_count": len(customer_sources),
                             "source_type_counts": dict(Counter(source["source_type"] for source in sources)),
-                            "selection_method": "round_robin_page_model_rating_sort",
+                            "selection_method": "interleaved_rating_expression_page_model_v1",
                             "item_issues": issues, "max_model_calls": self.max_model_calls,
                             "max_repairs_per_item": 1, "market_frequency_estimated": False}
         validate_planning_brief(brief)
