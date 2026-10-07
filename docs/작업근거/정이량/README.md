@@ -1,39 +1,11 @@
 # 정이량 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
-## 최신 근거 — 정이량-E054-R6-REVIEW-CLOSEOUT
+## 최신 근거 — 정이량-E055-OPERATING58
 
-- [E054](2026-10-07/정이량-E054-R6-REVIEW-CLOSEOUT.md)은 actual main1f25/CI2,221062·226067 승인, 새 known6/47,202·예산 전송전취소·중간 의미FAIL4/run0과 원SHA를 연결한다. 원8ec 완료/FAIL·불명2·비용을 보존했다.
-- [007](../../작업기록/정이량/2026-10-07/정이량-20261007-007-R6-REVIEW-CLOSEOUT.md)을 먼저 읽는다. wire 인용 보완/새 효과·최종운영/ProjectACK는 후속이며 양면요약·다른키친가전은 검토안·Figma 제외·OFF 유지다.
-
-## 최신 근거 — 정이량-E053-UPSTREAM-WEB
-
-- [E053](2026-10-07/정이량-E053-UPSTREAM-WEB.md)은 CORE 전18행 지원검수181/Ruff7·Python1597/launcher6·WEB47/빌드와 실제217/219병합·220/222승인·221수정요청을 연결한다. 새 실모델 의미 효과·최종운영/공식ACK는 후속이다.
-- [006](../../작업기록/정이량/2026-10-07/정이량-20261007-006-UPSTREAM-WEB.md)을 먼저 읽고 원 raw·실패/비용·역사 checkpoint는 아래E052/E049로 대조한다. Figma 제외·전원OFF 유지.
-
-## 최신 근거 — 정이량-E052-R5-NATIVE-QUALITY
-
-- [E052](2026-10-07/정이량-E052-R5-NATIVE-QUALITY.md) · [원문 대조 품질](../../../evals/pm-prototype/20261007/r5-live-quality/normal-8ec-independent-quality.json)는 source8ec의 실제5회/33237·native 기록 PASS와 독립 의미 FAIL3개를 구분한다. 원 raw/자체 completed·기존 비용·Done5/21/요구0/31을 보존한다.
-- [독립성 보류](../../../data/research/r5-public-reviews-20261007/independence-holds.20261007.v1.json)는 과거 개발 노출3군·시연2군의 승인 조건이며 원 분할·본문은 불변이다. 기존179DB+추가59JSON/Excel과238연구후기, PR217 수정 요청·219 별도검수·Notion 실제 반영·최종 운영/공식ACK 미완료를 연결한다. 아래E049는 당시 checkpoint다.
-
-## 최신 근거 — 정이량-E049-REAL-PROTOTYPE-R5
-
-- [E049](2026-10-07/정이량-E049-REAL-PROTOTYPE-R5.md) · [원3응답/SHA](../../../evals/pm-integration/20261007/live-originals/manifest.json) · [R5 작업/검수 조건](../../pm/real-review-prototype-r5-20261007.md). 코드ran1589/skip4·launcher6·WEB548와 계약/하네스/문서/HTTP·브라우저 검사가 통과했다. 고유238후기 연구 표본·원문/분할/SHA·Excel, 실제215/216 병합·독립 재현을 연결한다. 새 실모델 최종응답은 미수신이며 통신 수정11검사는 의미 품질 증명이 아니다. 원 비용/불명 기록·Figma 제외·자동화OFF를 유지한다.
-
-## 최신 근거 — 정이량-E048-QUALITY-CLOSEOUT
-
-- [E048](2026-10-07/정이량-E048-QUALITY-CLOSEOUT.md)·[고정 검수근거](../../../evals/pm-integration/20261007/README.md)·[실제 병합 재조회](../../../evals/pm-integration/20261007/merged-pr-readback.json)는 원17후속PR/통합212 실제병합과 모델 정상/변경/근거부족 failed/failed/held를 구분한다. 새15호출/91587토큰의 원응답·입력 SHA를 고정했으며 정상품질/CORE199 효과는 승인하지 않았다.
-- 통합1546+launcher6/웹530+Node4/type/build/HTTP·MCP·화면·집계·브라우저 PASS, 선택 Ruff94건 별도 실패를 보존한다. 부모5/21Done·요구0/31verified·전원OFF·원비용/불명ledger는 그대로다. 최종same-release 실행·공식ACK·노션 실제수신은 운영Issue28 종료증거로 대조한다.
-- 아래 E047/10월6일 항목은 원 checkpoint로 보존한다.
-
-## 최신 근거 — 정이량-E047-REVIEWED-HISTORY
-
-- [E047](2026-10-07/정이량-E047-REVIEWED-HISTORY.md)·[새 고정 검수근거](../../../evals/pm-integration/20261007/README.md)·[10/7 큐](../../pm/pr-intake-queue-20261007.json)는 PM188 e7bc486 실제병합/공식ACK와 CORE198·DATA190 원P1해소/CORE199·DATA8·WEB6 독립 검수, de09b64 전체1546/웹530·실HTTP/MCP/화면·집계·브라우저 PASS를 구분한다. 원17head ancestry·원424근거 바이트와 owner충돌보존 proof를 연결한다.
-- 원 모델53/193708·모든 실패/불명비용·21task상태/전원OFF를 보존한다. 새 실모델3사례·운영버전·최종main/공식수신은 실행후 후속증거를 따른다. 아래 E045 항목은 원10/6 checkpoint다.
-- 5원문161753B·104제목·169링크/anchor·원Git/이관반례4개, 개인8원본/231구간/28세션·동일AGENTS/CLAUDE·CI검사를 확인했다. 이관당시 protected를 향후 정상owner갱신금지로 해석하지 않는다.
-- 고정c5eb92d의 Docker full1490실행/실패0/skip4·웹516통과/skip5·Node4/type/build·계약/하네스/지침/이관 PASS. 실제PDF3등록/검색/restart·API/MCP와Chromium20/20+4/4은 LLM정상완주/실운영배포와 구분한다.
-- 모델13원출력·53actual/193708tokens, v3source428f237·audit8c8de930·원10리뷰/inputsha. 길이해결/남은의미품질hold와 제한2리뷰성공을 구분한다. R6 gateway5044관측은 원응답/원ledger 복원이 아니다.
-- [P1반례](../../../evals/pm-integration/20261006/pr190-independent-blocker.json)·[메일수신증](../../../evals/pm-integration/20261006/followup-notifications.json) 및 [E045 상세](2026-10-06/정이량-E045-INTEGRATION.md)를 읽는다. 최종공유main/CI·Project ACK·OFF/비용보존·노션 재조회는 운영Issue28 이번PM종료보고 및 실제운영수신증으로 대조한다. 부모Done/참가작완성은 아직 아니다.
+- [E055](2026-10-07/정이량-E055-OPERATING58.md)는 main58fe/CI·5달러 예산 실제 읽기·ZIP6명령·운영8 보존·API88·화면/내보내기·MCP80·R7 구조199의 원 SHA와 미완료 gate를 연결한다. 준비-only·실제 실행·독립 읽기를 구분한다.
+- [008 상세](../../작업기록/정이량/2026-10-07/정이량-20261007-008-OPERATING58.md)을 먼저 읽는다. 원 의미 FAIL4/최종 run0·불명 비용·품질 보류는 [E054](2026-10-07/정이량-E054-R6-REVIEW-CLOSEOUT.md)에 보존돼 있다.
+- 이전 입구 본문은 [원바이트 snapshot](2026-10-07/008-prior-resume-58fe.txt)에 보존했다. 원 README 경로 기준 상대 링크·commit/SHA는 [manifest](2026-10-07/008-prior-resume-58fe.manifest.json)를 따른다.
 
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
