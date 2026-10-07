@@ -1,0 +1,318 @@
+"""Owned zero-auth Docker HTTP/SQLite acceptance; never operate the deployed service."""
+
+import hashlib
+import json
+import os
+import re
+import secrets
+import socket
+import sqlite3
+import subprocess
+import sys
+import tempfile
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+from pathlib import Path
+
+from lgax_contracts import validate
+
+ROOT = Path(__file__).resolve().parents[3]
+SOURCE = ROOT / "data/research/r5-public-reviews-20261007/fixed18/development.dataset.json"
+PLAN = ROOT / "data/research/PM-DATA-intake-20261006/generated/plan.json"
+BASE = "8ec1e8a51faabd6db032e52245680bef4229f93f"
+TRACE = {}
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def load(path):
+    return json.loads(path.read_bytes())
+
+
+def db_snapshot(path):
+    with sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True) as db:
+        schema = list(db.execute("SELECT type,name,tbl_name,sql FROM sqlite_master ORDER BY type,name"))
+        tables = {}
+        for (name,) in db.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"):
+            if not re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*", name):
+                raise ValueError("Unexpected SQLite identifier")
+            rows = [list(row) for row in db.execute('SELECT * FROM "' + name + '"')]
+            tables[name] = sorted(rows, key=lambda row: json.dumps(row, ensure_ascii=False, sort_keys=True))
+    return {"sha256": sha(path.read_bytes()), "schema": schema, "tables": tables}
+
+
+def run():
+    checks = []
+    captures = []
+    attempts = []
+    TRACE.update(checks=checks, captures=captures, request_attempts=attempts)
+    readiness_probes = 0
+    processes = []
+    dataset = load(SOURCE)
+    plan = load(PLAN)
+    temp = Path(tempfile.mkdtemp(prefix="data456-r5-"))
+    # New inert credentials exist only inside this owned container, never in artifacts.
+    token = secrets.token_urlsafe(48)
+    token_file = temp / "document-token.txt"
+    token_file.write_text(token, "utf-8")
+    credentials = temp / "workspace-credentials.json"
+    credentials.write_text(json.dumps({"credentials": [{"principal_id": "data456-isolated",
+                           "role": "editor", "token_sha256": sha(token.encode())}]}), "utf-8")
+    document_dir = temp / "documents"
+    workspace_db = temp / "workspace.sqlite"
+    # Reuse an already installed, byte-pinned parser inside this read-only source copy.
+    child_environment = dict(os.environ)
+    provider = ROOT / "_verificationdeps"
+    if provider.is_dir():
+        child_environment["PYTHONPATH"] = str(provider) + os.pathsep + child_environment.get("PYTHONPATH", "")
+
+    def check(name, actual, expected):
+        equal = (json.dumps(actual, ensure_ascii=False, sort_keys=True)
+                 == json.dumps(expected, ensure_ascii=False, sort_keys=True))
+        checks.append({"check": name, "passed": equal})
+        if not equal:
+            raise AssertionError(name)
+
+    def port():
+        with socket.socket() as sock:
+            sock.bind(("127.0.0.1", 0))
+            return sock.getsockname()[1]
+
+    doc_port, work_port = port(), port()
+    doc_url = "http://127.0.0.1:" + str(doc_port)
+    work_url = "http://127.0.0.1:" + str(work_port)
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+
+    def request(origin, path, phase, *, body=None, authenticated=True, expected=200, record=True):
+        nonlocal readiness_probes
+        headers = {"Authorization": "Bearer " + token} if authenticated else {}
+        if isinstance(body, dict):
+            body = json.dumps(body, ensure_ascii=False).encode("utf-8")
+            headers["Content-Type"] = "application/json"
+        req = urllib.request.Request(origin + path, data=body, headers=headers)
+        if record:
+            attempts.append({"phase": phase, "path": path, "method": req.get_method(),
+                             "body_bytes": len(body) if body is not None else 0,
+                             "body_sha256": sha(body) if body is not None else None})
+        try:
+            # The unchanged PDF worker has a 90 second bound. The upload client must cover it.
+            response = opener.open(req, timeout=120 if body is not None else 15)
+        except urllib.error.HTTPError as error:
+            response = error
+        with response:
+            raw = response.read(16 * 1024 * 1024 + 1)
+            if len(raw) > 16 * 1024 * 1024:
+                raise ValueError("Bounded response exceeded")
+            status = response.status
+            media_type = response.headers.get("Content-Type", "")
+            value = json.loads(raw) if "json" in media_type else None
+            item = {"phase": phase, "service": "documents" if origin == doc_url else "workspace",
+                    "method": req.get_method(), "path": path, "status": status,
+                    "response_bytes": len(raw), "response_sha256": sha(raw),
+                    "cache_control": response.headers.get("Cache-Control"), "json": value}
+        if record:
+            captures.append(item)
+            check(phase + " " + req.get_method() + " " + path + " status", status, expected)
+        else:
+            readiness_probes += 1
+        return item, raw
+
+    def start():
+        commands = [
+            ("document-server", [sys.executable, "-m", "lgax_core.documents_server", "--directory",
+                                  str(document_dir), "--plan", str(PLAN), "--extractor-python", sys.executable,
+                                  "--token-file", str(token_file), "--port", str(doc_port)]),
+            ("workspace-server", [sys.executable, "-m", "lgax_api.workspace_server", "--db", str(workspace_db),
+                                   "--credentials", str(credentials), "--document-dataset", str(SOURCE),
+                                   "--document-dataset-sha256", sha(SOURCE.read_bytes()), "--port", str(work_port)]),
+        ]
+        for name, command in commands:
+            log = (temp / (name + ".log")).open("ab")
+            processes.append((subprocess.Popen(command, stdout=log, stderr=log, cwd=ROOT,
+                                              env=child_environment), log))
+        for origin in (doc_url, work_url):
+            for _ in range(100):
+                if any(proc.poll() is not None for proc, _log in processes):
+                    raise RuntimeError("Owned server exited before readiness")
+                try:
+                    item, _ = request(origin, "/health", "readiness", record=False)
+                    if item["status"] == 200:
+                        break
+                except urllib.error.URLError:
+                    time.sleep(0.1)
+            else:
+                raise TimeoutError("Owned server readiness")
+
+    def stop():
+        for proc, _log in processes:
+            proc.terminate()
+        stopped = []
+        for proc, log in processes:
+            try:
+                proc.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                proc.kill()
+                proc.wait(timeout=3)
+            stopped.append({"pid": proc.pid, "returncode": proc.returncode})
+            log.close()
+        processes.clear()
+        return stopped
+
+    projects = []
+
+    def capture_phase(phase):
+        before = len(captures)
+        request(work_url, "/api/workspace/bootstrap", phase, authenticated=False, expected=401)
+        bootstrap, _ = request(work_url, "/api/workspace/bootstrap", phase)
+        validate("WorkspaceBootstrapResponse", bootstrap["json"])
+        check(phase + " public bootstrap no-store", bootstrap["cache_control"], "no-store")
+        data = bootstrap["json"]["data"]
+        for collection in ("products", "reviews", "evidence", "features"):
+            check(phase + " bootstrap " + collection + " exact source", data[collection], dataset[collection])
+        check(phase + " bootstrap research review exclusion", data["manifest"]["review_count"], 0)
+        health, _ = request(work_url, "/health", phase)
+        check(phase + " planning disabled", health["json"]["planning_enabled"], False)
+        for spec in plan["documents"]:
+            did = spec["document_id"]
+            metadata, _ = request(doc_url, "/api/documents/" + did, phase)
+            record = metadata["json"]["data"]
+            check(phase + " " + did + " OCR unused", record["ocr_used"], False)
+            with sqlite3.connect((document_dir / "documents.sqlite").as_uri() + "?mode=ro", uri=True) as db:
+                stored = json.loads(db.execute("SELECT record FROM documents WHERE id=?", (did,)).fetchone()[0])
+            check(phase + " " + did + " DB record equals metadata", record, stored)
+            original, _ = request(doc_url, "/api/documents/" + did + "/original", phase)
+            check(phase + " " + did + " original PDF SHA", original["response_sha256"], spec["sha256"])
+        for evidence in dataset["evidence"]:
+            response, _ = request(doc_url, "/api/evidence/" + evidence["id"], phase)
+            check(phase + " " + evidence["id"] + " canonical evidence", response["json"]["data"]["evidence"],
+                  evidence)
+        for index, product in enumerate(dataset["products"]):
+            model = product["model_id"]
+            sample = next(e for e in dataset["evidence"] if e["model_id"] == model)
+            query = re.findall(r"\w+", sample["text"])[0]
+            parameters = {"q": query, "model_id": model, "document_version": product["document_version"],
+                          "limit": 50}
+            for kind in ("normal", "other-valid-model", "unknown-model", "wrong-version"):
+                params = parameters.copy()
+                if kind == "other-valid-model":
+                    other = dataset["products"][(index + 1) % len(dataset["products"])]
+                    params.update(model_id=other["model_id"], document_version=other["document_version"])
+                elif kind == "unknown-model":
+                    params["model_id"] = "unregistered-research-SKU"
+                elif kind == "wrong-version":
+                    params["document_version"] = "unapproved-version"
+                expected = 404 if kind == "unknown-model" else 400 if kind == "wrong-version" else 200
+                response, _ = request(doc_url, "/api/evidence/search?" + urllib.parse.urlencode(params), phase,
+                                      expected=expected)
+                if expected == 200:
+                    results = response["json"]["data"]["items"]
+                    check(phase + " " + model + " " + kind + " scoped models",
+                          all(r["model_id"] == params["model_id"] for r in results), True)
+                    if kind == "normal":
+                        check(phase + " " + model + " literal query includes its source", bool(results), True)
+            project = projects[index]
+            pid = project["project"]["id"]
+            response, _ = request(work_url, "/api/workspace/projects/" + pid, phase)
+            check(phase + " " + pid + " stored project", response["json"]["data"], project)
+            for scoped_model in (model, "unregistered-research-SKU"):
+                params = {"q": query, "model_id": scoped_model, "limit": 50}
+                response, _ = request(work_url, "/api/workspace/projects/" + pid + "/evidence?"
+                                      + urllib.parse.urlencode(params), phase,
+                                      expected=200 if scoped_model == model else 400)
+                if scoped_model == model:
+                    check(phase + " workspace canonical source SHA", response["json"]["data"]["dataset_sha256"],
+                          project["dataset_sha256"])
+        return captures[before:]
+
+    try:
+        rebuild = subprocess.run([sys.executable, "scripts/build_public_review_db.py", "--profile", "fixed18",
+                                  "--output", str(temp / "research-fixed18.sqlite3")], cwd=ROOT,
+                                 capture_output=True, text=True, timeout=60, check=True)
+        research = json.loads(rebuild.stdout)
+        check("research DB JSON originals equal", research["json_rows_equal"], True)
+        check("research DB source reviews", research["reviews"], 179)
+        check("research DB source page products", research["products"], 18)
+        research_before = db_snapshot(temp / "research-fixed18.sqlite3")
+        check("R5 fixed execution source bytes", sha(SOURCE.read_bytes()),
+              "aee2b54b80b5d48559cab4d45eed1e3c3a3d2cb7d9f087542a820a22cf5e69a7")
+        start()
+        for spec in plan["documents"]:
+            matches = [p for p in (ROOT / "data/sources/lg-manuals-20261005").glob("*.pdf")
+                       if sha(p.read_bytes()) == spec["sha256"]]
+            check(spec["document_id"] + " exact source PDF found", len(matches), 1)
+            request(doc_url, "/api/documents/" + spec["document_id"], "registration",
+                    body=matches[0].read_bytes())
+        bootstrap, _ = request(work_url, "/api/workspace/bootstrap", "registration")
+        canonical_sha = bootstrap["json"]["data"]["manifest"]["dataset_sha256"]
+        for product in dataset["products"]:
+            request_body = load(ROOT / "data/demo/planning_requests.json")[0]
+            request_body.update(product_group=product["product_group"], model_ids=[product["model_id"]],
+                                dataset_version=dataset["dataset_version"])
+            body = {"name": "DATA456 isolated source integrity " + product["model_id"], "request": request_body,
+                    "document_versions": {product["model_id"]: product["document_version"]}}
+            item, _ = request(work_url, "/api/workspace/projects", "registration", body=body, expected=201)
+            project = item["json"]["data"]
+            check(product["model_id"] + " project canonical SHA", project["dataset_sha256"], canonical_sha)
+            projects.append(project)
+        before = capture_phase("before-restart")
+        db_before = {"documents": db_snapshot(document_dir / "documents.sqlite"),
+                     "workspace": db_snapshot(workspace_db)}
+        TRACE["DB_before"] = db_before
+        stop_receipt = stop()
+        start()
+        after = capture_phase("after-restart")
+        db_after = {"documents": db_snapshot(document_dir / "documents.sqlite"),
+                    "workspace": db_snapshot(workspace_db)}
+        TRACE["DB_after"] = db_after
+        check("before/after captured response count", len(after), len(before))
+        for previous, current in zip(before, after):
+            for field in ("service", "method", "path", "status", "response_bytes", "response_sha256", "json"):
+                check("restart " + previous["path"] + " " + field, current[field], previous[field])
+        for name in db_before:
+            check(name + " full DB schema/rows/bytes before-after", db_after[name], db_before[name])
+        research_after = db_snapshot(temp / "research-fixed18.sqlite3")
+        check("separate research DB preserved before-after", research_after, research_before)
+        return {
+            "status": "PASS", "source_commit": BASE, "scope": "owned_isolated_HTTP_and_SQLite_not_operating",
+            "execution_dataset": {"path": SOURCE.relative_to(ROOT).as_posix(),
+                                  "raw_sha256": sha(SOURCE.read_bytes()), "canonical_sha256": canonical_sha,
+                                  "dataset_version": dataset["dataset_version"], "reviews": 0,
+                                  "evidence": 21, "features": 9, "products": 3},
+            "document_plan": {"path": PLAN.relative_to(ROOT).as_posix(), "raw_sha256": sha(PLAN.read_bytes()),
+                              "dataset_version": plan["dataset_version"]},
+            "research_DB_rebuild": {**research, "sqlite_version": sqlite3.sqlite_version},
+            "research_DB_schema_and_row_counts": {"schema": research_before["schema"],
+                                                   "row_counts": {k: len(v) for k, v in research_before["tables"].items()}},
+            "DB_before": db_before, "DB_after": db_after, "captures": captures,
+            "controlled_restart": {"stopped_owned_PIDs": stop_receipt, "processes": 2,
+                                   "same_registration_directory_and_workspace_DB": True,
+                                   "deployed_services_restarted": False},
+            "checks": checks, "check_count": len(checks), "HTTP_requests_recorded": len(captures),
+            "readiness_probes": readiness_probes, "planning_enabled": False, "model_calls": 0,
+            "OCR_calls": 0, "public_research_reviews_promoted_to_model_input": 0,
+            "operating_origin_verified": False, "PM_acceptance_verified": False,
+            "full_R5_operating_DB_API_restart_bundle_received": False,
+        }
+    finally:
+        if processes:
+            stop()
+        TRACE["owned_service_diagnostic_tails"] = {
+            path.name: path.read_text("utf-8", errors="replace")[-1600:].replace(token, "[inert-token-removed]")
+            for path in temp.glob("*-server.log")
+        }
+
+
+if __name__ == "__main__":
+    try:
+        result = run()
+    except Exception as error:
+        result = {**TRACE, "status": "FAIL", "exception_type": type(error).__name__, "reason": str(error),
+                  "source_commit": BASE, "operating_origin_verified": False, "PM_acceptance_verified": False}
+    Path("/artifacts/result.json").write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    print(json.dumps({k: v for k, v in result.items() if k in ("status", "reason", "exception_type", "check_count",
+                                                           "HTTP_requests_recorded")}, ensure_ascii=False))
+    raise SystemExit(0 if result["status"] == "PASS" else 1)

@@ -1,0 +1,26 @@
+PLC0206 Extracting value from dictionary without calling `.items()`
+   --> /tmp/data456-lint-z1gpigpp/capture_integrity.py:275:13
+    |
+273 |             for field in ("service", "method", "path", "status", "response_bytes", "response_sha256", "json"):
+274 |                 check("restart " + previous["path"] + " " + field, current[field], previous[field])
+275 |         for name in db_before:
+    |             ^^^^^^^^^^^^^^^^^
+276 |             check(name + " full DB schema/rows/bytes before-after", db_after[name], db_before[name])
+    |                                                                                     ---------------
+277 |         research_after = db_snapshot(temp / "research-fixed18.sqlite3")
+278 |         check("separate research DB preserved before-after", research_after, research_before)
+    |
+help: Use `for name, value in db_before.items()` instead
+
+BLE001 Do not catch blind exception: `Exception`
+   --> /tmp/data456-lint-z1gpigpp/capture_integrity.py:312:12
+    |
+310 |     try:
+311 |         result = run()
+312 |     except Exception as error:
+    |            ^^^^^^^^^
+313 |         result = {**TRACE, "status": "FAIL", "exception_type": type(error).__name__, "reason": str(error),
+314 |                   "source_commit": BASE, "operating_origin_verified": False, "PM_acceptance_verified": False}
+    |
+
+Found 2 errors.
