@@ -13,10 +13,10 @@ const bundle: ResearchBundle = { schema_version: '1.0', bundle_id: 'WEB-actual-m
   sources: [source], collection_manifest: { independent_evaluation_approved: false, limitations: ['Purposive UI sample'], review_count: 0 } };
 const hosts: HTMLDivElement[] = []; const roots: ReturnType<typeof createRoot>[] = [];
 afterEach(async () => { for (const root of roots.splice(0)) await act(async () => root.unmount()); hosts.splice(0).forEach(host => host.remove()); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
-async function mount(inspectId = '') {
+async function mount(inspectId = '', data: ResearchBundle = bundle) {
   vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true); vi.stubGlobal('crypto', webcrypto); vi.stubGlobal('fetch', vi.fn());
   const host = document.createElement('div'); document.body.append(host); hosts.push(host); const root = createRoot(host); roots.push(root);
-  await act(async () => root.render(createElement(ResearchSourcesPanel, { bundle, brief: null, inspectId, onInspect: vi.fn(), onCloseInspect: vi.fn(), panelRef: createRef<HTMLElement>(), sourceBundleHash: 'c'.repeat(64) })));
+  await act(async () => root.render(createElement(ResearchSourcesPanel, { bundle: data, brief: null, inspectId, onInspect: vi.fn(), onCloseInspect: vi.fn(), panelRef: createRef<HTMLElement>(), sourceBundleHash: 'c'.repeat(64) })));
   return host;
 }
 async function changeSelect(host: HTMLDivElement, label: string, value: string) {
@@ -63,5 +63,18 @@ describe('source filters, plain-language limits and selection UI', () => {
     await vi.waitFor(() => expect(downloaded).toHaveLength(1));
     expect(downloaded[0]).toContain('원문 위치: 25쪽 · 항목 「출력 조절」');
     expect(downloaded[0]).toContain('(위치: 25쪽 · 항목 「출력 조절」)');
+  });
+  // O-R8-2 (DATA reply #6 6040922039): a review's document_version is the page model's linked reference material,
+  // not the review's edition or the purchased SKU's manual, so it is not labelled as the review's document edition.
+  it('labels a review version as the page model reference material and keeps a manual version as its edition', async () => {
+    const manualHost = await mount(source.source_id);
+    expect(manualHost.querySelector('[data-document-version]')?.textContent).toBe(`문서판: ${source.document_version}`);
+    expect(manualHost.querySelector('[data-document-version-note]')).toBeNull();
+    const review = { ...source, source_id: 'LGE-R8-REVIEW-TEST', source_type: 'review', source_role: 'customer_experience', coverage: 'full',
+      document_version: 'MFL71959117 Rev.07_030626', facts: [], locator: { original_review_id: 'TEST' } } as ResearchSource;
+    const reviewHost = await mount(review.source_id, { ...bundle, sources: [review] });
+    expect(reviewHost.querySelector('[data-document-version]')?.textContent).toBe('페이지 모델의 연결 참고자료 버전: MFL71959117 Rev.07_030626');
+    expect(reviewHost.querySelector('[data-document-version-note]')?.textContent).toContain('구매 당시 설명서 판을 확인한 값이 아닙니다');
+    expect(reviewHost.querySelector('.research-source-detail')?.textContent).not.toContain('문서판');
   });
 });
