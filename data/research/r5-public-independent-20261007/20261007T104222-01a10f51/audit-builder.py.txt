@@ -1,0 +1,174 @@
+"""Independent R5 source audit; raw HTML/reviews stay private; no models, OCR, DB or collector edits."""
+import csv,hashlib,json,re,subprocess,sys,unicodedata
+from datetime import datetime,timezone,timedelta
+from pathlib import Path
+sys.stdout.reconfigure(encoding="utf-8")
+ROOT=Path("C:\\Users\\user\\Documents\\ChatGPT\\LG공모전")
+WORK=Path("C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data-real-review-audit-20261007T104222-01a10f51")
+CONTROL=Path(__file__).resolve().parent
+MAIN="1f3f4ecb93fdd945850a1e9f790bc37766b2355c"
+REL="data/research/r5-public-independent-20261007/20261007T104222-01a10f51"
+OUT=WORK/REL
+OUT.mkdir(parents=True,exist_ok=True)
+def sha(b):return hashlib.sha256(b).hexdigest()
+def normal(text):return " ".join(unicodedata.normalize("NFC",text).split())
+def write(name,v):(OUT/name).write_text(json.dumps(v,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+def csvfile(name,rows):
+    keys=list(dict.fromkeys(k for r in rows for k in r))
+    with (OUT/name).open("w",encoding="utf-8-sig",newline="") as f:
+        w=csv.DictWriter(f,fieldnames=keys);w.writeheader()
+        w.writerows({k:json.dumps(v,ensure_ascii=False,sort_keys=True) if isinstance(v,(dict,list)) else v for k,v in r.items()} for r in rows)
+def gitraw(path,ref=MAIN):
+    return subprocess.run(["git","show",ref+":"+path],cwd=WORK,capture_output=True,check=True).stdout
+def same_old_bytes(path):
+    exists=subprocess.run(["git","cat-file","-e","9cd2d56be52588764c18c109c9ffca4c104bd48c:"+path],cwd=WORK,capture_output=True)
+    return gitraw(path)==gitraw(path,"9cd2d56be52588764c18c109c9ffca4c104bd48c") if exists.returncode==0 else None
+tracked=subprocess.run(["git","ls-tree","-r","--name-only","-z",MAIN],cwd=WORK,capture_output=True,check=True).stdout.decode().strip("\0").split("\0")
+initial={p:sha((WORK/p).read_bytes()) for p in tracked}
+(CONTROL/"baseline-tracked-hashes.json").write_text(json.dumps(initial,ensure_ascii=False,sort_keys=True),encoding="utf-8")
+fresh=json.loads((CONTROL/"official-page-observations-private.json").read_text("utf-8"))
+catalogs=json.loads((CONTROL/"catalog-observations.json").read_text("utf-8"))
+origins=ROOT/"publication/data001-r06-r08-20261006-01a10f51/frozen-source-a5/data/research/P2-DATA-001-r03-r05-20261006-01a10f51/source-proof.json"
+old=json.loads(origins.read_text("utf-8"))
+old_used={r["original_body_sha256"]:r for r in old["samples"]}
+exposure_path=ROOT/".worktrees/data001-r03-r05-20261006-01a10f51/data/research/P2-DATA-001-r06-r08-20261006-01a10f51/execution-summary.json"
+exposure=json.loads(exposure_path.read_text("utf-8"))
+plan=json.loads((WORK/"data/research/PM-DATA-intake-20261006/generated/plan.json").read_text("utf-8"))
+docs={d["product"]["model_id"]:d for d in plan["documents"]}
+pins=[];reviews=[];lineage=[]
+for page in fresh:
+    model=page["model_id"];group=page["product_group"]
+    product=next(p for p in page["json_ld_blocks"] if isinstance(p,dict) and p.get("@type")=="Product")
+    block=page["json_ld_blocks"].index(product)
+    html=(CONTROL/"private-captures"/(model+".html")).read_bytes()
+    assert sha(html)==page["html_sha256"]
+    pdf=next((WORK/"data/sources/lg-manuals-20261005").glob(model+"*.pdf"))
+    assert sha(pdf.read_bytes())==docs[model]["sha256"]
+    cover=WORK/"evals/data14-auto-table-link-audit/20261007-01a1100e/pdf-renders"/(model+"-p1-180dpi.png")
+    pins.append({"model_id":model,"url":page["url"],"observed_utc":page["observed_utc"],"HTTP_status":page["http_status"],
+        "HTML_sha256":page["html_sha256"],"JSON_LD_Product_block_index":block,
+        "publisher_page_model":product.get("model"),"publisher_page_SKU":product.get("sku"),
+        "child_review_itemReviewed_or_SKU_present":False,
+        "manual_document_id":docs[model]["document_id"],"manual_version":docs[model]["document_version"],
+        "manual_pdf_path":str(pdf.relative_to(WORK)).replace("\\","/"),"manual_pdf_sha256":sha(pdf.read_bytes()),
+        "cover_render_path":str(cover.relative_to(WORK)).replace("\\","/"),"cover_render_sha256":sha(cover.read_bytes()),
+        "manual_model_scope":"official archived page/model association; DUE uses family wildcard; MW cover includes MW23FDI",
+        "buyer_SKU_applicability":"unconfirmed","raw_HTML_or_author_data_published":False,"models_OCR_calls":0})
+    for index,r in enumerate(product["review"]):
+        body=r["reviewBody"];bodysha=sha(body.encode());normsha=sha(normal(body).encode())
+        rid="OBS-LGE-"+model+"-"+bodysha[:12]
+        # One manually reviewed category mismatch; another dishwasher review mentioning induction setup is retained page_only.
+        quarantine=(model=="DUE6BGL2E" and bodysha=="a3aa3cf6e4e9f33c523ceb558235c31518b6ab429e9470404797dc837e969279")
+        declared=r.get("datePublished")
+        if declared:datetime.fromisoformat(declared)
+        seen=bodysha in old_used
+        reviews.append({"observation_id":rid,"provider_review_id":None,"ID_kind":"local model+full-body-SHA; not provider ID",
+            "product_group":group,"page_model_id":model,"page_SKU":product.get("sku"),"purchased_SKU":None,
+            "SKU_status":"quarantine" if quarantine else "page_only","planning_input_allowed":False,
+            "quarantine_reason":"내용이 하이라이트/조리 화력 전환 경험이며 대상 식기세척기와 품목 불일치" if quarantine else None,
+            "source_url":page["url"],"HTML_sha256":page["html_sha256"],"JSON_LD_block_index":block,
+            "review_body_pointer":"/review/"+str(index)+"/reviewBody","raw_body_UTF8_sha256":bodysha,
+            "normalized_body_sha256":normsha,"raw_body_character_count":len(body),
+            "purchase_date":None,"purchase_date_label_received":False,"reported_JSONLD_datePublished":declared,
+            "published_at":None,"publication_date_independently_verified":False,"date_status":"provider metadata only; UI purchase/post label missing",
+            "review_rating_declared":r.get("reviewRating",{}).get("ratingValue"),
+            "manual_document_id":docs[model]["document_id"],"manual_version":docs[model]["document_version"],
+            "manual_buy_SKU_link":"unconfirmed","duplicate_group_id":"ORIGINAL-BODY-"+bodysha,
+            "development_exposure_known":seen,"prior_excerpt_ID":old_used[bodysha]["review_id"] if seen else None,
+            "split_assignment":None,"independent_evaluation_eligibility":"hold: SKU/date/split authority pending",
+            "sampling":"all three HTML JSON-LD featured records; not random; no negative-only selection"})
+        lineage.append({"representation_id":rid,"kind":"current_full_body_observation","page_model":model,
+            "raw_body_sha256":bodysha,"original_body_sha256":bodysha,"duplicate_group_id":"ORIGINAL-BODY-"+bodysha,
+            "source_url":page["url"],"developer_exposure_known":seen,"split":None})
+        if seen:
+            o=old_used[bodysha];excerpt=body[o["excerpt_start_char"]:o["excerpt_end_char"]]
+            assert o["model_id"]==model and o["url"]==page["url"] and o["date_published"]==declared
+            assert sha(excerpt.encode())==o["text_sha256"]
+            assert any(c["model_id"]==model and c["generations"]>0 for c in exposure["cases"])
+            lineage.append({"representation_id":o["review_id"],"kind":"preserved_excerpt_not_new_review","page_model":model,
+                "raw_body_sha256":o["text_sha256"],"original_body_sha256":bodysha,"duplicate_group_id":"ORIGINAL-BODY-"+bodysha,
+                "source_url":o["url"],"developer_exposure_known":True,"split":"historical development"})
+groups={}
+for r in lineage:groups.setdefault(r["duplicate_group_id"],[]).append(r)
+dups=[{"duplicate_group_id":k,"representations":[r["representation_id"] for r in v],
+    "original_review_count":1,"development_exposure_known":any(r["developer_exposure_known"] for r in v),
+    "must_not_be_split_across_development_independent_demo":True,
+    "counterexample":"same original body stored as full review and excerpt; text hashes differ but original_body_sha256 matches"}
+    for k,v in groups.items() if len(v)>1]
+model_rows=[]
+for cat in catalogs:
+    for idx,candidate in enumerate(cat["candidates"],1):
+        model=candidate["model_id"];observed=[r for r in reviews if r["page_model_id"]==model]
+        pilot=model==cat["pilot"];q=sum(r["SKU_status"]=="quarantine" for r in observed);po=len(observed)-q
+        model_rows.append({"group":cat["group"],"candidate_slot":idx,"model_id":model,
+            "roster_role":"existing 3-model pilot selection" if pilot else "replacement candidate",
+            "R5_PM_roster_approval":"unconfirmed","catalog_product_link":candidate["product_url"],
+            "catalog_source_url":cat["url"],"catalog_HTML_sha256":cat["html_sha256"],
+            "raw_reviews_audited":len(observed) if pilot else None,"quarantined":q if pilot else None,
+            "page_only":po if pilot else None,"exact_purchased_SKU_confirmed":0 if pilot else None,
+            "eligible_for_model_planning":0 if pilot else None,"pilot_target_min":10 if pilot else None,
+            "pilot_target_max":20 if pilot else None,"deficit_candidate_count_to10":10-po if pilot else None,
+            "deficit_eligible_SKU_to10":10 if pilot else None,"per_model_collection_cap":100,
+            "manual_version":docs[model]["document_version"] if pilot else None,
+            "purchased_SKU_manual_link":"unconfirmed","purchase_post_dates_status":"unconfirmed",
+            "state":"부족·SKU 보류" if pilot else "미확인·후보",
+            "supplier_fixed_head":None,"supplier_packet_received":False})
+assert len(model_rows)==18 and len(set(r["model_id"] for r in model_rows))==18
+assert len(reviews)==9 and sum(r["SKU_status"]=="quarantine" for r in reviews)==1
+# Preserve actual producer records; no artificial table output, denominator or OCR calls.
+paths=[
+"evals/data14-auto-table-link-audit/20261007-01a1100e/processing-path-inventory.json",
+"evals/data003-live/20261005/ocr-v3/results.json","evals/data003-live/20261005/ocr-v3/runner-source.py",
+"services/inference/ocr_benchmark.py","packages/core/src/lgax_core/pdf_text_worker.py"]
+ocrpins=[{"path":p,"current_main":MAIN,"sha256":sha(gitraw(p)),
+    "same_bytes_as_PR205_inspected_base":same_old_bytes(p)} for p in paths]
+saved=json.loads(gitraw("evals/data003-live/20261005/ocr-v3/results.json"))
+inventory=json.loads(gitraw(paths[0]))
+auto={"current_main":MAIN,"PR205_review":"https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/205#pullrequestreview-5435521482",
+    "saved_result_type":type(saved).__name__,"declared_saved_structure_fields":inventory["automatic_structure_fields_present"],
+    "source_pins":ocrpins,"automatic_structure_output_received":False,"automatic_accuracy":None,"automatic_error_count":None,
+    "manual_144_questions_are_not_performance_denominator":True,"original_archived_crops_missing_in_selected_snapshot":True,
+    "new_model_or_OCR_calls":0,"producer_and_CORE_role_request":json.loads((CONTROL/"role-request-receipts.json").read_text("utf-8"))[1],
+    "minimum_handoff_fields":["producer_commit","PDF_SHA","page","actual_OCR_input_SHA","render_or_crop_coordinates",
+        "table_id","cell_id","row_index","column_index","rowspan","colspan","raw_text","bbox",
+        "header_path","model_or_model_family_link","numeric_value","unit","unit_source_cell",
+        "footnote_marker","footnote_body","footnote_applied_cell_ids"]}
+need={"PM_aux_DATA_owner":"jeongiryang coordinates collector/DB/Excel; independent reviewer does not edit producer",
+    "requested_pilot":"first one model per group,10-20 fixed raw review records per model, cap100",
+    "missing_reference_on_audited_main":["docs/pm/real-review-prototype-r5-20261007.md","data/research/r5-public-reviews-20261007"],
+    "required_packet":["exact_commit_and_file_manifest","approved_18_model_roster","original_capture_URL/hash/locator",
+        "review_id_or_explicit_local_ID_kind","full_body_SHA","per-review_purchased_SKU_evidence_or_page_only/quarantine",
+        "manual_file/version/model_family_applicability","purchase_date_with_original_label",
+        "posted_date_with_original_label_or_null","global_original_review_duplicate_groups","development/evaluation/demo_split_mapping"],
+    "do_not_infer":["page modelId is purchased SKU","JSON-LD datePublished automatically equals displayed purchase date",
+        "displayed total review count equals secured valid sample count","excerpt and full body are distinct independent cases",
+        "catalog candidates are PM approved roster","manual reference is automatic table output"],
+    "handoff_request":json.loads((CONTROL/"role-request-receipts.json").read_text("utf-8"))[0]}
+summary={"created_utc":datetime.now(timezone.utc).isoformat(),"main":MAIN,"mode":"independent original-source audit",
+    "model_candidates":18,"groups_each":6,"PM_R5_roster_approved":False,"pilot_raw_review_observations":9,
+    "page_only":8,"quarantine":1,"exact_purchased_SKU_confirmed":0,"eligible_for_model_planning":0,
+    "pilot_10_to20_completed":False,"preserved_excerpt_representations":3,"original_duplicate_groups":len(dups),
+    "observed_full_body_unique_count":len(set(r["raw_body_UTF8_sha256"] for r in reviews)),
+    "all_18_global_duplicate_or_split_check_complete":False,"new_models_OCR_calls":0,"collector_DB_Excel_changes":0,
+    "automatic_table_output_received":False,"automatic_metrics":None,"formal_issue12_or14_done":False}
+write("summary.json",summary);write("review-source-pins.json",pins)
+write("review-audit.json",reviews);csvfile("review-audit.csv",reviews)
+write("18-model-status.json",model_rows);csvfile("18-model-status.csv",model_rows)
+write("global-duplicate-lineage.json",{"representations":lineage,"duplicate_groups":dups,"old_excerpt_source_metadata_sha256":sha(origins.read_bytes()),
+    "old_excerpt_source_relative_path":str(origins.relative_to(ROOT)).replace("\\","/"),
+    "historical_development_execution_metadata_sha256":sha(exposure_path.read_bytes()),"historical_development_code_commit":exposure["code_commit"],
+    "global_18_model_split_mapping_received":False,"real_source_counterexamples":len(dups),"new_publisher_reviews_created":0})
+write("automatic-table-handoff.json",auto);write("supplier-handoff-needed.json",need)
+write("role-request-receipts.json",json.loads((CONTROL/"role-request-receipts.json").read_text("utf-8")))
+write("authority-observation.json",{"Github_read_at":json.loads((CONTROL/"github-current.json").read_text("utf-8"))["observed_utc"],
+    "PM_R5_assignment":"https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/12#issuecomment-6028745109",
+    "current_user_scope":"#12 independent raw source/SKU/date/duplicate audit + #14 after actual structure output; GitHub roles/PR authorized",
+    "new_original_HTTP_requests":6,"normal_browser_review_list_open_verified":False,"direct_HTML_cookie_sent":False,
+    "browser_login_attempts":0,"hidden_API_used":False,"browser_anonymous_cookie_state":"not inspected; normal public UI only",
+    "raw_captures_private":True,"old_reviews_or_structured_tests_not_recounted_as_new_quality":True})
+changed=[p for p,v in initial.items() if sha((WORK/p).read_bytes())!=v]
+assert not changed
+write("preservation.json",{"original_tracked_files":len(initial),"changed_original_paths":changed,
+    "existing_code_data_personal_READMEs_preserved":True,"new_folder":REL})
+print(json.dumps({"summary":summary,"source_files_preserved":len(initial),"source_paths_equal_to_205":ocrpins,
+    "duplicate_groups":[r["representations"] for r in dups]},ensure_ascii=False))
