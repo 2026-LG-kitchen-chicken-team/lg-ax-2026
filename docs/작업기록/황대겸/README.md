@@ -1,6 +1,9 @@
 # 황대겸 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-07 CORE-D3-CONSUMER-INTAKE-01a10729-01: DATA PR244 고정 경쟁근거와 원 후기848850의 설치 제약·긍정/잔여 불편4구간을 소비 준비로 대조. manifest8/발췌12/hash·상태 확인, 새모델0.
+- [상세](2026-10-07/CORE-D3-CONSUMER-INTAKE-01a10729-01.md) · [소비 조건·격리 수신](../../../evals/core-manual-quality/20261007/d3-consumer-intake/README.md). 키친핏 대안의 설치 제약·비교 불일치·미확인 상태 보존; P0/첫 문제/실제 흐름 인수는 대기.
+
 - 2026-10-07 CORE-MANUAL-QUEUE-PREFLIGHT-01a10729-01: 최신 C1~C4/X1 큐와 실제 소비 계약 대조; 기존 Qwen3.5:27b/Q4_K_M·Ollama0.34.0·digest64ae5b1d의 실제 실행/원12파일 동일 확인. 새모델·6사례 재채점0.
 - [상세](2026-10-07/CORE-MANUAL-QUEUE-PREFLIGHT-01a10729-01.md) · [정확 버전·기존 결과·선행별 다음 행동](../../../evals/core-manual-quality/20261007/manual-queue-preflight/README.md). 사용자 선택대로 PM의 준비된 LG27B와 P0, DATA D1/D2를 인계받아 실제 자료 CORE 연결. 판단 의존만 보류하고 독립 필수 작업 계속; PM 제품/공통 파일 중복 편집0.
 
