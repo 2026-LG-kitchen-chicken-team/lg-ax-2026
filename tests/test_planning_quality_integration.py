@@ -46,6 +46,7 @@ class PlanningQualityIntegrationTests(unittest.TestCase):
         call = next(row for row in result["model_calls"] if row["skill_id"] == "semantic_review")
         original_lineage = call["request_context"]["quality_context"]["concept_lineage"]
         restored_lineage = deepcopy(semantic["context"]["quality_context"]["concept_lineage"])
+        canonical_concepts = {candidate["id"]: candidate for candidate in semantic["context"]["concepts"]}
         for candidate, original in zip(restored_lineage["candidates"], original_lineage["candidates"], strict=True):
             self.assertEqual(candidate["concept_id"], original["concept_id"])
             self.assertIsInstance(original["links"], list, "full request trace must retain original links")
@@ -55,7 +56,16 @@ class PlanningQualityIntegrationTests(unittest.TestCase):
             self.assertIn("review_evidence_ids", columns)
             self.assertIn("manual_evidence_ids", columns)
             candidate["links"] = self.annotation_rows(candidate["links"], columns)
-        self.assertEqual(restored_lineage, original_lineage, "every lineage field and value must restore exactly")
+            self.assertEqual(candidate["links"], original["links"], "all original link fields and wording must restore")
+            self.assertEqual(candidate["gap_ids"], [link["gap_id"] for link in original["links"]])
+            self.assertEqual(candidate["numeric_mentions"], original["numeric_mentions"])
+            self.assertEqual(candidate["valid"], original["valid"])
+            # The existing v2 projection already keeps these repeated candidate
+            # facts in canonical concepts. Semantic link tables must not lose them.
+            for field in ("evidence_ids", "requirements", "assumptions"):
+                self.assertEqual(original[field], canonical_concepts[original["concept_id"]][field], field)
+        self.assertEqual({key: value for key, value in restored_lineage.items() if key != "candidates"},
+                         {key: value for key, value in original_lineage.items() if key != "candidates"})
         self.assertEqual(call["prompt_context"], semantic["context"], "record the exact submitted representation")
         for field in ("sources", "features", "needs", "gaps", "concepts", "semantic_grounding_requirements"):
             self.assertEqual(semantic["context"][field], call["request_context"][field], field)
