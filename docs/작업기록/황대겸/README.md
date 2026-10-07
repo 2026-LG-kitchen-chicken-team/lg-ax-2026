@@ -1,6 +1,9 @@
 # 황대겸 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-07 PR221 리뷰5437222152: 재현기 import 전 source38파일/hash 검증을 추가하고 원 native 실패(e1a6ec/closure SHA0477)와 후속8ec study의5회/33,237토큰·런타임 완료/의미 FAIL을 수신 시점으로 구분한다. 원 응답·166검사 수신·과거 기록은 보존하고 PM 제품 수정은 중복하지 않는다.
+- 2026-10-07 CORE-R5-PR218-AUDIT-01a10729-01: PR218 head0d920df·merge8ec1e8a의 관련166 PASS/skip0·원3/선택5호출 동일·Gap27 연결 대조 완료. 모델0; 새 실모델 품질/독립 평가/부모 인수는 미완료.
+- [상세](2026-10-07/CORE-R5-PR218-AUDIT-01a10729-01.md) · [고정 검수와 연결 근거](../../../evals/core-manual-quality/20261007/r5-independent/pr218-head-audit/README.md). 다음은 별도 PM CORE 수정의 정확 head·고정 원 결과 및 DATA 실제 input-only 전송 인계 후 본인 의미 대조. 최신 런타임 완료를 품질 승인으로 확대하지 않는다.
 - 2026-10-07 CORE-R5-RAW-AUDIT-01a10729-01: PM 인계 원3 SHA/15답변 대조 완료. 정상 후보의 RE008 보유와 차별점 검수 누락, 변경의 MANUAL001 반복 누락/code-only feedback, NEED006 존재에 대한 검수 오판을 분리했다. 질문 없는 held의 실제 거절·진짜 자료 부족 held 유지; 신규모델0.
 - [상세](2026-10-07/CORE-R5-RAW-AUDIT-01a10729-01.md) · [원 반례·판정·격리 대조](../../../evals/core-manual-quality/20261007/r5-independent/README.md). PM 보조 코어 파일 중복 편집0; 다음은 정확 수정 PR head 독립 검수. 실모델 품질·PM 승인/병합/통합·부모Done 미완료.
 - 2026-10-06 CORE-SEMANTIC-GROUNDING-01a10729-01: PM full-cap-v3의 새 가설 설명서 요구/현재 제품 단정 반례 대조와 실제 검토 지침 보완. INSTRUCTIONS 외 AST 동일, 새모델0·후속효과 미검증.
