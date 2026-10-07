@@ -1,0 +1,135 @@
+{
+  "review_kind": "independent_read_only_source_and_existing_receipt_review",
+  "decision": "SOURCE_APPROVE_EXACT_SIX_FROZEN_OVERLAY_FILES",
+  "findings": [],
+  "base_source_commit": "58feb9c30fc5faae1cc8acfb0ff409106a6d7174",
+  "source_state": "uncommitted_frozen_overlay_not_a_published_commit_or_deployment",
+  "source_files": {
+    "packages/core/src/lgax_core/claim_support.py": {
+      "raw_sha256": "222b4757a55153f863a3df0a0711686e26938c3e8103b59190ebb9c90e31ff0a",
+      "bytes": 6742
+    },
+    "packages/core/src/lgax_core/semantic_review.py": {
+      "raw_sha256": "5c7cf1aa1ea8ffd7e5b8cc0d1d7ceae66dae3e20f4783e133b7fcecc2e9512e6",
+      "bytes": 25908
+    },
+    "packages/core/src/lgax_core/planning_agent.py": {
+      "raw_sha256": "01d6d1ae665310f2379408adb4f26daddc52b6633fad08fdb17bdf7a88f11708",
+      "bytes": 59915
+    },
+    "tests/test_claim_support.py": {
+      "raw_sha256": "d6000974bb38843453756a5325ca9e31237b551d75e96031f17aad464bfbb860",
+      "bytes": 15577
+    },
+    "tests/test_planning_agent.py": {
+      "raw_sha256": "e01e1aa368d48a54458413274af62735860877ad86b8d02a2e2fb07a2f3fa79d",
+      "bytes": 28364
+    },
+    "tests/test_semantic_review.py": {
+      "raw_sha256": "7465b234d379beee8dbdefc887c7f6a56b9b625fd30f5bbdf260d0c5c0dabad1",
+      "bytes": 33242
+    }
+  },
+  "scope": {
+    "actual_fields": {
+      "need": [
+        "pain",
+        "situation"
+      ],
+      "gap": [
+        "remaining_pain",
+        "gap_assessments.reason"
+      ],
+      "concept": [
+        "differentiation",
+        "concept_assessments.reason"
+      ]
+    },
+    "checks": [
+      "exact_two_field_coverage",
+      "linked_and_literally_quoted_source_ids",
+      "model_document_and_synthetic_public_scope_binding",
+      "typed_review_manual_roles",
+      "empty_resolved_field_handling",
+      "scope_mismatch_and_unconfirmed_feedback",
+      "parent_consistent_satisfied_cannot_hide_claim_violation",
+      "needs_compare_concepts_feedback_stage",
+      "unchanged_shared_two_revision_budget"
+    ],
+    "unconfirmed_scope_hold_precedence": "preserved_as_explicit_parent_decision",
+    "legacy_instruction_assignment_ast_unchanged": true,
+    "new_schema_and_review_flags_default_false": true,
+    "protected_clean_paths": 102,
+    "protected_git_blob_manifest_sha256": "548ad2d23db811ffbc1cb949deffa334843b08b6c946d0b8ce714dd8c1d68722"
+  },
+  "existing_actual_validation": {
+    "execution_id": "pm-r7-claim-core-4eb24cef290940bc9b9e7ceaf84bdee3",
+    "receipt_sha256": "194e582287a9839c4bf317696c9b8434625179c2b23927772f1bb0c6bdfe15ae",
+    "executor_log_sha256": "72bd975930989abe163857694d39942a55be936837fa36e216c34c28b7cbf621",
+    "passed_unittest": 199,
+    "ruff_paths": 10,
+    "new_claim_tests": 11,
+    "source_files": 4020,
+    "source_changed": [],
+    "native_schema_bytes": 16197,
+    "native_limit_unchanged": 16384,
+    "formatted_prompt_chars": 22592,
+    "formatted_prompt_utf8_bytes": 33134,
+    "model_calls": 0,
+    "network_calls": 0,
+    "boundary": {
+      "backend": "docker",
+      "image_id": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+      "role": "validator",
+      "uid": 1000,
+      "readonly_root": true,
+      "caps_dropped": true,
+      "no_new_privileges": true,
+      "network": "none",
+      "mount_targets": [
+        "/artifacts",
+        "/workspace"
+      ],
+      "publisher_credentials_mounted": false,
+      "ai_profile_mounted": false
+    },
+    "initial_199_two_test_call_gate_errors": "preserved_original_receipt; only two active replay testcalls add require_claims=True"
+  },
+  "consumer_compatibility": {
+    "WorkspaceRunSnapshot_output_schema": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "web_decision_code_string_not_closed_enum": true,
+    "web_extra_claim_rows_do_not_fail_legacy_read_projection": true,
+    "api_semantic_review_and_decision_originals_preserved": true,
+    "json_export_preserves_original_execution_record": true,
+    "no_client_header_auth_or_public_contract_changes": true,
+    "no_new_public_private_diagnostic_allowlist": true
+  },
+  "consumer_followup_limitations": [
+    "CLAIM_NEED/GAP/CONCEPT_VIOLATION/UNCERTAIN lack Korean WEB labels; unknown code fallback remains visible.",
+    "WEB semantic tables and Markdown semantic rows project legacy exclusion/quality assessments, not the new field claims; JSON retains originals.",
+    "CLAIM codes are absent from WEB SEMANTIC and GROUNDING grouping; hold uses generic explanation and does not correctly categorize claim uncertainty.",
+    "API closed diagnostic allowlist redacts new structural claim reasons/stage/entity_kind/field/source_ids; original semantic_reviews and stored decisions remain available.",
+    "No actual browser/API/MCP or model verification of this R7 overlay was executed by this review."
+  ],
+  "quality_limitations": [
+    "Coverage and declared evidence roles are structure guards, not factual entailment, object/condition truth, or independent model quality PASS.",
+    "The model can still misclassify a fact as a concept hypothesis or incorrectly declare scope aligned/supported.",
+    "Original development semantic failures, prior unknown cost and first failed test receipts remain preserved; no new generation or quality conclusion.",
+    "Gold/private inputs were not read; no model, HTTP, SSH, GPU, deployment, author helper, or product code execution occurred."
+  ],
+  "reviewer_execution": {
+    "own_stdlib_metadata_only": true,
+    "git_metadata_only": true,
+    "product_imports": 0,
+    "tests_executed": 0,
+    "models": 0,
+    "network": 0,
+    "source_edits": 0,
+    "remote_mutations": 0
+  }
+}
