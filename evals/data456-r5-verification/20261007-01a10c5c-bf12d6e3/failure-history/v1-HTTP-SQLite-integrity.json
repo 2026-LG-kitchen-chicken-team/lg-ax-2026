@@ -1,0 +1,58 @@
+{
+  "checks": [
+    {
+      "check": "research DB JSON originals equal",
+      "passed": true
+    },
+    {
+      "check": "research DB source reviews",
+      "passed": true
+    },
+    {
+      "check": "research DB source page products",
+      "passed": true
+    },
+    {
+      "check": "R5 fixed execution source bytes",
+      "passed": true
+    },
+    {
+      "check": "T876MEE1H1-manual-d00942446318 exact source PDF found",
+      "passed": true
+    },
+    {
+      "check": "registration POST /api/documents/T876MEE1H1-manual-d00942446318 status",
+      "passed": false
+    }
+  ],
+  "captures": [
+    {
+      "phase": "registration",
+      "service": "documents",
+      "method": "POST",
+      "path": "/api/documents/T876MEE1H1-manual-d00942446318",
+      "status": 400,
+      "response_bytes": 137,
+      "response_sha256": "200739a90dda7590176bc606036f17c1afb3b5bf2404b950e579fc0127acb1cc",
+      "cache_control": null,
+      "json": {
+        "ok": false,
+        "error": {
+          "code": "PARSING_FAILED",
+          "message": "텍스트 PDF 추출 실패; OCR은 수행하지 않았습니다.",
+          "details": {}
+        }
+      }
+    }
+  ],
+  "owned_service_diagnostic_tails": {
+    "workspace-server.log": "INFO:     Started server process [14]\nINFO:     Waiting for application startup.\nINFO:     Application startup complete.\nINFO:     Uvicorn running on http://127.0.0.1:54187 (Press CTRL+C to quit)\nINFO:     127.0.0.1:41458 - \"GET /health HTTP/1.1\" 200 OK\nINFO:     Shutting down\nINFO:     Waiting for application shutdown.\nINFO:     Application shutdown complete.\nINFO:     Finished server process [14]\n",
+    "document-server.log": ""
+  },
+  "status": "FAIL",
+  "exception_type": "AssertionError",
+  "reason": "registration POST /api/documents/T876MEE1H1-manual-d00942446318 status",
+  "source_commit": "8ec1e8a51faabd6db032e52245680bef4229f93f",
+  "operating_origin_verified": false,
+  "PM_acceptance_verified": false
+}
