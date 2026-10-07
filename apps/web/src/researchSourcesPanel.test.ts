@@ -13,10 +13,10 @@ const bundle: ResearchBundle = { schema_version: '1.0', bundle_id: 'WEB-actual-m
   sources: [source], collection_manifest: { independent_evaluation_approved: false, limitations: ['Purposive UI sample'], review_count: 0 } };
 const hosts: HTMLDivElement[] = []; const roots: ReturnType<typeof createRoot>[] = [];
 afterEach(async () => { for (const root of roots.splice(0)) await act(async () => root.unmount()); hosts.splice(0).forEach(host => host.remove()); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
-async function mount() {
+async function mount(inspectId = '') {
   vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true); vi.stubGlobal('crypto', webcrypto); vi.stubGlobal('fetch', vi.fn());
   const host = document.createElement('div'); document.body.append(host); hosts.push(host); const root = createRoot(host); roots.push(root);
-  await act(async () => root.render(createElement(ResearchSourcesPanel, { bundle, brief: null, inspectId: '', onInspect: vi.fn(), onCloseInspect: vi.fn(), panelRef: createRef<HTMLElement>(), sourceBundleHash: 'c'.repeat(64) })));
+  await act(async () => root.render(createElement(ResearchSourcesPanel, { bundle, brief: null, inspectId, onInspect: vi.fn(), onCloseInspect: vi.fn(), panelRef: createRef<HTMLElement>(), sourceBundleHash: 'c'.repeat(64) })));
   return host;
 }
 async function changeSelect(host: HTMLDivElement, label: string, value: string) {
@@ -50,5 +50,18 @@ describe('source filters, plain-language limits and selection UI', () => {
     expect(exported.collection_manifest.selection).toMatchObject({ source_bundle_id: bundle.bundle_id, review_text_edits: 0, facts_edits: 0, independent_evaluation_approved: false });
     expect(fetch).not.toHaveBeenCalled(); expect(host.textContent).toContain('원래 선택한 자료 묶음');
     await click(host, '전체 선택 해제'); expect(host.textContent).toContain('선택 0건');
+  });
+  it('shows where each original sits (page and section) in the row, the detail, its facts and the Markdown export', async () => {
+    const downloaded: string[] = [];
+    vi.spyOn(views, 'download').mockImplementation((_name, _type, content) => { downloaded.push(content); });
+    const host = await mount(source.source_id);
+    expect(host.querySelector('.research-source-row')?.textContent).toContain('위치 25쪽 · 항목 「출력 조절」');
+    expect(host.querySelector('[data-source-locator]')?.textContent).toBe('원문 위치: 25쪽 · 항목 「출력 조절」');
+    expect(host.querySelector('.research-source-detail li')?.textContent).toContain('위치 25쪽 · 항목 「출력 조절」');
+    expect(host.querySelector('.research-locator-technical')).toBeNull();
+    await click(host, '표시 자료 모두 선택'); await click(host, '선택 자료 Markdown');
+    await vi.waitFor(() => expect(downloaded).toHaveLength(1));
+    expect(downloaded[0]).toContain('원문 위치: 25쪽 · 항목 「출력 조절」');
+    expect(downloaded[0]).toContain('(위치: 25쪽 · 항목 「출력 조절」)');
   });
 });
