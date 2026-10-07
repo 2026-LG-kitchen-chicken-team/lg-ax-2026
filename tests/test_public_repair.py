@@ -210,6 +210,40 @@ class PublicRepairTests(unittest.TestCase):
                     self.assertEqual(source["text"], original["text"])
                     self.assertEqual(source["facts"], original["facts"])
 
+    def test_three_feedback_items_cannot_spend_more_than_two_failed_corrections_or_reset_on_next_repair(self):
+        calls = []
+
+        def failed_patch(prompt, schema):
+            calls.append(prompt)
+
+        feedback = [request("Problem", ["description"]), request(), request("Concept", ["before_steps"])]
+        result = repair_public_brief(failed_patch, self.bundle, self.previous, feedback)
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(result["runtime"]["correction_budget"]["revision_count"], 2)
+        self.assertEqual(result["concepts"], self.previous["concepts"])
+        self.assertEqual(result["runtime"]["item_issues"][-1]["code"], "shared_correction_budget_exhausted")
+        again = repair_public_brief(failed_patch, self.bundle, result, [request()])
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(again["runtime"]["correction_budget"]["revision_count"], 2)
+        self.assertEqual(again["runtime"]["model_calls"], [])
+
+    def test_generation_correction_count_is_carried_into_feedback_and_cannot_discard_old_attempts(self):
+        previous = deepcopy(self.previous)
+        previous["runtime"]["model_calls"] = [{"stage": "repair_fields", "status": "rejected"}]
+        previous["runtime"]["correction_budget"] = {"revision_count": 1}
+        calls = []
+
+        def failed_patch(prompt, schema):
+            calls.append(prompt)
+
+        result = repair_public_brief(failed_patch, self.bundle, previous, [request(), request("Concept", ["before_steps"])])
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(result["runtime"]["model_calls"][0]["correction_count"], 2)
+        previous["runtime"]["correction_budget"]["revision_count"] = 0
+        with self.assertRaises(ValueError):
+            repair_public_brief(failed_patch, self.bundle, previous, [request()])
+        self.assertEqual(len(calls), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -20,6 +20,7 @@ from .public_planning import (
     _MODEL_ERROR_REASONS,
     INSTRUCTIONS,
     PublicPlanner,
+    _correction_budget,
     _definition_schema,
     _digest,
     _output_schema,
@@ -28,6 +29,7 @@ from .public_planning import (
     claim_issues,
     is_customer_source,
     source_facts,
+    summary_reference_coverage,
 )
 
 ITEM_COLLECTIONS = {"Problem": "problems", "Comparison": "comparisons", "Concept": "concepts"}
@@ -117,6 +119,26 @@ def _patch_issues(kind: str, candidate: dict, fields: set[str], catalog: dict, c
     return issues
 
 
+def _inherited_summary_coverage(bundle: dict, previous: dict) -> dict | None:
+    """Retain only exact reference math; missing legacy metadata stays unknown."""
+    raw = previous["runtime"].get("summary_reference_coverage")
+    if not isinstance(raw, dict):
+        return None
+    denominator = raw.get("denominator_source_ids")
+    if not isinstance(denominator, list) or any(not isinstance(eid, str) for eid in denominator):
+        return None
+    customer_ids, groups = set(), set()
+    for source in bundle["sources"]:
+        group = source.get("duplicate_group") or source["source_id"]
+        if is_customer_source(source) and group not in groups:
+            customer_ids.add(source["source_id"])
+            groups.add(group)
+    expected = summary_reference_coverage(previous["summaries"], customer_ids, set(denominator))
+    if _digest(raw) != _digest(expected):
+        return None
+    return deepcopy(raw)
+
+
 def repair_public_brief(model_caller, bundle: dict, previous: dict, feedback: list[dict], *,
                         runtime_metadata: dict | None = None, max_prompt_characters: int = 26000,
                         max_source_characters: int = 1800, max_model_calls: int = 4) -> dict:
@@ -136,6 +158,7 @@ def repair_public_brief(model_caller, bundle: dict, previous: dict, feedback: li
     result.update(brief_id=f"brief-{uuid4().hex}", run_id=f"run-{uuid4().hex}",
                   revision=previous["revision"] + 1, previous_brief_id=previous["brief_id"])
     trace, issues, outcomes, selected_ids = [], [], [], set()
+    corrections = _correction_budget(previous)
     context_builder = PublicPlanner(model_caller, max_source_characters=max_source_characters)._source_context
     definitions = load_research_schema()["$defs"]
     removed_by_item = {}
@@ -164,11 +187,16 @@ def repair_public_brief(model_caller, bundle: dict, previous: dict, feedback: li
             failure = "prompt_too_large"
         elif len(trace) >= max_model_calls:
             failure = "repair_call_budget_exhausted"
+        elif corrections.snapshot["closed"]:
+            failure = "shared_correction_budget_exhausted"
         if failure is not None:
             issues.append({"kind": kind, "item_id": item_id, "code": failure})
             outcomes.append({"item_kind": kind, "item_id": item_id, "status": "failed"})
             continue
+        correction_count = corrections.claim(expected_revision_count=corrections.snapshot["revision_count"],
+                                             operation="review_revision")
         record = {"stage": "repair_fields", "item_kind": kind, "item_id": item_id,
+                  "correction_count": correction_count,
                   "prompt_sha256": _digest(prompt), "prompt_characters": len(prompt), "status": "attempted"}
         trace.append(record)
         selected_ids.update(source_ids)
@@ -216,6 +244,17 @@ def repair_public_brief(model_caller, bundle: dict, previous: dict, feedback: li
                          "parent_run_id": previous["run_id"], "source_bundle_sha256": _digest(bundle),
                          "source_facts_sha256": _digest(result["source_facts"]), "input_source_count": len(catalog),
                          "selected_source_ids": sorted(selected_ids), "omitted_source_count": len(catalog) - len(selected_ids),
-                         "max_model_calls": max_model_calls, "max_repairs_per_item": 1}
+                         "max_model_calls": max_model_calls, "max_repairs_per_item": 1,
+                         "correction_budget": corrections.snapshot}
+    # Summary fields are immutable in this path. A new repair call does not
+    # establish a new discovery denominator, including when that call fails.
+    result["runtime"].pop("summary_reference_coverage", None)
+    result["runtime"].pop("summary_reference_coverage_inheritance", None)
+    if "summary_reference_coverage" in previous["runtime"]:
+        coverage = _inherited_summary_coverage(bundle, previous)
+        result["runtime"]["summary_reference_coverage_inheritance"] = (
+            "preserved" if coverage is not None else "invalid_previous_metadata")
+        if coverage is not None:
+            result["runtime"]["summary_reference_coverage"] = coverage
     validate_planning_brief(result)
     return result

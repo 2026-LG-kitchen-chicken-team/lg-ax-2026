@@ -4,13 +4,36 @@ import unittest
 from copy import deepcopy
 from pathlib import Path
 
-from lgax_core.public_planning import PublicPlanner, _balanced_sources, is_customer_source, source_facts
+from lgax_core.public_planning import (
+    PublicPlanner,
+    _balanced_sources,
+    _planning_customer_context,
+    is_customer_source,
+    source_facts,
+)
 
 PACK = (Path(__file__).resolve().parents[1] / "data/research/r8-public-official-expansion-20261007"
         / "bundles/dishwasher.development.research-bundle.json")
 
 
 class PublicPlanningSamplingTests(unittest.TestCase):
+    def test_two_source_window_keeps_supplied_counter_role_without_rewriting_actual_records(self):
+        bundle = json.loads(PACK.read_text("utf-8"))
+        catalog = {row["source_id"]: row for row in bundle["sources"]}
+        before = deepcopy(bundle)
+        # Test-only role wiring, not a new finding that these reviews disagree.
+        problem = {"source_ids": ["LGE-R8-REVIEW-752651", "LGE-R8-REVIEW-800073"],
+                   "counter_source_ids": ["LGE-R8-REVIEW-853593"]}
+        selected = _planning_customer_context(problem, catalog)
+        self.assertEqual([row["source_id"] for row in selected],
+                         ["LGE-R8-REVIEW-752651", "LGE-R8-REVIEW-853593"])
+        self.assertEqual(bundle, before)
+        for row in selected:
+            self.assertIs(row, catalog[row["source_id"]])
+        problem["counter_source_ids"] = []
+        self.assertEqual([row["source_id"] for row in _planning_customer_context(problem, catalog)],
+                         problem["source_ids"])
+
     def test_small_actual_sample_includes_low_rating_mixed_text_and_other_model_without_mutation(self):
         bundle = json.loads(PACK.read_text("utf-8"))
         sources = [source for source in bundle["sources"] if is_customer_source(source)]

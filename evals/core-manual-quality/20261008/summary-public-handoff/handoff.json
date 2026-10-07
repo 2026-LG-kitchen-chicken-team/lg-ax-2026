@@ -1,0 +1,49 @@
+{
+  "record_id": "CORE-C4-PUBLIC-HANDOFF-01a10729-01",
+  "incoming_comment_id": 6045838244,
+  "head": "dc385fe92962f4c68592bb382f327e8253e37676",
+  "core_file_sha256": "34072ebcf789c153c2d01dfe256e30adb7ca84fa96fa919aeb88ffd9ec99ed8d",
+  "API_file_sha256": "1a0acaea7a04618433863bf446edc85f17d7ae36eb4d544e1ba84ded2058f38b",
+  "coverage_keys": [
+    "basis",
+    "sample_unit",
+    "summary_item_counts",
+    "polarity_source_counts",
+    "polarity_source_ids",
+    "input_customer_source_count",
+    "denominator_customer_source_count",
+    "denominator_source_ids",
+    "covered_customer_source_count",
+    "covered_source_ids",
+    "unreferenced_processed_source_count",
+    "unprocessed_input_source_count",
+    "overlapping_polarity_source_count",
+    "coverage_ratio",
+    "classification_approved",
+    "market_frequency_estimated"
+  ],
+  "comment_id": 6045972338,
+  "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/234#issuecomment-6045972338",
+  "new_model_calls": 0,
+  "existing_checks_reused": true,
+  "actual_HTTP_MCP_delivery_verified": false,
+  "PM_intake_complete": false,
+  "basis": "returned_summary_references_on_successful_discovery",
+  "sample_unit": "unique_deduplicated_customer_source",
+  "count_identities": {
+    "unreferenced_processed_source_count": "M-C",
+    "unprocessed_input_source_count": "N-M",
+    "coverage_ratio": "C/M if M>0 else null"
+  },
+  "variables": {
+    "N": "input deduplicated customer IDs",
+    "M": "successful discovery customer IDs",
+    "C": "union of retained summary customer IDs within M"
+  },
+  "missing_metadata_is_not_zero": true,
+  "source_facts_membership_is_not_customer_dedup_proof": true,
+  "API_projection_owner": "PM",
+  "WEB_display_owner": "WEB",
+  "CORE_product_code_changed": false,
+  "same_stored_HTTP_MCP_handoff_received": false
+}
