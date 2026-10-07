@@ -78,10 +78,11 @@ describe('new public profile uses registered SKU, document and dataset boundarie
 
   it('requires an explicit current model when the previous project model is absent from the new dataset', async () => {
     const oldInput = { ...request('public-profile-test.r4'), model_ids: ['FRIDGE-A'] };
-    const old = project('project-old-absent-model', oldInput);
+    const old = { ...project('project-old-absent-model', oldInput), document_versions: { 'FRIDGE-A': '1.0' } };
     vi.mocked(WorkspaceClient.prototype.listProjects).mockResolvedValue({ projects: [old], contract_version: '0.1.0' });
     vi.spyOn(WorkspaceClient.prototype, 'getProject').mockResolvedValue(old);
-    vi.spyOn(WorkspaceClient.prototype, 'listRuns').mockResolvedValue({ runs: [snapshot(old.project.id, oldInput, 'held')], contract_version: '0.1.0' });
+    const previous = { ...snapshot(old.project.id, oldInput, 'held'), document_versions: { 'FRIDGE-A': '1.0' } };
+    vi.spyOn(WorkspaceClient.prototype, 'listRuns').mockResolvedValue({ runs: [previous], contract_version: '0.1.0' });
     const createProject = vi.spyOn(WorkspaceClient.prototype, 'createProject').mockImplementation(async (_name, input) => project('project-selected-current', input as unknown as PlanningRequest));
     const createRun = vi.spyOn(WorkspaceClient.prototype, 'createRun').mockImplementation(async (id, input, previous) => snapshot(id, input as unknown as PlanningRequest, 'held', previous));
     await mountAndConnect();
