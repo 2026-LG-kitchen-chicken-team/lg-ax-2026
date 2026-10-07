@@ -22,8 +22,11 @@ ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("public_validation_replay_helpers", ROOT / "evals/pm-intake/20261006/replay_workspace.py")
 helpers = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(helpers)
-# The historical helper predates the three registered review-trend read tools.
-helpers.TOOLS = helpers.TOOLS | {"review_trends", "get_review_trends", "trend_evidence"}
+# Keep the historical helper unchanged; this regression checks today's exact private tool surface.
+helpers.TOOLS = helpers.TOOLS | {
+    "review_trends", "get_review_trends", "trend_evidence",
+    "list_research_bundles", "get_research_bundle", "create_research_run", "get_research_run",
+}
 PRIVATE = "private-fixture-diagnostic-value"
 
 
