@@ -72,6 +72,32 @@ def semantic_for(context):
              "source_quotes": [{"evidence_id": source["id"], "quote": source["text"]}
                                for source in context["sources"]]}
             for kind, field in (("need", "needs"), ("gap", "gaps")) for entity in declarations(field)]
+        if context.get("claim_review_required"):
+            sources = {source["id"]: source for source in context["sources"]}
+
+            def claim(field, text, entity, *, proposal=False):
+                ids = [eid for eid in entity["evidence_ids"] if eid in sources]
+                reviews = [eid for eid in ids if sources[eid]["source_type"] == "review"]
+                manuals = [eid for eid in ids if sources[eid]["source_type"] == "manual"]
+                basis = ("empty" if not text.strip() else "hypothesis" if proposal else
+                         "mixed" if reviews and manuals else "manual_fact" if manuals else "review_observation")
+                chosen = [] if basis in ("empty", "hypothesis") else ids
+                return {"field": field, "basis": basis, "verdict": "supported", "scope": "aligned",
+                        "source_ids": chosen, "reason": "Mock field coverage, not a live factual quality judgement"}
+
+            for row in result["upstream_assessments"]:
+                kind = row["entity_kind"]
+                entity = next(item for item in declarations("needs" if kind == "need" else "gaps")
+                              if item["id"] == row["entity_id"])
+                fields = ({key: entity[key] for key in ("pain", "situation")} if kind == "need" else
+                          {"remaining_pain": entity["remaining_pain"], "reason": comparisons[entity["id"]]["reason"]})
+                row["claims"] = [claim(key, text, entity) for key, text in fields.items()]
+            reasons = {item["concept_id"]: item["reason"] for item in context["concept_assessments"]}
+            for row in result["quality_assessments"]:
+                candidate = next(item for item in context["concepts"] if item["id"] == row["concept_id"])
+                row["claims"] = ([claim("differentiation", candidate["differentiation"], candidate, proposal=True),
+                                  claim("reason", reasons[candidate["id"]], candidate)]
+                                 if row["criterion"] == "unsupported_factual_claims" else [])
     return result
 
 

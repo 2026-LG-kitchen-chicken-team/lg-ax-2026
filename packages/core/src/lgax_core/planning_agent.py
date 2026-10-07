@@ -38,7 +38,7 @@ from .no_candidate_review import (
 from .prompt_context import model_context
 from .revision_guard import RevisionSession
 from .semantic_review import (
-    INSTRUCTIONS,
+    ACTIVE_INSTRUCTIONS,
     review_semantics,
     schema_for_review,
     semantic_feedback,
@@ -667,13 +667,15 @@ class PlanningAgent:
                     context["quality_context"] = quality_context
                     context["semantic_grounding_requirements"] = semantic_grounding_requirements(payload, current)
                     context["upstream_review_required"] = True
+                    context["claim_review_required"] = True
                     projected = semantic_model_context(context)
                     try:
                         report = model_call("review", "semantic_review", context,
-                                            INSTRUCTIONS + json.dumps(projected, ensure_ascii=False, separators=(",", ":")),
-                                            schema_for_review(payload, current, literal_choices=True, include_upstream=True),
+                                            ACTIVE_INSTRUCTIONS + json.dumps(projected, ensure_ascii=False, separators=(",", ":")),
+                                            schema_for_review(payload, current, literal_choices=True,
+                                                              include_upstream=True, include_claims=True),
                                             prompt_projection=projected).data
-                        decision = review_semantics(payload, current, report, require_upstream=True)
+                        decision = review_semantics(payload, current, report, require_upstream=True, require_claims=True)
                         reviewed_questions = deepcopy(report["questions"])
                         retry_feedback = semantic_feedback(report)
                         result["semantic_reviews"].append({"report": deepcopy(report), "decision": deepcopy(decision),
@@ -688,7 +690,7 @@ class PlanningAgent:
                             if raw.startswith("```"):
                                 raw = "\n".join(raw.splitlines()[1:-1])
                             try:
-                                review_semantics(payload, current, json.loads(raw), require_upstream=True)
+                                review_semantics(payload, current, json.loads(raw), require_upstream=True, require_claims=True)
                             except DomainError as canonical_error:
                                 # Keep the original schema rejection in model_calls,
                                 # but preserve the same per-Gap correction details.
@@ -697,11 +699,14 @@ class PlanningAgent:
                                 pass
                         result["errors"].append(error.response()["error"])
                         revise = payload["revision_count"] < 2
+                        retry_stage = error.details.get("stage", "concepts")
+                        if retry_stage not in ("needs", "compare", "concepts"):
+                            retry_stage = "concepts"
                         decision = {"valid": False, "action": "revise" if revise else "unresolved",
                                     "revision_count": payload["revision_count"],
                                     "next_revision_count": payload["revision_count"] + int(revise),
-                                    "rerun_from": "concepts" if revise else None,
-                                    "violations": [{"code": "INVALID_SEMANTIC_REVIEW", "stage": "concepts"}]}
+                                    "rerun_from": retry_stage if revise else None,
+                                    "violations": [{"code": "INVALID_SEMANTIC_REVIEW", "stage": retry_stage}]}
                         retry_feedback = [{**decision["violations"][0], "message": error.message,
                                            "details": deepcopy(error.details)}]
                         event("review", "semantic_review_error", context, error.response())
