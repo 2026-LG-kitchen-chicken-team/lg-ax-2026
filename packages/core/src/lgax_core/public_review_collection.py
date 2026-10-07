@@ -11,6 +11,7 @@ import json
 import re
 import sqlite3
 import unicodedata
+from contextlib import closing
 from dataclasses import dataclass, field
 from html.parser import HTMLParser
 from pathlib import Path
@@ -285,7 +286,7 @@ def save_landing_db(path: Path, *, records: list[dict], products: list[dict], ma
     """A fresh SQLite landing with all record metadata, separate from app DB."""
     if path.exists():
         raise ValueError("Immutable landing DB already exists")
-    with sqlite3.connect(path) as db:
+    with closing(sqlite3.connect(path)) as db, db:
         db.executescript("""
             CREATE TABLE products (model_id TEXT PRIMARY KEY, metadata_json TEXT NOT NULL);
             CREATE TABLE reviews (original_review_id TEXT PRIMARY KEY, dedup_group_id TEXT NOT NULL,

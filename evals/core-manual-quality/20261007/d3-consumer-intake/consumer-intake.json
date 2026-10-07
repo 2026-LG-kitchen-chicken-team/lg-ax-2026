@@ -1,0 +1,107 @@
+{
+  "record_id": "CORE-D3-CONSUMER-INTAKE-01a10729-01",
+  "at": "2026-10-07T13:14:50.390592+00:00",
+  "kind": "author source-intake annotations; not model planning output",
+  "pins": {
+    "pr": 244,
+    "head": "3079455cb856462eb4ab466540884617f966f9c1",
+    "producer_version": "d3-01a114f6.20261007.v1",
+    "pack_path": "data/research/r8-public-research-20261007/competitors/01a114f6",
+    "review_commit": "58feb9c30fc5faae1cc8acfb0ff409106a6d7174",
+    "review_path": "data/research/r5-public-reviews-20261007/fixed18/development.records.json",
+    "review_file_sha256": "f82cfe2ef8ee8f0873c250e6d82918a81d215e449187d9ee1644957cd907831a",
+    "comparison_sha256": "1b419e881762d791e198d4bc78d5baf15bac26210fe945866a624312fd33d403",
+    "sources_sha256": "51a687aa32c3edfaab11826692a7a88f6720b50c073ec4d47e6e027115894557",
+    "manifest_sha256": "535c08e6009e873c3d09fc92b5fcb68b47f88bad562e34c33f15bca97bc9de6d"
+  },
+  "review": {
+    "id": "848850",
+    "original_text_sha256": "f7c96d4b8243c18ce33b6b3f4bf6a030b7c3004d3c75facf1d38df8f66853d0a",
+    "displayed_model": "T876MEE1H1",
+    "purchased_sku": null,
+    "published_at": null,
+    "purchase_date": "2026-09-19",
+    "split": "development",
+    "eligible_for_model_input": false,
+    "literal_context": [
+      {
+        "id": "installation_constraint",
+        "quote": "구축 아파트라 사이즈가 맞지 않아 키친핏을 포기하고",
+        "start": 45,
+        "end": 73,
+        "location_basis": "original review text character offsets; not canonical Evidence",
+        "author_annotation": "키친핏을 상용 대안으로 비교하되 이 사용자의 설치 제약을 해결했다고 주장할 수 없다."
+      },
+      {
+        "id": "positive_comfort",
+        "quote": "냉장실이 위에 있어 허리도 편하고 훨씬 만족스럽네요.",
+        "start": 104,
+        "end": 133,
+        "location_basis": "original review text character offsets; not canonical Evidence",
+        "author_annotation": "사용자 보고의 긍정 경험. 물리 시험이나 전체 모집단 결론이 아니다."
+      },
+      {
+        "id": "positive_storage",
+        "quote": "용량이 커서 식재료가 넉넉하게 들어가고 수납도 확 트였습니다.",
+        "start": 144,
+        "end": 178,
+        "location_basis": "original review text character offsets; not canonical Evidence",
+        "author_annotation": "용량/수납 만족을 보존한다. 작은 용량으로의 교체를 무조건 해결로 만들지 않는다."
+      },
+      {
+        "id": "residual_reach",
+        "quote": "안쪽 깊숙한 곳은 팔이 잘 닿지 않아 공간을 다 활용하기 어렵다는 아쉬움",
+        "start": 206,
+        "end": 246,
+        "location_basis": "original review text character offsets; not canonical Evidence",
+        "author_annotation": "잔여 접근 불편의 사용자 보고. 구매 SKU 미확인 상태를 보존한다."
+      }
+    ]
+  },
+  "consumer_conditions": [
+    {
+      "id": "installation_eligibility",
+      "disposition": "preserve original constraint before choosing alternative",
+      "source_context_id": "installation_constraint"
+    },
+    {
+      "id": "balanced_summary",
+      "disposition": "retain positive comfort/storage alongside residual reach; denominator not inferred",
+      "source_context_ids": [
+        "positive_comfort",
+        "positive_storage",
+        "residual_reach"
+      ]
+    },
+    {
+      "id": "external_depth",
+      "disposition": "manufacturer external depth is not internal reach, cleaning time or measured benefit"
+    },
+    {
+      "id": "comparison_envelope",
+      "disposition": "preserve unequal capacity/installation/handle basis/release timing and unperformed common tests"
+    },
+    {
+      "id": "existing_features",
+      "disposition": "documented folding shelves are existing; unmentioned pull-out shelves remain unknown"
+    },
+    {
+      "id": "web_lineage",
+      "disposition": "future observed steps need approved evidence IDs; inferred steps labeled inferred; counter evidence missing and empty remain distinct"
+    }
+  ],
+  "pending": {
+    "first_problem_id": null,
+    "p0_contract_and_adapter": true,
+    "d1_fixed_bundle": true,
+    "c1_live_lg27b_path": true,
+    "c2_c3_fixed_source": true,
+    "new_concept_direction": null
+  },
+  "raw_html_reverified_in_this_intake": false,
+  "producer_raw_capture_check": "existing DATA execution-receipt reused; only posted excerpt hash/metadata reviewed here",
+  "canonical_evidence_imported": false,
+  "planning_run_executed": false,
+  "parent_done": false,
+  "human_question_pending": false
+}

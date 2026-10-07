@@ -179,8 +179,14 @@ function ComparisonTable({ snapshot, features, evidence }: { snapshot: RunSnapsh
 export function download(name: string, type: string, content: string) {
   const url = URL.createObjectURL(new Blob([content], { type }));
   const link = document.createElement('a');
-  link.href = url; link.download = name; link.click();
-  URL.revokeObjectURL(url);
+  link.href = url; link.download = name;
+  try {
+    document.body.appendChild(link);
+    link.click();
+  } finally {
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
 }
 
 function ExportActions({ mode, snapshot, features, evidence, runs }: { mode: DataMode; snapshot: RunSnapshot; features: Feature[]; evidence: Evidence[]; runs: RunSnapshot[] }) {

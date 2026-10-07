@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
+import { enterLegacyEvidence } from './fixtures/legacy-test-navigation';
 import * as api from './api';
 import * as views from './PlanningViews';
 import { FIXTURE_BOOTSTRAP, FIXTURE_ORIGINAL_REQUEST, FIXTURE_RUNS } from './fixtures/planning.fixture';
@@ -114,7 +115,7 @@ beforeEach(async () => {
   vi.spyOn(WorkspaceClient.prototype, 'getProject').mockImplementation(async id => id === a.project.id ? a : b);
   vi.spyOn(WorkspaceClient.prototype, 'listRuns').mockImplementation(async id => ({ runs: id === a.project.id ? [run(id, firstId), run(id, baseId, firstId)] : [run(id, 'run-b-1')], contract_version: '0.1.0' }));
   vi.spyOn(views, 'download').mockImplementation((_name, _type, content) => { downloads.push(JSON.parse(content) as MeasurementExport); });
-  await act(async () => { root.render(createElement(App)); });
+  await act(async () => { root.render(createElement(App)); }); await act(async () => { enterLegacyEvidence(container); });
 });
 
 describe('App request form authentication boundaries', () => {
@@ -138,7 +139,7 @@ describe('App request form authentication boundaries', () => {
     vi.mocked(WorkspaceClient.prototype.bootstrap).mockResolvedValue(expandedBootstrap);
     // Refresh the mounted App so the controlled bootstrap response includes the second valid model.
     await act(async () => { root.unmount(); }); root = createRoot(container);
-    await act(async () => { root.render(createElement(App)); });
+    await act(async () => { root.render(createElement(App)); }); await act(async () => { enterLegacyEvidence(container); });
     await connect(); await requestView();
     await input('#planning-prompt', '저장 중에도 보존할 기획 요청');
     await input('#planning-customer', '저장 중에도 보존할 대상 고객');

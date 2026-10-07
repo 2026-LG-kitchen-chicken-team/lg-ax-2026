@@ -12,6 +12,7 @@ import { contractErrors, draftRunFromRequest, missingRequestQuestions, nextReque
 import type { DataMode, Feature, PlanningRequest, RunSnapshot } from './planning';
 import { PendingJudgement } from './PendingJudgement';
 import { ReviewTrendsPanel } from './ReviewTrendsPanel';
+import { ResearchPlanningView } from './ResearchPlanningView';
 import { ConceptsView, download, FixtureBanner, HistoryView, ModeSwitch, RequestInsights, ServerEvidenceSearch, WorkspaceBar } from './PlanningViews';
 import { currentEvidenceForSnapshot } from './EvidenceTracePanel';
 import type { MeasureControls } from './PlanningViews';
@@ -19,6 +20,7 @@ import { cancelMeasurement, exportMeasurements, finishMeasurement, startMeasurem
 import type { EditSummary, MeasurementScope, ModificationMeasurement } from './measurement';
 
 const NAV: { id: View; label: string; number: string }[] = [
+  { id: 'research', label: '실제 자료 기획', number: '00' },
   { id: 'request', label: '기획 요청', number: '01' },
   { id: 'evidence', label: '근거 대조', number: '02' },
   { id: 'concepts', label: '콘셉트 검토', number: '03' },
@@ -173,7 +175,8 @@ const SAVED_TITLE: Record<string, string> = {
 };
 
 export default function App() {
-  const [view, setView] = useState<View>('evidence');
+  const [view, setView] = useState<View>('research');
+  const researchActive = view === 'research';
   const [group, setGroup] = useState<ProductGroup>('fridge');
   const [modelChoice, setModelChoice] = useState('');
   const [type, setType] = useState('all');
@@ -195,7 +198,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (mode !== 'live') return;
+    if (mode !== 'live' || researchActive) return;
     const controller = new AbortController();
     let current = true;
     setState({ status: 'loading' });
@@ -206,7 +209,7 @@ export default function App() {
       setState({ status: 'error', message: friendlyError(error), code: error instanceof ApiError ? error.code : 'UNKNOWN_ERROR' });
     });
     return () => { current = false; controller.abort(); };
-  }, [mode, reload]);
+  }, [mode, reload, researchActive]);
 
   const workspace = useLiveWorkspace();
   // Authenticated sources belong to this login. A missing/private bootstrap is never replaced by the public demo.
@@ -380,8 +383,9 @@ export default function App() {
       <div className="sidebar-lower"><p>고객의 말에서<br /><strong>새로운 기회의 근거로.</strong></p><div className="sidebar-stage"><span className="status-dot" />개발 프레임워크 · v0.1</div></div>
     </aside>
     <div className="main-shell">
-      <header className="topbar"><div className="breadcrumb">상품기획 작업실<span>/</span><strong>{currentNav.label}</strong></div><div className="topbar-right"><ModeSwitch mode={mode} onChange={changeMode} /><div className="connection-status">{mode === 'fixture' ? <><span className="status-dot loading" />fixture 사용 · 공통 API 요청 안 함</> : <><span className={`status-dot ${active.status}`} />{active.status === 'ready' ? workspace.connection === 'connected' ? '인증된 작업실 자료 연결됨' : '공통 API 연결됨' : active.status === 'loading' ? '자료 API 연결 확인 중' : '자료 API 연결 오류'}</>}</div></div></header>
+      <header className="topbar"><div className="breadcrumb">상품기획 작업실<span>/</span><strong>{currentNav.label}</strong></div><div className="topbar-right">{view === 'research' ? <span className="connection-status">실제 공개 자료 · 근거와 개선 장면</span> : <><ModeSwitch mode={mode} onChange={changeMode} /><div className="connection-status">{mode === 'fixture' ? <><span className="status-dot loading" />fixture 사용 · 공통 API 요청 안 함</> : <><span className={`status-dot ${active.status}`} />{active.status === 'ready' ? workspace.connection === 'connected' ? '인증된 작업실 자료 연결됨' : '공통 API 연결됨' : active.status === 'loading' ? '자료 API 연결 확인 중' : '자료 API 연결 오류'}</>}</div></>}</div></header>
       <main id="main-content">
+        {view === 'research' ? <ResearchPlanningView /> : <>
         <section className="hero"><div><p className="eyebrow">EVIDENCE-LED KITCHEN PLANNING</p><h1>근거에서 시작하는<br />키친 기획.</h1><p>고객의 불편과 제품의 기능을 함께 살펴보고,<br className="desktop-break" /> 아직 해결되지 않은 기회를 검토하는 작업실입니다.</p></div><div className="hero-stats"><div><strong>{data?.products.length ?? '—'}</strong><span>등록된 모델</span></div><div><strong>{data?.evidence.length ?? '—'}</strong><span>조회 가능한 근거</span></div><p>{mode === 'fixture' ? `계약 fixture · FRIDGE-A 예시만 포함` : data ? `공통 계약 ${data.contract_version} · ${bootstrapSourceSummary(data)}` : '공통 API에서 자료를 불러옵니다'}</p></div></section>
         {mode === 'live' && sourceWarnings.length ? <div className="scope-notice" role="note" data-source-warnings><strong>현재 자료의 확인 범위</strong><ul>{sourceWarnings.map((warning, index) => <li key={index}>{warning}</li>)}</ul></div> : null}
         {mode === 'fixture' ? <FixtureBanner /> : <WorkspaceBar workspace={scopedWorkspace} onScopeChange={() => setFormSeed(value => value + 1)} />}
@@ -407,6 +411,7 @@ export default function App() {
         } } : undefined} /> : selectedRun && originalRequest && view === 'concepts' ? <ConceptsView {...planningProps} selected={selectedRun} /> : selectedRun && originalRequest ? <HistoryView {...planningProps} selected={selectedRun} original={originalRequest} onRerun={rerun} busy={workspace.busy} measure={measure} /> : view === 'concepts' ? <section className="panel future-panel"><EmptyState type="future" title="근거를 갖춘 콘셉트를 이곳에서 검토합니다" text="작업실에 연결하고 기획 요청을 저장하면 실행 결과를 확인할 수 있습니다. 요청만 저장됐거나 분석이 보류된 경우에는 후보를 표시하지 않습니다." /><div className="future-columns"><div><strong>콘셉트 비교</strong><span>최대 3개 타당한 후보 · 근거 부족 시 보류</span></div><div><strong>요구사항 확인</strong><span>연결된 원문 · 남은 불편 · 검토할 조건</span></div><div><strong>기획자 검토</strong><span>선택 · 수정 요청 · 추가 조건</span></div></div></section> : <section className="panel future-panel"><EmptyState type="future" title="아직 실행·수정 이력이 없습니다" text="작업실에 연결하면 동일 기획의 저장된 실행과 변경 전후, 사용한 자료 버전을 확인할 수 있습니다." /><div className="history-plan"><span>기획 요청</span><ArrowIcon /><span>근거·판단 기록</span><ArrowIcon /><span>새 자료로 재검토</span><ArrowIcon /><span>변경 전후 비교</span></div></section>}
         {mode === 'live' && view === 'evidence' && workspace.connection === 'connected' ? <ServerEvidenceSearch workspace={workspace} modelId={modelId} /> : null}
         {mode === 'live' && (view === 'concepts' || view === 'history') && !selectedRun ? <p className="hint">{workspace.connection === 'connected' ? '저장된 실행 기록이 없습니다. 기획 요청에서 작업실에 저장하면 여기에 표시됩니다.' : '작업실 서버에 연결하면 저장된 실제 실행 기록을 불러옵니다. 화면 예시는 상단의 계약 fixture에서 볼 수 있습니다.'}</p> : null}
+        </>}
         <footer className="page-footer"><span>키친에서치킨먹기 · LG AX 2026</span><span>반복 가능한 상품기획을 위한 첫 작업 공간</span></footer>
       </main>
     </div>

@@ -13,6 +13,7 @@ async function openArea(page: Page, label: string) {
 
 test('fixture: request questions → candidate review → corrected rerun → export and measured modification time', async ({ page }) => {
   await page.goto('/');
+  await page.getByRole('navigation', { name: '기획 작업 영역' }).getByRole('button', { name: '근거 대조' }).click();
   await page.getByRole('button', { name: '계약 fixture' }).click();
   await expect(page.getByRole('note').filter({ hasText: '모의 데이터 모드' })).toBeVisible();
 
@@ -86,6 +87,7 @@ test('fixture: request questions → candidate review → corrected rerun → ex
 
 test('fixture: a cancelled measurement stays unmeasured (null)', async ({ page }) => {
   await page.goto('/');
+  await page.getByRole('navigation', { name: '기획 작업 영역' }).getByRole('button', { name: '근거 대조' }).click();
   await page.getByRole('button', { name: '계약 fixture' }).click();
   await openArea(page, '수정 이력');
   await page.getByRole('button', { name: '수정 시간 측정 시작' }).click();
@@ -102,6 +104,7 @@ test('live: connect, save a request, rerun with a corrected condition on the rea
   test.skip(!tokenFile, 'LGAX_E2E_TOKEN_FILE not set; live workspace flow is opt-in');
   const token = (JSON.parse(readFileSync(tokenFile!, 'utf8')) as { token: string }).token;
   await page.goto('/');
+  await page.getByRole('navigation', { name: '기획 작업 영역' }).getByRole('button', { name: '근거 대조' }).click();
   await expect(page.locator('.connection-status')).toContainText('공통 API 연결됨');
   await page.getByLabel('작업실 토큰').fill(token);
   await page.getByRole('button', { name: '연결', exact: true }).click();

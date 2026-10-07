@@ -49,6 +49,7 @@ test('recorded live runs: core record under the same run ID → exclude a candid
   });
 
   await page.goto('/');
+  await page.getByRole('navigation', { name: '기획 작업 영역' }).getByRole('button', { name: '근거 대조' }).click();
   await expect(page.locator('.connection-status')).toContainText('공통 API 연결됨');
   await page.getByLabel('작업실 토큰').fill(TOKEN);
   await page.getByRole('button', { name: '연결', exact: true }).click();

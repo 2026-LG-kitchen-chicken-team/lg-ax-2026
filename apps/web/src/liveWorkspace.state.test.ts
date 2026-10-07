@@ -257,6 +257,49 @@ describe('actual React workspace state boundaries', () => {
     expect((saved as RunSnapshot | null)?.run.id).toBe('run-retry');
     expect(createRun).toHaveBeenLastCalledWith('project-new', FIXTURE_ORIGINAL_REQUEST, null);
   });
+
+  // O2 (record 054): the server refused the new project, so nothing was stored. The screen must go back to the
+  // project it showed (the picker still displays it) with its runs, instead of an empty selection.
+  it('returns to the previously shown project when the server refuses to create the new one', async () => {
+    await connect();
+    vi.spyOn(WorkspaceClient.prototype, 'createProject').mockRejectedValueOnce(new ApiError('FORBIDDEN', 'origin'));
+    const createRun = vi.spyOn(WorkspaceClient.prototype, 'createRun');
+    let saved: RunSnapshot | null = run('unused');
+    await act(async () => { saved = await live.saveRequest(FIXTURE_ORIGINAL_REQUEST, FIXTURE_BOOTSTRAP.products); });
+    expect(saved).toBeNull();
+    expect(createRun).not.toHaveBeenCalled();
+    expect(live.error?.code).toBe('FORBIDDEN');
+    expect(live.project?.project.id).toBe(a.project.id);
+    expect(live.runs.map(item => item.run.id)).toEqual([`run-${a.project.id}`]);
+    expect(live.projects.map(item => item.project.id)).toEqual([a.project.id]);
+    expect(live.busy).toBe(false);
+    // The restored selection is usable: the next write continues the project that is shown.
+    createRun.mockResolvedValueOnce(run(a.project.id, 'run-next'));
+    await act(async () => { saved = await live.addRun(FIXTURE_ORIGINAL_REQUEST, null); });
+    expect(createRun).toHaveBeenLastCalledWith(a.project.id, FIXTURE_ORIGINAL_REQUEST, null);
+  });
+
+  it('does not restore the previous project after an authorization failure on create', async () => {
+    await connect();
+    vi.spyOn(WorkspaceClient.prototype, 'createProject').mockRejectedValueOnce(new ApiError('UNAUTHORIZED', 'expired'));
+    await act(async () => { await live.saveRequest(FIXTURE_ORIGINAL_REQUEST, FIXTURE_BOOTSTRAP.products); });
+    expect(live.connection).toBe('error');
+    expect(live.project).toBeNull();
+    expect(live.runs).toEqual([]);
+  });
+
+  it('keeps a project chosen while the refused create was pending', async () => {
+    await connect();
+    const creation = deferred<WorkspaceProject>();
+    vi.spyOn(WorkspaceClient.prototype, 'createProject').mockImplementationOnce(() => creation.promise);
+    let saved!: Promise<RunSnapshot | null>;
+    await act(async () => { saved = live.saveRequest(FIXTURE_ORIGINAL_REQUEST, FIXTURE_BOOTSTRAP.products); });
+    await act(async () => { await live.selectProject(b.project.id); });
+    await act(async () => { creation.reject(new ApiError('FORBIDDEN', 'origin')); await saved; });
+    expect(live.project?.project.id).toBe(b.project.id);
+    expect(live.runs.map(item => item.run.id)).toEqual([`run-${b.project.id}`]);
+  });
+
   it('rejects a run list from a different project even when the payload has the right shape', async () => {
     await connect();
     vi.mocked(WorkspaceClient.prototype.listRuns).mockResolvedValueOnce({ runs: [run(a.project.id)], contract_version: '0.1.0' });
