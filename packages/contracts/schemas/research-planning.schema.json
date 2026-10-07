@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lgax.example/contracts/research-planning/1.0",
+  "title": "Public research and visual planning contracts",
+  "$defs": {
+    "SourceFact": {
+      "type": "object",
+      "required": ["fact_id", "kind", "text"],
+      "properties": {
+        "fact_id": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["observed", "expectation", "document_fact", "unknown"]},
+        "text": {"type": "string", "minLength": 1},
+        "value": {"type": ["string", "number", "null"]},
+        "unit": {"type": ["string", "null"]},
+        "locator": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
+    "ResearchSource": {
+      "type": "object",
+      "required": ["source_id", "source_type", "source_kind", "product_group", "url", "title", "text", "page_model", "purchased_model", "published_at", "date_kind", "coverage", "source_role", "locator", "facts"],
+      "properties": {
+        "source_id": {"type": "string", "minLength": 1},
+        "source_type": {"enum": ["review", "qa", "faq", "manual", "spec", "installation"]},
+        "source_kind": {"const": "public"},
+        "product_group": {"type": "string", "minLength": 1},
+        "url": {"type": "string", "format": "uri", "pattern": "^https?://"},
+        "title": {"type": "string"},
+        "text": {"type": "string", "minLength": 1},
+        "page_model": {"type": ["string", "null"]},
+        "purchased_model": {"type": ["string", "null"]},
+        "published_at": {"type": ["string", "null"]},
+        "date_kind": {"enum": ["posting", "purchase", "unknown"]},
+        "coverage": {"enum": ["excerpt", "full", "unknown"]},
+        "source_role": {"enum": ["customer_experience", "customer_question", "official_answer", "official_document", "official_specification"]},
+        "document_version": {"type": ["string", "null"]},
+        "brand": {"type": ["string", "null"]},
+        "rating": {"type": ["number", "null"], "minimum": 0, "maximum": 5},
+        "collected_at": {"type": ["string", "null"]},
+        "sort_order": {"type": ["string", "null"]},
+        "duplicate_group": {"type": ["string", "null"]},
+        "locator": {"type": "object"},
+        "facts": {"type": "array", "items": {"$ref": "#/$defs/SourceFact"}},
+        "metadata": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
+    "ResearchBundle": {
+      "type": "object",
+      "required": ["schema_version", "bundle_id", "product_group", "analysis_scope", "sources", "collection_manifest"],
+      "properties": {
+        "schema_version": {"const": "1.0"},
+        "bundle_id": {"type": "string", "minLength": 1},
+        "product_group": {"type": "string", "minLength": 1},
+        "analysis_scope": {"enum": ["product_group", "exact_model"]},
+        "sources": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/ResearchSource"}},
+        "collection_manifest": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
+    "Problem": {
+      "type": "object",
+      "required": ["id", "title", "description", "source_ids", "counter_source_ids", "scope_caveat"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1}, "title": {"type": "string", "minLength": 1},
+        "description": {"type": "string", "minLength": 1},
+        "source_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "counter_source_ids": {"type": "array", "items": {"type": "string"}},
+        "scope_caveat": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "Comparison": {
+      "type": "object",
+      "required": ["id", "problem_id", "product", "existing_response", "remaining_burden", "source_ids", "comparison_limits"],
+      "properties": {
+        "id": {"type": "string"}, "problem_id": {"type": "string"}, "product": {"type": "string"},
+        "existing_response": {"type": "string"}, "remaining_burden": {"type": "string"},
+        "source_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "comparison_limits": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "Concept": {
+      "type": "object",
+      "required": ["id", "title", "problem_ids", "target_user", "use_context", "before_steps", "after_steps", "mechanism", "proposed_changes", "source_ids", "assumptions", "validation_questions", "visual_scenes", "status"],
+      "properties": {
+        "id": {"type": "string"}, "title": {"type": "string", "minLength": 1},
+        "problem_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "target_user": {"type": "string", "minLength": 1}, "use_context": {"type": "string", "minLength": 1},
+        "before_steps": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "after_steps": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "mechanism": {"type": "string", "minLength": 1},
+        "proposed_changes": {"type": "array", "items": {"type": "string"}},
+        "source_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "assumptions": {"type": "array", "items": {"type": "string"}},
+        "validation_questions": {"type": "array", "items": {"type": "string"}},
+        "visual_scenes": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["title", "before", "after"], "properties": {"title": {"type": "string"}, "before": {"type": "string"}, "after": {"type": "string"}}, "additionalProperties": false}},
+        "status": {"enum": ["draft", "supported", "needs_sources"]}
+      },
+      "additionalProperties": false
+    },
+    "SummaryItem": {
+      "type": "object", "required": ["text", "source_ids"],
+      "properties": {"text": {"type": "string", "minLength": 1}, "source_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}}},
+      "additionalProperties": false
+    },
+    "PlanningBrief": {
+      "type": "object",
+      "required": ["schema_version", "brief_id", "bundle_id", "run_id", "revision", "previous_brief_id", "status", "product_group", "analysis_scope", "goal", "constraints", "problems", "comparisons", "concepts", "source_facts", "uncertainties", "summaries", "relations", "runtime"],
+      "properties": {
+        "schema_version": {"const": "1.0"},
+        "brief_id": {"type": "string", "minLength": 1}, "bundle_id": {"type": "string", "minLength": 1}, "run_id": {"type": "string", "minLength": 1},
+        "revision": {"type": "integer", "minimum": 0}, "previous_brief_id": {"type": ["string", "null"]},
+        "status": {"enum": ["complete", "partial", "needs_sources"]},
+        "product_group": {"type": "string", "minLength": 1}, "analysis_scope": {"enum": ["product_group", "exact_model"]},
+        "goal": {"type": "string", "minLength": 1}, "constraints": {"type": "array", "items": {"type": "string"}},
+        "problems": {"type": "array", "items": {"$ref": "#/$defs/Problem"}},
+        "comparisons": {"type": "array", "items": {"$ref": "#/$defs/Comparison"}},
+        "concepts": {"type": "array", "items": {"$ref": "#/$defs/Concept"}},
+        "source_facts": {"type": "array", "items": {"type": "object", "required": ["source_id", "facts"], "properties": {"source_id": {"type": "string"}, "facts": {"type": "array", "items": {"$ref": "#/$defs/SourceFact"}}}, "additionalProperties": false}},
+        "uncertainties": {"type": "array", "items": {"type": "string"}},
+        "summaries": {"type": "object", "required": ["positive", "negative", "mixed"], "properties": {"positive": {"type": "array", "items": {"$ref": "#/$defs/SummaryItem"}}, "negative": {"type": "array", "items": {"$ref": "#/$defs/SummaryItem"}}, "mixed": {"type": "array", "items": {"$ref": "#/$defs/SummaryItem"}}}, "additionalProperties": false},
+        "relations": {"type": "array", "items": {"type": "object", "required": ["from_id", "to_id", "relation", "source_ids", "inferred"], "properties": {"from_id": {"type": "string"}, "to_id": {"type": "string"}, "relation": {"enum": ["supports", "contradicts", "co_occurs", "addresses", "proposes"]}, "source_ids": {"type": "array", "items": {"type": "string"}}, "inferred": {"type": "boolean"}}, "additionalProperties": false}},
+        "runtime": {"type": "object"}
+      },
+      "additionalProperties": false
+    }
+  }
+}
