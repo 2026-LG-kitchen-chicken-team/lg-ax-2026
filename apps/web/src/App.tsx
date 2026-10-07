@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { ApiError, loadBootstrap, parseBootstrap, requestPlanning } from './api';
-import { evidenceLocation, filterEvidence, friendlyError, productName, SCENARIOS } from './domain';
+import { bootstrapSourceSummary, evidenceLocation, filterEvidence, friendlyError, productName, SCENARIOS } from './domain';
 import type { BootstrapData, Evidence, ProductGroup, View } from './domain';
 import { FIXTURE_BOOTSTRAP, FIXTURE_ORIGINAL_REQUEST, FIXTURE_PROJECT_ID, FIXTURE_RUNS } from './fixtures/planning.fixture';
 import { ApplianceIcon, ArrowIcon, SearchIcon } from './icons';
@@ -87,6 +87,7 @@ ${trendNote}` : base; });
   // Without a project, the first request in this form is the original; later edits are change requests with a new revision.
   const [firstRequest] = useState<PlanningRequest>(() => request);
   const continueProject = !!(live && projectRequest && sameProjectScope(projectRequest, request));
+  const datasetChanged = !!(live && projectRequest && datasetVersion && projectRequest.dataset_version !== datasetVersion);
   const original = continueProject ? projectRequest! : { ...firstRequest, model_ids: request.model_ids, dataset_version: request.dataset_version };
   const parent = continueProject ? live!.latest : null;
   // A live save that starts a new project is that project's original request: the server records revision 0.
@@ -136,12 +137,13 @@ ${trendNote}` : base; });
   }
 
   const footer = live
-    ? unchanged ? `이전 실행과 같은 요청입니다. 저장하면 같은 요청 회차(${revision})로 다시 기록됩니다.` : continueProject ? `“${live.project!.project.name}” 프로젝트에 변경 요청(요청 회차 ${revision})으로 저장합니다. 서버의 실행 결과는 저장 후 확인하세요.` : '새 프로젝트와 첫 실행으로 저장합니다. 제품군이나 검토 모델이 바뀌면 새 프로젝트가 됩니다.'
+    ? unchanged ? `이전 실행과 같은 요청입니다. 저장하면 같은 요청 회차(${revision})로 다시 기록됩니다.` : continueProject ? `“${live.project!.project.name}” 프로젝트에 변경 요청(요청 회차 ${revision})으로 저장합니다. 서버의 실행 결과는 저장 후 확인하세요.` : '새 프로젝트와 첫 실행으로 저장합니다. 제품군·검토 모델·자료 버전이 바뀌면 새 프로젝트가 됩니다.'
     : mode === 'live' ? '작업실에 연결하면 요청을 저장할 수 있습니다. 지금은 연결 확인만 합니다.' : '현재 요청은 Agent 분석 결과를 생성하지 않습니다.';
 
   return <div className="request-layout"><form className="request-form panel" onSubmit={submit}>
     <div className="panel-header"><div><p className="eyebrow">PLANNING BRIEF</p><h2>어떤 불편을 개선할까요?</h2></div><span className="state-badge">{mode === 'fixture' ? '화면 확인용 예시' : live ? '작업실 연결됨' : '작업실 연결 필요'}</span></div>
     <p className="section-description">고객과 사용 상황을 구체적으로 입력해 기획의 출발점을 정하세요.</p>
+    {datasetChanged ? <p className="scope-notice" role="note" data-dataset-change>자료 버전이 {projectRequest!.dataset_version}에서 {datasetVersion}로 바뀌었습니다. 현재 자료로 새 프로젝트를 만들며, 이전 프로젝트와 실행 기록은 원 버전 그대로 보존합니다.</p> : null}
     <label className="field-label" htmlFor="planning-prompt">기획 요청</label><textarea id="planning-prompt" rows={4} value={prompt} onChange={event => setPrompt(event.target.value)} />
     <label className="field-label" htmlFor="planning-customer">대상 고객</label><input id="planning-customer" value={customer} onChange={event => setCustomer(event.target.value)} />
     <fieldset className="model-picker"><legend className="field-label">검토 모델 <small>기존 기능을 대조할 모델을 하나 이상 고르세요</small></legend>
@@ -364,7 +366,7 @@ export default function App() {
     <div className="main-shell">
       <header className="topbar"><div className="breadcrumb">상품기획 작업실<span>/</span><strong>{currentNav.label}</strong></div><div className="topbar-right"><ModeSwitch mode={mode} onChange={changeMode} /><div className="connection-status">{mode === 'fixture' ? <><span className="status-dot loading" />fixture 사용 · 공통 API 요청 안 함</> : <><span className={`status-dot ${state.status}`} />{state.status === 'ready' ? '공통 API 연결됨' : state.status === 'loading' ? 'API 연결 확인 중' : 'API 연결 오류'}</>}</div></div></header>
       <main id="main-content">
-        <section className="hero"><div><p className="eyebrow">EVIDENCE-LED KITCHEN PLANNING</p><h1>근거에서 시작하는<br />키친 기획.</h1><p>고객의 불편과 제품의 기능을 함께 살펴보고,<br className="desktop-break" /> 아직 해결되지 않은 기회를 검토하는 작업실입니다.</p></div><div className="hero-stats"><div><strong>{data?.products.length ?? '—'}</strong><span>등록된 모델</span></div><div><strong>{data?.evidence.length ?? '—'}</strong><span>조회 가능한 근거</span></div><p>{mode === 'fixture' ? `계약 fixture · FRIDGE-A 예시만 포함` : data ? `공통 계약 ${data.contract_version} · 시연용 합성자료` : '공통 API에서 자료를 불러옵니다'}</p></div></section>
+        <section className="hero"><div><p className="eyebrow">EVIDENCE-LED KITCHEN PLANNING</p><h1>근거에서 시작하는<br />키친 기획.</h1><p>고객의 불편과 제품의 기능을 함께 살펴보고,<br className="desktop-break" /> 아직 해결되지 않은 기회를 검토하는 작업실입니다.</p></div><div className="hero-stats"><div><strong>{data?.products.length ?? '—'}</strong><span>등록된 모델</span></div><div><strong>{data?.evidence.length ?? '—'}</strong><span>조회 가능한 근거</span></div><p>{mode === 'fixture' ? `계약 fixture · FRIDGE-A 예시만 포함` : data ? `공통 계약 ${data.contract_version} · ${bootstrapSourceSummary(data)}` : '공통 API에서 자료를 불러옵니다'}</p></div></section>
         {mode === 'fixture' ? <FixtureBanner /> : <WorkspaceBar workspace={scopedWorkspace} onScopeChange={() => setFormSeed(value => value + 1)} />}
         <section className="scenario-grid" aria-label="제품군 선택">{SCENARIOS.map(scenario => {
           const unavailable = mode === 'fixture' && scenario.group !== FIXTURE_ORIGINAL_REQUEST.product_group;

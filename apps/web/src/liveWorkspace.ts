@@ -28,10 +28,11 @@ const ERROR_VIEWS: Record<string, Omit<ErrorView, 'code'>> = {
   MODEL_UNAVAILABLE: { title: '분석 모델을 사용할 수 없습니다', action: '모델 서버 연결 또는 응답 형식에 문제가 있습니다. 잠시 후 다시 시도하거나 PM에게 모델 상태를 확인해 주세요.', tone: 'error' },
 };
 
-/** A changed request on the same product group and model set continues the project; otherwise it starts a new one. */
+/** A project is pinned to its product scope and dataset version; new data starts a new project. */
 export function sameProjectScope(project: PlanningRequest, request: PlanningRequest): boolean {
   const models = (ids: string[]) => [...ids].sort().join('\n');
-  return project.product_group === request.product_group && models(project.model_ids) === models(request.model_ids);
+  return project.dataset_version === request.dataset_version
+    && project.product_group === request.product_group && models(project.model_ids) === models(request.model_ids);
 }
 
 export function errorView(error: unknown): ErrorView {

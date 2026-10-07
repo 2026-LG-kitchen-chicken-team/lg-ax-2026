@@ -44,6 +44,17 @@ export function productName(product: Product): string {
   return product.name ?? product.label ?? product.model_id;
 }
 
+/** Describes the connected sources, not whether an Agent ran or the dataset represents market demand. */
+export function bootstrapSourceSummary(data: BootstrapData): string {
+  const labels: Record<string, string> = { synthetic: '합성자료', public: '공개자료', licensed: '이용허락 자료', private: '비공개 자료' };
+  const kinds = new Set(data.evidence.map(item => item.source_kind));
+  if (typeof data.manifest.source_kind === 'string') kinds.add(data.manifest.source_kind);
+  const origins = [...new Set([...kinds].map(kind => Object.hasOwn(labels, kind) ? labels[kind] : '출처 미확인'))].sort();
+  const source = origins.length > 1 ? `혼합자료 (${origins.join(' · ')})` : origins[0] ?? '출처 미확인';
+  const version = typeof data.manifest.version === 'string' && data.manifest.version ? data.manifest.version : '버전 미확인';
+  return `${source} · 자료 ${version}`;
+}
+
 export function evidenceLocation(evidence: Evidence): string {
   const parts: string[] = [];
   if (evidence.locator.page !== undefined) parts.push(`${evidence.locator.page}쪽`);
