@@ -1,0 +1,31 @@
+{
+  "checked_at_kst": "2026-10-07T11:35:26.277622+09:00",
+  "command": [
+    "python",
+    "-B",
+    "/input/rescore.py",
+    "--input",
+    "/input",
+    "--output",
+    "/artifacts/approved-rescore.json"
+  ],
+  "image": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+  "user": "1000:1000",
+  "network": "none",
+  "readonly_root": true,
+  "mounts": [
+    {
+      "destination": "/artifacts",
+      "read_only": false
+    },
+    {
+      "destination": "/input",
+      "read_only": true
+    }
+  ],
+  "credentials_or_reviewer_answers_mounted": false,
+  "exit_code": 0,
+  "code_sha256": "f2f3a415f8c627ddb8e803efaed9d7da0231ef8bb5650ac5a55fbd10f49f2813",
+  "log_sha256": "db5a433982097a3f122f85f489759d555d1d18532c5dd549cdf9e4baed42b2cb",
+  "new_model_API_or_installs": 0
+}

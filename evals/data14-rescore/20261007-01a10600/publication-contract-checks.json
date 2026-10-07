@@ -1,0 +1,34 @@
+{
+  "checks": [
+    {
+      "command": [
+        "/opt/lgax-venv/bin/python",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "PASS: AGENTS.md and CLAUDE.md are byte-identical\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/opt/lgax-venv/bin/python",
+        "scripts/check_document_navigation.py"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"source_commit\": \"0078975ef4579008eb7c5921541122a8f569ce3a\",\n  \"original_byte_archives\": 5,\n  \"original_bytes_preserved\": 161753,\n  \"original_headings_preserved\": 104,\n  \"source_relative_links_checked\": 169,\n  \"current_entries_checked\": 6,\n  \"protected_files_checked\": 0,\n  \"pinned_git_source_checked\": false,\n  \"previous_stage_proof_preserved\": true,\n  \"product_execution\": false,\n  \"network_calls\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/opt/lgax-venv/bin/python",
+        "scripts/check_contracts.py"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"status\": \"pass\", \"definitions\": 51, \"models\": 5, \"reviews\": 36, \"planning_requests\": 3, \"analysis_implemented\": false}\n",
+      "stderr": ""
+    }
+  ],
+  "full_phase2_history_gate_not_run_in_source_only_mount": true,
+  "new_model_calls": 0
+}
