@@ -1,6 +1,9 @@
 # 황대겸 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-08 CORE-C3-COMPARISON-GUARD-01a10729-01: 원 후기848850/D3 비교 조건을 실제 기획 지침에 전달; 설치·용량·외형/접근·기존 기능 한계 보존. 실모델0·효과/PM 인수 미검증. 기존36검사/원문/정적 검사 PASS.
+- [상세](2026-10-08/CORE-C3-COMPARISON-GUARD-01a10729-01.md) · [원문/고정 조건](../../../evals/core-manual-quality/20261008/c3-comparison-guard/README.md).
+
 - 2026-10-08 CORE-C4-WEB-CONSUMER-BOUNDARY-01a10729-01: WEB 고정 함수10경계에서 비율 범위 밖 허용2개 재현/담당 인계; 제품/모델0, WEB c0116fb 같은10입력 재검수 PASS; 실제 API/PM 인수 미완료.
 - [상세](2026-10-08/CORE-C4-WEB-CONSUMER-BOUNDARY-01a10729-01.md) · [원 입력/출력·재현](../../../evals/core-manual-quality/20261008/web261-coverage-boundary/README.md).
 - 2026-10-08 CORE-C4-PUBLIC-HANDOFF-01a10729-01: WEB API 누락 수신과 성공 분모/인용/미처리·미제공 구분 인계; 제품·모델0, 실제 HTTP/MCP/PM 인수 미완료.

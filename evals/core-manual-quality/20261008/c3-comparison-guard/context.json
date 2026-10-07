@@ -1,0 +1,112 @@
+{
+  "record_id": "CORE-C3-COMPARISON-GUARD-01a10729-01",
+  "base_head": "d9a50b93a728123f12abe4a83d53d84ac1f6c5bd",
+  "kind": "source-grounded instruction review; not model output",
+  "review_id": "848850",
+  "original_text": "오랫동안 사용하던 양문형 냉장고를 보내주고 LG 오브제컬렉션으로 갈아탔습니다!\n\n구축 아파트라 사이즈가 맞지 않아 키친핏을 포기하고 결정했는데, 걱정했던 상냉장 하냉동 구조는 자주 쓰는 냉장실이 위에 있어 허리도 편하고 훨씬 만족스럽네요.\n\n기존 양문형보다 용량이 커서 식재료가 넉넉하게 들어가고 수납도 확 트였습니다. 다만 깊이가 깊다 보니 앞으로 살짝 튀어나오고, 안쪽 깊숙한 곳은 팔이 잘 닿지 않아 공간을 다 활용하기 어렵다는 아쉬움은 살짝 있네요. \n\n편리한 매직스페이스와 냄새 걱정 없는 UV청정탈취필터 기능이 정말 마음에 들고, 주방 분위기도 깔끔해졌어요. 잔고장 없이 오랫동안 잘 사용했으면 좋겠습니다!",
+  "original_text_sha256": "f7c96d4b8243c18ce33b6b3f4bf6a030b7c3004d3c75facf1d38df8f66853d0a",
+  "anchors": [
+    {
+      "id": "installation_constraint",
+      "quote": "구축 아파트라 사이즈가 맞지 않아 키친핏을 포기하고",
+      "start": 45,
+      "end": 73,
+      "location_basis": "original review text character offsets; not canonical Evidence",
+      "author_annotation": "키친핏을 상용 대안으로 비교하되 이 사용자의 설치 제약을 해결했다고 주장할 수 없다."
+    },
+    {
+      "id": "positive_comfort",
+      "quote": "냉장실이 위에 있어 허리도 편하고 훨씬 만족스럽네요.",
+      "start": 104,
+      "end": 133,
+      "location_basis": "original review text character offsets; not canonical Evidence",
+      "author_annotation": "사용자 보고의 긍정 경험. 물리 시험이나 전체 모집단 결론이 아니다."
+    },
+    {
+      "id": "positive_storage",
+      "quote": "용량이 커서 식재료가 넉넉하게 들어가고 수납도 확 트였습니다.",
+      "start": 144,
+      "end": 178,
+      "location_basis": "original review text character offsets; not canonical Evidence",
+      "author_annotation": "용량/수납 만족을 보존한다. 작은 용량으로의 교체를 무조건 해결로 만들지 않는다."
+    },
+    {
+      "id": "residual_reach",
+      "quote": "안쪽 깊숙한 곳은 팔이 잘 닿지 않아 공간을 다 활용하기 어렵다는 아쉬움",
+      "start": 206,
+      "end": 246,
+      "location_basis": "original review text character offsets; not canonical Evidence",
+      "author_annotation": "잔여 접근 불편의 사용자 보고. 구매 SKU 미확인 상태를 보존한다."
+    }
+  ],
+  "source_pins": {
+    "data/research/r5-public-reviews-20261007/fixed18/development.records.json": "f82cfe2ef8ee8f0873c250e6d82918a81d215e449187d9ee1644957cd907831a",
+    "evals/core-manual-quality/20261007/d3-consumer-intake/consumer-intake.json": "d10aa369ce2e9d2eb77c0c63ac49664ebf78885324be384cadfdd82d725a84c5",
+    "data/research/r8-public-research-20261007/competitors/01a114f6/comparison.json": "1b419e881762d791e198d4bc78d5baf15bac26210fe945866a624312fd33d403",
+    "data/research/r8-public-research-20261007/competitors/01a114f6/official-sources.json": "51a687aa32c3edfaab11826692a7a88f6720b50c073ec4d47e6e027115894557",
+    "data/research/r8-public-research-20261007/competitors/01a114f6/manifest.json": "535c08e6009e873c3d09fc92b5fcb68b47f88bad562e34c33f15bca97bc9de6d"
+  },
+  "comparability": {
+    "category": "same broad household four-door fridge category",
+    "same_capacity": false,
+    "nominal_capacity_difference_l": 230,
+    "same_installation": false,
+    "same_dimension_basis_verified": false,
+    "same_release_period": false,
+    "same_test_conditions_verified": false,
+    "reach_or_cleaning_test_performed": false,
+    "capacity_basis_cross_manufacturer_verified": false,
+    "price_comparison_performed": false
+  },
+  "dimensions_and_capacity": [
+    {
+      "model_id": "T876MEE1H1",
+      "capacity_l": 870,
+      "dimensions_mm": {
+        "width": 914,
+        "height": 1787,
+        "depth": 918
+      },
+      "dimensions_basis": "Manufacturer labels product WxHxD; rear-handle inclusion not separately specified in captured excerpt.",
+      "installation_type": "freestanding",
+      "folding_shelf": {
+        "status": "illustrated on product page",
+        "evidence": "LG-FOLD",
+        "exact_condition_verification": "manual/model reconciliation pending"
+      },
+      "pull_out_shelf": {
+        "status": "unknown",
+        "absence_confirmed": false
+      }
+    },
+    {
+      "model_id": "RM70F63R231",
+      "capacity_l": 640,
+      "dimensions_mm": {
+        "width": 912,
+        "height": 1853,
+        "depth_with_rear_handle": 697,
+        "depth_without_rear_handle": 683
+      },
+      "dimensions_basis": "Two explicitly different rear-handle inclusion bases; neither is internal usable depth or measured arm reach.",
+      "installation_type": "KitchenFit Max",
+      "folding_shelf": {
+        "status": "documented",
+        "count": 1,
+        "evidence": "SS-FOLD"
+      },
+      "pull_out_shelf": {
+        "status": "unknown",
+        "absence_confirmed": false
+      }
+    }
+  ],
+  "confirmed_instruction_gap": "Existing intake recorded installation/capacity/dimension/feature limits, but the actual PublicPlanner INSTRUCTIONS did not explicitly transmit them to problem comparison/planning calls.",
+  "original_DATA_records_changed": false,
+  "agent_input_approved": false,
+  "new_model_calls": 0,
+  "actual_generated_comparison_reviewed": false,
+  "model_effect_verified": false,
+  "planning_direction_chosen": false,
+  "PM_acceptance": false
+}
