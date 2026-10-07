@@ -6,6 +6,7 @@ import type { Root } from 'react-dom/client';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
+import { enterLegacyEvidence } from './fixtures/legacy-test-navigation';
 import { HistoryView } from './PlanningViews';
 import { FIXTURE_BOOTSTRAP, FIXTURE_ORIGINAL_REQUEST, FIXTURE_RUNS } from './fixtures/planning.fixture';
 import type { Feature } from './planning';
@@ -25,7 +26,7 @@ describe('PM integrated planner screens', () => {
     button.click();
   }); };
   it('App reaches the evidence trace and separated revision/clarification panels', async () => {
-    await act(async () => root.render(createElement(App)));
+    await act(async () => root.render(createElement(App))); await act(async () => { enterLegacyEvidence(host); });
     await click('계약 fixture'); await click('콘셉트 검토');
     expect(host.querySelector('[aria-label="근거 추적"]')).not.toBeNull();
     expect(host.textContent).toContain('합성 자료');
@@ -37,7 +38,7 @@ describe('PM integrated planner screens', () => {
     expect(host.querySelector('[aria-label="이전 실행과 결과 비교"]')).not.toBeNull();
   });
   it('keeps the selected candidate original citation list distinct from judgment trace quotations', async () => {
-    await act(async () => root.render(createElement(App)));
+    await act(async () => root.render(createElement(App))); await act(async () => { enterLegacyEvidence(host); });
     await click('계약 fixture'); await click('콘셉트 검토');
     const inspect = [...host.querySelectorAll<HTMLButtonElement>('button')].filter(item => item.textContent?.includes('원문·판단 함께 보기'));
     await act(async () => inspect[1].click());

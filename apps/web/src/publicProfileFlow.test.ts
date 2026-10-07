@@ -6,6 +6,7 @@ import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
+import { enterLegacyEvidence } from './fixtures/legacy-test-navigation';
 import * as api from './api';
 import type { BootstrapData } from './domain';
 import { FIXTURE_BOOTSTRAP, FIXTURE_ORIGINAL_REQUEST, FIXTURE_RUNS } from './fixtures/planning.fixture';
@@ -52,7 +53,7 @@ async function click(text: string) {
   await act(async () => button.click());
 }
 async function mountAndConnect() {
-  await act(async () => root.render(createElement(App)));
+  await act(async () => root.render(createElement(App))); await act(async () => { enterLegacyEvidence(host); });
   await setValue(host.querySelector<HTMLInputElement>('#workspace-token')!, 'test-token-not-a-credential');
   await click('연결');
   await click('01기획 요청');
@@ -101,7 +102,7 @@ describe('new public profile uses registered SKU, document and dataset boundarie
     expect(old.project.request).toEqual(oldInput);
   });
   it('shows authenticated public sources only after connecting and clears their form/source on disconnect', async () => {
-    await act(async () => root.render(createElement(App)));
+    await act(async () => root.render(createElement(App))); await act(async () => { enterLegacyEvidence(host); });
     expect(host.querySelector('.hero-stats')?.textContent).toContain('합성자료');
     expect(host.querySelector('.hero-stats')?.textContent).not.toContain(VERSION);
     await setValue(host.querySelector<HTMLInputElement>('#workspace-token')!, 'test-token-not-a-credential');

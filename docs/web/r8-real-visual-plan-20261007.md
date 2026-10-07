@@ -33,4 +33,6 @@ API 미구현·연결 실패·인증/권한 오류는 명시적으로 표시한�
 
 검사: TypeScript/production build 통과. 신규 계약·클라이언트·DOM 상태 10개와 실제 DATA bundle 3개의 읽기 전용 intake 검사를 포함한 13개 검사 통과. 실제 intake 경로는 DATA 작업트리의 `data/research/r8-public-research-20261007/bundles`였다. `LGAX_RESEARCH_INTAKE_DIR` 환경변수를 이 폴더로 설정해 `npx vitest run src/research.test.ts src/researchFlow.test.ts src/researchIntake.test.ts`로 실행했다. 환경변수가 없으면 외부 DATA 인수 검사 3개만 건너뛴다.
 
-Qwen API의 실제 브라우저 전 과정은 통합 서버 준비 후 별도로 확인해야 한다. 초기 화면을 실제 자료 기획으로 바꿨으므로 과거 fixture 중심 브라우저 시나리오는 먼저 기존 메뉴로 이동해야 한다. 기존 전체 530 검사 반복 실행은 하지 않았다. 번들 500kB 경고는 빌드 실패가 아니며 후속 화면 분할 대상으로 남겼다.
+Qwen API의 실제 브라우저 전 과정은 통합 서버 준비 후 별도로 확인해야 한다. 초기 화면을 실제 자료 기획으로 바꿨으므로 기존 화면 검사의 진입 단계에 `근거 대조` 메뉴 선택을 추가했다. 기존 5개 App 검사 파일의 진입 helper와 9개 브라우저 시나리오 파일의 첫 메뉴 단계만 수정했으며 기존 기능·합성 예시 본문은 변경하지 않았다. 영향을 받은 UI 검사와 새 첫 화면 검사만 이름으로 선택해 31개 통과했고 관련 없는 37개는 건너뛰었다. TypeScript 검사와 Playwright 11개 시나리오의 `--list` 수집 검사도 통과했다. 이 목록 검사는 브라우저 실행을 뜻하지 않는다.
+
+기존 전체 530 검사 반복 실행은 하지 않았다. 번들 500kB 경고는 빌드 실패가 아니며 후속 화면 분할 대상으로 남겼다.

@@ -11,6 +11,7 @@ const HANDOFF = '청소 불편과 기존 기능을 대조하고 기회 후보를
 test('request form at 1280px: a long hand-off ID does not squeeze the original column; model labels stay on one line', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 1000 });
   await page.goto('/');
+  await page.getByRole('navigation', { name: '기획 작업 영역' }).getByRole('button', { name: '근거 대조' }).click();
   await page.getByRole('button', { name: '계약 fixture' }).click();
   await page.getByRole('navigation', { name: '기획 작업 영역' }).getByRole('button', { name: '기획 요청' }).click();
   await page.locator('#planning-prompt').fill(HANDOFF);
