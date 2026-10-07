@@ -1,6 +1,9 @@
 # 황대겸 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-07 CORE-X1-GUIDE-PRINT-01a10729-01: 공식 안내 print CSS를 보완했다. 실제3모델·15발췌의 원문/ID와 JSON·MD·화면본문 동일, A4 3/4/4쪽 판독 완료. 정확모델 FAQ·실제 콘셉트 설명서와 PM 인수는 별도 미완료다.
+- [상세](2026-10-07/CORE-X1-GUIDE-PRINT-01a10729-01.md) · [고정 근거](../../../evals/core-manual-quality/20261007/x1-guide-print/README.md). 다음은 담당 수정/원 모델 결과 인수 후 같은 버전 검수. 의미 품질·전체 Done을 대신하지 않는다.
+
 - 2026-10-07 PR221 리뷰5437222152: 재현기 import 전 source38파일/hash 검증을 추가하고 원 native 실패(e1a6ec/closure SHA0477)와 후속8ec study의5회/33,237토큰·런타임 완료/의미 FAIL을 수신 시점으로 구분한다. 원 응답·166검사 수신·과거 기록은 보존하고 PM 제품 수정은 중복하지 않는다.
 - 2026-10-07 CORE-R5-PR218-AUDIT-01a10729-01: PR218 head0d920df·merge8ec1e8a의 관련166 PASS/skip0·원3/선택5호출 동일·Gap27 연결 대조 완료. 모델0; 새 실모델 품질/독립 평가/부모 인수는 미완료.
 - [상세](2026-10-07/CORE-R5-PR218-AUDIT-01a10729-01.md) · [고정 검수와 연결 근거](../../../evals/core-manual-quality/20261007/r5-independent/pr218-head-audit/README.md). 다음은 별도 PM CORE 수정의 정확 head·고정 원 결과 및 DATA 실제 input-only 전송 인계 후 본인 의미 대조. 최신 런타임 완료를 품질 승인으로 확대하지 않는다.
