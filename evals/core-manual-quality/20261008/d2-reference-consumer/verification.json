@@ -1,0 +1,86 @@
+{
+  "record_id": "CORE-X1-D2-CONSUMER-01a10729-01",
+  "tests": {
+    "consumer": {
+      "exit_code": 0,
+      "log": "consumer.log"
+    },
+    "tests": {
+      "exit_code": 0,
+      "log": "tests.log",
+      "count": 7
+    },
+    "ruff": {
+      "exit_code": 0,
+      "log": "ruff.log",
+      "files": 4
+    },
+    "docs": {
+      "exit_code": 0,
+      "checks": 2,
+      "new_docs": 5,
+      "relative_links": 142,
+      "receipt": "docs-receipt.json"
+    }
+  },
+  "scope": "consumer structure, source preservation, roles, renderer and CLI; not actual planner/model/PM acceptance",
+  "Docker_image": "sha256:36ad082dbccf05bc9cff7c4dc5766e9ab7ed8c42198b0b731cf3831c546aaaf0",
+  "Docker": {
+    "user": "65534:65534",
+    "network": "none",
+    "rootfs": "read-only",
+    "credentials_mounted": false,
+    "source_only_readonly": true,
+    "writable_mount": "new output directory only",
+    "capabilities_dropped": "ALL"
+  },
+  "host_repository_imports": 0,
+  "model_calls": 0,
+  "source_pins": [
+    {
+      "path": "packages/core/src/lgax_core/guides.py",
+      "sha256": "d12fd0ab69dbb667c0369c007b6b8a5ceee689fcecde91e25af98805fb5f80f1"
+    },
+    {
+      "path": "scripts/export_research_guide.py",
+      "sha256": "212692040a2ebae37d4b97a503507bd3f1407afe8ac9d9f314273b9d6dbe1269"
+    },
+    {
+      "path": "tests/test_research_guides.py",
+      "sha256": "1cbcb20f91f94eca9df554a8d84d52c4e8fb7e480ea375aca8f3eb8971a1e983"
+    },
+    {
+      "path": "consumer-audit.json",
+      "sha256": "3d41407d8aea3f7c7da23df99bd5c46ea16eba6c6f25449d765b3a35e3257223"
+    },
+    {
+      "path": "verify_d2_consumer.py",
+      "sha256": "4024be216cc1ce0411ab5349570b4fadbebccc6d2a7dec5c1506fd855f04d76c"
+    },
+    {
+      "path": "official-references.zip",
+      "sha256": "7e48aa616026c8e1a6f028de92be492ecaad4192369f88c2b3c0df7e5582b473"
+    }
+  ],
+  "failures_preserved": [
+    {
+      "kind": "audit readback comparison",
+      "cause": "read_text normalized native CRLF before comparison",
+      "resolution": "use read_bytes == expected UTF8 bytes; all native CRLF input remains unchanged",
+      "product_failure": false
+    },
+    {
+      "kind": "reproducer static check",
+      "cause": "long import block and unbound loop variables in immediately invoked guard lambdas",
+      "resolution": "formatted imports and explicitly bound lambda defaults; four changed Python files Ruff PASS and final consumer audit rerun PASS",
+      "product_failure": false
+    },
+    {
+      "kind": "staged whitespace check",
+      "cause": "two original documentation stdout lines contain a space",
+      "resolution": "preserved original log privately and stored exact stdout/stderr in JSON receipt; Git whitespace check remains enabled",
+      "product_failure": false
+    }
+  ],
+  "final_reproducer_outputs_equal_to_visually_inspected_outputs": true
+}

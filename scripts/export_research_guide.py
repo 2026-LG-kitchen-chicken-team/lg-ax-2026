@@ -6,6 +6,7 @@ from pathlib import Path
 from lgax_core.guides import (
     build_concept_guide,
     build_official_guide,
+    build_official_reference_guide,
     render_guide_html,
     render_guide_markdown,
 )
@@ -17,6 +18,8 @@ def main(argv=None):
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--page-model")
     mode.add_argument("--concept-id")
+    mode.add_argument("--source-id", action="append", dest="source_ids", metavar="ID",
+                      help="repeat for explicitly selected official references; no page-model assignment")
     parser.add_argument("--brief", type=Path)
     parser.add_argument("--output-prefix", type=Path, required=True)
     parser.add_argument("--overwrite", action="store_true")
@@ -33,6 +36,8 @@ def main(argv=None):
     bundle = json.loads(args.bundle.read_text(encoding="utf-8"))
     if args.page_model:
         guide = build_official_guide(bundle, args.page_model)
+    elif args.source_ids:
+        guide = build_official_reference_guide(bundle, args.source_ids)
     else:
         brief = json.loads(args.brief.read_text(encoding="utf-8"))
         guide = build_concept_guide(bundle, brief, args.concept_id)

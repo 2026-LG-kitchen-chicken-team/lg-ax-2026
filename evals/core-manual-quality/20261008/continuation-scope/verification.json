@@ -1,0 +1,81 @@
+{
+  "record_id": "CORE-X1-CONTINUATION-SCOPE-01a10729-01",
+  "tests": {
+    "count": 7,
+    "exit_code": 0,
+    "log": "tests.log"
+  },
+  "ruff": {
+    "files": 3,
+    "exit_code": 0,
+    "log": "ruff.log"
+  },
+  "consumer": {
+    "exit_code": 0,
+    "receipt": "consumer-receipt.json"
+  },
+  "initial_failure": {
+    "exit_code": 1,
+    "log": "consumer-initial.log",
+    "cause": "Fixed DATA254 bundle was absent from the initial source-only copy; DATA PR is unmerged.",
+    "resolution": "Copy the already-received exact bundle e922c51d into the isolated copy; rerun only consumer.",
+    "source_or_test_changes_for_recovery": false,
+    "checks_weakened": false
+  },
+  "Docker_image": "sha256:36ad082dbccf05bc9cff7c4dc5766e9ab7ed8c42198b0b731cf3831c546aaaf0",
+  "Docker": {
+    "user": "65534:65534",
+    "network": "none",
+    "rootfs": "read-only",
+    "source_only_readonly": true,
+    "credentials_mounted": 0,
+    "capabilities_dropped": "ALL"
+  },
+  "host_repository_imports": 0,
+  "new_model_calls": 0,
+  "new_OCR_calls": 0,
+  "actual_planning_run": false,
+  "model_version": null,
+  "model_digest": null,
+  "usage": null,
+  "visual_receipt": "visual/render-receipt.json",
+  "new_paginated_A4_check": false,
+  "scope": "Reference display wording and preservation; not production page semantics or model quality/PM acceptance",
+  "docs": {
+    "checks": 2,
+    "exit_code": 0,
+    "new_docs": 5,
+    "relative_links": 144,
+    "source_archive_migration_verification": {
+      "source_files": 8,
+      "sections": 231,
+      "session_files": 28,
+      "body_bytes": 818663,
+      "relative_links": 128
+    },
+    "pinned_git_source_checked": false,
+    "receipt": "docs-receipt.json"
+  },
+  "documentation_failure_preserved": {
+    "cause": "Windows text write translated original LF README to CRLF in isolated copy.",
+    "resolution": "Restore original README bytes and insert only new owner update; original archive reconstruction verified.",
+    "initial_exit_codes": [
+      0,
+      1
+    ],
+    "checks_weakened": false
+  },
+  "exports_storage": {
+    "path": "reference-exports.zip",
+    "sha256": "f5ca2f73dfee4396bd7a7a41b18f474be90cc8a2bafb598b1e1017e7997839d5",
+    "bytes": 15239,
+    "members_byte_equal_to_consumer_receipt": true,
+    "native_CRLF_and_trailing_spaces_preserved": true
+  },
+  "staged_whitespace_failure_preserved": {
+    "cause": "Raw generated HTML/Markdown preserve native excerpt trailing spaces; standalone new files fail Git whitespace check.",
+    "resolution": "Package exact original HTML/Markdown bytes as ZIP; retain JSON, pins and screenshots separately.",
+    "consumer_output_edited": false,
+    "checks_weakened": false
+  }
+}

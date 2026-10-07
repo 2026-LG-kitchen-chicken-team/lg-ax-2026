@@ -1,18 +1,18 @@
 # 황대겸 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
-
-- 2026-10-07 R8 후속 인수: PM 고정5fdb에서도 공유 수정3/정상 항목 소실을 재현; 새27B tag/digest는 역사 버전과 다름. [담당 기록](2026-10-07/CORE-R8-CONSUMER-AUDIT-01a10729-01.md), PR247/248와 접수 수신을 확인. 실제 품질/필수 잔여 미완료.
-
-- 2026-10-07 CORE-R8-CONSUMER-AUDIT-01a10729-01: 고정 R8 e04에서 공유수정3회/정상 wire 형제 소실을 재현해 PM245에 인계했다. 실제 고객 원문·기존 Qwen 오류만 재사용했으며 새모델/콘셉트0이다. C1 실제27B 지원 실행은 중복하지 않는다.
-- [상세](2026-10-07/CORE-R8-CONSUMER-AUDIT-01a10729-01.md) · [고정 근거](../../../evals/core-manual-quality/20261007/r8-consumer-audit/README.md). 다음은 담당 수정/원 모델 결과 인수 후 같은 버전 검수. 의미 품질·전체 Done을 대신하지 않는다.
-
+- 2026-10-08 CORE-X1-CONTINUATION-SCOPE-01a10729-01: DATA259의5참조 쪽 경고를 받아 CORE 라벨/안내를 보완했다. 24source/관리14·쪽값 보존, 관련7검사/Ruff·소비 PASS, 실모델0.
+- [상세](2026-10-08/CORE-X1-CONTINUATION-SCOPE-01a10729-01.md) · [고정 검증·새 출력](../../../evals/core-manual-quality/20261008/continuation-scope/README.md). 생산 metadata 정의와 실제27B/기획/PM 인수는 미완료.
+- 2026-10-08 CORE-X1-D2-CONSUMER-01a10729-01: DATA254 canonical3/184source·기존 후기141·관리14원문을 소비하고, 모델 미확인·역할·조건을 보존하는 공식 참고자료42source 출력을 구현했다. 관련7검사/Ruff·화면3/인쇄33쪽 PASS, 실모델0.
+- [상세](2026-10-08/CORE-X1-D2-CONSUMER-01a10729-01.md) · [고정 검증·출력](../../../evals/core-manual-quality/20261008/d2-reference-consumer/README.md). 새 DATA 생산 전달은 수신했고 PM native/raw·실제기획/적용 인수는 미완료.
+- 2026-10-08 CORE-X1-REFERENCE-01a10729-01: 후기 참고자료 버전의 HTML/Markdown 표시를 원 값 보존으로 보완하고 DATA 관리 절의 생산 등록 전 소비 경계를 고정했다. 실모델0·기존 공식 인쇄 근거 재사용.
+- [상세](2026-10-08/CORE-X1-REFERENCE-01a10729-01.md) · [검증·인수 경계](../../../evals/core-manual-quality/20261008/x1-reference-intake/README.md). 실제27B/기획 원응답·PM/DATA 인수는 미완료.
+- 2026-10-07 CORE-X1-GUIDE-PRINT-01a10729-01: 공식 안내 print CSS를 보완했다. 실제3모델·15발췌의 원문/ID와 JSON·MD·화면본문 동일, A4 3/4/4쪽 판독 완료. 정확모델 FAQ·실제 콘셉트 설명서와 PM 인수는 별도 미완료다.
+- [상세](2026-10-07/CORE-X1-GUIDE-PRINT-01a10729-01.md) · [고정 근거](../../../evals/core-manual-quality/20261007/x1-guide-print/README.md). 다음은 담당 수정/원 모델 결과 인수 후 같은 버전 검수. 의미 품질·전체 Done을 대신하지 않는다.
 - 2026-10-07 CORE-D3-CONSUMER-INTAKE-01a10729-01: DATA PR244 고정 경쟁근거와 원 후기848850의 설치 제약·긍정/잔여 불편4구간을 소비 준비로 대조. manifest8/발췌12/hash·상태 확인, 새모델0.
 - [상세](2026-10-07/CORE-D3-CONSUMER-INTAKE-01a10729-01.md) · [소비 조건·격리 수신](../../../evals/core-manual-quality/20261007/d3-consumer-intake/README.md). 키친핏 대안의 설치 제약·비교 불일치·미확인 상태 보존; P0/첫 문제/실제 흐름 인수는 대기.
-
 - 2026-10-07 CORE-MANUAL-QUEUE-PREFLIGHT-01a10729-01: 최신 C1~C4/X1 큐와 실제 소비 계약 대조; 기존 Qwen3.5:27b/Q4_K_M·Ollama0.34.0·digest64ae5b1d의 실제 실행/원12파일 동일 확인. 새모델·6사례 재채점0.
 - [상세](2026-10-07/CORE-MANUAL-QUEUE-PREFLIGHT-01a10729-01.md) · [정확 버전·기존 결과·선행별 다음 행동](../../../evals/core-manual-quality/20261007/manual-queue-preflight/README.md). 사용자 선택대로 PM의 준비된 LG27B와 P0, DATA D1/D2를 인계받아 실제 자료 CORE 연결. 판단 의존만 보류하고 독립 필수 작업 계속; PM 제품/공통 파일 중복 편집0.
-
 - 2026-10-07 PR221 리뷰5437222152: 재현기 import 전 source38파일/hash 검증을 추가하고 원 native 실패(e1a6ec/closure SHA0477)와 후속8ec study의5회/33,237토큰·런타임 완료/의미 FAIL을 수신 시점으로 구분한다. 원 응답·166검사 수신·과거 기록은 보존하고 PM 제품 수정은 중복하지 않는다.
 - 2026-10-07 CORE-R5-PR218-AUDIT-01a10729-01: PR218 head0d920df·merge8ec1e8a의 관련166 PASS/skip0·원3/선택5호출 동일·Gap27 연결 대조 완료. 모델0; 새 실모델 품질/독립 평가/부모 인수는 미완료.
 - [상세](2026-10-07/CORE-R5-PR218-AUDIT-01a10729-01.md) · [고정 검수와 연결 근거](../../../evals/core-manual-quality/20261007/r5-independent/pr218-head-audit/README.md). 다음은 별도 PM CORE 수정의 정확 head·고정 원 결과 및 DATA 실제 input-only 전송 인계 후 본인 의미 대조. 최신 런타임 완료를 품질 승인으로 확대하지 않는다.
@@ -22,6 +22,9 @@
 - [상세](2026-10-06/CORE-SEMANTIC-GROUNDING-01a10729-01.md) · [원 반례·검사](../../../evals/core-manual-quality/20261006/semantic-grounding/README.md). PR198 CI4/4·보고수신 완료는 별도, DATA conflicting1/WEB·실모델 품질/PM 인수·부모Done 남음.
 - 2026-10-06 CORE-METADATA-01a10729-01: 중복 판단 상충 거절·불확실성 사유/질문/누락 정보 최종 hold 전달. 관련130/전체1475통과; 고정 DATA190 조합 conflicting1은 DATA 반영 전 미완료.
 - [상세](2026-10-06/CORE-METADATA-01a10729-01.md) · [원 반례·검사·담당 인계](../../../evals/core-manual-quality/20261006/metadata-consistency/README.md). 원 R6추가5044/49277관측·응답유실은 별도 보존, 새모델0·실모델품질/PM/부모Done 남음.
+- 2026-10-07 R8 후속 인수: PM 고정5fdb에서도 공유 수정3/정상 항목 소실을 재현; 새27B tag/digest는 역사 버전과 다름. [담당 기록](2026-10-07/CORE-R8-CONSUMER-AUDIT-01a10729-01.md), PR247/248와 접수 수신을 확인. 실제 품질/필수 잔여 미완료.
+- 2026-10-07 CORE-R8-CONSUMER-AUDIT-01a10729-01: 고정 R8 e04에서 공유수정3회/정상 wire 형제 소실을 재현해 PM245에 인계했다. 실제 고객 원문·기존 Qwen 오류만 재사용했으며 새모델/콘셉트0이다. C1 실제27B 지원 실행은 중복하지 않는다.
+- [상세](2026-10-07/CORE-R8-CONSUMER-AUDIT-01a10729-01.md) · [고정 근거](../../../evals/core-manual-quality/20261007/r8-consumer-audit/README.md). 다음은 담당 수정/원 모델 결과 인수 후 같은 버전 검수. 의미 품질·전체 Done을 대신하지 않는다.
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
 
