@@ -9,8 +9,10 @@ import unittest
 import warnings
 import zipfile
 from pathlib import Path
+from unittest.mock import patch
 
 from scripts.package_submission import (
+    APPROVED_AUTHORIZATION_NOTES,
     GUIDE_PATH,
     MANIFEST_PATH,
     REQUIRED_FILES,
@@ -23,6 +25,95 @@ from scripts.package_submission import (
     unpack,
     verify,
 )
+
+HISTORICAL_NOTES = (
+    ("data/research/P2-DATA-001-stage123-20261005/execution-context.json",
+     "269edbbef899f54051575e3e0eabf32b8ced75d07f74c3c529f48c9df3e33761",
+     "/authorization", "ba7fcd39b9e84570889239d310a5065c65606dacf24dee875c4f0db6289bfaaf"),
+    ("docs/history/project/20261006/manifest.json",
+     "26d718fd723f3ebc7e73eb11c7d24f8be6173163bd340c052af0a7636afb5f29",
+     "/additional_sources_note/authorization", "8871207a1414b8763e6de9efa89c4ab08c2a999051a16579b8d192d4a96d8896"),
+    ("evals/core-manual-quality/20261006/integration-r4-audit/pm-review-correction.json",
+     "1c383018fefd37398a3c80cfd8571a6f90fbd42ed5f8c1f841447244dac97d7c",
+     "/authorization", "edb349f7d197401fbef340a0e8d47ea067f5e55b0830466b2183d17b708d7a28"),
+)
+
+
+class ApprovedHistoricalAuthorizationTests(unittest.TestCase):
+    """Real immutable note bytes, with adversarial copies and same-file mutations."""
+
+    def originals(self):
+        for name, file_sha, pointer, value_sha in HISTORICAL_NOTES:
+            data = (Path(__file__).resolve().parents[1] / name).read_bytes()
+            self.assertEqual(digest(data), file_sha, name)
+            yield name, data, pointer, value_sha
+
+    def replace_note(self, data, pointer, value):
+        document = json.loads(data)
+        parts = pointer.removeprefix("/").split("/")
+        parent = document
+        for part in parts[:-1]:
+            parent = parent[part]
+        parent[parts[-1]] = value
+        return json.dumps(document, ensure_ascii=False).encode("utf-8")
+
+    def test_exact_three_historical_note_bytes_and_values_pass(self):
+        self.assertEqual(APPROVED_AUTHORIZATION_NOTES, frozenset(HISTORICAL_NOTES))
+        for name, data, pointer, value_sha in self.originals():
+            with self.subTest(name=name):
+                value = json.loads(data)
+                for part in pointer.removeprefix("/").split("/"):
+                    value = value[part]
+                self.assertIsInstance(value, str)
+                encoded = json.dumps(value, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+                self.assertEqual(digest(encoded), value_sha)
+                before = bytes(data)
+                _check_content(name, data)
+                self.assertEqual(data, before)
+
+    def test_original_note_copies_other_paths_and_whole_file_changes_are_rejected(self):
+        for name, data, _, _ in self.originals():
+            with self.subTest(name=name):
+                for copy_name, changed in [("copies/" + name, data), (name, data + b" ")]:
+                    with self.assertRaisesRegex(PackageError, "Literal credential field"):
+                        _check_content(copy_name, changed)
+
+    def test_changed_note_literal_and_extra_nested_credential_are_rejected(self):
+        synthetic_token = "Z" * 64
+        for name, data, pointer, _ in self.originals():
+            with self.subTest(name=name):
+                with self.assertRaisesRegex(PackageError, "Literal credential field"):
+                    _check_content(name, self.replace_note(data, pointer, synthetic_token))
+                document = json.loads(data)
+                # Keep the original permission note while adding a separate credential.
+                document["nested"] = [{"api_key": synthetic_token}]
+                with self.assertRaisesRegex(PackageError, "Literal credential field"):
+                    _check_content(name, json.dumps(document, ensure_ascii=False).encode("utf-8"))
+
+    def test_pointer_and_value_sha_must_also_match_the_fixed_note(self):
+        # A mistaken future approval cannot rely on only the path and file digest.
+        for name, data, pointer, value_sha in self.originals():
+            for wrong in [(name, digest(data), pointer + "/other", value_sha),
+                          (name, digest(data), pointer, "0" * 64)]:
+                with (
+                    self.subTest(name=name, wrong_pointer=wrong[2]),
+                    patch("scripts.package_submission.APPROVED_AUTHORIZATION_NOTES", frozenset({wrong})),
+                    self.assertRaisesRegex(PackageError, "Literal credential field"),
+                ):
+                    _check_content(name, data)
+
+    def test_secret_patterns_databases_and_personal_identifiers_precede_notes(self):
+        for name, data, _, _ in self.originals():
+            with self.subTest(name=name):
+                for content in [data + b"hf_" + b"z" * 32, b"SQLite format 3\0" + data]:
+                    with self.assertRaisesRegex(PackageError, "Credential/database content"):
+                        _check_content(name, content)
+                for field, value, message in [("student_id", "20999999", "Student identifier"),
+                                              ("phone", "010-0000-0000", "Personal mobile")]:
+                    document = json.loads(data)
+                    document["private_copy"] = [{field: value}]
+                    with self.assertRaisesRegex(PackageError, message):
+                        _check_content(name, json.dumps(document, ensure_ascii=False).encode("utf-8"))
 
 
 class SubmissionPackageTests(unittest.TestCase):

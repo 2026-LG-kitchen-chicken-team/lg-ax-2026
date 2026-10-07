@@ -28,7 +28,11 @@ class PlanningQualityIntegrationTests(unittest.TestCase):
         for post in transport.posts:
             if post["skill"] in ("concept_draft", "semantic_review"):
                 quality = post["context"]["quality_context"]
-                self.assertEqual(quality["representation"], "derived_annotations_column_table_v2")
+                expected_representation = (
+                    "derived_annotations_column_table_v2_semantic_links_v1"
+                    if post["skill"] == "semantic_review" else "derived_annotations_column_table_v2"
+                )
+                self.assertEqual(quality["representation"], expected_representation)
                 support = self.annotation_rows(quality["feature_support"],
                                                ("gap_id", "support_basis", "support_status", "valid"))
                 residual = self.annotation_rows(quality["residual_matrix"],
@@ -39,7 +43,38 @@ class PlanningQualityIntegrationTests(unittest.TestCase):
                 self.assertEqual(residual[0]["resolution"], "remaining")
                 self.assertFalse(quality["concept_lineage"]["semantic_accuracy_verified"])
         semantic = next(row for row in transport.posts if row["skill"] == "semantic_review")
-        link = semantic["context"]["quality_context"]["concept_lineage"]["candidates"][0]["links"][0]
+        call = next(row for row in result["model_calls"] if row["skill_id"] == "semantic_review")
+        original_lineage = call["request_context"]["quality_context"]["concept_lineage"]
+        restored_lineage = deepcopy(semantic["context"]["quality_context"]["concept_lineage"])
+        canonical_concepts = {candidate["id"]: candidate for candidate in semantic["context"]["concepts"]}
+        for candidate, original in zip(restored_lineage["candidates"], original_lineage["candidates"], strict=True):
+            self.assertEqual(candidate["concept_id"], original["concept_id"])
+            self.assertIsInstance(original["links"], list, "full request trace must retain original links")
+            columns = tuple(original["links"][0])
+            self.assertIn("gap_id", columns)
+            self.assertIn("need_id", columns)
+            self.assertIn("review_evidence_ids", columns)
+            self.assertIn("manual_evidence_ids", columns)
+            candidate["links"] = self.annotation_rows(candidate["links"], columns)
+            self.assertEqual(candidate["links"], original["links"], "all original link fields and wording must restore")
+            self.assertEqual(candidate["gap_ids"], [link["gap_id"] for link in original["links"]])
+            self.assertEqual(candidate["numeric_mentions"], original["numeric_mentions"])
+            self.assertEqual(candidate["valid"], original["valid"])
+            # The existing v2 projection already keeps these repeated candidate
+            # facts in canonical concepts. Semantic link tables must not lose them.
+            for field in ("evidence_ids", "requirements", "assumptions"):
+                self.assertEqual(original[field], canonical_concepts[original["concept_id"]][field], field)
+        self.assertEqual({key: value for key, value in restored_lineage.items() if key != "candidates"},
+                         {key: value for key, value in original_lineage.items() if key != "candidates"})
+        self.assertEqual(call["prompt_context"], semantic["context"], "record the exact submitted representation")
+        for field in ("sources", "features", "needs", "gaps", "concepts", "semantic_grounding_requirements"):
+            self.assertEqual(semantic["context"][field], call["request_context"][field], field)
+        self.assertIn("gap_id identifies each row", semantic["context"]["quality_context"]["reference"])
+        self.assertIn("zip(columns, values_row)", semantic["context"]["quality_context"]["reference"])
+        trace = next(row for row in result["trace"] if row["operation"] == "semantic_review")
+        self.assertEqual(trace["inputs"], call["request_context"], "trace must preserve full uncompressed input")
+        link = restored_lineage["candidates"][0]["links"][0]
+        self.assertEqual(link["gap_id"], result["output"]["gaps"][0]["id"])
         self.assertEqual(link["need_id"], result["output"]["needs"][0]["id"])
         self.assertTrue(link["review_evidence_ids"] and link["manual_evidence_ids"])
         self.assertTrue(any(row["operation"] == "quality_context" for row in result["trace"]))

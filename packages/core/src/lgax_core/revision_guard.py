@@ -117,6 +117,10 @@ def revision_schema(next_count: int, *, review_evidence_ids: list[str] | None = 
     include(properties)
     return {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
             "properties": properties, "required": list(properties), "additionalProperties": False,
+            "allOf": [{"if": {"properties": {"status": {"const": "held"}}, "required": ["status"]},
+                       "then": {"properties": {"questions": {"minItems": 1},
+                                                "hold_reasons": {"minItems": 1},
+                                                "result": {"properties": {"concepts": {"maxItems": 0}}}}}}],
             "$defs": included}
 
 

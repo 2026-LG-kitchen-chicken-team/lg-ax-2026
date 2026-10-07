@@ -109,6 +109,7 @@ beforeEach(async () => {
   (globalThis as unknown as Record<string, unknown>).IS_REACT_ACT_ENVIRONMENT = true;
   container = document.createElement('div'); document.body.append(container); root = createRoot(container); downloads = [];
   vi.spyOn(api, 'loadBootstrap').mockResolvedValue(FIXTURE_BOOTSTRAP);
+  vi.spyOn(WorkspaceClient.prototype, 'bootstrap').mockResolvedValue(FIXTURE_BOOTSTRAP);
   vi.spyOn(WorkspaceClient.prototype, 'listProjects').mockResolvedValue({ projects: [b, a], contract_version: '0.1.0' });
   vi.spyOn(WorkspaceClient.prototype, 'getProject').mockImplementation(async id => id === a.project.id ? a : b);
   vi.spyOn(WorkspaceClient.prototype, 'listRuns').mockImplementation(async id => ({ runs: id === a.project.id ? [run(id, firstId), run(id, baseId, firstId)] : [run(id, 'run-b-1')], contract_version: '0.1.0' }));
@@ -131,8 +132,10 @@ describe('App request form authentication boundaries', () => {
   });
 
   it('preserves entered fields and the successful save message when connected project creation changes the scope', async () => {
-    vi.mocked(api.loadBootstrap).mockResolvedValue({ ...FIXTURE_BOOTSTRAP,
-      products: [...FIXTURE_BOOTSTRAP.products, { model_id: 'FRIDGE-B', product_group: 'fridge', name: '추가 검토 모델', document_version: '1.0' }] });
+    const expandedBootstrap: typeof FIXTURE_BOOTSTRAP = { ...FIXTURE_BOOTSTRAP,
+      products: [...FIXTURE_BOOTSTRAP.products, { model_id: 'FRIDGE-B', product_group: 'fridge', name: '추가 검토 모델', document_version: '1.0' }] };
+    vi.mocked(api.loadBootstrap).mockResolvedValue(expandedBootstrap);
+    vi.mocked(WorkspaceClient.prototype.bootstrap).mockResolvedValue(expandedBootstrap);
     // Refresh the mounted App so the controlled bootstrap response includes the second valid model.
     await act(async () => { root.unmount(); }); root = createRoot(container);
     await act(async () => { root.render(createElement(App)); });
