@@ -87,7 +87,7 @@ class RecordedR5GroundingTests(unittest.TestCase):
     def test_difference_violation_is_not_forced_to_satisfied_by_quote_schema(self):
         payload = fixtures.read('normal.input.json')
         output = fixtures.read('normal.fixture-output.json')
-        context = {**payload, **output}
+        context = {**payload, **output, 'input_sha256': input_digest(payload), 'output_sha256': input_digest(output)}
         report = fixtures.semantic_for(context)
         row = next(r for r in report['quality_assessments'] if r['criterion'] == 'difference_from_current_features')
         row.update(verdict='violation', source_quotes=[], reason='Fixture: difference is not established')
@@ -107,6 +107,7 @@ class RecordedR5GroundingTests(unittest.TestCase):
     def test_held_question_shape_does_not_supply_or_accept_a_candidate(self):
         value = deepcopy(next(c for c in self.cases['normal']['calls'] if c['skill_id'] == 'review_revision')['data'])
         value['questions'] = ['Authored fixture question; actual semantic necessity is not verified']
+        value['hold_reasons'] = ['Authored fixture missing source; actual semantic necessity is not verified']
         self.assertFalse(list(Draft202012Validator(revision_schema(2)).iter_errors(value)))
         self.assertEqual(value['status'], 'held')
         self.assertEqual(value['result']['concepts'], [])
