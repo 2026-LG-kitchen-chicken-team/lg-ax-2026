@@ -81,7 +81,8 @@ class WorkspaceClient:
         return self._request("GET", f"/api/research/bundles/{bundle_id}", "ResearchBundle")
 
     def create_research_run(self, bundle_id, goal, constraints=None, previous_run_id=None,
-                            review_feedback: list[dict] | None = None):
+                            review_feedback: list[dict] | None = None,
+                            selected_source_ids: list[str] | None = None, bundle_sha256: str | None = None):
         self._identifier(bundle_id)
         if previous_run_id is not None:
             self._identifier(previous_run_id)
@@ -89,6 +90,10 @@ class WorkspaceClient:
                    "previous_run_id": previous_run_id}
         if review_feedback is not None:
             payload["review_feedback"] = review_feedback
+        if selected_source_ids is not None:
+            payload["selected_source_ids"] = selected_source_ids
+        if bundle_sha256 is not None:
+            payload["bundle_sha256"] = bundle_sha256
         return self._request("POST", "/api/research/planning-runs", "PlanningBrief", payload, timeout=600)
 
     def get_research_run(self, run_id):

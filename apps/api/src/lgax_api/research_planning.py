@@ -55,7 +55,7 @@ def _safe_cause(code: Any, reason: Any) -> dict:
     return result
 
 
-def public_research_brief(brief: dict, bundle_sha256: str) -> dict:
+def public_research_brief(brief: dict, bundle_sha256: str, bundle: dict | None = None) -> dict:
     """Project every response, including old raw rows, without altering the private snapshot."""
     result = deepcopy(brief)
     raw = brief["runtime"]
@@ -113,6 +113,17 @@ def public_research_brief(brief: dict, bundle_sha256: str) -> dict:
                         projected["field"] = issue["field"]
                     runtime["validation_issues"].append(projected)
     result["runtime"] = runtime
+    from .research_projection import project_source_statistics
+
+    runtime.update(project_source_statistics(brief, bundle))
+    selection = raw.get("user_selected_source_ids")
+    if (isinstance(selection, list) and selection
+            and all(isinstance(value, str) and value in source_ids for value in selection)
+            and len(selection) == len(set(selection))
+            and set(selection) == source_ids
+            and raw.get("input_scope") in {"full_bundle", "user_selected_sources"}):
+        runtime["user_selected_source_ids"] = deepcopy(selection)
+        runtime["input_scope"] = raw["input_scope"]
     return result
 
 
@@ -218,7 +229,7 @@ class ResearchWorkspace:
 
     def get_run(self, run_id: str, principal) -> dict:
         row = self._row(run_id, principal)
-        return public_research_brief(json.loads(row[3]), row[2])
+        return public_research_brief(json.loads(row[3]), row[2], self.get_bundle(row[1]))
 
     def _failed_attempt(self, attempt_id: str, error: Exception, code: str, reason: str, brief: Any) -> None:
         """Retain failure state privately; no exception messages or credential details are copied."""
@@ -236,10 +247,13 @@ class ResearchWorkspace:
 
     def create_run(self, payload: dict, principal) -> dict:
         principal.require_write()
-        if set(payload) - {"bundle_id", "goal", "constraints", "previous_run_id", "review_feedback"}:
+        if set(payload) - {"bundle_id", "goal", "constraints", "previous_run_id", "review_feedback",
+                           "selected_source_ids", "bundle_sha256"}:
             raise DomainError("INVALID_ARGUMENT", "허용된 기획 입력만 보내 주세요.")
         bundle_id = _identifier(payload.get("bundle_id"))
         bundle = self.get_bundle(bundle_id)
+        if "bundle_sha256" in payload and payload["bundle_sha256"] != self.digests[bundle_id]:
+            raise DomainError("DATASET_MISMATCH", "선택한 자료가 갱신됐습니다. 자료를 다시 확인해 주세요.")
         goal, constraints = payload.get("goal"), payload.get("constraints")
         if (not isinstance(goal, str) or not 1 <= len(goal.strip()) <= 1000
                 or not isinstance(constraints, list) or len(constraints) > 10
@@ -252,6 +266,22 @@ class ResearchWorkspace:
             if row[0] != principal.id or row[1] != bundle_id or row[2] != self.digests[bundle_id]:
                 raise DomainError("DATASET_MISMATCH", "같은 소유자·자료 버전의 실행에서만 조건을 변경할 수 있습니다.")
             previous = json.loads(row[3])
+        all_ids = [source["source_id"] for source in bundle["sources"]]
+        selected = payload.get("selected_source_ids", all_ids)
+        if (not isinstance(selected, list) or not selected
+                or any(not isinstance(value, str) or value not in all_ids for value in selected)
+                or len(selected) != len(set(selected))):
+            raise DomainError("INVALID_ARGUMENT", "현재 자료에 있는 근거를 중복 없이 선택해 주세요.")
+        if previous is not None:
+            inherited = [row["source_id"] for row in previous["source_facts"]]
+            if "selected_source_ids" in payload and set(selected) != set(inherited):
+                raise DomainError("DATASET_MISMATCH", "조건 수정은 이전 근거 범위를 유지합니다. 다른 근거는 새 기획으로 시작해 주세요.")
+            selected = inherited
+        selected_set = set(selected)
+        bundle["sources"] = [source for source in bundle["sources"] if source["source_id"] in selected_set]
+        selected = [source["source_id"] for source in bundle["sources"]]
+        input_scope = (previous["runtime"].get("input_scope", "full_bundle") if previous is not None
+                       else "user_selected_sources" if "selected_source_ids" in payload else "full_bundle")
         normalized_goal, normalized_constraints = goal.strip(), [item.strip() for item in constraints]
         feedback = payload.get("review_feedback")
         if "review_feedback" in payload:
@@ -297,8 +327,10 @@ class ResearchWorkspace:
             except DomainError as error:
                 raise DomainError("CONTRACT_MISMATCH", "기획 실행 식별자가 규격과 다릅니다.",
                                   {"reason": "invalid_run_id"}) from error
+            brief["runtime"]["user_selected_source_ids"] = selected
+            brief["runtime"]["input_scope"] = input_scope
             encoded = json.dumps(brief, ensure_ascii=False, allow_nan=False)
-            public = public_research_brief(brief, self.digests[bundle_id])
+            public = public_research_brief(brief, self.digests[bundle_id], bundle)
             with self.connect() as connection:
                 connection.execute("INSERT INTO research_runs VALUES (?, ?, ?, ?, ?)",
                                    (run_id, principal.id, bundle_id, self.digests[bundle_id], encoded))
