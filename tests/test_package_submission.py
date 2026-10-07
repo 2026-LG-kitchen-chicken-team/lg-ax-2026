@@ -95,10 +95,12 @@ class ApprovedHistoricalAuthorizationTests(unittest.TestCase):
         for name, data, pointer, value_sha in self.originals():
             for wrong in [(name, digest(data), pointer + "/other", value_sha),
                           (name, digest(data), pointer, "0" * 64)]:
-                with self.subTest(name=name, wrong_pointer=wrong[2]):
-                    with patch("scripts.package_submission.APPROVED_AUTHORIZATION_NOTES", frozenset({wrong})):
-                        with self.assertRaisesRegex(PackageError, "Literal credential field"):
-                            _check_content(name, data)
+                with (
+                    self.subTest(name=name, wrong_pointer=wrong[2]),
+                    patch("scripts.package_submission.APPROVED_AUTHORIZATION_NOTES", frozenset({wrong})),
+                    self.assertRaisesRegex(PackageError, "Literal credential field"),
+                ):
+                    _check_content(name, data)
 
     def test_secret_patterns_databases_and_personal_identifiers_precede_notes(self):
         for name, data, _, _ in self.originals():
