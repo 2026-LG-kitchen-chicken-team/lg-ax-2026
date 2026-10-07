@@ -1,0 +1,71 @@
+{
+  "approval": {
+    "id": 6029600741,
+    "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/14#issuecomment-6029600741",
+    "author": "jeongiryang",
+    "created_at": "2026-10-07T02:28:17Z",
+    "body": "LGAX-R5-FR01-GOLD-APPROVAL-20261007\n\n요청 [6029219408](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/14#issuecomment-6029219408)의 FR01 정답 연결만 승인합니다. `T876MEE1H1-MANUAL-F10-FOOD`는 MFL71401557 Rev.00_032526 원문19쪽의 선반 분리 전에 식품을 치우는 조건이며, 기존 F10은 선반 고리를 빼는 동작입니다. 원 text SHA `11212c8d4c0a986100451a8693f76ddc93b5a6de5b5b0ee2ecd502bb5cd48a5b`·판본·위치·PR206 연결표·PR200 원225행을 PM 보조 독립 읽기 대조했습니다.\n\n이 ID로 **같은 고정225행/11질문을 오프라인 재채점한 새 산출물**을 제출하세요. 다른10 Gold·질문/입력·모델/설정·원순위와 원F10 근거는 그대로 보존합니다. 사후 정답 정정이라고 표시하고 질문11개를 분모로 하며 실패행/다중 Gold의 기존 규칙을 유지합니다. 기존 공식점수 null을 원파일에서 덮어쓰지 않고 새 채점·근거SHA·이 승인 댓글을 연결한 작은 PR로 제출합니다. no-gold4의 의미 판단은 별도이고 새 모델/OCR 호출은 승인하지 않습니다.\n\n자동 표 구조는 현재 자동 cell/graph 출력이 없어 정확도/오류수 null을 유지합니다. PM은 기존 #13 자료 처리의 producer와 공통 Evidence adapter를 조율하고, 신진하는 실제 producer commit·PDF SHA/페이지영역·셀/모델/단위/각주 출력 수신 후 원문 대조를 맡습니다. 기존 수동144검수표를 자동 출력/성능으로 바꾸지 않습니다. 계약·판단 코드 중복 편집이나 새 OCR 비용/모델 호출은 이 정답 승인 범위가 아닙니다. 자동화 OFF입니다.\n"
+  },
+  "source_PR200_head": "a26b6458118157fa0513218414f24abd6eae4b2a",
+  "original_225_sha256": "ac215807a49c989e68cfa80503adcbb104ff418dbfce72a7beaafdda57462de4",
+  "Gold_version": "PM-FR01-corrected-20261007-offline-v1",
+  "legacy_FR01_Gold_preserved": [
+    "T876MEE1H1-MANUAL-F10"
+  ],
+  "FR01_only_new_Gold": [
+    "T876MEE1H1-MANUAL-F10-FOOD"
+  ],
+  "other_10_Gold_changed": false,
+  "unique_question_denominator": 11,
+  "failure_rule": "each failed saved repeat contributes zero; none dropped; five repeats reduced within each unique question",
+  "failed_original_attempts": 0,
+  "methods": [
+    {
+      "method": "bge_m3_filtered",
+      "denominator_unique_queries": 11,
+      "hit_at_1": 0.6363636363636364,
+      "recall_at_3": 1.0,
+      "mrr_at_3": 0.803030303030303,
+      "exact_fractions": {
+        "hit_at_1": "7/11",
+        "recall_at_3": "1",
+        "mrr_at_3": "53/66"
+      },
+      "FR01_rank": 2,
+      "post_measurement_Gold_correction": true,
+      "independent_final_evaluation": false
+    },
+    {
+      "method": "bge_m3_filtered_reranker",
+      "denominator_unique_queries": 11,
+      "hit_at_1": 0.6363636363636364,
+      "recall_at_3": 0.9090909090909091,
+      "mrr_at_3": 0.7575757575757576,
+      "exact_fractions": {
+        "hit_at_1": "7/11",
+        "recall_at_3": "10/11",
+        "mrr_at_3": "25/33"
+      },
+      "FR01_rank": 2,
+      "post_measurement_Gold_correction": true,
+      "independent_final_evaluation": false
+    },
+    {
+      "method": "bm25_filtered",
+      "denominator_unique_queries": 11,
+      "hit_at_1": 0.6363636363636364,
+      "recall_at_3": 0.8636363636363636,
+      "mrr_at_3": 0.7575757575757576,
+      "exact_fractions": {
+        "hit_at_1": "7/11",
+        "recall_at_3": "19/22",
+        "mrr_at_3": "25/33"
+      },
+      "FR01_rank": 3,
+      "post_measurement_Gold_correction": true,
+      "independent_final_evaluation": false
+    }
+  ],
+  "new_model_search_OCR_calls": 0,
+  "source_quality_scope": "public authored development questions; post-measurement Gold correction; not heldout performance"
+}

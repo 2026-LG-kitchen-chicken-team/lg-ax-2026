@@ -5,12 +5,17 @@ import unittest
 from copy import deepcopy
 from pathlib import Path
 
+import test_planning_agent as fixtures
 from lgax_core.errors import DomainError
 from lgax_core.model_client import ModelConfig, OllamaAdapter, StructuredModelClient
 from lgax_core.prompt_context import model_context
-from lgax_core.semantic_review import INSTRUCTIONS, schema_for_review, semantic_grounding_requirements, semantic_model_context
+from lgax_core.semantic_review import (
+    INSTRUCTIONS,
+    schema_for_review,
+    semantic_grounding_requirements,
+    semantic_model_context,
+)
 from lgax_core.source_boundary import SourceBoundary
-import test_planning_agent as fixtures
 
 ROOT = Path(__file__).resolve().parents[1]
 ARTIFACT = ROOT / 'evals/pm-prototype/20261007/r5-core/semantic-prompt-counterexample.json'
@@ -93,7 +98,11 @@ class RecordedSemanticPromptTests(unittest.TestCase):
         self.assertIn('zip(columns, values_row)', projected['quality_context']['reference'])
         for key in context:
             if key != 'quality_context':
-                self.assertEqual(projected[key], expected[key])
+                value = projected[key]
+                restored = ([dict(zip(value['columns'], row, strict=True)) for row in value['values']]
+                            if key in ('needs', 'desired_outcomes', 'gaps', 'review_assessments', 'gap_assessments')
+                            and isinstance(value, dict) else value)
+                self.assertEqual(restored, expected[key])
         self.assertEqual(projected['sources'], self.case['payload']['sources'])
         self.assertEqual(projected['semantic_grounding_requirements'], semantic_grounding_requirements(
             self.case['payload'], self.case['current_output']))

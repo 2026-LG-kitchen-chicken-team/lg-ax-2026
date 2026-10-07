@@ -491,7 +491,7 @@ function cell(text: string): string {
   return text.replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
 }
 
-const DECISION_TEXT: Record<string, string> = { accept: '계약 검사 통과(의미 검증 아님)', hold: '보류', revise: '수정 중', unresolved: '미해결 종료' };
+const DECISION_TEXT: Record<string, string> = { accept: '계약 검사 통과(의미 검증 아님)', hold: '보류', revise: '수정 필요', unresolved: '미해결 종료' };
 const STATUS_TEXT: Record<string, string> = { completed: '완료', held: '보류', failed: '실패' };
 export const RESOLUTION_TEXT: Record<string, string> = { resolved: '불편 해소', remaining: '불편 남음', unknown: '해소 여부 알 수 없음' };
 export const POLARITY_TEXT: Record<string, string> = { complaint: '불편', positive: '긍정', conflicting: '상충', irrelevant: '무관', uncertain: '불확실' };

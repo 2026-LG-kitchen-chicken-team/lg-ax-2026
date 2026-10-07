@@ -1,0 +1,108 @@
+{
+  "record_kind": "PM assistant CORE implementation validation, not live quality acceptance",
+  "base_source_commit": "8ec1e8a51faabd6db032e52245680bef4229f93f",
+  "tested_code_commit": "297c65a48c81137adddd317e194a68b335ae27c1",
+  "draft_commits": [
+    "12b3a59fd1f1aac15414576ac36643091d248f26",
+    "297c65a48c81137adddd317e194a68b335ae27c1"
+  ],
+  "validator_sha256": "fe8bfc4bf68a60b60bcd530f862436f5bf21906ee8a338789df0dfed4ce243a4",
+  "success_receipt": {
+    "execution_id": "pm-r6-upstream-core-3b864e5708bf4e888b54e2fb164636af",
+    "sha256": "214c22ca5da9d3dcaebcf31471f3107cc122e3f79245ba94779958c5648765d3"
+  },
+  "original_failed_validation_preserved": {
+    "execution_id": "pm-r6-upstream-core-c83bea858e704693af4bcdc236629797",
+    "receipt_sha256": "0614228bcb6c7c94405433140e9048af6f8286143e39a60ca39b93f910541d48",
+    "result": "181 ran, 2 active-report replay-mode callsite errors; 2 Ruff import ordering errors. Raw fixture/model/source bytes preserved."
+  },
+  "boundary": {
+    "backend": "docker",
+    "image_id": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+    "role": "validator",
+    "uid": 1000,
+    "readonly_root": true,
+    "caps_dropped": true,
+    "no_new_privileges": true,
+    "network": "none",
+    "mount_targets": [
+      "/artifacts",
+      "/workspace"
+    ],
+    "publisher_credentials_mounted": false,
+    "ai_profile_mounted": false
+  },
+  "validation": {
+    "returncode": 0,
+    "test_returncode": 0,
+    "ruff_returncode": 0,
+    "ruff_command": [
+      "-m",
+      "ruff",
+      "check",
+      "packages/core/src/lgax_core/upstream_semantics.py",
+      "packages/core/src/lgax_core/semantic_review.py",
+      "packages/core/src/lgax_core/planning_agent.py",
+      "tests/test_upstream_semantics.py",
+      "tests/test_planning_agent.py",
+      "tests/test_planning_quality_integration.py",
+      "tests/test_r5_semantic_prompt.py"
+    ],
+    "command": [
+      "-m",
+      "unittest",
+      "test_upstream_semantics",
+      "test_r5_semantic_prompt",
+      "test_planning_quality_integration",
+      "test_prompt_context_budget",
+      "test_model_prompt_limits",
+      "test_r5_grounding",
+      "test_concept_lineage",
+      "test_planning_agent",
+      "test_no_candidate_review",
+      "test_no_candidate_termination",
+      "test_semantic_review",
+      "test_semantic_recorded_reviews",
+      "test_revision_guard",
+      "test_recorded_hold_feedback",
+      "test_recorded_stage_alignment",
+      "test_stage_metadata",
+      "-v"
+    ],
+    "source_files": 3762,
+    "source_changed": [],
+    "source_manifest_sha256": "a8169036d922f5067b2c5c2e7df4a3d25cf199578c16394ff0a887cae582d13b",
+    "model_calls": 0,
+    "network_calls": 0
+  },
+  "passed_unit_tests": 181,
+  "actual_active_formatted_prompt": {
+    "chars": 22856,
+    "utf8_bytes": 33140,
+    "limits": [
+      24000,
+      45000
+    ],
+    "need_gap_concept_counts": [
+      9,
+      9,
+      3
+    ],
+    "context_tokens": 16384,
+    "max_output_tokens": 8192,
+    "max_revisions": 2
+  },
+  "counterexample_fixture_sha256": "e2c5539485a8e4d62d7284cfeca12bd00b607be4ea150c6344a4a9c881d9dd6b",
+  "actual_previous_run_output_sha256": "276e774a69eeae1fb24c414a003335b837be2d7fde64b16bd60168a3f0af418a",
+  "independent_actual_run_quality_audit_v2_sha256": "54ad821c03c00c1058d176a5c63dba1d9654a02c9e0b49aa274f777924b8cebf",
+  "quality": {
+    "previous_actual_source8ec_normal": "FAIL, 3 independent semantic findings; runtime completed unchanged",
+    "new_code_model_runs": 0,
+    "new_code_live_semantic_quality": null,
+    "mock_consistent_declarations": "Protocol scaffolding only, not model or independent quality acceptance",
+    "changed_and_missing_manual_retested": false,
+    "official_Done_changed": false,
+    "application_requirements_complete": false
+  },
+  "behaviour": "Active semantic review requires every Need and Gap, including resolved gaps outside candidates; code checks exact entity/quote/provenance coverage while model keeps meaning judgement. Earliest-stage feedback uses the existing shared max2 RevisionSession. Legacy report replay and original raw results remain unchanged."
+}

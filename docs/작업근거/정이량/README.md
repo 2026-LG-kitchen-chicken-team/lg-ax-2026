@@ -1,6 +1,16 @@
 # 정이량 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
+## 최신 근거 — 정이량-E053-UPSTREAM-WEB
+
+- [E053](2026-10-07/정이량-E053-UPSTREAM-WEB.md)은 CORE 전18행 지원검수181/Ruff7·Python1597/launcher6·WEB47/빌드와 실제217/219병합·220/222승인·221수정요청을 연결한다. 새 실모델 의미 효과·최종운영/공식ACK는 후속이다.
+- [006](../../작업기록/정이량/2026-10-07/정이량-20261007-006-UPSTREAM-WEB.md)을 먼저 읽고 원 raw·실패/비용·역사 checkpoint는 아래E052/E049로 대조한다. Figma 제외·전원OFF 유지.
+
+## 최신 근거 — 정이량-E052-R5-NATIVE-QUALITY
+
+- [E052](2026-10-07/정이량-E052-R5-NATIVE-QUALITY.md) · [원문 대조 품질](../../../evals/pm-prototype/20261007/r5-live-quality/normal-8ec-independent-quality.json)는 source8ec의 실제5회/33237·native 기록 PASS와 독립 의미 FAIL3개를 구분한다. 원 raw/자체 completed·기존 비용·Done5/21/요구0/31을 보존한다.
+- [독립성 보류](../../../data/research/r5-public-reviews-20261007/independence-holds.20261007.v1.json)는 과거 개발 노출3군·시연2군의 승인 조건이며 원 분할·본문은 불변이다. 기존179DB+추가59JSON/Excel과238연구후기, PR217 수정 요청·219 별도검수·Notion 실제 반영·최종 운영/공식ACK 미완료를 연결한다. 아래E049는 당시 checkpoint다.
+
 ## 최신 근거 — 정이량-E049-REAL-PROTOTYPE-R5
 
 - [E049](2026-10-07/정이량-E049-REAL-PROTOTYPE-R5.md) · [원3응답/SHA](../../../evals/pm-integration/20261007/live-originals/manifest.json) · [R5 작업/검수 조건](../../pm/real-review-prototype-r5-20261007.md). 코드ran1589/skip4·launcher6·WEB548와 계약/하네스/문서/HTTP·브라우저 검사가 통과했다. 고유238후기 연구 표본·원문/분할/SHA·Excel, 실제215/216 병합·독립 재현을 연결한다. 새 실모델 최종응답은 미수신이며 통신 수정11검사는 의미 품질 증명이 아니다. 원 비용/불명 기록·Figma 제외·자동화OFF를 유지한다.

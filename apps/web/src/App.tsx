@@ -8,7 +8,7 @@ import { ApplianceIcon, ArrowIcon, SearchIcon } from './icons';
 import { runStatusView, sameProjectScope, useLiveWorkspace } from './liveWorkspace';
 import type { WorkspaceProject } from './workspace';
 import { runSources } from './judgement';
-import { contractErrors, draftRunFromRequest, missingRequestQuestions, nextRequestRevision, requestChanges } from './planning';
+import { contractErrors, draftRunFromRequest, missingRequestQuestions, nextRequestRevision, requestChanges, sourceKindLabel } from './planning';
 import type { DataMode, Feature, PlanningRequest, RunSnapshot } from './planning';
 import { PendingJudgement } from './PendingJudgement';
 import { ReviewTrendsPanel } from './ReviewTrendsPanel';
@@ -39,7 +39,7 @@ function EmptyState({ title, text, type = 'plain' }: { title: string; text: stri
 function EvidenceDetail({ selected, features }: { selected: Evidence | undefined; features: BootstrapData['features'] }) {
   if (!selected) return <aside className="detail-panel"><EmptyState title="검토할 근거를 선택하세요" text="리뷰나 제품 기능의 원문과 위치를 여기서 확인할 수 있습니다." /></aside>;
   return <aside className="detail-panel" aria-label="선택한 근거 상세">
-    <div className="detail-top"><p className="eyebrow">SOURCE DETAIL</p><span className="sample-label">{selected.source_kind === 'synthetic' ? '합성자료' : selected.source_kind}</span></div>
+    <div className="detail-top"><p className="eyebrow">SOURCE DETAIL</p><span className="sample-label">{sourceKindLabel(selected.source_kind)}</span></div>
     <SourceBadge type={selected.source_type} />
     <h3>{selected.source_type === 'review' ? '고객의 사용 경험' : '문서에 있는 제품 기능'}</h3>
     <blockquote>{selected.text}</blockquote>
@@ -88,6 +88,7 @@ ${trendNote}` : base; });
   const [firstRequest] = useState<PlanningRequest>(() => request);
   const continueProject = !!(live && projectRequest && sameProjectScope(projectRequest, request));
   const datasetChanged = !!(live && projectRequest && datasetVersion && projectRequest.dataset_version !== datasetVersion);
+  const unavailablePreviousModels = datasetChanged ? (seed?.model_ids ?? []).filter(id => !groupModels.includes(id)) : [];
   const original = continueProject ? projectRequest! : { ...firstRequest, model_ids: request.model_ids, dataset_version: request.dataset_version };
   const parent = continueProject ? live!.latest : null;
   // A live save that starts a new project is that project's original request: the server records revision 0.
@@ -147,6 +148,7 @@ ${trendNote}` : base; });
     <label className="field-label" htmlFor="planning-prompt">기획 요청</label><textarea id="planning-prompt" rows={4} value={prompt} onChange={event => setPrompt(event.target.value)} />
     <label className="field-label" htmlFor="planning-customer">대상 고객</label><input id="planning-customer" value={customer} onChange={event => setCustomer(event.target.value)} />
     <fieldset className="model-picker"><legend className="field-label">검토 모델 <small>기존 기능을 대조할 모델을 하나 이상 고르세요</small></legend>
+      {unavailablePreviousModels.length ? <p className="scope-notice" role="note" data-missing-project-models>이전 프로젝트의 모델 {unavailablePreviousModels.join(', ')}은 현재 선택 범위에서 사용할 수 없습니다. 이 범위에서 검토할 모델을 직접 선택해 주세요.</p> : null}
       {groupModels.length ? groupModels.map(id => <label key={id} className={models.includes(id) ? 'checked' : ''}><input type="checkbox" checked={models.includes(id)} onChange={() => toggleModel(id)} />{id}<small>{productName(data!.products.find(product => product.model_id === id)!)}</small></label>) : <div className="readonly-field">자료가 연결되면 모델을 선택할 수 있습니다</div>}
     </fieldset>
     <label className="field-label" htmlFor="planning-situation">사용 상황</label><textarea id="planning-situation" rows={2} value={situation} onChange={event => setSituation(event.target.value)} />

@@ -15,6 +15,13 @@ const request: PlanningRequest = {
 };
 
 describe('workspace error presentation', () => {
+  it('keeps permission and origin refusals possible instead of diagnosing every FORBIDDEN as a viewer token', () => {
+    const refused = errorView(new ApiError('FORBIDDEN', '이 작업을 수행할 권한이 없습니다.'));
+    expect(refused.action).toContain('토큰의 편집 권한');
+    expect(refused.action).toContain('서버가 허용한 접속 주소');
+    expect(refused.action).toContain('허용되지 않은 출처');
+    expect(refused.code).toBe('FORBIDDEN');
+  });
   it('gives each server failure its own title and next action', () => {
     const codes = ['UNAUTHORIZED', 'FORBIDDEN', 'NOT_FOUND', 'DATASET_MISMATCH', 'INVALID_ARGUMENT', 'CONNECTION_FAILED', 'CONTRACT_MISMATCH', 'NOT_IMPLEMENTED'];
     const views = codes.map(code => errorView(new ApiError(code, 'server message')));

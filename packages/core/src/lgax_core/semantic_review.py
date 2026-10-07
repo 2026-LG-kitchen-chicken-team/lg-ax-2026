@@ -8,6 +8,7 @@ from typing import Any
 
 from jsonschema import Draft202012Validator
 
+from . import upstream_semantics
 from .concept_lineage import trace_concept_lineage
 from .errors import DomainError
 from .judgement_contract import input_digest
@@ -64,7 +65,9 @@ INSTRUCTIONS = (
     "semantic_grounding_requirements에는 후보·Gap별 차이 판정의 필수 인용 그룹이 있습니다. "
     "difference를 satisfied로 선언할 때 각 그룹에서 원문을 적어도 하나 인용해야 하며 "
     "인용 존재만으로 의미 충족을 선언하지 마세요. "
-    "uncertain이면 필요한 질문을 questions에 남기세요. JSON 한 개만 출력하세요.\nDATA_JSON:\n"
+    "uncertain이면 필요한 질문을 questions에 남기세요. "
+    + upstream_semantics.INSTRUCTIONS
+    + "JSON 한 개만 출력하세요.\nDATA_JSON:\n"
 )
 
 
@@ -118,10 +121,21 @@ def semantic_model_context(context: dict) -> dict:
             " Candidate links also use columns/values; gap_id identifies each row. "
             "zip(columns, values_row) restores all link fields and wording exactly."
         )
+    for field in ("needs", "desired_outcomes", "gaps", "review_assessments", "gap_assessments"):
+        rows = result.get(field)
+        if isinstance(rows, list) and rows and all(isinstance(row, dict) for row in rows):
+            columns = list(rows[0])
+            if all(set(row) == set(columns) for row in rows):
+                result[field] = {"columns": columns, "values": [[row[column] for column in columns] for row in rows]}
+    quality["reference"] += (
+        " Need/Gap and their assessments/outcomes also use columns/values. Each row's id, need_id, gap_id "
+        "or evidence_id identifies its original declaration; zip(columns, values_row) restores every field exactly."
+    )
     return result
 
 
-def schema_for_review(payload: dict, output: dict, *, literal_choices: bool = False) -> dict:
+def schema_for_review(payload: dict, output: dict, *, literal_choices: bool = False,
+                      include_upstream: bool = False) -> dict:
     ids = [c["id"] for c in output["concepts"]]
     text = {"type": "string", "minLength": 1, "pattern": r"\S"}
     source_quote = {"type": "object", "properties": {
@@ -164,6 +178,8 @@ def schema_for_review(payload: dict, output: dict, *, literal_choices: bool = Fa
             "unsupported_factual_claims=후보 본문/판정 사유의 기존 제품 사실·성능·효과·실현성을 근거 없이 단정하지 않음"}}, len(ids) * len(QUALITY)),
         "questions": {"type": "array", "items": text, "uniqueItems": True},
     }
+    if include_upstream:
+        properties["upstream_assessments"] = upstream_semantics.assessment_schema(payload, output)
     if literal_choices and ids:
         clauses = []
         for candidate in semantic_grounding_requirements(payload, output):
@@ -208,7 +224,8 @@ def _candidate_strings(output: dict, concept_id: str):
 
 def semantic_feedback(report: dict) -> list[dict]:
     """Detailed retry context from a validated report, separate from the public decision."""
-    rows = [{"code": f"{category.upper()}_{row['verdict'].upper()}", "stage": "concepts", "details": row}
+    rows = upstream_semantics.feedback(report) + [
+            {"code": f"{category.upper()}_{row['verdict'].upper()}", "stage": "concepts", "details": row}
             for category, items, passed in (("exclusion", report["exclusion_assessments"], "compliant"),
                                             ("quality", report["quality_assessments"], "satisfied"))
             for row in items if row["verdict"] != passed]
@@ -217,14 +234,16 @@ def semantic_feedback(report: dict) -> list[dict]:
     return rows
 
 
-def review_semantics(payload: dict, output: dict, report: Any) -> dict:
+def review_semantics(payload: dict, output: dict, report: Any, *, require_upstream: bool = False) -> dict:
     """Bind the review to exact inputs/candidates; decide hold/retry within the same budget."""
     def invalid(reason: str, details: dict | None = None):
         raise DomainError("VALIDATION_FAILED", "의미 검토의 원문·범위·완전성을 확인해야 합니다.",
                           {"reason": reason, **(details or {})})
 
-    if any(Draft202012Validator(schema_for_review(payload, output)).iter_errors(report)):
+    if any(Draft202012Validator(schema_for_review(payload, output, include_upstream=require_upstream)).iter_errors(report)):
         invalid("semantic_review_schema")
+    if require_upstream:
+        upstream_semantics.validate(payload, output, report["upstream_assessments"])
     concepts = {c["id"]: c for c in output["concepts"]}
     sources = {s["id"]: s["text"] for s in payload["sources"]}
     product = payload["product"]
@@ -292,6 +311,7 @@ def review_semantics(payload: dict, output: dict, report: Any) -> dict:
         "revise" if count < 2 else "unresolved") if violations else "accept"
     return {"valid": action == "accept", "action": action, "revision_count": count,
             "next_revision_count": count + int(action == "revise"),
-            "rerun_from": "concepts" if action == "revise" else None,
+            "rerun_from": next(stage for stage in ("needs", "compare", "concepts")
+                               if any(row["stage"] == stage for row in violations)) if action == "revise" else None,
             "violations": [{"code": code, "stage": stage}
                            for code, stage in dict.fromkeys((v["code"], v["stage"]) for v in violations)]}

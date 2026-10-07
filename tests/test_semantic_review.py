@@ -380,7 +380,8 @@ class SemanticPipelineTests(unittest.TestCase):
             "semantic_review", "review_revision", "semantic_review"])
         self.assertEqual(transport.posts[-1]["context"]["revision_count"], 2)
         for review in result["semantic_reviews"]:
-            self.assertEqual(review_semantics(review["reviewed_input"], review["reviewed_output"], review["report"]),
+            self.assertEqual(review_semantics(review["reviewed_input"], review["reviewed_output"], review["report"],
+                                              require_upstream=True),
                              review["decision"])
 
     def test_failed_revision_completion_spends_attempt_and_reuses_same_session(self):
@@ -463,7 +464,8 @@ class SemanticPipelineTests(unittest.TestCase):
         self.assertEqual(review["report"]["input_sha256"], input_digest(review["reviewed_input"]))
         self.assertEqual(review["report"]["output_sha256"], input_digest(review["reviewed_output"]))
         self.assertEqual(result["rejected_output"], review["reviewed_output"])
-        self.assertEqual(review_semantics(review["reviewed_input"], review["reviewed_output"], review["report"]),
+        self.assertEqual(review_semantics(review["reviewed_input"], review["reviewed_output"], review["report"],
+                                          require_upstream=True),
                          review["decision"])
         self.assertNotEqual(result["output"]["questions"], review["reviewed_output"]["questions"])
 

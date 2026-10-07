@@ -1,0 +1,166 @@
+{
+  "observed_utc": "2026-10-06T06:54:18.468010+00:00",
+  "code_commit": "b940a11245d7940f79662682e73527b8b3bafef1",
+  "observed_main": "1a50dbe1d98461c0714e098fea21f804141bc88c",
+  "dataset_sha256": "4e7f97a99f65364376bdaa6291778ec97f93117c0459138258caf6091a193c16",
+  "cases": [
+    {
+      "case_id": "fridge",
+      "mode": "live",
+      "process_exit": 0,
+      "relay_error": null,
+      "source_readonly": true,
+      "network": "none",
+      "host_auth_mounted": false,
+      "generations": 5,
+      "tokens": 24864,
+      "unknown_usage": false,
+      "status": "failed",
+      "r06": true,
+      "input_digest": "1fba5444960c7c1683d0c53ffcf32c6ee9892c5d18957f18e837ea754646dd4e",
+      "r07": {
+        "all_raw_requests_consumed": true,
+        "same_input_digest": true,
+        "same_output_digest": true,
+        "same_status": true,
+        "changed_input_refuses_cached_completions": true
+      },
+      "model_id": "T876MEE1H1",
+      "output_present": true,
+      "decision_action": "unresolved",
+      "decision_valid": false,
+      "violations": [
+        {
+          "code": "SUPPORT_UNKNOWN",
+          "stage": "compare"
+        },
+        {
+          "code": "HOLD_WITHOUT_QUESTIONS",
+          "stage": "review"
+        }
+      ],
+      "error_codes": [],
+      "r08_acceptance": false,
+      "r06_full_acceptance": "identity-preservation-only"
+    },
+    {
+      "case_id": "dishwasher",
+      "mode": "live",
+      "process_exit": 0,
+      "relay_error": null,
+      "source_readonly": true,
+      "network": "none",
+      "host_auth_mounted": false,
+      "generations": 2,
+      "tokens": 9193,
+      "unknown_usage": false,
+      "status": "held",
+      "r06": true,
+      "input_digest": "f3c530545ca942344c863777e83084ec6e2899307ebe133822751afd94954592",
+      "r07": {
+        "all_raw_requests_consumed": true,
+        "same_input_digest": true,
+        "same_output_digest": true,
+        "same_status": true,
+        "changed_input_refuses_cached_completions": true
+      },
+      "model_id": "DUE6BGL2E",
+      "output_present": true,
+      "decision_action": "hold",
+      "decision_valid": false,
+      "violations": [
+        {
+          "code": "NO_CANDIDATE_VIOLATION",
+          "stage": "compare"
+        },
+        {
+          "code": "NO_CANDIDATE_UNCERTAIN",
+          "stage": "concepts"
+        }
+      ],
+      "error_codes": [],
+      "r08_acceptance": false,
+      "r06_full_acceptance": "identity-preservation-only"
+    },
+    {
+      "case_id": "microwave",
+      "mode": "live",
+      "process_exit": 0,
+      "relay_error": null,
+      "source_readonly": true,
+      "network": "none",
+      "host_auth_mounted": false,
+      "generations": 3,
+      "tokens": 10122,
+      "unknown_usage": false,
+      "status": "failed",
+      "r06": true,
+      "input_digest": "714cd9453ce3314b3b63ba6b536446b74f94446e9a2d6a5d802267fb01d55377",
+      "r07": {
+        "all_raw_requests_consumed": true,
+        "same_input_digest": true,
+        "same_output_digest": true,
+        "same_status": true,
+        "changed_input_refuses_cached_completions": true
+      },
+      "model_id": "MW23FDI",
+      "output_present": false,
+      "decision_action": "unresolved",
+      "decision_valid": false,
+      "violations": [
+        {
+          "code": "VALIDATION_FAILED",
+          "stage": "needs"
+        }
+      ],
+      "error_codes": [
+        "VALIDATION_FAILED",
+        "VALIDATION_FAILED",
+        "VALIDATION_FAILED"
+      ],
+      "r08_acceptance": false,
+      "r06_full_acceptance": false
+    },
+    {
+      "case_id": "dishwasher-fresh-replay",
+      "mode": "live",
+      "process_exit": 0,
+      "relay_error": null,
+      "source_readonly": true,
+      "network": "none",
+      "host_auth_mounted": false,
+      "generations": 2,
+      "tokens": 8868,
+      "unknown_usage": false,
+      "status": "held",
+      "r06": true,
+      "input_digest": "f3c530545ca942344c863777e83084ec6e2899307ebe133822751afd94954592",
+      "r07": {
+        "all_raw_requests_consumed": true,
+        "same_input_digest": true,
+        "same_output_digest": true,
+        "same_status": true,
+        "changed_input_refuses_cached_completions": true
+      },
+      "model_id": "DUE6BGL2E",
+      "output_present": true,
+      "decision_action": "hold",
+      "decision_valid": false,
+      "violations": [
+        {
+          "code": "NO_CANDIDATE_UNCERTAIN",
+          "stage": "compare"
+        }
+      ],
+      "error_codes": [],
+      "r08_acceptance": false,
+      "r06_full_acceptance": "identity-preservation-only"
+    }
+  ],
+  "r06": "partial",
+  "r07": "frozen failed/held runs reproducible; recorded and fresh runs distinguished",
+  "r08": "incomplete: 0 of 3 product outcomes satisfy judgement/hold acceptance",
+  "issue12_done": false,
+  "independent_stage5_evaluation": false,
+  "publication_performed": false
+}

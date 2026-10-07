@@ -117,6 +117,10 @@ describe('real 27B held / 8B failed runs replayed from the workspace HTTP API (r
       expect(judgement.terminal_reason).toBe(record.correction_budget!.terminal_reason);
       expect(judgement.rejected_candidates.map(item => item.id)).toEqual((record.rejected_output?.concepts ?? []).map(item => item.id));
       const markdown = exportMarkdown(doc);
+      if (judgement.check_rounds.some(round => round.action === 'revise')) {
+        expect(markdown).toContain('수정 필요');
+        expect(markdown).not.toContain('수정 중');
+      }
       expect(markdown).toContain(`- 실행 상태: ${row.recorded_status}`);
       expect(markdown).not.toContain('계약 검사 통과');
       const rejected = rejectedCandidateCount(snapshot);

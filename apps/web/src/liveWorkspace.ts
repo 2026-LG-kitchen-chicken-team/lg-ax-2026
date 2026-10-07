@@ -11,7 +11,7 @@ export interface ErrorView { code: string; title: string; action: string; tone: 
 // Each server failure tells the planner what happened and what to do next; codes are never merged into one message.
 const ERROR_VIEWS: Record<string, Omit<ErrorView, 'code'>> = {
   UNAUTHORIZED: { title: '작업실 인증이 필요합니다', action: '작업실 토큰을 다시 입력해 주세요. 토큰은 이 화면의 메모리에만 보관됩니다.', tone: 'error' },
-  FORBIDDEN: { title: '이 작업을 할 권한이 없습니다', action: '읽기 전용 토큰으로는 기록을 저장할 수 없습니다. 편집 권한 토큰으로 연결해 주세요.', tone: 'error' },
+  FORBIDDEN: { title: '이 작업을 할 권한이 없습니다', action: '토큰의 편집 권한과 서버가 허용한 접속 주소를 확인해 주세요. 읽기 전용 토큰이나 허용되지 않은 출처에서는 기록을 저장할 수 없습니다.', tone: 'error' },
   NOT_FOUND: { title: '작업 기록을 찾을 수 없습니다', action: '목록을 새로 불러온 뒤 다시 선택해 주세요.', tone: 'error' },
   DATASET_MISMATCH: { title: '프로젝트 생성 이후 자료가 바뀌었습니다', action: '기존 기록은 읽을 수 있지만 새 실행과 근거 조회는 막혀 있습니다. 새 프로젝트로 다시 시작해 주세요.', tone: 'error' },
   INVALID_ARGUMENT: { title: '입력을 확인해 주세요', action: '필수 항목·검토 모델·제품군 범위를 확인해 주세요.', tone: 'error' },

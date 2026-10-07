@@ -53,12 +53,26 @@ def semantic_for(context):
                 "candidate_quote": candidate["title"], "source_quotes": [
                     {"evidence_id": source["id"], "quote": source["text"]}
                     for source in context.get("sources", [])]}
-    return {"input_sha256": context["input_sha256"], "output_sha256": context["output_sha256"],
+    result = {"input_sha256": context["input_sha256"], "output_sha256": context["output_sha256"],
             "exclusion_assessments": [{**row(c), "verdict": "compliant", "condition_index": i, "condition": condition}
                                       for c in context["concepts"]
                                       for i, condition in enumerate(context["request"]["exclusions"])],
             "quality_assessments": [{**row(c), "criterion": criterion}
                                     for c in context["concepts"] for criterion in QUALITY], "questions": []}
+    if context.get("upstream_review_required"):
+        def declarations(field):
+            value = context[field]
+            return ([dict(zip(value["columns"], row, strict=True)) for row in value["values"]]
+                    if isinstance(value, dict) else value)
+        comparisons = {row["gap_id"]: row for row in declarations("gap_assessments")}
+        result["upstream_assessments"] = [
+            {"entity_kind": kind, "entity_id": entity["id"], "verdict": "consistent",
+             "reason": "Mock transport protocol fixture; not a semantic quality result",
+             "judgement_quote": entity["pain"] if kind == "need" else comparisons[entity["id"]]["reason"],
+             "source_quotes": [{"evidence_id": source["id"], "quote": source["text"]}
+                               for source in context["sources"]]}
+            for kind, field in (("need", "needs"), ("gap", "gaps")) for entity in declarations(field)]
+    return result
 
 
 def no_candidate_for(context):

@@ -67,6 +67,39 @@ beforeEach(() => {
 afterEach(async () => { await act(async () => root.unmount()); host.remove(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 describe('new public profile uses registered SKU, document and dataset boundaries', () => {
+  it('labels the selected public evidence in Korean without changing its source type or provenance', async () => {
+    await mountAndConnect();
+    await click('02근거 대조');
+    expect(host.querySelector('.detail-panel .sample-label')?.textContent).toBe('공개자료');
+    expect(host.querySelector('.detail-panel')?.textContent).toContain(DOC);
+    expect(host.querySelector('.detail-panel')?.textContent).toContain(review.evidence_id);
+    expect(host.querySelector('.detail-panel .source-badge')?.textContent).toBe('고객 리뷰');
+  });
+
+  it('requires an explicit current model when the previous project model is absent from the new dataset', async () => {
+    const oldInput = { ...request('public-profile-test.r4'), model_ids: ['FRIDGE-A'] };
+    const old = { ...project('project-old-absent-model', oldInput), document_versions: { 'FRIDGE-A': '1.0' } };
+    vi.mocked(WorkspaceClient.prototype.listProjects).mockResolvedValue({ projects: [old], contract_version: '0.1.0' });
+    vi.spyOn(WorkspaceClient.prototype, 'getProject').mockResolvedValue(old);
+    const previous = { ...snapshot(old.project.id, oldInput, 'held'), document_versions: { 'FRIDGE-A': '1.0' } };
+    vi.spyOn(WorkspaceClient.prototype, 'listRuns').mockResolvedValue({ runs: [previous], contract_version: '0.1.0' });
+    const createProject = vi.spyOn(WorkspaceClient.prototype, 'createProject').mockImplementation(async (_name, input) => project('project-selected-current', input as unknown as PlanningRequest));
+    const createRun = vi.spyOn(WorkspaceClient.prototype, 'createRun').mockImplementation(async (id, input, previous) => snapshot(id, input as unknown as PlanningRequest, 'held', previous));
+    await mountAndConnect();
+    expect(host.querySelector('[data-missing-project-models]')?.textContent).toContain('FRIDGE-A');
+    expect(host.querySelector('[data-missing-project-models]')?.textContent).toContain('직접 선택');
+    expect(host.querySelectorAll('.model-picker input:checked')).toHaveLength(0);
+    await click('새 프로젝트로 저장');
+    expect(host.textContent).toContain('모델을 하나 이상 선택');
+    expect(createProject).not.toHaveBeenCalled();
+    expect(createRun).not.toHaveBeenCalled();
+    await act(async () => host.querySelector<HTMLInputElement>('.model-picker input')!.click());
+    await click('새 프로젝트로 저장');
+    expect(createProject).toHaveBeenCalledTimes(1);
+    expect(createProject.mock.calls[0][1]).toMatchObject({ model_ids: [MODEL], dataset_version: VERSION });
+    expect(createRun.mock.calls[0][2]).toBeUndefined();
+    expect(old.project.request).toEqual(oldInput);
+  });
   it('shows authenticated public sources only after connecting and clears their form/source on disconnect', async () => {
     await act(async () => root.render(createElement(App)));
     expect(host.querySelector('.hero-stats')?.textContent).toContain('합성자료');

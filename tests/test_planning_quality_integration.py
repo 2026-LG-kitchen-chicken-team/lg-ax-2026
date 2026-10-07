@@ -68,7 +68,10 @@ class PlanningQualityIntegrationTests(unittest.TestCase):
                          {key: value for key, value in original_lineage.items() if key != "candidates"})
         self.assertEqual(call["prompt_context"], semantic["context"], "record the exact submitted representation")
         for field in ("sources", "features", "needs", "gaps", "concepts", "semantic_grounding_requirements"):
-            self.assertEqual(semantic["context"][field], call["request_context"][field], field)
+            value = semantic["context"][field]
+            restored = ([dict(zip(value["columns"], row, strict=True)) for row in value["values"]]
+                        if field in ("needs", "gaps") and isinstance(value, dict) else value)
+            self.assertEqual(restored, call["request_context"][field], field)
         self.assertIn("gap_id identifies each row", semantic["context"]["quality_context"]["reference"])
         self.assertIn("zip(columns, values_row)", semantic["context"]["quality_context"]["reference"])
         trace = next(row for row in result["trace"] if row["operation"] == "semantic_review")

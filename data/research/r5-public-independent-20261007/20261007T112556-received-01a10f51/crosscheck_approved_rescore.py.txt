@@ -1,0 +1,50 @@
+"""Independently recompute peer's approved 11-query scores from original rankings; no retrieval calls."""
+import hashlib,json,math,sys
+from collections import defaultdict
+from pathlib import Path
+sys.stdout.reconfigure(encoding="utf-8")
+CONTROL=Path(__file__).resolve().parent
+WORK=Path("C:\\Users\\user\\Documents\\ChatGPT\\LG공모전\\.worktrees\\data-remaining-recovery-20261007T112556-01a10f51")
+ROOT=Path("C:\\Users\\user\\Documents\\ChatGPT\\LG공모전")
+attempt_path=WORK/"evals/data-four-followup/20261006-01a10600/attempts.jsonl"
+attempts=[json.loads(s) for s in attempt_path.read_text("utf-8").splitlines()]
+old=json.loads((WORK/"evals/data14-search-evaluation/20261007-01a10600/gold-audit-11.json").read_text("utf-8"))
+gold={r["query_id"]:r["legacy_gold_ids"] for r in old["rows"]};gold["FR-01"]=["T876MEE1H1-MANUAL-F10-FOOD"]
+dataset=json.loads((WORK/"data/research/PM-DATA-intake-20261006/generated/dataset.json").read_text("utf-8"))
+food=next(e for e in dataset["evidence"] if e["id"]==gold["FR-01"][0])
+assert hashlib.sha256(food["text"].encode()).hexdigest()=="11212c8d4c0a986100451a8693f76ddc93b5a6de5b5b0ee2ecd502bb5cd48a5b"
+groups=defaultdict(list)
+for a in attempts:
+    if a["query_id"] in gold:groups[(a["method"],a["query_id"])].append(a)
+per=[]
+for (method,q),rs in sorted(groups.items()):
+    assert len(rs)==5
+    ranks=[tuple(x["id"] for x in a["top3"]) if a["status"]=="success" else () for a in rs]
+    assert len(set(ranks))==1
+    ids=ranks[0];g=set(gold[q]);hit=int(bool(ids) and ids[0] in g);recall=len(g&set(ids[:3]))/len(g)
+    rank=next((i+1 for i,s in enumerate(ids[:3]) if s in g),None)
+    per.append({"method":method,"query_id":q,"gold_ids":sorted(g),"Hit_at_1":hit,"Recall_at_3":recall,"MRR_at_3":1/rank if rank else 0,
+      "repeat_ranks_identical":True})
+metrics={}
+for method in sorted({r["method"] for r in per}):
+    rows=[r for r in per if r["method"]==method];assert len(rows)==11
+    metrics[method]={"hit_at_1":sum(r["Hit_at_1"] for r in rows)/11,"recall_at_3":sum(r["Recall_at_3"] for r in rows)/11,
+       "mrr_at_3":sum(r["MRR_at_3"] for r in rows)/11}
+context=json.loads((ROOT/"publication/r5-eval-trends-20261007-01a10600/clean-publication-context.json").read_text("utf-8"))
+peer_path=next(Path(context["workspace"])/p for p in context["files"] if p.endswith("/approved-rescore.json"))
+peer=json.loads(peer_path.read_text("utf-8"))
+differences=[]
+for method,m in metrics.items():
+    for k,value in m.items():
+        if not math.isclose(value,peer["official_11_question_metrics"][method][k],rel_tol=0,abs_tol=1e-12):
+            differences.append({"method":method,"metric":k})
+result={"approval":"https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/14#issuecomment-6029600741",
+ "FR01_corrected_only":gold["FR-01"],"food_text_sha256":hashlib.sha256(food["text"].encode()).hexdigest(),
+ "original_attempts_sha256":hashlib.sha256(attempt_path.read_bytes()).hexdigest(),"old_inputs_and_rankings_preserved":True,
+ "methods":metrics,"per_query":per,"quality_denominator":11,"timing_repeats_counted_as_questions":False,
+ "four_no_gold_cases_not_semantically_graded":True,"new_search_model_calls":0,
+ "peer_differences":differences,"peer_metric_file_sha256":hashlib.sha256(peer_path.read_bytes()).hexdigest(),
+ "publication_of_main_rescore_owned_by_parallel_DATA_evaluation_window":True}
+(CONTROL/"received-audit/approved-rescore-crosscheck.json").write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+assert not differences
+print(json.dumps({"metrics":metrics,"peer_differences":differences,"raw_attempts":len(attempts),"denominator":11,"new_model_calls":0},ensure_ascii=False))
