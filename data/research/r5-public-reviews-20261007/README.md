@@ -28,4 +28,10 @@
 
 source `539959aef557ba953c60a557f2b3310b131a2c70`에서 수집/수입 focused19검사와 실제18모델 오프라인 적재를 고정 Docker로 통과했다. 네트워크 없음·인증 mount 없음·원source3660파일 변경0·모델 호출0이다. 검증과 모든 산출물 파일 해시는 `evals/pm-prototype/20261007/r5-data/validation.json`에 있다. 최종 Excel은 같은179본문·18모델을 `Spreadsheets` skill과 bundled artifact runtime으로 작성했으며 두 시트 렌더·계산 합계179/179/10·오류0·저장 후 행180/필터table/행1·열2고정 구조를 확인했다. native Excel 앱에서 직접 열어본 검증은 하지 않았다.
 
+## 연구 DB 재생성과 소스 ZIP
+
+검수한 두 연구 DB의 원바이트와 SHA는 DATA 인수 commit `8f052e086b4066f181be317fae770badbe18bad1` 및 사용자 산출물에 보존했다. 최종 소스 트리는 개인정보/운영 DB가 섞이지 않게 DB 추적을 제외하며, 기존 소스 패키저의 모든 DB 거절 규칙은 유지한다. `files.json`의 DB 항목은 생성된 연구 산출물의 해시이며 현재 추적 소스 파일 목록이 아니다. 원 JSON·manifest·수집 및 재생성 코드는 소스에 포함한다.
+
+`uv run python scripts/build_public_review_db.py --profile fixed18 --output private/research/fixed18.sqlite3`로 새 DB를 오프라인 재생성한다. `pilot1`도 같은 명령의 profile로 선택한다. 원 JSON 해시와 모든 DB 행·제품·manifest를 대조하며 기존 DB를 덮어 쓰지 않는다. 고정 SQLite에서 원 DB 바이트 해시를 확인하고, 다른 SQLite 버전에서는 바이트 일치와 내용 일치를 별도로 보고한다. 이 DB는 연구용이며 정확 SKU 미확인 후기를 자동으로 기획 입력에 넣지 않는다.
+
 현재179건은 전부5점으로 추천순 긍정 편향이 강하다. 구매일 관찰 범위는2023-04-26~2026-10-06이고 작성일의 연도 범위는 미확인이다. 18표시모델 수집·정제·연구 분할·SQLite/Excel 적재는 완료했으며, 구매SKU 확인과 신규15모델 매뉴얼판 검증을 마친 제품별 실제 기획 입력 전환은 아직 보류다.
