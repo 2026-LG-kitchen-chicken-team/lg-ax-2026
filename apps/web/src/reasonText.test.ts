@@ -22,7 +22,9 @@ const CORE = root('packages/core/src/lgax_core');
 const EMIT = [/\bflag\(\s*([^,)]*)/g, /\berrors\.append\(\s*([^,)]*)/g, /"code":\s*([^,}]*)/g];
 const CODE_LITERAL = /"([A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+)"/g;
 // no_candidate_review.py builds "NO_CANDIDATE_" + verdict.upper(); "consistent" is not fed back (황대겸, record 027).
-const BUILT_CODES = ['NO_CANDIDATE_VIOLATION', 'NO_CANDIDATE_UNCERTAIN'];
+// upstream_semantics.py builds "UPSTREAM_" + entity_kind(need/gap) + "_" + verdict.upper(); "consistent" is not fed back (record 053).
+const BUILT_CODES = ['NO_CANDIDATE_VIOLATION', 'NO_CANDIDATE_UNCERTAIN',
+  'UPSTREAM_NEED_VIOLATION', 'UPSTREAM_NEED_UNCERTAIN', 'UPSTREAM_GAP_VIOLATION', 'UPSTREAM_GAP_UNCERTAIN'];
 // HTTP/argument error codes that never reach hold_reasons / violations.
 const NOT_REASONS = new Set(['INVALID_ORIGIN']);
 
