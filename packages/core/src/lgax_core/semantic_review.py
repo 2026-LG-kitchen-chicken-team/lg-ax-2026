@@ -163,6 +163,9 @@ def schema_for_review(payload: dict, output: dict, *, literal_choices: bool = Fa
         shared["candidate_quote"]["enum"] = list(dict.fromkeys(
             [""] + [text for candidate in output["concepts"]
                     for text in _candidate_strings(output, candidate["id"]) if text.strip()]))
+        if include_upstream:
+            definitions["literal_candidate_quote"] = shared["candidate_quote"]
+            shared["candidate_quote"] = {"$ref": "#/$defs/literal_candidate_quote"}
 
     def rows(extra: dict, count: int) -> dict:
         fields = {**shared, **extra}

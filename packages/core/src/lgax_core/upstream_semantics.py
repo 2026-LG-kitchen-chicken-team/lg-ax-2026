@@ -49,10 +49,11 @@ def assessment_schema(payload: dict, output: dict, *, literal_choices: bool = Fa
                 # A resolved Gap may have empty remaining_pain. Its assessment
                 # reason remains a valid judgment quote; an empty quote does not.
                 literals = list(dict.fromkeys(value for value in wording if value.strip()))
+                # The common item already requires every assessment field.
+                # Each branch only binds those present fields to its entity.
                 choices.append({"properties": {
                     "entity_kind": {"const": kind}, "entity_id": {"const": entity["id"]},
-                    "judgement_quote": {"enum": literals}},
-                    "required": ["entity_kind", "entity_id", "judgement_quote"]})
+                    "judgement_quote": {"enum": literals}}})
         if choices:
             item["allOf"] = [{"oneOf": choices}]
     return {"type": "array", "minItems": len(ids), "maxItems": len(ids), "items": item}

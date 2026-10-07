@@ -231,6 +231,19 @@ class UpstreamLiteralSchemaTests(unittest.TestCase):
         self.assertEqual(caught.exception.details["reason"], "upstream_requires_linked_review")
         self.assertEqual(caught.exception.details["entity_id"], "GAP-004")
 
+    def test_native_common_required_fields_still_reject_missing_need_and_gap_bindings(self):
+        self.copy_judgement_literals()
+        Draft202012Validator(self.schema).validate(self.report)
+        for index in (0, 9):
+            for field in ("entity_kind", "entity_id", "judgement_quote"):
+                with self.subTest(entity=self.report["upstream_assessments"][index]["entity_id"], field=field):
+                    malformed = deepcopy(self.report)
+                    del malformed["upstream_assessments"][index][field]
+                    errors = list(Draft202012Validator(self.schema).iter_errors(malformed))
+                    self.assertTrue(any(error.validator == "required"
+                                        and tuple(error.path) == ("upstream_assessments", index)
+                                        and field in error.message for error in errors))
+
     def test_resolved_empty_pain_keeps_actual_assessment_reason_and_rejects_empty_copy(self):
         self.copy_judgement_literals()
         row = next(row for row in self.report["upstream_assessments"] if row["entity_id"] == "GAP-004")
@@ -282,6 +295,13 @@ class UpstreamLiteralSchemaTests(unittest.TestCase):
         for field in ("exclusion_assessments", "quality_assessments", "upstream_assessments"):
             citation = self.schema["properties"][field]["items"]["properties"]["source_quotes"]["items"]
             self.assertEqual(citation, {"$ref": "#/$defs/literal_source_quote"})
+        candidate_quote = self.schema["$defs"]["literal_candidate_quote"]
+        unfactored = schema_for_review(self.payload, self.output, literal_choices=True)
+        self.assertEqual(candidate_quote,
+                         unfactored["properties"]["quality_assessments"]["items"]["properties"]["candidate_quote"])
+        for field in ("exclusion_assessments", "quality_assessments"):
+            quote = self.schema["properties"][field]["items"]["properties"]["candidate_quote"]
+            self.assertEqual(quote, {"$ref": "#/$defs/literal_candidate_quote"})
         adapter = PreparationCapture(ModelConfig("http://127.0.0.1:11434", MODEL, DIGEST,
                                                  max_output_tokens=8192, context_tokens=16384))
         self.addCleanup(adapter.close)
@@ -290,7 +310,8 @@ class UpstreamLiteralSchemaTests(unittest.TestCase):
         self.assertEqual(adapter.prepared[1], self.schema)
         print(json.dumps({"normal1f25_upstream_native_schema_bytes": len(encoded),
                           "unchanged_schema_byte_limit": 16384, "needs_gaps_concepts": [9, 9, 3],
-                          "local_source_quote_definitions": 1, "model_calls": 0}))
+                          "local_source_quote_definitions": 1, "local_candidate_quote_definitions": 1,
+                          "model_calls": 0}))
 
 
 if __name__ == "__main__":
