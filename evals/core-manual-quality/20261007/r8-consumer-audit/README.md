@@ -29,3 +29,7 @@ e04의 Python CI [run37626673758](https://github.com/2026-LG-kitchen-chicken-tea
 첫 인쇄 검수에서 본문 없는 제목 페이지와 긴 fact JSON의 분할을 발견했다. 원 실패 출력은 비공개 재개 기록에 보존하고, 후속 X1 print-only branch에서 CSS를 보완한다. 이 디렉터리의 원 고정 출력은 해당 CSS 보완의 최종 산출물이 아니다. 새 기획 설명서는 실제 저장된 콘셉트 수신 전 보류하며 placeholder를 만들지 않는다.
 
 전체 모델 품질·PM 인수·병합·통합·Done은 미완료다. 사용자 추가 판단 대기0이며, C1은 PM이 진행 중인 실제27B 실행의 원응답·usage·version을 인계받아 검수한다. 이 창에서 live run을 중복 시작하지 않는다.
+
+## 5fdb follow-up
+
+[후속 고정 결과](failure-boundaries-5fdb.json)는 같은 원 입력/실패 probe를 새 5fdb 코드에서 대조한 것이다. 원 e04 실패를 덮어쓰지 않는다. 새 모델/리뷰/콘셉트/AI채점0. 별도 국소 검수 patch가 추가됐으나 기존 생성 경계의 공유2/정상 형제 보존 요구는 미충족이다.

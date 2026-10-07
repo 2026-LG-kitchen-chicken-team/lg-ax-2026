@@ -1,6 +1,9 @@
 # 황대겸 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
+
+- 2026-10-07 R8 후속 인수: PM 고정5fdb에서도 공유 수정3/정상 항목 소실을 재현; 새27B tag/digest는 역사 버전과 다름. [담당 기록](2026-10-07/CORE-R8-CONSUMER-AUDIT-01a10729-01.md), PR247/248와 접수 수신을 확인. 실제 품질/필수 잔여 미완료.
+
 - 2026-10-07 CORE-R8-CONSUMER-AUDIT-01a10729-01: 고정 R8 e04에서 공유수정3회/정상 wire 형제 소실을 재현해 PM245에 인계했다. 실제 고객 원문·기존 Qwen 오류만 재사용했으며 새모델/콘셉트0이다. C1 실제27B 지원 실행은 중복하지 않는다.
 - [상세](2026-10-07/CORE-R8-CONSUMER-AUDIT-01a10729-01.md) · [고정 근거](../../../evals/core-manual-quality/20261007/r8-consumer-audit/README.md). 다음은 담당 수정/원 모델 결과 인수 후 같은 버전 검수. 의미 품질·전체 Done을 대신하지 않는다.
 
