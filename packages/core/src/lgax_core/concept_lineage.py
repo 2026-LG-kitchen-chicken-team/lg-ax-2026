@@ -14,6 +14,37 @@ from .residual_matrix import build_residual_matrix
 _NUMBER = re.compile(r"(?<![\w.])\d+(?:\.\d+)?\s*(?:%|분|초|시간|배|개|kg|g|mm|cm|ml|mL|L|W|kWh)(?![A-Za-z])")
 
 
+def concept_grounding_requirements(payload: dict, output: dict) -> list[dict]:
+    """Expose existing Gap edges without choosing a candidate or adding citations."""
+    rows = build_residual_matrix(payload, output)["rows"]
+    return [{"gap_id": row["gap_id"], "need_id": row["need_id"],
+             "candidate_eligible": row["candidate_eligible"],
+             "required_evidence_ids": sorted(set(row["evidence_ids"])),
+             "required_review_evidence_ids": sorted(set(row["review_evidence_ids"])),
+             "linked_manual_evidence_ids": sorted(set(row["manual_evidence_ids"]))}
+            for row in rows]
+
+
+def constrain_concept_grounding(schema: dict, requirements: list[dict]) -> None:
+    """Require evidence only for the Gap IDs the model chooses for this candidate.
+
+    This strengthens the generation shape to match the existing lineage gate.
+    Ollama's native support for these conditional clauses requires a separately
+    bounded live check; the canonical Python validator remains authoritative.
+    """
+    clauses = [{
+        "if": {"properties": {"gap_ids": {"contains": {"const": row["gap_id"]}}},
+               "required": ["gap_ids"]},
+        "then": {"properties": {"evidence_ids": {"allOf": [
+            {"contains": {"const": eid}} for eid in row["required_evidence_ids"]]}}},
+    } for row in requirements if row["required_evidence_ids"]]
+    if clauses:
+        schema["allOf"] = clauses
+    schema["properties"]["evidence_ids"]["description"] = (
+        "선택한 gap_ids 각각에 연결된 required_evidence_ids 전체를 원문에서 대조하여 인용. "
+        "다른 Gap의 ID로 대신하지 않으며 ID 존재는 의미 정확성 승인이 아니다.")
+
+
 def trace_concept_lineage(payload: dict, output: dict, *, residual: dict | None = None) -> dict:
     """Return 0..3 candidate graphs, hold reasons and exact missing references."""
     residual = build_residual_matrix(payload, output) if residual is None else residual
@@ -26,7 +57,7 @@ def trace_concept_lineage(payload: dict, output: dict, *, residual: dict | None 
         violations.append({"code": "CONCEPT_LIMIT", "stage": "concepts"})
     for concept in output["concepts"]:
         validate("Concept", concept)
-        errors, links = [], []
+        errors, links, missing_links = [], [], []
         if concept["status"] not in ("proposed", "needs_review"):
             errors.append("HUMAN_DECISION_REQUIRED")
         if any(eid not in sources for eid in concept["evidence_ids"]):
@@ -47,6 +78,9 @@ def trace_concept_lineage(payload: dict, output: dict, *, residual: dict | None 
                 errors.append("CONCEPT_WITHOUT_CONFIRMED_GAP")
             if not set(row["evidence_ids"]) <= set(concept["evidence_ids"]):
                 errors.append("CONCEPT_GROUNDING_MISSING")
+                missing_links.append({"gap_id": gid, "need_id": row["need_id"],
+                                      "required_evidence_ids": sorted(set(row["evidence_ids"])),
+                                      "missing_evidence_ids": sorted(set(row["evidence_ids"]) - set(concept["evidence_ids"]))})
         assessment = assessments.get(concept["id"])
         if assessment is None:
             errors.append("ASSESSMENT_COVERAGE")
@@ -64,7 +98,9 @@ def trace_concept_lineage(payload: dict, output: dict, *, residual: dict | None 
             "requires_semantic_review": True}
             for field, text in texts.items() for match in _NUMBER.finditer(text)]
         errors = list(dict.fromkeys(errors))
-        violations.extend({"code": code, "stage": "concepts", "concept_id": concept["id"]} for code in errors)
+        violations.extend({"code": code, "stage": "concepts", "concept_id": concept["id"],
+                           **({"missing_links": missing_links} if code == "CONCEPT_GROUNDING_MISSING" else {})}
+                          for code in errors)
         candidates.append({"concept_id": concept["id"], "links": links,
                            "evidence_ids": concept["evidence_ids"], "requirements": concept["requirements"],
                            "assumptions": concept["assumptions"], "numeric_mentions": mentions,

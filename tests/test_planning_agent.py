@@ -66,8 +66,9 @@ def no_candidate_for(context):
     return {"input_sha256": context["input_sha256"], "output_sha256": context["output_sha256"],
             "assessments": [{"criterion": criterion, "verdict": "consistent", "reason": "테스트 검토 선언",
                              "candidate_quote": context["judgement"]["no_candidate_reasons"][0],
+                             "missing_need_review_ids": [],
                              "source_quotes": [{"evidence_id": source["id"], "quote": source["text"]}]}
-                            for criterion in NO_CANDIDATE_CRITERIA], "questions": []}
+                            for criterion in NO_CANDIDATE_CRITERIA], "questions": [], "question_basis": []}
 
 
 class Transport:

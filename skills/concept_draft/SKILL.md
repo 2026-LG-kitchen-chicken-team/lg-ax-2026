@@ -15,6 +15,8 @@ kind는 제안의 실제 형태에 맞춘다. 제품 구조는 product, 제품 �
 
 `concept_lineage`는 각 후보→잔여 Gap→Need→고객 리뷰·기능 설명서의 연결과 요구사항/검증 가정을 추적한다. 차별점 충족 선언에는 후보의 각 Gap에 연결된 리뷰와 같은 모델·버전의 설명서, 각 연결 기능의 설명서 인용이 필요하다. 후보 본문과 중복 판정 사유의 수치 문구는 별도 의미 검토 대상으로 전달하며, 원문에 같은 숫자가 나온다는 이유로 효과 입증을 선언하지 않는다. 정당한 보류를 후보 생성 성공으로 바꾸지 않는다.
 
+R5 기획 handler는 `candidate_grounding_requirements`로 Gap별 필수 근거를 전달하고, 선택한 Gap의 인용 누락을 생성 스키마와 기존 lineage 검사에서 거절한다. `CONCEPT_GROUNDING_MISSING`의 `missing_links`는 후보·Gap·Need와 실제 누락 ID를 수정 피드백에 보존한다. 코드가 인용을 자동으로 붙이지 않으며, 조건 스키마의 로컬 검사 통과와 Ollama native 지원·실모델 의미 품질은 별도로 검증한다. 후보 없음 검수의 Need 누락 주장·질문 유형은 실제 Need 연결표와 대조하며, 연결 존재만으로 Need 내용이 맞다고 승인하지 않는다.
+
 입력·출력 형식은 [input.json](schemas/input.json)과 [output.json](schemas/output.json)을 따른다. 구조화 예시는 [input.json](examples/input.json)이다. 직접 작성한 입력 예시이며 실제 Agent 판단 결과가 아니다.
 
 저장소 루트에서 실행한다.
