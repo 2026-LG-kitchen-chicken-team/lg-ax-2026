@@ -21,10 +21,10 @@ from lgax_core.workspace import WorkspaceStore
 from lgax_core.workspace_planning import EnvPlanningRunner, PlanningRunner
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from .workspace_auth import TokenRegistry
-from .workspace_bootstrap import workspace_bootstrap
 from .public_validation import public_validation_details
 from .trend_configuration import load_trend_runtime
+from .workspace_auth import TokenRegistry
+from .workspace_bootstrap import workspace_bootstrap
 from .workspace_trends import TrendCollector, WorkspaceTrends
 
 ORIGINS = {"http://127.0.0.1:5173", "http://localhost:5173"}
@@ -168,7 +168,7 @@ def _load_document_store(path: Path, expected_sha256: str):
     dataset = json.loads(raw.decode("utf-8-sig"), object_pairs_hook=unique_object,
                          parse_constant=invalid_constant)
     if not isinstance(dataset, dict):
-        raise ValueError("Document dataset must be an object")
+        raise TypeError("Document dataset must be an object")
     # Import after this module has initialized: the legacy document CLI uses
     # create_workspace_app from here and must keep its existing entry point.
     from lgax_core.document_workspace import WorkspaceDocumentStore

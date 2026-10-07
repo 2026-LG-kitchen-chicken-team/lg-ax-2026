@@ -1,13 +1,13 @@
 """Pinned public snapshot CLI and no-generation hold persistence, not live-model quality."""
 
+import json
+import unittest
 from contextlib import redirect_stderr
 from copy import deepcopy
 from hashlib import sha256
 from io import StringIO
-import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
-import unittest
 from unittest.mock import MagicMock, patch
 
 from fastapi.testclient import TestClient
