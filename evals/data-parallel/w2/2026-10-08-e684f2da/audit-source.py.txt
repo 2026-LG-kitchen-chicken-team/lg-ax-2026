@@ -1,0 +1,137 @@
+"""Read-only audit of pinned source metadata and development-only annotations.
+Never imports or runs repository/product/model code.
+"""
+import json,hashlib,subprocess,re,unicodedata,sys
+from pathlib import Path
+from collections import Counter,defaultdict
+from datetime import datetime,UTC
+RUN=Path(__file__).parent;CFG=json.loads((RUN/'run-config.json').read_text(encoding='utf-8'))
+ROOT=Path(CFG['worktree']);OUT=ROOT/CFG['folder'];OUT.mkdir(parents=True,exist_ok=True)
+BASE='data/research/r8-public-research-20261007/';T=BASE+'trend-annotations/01a114f6/'
+def sha(b):return hashlib.sha256(b).hexdigest()
+def canonical(o):return json.dumps(o,ensure_ascii=False,sort_keys=True,separators=(',',':'),allow_nan=False).encode('utf-8')
+def read(p):return json.loads((ROOT/p).read_bytes())
+def prior(name):return json.loads((RUN/'received'/name).read_bytes())
+def write(name,o):p=OUT/name;p.write_bytes((json.dumps(o,ensure_ascii=False,indent=2,allow_nan=False)+'\n').encode('utf-8'))
+pins=json.loads((RUN/'input-pins.private.json').read_bytes());public_pins=[{k:v for k,v in p.items() if k!='summary'} for p in pins]
+paths=[BASE+'records.json',BASE+'products.json',BASE+'d1-d2-01a10600/d1-membership.json',BASE+'d1-d2-01a10600/d1-delivery-manifest.json',T+'annotation.draft.json',T+'development-sources.json',T+'draft-memberships.json',T+'partition-memberships.json',T+'date-only.metadata.json',T+'handoff-summary.json','data/document_plans/lg-three-models-20261005.json','data/research/r5-public-reviews-20261007/fixed18/records.json','data/research/r5-public-reviews-20261007/balanced-pilot-v2/records.json',BASE+'competitors/01a114f6/comparison.json']
+for p in paths:
+ raw=(ROOT/p).read_bytes();public_pins.append({'commit':CFG['base'],'path':p,'bytes':len(raw),'sha256':sha(raw),'origin':'pinned_main_worktree','git_blob_sha':subprocess.check_output(['git','hash-object','--stdin'],input=raw,cwd=ROOT).decode().strip()})
+tracked=subprocess.check_output(['git','-c','core.hooksPath=NUL','-c','core.fsmonitor=false','ls-tree','-r','--name-only','-z',CFG['base']],cwd=ROOT).decode('utf-8').split('\0')
+baseline={p:sha((ROOT/p).read_bytes()) for p in tracked if p}
+(RUN/'baseline-tracked-sha256.json').write_bytes((json.dumps(baseline,ensure_ascii=False)+'\n').encode('utf-8'))
+checks=[];findings=[]
+def check(name,ok,scope):
+ checks.append({'id':name,'pass':bool(ok),'scope':scope})
+ if not ok:findings.append({'id':name,'status':'상충','scope':scope})
+records=read(BASE+'records.json');by_id={r['original_review_id']:r for r in records}
+membership=read(BASE+'d1-d2-01a10600/d1-membership.json');member_by={r['original_review_id']:r for r in membership}
+products=read(BASE+'products.json');prod_by={p['model_id']:p for p in products}
+dev={k:r for k,r in by_id.items() if r['split']=='development'}
+ann=read(T+'annotation.draft.json');rows=ann['rows'];sources=read(T+'development-sources.json')['sources'];source_by={s['source_id']:s for s in sources}
+date_rows=read(T+'date-only.metadata.json')['rows'];date_by={r['source_id']:r for r in date_rows}
+draft=read(T+'draft-memberships.json');summary=read(T+'handoff-summary.json')
+check('original_unique238',len(records)==len(by_id)==238,'238 unique original review IDs')
+check('membership_equals238',set(by_id)==set(member_by),'original record IDs vs D1 metadata membership')
+split_counts=Counter(r['split'] for r in membership)
+check('partition_counts',dict(split_counts)=={'development':141,'independent_evaluation':36,'demonstration':49,'quarantine':12},'unchanged original split labels')
+check('partition_exclusion_accounting',141+36+49+12==len(records) and 36+49+12==97,'97 out-of-scope unique IDs and 141 development; undated141 is a subsequent filter, not an extra subtraction from238')
+first=read('data/research/r5-public-reviews-20261007/fixed18/records.json')
+second=read('data/research/r5-public-reviews-20261007/balanced-pilot-v2/records.json')
+first_ids={x['original_review_id'] for x in first};second_ids={x['original_review_id'] for x in second}
+check('observations239_to_unique238',len(first)==179 and len(second)==60 and len(first)+len(second)==239 and len(first_ids|second_ids)==238,'original source metadata; collection not rerun')
+check('single_reobservation',first_ids&second_ids=={'860977'},'original review860977 appears in both captures; count once')
+sets={s:{r['original_review_id'] for r in membership if r['split']==s} for s in split_counts}
+intersections=[]
+for i,a in enumerate(sorted(sets)):
+ for b in sorted(sets)[i+1:]:
+  hashes_a={member_by[k]['normalized_body_sha256'] for k in sets[a]};hashes_b={member_by[k]['normalized_body_sha256'] for k in sets[b]}
+  entry={'a':a,'b':b,'ID_intersection':sorted(sets[a]&sets[b]),'normalized_body_hash_intersection':sorted(hashes_a&hashes_b)}
+  intersections.append(entry);check('split_disjoint_'+a+'_'+b,not entry['ID_intersection'] and not entry['normalized_body_hash_intersection'],'Declared normalized hashes and IDs; no past-exposure/Gold approval inferred')
+check('draft141_scope',len(rows)==141 and {r['original_review_id'] for r in rows}==set(dev),'draft reviews are exactly development141')
+check('source141_scope',len(sources)==141 and {s['metadata']['original_review_id'] for s in sources}==set(dev),'development source snapshot only')
+check('date_only141_scope',len(date_rows)==141 and {r['source_id'] for r in date_rows}=={r['source_id'] for r in rows},'date-only sidecar IDs exactly match development draft')
+check('draft_approval_not_promoted',ann['status']=='draft' and ann['pm_approved'] is False and all(r['approved'] is False for r in rows),'unapproved topic draft remains unapproved')
+topic_set={t['topic_id'] for t in ann['taxonomy']};row_reports=[];topic_members=defaultdict(set);polarity_members=defaultdict(lambda:defaultdict(set));aspect_count=0
+for a in rows:
+ k=a['original_review_id'];r=dev[k];s=source_by.get(a['source_id']);d=date_by.get(a['source_id']);errors=[];span_checks=[]
+ if not s:errors.append('source_id_missing')
+ else:
+  if s['metadata']['original_review_id']!=k:errors.append('original_ID_join')
+  if sha(s['text'].encode('utf-8'))!=r['text_sha256'] or s['text']!=r['text']:errors.append('source_text_or_hash_join')
+  if a['research_source_sha256']!=sha(canonical(s)):errors.append('canonical_source_object_digest')
+  if a['text_sha256']!=r['text_sha256'] or member_by[k]['text_sha256']!=r['text_sha256']:errors.append('record_member_annotation_text_digest')
+  if a['displayed_page_model']!=r['displayed_model_id'] or s['page_model']!=r['displayed_model_id']:errors.append('page_model_join')
+  if a['reference_document_version']!=r.get('document_version',r.get('manual_version')) or s['document_version']!=r.get('document_version',r.get('manual_version')) or a['record_document_version']!=r.get('document_version'):errors.append('document_version_join')
+  if a['source_url']!=r['source_url'] or s['url']!=r['source_url']:errors.append('original_URL_join')
+  if s['locator']['original_review_id']!=k or a['source_locator']['original_review_id']!=k:errors.append('original_locator_ID_join')
+  if a['dedup_group_id']!=r['dedup_group_id']:errors.append('dedup_group_join')
+ if not d or d['published_at'] is not None or d['topic_ids']!=[] or d['classification_status']!='unclassified':errors.append('date_only_sidecar_boundary')
+ if a['published_at'] is not None or r['published_at'] is not None:errors.append('publication_date_promoted')
+ if a['actual_purchased_model_id'] is not None or r['actual_purchased_model_id'] is not None:errors.append('purchase_SKU_promoted')
+ if len(a['topic_ids'])!=len(set(a['topic_ids'])) or not set(a['topic_ids'])<=topic_set:errors.append('duplicate_or_unknown_topic_ID')
+ if set(a['topic_ids'])!={x['topic_id'] for x in a['aspects']}:errors.append('topic_membership_vs_aspects')
+ for asp in a['aspects']:
+  aspect_count+=1;q=asp['quote'];tr=asp['text_range'];start,end=tr['start'],tr['end'];actual=r['text'][start:end]
+  passed=actual==q and sha(q.encode('utf-8'))==asp['quote_sha256'] and tr['unit']=='unicode_codepoint' and tr['end_exclusive'] is True
+  span_checks.append({'topic_id':asp['topic_id'],'polarity':asp['polarity'],'text_range':tr,'quote_sha256':asp['quote_sha256'],'matches_development_original':passed})
+  if not passed:errors.append('quote_range_or_digest')
+  polarity_members[asp['topic_id']][asp['polarity']].add(k)
+ for t in a['topic_ids']:topic_members[t].add(k)
+ if errors:findings.append({'original_review_id':k,'status':'상충','errors':sorted(set(errors))})
+ row_reports.append({'original_review_id':k,'source_id':a['source_id'],'record_review_id':a['record_review_id'],'projection_review_id':a['projection_review_id'],'page_model':r['displayed_model_id'],'record_document_version':r.get('document_version'),'effective_reference_version':r.get('document_version',r.get('manual_version')),'source_url':r['source_url'],'source_locator':a['source_locator'],'text_sha256':r['text_sha256'],'source_object_sha256':a['research_source_sha256'],'all_identity_date_version_and_locator_checks_match':not errors,'errors':sorted(set(errors)),'span_checks':span_checks,'published_at':None,'topic_approved':False,'time_denominator_contribution':0,'overall_opinion':a['overall_opinion'],'topic_ids_draft':a['topic_ids']})
+check('141_row_original_joins',all(not r['errors'] for r in row_reports),'141 original/source/draft/date-sidecar/page/version/URL/hash/locator joins; no new topic assignment')
+check('draft_overall_count',dict(Counter(a['overall_opinion'] for a in rows))==draft['overall_opinion_counts'],'overall opinion counts are draft counts, not approved polarity or market percentages')
+for topic,polarity in draft['topic_polarity_memberships'].items():
+ for label,ids in polarity.items():check('membership_'+topic+'_'+label,set(ids)==polarity_members[topic][label] and len(ids)==len(set(ids)),'unique original review IDs per topic/polarity; mixed polarity may overlap')
+multi_polarity=[{'topic':topic,'review_id':k,'polarities':sorted([p for p,ids in pol.items() if k in ids])} for topic,pol in polarity_members.items() for k in set().union(*pol.values()) if sum(k in ids for ids in pol.values())>1]
+ledger=[];manual_sidecar=prior('pr270-manual-applicability.sidecar.json');manual_models={m['model_id']:m for m in manual_sidecar['models']}
+manual_refs=defaultdict(list)
+for m in manual_sidecar['manual_references']:
+ manual_refs[m['model_id']].append({'document_version':m['document_version'],'PDF_sha256':m['pdf_sha256'],'PDF_bytes':m['pdf_bytes'],'URL':m['manual_url'],'support_listed_date':m['support_listed_date'],'binding':'exact model support catalogue link; candidate features conditional','reference_id':m['reference_id']})
+for m in read('data/document_plans/lg-three-models-20261005.json')['documents']:
+ manual_refs[m['product']['model_id']].append({'document_version':m['document_version'],'PDF_sha256':m['sha256'],'URL':m['url'],'support_listed_date':None,'binding':'existing canonical document-to-model link; optional feature scope preserved','reference_id':m['document_id']})
+def edition_date(version):
+ m=re.search(r'Rev\.[^_]+_(\d{6})',version or '')
+ if not m:return None
+ try:return datetime.strptime(m[1],'%m%d%y').date().isoformat()
+ except ValueError:return None
+late_by_split=Counter();purchase_known=Counter()
+for r in records:
+ model=r['displayed_model_id']; refs=manual_refs[model];purchase=r.get('purchase_date');dates=[edition_date(x['document_version']) for x in refs];dates=[d for d in dates if d]
+ valid=bool(purchase and re.fullmatch(r'\d{4}-\d{2}-\d{2}',purchase))
+ flag=bool(valid and dates and all(d>purchase for d in dates))
+ if valid:purchase_known[r['split']]+=1
+ if flag:late_by_split[r['split']]+=1
+ ledger.append({'original_review_id':r['original_review_id'],'split':r['split'],'page_model':model,'original_record_document_version':r.get('document_version'),'record_manual_version':r.get('manual_version'),'effective_reference_version':r.get('document_version',r.get('manual_version')),'source_url':r['source_url'],'source_locator':r['source_locator'],'original_text_sha256_declared':r.get('original_text_sha256'),'record_text_sha256':r['text_sha256'],'normalized_body_sha256':member_by[r['original_review_id']]['normalized_body_sha256'],'reported_purchase_date':purchase,'reported_purchase_date_is_publication_date':False,'published_at':r['published_at'],'purchased_SKU':r['actual_purchased_model_id'],'candidate_edition_dates':sorted(set(dates)),'all_current_candidate_edition_dates_after_reported_purchase_date':flag,'purchase_time_edition_verified':False,'quarantined':r.get('quarantined',member_by[r['original_review_id']]['quarantined']),'time_denominator_contribution':0,'source_field_checks_match':all(member_by[r['original_review_id']].get(f)==r.get(f) for f in ['displayed_model_id','actual_purchased_model_id','published_at','purchase_date','split','source_url','source_locator','text_sha256']) and member_by[r['original_review_id']]['document_version']==r.get('document_version',r.get('manual_version'))})
+check('238_metadata_fields',all(x['source_field_checks_match'] for x in ledger),'Original record and D1 membership fields; no held-out/Gold text reviewed')
+check('238_unknown_posting_and_SKU',all(r['published_at'] is None and r['actual_purchased_model_id'] is None for r in records),'238 null dates/exact purchase SKU preserved')
+model_map=[]
+for p in sorted(products,key=lambda x:(x['product_group'],x['model_id'])):
+ model=p['model_id']; model_records=[r for r in records if r['displayed_model_id']==model]; chosen=manual_refs[model]
+ model_map.append({'model_id':model,'source_model_id':p['lge_model_id'],'product_group':p['product_group'],'official_product_url':p['displayed_product_identity']['canonical_url'],'existing_review_count':len(model_records),'development_review_count':sum(r['split']=='development' for r in model_records),'reference_record_document_version':p['document_version'],'candidate_manual_links':chosen,'manual_feature_scope':manual_models[model]['manual_scope_status'] if model in manual_models else ('CONFIRMED' if model=='MW23FDI' else 'CONDITIONAL'),'exact_purchased_SKU_count':0,'purchase_time_edition_verified_count':0,'new_candidate_documents_not_added_to_existing_data':True})
+check('all18_displayed_models_have_reused_document_links',len(model_map)==18 and all(x['candidate_manual_links'] for x in model_map),'3 original canonical plus15 model candidates; catalogue link does not prove buyer identity/features')
+months=[{'period_id':'month:'+m,'time_basis':'Asia/Seoul','denominator':0,'approved_topic_numerator':None,'ratio':None,'exclusion':'all141 selected development reviews have unknown posting date'} for m in ['2026-'+str(i).zfill(2) for i in range(1,13)]]
+seasons=[{'period_id':x,'denominator':0,'approved_topic_numerator':None,'ratio':None} for x in ['season:2026:spring','season:2026:summer','season:2026:autumn','season:2026:winter']]
+trend={'version':'products-trends-audit.20261008.'+CFG['uid']+'.v1','base_commit':CFG['base'],'method':'offline independent metadata/141 source-span/membership arithmetic review; existing collector/model/collection not rerun','observations':len(first)+len(second),'unique_original_reviews':len(records),'reobserved_IDs':sorted(first_ids&second_ids),'duplicate_observations':1,'split_counts':dict(split_counts),'development_groups':dict(Counter(a['product_group'] for a in rows)),'out_of_scope97':97,'development_undated141':141,'reported_purchase_date_counts':dict(purchase_known),'publication_date_confirmed_existing_cohort':0,'approved_topic_version':None,'approved_correction_source_IDs_received':[],'draft_annotation_version':ann['annotation_version'],'draft_annotation_sha256':sha((ROOT/(T+'annotation.draft.json')).read_bytes()),'draft_approval':False,'approved_topic_numerator':None,'approved_topic_ratio':None,'approved_time_denominator':0,'monthly':months,'seasonal':seasons,'season_rule':'winter Y covers December Y and January/February Y+1; 2026 winter example is future/incomplete as of2026-10-08','draft_overall_opinion_counts':dict(Counter(a['overall_opinion'] for a in rows)),'draft_topic_counts':{t:len(ids) for t,ids in sorted(topic_members.items())},'multi_topic_reviews_count':sum(len(a['topic_ids'])>1 for a in rows),'same_review_multi_polarity_memberships':multi_polarity,'sum_topic_mentions_is_not_review_denominator':True,'verified_development_source_spans':aspect_count,'new_candidates_added_to_cohort':0,'normalized_hash_split_intersections':intersections,'scope_notes':['239 observation duplicate1, scope exclusion97 and undated141 are distinct stages; do not add them as one total','PM approval and independent evaluation eligibility are separate; original36/49 split names do not prove approval','Service opinions, current/previous product, hope vs experience and topic approval are preserved in the original draft; this verifies its linkage, not final semantic accuracy','No monthly/seasonal percentage or causal/market-frequency claim'] }
+lineage={'method':'Compare current referenced candidate edition cover code date with reported UI purchase date; no historical edition or actual purchase authenticated','edition_date_format':'Rev.*_MMDDYY','original_record_versions_preserved':True,'records_without_explicit_document_version':sum('document_version' not in r for r in records),'effective_version_basis':'Preserve explicit record_document_version null; existing manual_version fallback compared against member/source version, without changing original records','current_reference_after_purchase_counts_by_split':dict(late_by_split),'known_UI_purchase_dates_by_split':dict(purchase_known),'interpretation':'A later current candidate edition cannot prove what was supplied at that reported purchase date. Earlier edition or same model listing also does not prove the actual unit/edition. Historical features/absence not inferred.','exact_purchase_time_edition_verified':0}
+candidate=json.loads((RUN/'new-candidates.verified-private.json').read_bytes());safe=[]
+for c in candidate['candidates']:
+ n={k:v for k,v in c.items() if k not in ['anchors','article_date_meta_fields']};n['anchor_locations']=[{k:v for k,v in a.items() if k!='anchor'}|{'field':('model' if i==0 else 'condition_'+str(i))} for i,a in enumerate(c['anchors'])]
+ safe.append(n)
+candidate_safe={k:v for k,v in candidate.items() if k!='candidates'};candidate_safe['candidates']=safe
+candidate_safe['excluded_discovery_examples']=[{'url':'https://gift.methe.money/2022/03/23/과장-없는-광파-오븐-1위부터-20위까지-찐-후기/','reason':'Republished retailer quotes; original review IDs/first posting/source lineage absent'},{'url':'https://oh-taste.com/ingredient/item/jjimkkong2-224375944885','reason':'Secondary rewrite; original Naver article not received; summary date not original posting proof'},{'url':'https://guide.homeappliance-help.com/products/due6bgl2e/','reason':'Aggregated product/marketing guide; customer authored original IDs/date not established'}]
+conditions={'version':'product-applicability.20261008.'+CFG['uid']+'.v1','existing_findings_reused':True,'competing_models':read(BASE+'competitors/01a114f6/comparison.json')['models'],'comparability':read(BASE+'competitors/01a114f6/comparison.json')['comparability'],'same_conditions_superiority':None,'reach_or_customer_demand_proven':False,'kimchi_and_oven_installation':prior('pr290-manual-installation-scope.json')['findings'],'kimchi_and_oven_installation_page_pins':[{k:v for k,v in x.items() if k!='anchors'} for x in prior('pr290-manual-installation-scope.json')['pages']],'additional_manual_models':[{k:v for k,v in c.items() if k in ['catalogue_model','catalogue_url','PDF_URLs','PDF_sha256','PDF_bytes','document_version','cover_model_scope','model_to_catalogue_document_link','exact_optional_features_and_purchase_time_edition','manual_feature_conditions','inspected_source_spans']} for c in prior('pr282-manual-candidates.json')['candidates']],'individual_customer_QA_reference':'https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/288','QA470877_reused':{'question_original_ID':'470877','page_model':'DUE6BGL2E','inside_clearance_mm':600,'front_clearance_mm':590,'conditional_depth_mm':[567,600],'conditions':['plumbing must not be compressed; installation engineer must confirm individual site'],'question119_120mm_meaning':None,'question_date':'2026-09-26','answer_date':'2026-09-29','customer_review_date':None,'input_to_customer_review_denominator':False},'manufacturer_FAQ_count3_reused':3,'manufacturer_FAQ_is_customer_discomfort_count':False,'new_candidate_runtime_registration':0,'operating_source_consumption_across_all_runs':None}
+write('input-pins.json',{'base_commit':CFG['base'],'sources':public_pins,'same_code_version_output_policy':'All newly derived records refer to the same base and audit source digest; no project model IDs/settings/IO generated','approval_sources':['https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/12#issuecomment-6029599916','https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/148#issuecomment-6055702565','https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/148#issuecomment-6052081322']})
+write('trend-audit.json',trend);write('development-row-checks.json',{'rows':row_reports,'all_rows':len(row_reports),'source_spans':aspect_count,'quotes_and_nondevelopment_text_not_copied':True})
+write('review-metadata-ledger.json',{'rows':ledger,'count':len(ledger),'raw_or_Gold_or_answer_text_copied':False})
+write('purchase-edition-audit.json',lineage);write('product-model-map.json',{'models':model_map,'model_count':18,'original3_reused':True,'additional15_reused':True,'existing_data_modified':False})
+write('new-review-candidates.json',candidate_safe);write('product-conditions.json',conditions)
+write('linkage-findings.json',{'findings':findings,'status':'확인' if not findings else '상충','unconfirmed':['Exact purchased SKU and contemporaneous edition for238','PM approved topic version or identified correction Source IDs','History/authenticity/duplicate exposure approval for newly dated articles','Same conditions competitor physical/internal reach test; entire model optional features'],'topic_meaning_or_Gold_approval_performed':False})
+write('verification.json',{'method':'single scoped offline audit; no repository collector/product code executed','checked_at_utc':datetime.now(UTC).isoformat(),'base_commit':CFG['base'],'audit_script_sha256':sha(Path(__file__).read_bytes()),'checks':checks,'passed':sum(c['pass'] for c in checks),'failed':sum(not c['pass'] for c in checks),'source_spans':aspect_count,'original_tracked_count':len(baseline),'original_tracked_changes':[],'new_model_or_OCR_calls':0,'collection_reruns':0,'server_API_DB_changes_or_calls':0,'completed225_or11_repeated':False,'approval_or_parent_done_claimed':False})
+write('source-parser-failure.json',{'original_failures_preserved':True,'failure':json.loads((RUN/'candidate-parser-failure.json').read_bytes()),'network_refetches':0,'raw_files_public':False})
+(OUT/'audit-source.py.txt').write_bytes(Path(__file__).read_bytes())
+changes=[p for p,dig in baseline.items() if sha((ROOT/p).read_bytes())!=dig]
+if changes: raise RuntimeError('Original tracked files modified')
+print(json.dumps({'PASS':sum(c['pass'] for c in checks),'FAIL':sum(not c['pass'] for c in checks),'findings':findings,'spans':aspect_count,'draft_overall':trend['draft_overall_opinion_counts'],'draft_topic_counts':trend['draft_topic_counts'],'multi_topic_review_count':trend['multi_topic_reviews_count'],'multi_polarity_count':len(multi_polarity),'purchase_edition_after_UI_date_counts':dict(late_by_split),'reported_purchase_date_counts':dict(purchase_known),'model_coverage18':[{k:v for k,v in m.items() if k in ['model_id','existing_review_count','development_review_count']} for m in model_map],'tracked_preserved':len(baseline)},ensure_ascii=False))
+if findings:sys.exit(1)

@@ -1,0 +1,613 @@
+{
+  "method": "single scoped offline audit; no repository collector/product code executed",
+  "checked_at_utc": "2026-10-08T11:43:50.928517+00:00",
+  "base_commit": "eab85d48385f965eef48c07a6cdd8f6fd9851c62",
+  "audit_script_sha256": "0782bbf89e9b581fec47fa8459b61397bd817bb67ff6d33c9c0375d939684805",
+  "checks": [
+    {
+      "id": "original_unique238",
+      "pass": true,
+      "scope": "238 unique original review IDs"
+    },
+    {
+      "id": "membership_equals238",
+      "pass": true,
+      "scope": "original record IDs vs D1 metadata membership"
+    },
+    {
+      "id": "partition_counts",
+      "pass": true,
+      "scope": "unchanged original split labels"
+    },
+    {
+      "id": "partition_exclusion_accounting",
+      "pass": true,
+      "scope": "97 out-of-scope unique IDs and 141 development; undated141 is a subsequent filter, not an extra subtraction from238"
+    },
+    {
+      "id": "observations239_to_unique238",
+      "pass": true,
+      "scope": "original source metadata; collection not rerun"
+    },
+    {
+      "id": "single_reobservation",
+      "pass": true,
+      "scope": "original review860977 appears in both captures; count once"
+    },
+    {
+      "id": "split_disjoint_demonstration_development",
+      "pass": true,
+      "scope": "Declared normalized hashes and IDs; no past-exposure/Gold approval inferred"
+    },
+    {
+      "id": "split_disjoint_demonstration_independent_evaluation",
+      "pass": true,
+      "scope": "Declared normalized hashes and IDs; no past-exposure/Gold approval inferred"
+    },
+    {
+      "id": "split_disjoint_demonstration_quarantine",
+      "pass": true,
+      "scope": "Declared normalized hashes and IDs; no past-exposure/Gold approval inferred"
+    },
+    {
+      "id": "split_disjoint_development_independent_evaluation",
+      "pass": true,
+      "scope": "Declared normalized hashes and IDs; no past-exposure/Gold approval inferred"
+    },
+    {
+      "id": "split_disjoint_development_quarantine",
+      "pass": true,
+      "scope": "Declared normalized hashes and IDs; no past-exposure/Gold approval inferred"
+    },
+    {
+      "id": "split_disjoint_independent_evaluation_quarantine",
+      "pass": true,
+      "scope": "Declared normalized hashes and IDs; no past-exposure/Gold approval inferred"
+    },
+    {
+      "id": "draft141_scope",
+      "pass": true,
+      "scope": "draft reviews are exactly development141"
+    },
+    {
+      "id": "source141_scope",
+      "pass": true,
+      "scope": "development source snapshot only"
+    },
+    {
+      "id": "date_only141_scope",
+      "pass": true,
+      "scope": "date-only sidecar IDs exactly match development draft"
+    },
+    {
+      "id": "draft_approval_not_promoted",
+      "pass": true,
+      "scope": "unapproved topic draft remains unapproved"
+    },
+    {
+      "id": "141_row_original_joins",
+      "pass": true,
+      "scope": "141 original/source/draft/date-sidecar/page/version/URL/hash/locator joins; no new topic assignment"
+    },
+    {
+      "id": "draft_overall_count",
+      "pass": true,
+      "scope": "overall opinion counts are draft counts, not approved polarity or market percentages"
+    },
+    {
+      "id": "membership_storage_access_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_storage_access_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_storage_access_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_storage_access_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_capacity_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_capacity_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_capacity_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_capacity_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_design_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_design_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_design_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_design_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_installation_fit_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_installation_fit_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_installation_fit_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_installation_fit_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_installation_service_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_installation_service_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_installation_service_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_installation_service_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_delivery_service_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_delivery_service_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_delivery_service_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_delivery_service_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_price_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_price_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_price_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_price_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_usability_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_usability_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_usability_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_usability_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_cooling_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_cooling_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_cooling_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_cooling_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_heating_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_heating_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_heating_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_heating_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_controls_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_controls_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_controls_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_controls_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_dish_cleaning_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_dish_cleaning_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_dish_cleaning_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_dish_cleaning_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_drying_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_drying_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_drying_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_drying_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_cleaning_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_cleaning_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_cleaning_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_cleaning_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_odor_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_odor_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_odor_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_odor_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_noise_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_noise_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_noise_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_noise_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_door_handling_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_door_handling_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_door_handling_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_door_handling_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_reliability_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_reliability_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_reliability_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_reliability_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_time_saving_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_time_saving_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_time_saving_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_time_saving_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_energy_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_energy_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_energy_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_energy_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_connectivity_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_connectivity_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_connectivity_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_connectivity_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_loading_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_loading_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_loading_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_loading_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_after_sales_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_after_sales_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_after_sales_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_after_sales_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_general_negative",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_general_neutral",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_general_positive",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "membership_general_uncertain",
+      "pass": true,
+      "scope": "unique original review IDs per topic/polarity; mixed polarity may overlap"
+    },
+    {
+      "id": "238_metadata_fields",
+      "pass": true,
+      "scope": "Original record and D1 membership fields; no held-out/Gold text reviewed"
+    },
+    {
+      "id": "238_unknown_posting_and_SKU",
+      "pass": true,
+      "scope": "238 null dates/exact purchase SKU preserved"
+    },
+    {
+      "id": "all18_displayed_models_have_reused_document_links",
+      "pass": true,
+      "scope": "3 original canonical plus15 model candidates; catalogue link does not prove buyer identity/features"
+    }
+  ],
+  "passed": 117,
+  "failed": 0,
+  "source_spans": 292,
+  "original_tracked_count": 4741,
+  "original_tracked_changes": [],
+  "new_model_or_OCR_calls": 0,
+  "collection_reruns": 0,
+  "server_API_DB_changes_or_calls": 0,
+  "completed225_or11_repeated": false,
+  "approval_or_parent_done_claimed": false,
+  "additional_artifact_checks": {
+    "new_candidate_spans7": 7,
+    "candidate_original_entity_and_text_hashes": true,
+    "received_pin_count": 15,
+    "received_pin_hash_size_and_Gitblob_bytes": true,
+    "JSON_files_checked_before_manifest_regeneration": 13,
+    "local_links": 14,
+    "AGENTS_CLAUDE_same_bytes": true,
+    "tracked4741_SHA_changes": []
+  }
+}

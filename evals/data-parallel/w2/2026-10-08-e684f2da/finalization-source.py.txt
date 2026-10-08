@@ -1,0 +1,72 @@
+from pathlib import Path
+import json,hashlib,sys,re,subprocess
+from datetime import datetime,UTC
+RUN=Path(r'C:\Users\user\Documents\ChatGPT\LG공모전\.worktrees\data001-recheck-20261005T0550\private\manual-preflight-20261005\data-products-trends-20261008-e684f2da');CFG=json.loads((RUN/'run-config.json').read_bytes());ROOT=Path(CFG['worktree']);OUT=ROOT/CFG['folder']
+def sha(b):return hashlib.sha256(b).hexdigest()
+def write(name,obj):(OUT/name).write_bytes((json.dumps(obj,ensure_ascii=False,indent=2)+'\n').encode('utf-8'))
+o=json.loads((OUT/'product-conditions.json').read_bytes())
+for row in o['additional_manual_models']:
+ if row['catalogue_model']=='Z330MEEF11':
+  row['manual_feature_conditions']='공용 설명서2쪽, 연결9쪽의2.4GHz/5GHz 비지원,10쪽의모델별 조건; ML32 전용 로고/원격 기능 조건을 김치냉장고에 전이하지 않음'
+ else:
+  row['manual_feature_conditions']='ML32 공용;17쪽2.4GHz/5GHz 비지원,18쪽실제Wi-Fi/SmartThinQ로고·모델·앱버전 조건; 현재 지원목록 연결과 구매당시판은 별도'
+o['upstream_mixed_model_note_not_inherited']=True
+write('product-conditions.json',o)
+failures=[json.loads((RUN/p).read_bytes()) for p in ['audit-reader-failure.json','audit-reader-failure-2.json']]
+o=json.loads((OUT/'source-parser-failure.json').read_bytes());o['offline_audit_reader_failures']=failures
+o['publication_correction']=json.loads((RUN/'publication-correction-reason.json').read_bytes())
+o['first_read_output_budget_failure']={'stage':'read-only GitHub snapshot display','reason':'Requested output exceeded budget; no full snapshot parsed or evidence claimed; reduced metadata read subsequently succeeded','mutations':0}
+write('source-parser-failure.json',o)
+write('execution-record.json',{'record_id':'data-products-trends-20261008-'+CFG['uid'],'base_commit':CFG['base'],'branch':CFG['branch'],'operator':'ginaginaring / 신진하 / Codex','audit_source_sha256':sha((OUT/'audit-source.py.txt').read_bytes()),'capture_script_sha256':sha((RUN/'capture_candidates.py').read_bytes()),'parser_script_sha256':sha((RUN/'parse_candidate_captures.py').read_bytes()),'finalization_script_sha256':sha(Path(__file__).read_bytes()),'python_version':sys.version,'conditions':{'mode':'manual','automation_global_and_four_members':'off','new_model_id':None,'new_model_config':None,'new_model_inputs':None,'new_model_outputs':None,'model_calls':0,'OCR_calls':0,'collector_reruns':0,'completed225_or11_repeated':False,'network':'GitHub/controller read/manual reservation and two new public HTML GETs; audit itself offline','operating_API_DB_server_calls':0,'raw_article_HTML_body_and_auth_private':True},'inputs':'input-pins.json','outputs':['trend-audit.json','development-row-checks.json','review-metadata-ledger.json','purchase-edition-audit.json','product-model-map.json','new-review-candidates.json','product-conditions.json'],'failures':'source-parser-failure.json','topic_approval':False,'parent_done':False,'checked_at_utc':datetime.now(UTC).isoformat()})
+log=ROOT/CFG['log'];s=log.read_text(encoding='utf-8')
+s=s.replace('진행 중. 종료 시 실제 결과·검증·원 실패·완료 범위·막힘·다음 행동·PR/보고 수신을 아래에 추가한다.','''실제 결과·완료 범위: 고정 원238/관측239/개발141의 분할·중복·원ID·원문SHA·모델/판본/URL·292인용 위치·주제 membership117항목을 자체 오프라인 검수하여 일치했다. 기존18모델(원3+추가15)의 문서 연결과 구매/당시판 미확인을 분리했다. 현재 후보 판본 날짜가 표시구매일보다 늦은38건·그중개발18행을 별도로 남겼다. 판본이 더 앞서 있어도 당시판/구매 라벨을 확정하지 않았다.
+
+새 받은 자료: 작성자ML32WW1 사용글의 게시/수정2024-07-20·본문/원 응답SHA·조건 위치를 확보했다. 현재2025판을이글의2024당시판으로대입하지 않았다. Z330MEEF11 제휴글은게시2025-09-19/수정2026-08-15·진위/당시내용미확인으로보류했다. 두 후보는238/141합산·실행등록0. 제조사FAQ와Q&A날짜·가이드재게시를고객후기/분모로바꾸지 않았다. 기존 경쟁/김치/광파 설치 조건은 원검수와 정확핀을재사용하고 모델별조건을분리했다.
+
+통계: 개발141의게시일0·승인주제version없음, 월/계절분모0·승인분자null·ratio null. 긍정106/부정13/혼합16/불확실3/중립3은 기존draft의 산술 대조다. 여러주제110행·같은주제혼합극성2조합을중복증가로세지않았다. scope97제외와날짜미상141제외는다른단계다.
+
+실패/수정: 첫원문parser요소깊이처리에서본문일부누락, 원응답/출력보존뒤same HTML오프라인재파싱7조건확인·재GET0. 첫오프라인검수reader는선택필드document_version/quarantined2KeyError; 기존59행의manual_version/동일IDmembership을보존해수정, 원문과기존draft변경0. 첫GitHub읽기출력초과와보존소스도수신증에남겼다. 수정최종117일치 결과만유효근거다.
+
+변경/검증: 새자기폴더JSON/MD/코드snapshot·고유2기록만작성. 원4741파일SHA보존. 기존코드/자료/CSV8열/개인README/다른창변경0. 모델/OCR/수집재실행·완료225/11·서버/운영/DB·메일/ZIP·자동화ON/수동CI재실행0. 실제GitHub프로젝트읽기P2-DATA-001/005는Ready+자기Review requested이며PM품질/부모Done은별도다.
+
+막힘: 기존238정확구매SKU/구매당시판본·141후기게시일·PM승인주제version/지적SourceID미수신. 새2후보의진위/광고·수정이력/분할승인·같은조건경쟁효과/운영소비도미확인. 기존148인계요청6052081322를재사용하고이번새근거만연결한다. 메일발송은이창에서하지않는다.
+
+다음작업하나: PM승인분류또는지적SourceID를받으면해당행만원문/날짜/분모를보완한다. 새자료없는상태에서기존실험을반복하지않는다. 일반부분PR·#12/#148새근거댓글과#16정식review_requested보고, 실제수신/예약해제는게시수신증과Issue댓글에연결한다. 완료된독립검수단위와PM인수·병합·전체완료를구분한다.''')
+log.write_bytes(s.encode('utf-8'))
+# Verify each captured candidate date/anchor digest and every pinned input blob byte.
+candidate_private=json.loads((RUN/'new-candidates.verified-private.json').read_bytes());n=0
+for c in candidate_private['candidates']:
+ raw=(RUN/'article-captures'/(c['candidate_id']+'.html')).read_bytes()
+ text=(RUN/'article-captures'/(c['candidate_id']+'.normalized-v2.txt')).read_text(encoding='utf-8')
+ assert sha(raw)==c['html_entity_sha256'] and sha(text.encode('utf-8'))==c['text_sha256']
+ assert c['candidate_publication_date']==c['visible_article_date']
+ for a in c['anchors']:
+  assert sha(text[a['start']:a['end']].encode('utf-8'))==a['anchor_sha256'];n+=1
+pins=json.loads((RUN/'input-pins.private.json').read_bytes())
+for p in pins:
+ raw=(RUN/'received'/p['key']).read_bytes()
+ assert sha(raw)==p['sha256'] and len(raw)==p['bytes']
+ assert subprocess.check_output(['git','hash-object','--stdin'],input=raw,cwd=ROOT).decode().strip()==p['git_blob_sha']
+(OUT/'finalization-source.py.txt').write_bytes(Path(__file__).read_bytes())
+jsonfiles=list(OUT.glob('*.json'))
+for p in jsonfiles:json.loads(p.read_bytes())
+baseline=json.loads((RUN/'baseline-tracked-sha256.json').read_bytes())
+changed=[p for p,h in baseline.items() if sha((ROOT/p).read_bytes())!=h]
+assert not changed
+assert (ROOT/'AGENTS.md').read_bytes()==(ROOT/'CLAUDE.md').read_bytes()
+links=[]
+for p in [OUT/'README.md',ROOT/CFG['log'],ROOT/CFG['evidence']]:
+ for target in re.findall(r'\]\(([^)]+)\)',p.read_text(encoding='utf-8')):
+  if target.startswith(('http:','https:','codex:')):continue
+  assert (p.parent/target.split('#')[0]).resolve().exists(),(str(p),target)
+  links.append(target)
+v=json.loads((OUT/'verification.json').read_bytes())
+v.update({'additional_artifact_checks':{'new_candidate_spans7':n,'candidate_original_entity_and_text_hashes':True,'received_pin_count':len(pins),'received_pin_hash_size_and_Gitblob_bytes':True,'JSON_files_checked_before_manifest_regeneration':len(jsonfiles),'local_links':len(links),'AGENTS_CLAUDE_same_bytes':True,'tracked4741_SHA_changes':changed},'checked_at_utc':datetime.now(UTC).isoformat()})
+write('verification.json',v)
+items=[]
+for p in sorted(OUT.rglob('*')):
+ if p.is_file() and p.name!='artifact-manifest.json':items.append({'path':p.relative_to(ROOT).as_posix(),'bytes':p.stat().st_size,'sha256':sha(p.read_bytes())})
+for name in [CFG['log'],CFG['evidence']]:
+ p=ROOT/name;items.append({'path':name,'bytes':p.stat().st_size,'sha256':sha(p.read_bytes())})
+write('artifact-manifest.json',{'base_commit':CFG['base'],'manifest_self_excluded':True,'files':items,'new_files_only':True})
+print(json.dumps({'new_files':len(items)+1,'payload_entries':len(items),'links':len(links),'JSON_before_manifest':len(jsonfiles),'input_pins':len(pins),'candidate_spans':n,'scope_existing_changes':changed,'audit117_pass':v['failed']==0,'AGENTS_same_bytes':True},ensure_ascii=False))

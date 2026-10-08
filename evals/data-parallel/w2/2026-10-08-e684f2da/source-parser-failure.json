@@ -1,0 +1,53 @@
+{
+  "original_failures_preserved": true,
+  "failure": [
+    {
+      "candidate_id": "CAND-ML32-20240720-e684f2da",
+      "first_text_sha256": "577f7d7712c0ffde2ed02c89c0efc808583af9c1270e834e0534db25ed99b9f0",
+      "first_missing_anchor_count": 4,
+      "first_raw_entity_preserved": true,
+      "cause": "HTMLParser depth accounting for self-closing/void elements caused incomplete article extraction; repaired offline with an explicit element stack",
+      "corrected_text_sha256": "5be116e6c3c2e2331d0a9b4739982c3d51844f245df5cf8119bff93f76dcad7b",
+      "network_refetch": 0
+    },
+    {
+      "candidate_id": "CAND-Z330-20250919-e684f2da",
+      "first_text_sha256": "36d4caa29424e50995dda9d42594547d41b54cba22498c7ca857dd6e5fb10609",
+      "first_missing_anchor_count": 1,
+      "first_raw_entity_preserved": true,
+      "cause": "HTMLParser depth accounting for self-closing/void elements caused incomplete article extraction; repaired offline with an explicit element stack",
+      "corrected_text_sha256": "90c385050b5918e11a8248df7c712ac65943d0b4cfd6586d62959a017b49928f",
+      "network_refetch": 0
+    }
+  ],
+  "network_refetches": 0,
+  "raw_files_public": false,
+  "offline_audit_reader_failures": [
+    {
+      "stage": "first offline audit",
+      "failure": "KeyError: document_version",
+      "cause": "Reader assumed identical optional keys in179 first-source records and59 appended unique records; latter use manual_version. Original draft already preserves record_document_version null and has separate reference version. Corrected reader preserves distinction.",
+      "original_data_changes": 0,
+      "model_OCR_calls": 0,
+      "pre_failure_outputs": "private baseline and intent only; no new results claimed"
+    },
+    {
+      "failure": "KeyError: quarantined",
+      "cause": "Appended59 optional quarantine boolean is in pinned D1 membership rather than every original record. Reader preserves explicit flag or uses same-ID membership boolean; original split preserved.",
+      "original_changes": 0,
+      "new_result_before_failure": false
+    }
+  ],
+  "publication_correction": {
+    "published_first_head": "930e25247bd75a96e06640c3eebb05519115eadf",
+    "error": "After staging new files, offline reader ls-files included staged own artifacts in original-file baseline; they changed during output generation. Audit/finalization gates then failed, while publication did not halt at that separate preflight. Initial117/scoped source result and original4741 files were intact, but the generated count/manifest became stale.",
+    "repair": "Source original-file list only from fixed base tree; validate and regenerate all own artifacts and exact manifest before corrective commit; retain first published head/failure, update existing PR only.",
+    "existing_code_data_CSV_README_changed": false,
+    "model_OCR_calls": 0
+  },
+  "first_read_output_budget_failure": {
+    "stage": "read-only GitHub snapshot display",
+    "reason": "Requested output exceeded budget; no full snapshot parsed or evidence claimed; reduced metadata read subsequently succeeded",
+    "mutations": 0
+  }
+}
