@@ -17,7 +17,7 @@ pins=json.loads((RUN/'input-pins.private.json').read_bytes());public_pins=[{k:v 
 paths=[BASE+'records.json',BASE+'products.json',BASE+'d1-d2-01a10600/d1-membership.json',BASE+'d1-d2-01a10600/d1-delivery-manifest.json',T+'annotation.draft.json',T+'development-sources.json',T+'draft-memberships.json',T+'partition-memberships.json',T+'date-only.metadata.json',T+'handoff-summary.json','data/document_plans/lg-three-models-20261005.json','data/research/r5-public-reviews-20261007/fixed18/records.json','data/research/r5-public-reviews-20261007/balanced-pilot-v2/records.json',BASE+'competitors/01a114f6/comparison.json']
 for p in paths:
  raw=(ROOT/p).read_bytes();public_pins.append({'commit':CFG['base'],'path':p,'bytes':len(raw),'sha256':sha(raw),'origin':'pinned_main_worktree','git_blob_sha':subprocess.check_output(['git','hash-object','--stdin'],input=raw,cwd=ROOT).decode().strip()})
-tracked=subprocess.check_output(['git','-c','core.hooksPath=NUL','-c','core.fsmonitor=false','ls-files','-z'],cwd=ROOT).decode('utf-8').split('\0')
+tracked=subprocess.check_output(['git','-c','core.hooksPath=NUL','-c','core.fsmonitor=false','ls-tree','-r','--name-only','-z',CFG['base']],cwd=ROOT).decode('utf-8').split('\0')
 baseline={p:sha((ROOT/p).read_bytes()) for p in tracked if p}
 (RUN/'baseline-tracked-sha256.json').write_bytes((json.dumps(baseline,ensure_ascii=False)+'\n').encode('utf-8'))
 checks=[];findings=[]

@@ -38,6 +38,13 @@
       "new_result_before_failure": false
     }
   ],
+  "publication_correction": {
+    "published_first_head": "930e25247bd75a96e06640c3eebb05519115eadf",
+    "error": "After staging new files, offline reader ls-files included staged own artifacts in original-file baseline; they changed during output generation. Audit/finalization gates then failed, while publication did not halt at that separate preflight. Initial117/scoped source result and original4741 files were intact, but the generated count/manifest became stale.",
+    "repair": "Source original-file list only from fixed base tree; validate and regenerate all own artifacts and exact manifest before corrective commit; retain first published head/failure, update existing PR only.",
+    "existing_code_data_CSV_README_changed": false,
+    "model_OCR_calls": 0
+  },
   "first_read_output_budget_failure": {
     "stage": "read-only GitHub snapshot display",
     "reason": "Requested output exceeded budget; no full snapshot parsed or evidence claimed; reduced metadata read subsequently succeeded",

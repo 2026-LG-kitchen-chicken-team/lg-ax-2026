@@ -15,3 +15,5 @@
 한계: exact 구매 SKU·당시판본·공용 선택기능 전체 적용, 주제 승인/지적행, 같은 조건 경쟁제품 효과, 후기 진위/시장대표성/독립성 승인, 운영 사용 여부는 미확인. 공식FAQ는 고객 불편 분모가 아니다. Gold·최종 독립 채점을 수행하지 않았다. 모델 IDs/settings/input/output는 새로 생성되지 않았으며 동일 감사 코드 SHA/기준 commit과 원문 입력·출력·실패를 연결했다.
 
 출력/JSON·링크·scope·원파일/hash·게시 Gitblob 확인 및 실제 PR/보고 수신은 상세 작업기록의 종료 부분과 별도 게시 수신증에 연결한다. 공유README/기존코드·자료/CSV/타창변경0, 자동화OFF 유지.
+
+게시 정정 근거: 최초299head930e25247bd75a96e06640c3eebb05519115eadf 보존, staged 신규파일을 원본 목록에 넣은 reader 및 후속게시 gate 오류를 수정했다. 원본 목록은고정base4741만사용하고 정정117항목/292원문범위·17payload manifest·18Gitblob exact bytes를 재확인한 최종head를 유효 인수 근거로 쓴다.

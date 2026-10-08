@@ -14,6 +14,7 @@ o['upstream_mixed_model_note_not_inherited']=True
 write('product-conditions.json',o)
 failures=[json.loads((RUN/p).read_bytes()) for p in ['audit-reader-failure.json','audit-reader-failure-2.json']]
 o=json.loads((OUT/'source-parser-failure.json').read_bytes());o['offline_audit_reader_failures']=failures
+o['publication_correction']=json.loads((RUN/'publication-correction-reason.json').read_bytes())
 o['first_read_output_budget_failure']={'stage':'read-only GitHub snapshot display','reason':'Requested output exceeded budget; no full snapshot parsed or evidence claimed; reduced metadata read subsequently succeeded','mutations':0}
 write('source-parser-failure.json',o)
 write('execution-record.json',{'record_id':'data-products-trends-20261008-'+CFG['uid'],'base_commit':CFG['base'],'branch':CFG['branch'],'operator':'ginaginaring / 신진하 / Codex','audit_source_sha256':sha((OUT/'audit-source.py.txt').read_bytes()),'capture_script_sha256':sha((RUN/'capture_candidates.py').read_bytes()),'parser_script_sha256':sha((RUN/'parse_candidate_captures.py').read_bytes()),'finalization_script_sha256':sha(Path(__file__).read_bytes()),'python_version':sys.version,'conditions':{'mode':'manual','automation_global_and_four_members':'off','new_model_id':None,'new_model_config':None,'new_model_inputs':None,'new_model_outputs':None,'model_calls':0,'OCR_calls':0,'collector_reruns':0,'completed225_or11_repeated':False,'network':'GitHub/controller read/manual reservation and two new public HTML GETs; audit itself offline','operating_API_DB_server_calls':0,'raw_article_HTML_body_and_auth_private':True},'inputs':'input-pins.json','outputs':['trend-audit.json','development-row-checks.json','review-metadata-ledger.json','purchase-edition-audit.json','product-model-map.json','new-review-candidates.json','product-conditions.json'],'failures':'source-parser-failure.json','topic_approval':False,'parent_done':False,'checked_at_utc':datetime.now(UTC).isoformat()})
@@ -60,7 +61,7 @@ for p in [OUT/'README.md',ROOT/CFG['log'],ROOT/CFG['evidence']]:
   assert (p.parent/target.split('#')[0]).resolve().exists(),(str(p),target)
   links.append(target)
 v=json.loads((OUT/'verification.json').read_bytes())
-v.update({'additional_artifact_checks':{'new_candidate_spans7':n,'candidate_original_entity_and_text_hashes':True,'received_pin_count':len(pins),'received_pin_hash_size_and_Gitblob_bytes':True,'JSON_files_before_manifest':len(jsonfiles),'local_links':len(links),'AGENTS_CLAUDE_same_bytes':True,'tracked4741_SHA_changes':changed},'checked_at_utc':datetime.now(UTC).isoformat()})
+v.update({'additional_artifact_checks':{'new_candidate_spans7':n,'candidate_original_entity_and_text_hashes':True,'received_pin_count':len(pins),'received_pin_hash_size_and_Gitblob_bytes':True,'JSON_files_checked_before_manifest_regeneration':len(jsonfiles),'local_links':len(links),'AGENTS_CLAUDE_same_bytes':True,'tracked4741_SHA_changes':changed},'checked_at_utc':datetime.now(UTC).isoformat()})
 write('verification.json',v)
 items=[]
 for p in sorted(OUT.rglob('*')):

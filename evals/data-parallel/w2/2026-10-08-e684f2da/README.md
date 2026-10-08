@@ -72,3 +72,5 @@
 [모델별 문서](product-model-map.json) · [구매일/판본 대조](purchase-edition-audit.json) · [후기 통계](trend-audit.json) · [238 metadata](review-metadata-ledger.json) · [141행/292인용 대조](development-row-checks.json) · [새 후보](new-review-candidates.json) · [공식 조건](product-conditions.json) · [입력 고정값](input-pins.json) · [검증](verification.json) · [실패 보존](source-parser-failure.json)
 
 PM에게 필요한 것은 기존 [분류/Source ID 인계 요청](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/148#issuecomment-6052081322)에 대한 승인 버전/지적 행과, 정확 구매 모델·당시 판본의 확인 가능한 기존 근거다. 이번 새 후보 2건의 사용·날짜·광고/수정 이력 검토를 같은 요청에 연결한다. 다음 작업은 **승인된 분류 또는 지적 Source ID를 받으면 그 행만 보완**하는 것이다. PM 인수·실제 병합·전체 완료는 별도다.
+
+게시 뒤 검수기 재실행에서는 새로 staged된 파일을 원본 목록에 포함한 reader 오류로 원본 수와 manifest가 어긋났다. 최초 게시 head 930e25247bd75a96e06640c3eebb05519115eadf와 실패를 보존하고, 고정 base의4741파일만 원본으로 읽도록 수정했다. 정정된117항목/292범위 및 최종 manifest·원격 blob 대조를 유효 제출 근거로 사용한다.
