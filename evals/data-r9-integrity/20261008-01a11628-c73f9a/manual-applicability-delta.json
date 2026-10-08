@@ -1,5 +1,5 @@
 {
-  "version": "manual-model-scope.20261008.01a11628-c73f9a.v1",
+  "version": "manual-model-scope.20261008.01a11628-c73f9a.v2",
   "production_updated": false,
   "source_pins": "evidence-pins.json",
   "rendered_dom": "model-scope-observation.json",
@@ -76,8 +76,8 @@
       "basis": [
         "MFL67704818 p26"
       ],
-      "fact": "General ceiling/wall clearance10cm; separate door-top/enclosure2.5cm requirement is for applicable illuminance-sensor models.",
-      "limit": "Do not replace general clearance with2.5cm or infer sensor fitment for this SKU. Actual site suitability unverified."
+      "fact": "Two independent installation bullets: product to ceiling/walls at least10cm; product door top to refrigerator enclosure at least2.5cm. The subordinate illumination-sensor explanation is conditional on applicable models; do not narrow the parent2.5cm instruction to sensor-equipped models.",
+      "limit": "The10cm and2.5cm distances have different endpoints and do not replace one another. Shared-manual instructions do not prove this SKU has a sensor or that a particular site is suitable."
     },
     {
       "id": "O-INSTALL",
@@ -85,7 +85,8 @@
       "result": "prior_exact_model_QA_and_shared_manual_reused",
       "basis": [
         "Q&A465636 vendor answer names ML32WW1",
-        "MFL68822502 Rev.25_090425 p11/p57"
+        "MFL68822502 Rev.25_090425 p11/p57",
+        "MFL68822502 p4 installation restriction with dedicated built-in-model exception; p11 decorative-door prohibition and separate condensation note"
       ],
       "facts": {
         "size_without_handle_mm": [
@@ -101,7 +102,7 @@
         "top_clearance_cm_min": 20,
         "left_right_rear_clearance_cm_min": 10
       },
-      "limit": "Q55x40x55 has no unit; do not silently assign cm. Current Rev25 cannot establish what 2024 purchasers received."
+      "limit": "Q55x40x55 has no unit. Preserve p4 enclosed-space/cabinet restriction and dedicated built-in-model exception, without assuming the exception applies to ML32WW1. The p11 condensation note is not installation permission. Current Rev25 does not establish the edition/accessories delivered to2024 purchasers."
     },
     {
       "id": "O-VESSELS",
@@ -120,5 +121,6 @@
     "six native LG review rows",
     "prior blog224375944885"
   ],
-  "manual_purchase_revision_unresolved": true
+  "manual_purchase_revision_unresolved": true,
+  "supersedes_commit": "94f0800e30c4d653a07c32ed3b8f0dd2f793d44a"
 }

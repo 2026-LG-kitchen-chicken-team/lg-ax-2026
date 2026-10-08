@@ -1,0 +1,61 @@
+{
+  "scope": "Changed installation notes, immutable-record boundaries, receiver-stage separation and purchase/edition chronology",
+  "passed": 12,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "review_and_QA_records_unchanged",
+      "passed": true
+    },
+    {
+      "name": "manual_PDF_pins_unchanged",
+      "passed": true
+    },
+    {
+      "name": "sidecar_version_changed",
+      "passed": true
+    },
+    {
+      "name": "oven_exception_page_linked",
+      "passed": true
+    },
+    {
+      "name": "six_unaffected_claims_unchanged",
+      "passed": true
+    },
+    {
+      "name": "only_two_claims_changed",
+      "passed": true
+    },
+    {
+      "name": "two_source_locations_recorded",
+      "passed": true
+    },
+    {
+      "name": "receiver_status_bound_to_original_head",
+      "passed": true
+    },
+    {
+      "name": "receipt_does_not_promote_new_head_or_PM",
+      "passed": true
+    },
+    {
+      "name": "chronology_uses_existing_purchase_dates",
+      "passed": true
+    },
+    {
+      "name": "two_newer_editions_four_unproven",
+      "passed": true
+    },
+    {
+      "name": "no_purchase_or_edition_proofs_invented",
+      "passed": true
+    }
+  ],
+  "old_80_84_audits_rerun": false,
+  "limitations": [
+    "PDF bullet hierarchy and exception meaning were visually checked separately; assertions do not prove semantic correctness.",
+    "The receiver's 13 hashes were compared to immutable Git bytes by the separate read-only receipt intake; this checker validates the resulting boundary record.",
+    "No WEB receipt, new-head CORE acknowledgement, PM approval or operating result is inferred."
+  ]
+}
