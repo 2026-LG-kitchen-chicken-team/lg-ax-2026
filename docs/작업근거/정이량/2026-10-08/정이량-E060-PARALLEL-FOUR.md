@@ -31,3 +31,5 @@ GPU3 모델27B가 올라간 상태의 여유24,204MiB·GPU1/Naru 및 타GPU 프�
 14:40 KST 종료 확인: 다섯 번째 Chrome 요청도 기획 초안 complete/run-21d84422678346d8b6a630ec971f8672로 표시됐다. 대기14:34:45~14:36:02 후14:37:28 완료이며 POST 재접수0.14:40:35 읽기 확인에서 모델PID 동일·GPU3 20,396MiB 상주·is_sleeping=false·세 서비스active/NRestarts0/RuntimeMaxUSec=infinity, 종료예약 없음. 새 모델 호출 없이 확인했다.
 
 독립 증빙 보완: 고정GPU4run의 registered R9 pack raw SHA fbc233a429c6ec1ceeb1571ce509ecad7d9494fe5388a0524fd3e64bfa0639ff, 선택6 source_facts/선택subset/정렬·사용자 선택목록 SHA 전부 기대값과 일치. 이 대조는 읽기 전용 metadata이고 원문/질문/owner 출력0·새 모델 호출0이다. Notion LG 페이지/대시보드에14:42 KST 실제4 배포 결과를 삽입했으며 새 본문 재조회와 PR284 공유를 종료 확인한다.
+
+종료 공유: Notion 두 페이지의 새4배포/원13:35본문 보존을 재조회했다. 기록source3e32280의 격리 규칙/계약/phase2/navigation은전부PASS. Git 줄바꿈 정규화로 생기는 원수신증/013snapshot 바이트 차이를 전용 .gitattributes로 보완하고 원metadata SHA와Git index byte 일치20개 및 두snapshot을 직접 대조했다. live sourcee409와최종기록source의 웹/계약/서빙 코드 diff0. 미병합PR284를 갱신·공유하며 필수CI·main·품질은 별도다.
