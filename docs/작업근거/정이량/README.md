@@ -3,7 +3,7 @@
 <!-- member-log:owner-updates:start -->
 ## 최신 재개 요약 — 정이량-E061-CHAT-PLANNING-UI
 
-- 최신 자연어 요청에 따라 밝은 대화형 기획 작업실·카드/그래프·원문 패널을 구현 중이다. Figma 보류는 이번 직접 요청으로 해제했으며 자동화는 OFF다.
+- 최신 자연어 요청에 따라 밝은 대화형 기획 작업실·카드/그래프·원문 패널과 편집 가능한 Figma를 구현·검수·공유 배포했다. Figma 보류는 이번 직접 요청으로 해제했으며 자동화는 OFF다.
 - [상세 기록](2026-10-08/정이량-E061-CHAT-PLANNING-UI.md) · [Figma 디자인](https://www.figma.com/design/uxM9HUb2RMXyVzkIVOwwU6?node-id=5-294) · [공유 서빙](../../pm/prototype-sharing-20261008.md).
 - 같은 Qwen·4슬롯·자료/계약을 보존한다. 검수·배포·main 인수·모델 품질은 실제 증거로 각각 판정한다.
 - 직전 요약 원바이트 [snapshot](2026-10-08/014-prior-resume.txt).
