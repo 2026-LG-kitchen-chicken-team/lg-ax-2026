@@ -1,12 +1,12 @@
 # 정이량 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
-## 최신 재개 요약 — 정이량-20261007-008-OPERATING58
+## 최신 재개 요약 — 정이량-20261008-009-FUNCTIONAL-PROTOTYPE
 
-- 원 CORE/DATA/WEB commit을 PR229/230으로 병합하고 Actions 월5달러 상한으로 필수 CI를 재개했다. 같은58fe ZIP 재실행·운영8 보존·API88·실제 화면/내보내기·MCP80·Project21/Issue28/중앙OFF 공식 수신을 인수했다.
-- 실제 연구후기238건의 구매 SKU·게시일 적격과 새 모델 의미 품질은 미완료다. R7 근거 역할/필드 후보는 구조 검사199·독립 검수를 통과했고 Qwen3.8 적재는 타 GPU 작업으로 시작 전에 멈췄다. 자동화 OFF·Figma 제외·부모 Done 보류.
-- [008 상세](2026-10-07/정이량-20261007-008-OPERATING58.md) · [E055](../../작업근거/정이량/2026-10-07/정이량-E055-OPERATING58.md) · [직전007](2026-10-07/정이량-20261007-007-R6-REVIEW-CLOSEOUT.md).
-- 이전 입구 본문은 [원바이트 snapshot](2026-10-07/008-prior-resume-58fe.txt)에 보존했다. 상대 링크는 원 README 경로 기준이며 [manifest](2026-10-07/008-prior-resume-58fe.manifest.json)가 원 commit/SHA를 연결한다.
+- 자동화 OFF·수동 R9. PR246~261 원 commit을 로컬 통합하고 선택 원문 API/MCP/WEB·native 항목 경계·관리14·추가15모델 설명서 수신을 연결했다. 실모델 정상·조건 수정은 저장됐고 API/MCP 동일 결과를 확인했다.
+- 실제 답변의 원문 없는 증상·시점·감성 확대를 보완 중이다. 새 통합 PR/CI·병합·사용자 검토·영상은 별도 확인하며 부모 전체 Done을 주장하지 않는다.
+- [009 상세](2026-10-08/정이량-20261008-009-FUNCTIONAL-PROTOTYPE.md) · [현재 수동 큐](../../pm/manual-queue-20261008.json).
+- 직전 입구 본문은 [원바이트 snapshot](2026-10-08/009-prior-resume.txt)에 보존했다. 아래 원문 분할 구간과 과거 고정 근거는 그대로 유지한다.
 
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.

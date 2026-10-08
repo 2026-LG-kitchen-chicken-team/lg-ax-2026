@@ -1,6 +1,7 @@
 import { ApiError } from './api';
 import { canonical } from './planning';
-import { FACT_KIND_LABEL, filterResearchSources, parseResearchBundle, RESEARCH_TYPE_LABEL } from './research';
+import { factLine, filterResearchSources, parseResearchBundle, RESEARCH_TYPE_LABEL } from './research';
+import { locatorView } from './researchLocator';
 import type { ResearchBundle, ResearchSource } from './research';
 import { calendarDay, confirmedPostingDay, sourceDateDisplay } from './researchSourceDates';
 export { confirmedPostingDay, sourceDateDisplay } from './researchSourceDates';
@@ -103,9 +104,9 @@ export async function exportResearchSelection(bundle: ResearchBundle, selectedId
     ...koreanSourceLimitations(selected).map(item => `- ${item}`), '', '## 원문'];
   for (const source of selected.sources) lines.push(`### ${source.source_id} · ${source.title || RESEARCH_TYPE_LABEL[source.source_type]}`,
     `유형: ${RESEARCH_TYPE_LABEL[source.source_type]} · ${sourceDateDisplay(source)}`,
-    `페이지 모델: ${source.page_model ?? '미확인'} · 구매 모델: ${source.purchased_model ?? '미확인'}`, `출처: ${source.url}`,
+    `페이지 모델: ${source.page_model ?? '미확인'} · 구매 모델: ${source.purchased_model ?? '미확인'}`, `원문 위치: ${locatorView(source.locator).text}`, `출처: ${source.url}`,
     '', source.text, '', 'facts 원기록:', '```json', JSON.stringify(source.facts, null, 2), '```',
-    ...source.facts.map(fact => `- ${FACT_KIND_LABEL[fact.kind]}: ${fact.text}`), '');
+    ...source.facts.map(factLine), '');
   lines.push('## 수집·선택 manifest', '```json', JSON.stringify(selected.collection_manifest, null, 2), '```');
   return { bundle: selected, json: `${JSON.stringify(selected, null, 2)}\n`, markdown: `${lines.join('\n')}\n` };
 }

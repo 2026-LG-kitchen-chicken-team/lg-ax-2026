@@ -13,6 +13,17 @@ export const REAL_RESEARCH_BUNDLE: ResearchBundle = {
     rating: record.rating, metadata: { test_scope: 'transport_and_rendering_only', original_review_id: record.original_review_id } }],
   collection_manifest: { limitations: ['작성일·구매 SKU 미확인', '단일 원문을 이용한 UI 계약 검사이며 실모델 평가 아님'], synthetic_review_count: 0 },
 };
+// Two existing development originals for selection transport checks. No generated review or live model call.
+export const REAL_RESEARCH_SELECTION_BUNDLE: ResearchBundle = {
+  ...REAL_RESEARCH_BUNDLE, bundle_id: 'WEB-actual-selection-contract-check',
+  sources: records.filter(item => item.split === 'development' && item.displayed_model_id === record.displayed_model_id).slice(0, 2).map(item => ({
+    source_id: item.original_review_id, source_kind: 'public', source_type: 'review', product_group: 'fridge',
+    url: item.source_url, title: 'LG 공개 후기 원문', text: item.text, page_model: item.displayed_model_id,
+    purchased_model: item.actual_purchased_model_id, published_at: item.published_at, date_kind: 'unknown',
+    coverage: 'full', source_role: 'customer_experience', locator: { selector: item.source_locator }, facts: [],
+    rating: item.rating, metadata: { ...item, test_scope: 'selection_transport_and_rendering_only' },
+  })),
+};
 export function heldBrief(bundle: ResearchBundle = REAL_RESEARCH_BUNDLE): PlanningBrief {
   return { schema_version: '1.0', brief_id: 'TEST-held-brief', bundle_id: bundle.bundle_id, run_id: 'TEST-held-run', revision: 0,
     previous_brief_id: null, status: 'needs_sources', product_group: bundle.product_group, analysis_scope: bundle.analysis_scope,

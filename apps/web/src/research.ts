@@ -2,6 +2,7 @@ import Ajv2020 from 'ajv/dist/2020';
 import schema from '../../../packages/contracts/schemas/research-planning.schema.json';
 import { ApiError } from './api';
 import { sourceDateDisplay } from './researchSourceDates';
+import { locatorView } from './researchLocator';
 
 export interface SourceFact {
   fact_id: string; kind: 'observed' | 'expectation' | 'document_fact' | 'unknown'; text: string;
@@ -51,7 +52,16 @@ export interface PlanningBrief {
   relations: Array<{ from_id: string; to_id: string; relation: 'supports' | 'contradicts' | 'co_occurs' | 'addresses' | 'proposes'; source_ids: string[]; inferred: boolean }>;
   runtime: Record<string, unknown>;
 }
-export interface ResearchPlanningInput { bundle_id: string; goal: string; constraints: string[]; previous_run_id?: string | null }
+export interface ResearchPlanningInput {
+  bundle_id: string; goal: string; constraints: string[]; previous_run_id?: string | null;
+  selected_source_ids?: string[]; bundle_sha256?: string;
+}
+export interface ResearchGuideInput { bundle_id: string; source_ids: string[]; bundle_sha256?: string }
+export interface ResearchGuideExport {
+  bundle_id: string; bundle_sha256: string; source_ids: string[]; markdown: string; html: string;
+  guide: { guide_version: '1.0'; guide_kind: 'official_reference'; bundle_id: string; title: string; notice: string;
+    sources: ResearchSource[]; proposal: null; exact_sku_applicability_confirmed: false };
+}
 
 const ajv = new Ajv2020({ allErrors: true, strict: false });
 ajv.addFormat('uri', { type: 'string', validate: value => {
@@ -121,6 +131,20 @@ export const RESEARCH_TYPE_LABEL: Record<ResearchSource['source_type'], string> 
   review: '고객 리뷰', qa: 'Q&A', faq: 'FAQ', manual: '설명서', spec: '제품 사양', installation: '설치 안내',
 };
 export const FACT_KIND_LABEL: Record<SourceFact['kind'], string> = { observed: '관찰 사실', expectation: '기대·추정', document_fact: '문서 사실', unknown: '미확인' };
+/** Markdown line for one fact; its own position is added when the fact records one. */
+export function factLine(fact: SourceFact): string {
+  return `- ${FACT_KIND_LABEL[fact.kind]}: ${fact.text}${fact.locator && Object.keys(fact.locator).length ? ` (위치: ${locatorView(fact.locator).text})` : ''}`;
+}
+/** How a source's `document_version` reads. On a customer review it is the version of the reference material linked to
+ *  the page model (DATA reply on #6, comment 6040922039): not the review's own edition, the purchased SKU or the manual
+ *  in force at purchase. Which material it is (manual or product-page snapshot) is not in the bundle yet, so the review
+ *  label stays generic until PM fixes how that basis is delivered. The raw value is shown unchanged. */
+export function documentVersionView(source: ResearchSource): { label: string; value: string; note: string | null } {
+  const value = source.document_version ?? '미확인';
+  return source.source_type === 'review'
+    ? { label: '페이지 모델의 연결 참고자료 버전', value, note: '후기 판본·구매 모델·구매 당시 설명서 판을 확인한 값이 아닙니다.' }
+    : { label: '문서판', value, note: null };
+}
 export function researchGroupLabel(group: string): string {
   return ({ fridge: '냉장고', microwave: '전자레인지', dishwasher: '식기세척기' } as Record<string, string>)[group] ?? group;
 }
@@ -137,6 +161,14 @@ export function exportResearchPlan(bundle: ResearchBundle, brief: PlanningBrief)
   const lines = [`# ${researchGroupLabel(brief.product_group)} 기획안`, '', `- 실행: ${brief.run_id} / 수정 ${brief.revision}`,
     `- 상태: ${brief.status}`, `- 자료 범위: ${researchScopeLabel(brief.analysis_scope)}`, `- 목적: ${brief.goal}`,
     '- 제약:', ...brief.constraints.map(item => `  - ${item}`), '', '## 발견한 문제'];
+  const inputIds = brief.runtime.user_selected_source_ids;
+  const inputScope = brief.runtime.input_scope;
+  const inputLabel = inputScope === 'user_selected_sources' ? '사용자 선택 근거' : inputScope === 'full_bundle' ? '자료 묶음 전체' : '범위 미제공';
+  lines.splice(lines.indexOf('## 발견한 문제'), 0, '## 기획 입력 범위',
+    `- 입력: ${inputLabel}${Array.isArray(inputIds) ? ` ${inputIds.length}건` : ''}`,
+    `- 입력 근거 ID: ${Array.isArray(inputIds) ? inputIds.join(', ') : '제공되지 않음'}`,
+    `- 원등록 자료 SHA-256: ${typeof brief.runtime.bundle_sha256 === 'string' ? brief.runtime.bundle_sha256 : '제공되지 않음'}`,
+    '원등록 자료는 출처 맥락을 보존하기 위해 아래에 모두 포함합니다. 실제 기획 입력 범위는 위 ID 목록입니다.', '');
   for (const problem of brief.problems) lines.push(`### ${problem.title}`, problem.description, `근거: ${problem.source_ids.join(', ')}`,
     `반대 근거: ${problem.counter_source_ids.join(', ') || '확인된 자료 없음'}`, `범위: ${problem.scope_caveat}`, '');
   lines.push('## 기존·경쟁 제품 대조');
@@ -158,7 +190,7 @@ export function exportResearchPlan(bundle: ResearchBundle, brief: PlanningBrief)
     lines.push(`### ${source.source_id} · ${source.title}`, `유형: ${RESEARCH_TYPE_LABEL[source.source_type]} / 범위: ${source.coverage}`,
       `페이지 모델: ${source.page_model ?? '미확인'} / 구매 모델: ${source.purchased_model ?? '미확인'}`,
       sourceDateDisplay(source),
-      `출처: ${source.url}`, source.text, ...source.facts.map(fact => `- ${FACT_KIND_LABEL[fact.kind]}: ${fact.text}`), '');
+      `원문 위치: ${locatorView(source.locator).text}`, `출처: ${source.url}`, source.text, ...source.facts.map(factLine), '');
   }
   return { json: `${JSON.stringify({ bundle, brief }, null, 2)}\n`, markdown: `${lines.join('\n')}\n` };
 }

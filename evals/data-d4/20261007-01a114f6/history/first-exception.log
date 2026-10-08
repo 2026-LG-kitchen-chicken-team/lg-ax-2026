@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/audit/audit_delivery.py", line 259, in <module>
+    main()
+  File "/audit/audit_delivery.py", line 244, in main
+    "research_rows_excluding_quarantine": sum(not r["quarantined"] for r in records),
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/audit/audit_delivery.py", line 244, in <genexpr>
+    "research_rows_excluding_quarantine": sum(not r["quarantined"] for r in records),
+                                                  ~^^^^^^^^^^^^^^^
+KeyError: 'quarantined'

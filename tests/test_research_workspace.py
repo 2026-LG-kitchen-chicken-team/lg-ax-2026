@@ -140,7 +140,10 @@ class ActualResearchBoundaryTests(unittest.TestCase):
         with self.research.connect() as connection:
             saved = json.loads(connection.execute("SELECT brief FROM research_runs").fetchone()[0])
             attempt = connection.execute("SELECT status, run_id, error_code FROM research_attempts").fetchone()
-        self.assertEqual(saved, planner.last_raw)
+        expected_saved = deepcopy(planner.last_raw)
+        expected_saved['runtime'].update(user_selected_source_ids=[source['source_id'] for source in self.bundle['sources']],
+                                         input_scope='full_bundle')
+        self.assertEqual(saved, expected_saved)
         self.assertEqual(attempt, ("completed", public["run_id"], None))
         public["source_facts"][0]["facts"].append({"fact_id": "local-edit", "kind": "unknown", "text": "local edit"})
         self.assertEqual(self.research.get_bundle(self.bundle["bundle_id"]), self.bundle)

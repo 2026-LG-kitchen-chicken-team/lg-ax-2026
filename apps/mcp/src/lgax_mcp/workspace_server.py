@@ -54,7 +54,9 @@ def create_workspace_mcp(client: WorkspaceClient) -> FastMCP:
     @mcp.tool(annotations=write)
     def create_research_run(bundle_id: str, goal: str, constraints: list[str] | None = None,
                             previous_run_id: str | None = None,
-                            review_feedback: list[dict] | None = None) -> dict:
+                            review_feedback: list[dict] | None = None,
+                            selected_source_ids: list[str] | None = None,
+                            bundle_sha256: str | None = None) -> dict:
         """Discover problems and draft visual planning from actual sources. Manual opt-in backend only.
 
         Inspect partial/needs_sources states, retain facts and uncertainties, and never retry automatically.
@@ -63,12 +65,26 @@ def create_workspace_mcp(client: WorkspaceClient) -> FastMCP:
         contains item_kind (Problem/Comparison/Concept), item_id, fields and message. The backend validates
         targets before any model call and creates a new immutable version; get_research_run reads that version.
         """
+        if selected_source_ids is not None or bundle_sha256 is not None:
+            return call(client.create_research_run, bundle_id, goal, constraints, previous_run_id,
+                        review_feedback, selected_source_ids, bundle_sha256)
         return call(client.create_research_run, bundle_id, goal, constraints, previous_run_id, review_feedback)
 
     @mcp.tool(annotations=read)
     def get_research_run(run_id: str) -> dict:
         """Read the same immutable research planning brief displayed/exported by the web workspace."""
         return call(client.get_research_run, run_id)
+
+    @mcp.tool(annotations=read)
+    def create_research_guide(bundle_id: str, source_ids: list[str], bundle_sha256: str | None = None) -> dict:
+        """Export explicitly selected official references as JSON, Markdown and escaped HTML.
+
+        Copies source originals and facts; no model or database write, new settings or procedures. Requires
+        backend write permission for this POST despite the export itself being read-only. The backend rejects
+        customer reviews/questions, invalid selections and stale bundle hashes. Preserve applicability
+        limits: a shared or unknown-model manual is not verified for a purchased SKU. Never retry automatically.
+        """
+        return call(client.create_research_guide, bundle_id, source_ids, bundle_sha256)
 
     @mcp.tool(annotations=write)
     def create_workspace_project(name: str, request: dict, document_versions: dict[str, str]) -> dict:

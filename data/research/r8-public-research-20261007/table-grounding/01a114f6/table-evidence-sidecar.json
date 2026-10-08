@@ -1,0 +1,339 @@
+{
+  "version": "table-grounding.20261008.01a114f6.v1",
+  "source_commit": "ef29aa8ff80e9ca3f4e344c48c9acec62ad8769f",
+  "relation_method": "Codex visual review of fixed full-page renders plus existing native parser spans",
+  "automatic_producer_graph_received": false,
+  "automatic_accuracy": null,
+  "automatic_error_count": null,
+  "new_ocr_model_calls": 0,
+  "documents": [
+    {
+      "id": "DUE",
+      "model_id": "DUE6BGL2E",
+      "page": 57,
+      "version": "MFL71959117 Rev.07_030626",
+      "pdf": {
+        "path": "data/sources/lg-manuals-20261005/DUE6BGL2E-ff60f78ab832.pdf",
+        "bytes": 5946269,
+        "sha256": "ff60f78ab8326c40b9a3446f11b49531b8f0c823a310ba98366716b633ba63f5"
+      },
+      "native": {
+        "path": "evals/data14-auto-table-link-audit/20261007-01a1100e/native-source-text/DUE6BGL2E-p57.txt",
+        "bytes": 1584,
+        "sha256": "0340ab2c1fa5bdfb38b5077ac356caaad856a28620fbf23d2fae35fcfc356275"
+      },
+      "render": {
+        "path": "evals/data14-auto-table-link-audit/20261007-01a1100e/pdf-renders/DUE6BGL2E-p57-180dpi.png",
+        "bytes": 232610,
+        "sha256": "acbea96448908de5277af620d3b5a243501e7f05f8976a915a2e3760ecf90107"
+      },
+      "column_headers": {
+        "DFE": {
+          "family": [
+            "DFE6**E",
+            "DFE6***E"
+          ],
+          "type": "freestanding"
+        },
+        "DUE": {
+          "family": [
+            "DUE6**E",
+            "DUE6***E",
+            "DUE6****E",
+            "DEE6**E"
+          ],
+          "type": "built_in"
+        }
+      },
+      "exact_document_model_pattern": "DUE6****E",
+      "buyer_sku_verified": false
+    },
+    {
+      "id": "MW",
+      "model_id": "MW23FDI",
+      "page": 37,
+      "version": "MFL68822538 Rev.00_120925",
+      "pdf": {
+        "path": "data/sources/lg-manuals-20261005/MW23FDI-3ceec78295d0.pdf",
+        "bytes": 3701939,
+        "sha256": "3ceec78295d02352fd467309bc613cf59c9bf7bce0bae3e9d5de3ad4bae2f7bc"
+      },
+      "native": {
+        "path": "evals/data14-auto-table-link-audit/20261007-01a1100e/native-source-text/MW23FDI-p37.txt",
+        "bytes": 925,
+        "sha256": "6ea2491cec1054264e49877038476d4de7f088852521e222389fbe2b866ec496"
+      },
+      "render": {
+        "path": "evals/data14-auto-table-link-audit/20261007-01a1100e/pdf-renders/MW23FDI-p37-180dpi.png",
+        "bytes": 199571,
+        "sha256": "a68754aa1782eca055c14880fc1ed0c567b192aa89ac414fd4468bf79e7d071b"
+      },
+      "column_headers": {
+        "23": [
+          "MWJ23PI",
+          "MWJ23EI",
+          "MW23FDI"
+        ],
+        "25": [
+          "MWJ25PI",
+          "MWJ25EI"
+        ]
+      },
+      "power_rows_merge_columns": [
+        "23",
+        "25"
+      ],
+      "buyer_sku_verified": false
+    }
+  ],
+  "cells": [
+    {
+      "id": "DUE-FREE-STANDARD",
+      "document": "DUE",
+      "page": 57,
+      "row": "dimensions_w_h_d",
+      "column_family": "DFE",
+      "installation_type": "freestanding",
+      "condition": null,
+      "values": {
+        "width_mm": 598,
+        "height_mm": 845,
+        "depth_mm": 600
+      },
+      "unit": "mm",
+      "source": {
+        "native_range": [
+          733,
+          757
+        ],
+        "span_sha256": "f864ddb2e39e3c13d9633732a36cee52795e1cb79fea65b9c0ab66ffa745207b",
+        "short_anchor": "845 mm",
+        "anchor_range": [
+          742,
+          748
+        ],
+        "range_basis": "0-based end-exclusive characters in the pinned native page text"
+      },
+      "canonical_evidence_ids": [
+        "DATA003-DUE6BGL2E-D03"
+      ],
+      "binding_meaning": "broad evidence contains all columns; this sidecar identifies which cell is applicable"
+    },
+    {
+      "id": "DUE-FREE-TOP-REMOVED",
+      "document": "DUE",
+      "page": 57,
+      "row": "dimensions_w_h_d",
+      "column_family": "DFE",
+      "installation_type": "freestanding",
+      "condition": "top_removed",
+      "values": {
+        "width_mm": 598,
+        "height_mm": 815,
+        "depth_mm": 567
+      },
+      "unit": "mm",
+      "source": {
+        "native_range": [
+          758,
+          792
+        ],
+        "span_sha256": "aff2316670d0b06f3c138d5be0528d041d1f297316e1807503bcb53189a393e7",
+        "short_anchor": "815 mm",
+        "anchor_range": [
+          767,
+          773
+        ],
+        "range_basis": "0-based end-exclusive characters in the pinned native page text"
+      },
+      "canonical_evidence_ids": [
+        "DATA003-DUE6BGL2E-D03"
+      ],
+      "binding_meaning": "broad evidence contains all columns; this sidecar identifies which cell is applicable"
+    },
+    {
+      "id": "DUE-BUILTIN",
+      "document": "DUE",
+      "page": 57,
+      "row": "dimensions_w_h_d",
+      "column_family": "DUE",
+      "installation_type": "built_in",
+      "condition": null,
+      "values": {
+        "width_mm": 598,
+        "height_mm": 815,
+        "depth_mm": 567
+      },
+      "unit": "mm",
+      "source": {
+        "native_range": [
+          793,
+          817
+        ],
+        "span_sha256": "49f16343886d48b4a5c562c62fc951b8ff5bfed55a4b762b12a243fd22ada59b",
+        "short_anchor": "815 mm",
+        "anchor_range": [
+          802,
+          808
+        ],
+        "range_basis": "0-based end-exclusive characters in the pinned native page text"
+      },
+      "canonical_evidence_ids": [
+        "DATA003-DUE6BGL2E-D03"
+      ],
+      "binding_meaning": "broad evidence contains all columns; this sidecar identifies which cell is applicable"
+    },
+    {
+      "id": "MW-CONSUMPTION",
+      "document": "MW",
+      "page": 37,
+      "row": "rated_consumption",
+      "column_family": "shared_23_25",
+      "value": 1570,
+      "unit": "W",
+      "quantity": "electric_input",
+      "source": {
+        "native_range": [
+          320,
+          334
+        ],
+        "span_sha256": "7e360ab47d86644c97cba183af6282f023eda51f9fd74c63a28048e3862d119d",
+        "short_anchor": "1570 W",
+        "anchor_range": [
+          328,
+          334
+        ],
+        "range_basis": "0-based end-exclusive characters in the pinned native page text"
+      },
+      "canonical_evidence_ids": [
+        "DATA003-MW23FDI-M06",
+        "DATA003-MW23FDI-M07"
+      ]
+    },
+    {
+      "id": "MW-RF-OUTPUT",
+      "document": "MW",
+      "page": 37,
+      "row": "rated_rf_output",
+      "column_family": "shared_23_25",
+      "value": 1000,
+      "unit": "W",
+      "maximum": true,
+      "quantity": "rf_output",
+      "footnote_ids": [
+        "MW-FN1"
+      ],
+      "source": {
+        "native_range": [
+          335,
+          358
+        ],
+        "span_sha256": "5a5b066ca287597a462df1996f7a508c15b4a8b1c80ce52e75e44299ec176485",
+        "short_anchor": "Max. 1000 W*1",
+        "anchor_range": [
+          345,
+          358
+        ],
+        "range_basis": "0-based end-exclusive characters in the pinned native page text"
+      },
+      "canonical_evidence_ids": [
+        "DATA003-MW23FDI-M06"
+      ]
+    }
+  ],
+  "footnotes": [
+    {
+      "id": "MW-FN1",
+      "document": "MW",
+      "page": 37,
+      "meaning": "short-duration output; can change as cooking time elapses",
+      "source": {
+        "native_range": [
+          189,
+          254
+        ],
+        "span_sha256": "e9d5ab57b34720a13c7b78fd39b7fea03b45c09ee0cb7acea16a78be73900a3a",
+        "short_anchor": "짧은 시간",
+        "anchor_range": [
+          207,
+          212
+        ],
+        "range_basis": "0-based end-exclusive characters in the pinned native page text"
+      },
+      "canonical_evidence_ids": [
+        "DATA003-MW23FDI-M06"
+      ]
+    }
+  ],
+  "canonical_mapping": [
+    {
+      "evidence_id": "DATA003-DUE6BGL2E-D03",
+      "model_id": "DUE6BGL2E",
+      "document_version": "MFL71959117 Rev.07_030626",
+      "locator": {
+        "page": 57,
+        "section": "스펙 / 제품 사이즈; 설명서 p57 DUE 빌트인 열"
+      },
+      "native_quote_range": [
+        574,
+        817
+      ],
+      "canonical_text_sha256": "648466764bbdae1d77e753d9c596c2223348cda16147b4b5bb05b9e1f10ed3c4",
+      "feature_ids": [],
+      "has_output_and_short_duration_note": false,
+      "canonical_fields_modified": false
+    },
+    {
+      "evidence_id": "DATA003-MW23FDI-M06",
+      "model_id": "MW23FDI",
+      "document_version": "MFL68822538 Rev.00_120925",
+      "locator": {
+        "page": 37,
+        "section": "스펙·설명서 p37"
+      },
+      "native_quote_range": [
+        189,
+        358
+      ],
+      "canonical_text_sha256": "8b482f448de36c5ce0b9554f96c4445a3efac1ade00f8d07a2badc422d624bc3",
+      "feature_ids": [],
+      "has_output_and_short_duration_note": true,
+      "canonical_fields_modified": false
+    },
+    {
+      "evidence_id": "DATA003-MW23FDI-M07",
+      "model_id": "MW23FDI",
+      "document_version": "MFL68822538 Rev.00_120925",
+      "locator": {
+        "page": 37,
+        "section": "고지정보·설명서 p37"
+      },
+      "native_quote_range": [
+        255,
+        334
+      ],
+      "canonical_text_sha256": "b0804822b0ae7e7637c509aa761576f2b723cfbcb30eba37b517eb76e2fe6b1e",
+      "feature_ids": [],
+      "has_output_and_short_duration_note": false,
+      "canonical_fields_modified": false
+    }
+  ],
+  "dataset_pin": {
+    "path": "data/research/PM-DATA-intake-20261006/generated/dataset.json",
+    "bytes": 18971,
+    "sha256": "d4649f1cd48db49277b0556c3fd8243b64dc748cca6631bf1e9441279aab81be"
+  },
+  "consumer_rules": {
+    "DUE6BGL2E_applicable_cell": "DUE-BUILTIN",
+    "DFE_top_removed_is_not_DUE_condition": true,
+    "M07_cannot_support_max_rf_output_or_note": true,
+    "empty_feature_ids_are_not_automatic_feature_approval": true,
+    "disconnected_cells_must_not_be_forged_into_a_contiguous_quote": true,
+    "sidecar_is_not_canonical_schema_extension": true
+  },
+  "limitations": [
+    "manual source-derived topology, not automatic table/OCR accuracy",
+    "no approved production adapter imported",
+    "CORE actual consumption acknowledgement pending"
+  ]
+}

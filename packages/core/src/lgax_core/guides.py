@@ -37,6 +37,33 @@ def build_official_guide(bundle: dict, page_model: str) -> dict:
             "sources": selected, "proposal": None}
 
 
+def build_official_reference_guide(bundle: dict, source_ids: list[str]) -> dict:
+    """Export explicitly selected official references without assigning an unknown model."""
+    validate_research_bundle(bundle)
+    if (not isinstance(source_ids, list) or not source_ids
+            or any(not isinstance(value, str) or not value.strip() for value in source_ids)
+            or len(source_ids) != len(set(source_ids))):
+        raise ValueError("Select unique official reference source IDs")
+    selected = [source for source in bundle["sources"] if source["source_id"] in source_ids]
+    if len(selected) != len(source_ids):
+        raise ValueError("Official reference selection contains an unknown source")
+    for source in selected:
+        host = urlparse(source["url"]).hostname or ""
+        if (source["source_kind"] != "public"
+                or source["source_type"] not in {"manual", "faq", "installation", "qa"}
+                or source["source_role"] not in {"official_document", "official_answer"}
+                or not any(host == domain or host.endswith("." + domain) for domain in _OFFICIAL_DOMAINS)):
+            raise ValueError("Official references require an official document or answer")
+    return {"guide_version": "1.0", "guide_kind": "official_reference", "bundle_id": bundle["bundle_id"],
+            "title": "공식 참고자료 발췌 안내 · 적용 범위 확인 필요",
+            "notice": "공식 원문과 답변을 모은 참고자료입니다. 전체 정식 설명서를 대체하지 않습니다. "
+                      "페이지 모델 미확인·공용 자료는 특정 구매 제품의 사용법으로 확정하지 않습니다. "
+                      "문서판·참조 쪽·조건과 원문 추출 한계를 확인하세요. 참조 쪽에는 다른 절이 포함될 수 있어 "
+                      "같은 작업의 순서나 이어지는 단계로 확정하지 않습니다. 경우별 안내는 고객의 원인이나 "
+                      "실제 호전 보장이 아니며, 새 설정이나 절차를 생성하지 않았습니다.",
+            "sources": deepcopy(selected), "proposal": None, "exact_sku_applicability_confirmed": False}
+
+
 def build_concept_guide(bundle: dict, brief: dict, concept_id: str) -> dict:
     """Assemble an unapproved proposed-product guide, keeping sources separate from proposals."""
     validate_research_bundle(bundle)
@@ -77,13 +104,44 @@ def _markdown(value) -> str:
 
 
 def _kind(guide: dict) -> str:
-    if guide["guide_kind"] not in {"official_excerpt", "concept_draft"}:
+    labels = {"official_excerpt": "공식 원문 발췌 안내", "concept_draft": "가상 제품 기획 설명서 · 초안",
+              "official_reference": "공식 참고자료 · 적용 범위 확인 필요"}
+    if guide["guide_kind"] not in labels:
         raise ValueError("Unknown guide kind")
-    return "공식 원문 발췌 안내" if guide["guide_kind"] == "official_excerpt" else "가상 제품 기획 설명서 · 초안"
+    return labels[guide["guide_kind"]]
+
+
+def _reference_details(source: dict) -> list[str]:
+    role = "공식 답변" if source["source_role"] == "official_answer" else "공식 문서"
+    details = [f"작성 역할: {role}"]
+    if source["page_model"] is None:
+        details.append("페이지 모델 미확인 · 정확 구매 모델/판본·선택 기능 적용 확인 필요")
+    metadata = source.get("metadata", {})
+    for key, label in (("applicability", "적용 범위"), ("sku_applicability", "SKU 적용 확인"),
+                       ("optional_sku_applicability", "선택 기능 적용 확인"), ("sku_binding", "모델 대응 근거"),
+                       ("conditions_and_limitations", "조건과 한계"),
+                       ("continuation_pages", "자료에 표시된 참조 쪽 · 같은 절/단계 미확인"),
+                       ("context_conditions", "조건별 치수·대응 · 단일 연속 발췌와 구분"),
+                       ("scope_caveats", "적용 유의"),
+                       ("native_unit_caution", "원문 숫자·단위 주의"), ("source_scope_notes", "출처 사용 범위")):
+        value = metadata.get(key)
+        if value is not None and value != [] and value != "":
+            text = json.dumps(value, ensure_ascii=False) if isinstance(value, (list, dict)) else str(value)
+            details.append(f"{label}: {text}")
+    if metadata.get("facts_verified_in_original_answer_outside_selected_quote"):
+        details.append("사실·조건에는 선택 발췌 바깥의 원문 대조가 포함되며, 하나의 연속 인용으로 표시하지 않습니다.")
+    return details
 
 
 def _list_html(values: list) -> str:
     return "<ul>" + "".join(f"<li>{_escape(value)}</li>" for value in values) + "</ul>"
+
+
+def _version_label(source: dict) -> str:
+    return "페이지 모델의 연결 참고자료 버전" if source["source_type"] == "review" else "문서판"
+
+
+_REVIEW_VERSION_NOTE = "후기 판본·구매 당시 설명서 판 확인과는 구분되는 참고값입니다."
 
 
 def render_guide_html(guide: dict) -> str:
@@ -106,15 +164,21 @@ def render_guide_html(guide: dict) -> str:
                         f"{_list_html(guide.get('uncertainties', []))}</section>")
     cards = []
     for source in guide["sources"]:
+        version_note = (f"<p class='meta'>{_REVIEW_VERSION_NOTE}</p>"
+                        if source["source_type"] == "review" else "")
         facts = "".join(f"<li>{_escape(fact['kind'])} · {_escape(fact['text'])}"
                         f"<pre>{_escape(json.dumps(fact, ensure_ascii=False, indent=2))}</pre></li>" for fact in source["facts"])
+        reference_details = ("<h4>적용 범위와 출처 역할</h4>" + _list_html(_reference_details(source))
+                             if guide["guide_kind"] == "official_reference" else "")
         cards.append(f"<article class='source'><span class='tag'>{_escape(_SOURCE_TYPES[source['source_type']])}</span>"
                      f"<h3>{_escape(source['title'])}</h3><p class='meta'>{_escape(source['source_id'])} · "
                      f"페이지 모델 {_escape(source['page_model'] or '미확인')} · "
                      f"{_escape(_COVERAGE[source['coverage']])}</p><blockquote>{_escape(source['text'])}</blockquote>"
-                     f"<p class='meta'>문서판 {_escape(source.get('document_version') or '미확인')} · "
+                     f"<p class='meta'>{_version_label(source)} {_escape(source.get('document_version') or '미확인')} · "
                      f"구매 모델 {_escape(source['purchased_model'] or '미확인')} · "
                      f"게시일 {_escape(source['published_at'] or '미확인')}</p>"
+                     f"{version_note}"
+                     f"{reference_details}"
                      f"<a href='{_escape(source['url'])}' rel='noopener noreferrer'>공개 원문 출처 ↗</a>"
                      f"<p class='meta'>원문 위치 {_escape(json.dumps(source['locator'], ensure_ascii=False))}</p>"
                      f"<h4>보존한 원문 사실</h4><ul>{facts}</ul></article>")
@@ -131,8 +195,12 @@ def render_guide_html(guide: dict) -> str:
             ".notice{padding:14px;background:#fff6e9;border-left:4px solid #b18446}.meta{color:#59685d;"
             "font-size:14px}blockquote{white-space:pre-wrap;margin:12px 0;border-left:3px solid #759963;"
             "padding-left:16px}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;background:"
-            "#f6f8f3;padding:12px}a{color:#355b33;overflow-wrap:anywhere}@media print{body{background:white}"
-            "main{margin:0;padding:0;max-width:none}header,section{border-radius:0}article{break-inside:avoid}"
+            "#f6f8f3;padding:12px}a{color:#355b33;overflow-wrap:anywhere}@media print{"
+            "body{background:white;font-size:13px;line-height:1.5}main{margin:0;padding:0;max-width:none}"
+            "header,section{border-radius:0;padding:14px;margin-bottom:12px}"
+            "h1{font-size:22px}h2{font-size:18px}h3{font-size:15px}h2,h3{break-after:avoid}"
+            "article{break-inside:avoid;padding:10px;margin-bottom:10px}"
+            "pre{display:none}"
             "a:after{content:' (' attr(href) ')';font-size:11px}}@page{size:A4;margin:16mm}</style></head>"
             f"<body><main><header><span class='tag'>{_escape(kind)}</span><h1>{_escape(guide['title'])}</h1>"
             f"<p class='notice'>{_escape(guide['notice'])}</p><p class='meta'>실제 자료 묶음 "
@@ -161,8 +229,12 @@ def render_guide_markdown(guide: dict) -> str:
     for source in guide["sources"]:
         lines += [f"### {_markdown(source['title'])}", "", f"출처 ID: {_markdown(source['source_id'])}", "",
                   f"자료 범위: {_markdown(_COVERAGE[source['coverage']])} · 페이지 모델: {_markdown(source['page_model'] or '미확인')}",
-                  f"문서판: {_markdown(source.get('document_version') or '미확인')} · 구매 모델: {_markdown(source['purchased_model'] or '미확인')}",
+                  f"{_version_label(source)}: {_markdown(source.get('document_version') or '미확인')} · 구매 모델: {_markdown(source['purchased_model'] or '미확인')}",
                   f"게시일: {_markdown(source['published_at'] or '미확인')}", ""]
+        if source["source_type"] == "review":
+            lines += [_REVIEW_VERSION_NOTE, ""]
+        if guide["guide_kind"] == "official_reference":
+            lines += [f"- {_markdown(detail)}" for detail in _reference_details(source)] + [""]
         lines += ["> " + _markdown(line) for line in source["text"].splitlines()] + [""]
         destination = quote(source["url"], safe=":/?=&%+#")
         lines += [f"[공개 원문 출처]({destination})", "", "원문 위치: " + _markdown(json.dumps(source["locator"], ensure_ascii=False)),

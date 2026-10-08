@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/code/build_development_handoff.py", line 419, in <module>
+    main()
+  File "/code/build_development_handoff.py", line 298, in main
+    draft = make_draft(read(args.seeds), selected, members, sources)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/code/build_development_handoff.py", line 146, in make_draft
+    assert record["text"].find(anchor, start + 1) == -1, (key, "ambiguous anchor", anchor)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('807886', 'ambiguous anchor', '좋아요.........좋아요')

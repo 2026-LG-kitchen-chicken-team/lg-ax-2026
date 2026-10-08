@@ -1,0 +1,377 @@
+{
+  "checked_at_utc": "2026-10-07T16:28:21.184965+00:00",
+  "scope": "sender bytes and metadata only; not a CORE receipt or model execution",
+  "status": "PASS",
+  "archive": {
+    "filename": "input-only.zip",
+    "sha256": "e73d3393ad43e0bb9cf5f19944cc6c23c3fa69c72a1a140d6d680037e89ffaa8",
+    "bytes": 11106,
+    "entry_count": 11,
+    "uncompressed_bytes": 35952
+  },
+  "metadata": {
+    "filename": "handoff-metadata.json",
+    "sha256": "7729630ce842c97cb17f6b67a68baf59c63c36bfee79822871e721413742647d",
+    "bytes": 11316
+  },
+  "published_metadata_head": "d5d33c46a5f27d7ccd805713c784ec4c9f0ace55",
+  "raw_input_producer_git_head": null,
+  "producer_script_sha256_declared": "0a2e1483cb336b9da208c93f71616f9dcb417c64817277fe83ca83eda2d23b3f",
+  "producer_script_reexecuted": false,
+  "entries": [
+    {
+      "path": "cases.json",
+      "bytes": 4517,
+      "sha256": "99a3982820a3f13de66c854d9e03c77e59c9ecbf6f396930288a2e1d89c91bf7"
+    },
+    {
+      "path": "materials/conflicting_reviews.json",
+      "bytes": 2377,
+      "sha256": "add01910d49045ff4da4f2f94d2a52729bb2c866b2b87823dbbc13158cf41c29"
+    },
+    {
+      "path": "materials/duplicate_feature.json",
+      "bytes": 2347,
+      "sha256": "2e22b777871d116bcb0a687209990147950f005f024f5c096cb2f96e55294aa7"
+    },
+    {
+      "path": "materials/missing_evidence.json",
+      "bytes": 1340,
+      "sha256": "dee163d13796e5220866cd8f08b66c0146a8f176bf63d0ca0336b7951bc19255"
+    },
+    {
+      "path": "materials/model_version_confusion.json",
+      "bytes": 1845,
+      "sha256": "055e774304225d3c4c890ecf203b54cb9648e55210f4ab08dd803e5859b3e842"
+    },
+    {
+      "path": "materials/normal.json",
+      "bytes": 2307,
+      "sha256": "0f4e45f0be33f3f48ffe20f7842cd3e6c4c342841e9b3fb97ebfca852b146bde"
+    },
+    {
+      "path": "materials/specification_change.json",
+      "bytes": 2312,
+      "sha256": "fa183fc043865b6636193d6bda3dc4f597c49900c75283b02243b5c8132616a6"
+    },
+    {
+      "path": "schemas/input.json",
+      "bytes": 6755,
+      "sha256": "0a01bf54ca597a04905a13875cddd630572f858943913406a4ca95e6568b492d"
+    },
+    {
+      "path": "schemas/output.json",
+      "bytes": 9596,
+      "sha256": "f5ebb8b0c466e0c38ff6df19dfee1446db84350d9c4a36478438d0b5aa92b7d5"
+    },
+    {
+      "path": "supplement-index.json",
+      "bytes": 331,
+      "sha256": "2749bbf684a756e0272ed3867ad6461b81fb2c399dbedd38b11a8878ee91fa82"
+    },
+    {
+      "path": "supplements/specification_change-before.json",
+      "bytes": 2225,
+      "sha256": "9f8113ae309cce84d1001fc5e1374fcc7e413225ba7a2a43b11eaa6a8554dc86"
+    }
+  ],
+  "input_bindings": [
+    {
+      "path": "materials/normal.json",
+      "role": "primary",
+      "case_id": "NEW-R5-NORMAL",
+      "group_id": "NEW-R5-NORMAL",
+      "raw_file_sha256": "0f4e45f0be33f3f48ffe20f7842cd3e6c4c342841e9b3fb97ebfca852b146bde",
+      "canonical_input_sha256": "ec0d081b3f7e3988ce74ae4c4509d6b1e9cac0e500b21cf6b29bf9e34b9240e2",
+      "source_count": 2,
+      "model_id": "PRIVATE-EVAL-MW-N701",
+      "document_version": "candidate-doc.v1",
+      "source_kind": "synthetic"
+    },
+    {
+      "path": "materials/duplicate_feature.json",
+      "role": "primary",
+      "case_id": "NEW-R5-DUPLICATE-FEATURE",
+      "group_id": "NEW-R5-DUPLICATE-FEATURE",
+      "raw_file_sha256": "2e22b777871d116bcb0a687209990147950f005f024f5c096cb2f96e55294aa7",
+      "canonical_input_sha256": "133cc35446a562523a902eb0853d223c5d792c6a0e1b876462c1151292474e73",
+      "source_count": 2,
+      "model_id": "PRIVATE-EVAL-FR-D418",
+      "document_version": "candidate-doc.v1",
+      "source_kind": "synthetic"
+    },
+    {
+      "path": "materials/model_version_confusion.json",
+      "role": "primary",
+      "case_id": "NEW-R5-MODEL-VERSION-CONFUSION",
+      "group_id": "NEW-R5-MODEL-VERSION-CONFUSION",
+      "raw_file_sha256": "055e774304225d3c4c890ecf203b54cb9648e55210f4ab08dd803e5859b3e842",
+      "canonical_input_sha256": "01144e94da54c4751e44e200fc0f655aa3a9922336d53af4cb57b429e821342f",
+      "source_count": 2,
+      "model_id": "PRIVATE-EVAL-DW-V620",
+      "document_version": "candidate-doc.v1",
+      "source_kind": "synthetic"
+    },
+    {
+      "path": "materials/conflicting_reviews.json",
+      "role": "primary",
+      "case_id": "NEW-R5-CONFLICTING-REVIEWS",
+      "group_id": "NEW-R5-CONFLICTING-REVIEWS",
+      "raw_file_sha256": "add01910d49045ff4da4f2f94d2a52729bb2c866b2b87823dbbc13158cf41c29",
+      "canonical_input_sha256": "d08a868ddabb83293a7652f893758783abd91a8063ea4745f55043ab6c645459",
+      "source_count": 3,
+      "model_id": "PRIVATE-EVAL-FR-C419",
+      "document_version": "candidate-doc.v1",
+      "source_kind": "synthetic"
+    },
+    {
+      "path": "materials/missing_evidence.json",
+      "role": "primary",
+      "case_id": "NEW-R5-MISSING-EVIDENCE",
+      "group_id": "NEW-R5-MISSING-EVIDENCE",
+      "raw_file_sha256": "dee163d13796e5220866cd8f08b66c0146a8f176bf63d0ca0336b7951bc19255",
+      "canonical_input_sha256": "a7f46f14ffba4f7355d96dbbaf514b8eff701ae2f25b9a8889f449e2693bbb61",
+      "source_count": 1,
+      "model_id": "PRIVATE-EVAL-DW-M622",
+      "document_version": "candidate-doc.v1",
+      "source_kind": "synthetic"
+    },
+    {
+      "path": "materials/specification_change.json",
+      "role": "primary",
+      "case_id": "NEW-R5-SPECIFICATION-CHANGE",
+      "group_id": "NEW-R5-SPECIFICATION-CHANGE",
+      "raw_file_sha256": "fa183fc043865b6636193d6bda3dc4f597c49900c75283b02243b5c8132616a6",
+      "canonical_input_sha256": "cae402e4861037faf819ef0cad6e9ec090d6f9ad53a54d358f8ce9a35848ba44",
+      "source_count": 2,
+      "model_id": "PRIVATE-EVAL-MW-S703",
+      "document_version": "candidate-doc.v1",
+      "source_kind": "synthetic"
+    },
+    {
+      "path": "supplements/specification_change-before.json",
+      "role": "paired_before",
+      "case_id": "NEW-R5-SPECIFICATION-CHANGE-BEFORE",
+      "group_id": "NEW-R5-SPECIFICATION-CHANGE",
+      "raw_file_sha256": "9f8113ae309cce84d1001fc5e1374fcc7e413225ba7a2a43b11eaa6a8554dc86",
+      "canonical_input_sha256": "551529094f33c30e8b56c624d2a556633ce8c0687047744058ee97c4965d7372",
+      "source_count": 2,
+      "model_id": "PRIVATE-EVAL-MW-S703",
+      "document_version": "candidate-doc.v1",
+      "source_kind": "synthetic"
+    }
+  ],
+  "checks": [
+    {
+      "check": "frozen ZIP SHA256",
+      "passed": true
+    },
+    {
+      "check": "original and outbox identical bytes",
+      "passed": true
+    },
+    {
+      "check": "frozen handoff metadata SHA256",
+      "passed": true
+    },
+    {
+      "check": "metadata published head is metadata provenance only",
+      "passed": true
+    },
+    {
+      "check": "metadata declares prepared, not sent or received",
+      "passed": true
+    },
+    {
+      "check": "exact 11 unique allowlisted entries",
+      "passed": true
+    },
+    {
+      "check": "relative regular unencrypted entries",
+      "passed": true
+    },
+    {
+      "check": "bounded input archive",
+      "passed": true
+    },
+    {
+      "check": "frozen cases manifest SHA256",
+      "passed": true
+    },
+    {
+      "check": "frozen input and output schema hashes",
+      "passed": true
+    },
+    {
+      "check": "no prohibited answer keys in non-schema input objects",
+      "passed": true
+    },
+    {
+      "check": "six primary and one paired input, six groups",
+      "passed": true
+    },
+    {
+      "check": "each material has one metadata binding",
+      "passed": true
+    },
+    {
+      "check": "materials/normal.json: raw input hash",
+      "passed": true
+    },
+    {
+      "check": "materials/normal.json: product model/version/source kind",
+      "passed": true
+    },
+    {
+      "check": "materials/normal.json: exact source membership",
+      "passed": true
+    },
+    {
+      "check": "materials/normal.json: source metadata/text binding NEW-NORMAL-MAN",
+      "passed": true
+    },
+    {
+      "check": "materials/normal.json: source metadata/text binding NEW-NORMAL-REV",
+      "passed": true
+    },
+    {
+      "check": "materials/duplicate_feature.json: raw input hash",
+      "passed": true
+    },
+    {
+      "check": "materials/duplicate_feature.json: product model/version/source kind",
+      "passed": true
+    },
+    {
+      "check": "materials/duplicate_feature.json: exact source membership",
+      "passed": true
+    },
+    {
+      "check": "materials/duplicate_feature.json: source metadata/text binding NEW-DUP-MAN",
+      "passed": true
+    },
+    {
+      "check": "materials/duplicate_feature.json: source metadata/text binding NEW-DUP-REV",
+      "passed": true
+    },
+    {
+      "check": "materials/model_version_confusion.json: raw input hash",
+      "passed": true
+    },
+    {
+      "check": "materials/model_version_confusion.json: product model/version/source kind",
+      "passed": true
+    },
+    {
+      "check": "materials/model_version_confusion.json: exact source membership",
+      "passed": true
+    },
+    {
+      "check": "materials/model_version_confusion.json: source metadata/text binding NEW-VERSION-REV",
+      "passed": true
+    },
+    {
+      "check": "materials/model_version_confusion.json: source metadata/text binding NEW-VERSION-FOREIGN-MAN",
+      "passed": true
+    },
+    {
+      "check": "materials/conflicting_reviews.json: raw input hash",
+      "passed": true
+    },
+    {
+      "check": "materials/conflicting_reviews.json: product model/version/source kind",
+      "passed": true
+    },
+    {
+      "check": "materials/conflicting_reviews.json: exact source membership",
+      "passed": true
+    },
+    {
+      "check": "materials/conflicting_reviews.json: source metadata/text binding NEW-CONFLICT-MAN",
+      "passed": true
+    },
+    {
+      "check": "materials/conflicting_reviews.json: source metadata/text binding NEW-CONFLICT-REV-A",
+      "passed": true
+    },
+    {
+      "check": "materials/conflicting_reviews.json: source metadata/text binding NEW-CONFLICT-REV-B",
+      "passed": true
+    },
+    {
+      "check": "materials/missing_evidence.json: raw input hash",
+      "passed": true
+    },
+    {
+      "check": "materials/missing_evidence.json: product model/version/source kind",
+      "passed": true
+    },
+    {
+      "check": "materials/missing_evidence.json: exact source membership",
+      "passed": true
+    },
+    {
+      "check": "materials/missing_evidence.json: source metadata/text binding NEW-MISSING-REV",
+      "passed": true
+    },
+    {
+      "check": "materials/specification_change.json: raw input hash",
+      "passed": true
+    },
+    {
+      "check": "materials/specification_change.json: product model/version/source kind",
+      "passed": true
+    },
+    {
+      "check": "materials/specification_change.json: exact source membership",
+      "passed": true
+    },
+    {
+      "check": "materials/specification_change.json: source metadata/text binding NEW-CHANGE-MAN",
+      "passed": true
+    },
+    {
+      "check": "materials/specification_change.json: source metadata/text binding NEW-CHANGE-REV",
+      "passed": true
+    },
+    {
+      "check": "supplements/specification_change-before.json: raw input hash",
+      "passed": true
+    },
+    {
+      "check": "supplements/specification_change-before.json: product model/version/source kind",
+      "passed": true
+    },
+    {
+      "check": "supplements/specification_change-before.json: exact source membership",
+      "passed": true
+    },
+    {
+      "check": "supplements/specification_change-before.json: source metadata/text binding NEW-CHANGE-MAN",
+      "passed": true
+    },
+    {
+      "check": "supplements/specification_change-before.json: source metadata/text binding NEW-CHANGE-REV",
+      "passed": true
+    },
+    {
+      "check": "archive unchanged during audit",
+      "passed": true
+    },
+    {
+      "check": "metadata unchanged during audit",
+      "passed": true
+    }
+  ],
+  "role_separation": {
+    "only_input_archive_and_metadata_mounted": true,
+    "reviewer_gold_demo_method_key_files_opened": false,
+    "prohibited_non_schema_key_findings": {},
+    "limitation": "File allowlist and metadata/key checks do not independently establish semantic Gold separation or evaluation independence."
+  },
+  "raw_input_text_exported": false,
+  "new_product_model_calls": 0,
+  "actual_CORE_receipt_verified": false,
+  "transfer_performed": false,
+  "independent_evaluation_approved": false
+}

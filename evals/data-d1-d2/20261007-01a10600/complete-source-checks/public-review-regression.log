@@ -1,0 +1,40 @@
+test_category_confusion_and_contact_details_are_quarantined (test_public_review_collection.PublicReviewCollectionTests.test_category_confusion_and_contact_details_are_quarantined) ... ok
+test_conflicting_original_id_fails_closed (test_public_review_collection.PublicReviewCollectionTests.test_conflicting_original_id_fails_closed) ... ok
+test_fresh_db_roundtrip_and_no_overwrite (test_public_review_collection.PublicReviewCollectionTests.test_fresh_db_roundtrip_and_no_overwrite) ... ERROR
+test_global_shared_review_dedup_precedes_split (test_public_review_collection.PublicReviewCollectionTests.test_global_shared_review_dedup_precedes_split) ... ok
+test_html_scripts_are_not_review_text (test_public_review_collection.PublicReviewCollectionTests.test_html_scripts_are_not_review_text) ... ok
+test_later_shared_page_quality_flag_cannot_be_lost (test_public_review_collection.PublicReviewCollectionTests.test_later_shared_page_quality_flag_cannot_be_lost) ... ok
+test_product_page_identity_is_checked_and_not_purchased_identity (test_public_review_collection.PublicReviewCollectionTests.test_product_page_identity_is_checked_and_not_purchased_identity) ... ok
+test_purchase_date_never_becomes_publication_date_or_exact_sku (test_public_review_collection.PublicReviewCollectionTests.test_purchase_date_never_becomes_publication_date_or_exact_sku) ... ok
+test_reposted_long_text_stays_in_same_group_but_short_praise_is_not_collapsed (test_public_review_collection.PublicReviewCollectionTests.test_reposted_long_text_stays_in_same_group_but_short_praise_is_not_collapsed) ... ok
+
+======================================================================
+ERROR: test_fresh_db_roundtrip_and_no_overwrite (test_public_review_collection.PublicReviewCollectionTests.test_fresh_db_roundtrip_and_no_overwrite)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/input/tests/test_public_review_collection.py", line 99, in test_fresh_db_roundtrip_and_no_overwrite
+    with tempfile.TemporaryDirectory() as folder:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/tempfile.py", line 871, in __init__
+    self.name = mkdtemp(suffix, prefix, dir)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/tempfile.py", line 374, in mkdtemp
+    prefix, suffix, dir, output_type = _sanitize_params(prefix, suffix, dir)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/tempfile.py", line 127, in _sanitize_params
+    dir = gettempdir()
+          ^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/tempfile.py", line 316, in gettempdir
+    return _os.fsdecode(_gettempdir())
+                        ^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/tempfile.py", line 309, in _gettempdir
+    tempdir = _get_default_tempdir()
+              ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/tempfile.py", line 224, in _get_default_tempdir
+    raise FileNotFoundError(_errno.ENOENT,
+FileNotFoundError: [Errno 2] No usable temporary directory found in ['/tmp', '/var/tmp', '/usr/tmp', '/input']
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.011s
+
+FAILED (errors=1)
