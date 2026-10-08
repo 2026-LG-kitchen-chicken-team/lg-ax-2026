@@ -1,0 +1,450 @@
+{
+  "schema_version": "1.0",
+  "review_kind": "independent_read_only_actual_source_semantic_review",
+  "review_date": "2026-10-08",
+  "reviewer_model_calls": 0,
+  "independent_semantic_quality_verified": false,
+  "overall_verdict": "normal_and_condition_generation_flows_complete_semantic_repairs_still_required",
+  "baseline_five_cases_unchanged": {
+    "file": "evals/pm-r9/20261008/semantic-review.json",
+    "sha256": "9bbc412a06002c53b4cf3935442a5a8488b869c867167b8d3862b51d223d157f",
+    "case_count": 5
+  },
+  "scope": "Actual dishwasher development sources only; no market-wide conclusion or independent-evaluation approval. Successful structure is distinct from semantic acceptance.",
+  "sources_reviewed": [
+    {
+      "source_id": "LGE-R8-REVIEW-752651",
+      "observation": "The buyer wants easier dishwashing for their wife, whose legs hurt. The review mentions cleaning the rotating arms around one month of use, odor starting at an unspecified time, and return to handwashing after about three months total. It does not confirm joint disease, pain relief or recurrence, residue/cleaning-performance loss, failed odor treatment, disassembly, manual ignorance or incomplete cleaning."
+    },
+    {
+      "source_id": "LGE-R8-REVIEW-853593",
+      "observation": "Explicit convenience/drying/performance praise and surprise about adding rinse/detergent/salt coexist. A mixed experience should remain represented regardless of the five-star rating."
+    },
+    {
+      "source_id": "LGE-R8-REVIEW-800073",
+      "observation": "Low noise, good cleaning, saved housework time and friendly installation are explicitly praised."
+    },
+    {
+      "source_id": "LGE-R8-REVIEW-645400",
+      "observation": "Schedule/discussion problems are reported. The installer seeming unwilling is the customer's perception; the new normal summary retains that uncertainty."
+    },
+    {
+      "source_ids": [
+        "D2-DUE-CARE-DW-ODOR-FISHY-P49",
+        "D2-DUE-CARE-DW-ODOR-DEVICE-P49"
+      ],
+      "observation": "Official shared DUE6 manual excerpts describe conditional odor guidance, not this customer's diagnosis/recovery. The residual-water guidance says more than 80 ml to 100 ml; it is conditional, not a new universal operating standard. Cleaning procedures reference separate maintenance chapters that are not included in this selected six-source input. Exact purchased SKU and purchase-time revision are unverified. The fishy-odor paragraph calls food trimethylamine alkaline and mentions acidic detergent, rather than establishing every detergent's acid/alkaline properties."
+    }
+  ],
+  "runs": [
+    {
+      "run_id": "run-1f83d846191941aea21153897b944ec1",
+      "public_output_sha256": "4e84728d07aedff38cc30c26f839abce2ae54719e341954f27dff353c79ed3d2",
+      "bundle_id": "LGE-R9-dishwasher-development-20261008-v1",
+      "revision": 0,
+      "reported_structural_status": "complete",
+      "semantic_verdict": "requires_targeted_repair",
+      "generation_flow_completed": true,
+      "independent_semantic_quality_verified": false,
+      "source_facts_exact_selected_six": true,
+      "input_scope": "user_selected_sources",
+      "input_source_count": 6,
+      "processed_customer_source_count": 4,
+      "selected_official_source_count": 2,
+      "constraints": [
+        "기존 기능을 새로운 발명으로 제안하지 않기"
+      ],
+      "controlled_pure_ab_comparison": false,
+      "comparison_caveat": "The earlier selected failures already had five web-only/support constraints. This fresh normal has only the default existing-feature constraint, and the prompt/configuration also changed. Completion demonstrates a recovered flow; it does not isolate a causal quality improvement from guide compression alone.",
+      "trace_observations": {
+        "model_calls": 2,
+        "repair_calls": 0,
+        "stages": [
+          "discover",
+          "plan"
+        ],
+        "prompt_characters": [
+          5062,
+          6448
+        ],
+        "locally_validated": [
+          true,
+          true
+        ],
+        "scope_caveat_characters": 136,
+        "instruction_echo_observed": false,
+        "output_truncated": false,
+        "model_id": "qwen3.8:27b-q4_K_M",
+        "revision_pin": "25b843619e944cd0ae6069f94ff4e5e26a16e109ccbc0a66a0f05979ed70098e",
+        "pin_verification": "before_and_after_generation",
+        "context_tokens": 16384,
+        "max_output_tokens": 4096,
+        "transport_api": "/api/generate",
+        "shared_correction_count": 0,
+        "shared_correction_limit": 2
+      },
+      "improvements_observed": [
+        "Discovery, official-source comparison and one concrete draft concept complete without prompt-budget rejection, instruction echo or truncation.",
+        "The observed problem is odor/return to handwashing; unreported cleaning-performance loss or residue is no longer asserted as the actual customer complaint.",
+        "The short caveat preserves unknown cause, cleaning outcome and odor onset time.",
+        "Comparison limits explicitly preserve shared-manual/SKU/purchase-time revision uncertainty and say guidance is neither a diagnosis nor a recovery guarantee.",
+        "Customer support is an unresolved-case escalation path; no explicit promised support resolution is stated.",
+        "The installer-intent summary stays a perceived attitude rather than verified refusal.",
+        "Source-facts snapshots remain exact and all four selected customer sources are in the reference denominator. Coverage is bookkeeping, not approved classification."
+      ],
+      "findings": [
+        {
+          "id": "CG-N-01",
+          "priority": "P1",
+          "code": "actor_and_medical_condition_expansion",
+          "source_ids": [
+            "LGE-R8-REVIEW-752651"
+          ],
+          "fields": [
+            "problems[problem-1].description",
+            "comparisons[comparison-1].remaining_burden",
+            "concepts[concept-1].target_user",
+            "concepts[concept-1].source_ids",
+            "concepts[concept-1].assumptions"
+          ],
+          "output_examples": [
+            "고객은 다리가 아파서",
+            "관절 부담 재발",
+            "관절 질환으로 손세척이 어려운 사용자"
+          ],
+          "assessment": "The condition belongs to the buyer's wife, not necessarily the buyer. Sore legs do not establish joint disease or a measured recurrence of joint burden. A broader target cohort is allowed as an explicitly marked planning assumption, but no such persona assumption is listed. The concept cites only manuals while carrying a persona claim derived from the customer story; preserve the customer citation if using that experience."
+        },
+        {
+          "id": "CG-N-02",
+          "priority": "P1",
+          "code": "unobserved_before_actions_and_treatment_order",
+          "source_ids": [
+            "LGE-R8-REVIEW-752651"
+          ],
+          "fields": [
+            "problems[problem-1].description",
+            "concepts[concept-1].before_steps",
+            "concepts[concept-1].visual_scenes",
+            "concepts[concept-1].assumptions"
+          ],
+          "output_examples": [
+            "냄새를 인지하고 회전날개 등 부품을 수동으로 청소",
+            "냄새가 지속되어",
+            "수동으로 부품을 분해 청소",
+            "청소 방법을 몰라 포기하거나 불완전하게 청소"
+          ],
+          "assessment": "The known caveat says the cleaning/outcome sequence is unknown, but the before steps and scenes assert odor followed by treatment and persistent odor, disassembly, ignorance and failed cleaning. Those are not reported observations. Label new hypothetical before scenes in place and in assumptions, or limit them to the confirmed odor/handwashing experience. The total approximately three-month period is preserved in the description; no extra three-month period is added here."
+        },
+        {
+          "id": "CG-N-03",
+          "priority": "P1",
+          "code": "purchase_hope_as_mixed_and_explicit_mixed_wording_lost",
+          "source_ids": [
+            "LGE-R8-REVIEW-752651",
+            "LGE-R8-REVIEW-853593"
+          ],
+          "fields": [
+            "summaries.mixed[0]",
+            "summaries.negative",
+            "summaries.positive[0]",
+            "summaries.mixed"
+          ],
+          "assessment": "Review 752651 expresses hoped-for convenience, odor, handwashing and disappointment, not an explicit positive use result; placing it in mixed while omitting negative is unsupported. Review 853593 explicitly combines praise with surprise, but its condensed positive-only summary drops the surprise and no mixed entry remains. Distinguish purchase expectation from actual satisfaction and preserve both stated sides of a mixed review."
+        },
+        {
+          "id": "CG-N-04",
+          "priority": "P2",
+          "code": "conditional_manual_reference_not_complete_procedure_or_diagnosis",
+          "source_ids": [
+            "D2-DUE-CARE-DW-ODOR-FISHY-P49",
+            "D2-DUE-CARE-DW-ODOR-DEVICE-P49"
+          ],
+          "fields": [
+            "concepts[concept-1].after_steps",
+            "concepts[concept-1].proposed_changes",
+            "concepts[concept-1].visual_scenes",
+            "concepts[concept-1].validation_questions"
+          ],
+          "output_examples": [
+            "잔수량(80~100ml 기준) 확인 및 배수 방법을 단계별로 안내",
+            "세척조 청소 절차를 영상 또는 이미지로 제공",
+            "정확하게 청소"
+          ],
+          "assessment": "The 80–100 ml quantity is present in the official source and is not a fabricated number. Preserve the source's greater-than/condition context and verify the applicable model/document before actionable guidance. Page 49 references maintenance procedures elsewhere; selected excerpts cannot by themselves support invented detailed cleaning/disassembly steps. No new explicit unsafe disassembly command is found in after_steps, but the unsupported before-disassembly scene is already covered by CG-N-02. Keep the procedure/visualization proposal clearly provisional and require the actual referenced chapter."
+        },
+        {
+          "id": "CG-N-05",
+          "priority": "P2",
+          "code": "customer_action_and_documented_guidance_roles_merged",
+          "source_ids": [
+            "LGE-R8-REVIEW-752651",
+            "D2-DUE-CARE-DW-ODOR-FISHY-P49",
+            "D2-DUE-CARE-DW-ODOR-DEVICE-P49"
+          ],
+          "fields": [
+            "comparisons[comparison-1].existing_response"
+          ],
+          "output_examples": [
+            "회전날개 등 청소 수행, 세제/린스 변경"
+          ],
+          "assessment": "This list combines the customer's reported cleaning action with official conditional guidance without role labels. It does not explicitly call cleaning an automatic product feature or declare the problem resolved, but separate what the customer did from what the manual advises and what remains unconfirmed."
+        }
+      ],
+      "minimum_item_feedback": [
+        {
+          "item_kind": "Comparison",
+          "item_id": "comparison-1",
+          "fields": [
+            "existing_response",
+            "remaining_burden"
+          ],
+          "message": "관절 부담 재발·반복 수동점검은 원문에서 확인되지 않습니다. 배우자의 다리 불편 때문에 설거지 부담을 덜려던 가정이 물비린내로 손설거지에 돌아온 경험만 보존하세요. 회전날개 청소는 고객 행동이며 세제/린스 변경 등의 조건별 안내는 공용 설명서 내용으로 분리하세요. 안내가 실제 실행됐거나 원인·해결을 확인했다는 뜻이 아닙니다."
+        },
+        {
+          "item_kind": "Concept",
+          "item_id": "concept-1",
+          "fields": [
+            "target_user",
+            "before_steps",
+            "after_steps",
+            "proposed_changes",
+            "source_ids",
+            "assumptions",
+            "validation_questions",
+            "visual_scenes"
+          ],
+          "message": "LGE-R8-REVIEW-752651의 아픈 사람은 배우자이며 관절 질환·부담 재발은 미확인입니다. 고객 경험을 활용하면 해당 출처를 포함하세요. 냄새→청소→지속, 분해 청소·방법 몰라 포기·불완전 청소는 실제 경험으로 만들지 마세요. 가상 before는 그 자리와 assumptions에 명시하세요. 공용 매뉴얼의 모델·버전·조건을 확인하고 80~100ml보다 많을 때라는 원 조건을 보존하세요. 세척조 실제 절차는 제공되지 않았으므로 공식 해당 장 연결/추가 확인으로 남기고 구체 분해법은 만들지 마세요."
+        }
+      ],
+      "repair_budget_and_summary_note": "The recommendation is limited to two items (Comparison and Concept) and fits the shared two-attempt limit without resetting it. Problem.description actor/order and summary classification remain separately unresolved; this recommendation does not claim every finding fixed. Coverage counts do not approve sentiment."
+    },
+    {
+      "run_id": "run-754268c6b0cb41bba50c5b8d713332d9",
+      "public_output_sha256": "0fd3a2047a7fd884af1c89e6d87ef46e83a446f5b277d18c838876bf63427c1d",
+      "bundle_id": "LGE-R9-dishwasher-development-20261008-v1",
+      "revision": 1,
+      "previous_brief_id": "brief-fe7412d6635c4822988f8d42ae6acddc",
+      "parent_run_id": "run-1f83d846191941aea21153897b944ec1",
+      "parent_brief_exact": true,
+      "reported_structural_status": "complete",
+      "semantic_verdict": "requires_targeted_repair",
+      "generation_flow_completed": true,
+      "independent_semantic_quality_verified": false,
+      "source_facts_exact_selected_six": true,
+      "source_facts_exact_parent": true,
+      "selected_source_ids_exact_parent": true,
+      "input_scope": "user_selected_sources",
+      "input_source_count": 6,
+      "processed_customer_source_count": 4,
+      "selected_official_source_count": 2,
+      "constraints": [
+        "기존 기능을 새로운 발명으로 제안하지 않기",
+        "하드웨어 변경 없이 개선",
+        "추가 구매 비용 최소화",
+        "기존 앱이나 웹 안내만 사용하고 새 센서나 부품을 추가하지 않기",
+        "확인한 결과를 기록하고, 미해결일 때 고객지원에 전달할 수 있게 하기"
+      ],
+      "trace_observations": {
+        "model_calls": 2,
+        "repair_calls": 0,
+        "stages": [
+          "discover",
+          "plan"
+        ],
+        "prompt_characters": [
+          5172,
+          6859
+        ],
+        "locally_validated": [
+          true,
+          true
+        ],
+        "generated_output_tokens": [
+          619,
+          1729
+        ],
+        "scope_caveat_characters": 168,
+        "instruction_echo_observed": false,
+        "output_truncated": false,
+        "model_id": "qwen3.8:27b-q4_K_M",
+        "revision_pin": "25b843619e944cd0ae6069f94ff4e5e26a16e109ccbc0a66a0f05979ed70098e",
+        "pin_verification": "before_and_after_generation",
+        "context_tokens": 16384,
+        "max_output_tokens": 4096,
+        "transport_api": "/api/generate",
+        "shared_correction_count": 0,
+        "shared_correction_limit": 2
+      },
+      "condition_response_assessment": {
+        "same_problem_retained": true,
+        "hardware_sensor_parts_not_added": true,
+        "existing_app_web_delivery_respected": true,
+        "record_and_support_handoff_proposed": true,
+        "additional_purchase_cost_minimization": "Digital route adds no proposed hardware. Detergent replacement and all-action escalation prerequisites are not costed and should be conditional, rather than compulsory for every customer.",
+        "medical_condition_expansion_removed_from_concept": true,
+        "actual_customer_actor_error_remains": true,
+        "promised_support_resolution_observed": false,
+        "support_speed_benefit": "A faster response is illustrated as an intended benefit, not measured evidence; operational feasibility/effectiveness remains an assumption.",
+        "manual_exists_therefore_customer_problem_resolved_observed": false,
+        "manual_was_read_or_failed_for_this_customer_not_verified": true,
+        "unreported_wash_performance_loss_or_residue_claim_observed": false,
+        "unsupported_detailed_disassembly_instruction_observed": false,
+        "complete_safe_operating_guide_approved": false
+      },
+      "improvements_vs_parent_normal": [
+        "The same source snapshots, parent brief and revision increment are preserved while the concept shifts to an app/web checklist and recorded customer-support handoff.",
+        "The joint-disease target and joint-burden recurrence claim disappear; target_user is now customers affected by odor or returning to handwashing.",
+        "The concept now cites the customer review as well as the two official excerpts.",
+        "The residual-water quantity is described as exceeding 80–100 ml in comparison, preserving the greater-than condition better than the normal concept.",
+        "The 853593 summary now retains the surprise about rinse/detergent/salt in its text, although its positive-only placement still misses the mixed experience.",
+        "No echoed guidance, output truncation, unreported cleaning-performance loss or explicit diagnosis/recovery promise appears."
+      ],
+      "findings": [
+        {
+          "id": "CG-C-01",
+          "priority": "P1",
+          "code": "wife_experience_still_assigned_to_buyer",
+          "source_ids": [
+            "LGE-R8-REVIEW-752651"
+          ],
+          "fields": [
+            "problems[problem-1].description"
+          ],
+          "output_examples": [
+            "고객은 다리가 아파서",
+            "청소했음에도"
+          ],
+          "assessment": "The original says the buyer’s wife has sore legs. This is still assigned to the customer/buyer. The caveat correctly says the cleaning/odor chronology and outcome are unknown, but the description still implies failed treatment. Removing the medical persona elsewhere does not repair this observation."
+        },
+        {
+          "id": "CG-C-02",
+          "priority": "P1",
+          "code": "manual_use_failure_and_prior_customer_actions_unobserved",
+          "source_ids": [
+            "LGE-R8-REVIEW-752651"
+          ],
+          "fields": [
+            "comparisons[comparison-1].remaining_burden",
+            "concepts[concept-1].use_context",
+            "concepts[concept-1].before_steps",
+            "concepts[concept-1].visual_scenes",
+            "concepts[concept-1].assumptions"
+          ],
+          "output_examples": [
+            "매뉴얼의 일반적 안내가 ... 해결하지 못했거나",
+            "매뉴얼을 찾아보거나 기억나지 않아 혼란스러워함",
+            "직접 청소했으나 냄새가 지속되거나 재발함",
+            "고객지원에 전화하여"
+          ],
+          "assessment": "These steps/scenes infer manual use, confusion, odor→cleaning→persistent/recurrent odor and prior support contact, none of which the review establishes. Listing an all-methods-failed assumption does not establish these other observations. comparison_limits correctly preserves uncertainty, but remaining_burden nonetheless narrows the experience to unverified failure/nonexecution explanations. This is not a renewed manual-exists→resolved claim; it is an unsupported manual-failure/history claim. Mark proposed before scenes as hypothetical in place, and leave actual cause/action/outcome unknown."
+        },
+        {
+          "id": "CG-C-03",
+          "priority": "P1",
+          "code": "support_handoff_uses_wrong_total_use_duration",
+          "source_ids": [
+            "LGE-R8-REVIEW-752651"
+          ],
+          "fields": [
+            "concepts[concept-1].after_steps",
+            "concepts[concept-1].assumptions",
+            "concepts[concept-1].validation_questions"
+          ],
+          "output_examples": [
+            "사용 기간(1개월)"
+          ],
+          "assessment": "The one-month reference concerns use around the reported cleaning mention. The review reports about three months total before handwashing. Automatically handing support a one-month total use period is a new false fact. A future flow should ask the customer to confirm duration/action history; for this reported case preserve approximately three months and distinguish the roughly one-month maintenance reference."
+        },
+        {
+          "id": "CG-C-04",
+          "priority": "P1",
+          "code": "sentiment_and_perceived_installer_motive_still_not_preserved",
+          "source_ids": [
+            "LGE-R8-REVIEW-752651",
+            "LGE-R8-REVIEW-853593",
+            "LGE-R8-REVIEW-645400"
+          ],
+          "fields": [
+            "summaries.mixed",
+            "summaries.positive[0]",
+            "summaries.negative[0]"
+          ],
+          "output_examples": [
+            "초기 기대와 실제 사용 경험 간에 괴리가 있다",
+            "기사가 설치를 거부하여"
+          ],
+          "assessment": "752651 still uses hoped-for convenience as the positive half of a mixed classification instead of an explicit favorable use result. 853593 now preserves surprise in its text but remains positive-only without the explicit mixed experience being classified. Unlike the parent normal, 645400 turns the customer’s perceived unwillingness into confirmed refusal. Reference coverage 4/4 is correct bookkeeping and does not approve these classifications or claims."
+        },
+        {
+          "id": "CG-C-05",
+          "priority": "P1",
+          "code": "conditional_official_actions_become_universal_escalation_prerequisites",
+          "source_ids": [
+            "D2-DUE-CARE-DW-ODOR-FISHY-P49",
+            "D2-DUE-CARE-DW-ODOR-DEVICE-P49"
+          ],
+          "fields": [
+            "comparisons[comparison-1].existing_response",
+            "concepts[concept-1].after_steps",
+            "concepts[concept-1].mechanism",
+            "concepts[concept-1].proposed_changes",
+            "concepts[concept-1].assumptions",
+            "concepts[concept-1].validation_questions"
+          ],
+          "output_examples": [
+            "배수(전원 3초 누름)",
+            "모든 기본 조치(세제 변경, 애벌세척, 배수)를 수행했음에도",
+            "고객이 취해야 할 최소한의 조치"
+          ],
+          "assessment": "These are condition-specific guidance branches, not three mandatory actions for every odor case. The cited drain procedure requires excess residual water, powering on, then holding the power button three seconds to select cancellation; the short comparison omits that full sequence. The quantities are present in the source, not invented, but the applicable SKU/current version and conditions remain unverified. Do not demand detergent purchase/prewash/draining before every support handoff, or synthesize cleaning steps from page-49 references to another chapter. Keep a reference/confirmation path and allow unresolved or inapplicable cases to be shared without claiming a confirmed cause or guaranteed solution."
+        }
+      ],
+      "minimum_item_feedback": [
+        {
+          "item_kind": "Comparison",
+          "item_id": "comparison-1",
+          "fields": [
+            "existing_response",
+            "remaining_burden"
+          ],
+          "message": "LGE-R8-REVIEW-752651은 배우자의 다리 불편, 물비린내, 총 약3개월 뒤 손설거지 전환만 보고합니다. 고객이 설명서를 읽거나 조치를 미실행/실패한 것은 미확인이므로 실제 이력처럼 추정하지 마세요. 공용 설명서 안내와 고객 행동을 분리하세요. 배수는 해당 모델·문서 적용과 잔수 초과 조건을 확인한 뒤 전원 켜기→전원 버튼3초→취소 선택이라는 원 순서를 보존하며, 안내 존재가 진단/해결 증명은 아닙니다."
+        },
+        {
+          "item_kind": "Concept",
+          "item_id": "concept-1",
+          "fields": [
+            "use_context",
+            "before_steps",
+            "after_steps",
+            "mechanism",
+            "proposed_changes",
+            "assumptions",
+            "validation_questions",
+            "visual_scenes"
+          ],
+          "message": "LGE-R8-REVIEW-752651의 매뉴얼 혼란·청소 후 지속/재발·지원전화는 미확인입니다. 가상 before는 그 자리와 assumptions에 표시하세요. 총 사용은 약3개월이며 1개월은 청소 언급 시점으로 상담정보를 확정하지 말고 고객 확인을 받으세요. 조건별 원인 후보를 진단으로 단정하지 말고 적용 모델·문서·잔수/음식물 조건을 확인하여 해당 조치만 제시하세요. 세제 변경·애벌·배수를 모든 고객의 지원 연결 필수조건으로 만들지 마세요. 세척조 절차는 공식 해당 장을 확인해 연결하고 새 작동법을 만들지 마세요."
+        }
+      ],
+      "repair_budget_and_summary_note": "Recommend only the Comparison and Concept items: two attempts within the existing shared limit, with no reset or extra model call requested. Problem.description actor/order and summaries classification/installer perception remain separately unresolved and require their own authorized correction. This review never marks the whole brief approved."
+    }
+  ],
+  "condition_case_pending": false,
+  "original_public_outputs_immutable": true,
+  "limited_prototype_assessment": "The latest normal and its condition revision complete actual source-based discovery/comparison/concept flows with exact selected source snapshots and a verified revision parent. They support a supervised first prototype test of source inspection, conditions and draft handoff. Actor/history/duration errors, conditional operating guidance and sentiment classification remain unapproved; do not present either output as a validated medical persona, safe complete operating guide, diagnosed cause or approved market insight.",
+  "paired_case_comparison": {
+    "normal_run_id": "run-1f83d846191941aea21153897b944ec1",
+    "condition_run_id": "run-754268c6b0cb41bba50c5b8d713332d9",
+    "same_model_manifest_and_transport": true,
+    "same_actual_six_sources": true,
+    "source_facts_exact": true,
+    "revision_parent_exact": true,
+    "normal_constraints_count": 1,
+    "condition_constraints_count": 5,
+    "flow_outcome": "Both complete structurally with two actual calls and no automatic repairs.",
+    "quality_outcome": "Condition response changes the delivery mechanism as requested and removes the medical persona, but preserves actor/order and polarity errors and adds a wrong total-use-duration handoff plus installer-refusal assertion.",
+    "not_controlled_guide_ab": "Neither successful case isolates the compact guide effect relative to the older five-constraint failures. The same guide is used for normal/revision, but goals/constraints differ intentionally.",
+    "minimum_feedback_item_cap": 2,
+    "whole_quality_approved": false,
+    "additional_model_calls_requested": 0
+  }
+}

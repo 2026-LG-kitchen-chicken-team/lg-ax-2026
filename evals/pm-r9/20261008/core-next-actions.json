@@ -1,0 +1,190 @@
+{
+  "schema_version": "1.0",
+  "artifact_kind": "core_follow_up_implementation_actions",
+  "created_date": "2026-10-08",
+  "implementation_status": "proposed_not_implemented",
+  "baseline_commit": "a6da678",
+  "baseline_ci": "Parent reports four CI checks passed; this artifact does not treat CI as semantic-quality approval.",
+  "evidence_review": "compact-guide-live-semantic-review.json",
+  "evidence_review_sha256": "f7d69e6fbd9ac43cd08754c7c7dfd51032b02472df90be37db160f17cb2f55fa",
+  "scope": "Actual public development sources and the latest normal/condition pair. No synthetic reviews, extra model calls, market-frequency approval or alteration of completed outputs.",
+  "model_calls_for_this_artifact": 0,
+  "independent_semantic_quality_verified": false,
+  "common_implementation_constraints": [
+    "ResearchBundle.text/facts/source_id/URL/locator/document version remain immutable; source_facts stays the code-owned exact copy. Derived interpretations belong to a separate private evidence representation, never replace source facts.",
+    "Reuse the pinned StructuredModelClient, existing discover/plan calls, item-local validation and apply_field_patch. Do not add repeated instructions, an unconditional extra critic call or an automatic repair-budget reset.",
+    "Exact quotation/span/schema checks establish provenance, not natural-language entailment. Ambiguous actor, event order, cause, opinion or procedure applicability stays unresolved; do not claim code alone proves meaning.",
+    "Build narrow regression fixtures from the collected real sources. Contract/model-output stubs and deliberately corrupted candidate fields can test boundaries; do not manufacture customer reviews.",
+    "Keep the public PlanningBrief contract stable for the first implementation by projecting internal typed records into existing fields. Coordinate any future public evidence-view schema separately with PM/API/WEB."
+  ],
+  "actions": [
+    {
+      "id": "CORE-NEXT-01",
+      "title": "고객 경험을 관찰·희망·추정과 주체·시간으로 분리",
+      "owner_recommendation": "CORE; PM confirms private evidence/runtime storage boundary",
+      "symptoms": [
+        "배우자의 다리 불편이 구매자의 경험 또는 관절 질환으로 확대됨.",
+        "약1개월의 청소 언급과 총약3개월의 사용 기간이 혼동됨.",
+        "구매 희망을 긍정 사용 결과로 보고 mixed에 넣고, 실제 긍정+당황 후기는 positive-only로 분류함.",
+        "기사가 설치하기 싫어 보였다는 고객 추정이 설치 거부 확정으로 바뀜."
+      ],
+      "user_impact": "잘못된 고객군·사용 이력·후기 분류가 기획 근거와 상담 전달 기록에 들어가며, 정확한 불편과 초기 적응 부담을 놓침.",
+      "implementation_boundary": [
+        "packages/core/src/lgax_core/public_planning.py: discovery schema, summary admission around lines516–565, planning customer context",
+        "New CORE-internal evidence representation/helper; keep source_facts() unchanged"
+      ],
+      "implementation_direction": [
+        "같은 discover 응답 안에서 source_id와 정확 원문 quote/span에 연결된 고객 주장 레코드를 반환: observation / expectation / customer_inference / planning_hypothesis, actor_anchor, event_or_duration_role, approximate_value, order_status, experienced_polarity.",
+        "주체와 관찰 표현은 원문에 고정된 anchor를 사용하고 미확인 지시대명사·의학적 정상화·시간 순서에는 unknown을 보존. 숫자는 단순 값뿐 아니라 총사용/정비언급/기대시간 역할을 함께 묶어 후속 필드에 전달.",
+        "후기 분류는 명시된 실제 만족/불편 레코드를 기반으로 투영하고 구매 기대·별점만으로 positive/mixed를 만들지 않음. 동시에 확인된 긍정·불편은 기존 mixed에 양쪽 표현을 남김.",
+        "원문 일치·출처 역할·enum·수치 역할 일관성은 코드 검증; 의미 해석 자체는 후보 상태이며 모호하면 단정 대신 미확인으로 보존. 원문 전체와 파생 레코드는 분리 저장."
+      ],
+      "deliverables": [
+        "내부 고객 evidence record + discovery 소비/분류 투영",
+        "배우자/기대/고객추정/시간 역할을 원문에 연결하는 실제-source 회귀 검사"
+      ],
+      "acceptance": {
+        "normal": [
+          "752651: 아픈 주체는 배우자로 유지, 약1개월 청소 언급과 총약3개월 사용을 분리, 만족을 새로 만들지 않고 불편 경험으로 분류.",
+          "853593: 편리·건조·성능 만족과 투입 준비에 대한 당황을 함께 유지하여 mixed; 800073 명시적 만족은 positive.",
+          "645400: 일정·사전협의 문제와 반송은 보존하고 기사 의도는 고객의 추정으로 유지."
+        ],
+        "counterexamples": [
+          "752651을 관절 질환/구매자 통증/통증 재발 또는 사용기간1개월로 확정하는 후보는 해당 claim/field 이슈로 남고 승인되지 않음.",
+          "구매 희망이나 별점만 있는 입력을 실제 긍정 경험으로 승격하지 않으며, 실제 긍정이 함께 명시된 다른 실후기는 무조건 negative로 내리지 않음.",
+          "출처 quote/span 불일치·다른 후기 연결·미확인 사건 순서 보간을 거절하고, 정상 source/summary는 그대로 보존."
+        ]
+      },
+      "dependencies": [],
+      "reuses": [
+        "is_customer_source",
+        "existing discovery call and selected actual sources",
+        "exact source_facts",
+        "summary_reference_coverage (coverage only, never classification approval)"
+      ],
+      "evidence": [
+        "CG-N-01",
+        "CG-N-03",
+        "CG-C-01",
+        "CG-C-03",
+        "CG-C-04"
+      ]
+    },
+    {
+      "id": "CORE-NEXT-02",
+      "title": "제품 문서 조치를 조건·적용 범위·순서와 묶어 보존",
+      "owner_recommendation": "CORE; DATA supplies missing official procedure chapter only when acquired",
+      "symptoms": [
+        "실제 공식80–100ml/3초 수치가 출처의 조건·전원 순서 없이 작동 안내로 축약됨.",
+        "세제 변경·애벌세척·배수가 모든 냄새 사례의 필수조치와 고객지원 연결 전제로 바뀜.",
+        "공용 설명서 발췌가 정확 구매모델·당시 버전 또는 이 고객의 원인/해결을 증명하는 것처럼 쓰일 여지가 있음."
+      ],
+      "user_impact": "불필요한 구매·작업을 요구하거나 적용이 확인되지 않은 작동 안내를 제공하고, 미해결 고객의 상담 연결을 지연시킬 수 있음.",
+      "implementation_boundary": [
+        "packages/core/src/lgax_core/public_planning.py: _source_context, official document planning context, comparison/concept admission",
+        "CORE-internal conditional document action helper reused by public_repair._patch_issues"
+      ],
+      "implementation_direction": [
+        "공식 문서의 조건→조치 레코드는 source_id, quote/span, applicability, document_version, coverage, locator, prerequisite, ordered_steps, threshold/comparator/unit, referenced_chapter를 함께 보존. 고객 경험 레코드와 합쳐 하나의 실제 고객 행동으로 만들지 않음.",
+        "작동 안내를 투영하려면 해당 조건과 절차를 함께 전달. 모델/SKU·단위·절차 장이 미확인이면 자세한 안내를 생성하지 않고 공식 발췌/해당 장 확인 경로로 출력.",
+        "출처에 나오는 여러 분기는 해당 조건일 때 선택하는 점검 후보로 구성; 모든 분기를 필수 구매/실행 게이트로 바꾸지 않음. 상담은 미해결·적용 불명·실행 곤란 상태에서도 기록 전달 가능.",
+        "숫자 출처 존재 검사는 유지하고 comparator/행동 순서/적용 범위까지 묶어 검사. 공용 문서 존재만으로 기능 부재·원인·해결·서비스 회복을 승인하지 않음."
+      ],
+      "deliverables": [
+        "조건부 공식 action record + 비교/기획/수리 공통 투영",
+        "실제P49 조건·전원 순서·공용 문서 한계 회귀 검사"
+      ],
+      "acceptance": {
+        "normal": [
+          "실제P49 잔수 조치는 80ml~100ml보다 많을 때, 전원 켜기→전원 버튼3초→취소 선택의 묶음과 공용DUE6/정확SKU 미확인 조건을 보존하거나 원문 참조로 제한.",
+          "물비린내/음식물/장기 미사용/잔수 분기를 점검 가능한 조건으로 제시하고 고객이 실제 해당하는지 확인; 미해결 기록·지원 전달은 실행 불가 상태에도 가능.",
+          "발췌에서 언급만 된 세척조 청소 장은 추가 원문 확인/공식 연결로 남기고 미취득 절차를 만들지 않음."
+        ],
+        "counterexamples": [
+          "수치만 맞지만 초과 조건이나 전원 켜기 순서를 뺀 실행 안내, 다른모델 절차, 단위 미확인 정량 실행 안내는 세부 안내로 승인되지 않음.",
+          "모든 고객에게 세제 구매·애벌세척·배수를 의무화하거나 새 분해/청소 순서를 생성하는 후보는 해당 필드 이슈로 남음.",
+          "설명서 제공/부재를 고객 해결/제품 기능 부재로 변환하지 않으며, 조건이 정확하고 절차가 실제 취득된 정상 안내는 무조건 막지 않음."
+        ]
+      },
+      "dependencies": [],
+      "reuses": [
+        "_source_context scope_metadata preservation",
+        "source role/coverage/document_version/locator",
+        "existing numeric claim_issues",
+        "focused item source context and existing patch validation"
+      ],
+      "evidence": [
+        "CG-N-04",
+        "CG-N-05",
+        "CG-C-02",
+        "CG-C-05"
+      ]
+    },
+    {
+      "id": "CORE-NEXT-03",
+      "title": "기획 전후 장면과 상담 기록을 구조화 근거에서 조립·국소 수리",
+      "owner_recommendation": "CORE; PM/API preserves private audit and existing public projection",
+      "symptoms": [
+        "before_steps/visual.before가 설명서 혼란·분해 청소·청소 후 재발·이전 지원전화 같은 미확인 경험을 추가함.",
+        "scope_caveat와 비교 한계에서는 미확인이라면서 다른 기획 필드에는 같은 이력을 확정함.",
+        "정상 항목을 남기는 수리 경로는 있으나, summary 분류와 모든 표시 필드의 동일 claim 근거가 연결되지 않음."
+      ],
+      "user_impact": "심사 시연과 상담 자료가 실제 후기 대신 만들어낸 고객 경험을 보여주며, 한 필드를 고쳐도 다른 필드에 오독이 남음.",
+      "implementation_boundary": [
+        "packages/core/src/lgax_core/public_planning.py: checked/item_issues, plan rendering, after_steps/visual_scenes/relations projection",
+        "packages/core/src/lgax_core/public_repair.py: validate_feedback, apply_field_patch boundary, affected evidence dependency validation",
+        "Existing private runtime item_issues/repair_outcomes; summary admission/correction boundary"
+      ],
+      "implementation_direction": [
+        "각 표시 claim을 고객 관찰 레코드·조건부 공식 조치·명시적 기획 가정 중 하나에 연결하는 field→claim 의존성 인덱스를 만듦. 실제 before는 관찰만, 새 가상 before/after는 그 자리와 assumptions에서 기획임을 표시.",
+        "상담 정보의 사용 기간·조치 이력은 검증된 customer record에서 조립하고, 확인되지 않은 값은 질문/미확인으로 표시. source_ids는 실제 사용한 레코드 출처에서 계산하며 공식 문서만으로 고객 경험을 인용하지 않음.",
+        "관련 claim이 미확인 또는 수정되면 영향을 받는 필드만 한 번 패치하고 정상 필드/ID/부모/revision/source_facts는 exact보존. 패치 뒤 동일 claim이 comparison·steps·scene에 일관되게 반영됐는지 검사하고 잔존이면 부분/검토필요로 남김.",
+        "summary는 현재 item repair의 불변 영역이므로 새 무제한 모델수리를 만들지 말고 NEXT-01 분류 결과를 별도 검증된 투영 경로로 소비; 실제 변경 전 원 요약/coverage와 private 감사 이력을 보존. 기존 공유수리2회 및 모델4call 한도를 유지."
+      ],
+      "deliverables": [
+        "field/claim dependency map + 관찰/가정 분리 renderer",
+        "최소 Comparison+Concept 수리로 정상항목 불변/잔존 문제 표시를 확인하는 회귀 검사"
+      ],
+      "acceptance": {
+        "normal": [
+          "752651의 원 관찰은 냄새·손세척 전환으로 제시하고 청소 치료 순서는 미확인; 추가 고객지원/매뉴얼 장면은 명시적 가상 기획으로 표시.",
+          "조건 변경은 같은6자료/원문facts/부모를 유지하면서 HW·센서 없이 앱·웹 점검, 고객 확인을 받은 상담기록 전달로 구체화.",
+          "Comparison+Concept 최대2항목 수리는 관련 필드만 변경하고 정상 비교/요약/관계와source_facts는 허용 규칙 밖 변경 없이 보존; 별도 미수리 Problem/summary 이슈는 숨기지 않음."
+        ],
+        "counterexamples": [
+          "가정으로 선언한 사실이 visual.before나 상담 payload에서 다시 관찰로 나타나면 해당 필드 품질 승인 불가.",
+          "부분패치로 총사용기간/대상은 고쳤으나 다른 장면에 잘못된1개월·관절질환·매뉴얼 실패가 남으면 전체승인하지 않고 잔존 field 이슈를 표시.",
+          "불량/실패 patch가 정상 후보 삭제·전체 재생성·source_facts 변경·출처/부모 교체·수리예산 초기화를 유발하지 않음; 원 항목과 실패 기록을 보존."
+        ]
+      },
+      "dependencies": [
+        "CORE-NEXT-01",
+        "CORE-NEXT-02"
+      ],
+      "reuses": [
+        "PublicPlanner.run/repair",
+        "apply_field_patch and validate_feedback",
+        "native item-level schema recovery",
+        "shared CorrectionBudget",
+        "source_facts/private trace/public projection"
+      ],
+      "evidence": [
+        "CG-N-01",
+        "CG-N-02",
+        "CG-C-01",
+        "CG-C-02",
+        "CG-C-03",
+        "CG-C-05"
+      ]
+    }
+  ],
+  "implementation_order": "CORE-NEXT-01 and CORE-NEXT-02 can be implemented independently; CORE-NEXT-03 consumes both. Prefer one small private representation and renderer over a rewrite of the legacy agent.",
+  "verification_plan": "First run only the new source-backed boundary/regression tests in the existing fixed zero-auth Docker validator after a pinned commit. A future authorized, finite same-source normal/condition pair can assess semantic effect; no such call is requested or performed by this artifact.",
+  "prototype_limit": "Current draft generation and condition flow are usable for supervised prototype inspection. No complete semantic, market or safe operating-guide approval follows from the passed CI or these proposed tasks.",
+  "original_artifacts_unchanged": {
+    "compact-guide-live-semantic-review.json": "f7d69e6fbd9ac43cd08754c7c7dfd51032b02472df90be37db160f17cb2f55fa",
+    "run-1f83d846191941aea21153897b944ec1.public.json": "4e84728d07aedff38cc30c26f839abce2ae54719e341954f27dff353c79ed3d2",
+    "run-754268c6b0cb41bba50c5b8d713332d9.public.json": "0fd3a2047a7fd884af1c89e6d87ef46e83a446f5b277d18c838876bf63427c1d",
+    "semantic-review.json": "9bbc412a06002c53b4cf3935442a5a8488b869c867167b8d3862b51d223d157f"
+  }
+}
