@@ -1,0 +1,15 @@
+"""Read only three newly corrected installation pages with existing bundled pypdf; no OCR."""
+from pathlib import Path
+from hashlib import sha256
+from datetime import datetime,timezone
+import argparse,json,sys
+p=argparse.ArgumentParser();p.add_argument('--input',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
+sys.path.insert(0,str(a.input/'_lib'));import pypdf
+rows=[]
+for r in json.loads((a.input/'pdf-source-receipt.json').read_text('utf-8')):
+    path=a.input/r['copy_file'];assert sha256(path.read_bytes()).hexdigest()==r['sha256'];doc=pypdf.PdfReader(path)
+    for number in r['requested_physical_pages']:
+        page=doc.pages[number-1];text=page.extract_text(extraction_mode='layout')
+        rows.append({'model':r['model'],'PDF_SHA256':r['sha256'],'document_version':r['document_version'],'physical_page_1_based':number,'PDF_page_label':doc.page_labels[number-1],'page_count':len(doc.pages),'page_width_points':float(page.mediabox.width),'page_height_points':float(page.mediabox.height),'text':text,'text_SHA256':sha256(text.encode()).hexdigest(),'extraction':'pypdf layout text; no OCR and no automatic table graph generated'})
+out={'at_utc':datetime.now(timezone.utc).isoformat(),'pypdf_version':pypdf.__version__,'python_version':sys.version.split()[0],'rows':rows,'pages_read':len(rows),'OCR_model_table_graph_calls':0}
+(a.output/'three-page-text.json').write_bytes(json.dumps(out,ensure_ascii=False,indent=2).encode());print(json.dumps({'pages':len(rows),'pypdf':pypdf.__version__,'source_PDFs_modified':False,'OCR_model_graph':0}))

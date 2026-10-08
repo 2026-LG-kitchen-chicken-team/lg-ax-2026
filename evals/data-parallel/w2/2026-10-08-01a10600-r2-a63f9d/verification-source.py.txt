@@ -1,0 +1,52 @@
+"""Audit only this new source intake against exact retained originals; no model/repo code."""
+from pathlib import Path
+from hashlib import sha256
+from html.parser import HTMLParser
+from datetime import datetime,timezone
+import argparse,json,re,unicodedata,csv
+p=argparse.ArgumentParser();p.add_argument('--input',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args();unit=a.input/'evals/data-parallel/w2/2026-10-08-01a10600-r2-a63f9d';private=a.input/'private-audit-input';checks=[]
+def check(name,value):
+    checks.append({'check':name,'pass':bool(value)});assert value,name
+def load(name):return json.loads((unit/name).read_text('utf-8'))
+def canonical(v):return sha256(json.dumps(v,ensure_ascii=False,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
+class Text(HTMLParser):
+    def __init__(self):super().__init__(convert_charrefs=True);self.parts=[]
+    def handle_data(self,s):self.parts.append(s)
+    def handle_starttag(self,tag,attrs):
+        if tag=='br':self.parts.append('\n')
+def norm(html):
+    x=Text();x.feed(html);return ' '.join(unicodedata.normalize('NFKC',''.join(x.parts)).split())
+dates=load('date-role-inspection.json');csvrows=list(csv.DictReader((unit/'date-role-inspection.csv').open(encoding='utf-8')))
+for r in dates['rows']:
+    raw=(private/(r['page_model']+'-review-list.html')).read_bytes();text=raw.decode('utf-8');loc=r['body_locator'];span=text[loc['char_start']:loc['char_end']]
+    check('review '+r['review_id']+' current HTML and exact original body SHA',sha256(raw).hexdigest()==r['current_HTML_SHA256'] and sha256(norm(span).encode()).hexdigest()==r['body_SHA256'])
+    candidates=list(re.finditer(r'<li\b[^>]*data-review-id="([0-9]+)"[^>]*>',text[:loc['char_start']]))
+    check('review '+r['review_id']+' ID/model DOM and purchase-date label',bool(candidates) and candidates[-1].group(1)==r['review_id'] and ('data-model-id="'+r['listing_model_id']+'"') in candidates[-1].group() and '구매 일자' in norm(text[r['date_label_locator']['char_start']:r['date_label_locator']['char_end']]) and r['displayed_date'].replace('-','.') in norm(text[r['date_label_locator']['char_start']:r['date_label_locator']['char_end']]))
+    check('review '+r['review_id']+' corrected date never becomes posting/purchase-SKU/cohort',r['published_at'] is None and r['actual_purchased_SKU'] is None and r['approved_time_denominator_contribution']==0 and not r['cohort_added'] and any(c['review_id']==r['review_id'] and c['displayed_date']==r['displayed_date'] and c['published_at']=='null' for c in csvrows))
+check('changed kimchi full HTML captures keep identical body identity, not overwrite old SHA',sum(not r['HTML_SHA_same_as_producer'] for r in dates['rows'])==3 and all(r['body_SHA_same_as_producer'] for r in dates['rows']))
+pages=json.loads((private/'three-page-text.json').read_text('utf-8'));manual=load('manual-installation-scope.json')
+for r in manual['pages']:
+    original=next(p for p in pages['rows'] if p['model']==r['model'] and p['physical_page_1_based']==r['physical_page_1_based'])
+    check(r['model']+' page '+str(r['physical_page_1_based'])+' native page SHA/PDF/version preserved',sha256(original['text'].encode()).hexdigest()==r['page_text_sha256'] and original['PDF_SHA256']==r['PDF_sha256'] and original['document_version']==r['document_version'] and original['PDF_page_label']==str(r['printed_page_observed']))
+    check(r['model']+' page '+str(r['physical_page_1_based'])+' short anchors exact source ranges',all(original['text'][s['char_start']:s['char_end']]==s['short_anchor'] and sha256(s['short_anchor'].encode()).hexdigest()==s['anchor_sha256'] for s in r['anchors']))
+check('two corrected common conditions keep SKU/sensor/built-in exception and purchase edition unknown',all(r['exact_purchased_SKU'] is None and r['purchase_time_manual_revision'] is None for r in manual['pages']) and manual['findings'][0]['this_SKU_sensor_presence_confirmed'] is None and manual['findings'][1]['exception_applies_to_ML32WW1'] is None and not manual['findings'][1]['condensation_note_is_installation_permission'])
+pins=load('input-pins.json')
+for pin in pins['public_fixed_inputs']:
+    copy=private/('pin-'+pin['sha256'][:12]+'.json')
+    if not copy.exists():copy=private/Path(pin['path']).name
+    check('fixed input bytes '+Path(pin['path']).name,sha256(copy.read_bytes()).hexdigest()==pin['sha256'])
+receipt=load('source-consumption-inspection.json');web=receipt['WEB_normal_snapshot'];jobpin=next(r for r in pins['public_fixed_inputs'] if r['path'].endswith('run-5ccd95da.job-response.json'));job=json.loads((private/('pin-'+jobpin['sha256'][:12]+'.json')).read_text('utf-8'));result=job['result']
+check('actual WEB normal JSON source bytes/run/brief/canonical-result SHA',jobpin['sha256']==web['source_file_sha256'] and result['run_id']==web['run_id'] and result['brief_id']==web['brief_id'] and canonical(result)==web['result_canonical_sha256'])
+check('actual WEB selection IDs agree with source facts and runtime metadata',set(web['selection'])==set(result['runtime']['user_selected_source_ids'])==set(result['runtime']['selected_source_ids'])==set(r['source_id'] for r in result['source_facts']))
+for r in receipt['joined_frozen_source_metadata']:
+    file='fridge.research-bundle.json' if r['receipt']=='WEB normal snapshot' else 'dishwasher.research-bundle.json';raw=(private/file).read_bytes();pack=json.loads(raw);found=[s for s in pack['sources'] if s['source_id']==r['source_id']]
+    check('source '+r['source_id']+' frozen ID/text/model/version/locator/pack SHA',len(found)==1 and sha256(raw).hexdigest()==r['frozen_pack_sha256'] and sha256(found[0]['text'].encode()).hexdigest()==r['original_text_sha256'] and all(found[0][k]==r[k] for k in ['page_model','purchased_model','document_version','locator','source_type','source_kind']))
+pmids=receipt['PM_hash_matched_selected_source_IDs'];pm_pin=next(r for r in pins['public_fixed_inputs'] if r['path'].endswith('four-source-sha-bindings.json'));pm=json.loads((private/('pin-'+pm_pin['sha256'][:12]+'.json')).read_text('utf-8'))
+for r in pm['runs']:check('PM named-run '+r['run_id']+' selected-ID hash matches frozen list',r['runtime_user_selected_source_ids_sha256']==canonical(pmids) and r['runtime_selected_source_ids_sha256']==canonical(sorted(pmids)) and r['actual_source_facts_sha256']==pm['expected_source_facts_sha256'])
+check('pending26 exact IDs remain absent only from these received selections; other consumption unknown',len(receipt['pending26_source_ID_rows'])==26 and all(r['source_id'] not in pmids+web['selection'] and r['other_runs_or_operating_adoption'] is None for r in receipt['pending26_source_ID_rows']))
+table=load('automatic-table-intake.json');approval=load('approval-intake.json')
+check('missing automatic table graph/approved adapter retains unavailable/null',not table['actual_graph_received'] and not table['approved_adapter_pin_received'] and table['automatic_accuracy'] is None and table['automatic_error_count'] is None)
+check('new dates never enter old cohort/topic/month denominator',not approval['original238_or_development141_modified'] and not approval['approved_topic_pin_received'] and approval['new_candidates_or_cohort_added']==0 and approval['month_or_season_denominator']==0 and approval['ratio'] is None)
+check('new WEB original is not legacy runs or full prompt/changed-response claim',web['run_id'] not in ['run-1f83d846191941aea21153897b944ec1','run-754268c6b0cb41bba50c5b8d713332d9'] and not web['full_input_delivery_confirmed'] and not receipt['WEB_changed_run']['full_response_file_received_here'])
+out={'at_utc':datetime.now(timezone.utc).isoformat(),'scope':'new six date roles/body/locator, new two installation corrections on three native pages, new PM4 reported hash receipts and one actual WEB JSON+12 source joins only','result':'PASS','checks_count':len(checks),'checks':checks,'automatic_table_accuracy':None,'AI_meaning_accuracy':None,'approved_time_ratio':None,'previous_completed_tests_or_models_reexecuted':False,'parent_Done':False}
+(a.output/'verification.json').write_bytes((json.dumps(out,ensure_ascii=False,indent=2)+'\n').encode());print(json.dumps({'result':'PASS','checks':len(checks),'model_OCR_calls':0,'automatic_accuracy':None,'parent_Done':False}))
