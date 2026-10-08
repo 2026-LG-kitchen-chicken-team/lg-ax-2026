@@ -1,0 +1,201 @@
+{
+  "schema_version": "data-w2-condition-review.1",
+  "record": "DATA-W2-01a1100e-r3-96b63eea",
+  "scope": "공식 문서 조건의 수동 독립 검수; 실제 AI 출력 오류나 자동 모델 정확도 검사 아님",
+  "rows": [
+    {
+      "review_id": "I01",
+      "source_ids": [
+        "W2R3-96b63eea-LG-TEST-MODELS"
+      ],
+      "status": "확인",
+      "claim": "페이지 모델과 시험 모델 연결",
+      "finding": "정확 모델 표기를 확인. 구매 SKU·과거 설명서 판본은 미확인."
+    },
+    {
+      "review_id": "I02",
+      "source_ids": [
+        "W2R3-96b63eea-LG-TEST-CONTROLS",
+        "W2R3-96b63eea-LG-TEST-MODELS"
+      ],
+      "status": "확인",
+      "claim": "시험 조건과 시점",
+      "finding": "명시 조건과 두 모델의 시험 시점을 구분."
+    },
+    {
+      "review_id": "I03",
+      "source_ids": [
+        "W2R3-96b63eea-LG-TEST-TIMES"
+      ],
+      "status": "상충",
+      "claim": "광고 배수와 표시 시간비",
+      "finding": "317/115=2.756521739130435; 표시 2.6과 직접 일치하지 않음. 원측정·표기 기준 미확인; 성능 오류 확정 아님.",
+      "calculation": {
+        "numerator_seconds": 317,
+        "denominator_seconds": 115,
+        "ratio": 2.756521739130435,
+        "advertised": 2.6,
+        "difference": 0.15652173913043477
+      }
+    },
+    {
+      "review_id": "I04",
+      "source_ids": [
+        "W2R3-96b63eea-LG-POWER-SCOPE"
+      ],
+      "status": "확인",
+      "claim": "출력 적용 조건",
+      "finding": "단독 동작 제한을 보존."
+    },
+    {
+      "review_id": "I05",
+      "source_ids": [
+        "W2R3-96b63eea-LG-COOKWARE-INDEX",
+        "W2R3-96b63eea-LG-COOKWARE-BOTTOM"
+      ],
+      "status": "확인",
+      "claim": "용기 조건",
+      "finding": "지수의 제조사 기준과 바닥 접촉면 조건을 연결."
+    },
+    {
+      "review_id": "I06",
+      "source_ids": [
+        "W2R3-96b63eea-LG-COOKWARE-CONTROL"
+      ],
+      "status": "확인",
+      "claim": "사용 절차 연결",
+      "finding": "공식 안내·이미지 alt 위치 확인; 실기기 수행 증거 없음."
+    },
+    {
+      "review_id": "I07",
+      "source_ids": [
+        "W2R3-96b63eea-LG-CUTOUT-DIMENSIONS",
+        "W2R3-96b63eea-LG-PRODUCT-DIMENSIONS"
+      ],
+      "status": "확인",
+      "claim": "행별 치수와 축 연결",
+      "finding": "외형과 타공을 별도 행·W-H-D로 기록. 자동 PDF 표 정확도에 포함하지 않음."
+    },
+    {
+      "review_id": "I08",
+      "source_ids": [
+        "W2R3-96b63eea-LG-INSTALLATION-SPACE",
+        "W2R3-96b63eea-LG-DISHWASHER-GAP"
+      ],
+      "status": "확인",
+      "claim": "설치 조건 구분",
+      "finding": "각각의 설치 맥락·측정 끝점을 유지."
+    },
+    {
+      "review_id": "I09",
+      "source_ids": [
+        "W2R3-96b63eea-LG-GENERIC-FAQ",
+        "W2R3-96b63eea-LG-TEST-CONTROLS"
+      ],
+      "status": "미확인",
+      "claim": "서로 다른 배수의 비교 가능성",
+      "finding": "공통 FAQ의 정확 시험 모델·조건이 없어 동등 비교값으로 적용하지 않음."
+    },
+    {
+      "review_id": "S01",
+      "source_ids": [
+        "W2R3-96b63eea-SS-PAGE-GAPS"
+      ],
+      "status": "확인",
+      "claim": "공식 웹 표기의 위치·모델 조건",
+      "finding": "좌우·상단·과거 비교 모델을 분리. 수신 원문 파일 핀은 S03에서 미확인."
+    },
+    {
+      "review_id": "S02",
+      "source_ids": [
+        "W2R3-96b63eea-SS-DEPTH-BASELINE"
+      ],
+      "status": "확인",
+      "claim": "내부 공간 비교의 대상",
+      "finding": "자사 기준 모델 연결 확인; LG 비교의 결과로 적용하지 않음."
+    },
+    {
+      "review_id": "S03",
+      "source_ids": [
+        "W2R3-96b63eea-SS-PAGE-GAPS",
+        "W2R3-96b63eea-SS-DEPTH-BASELINE"
+      ],
+      "status": "미확인",
+      "claim": "경쟁제품 새 HTML·설치 설명서 고정",
+      "finding": "원 HTML 요청 HTTP500; 오류 응답 SHA를 제품 문서 SHA로 사용하지 않음."
+    },
+    {
+      "review_id": "O01",
+      "source_ids": [
+        "W2R3-96b63eea-LG-TEST-CONTROLS",
+        "W2R3-96b63eea-LG-TEST-MODELS",
+        "W2R3-96b63eea-LG-TEST-TIMES",
+        "W2R3-96b63eea-LG-POWER-SCOPE",
+        "W2R3-96b63eea-LG-COOKWARE-INDEX",
+        "W2R3-96b63eea-LG-COOKWARE-BOTTOM",
+        "W2R3-96b63eea-LG-COOKWARE-CONTROL",
+        "W2R3-96b63eea-LG-CUTOUT-DIMENSIONS",
+        "W2R3-96b63eea-LG-PRODUCT-DIMENSIONS",
+        "W2R3-96b63eea-LG-INSTALLATION-SPACE",
+        "W2R3-96b63eea-LG-DISHWASHER-GAP",
+        "W2R3-96b63eea-LG-GENERIC-FAQ"
+      ],
+      "status": "미확인",
+      "claim": "실제 운영 소비 연결",
+      "finding": "이 지역 ID의 실제 run·선택 Source ID·출력 필드가 인수되지 않음. W3 원자료 인수·W1 의미 검수 범위."
+    },
+    {
+      "review_id": "O02",
+      "source_ids": [],
+      "status": "미확인",
+      "claim": "정확 구매 SKU·설명서·사용 경험",
+      "finding": "새 후기·구매일·게시일·구성품·설명서 판본·실기기 측정 근거 없음. 기존 후기 분모 불변."
+    }
+  ],
+  "status_counts": {
+    "확인": 9,
+    "상충": 1,
+    "미확인": 4
+  },
+  "manual_diagnostic_cases": [
+    {
+      "id": "D01",
+      "candidate": "3개 화구가 각각 최대값으로 동시에 동작한다고 해석",
+      "decision": "근거 범위 초과",
+      "source_ids": [
+        "W2R3-96b63eea-LG-POWER-SCOPE"
+      ]
+    },
+    {
+      "id": "D02",
+      "candidate": "타공 치수를 제품 외형으로 연결",
+      "decision": "행·측정 대상 불일치",
+      "source_ids": [
+        "W2R3-96b63eea-LG-CUTOUT-DIMENSIONS",
+        "W2R3-96b63eea-LG-PRODUCT-DIMENSIONS"
+      ]
+    },
+    {
+      "id": "D03",
+      "candidate": "제조사 자사 비교 모델을 LG T876으로 치환",
+      "decision": "제품 ID·비교 대상 불일치",
+      "source_ids": [
+        "W2R3-96b63eea-SS-DEPTH-BASELINE"
+      ]
+    },
+    {
+      "id": "D04",
+      "candidate": "공통 FAQ 배수를 같은 모델·조건의 시험 배수로 채점",
+      "decision": "검증 불가",
+      "source_ids": [
+        "W2R3-96b63eea-LG-GENERIC-FAQ",
+        "W2R3-96b63eea-LG-TEST-CONTROLS"
+      ]
+    }
+  ],
+  "diagnostic_scope": "직접 작성한 잘못된 연결 후보의 수동 대조. 현재 CORE가 이 주장을 출력했다는 관측이나 소프트웨어 거절 검증 아님.",
+  "automatic_table_output_received": false,
+  "automatic_table_accuracy": null,
+  "gold_approved": false,
+  "independent_accuracy_score": null
+}

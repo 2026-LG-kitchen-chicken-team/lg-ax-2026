@@ -1,0 +1,643 @@
+{
+  "schema_version": "data-w2-condition-evidence.1",
+  "record": "DATA-W2-01a1100e-r3-96b63eea",
+  "base_commit": "eab85d48385f965eef48c07a6cdd8f6fd9851c62",
+  "local_ids_are_not_site_or_runtime_ids": true,
+  "scope": "연구 검수 sidecar; 운영 등록·모델 입력 승인 없음",
+  "captures": [
+    {
+      "capture_id": "samsung-rm70-conditions",
+      "requested_url": "https://www.samsung.com/sec/refrigerators/french-door-rm70f63r231-d2c/RM70F63R231/",
+      "final_url": "https://www.samsung.com/sec/refrigerators/french-door-rm70f63r231-d2c/RM70F63R231/",
+      "captured_at": "2026-10-08T10:50:18.5774479Z",
+      "http_status": 500,
+      "received_entity_bytes": 239696,
+      "received_entity_sha256": "fecf8241f1fb95cd633e872cc1f77f0dce339c49d4762874ad4b425d09522396",
+      "hash_basis": "수신 HTTP entity; wire SHA·운영 DB SHA 아님",
+      "content_type": "text/html; charset=UTF-8",
+      "verified_product_document": false,
+      "raw_preserved_privately": true,
+      "raw_public": false
+    },
+    {
+      "capture_id": "lg-bei3hrble-conditions",
+      "requested_url": "https://www.lge.co.kr/product/electric-ranges/bei3hrble?modelId=MD10666831&pdpType=PURCHASE",
+      "final_url": "https://www.lge.co.kr/product/electric-ranges/bei3hrble?modelId=MD10666831&pdpType=PURCHASE",
+      "captured_at": "2026-10-08T10:50:19.4343422Z",
+      "http_status": 200,
+      "received_entity_bytes": 3996831,
+      "received_entity_sha256": "c7514f921ea72ab55e4890bd262e897b93900aeac55049f92a82d889573fe30c",
+      "hash_basis": "수신 HTTP entity; wire SHA·운영 DB SHA 아님",
+      "content_type": "text/html; charset=utf-8",
+      "verified_product_document": true,
+      "raw_preserved_privately": true,
+      "raw_public": false
+    }
+  ],
+  "normalization": "HTMLParser; script/style/template 제외; NFC·공백 정규화. 경로·line/column은 수신 UTF-8 HTML 기준이며 원문 byte offset 아님.",
+  "sources": [
+    {
+      "source_id": "W2R3-96b63eea-LG-TEST-CONTROLS",
+      "capture_id": "lg-bei3hrble-conditions",
+      "document_model": "BEI3HRBLE",
+      "upstream_document_id": "MD10666831",
+      "source_role": "official_product_document",
+      "document_version": "html-sha256:c7514f921ea72ab55e4890bd262e897b93900aeac55049f92a82d889573fe30c",
+      "values": {
+        "water_l": 1,
+        "pan_bottom_cm": 21,
+        "power_w": 3400,
+        "start_c": 25,
+        "target_c": 95
+      },
+      "scope": "제조사 시험 조건",
+      "locators": [
+        {
+          "node_key": "test_controls",
+          "kind": "html_text",
+          "path": "/html[1]/body[1]/div[5]/section[1]/div[4]/div[1]/div[1]/section[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[8]/main[1]/div[1]/div[1]/section[1]/div[1]/div[2]/article[1]/section[1]/dl[1]/span[4]",
+          "line": 30261,
+          "column": 18,
+          "ancestor_ids": [
+            "S:4",
+            "tab-panel-overview",
+            "overview",
+            "rowkhn3wr5f",
+            "colkhn3wr5g",
+            "iw_placeholder1605685870705",
+            "iw_comp1756328453487",
+            "desc-item-txt-pop40_17563284534870"
+          ],
+          "normalized_text_sha256": "cbf81b2fe73ad19e83ce1a554d289a48f3d19e4dd200f5d92df5d7761b4aa168"
+        },
+        {
+          "node_key": "test_method",
+          "kind": "html_text",
+          "path": "/html[1]/body[1]/div[5]/section[1]/div[4]/div[1]/div[1]/section[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[8]/main[1]/div[1]/div[1]/section[1]/div[1]/div[2]/article[1]/section[1]/dl[1]",
+          "line": 30256,
+          "column": 13,
+          "ancestor_ids": [
+            "S:4",
+            "tab-panel-overview",
+            "overview",
+            "rowkhn3wr5f",
+            "colkhn3wr5g",
+            "iw_placeholder1605685870705",
+            "iw_comp1756328453487",
+            "desc-item-txt-pop40_17563284534870"
+          ],
+          "normalized_text_sha256": "a2c861af25e3916ea4fc58c2b7a01627d66a1642efdc06c4da5505c4b3deee3e"
+        }
+      ],
+      "runtime_source_id": null,
+      "runtime_consumed": null,
+      "purchased_sku": null,
+      "manual_revision": null
+    },
+    {
+      "source_id": "W2R3-96b63eea-LG-TEST-MODELS",
+      "capture_id": "lg-bei3hrble-conditions",
+      "document_model": "BEI3HRBLE",
+      "upstream_document_id": "MD10666831",
+      "source_role": "official_product_document",
+      "document_version": "html-sha256:c7514f921ea72ab55e4890bd262e897b93900aeac55049f92a82d889573fe30c",
+      "values": {
+        "induction_model": "BEI3HRBLE",
+        "gas_model": "HB622AB",
+        "test_months": {
+          "induction": "2025-08",
+          "gas": "2021-12"
+        }
+      },
+      "scope": "다른 시험 시점",
+      "locators": [
+        {
+          "node_key": "test_models",
+          "kind": "html_text",
+          "path": "/html[1]/body[1]/div[5]/section[1]/div[4]/div[1]/div[1]/section[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[8]/main[1]/div[1]/div[1]/section[1]/div[1]/div[2]/article[1]/section[1]/dl[1]/span[5]",
+          "line": 30262,
+          "column": 18,
+          "ancestor_ids": [
+            "S:4",
+            "tab-panel-overview",
+            "overview",
+            "rowkhn3wr5f",
+            "colkhn3wr5g",
+            "iw_placeholder1605685870705",
+            "iw_comp1756328453487",
+            "desc-item-txt-pop40_17563284534870"
+          ],
+          "normalized_text_sha256": "40d5820de134ddce4b68c66280d074b3843ed278b4f8ed6c5b3e9e9a662b336d"
+        },
+        {
+          "node_key": "test_times",
+          "kind": "html_text",
+          "path": "/html[1]/body[1]/div[5]/section[1]/div[4]/div[1]/div[1]/section[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[8]/main[1]/div[1]/div[1]/section[1]/div[1]/div[2]/article[1]/section[1]/dl[1]/span[6]",
+          "line": 30263,
+          "column": 18,
+          "ancestor_ids": [
+            "S:4",
+            "tab-panel-overview",
+            "overview",
+            "rowkhn3wr5f",
+            "colkhn3wr5g",
+            "iw_placeholder1605685870705",
+            "iw_comp1756328453487",
+            "desc-item-txt-pop40_17563284534870"
+          ],
+          "normalized_text_sha256": "60163bf79654b03d77fc78a92c6e94d4e9dffdd1ee11f74928101235a50063e4"
+        }
+      ],
+      "runtime_source_id": null,
+      "runtime_consumed": null,
+      "purchased_sku": null,
+      "manual_revision": null
+    },
+    {
+      "source_id": "W2R3-96b63eea-LG-TEST-TIMES",
+      "capture_id": "lg-bei3hrble-conditions",
+      "document_model": "BEI3HRBLE",
+      "upstream_document_id": "MD10666831",
+      "source_role": "official_product_document",
+      "document_version": "html-sha256:c7514f921ea72ab55e4890bd262e897b93900aeac55049f92a82d889573fe30c",
+      "values": {
+        "induction_seconds": 115,
+        "gas_seconds": 317,
+        "advertised_max_ratio": 2.6
+      },
+      "scope": "제조사 표시값",
+      "locators": [
+        {
+          "node_key": "test_times",
+          "kind": "html_text",
+          "path": "/html[1]/body[1]/div[5]/section[1]/div[4]/div[1]/div[1]/section[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[8]/main[1]/div[1]/div[1]/section[1]/div[1]/div[2]/article[1]/section[1]/dl[1]/span[6]",
+          "line": 30263,
+          "column": 18,
+          "ancestor_ids": [
+            "S:4",
+            "tab-panel-overview",
+            "overview",
+            "rowkhn3wr5f",
+            "colkhn3wr5g",
+            "iw_placeholder1605685870705",
+            "iw_comp1756328453487",
+            "desc-item-txt-pop40_17563284534870"
+          ],
+          "normalized_text_sha256": "60163bf79654b03d77fc78a92c6e94d4e9dffdd1ee11f74928101235a50063e4"
+        }
+      ],
+      "runtime_source_id": null,
+      "runtime_consumed": null,
+      "purchased_sku": null,
+      "manual_revision": null
+    },
+    {
+      "source_id": "W2R3-96b63eea-LG-POWER-SCOPE",
+      "capture_id": "lg-bei3hrble-conditions",
+      "document_model": "BEI3HRBLE",
+      "upstream_document_id": "MD10666831",
+      "source_role": "official_product_document",
+      "document_version": "html-sha256:c7514f921ea72ab55e4890bd262e897b93900aeac55049f92a82d889573fe30c",
+      "values": {
+        "power_w": 3400,
+        "burner": "right_large",
+        "mode": "turbo",
+        "single_burner_required": true,
+        "actual_environment_may_differ": true
+      },
+      "scope": "단독 화구 조건",
+      "locators": [
+        {
+          "node_key": "power_scope",
+          "kind": "html_text",
+          "path": "/html[1]/body[1]/div[5]/section[1]/div[4]/div[1]/div[1]/section[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[8]/main[1]/div[1]/div[1]/section[1]/div[1]/div[2]/article[1]/section[1]/dl[1]/span[8]",
+          "line": 30265,
+          "column": 18,
+          "ancestor_ids": [
+            "S:4",
+            "tab-panel-overview",
+            "overview",
+            "rowkhn3wr5f",
+            "colkhn3wr5g",
+            "iw_placeholder1605685870705",
+            "iw_comp1756328453487",
+            "desc-item-txt-pop40_17563284534870"
+          ],
+          "normalized_text_sha256": "61e9e4c287a63c9b27449ea692ca69b40f289e9a559d350cec0cf1e7b331fc52"
+        },
+        {
+          "node_key": "actual_environment",
+          "kind": "html_text",
+          "path": "/html[1]/body[1]/div[5]/section[1]/div[4]/div[1]/div[1]/section[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[8]/main[1]/div[1]/div[1]/section[1]/div[1]/div[2]/article[1]/section[1]/dl[1]/span[7]",
+          "line": 30264,
+          "column": 18,
+          "ancestor_ids": [
+            "S:4",
+            "tab-panel-overview",
+            "overview",
+            "rowkhn3wr5f",
+            "colkhn3wr5g",
+            "iw_placeholder1605685870705",
+            "iw_comp1756328453487",
+            "desc-item-txt-pop40_17563284534870"
+          ],
+          "normalized_text_sha256": "525de96e54d99f1ff51721a60853066261b991b9324f94c4817a51a8fb81ab1a"
+        }
+      ],
+      "runtime_source_id": null,
+      "runtime_consumed": null,
+      "purchased_sku": null,
+      "manual_revision": null
+    },
+    {
+      "source_id": "W2R3-96b63eea-LG-COOKWARE-INDEX",
+      "capture_id": "lg-bei3hrble-conditions",
+      "document_model": "BEI3HRBLE",
+      "upstream_document_id": "MD10666831",
+      "source_role": "official_product_document",
+      "document_version": "html-sha256:c7514f921ea72ab55e4890bd262e897b93900aeac55049f92a82d889573fe30c",
+      "values": {
+        "scale": [
+          0,
+          10
+        ],
+        "manufacturer_internal_standard": true,
+        "recommended": [
+          9,
+          10
+        ],
+        "low_efficiency": [
+          5,
+          8
+        ],
+        "not_recommended": [
+          0,
+          4
+        ]
+      },
+      "scope": "공인 공통척도 미확인",
+      "locators": [
+        {
+          "node_key": "cookware_index",
+          "kind": "html_text",
+          "path": "/html[1]/body[1]/div[5]/section[1]/div[4]/div[1]/div[1]/section[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[15]/main[1]/div[1]/div[1]/section[2]/div[1]/div[2]/div[1]/div[2]/div[1]/p[2]",
+          "line": 30699,
+          "column": 14,
+          "ancestor_ids": [
+            "S:4",
+            "tab-panel-overview",
+            "overview",
+            "rowkhn3wr5f",
+            "colkhn3wr5g",
+            "iw_placeholder1605685870705",
+            "iw_comp1756328453489"
+          ],
+          "normalized_text_sha256": "72c62484295f373dfd63c1e66cbdc37adacf6a130235c8e423e5c33a6372d94d"
+        }
+      ],
+      "runtime_source_id": null,
+      "runtime_consumed": null,
+      "purchased_sku": null,
+      "manual_revision": null
+    },
+    {
+      "source_id": "W2R3-96b63eea-LG-COOKWARE-BOTTOM",
+      "capture_id": "lg-bei3hrble-conditions",
+      "document_model": "BEI3HRBLE",
+      "upstream_document_id": "MD10666831",
+      "source_role": "official_product_document",
+      "document_version": "html-sha256:c7514f921ea72ab55e4890bd262e897b93900aeac55049f92a82d889573fe30c",
+      "values": {
+        "magnetic_flat_round_bottom_required": true,
+        "bottom_diameter_cm": {
+          "large": [
+            19,
+            22
+          ],
+          "medium": [
+            16,
+            18
+          ],
+          "small": [
+            14,
+            15
+          ]
+        }
+      },
+      "scope": "바닥 자성 접촉면",
+      "locators": [
+        {
+          "node_key": "cookware_bottom",
+          "kind": "html_text",
+          "path": "/html[1]/body[1]/div[5]/section[1]/div[4]/div[1]/div[1]/section[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[15]/main[1]/div[1]/div[1]/section[2]/div[1]/div[2]/div[1]/div[2]/div[5]/div[1]/span[1]",
+          "line": 30728,
+          "column": 15,
+          "ancestor_ids": [
+            "S:4",
+            "tab-panel-overview",
+            "overview",
+            "rowkhn3wr5f",
+            "colkhn3wr5g",
+            "iw_placeholder1605685870705",
+            "iw_comp1756328453489"
+          ],
+          "normalized_text_sha256": "b8ff4b7d265a5652fad148e1f7a90730db3f5e2766d18985212d7793471d3fff"
+        }
+      ],
+      "runtime_source_id": null,
+      "runtime_consumed": null,
+      "purchased_sku": null,
+      "manual_revision": null
+    },
+    {
+      "source_id": "W2R3-96b63eea-LG-COOKWARE-CONTROL",
+      "capture_id": "lg-bei3hrble-conditions",
+      "document_model": "BEI3HRBLE",
+      "upstream_document_id": "MD10666831",
+      "source_role": "official_product_document",
+      "document_version": "html-sha256:c7514f921ea72ab55e4890bd262e897b93900aeac55049f92a82d889573fe30c",
+      "values": {
+        "control_hold_seconds_minimum": 3,
+        "display_wait_seconds_approximate": 5
+      },
+      "scope": "제조사 사용 안내",
+      "locators": [
+        {
+          "node_key": "cookware_control",
+          "kind": "image_alt",
+          "path": "/html[1]/body[1]/div[5]/section[1]/div[4]/div[1]/div[1]/section[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[15]/main[1]/div[1]/div[1]/section[2]/div[1]/div[2]/div[1]/div[2]/div[4]/img[1]/@alt",
+          "line": 30724,
+          "column": 14,
+          "ancestor_ids": [
+            "S:4",
+            "tab-panel-overview",
+            "overview",
+            "rowkhn3wr5f",
+            "colkhn3wr5g",
+            "iw_placeholder1605685870705",
+            "iw_comp1756328453489"
+          ],
+          "normalized_text_sha256": "c953098ddeb10e20cbd8481087278c7fe6e3a141725c4b59230f306bbaf0fd49"
+        }
+      ],
+      "runtime_source_id": null,
+      "runtime_consumed": null,
+      "purchased_sku": null,
+      "manual_revision": null
+    },
+    {
+      "source_id": "W2R3-96b63eea-LG-CUTOUT-DIMENSIONS",
+      "capture_id": "lg-bei3hrble-conditions",
+      "document_model": "BEI3HRBLE",
+      "upstream_document_id": "MD10666831",
+      "source_role": "official_product_document",
+      "document_version": "html-sha256:c7514f921ea72ab55e4890bd262e897b93900aeac55049f92a82d889573fe30c",
+      "values": {
+        "axis_order": "W-H-D",
+        "mm": [
+          560,
+          65,
+          480
+        ]
+      },
+      "scope": "타공 치수",
+      "locators": [
+        {
+          "node_key": "cutout_dimensions",
+          "kind": "html_text",
+          "path": "/html[1]/body[1]/div[5]/section[1]/div[6]/section[1]/div[1]/div[2]/div[4]/ul[1]/li[3]/dl[1]/div[1]",
+          "line": 31778,
+          "column": 2975,
+          "ancestor_ids": [
+            "S:4",
+            "tab-panel-spec",
+            "pdp-pc-specs-more"
+          ],
+          "normalized_text_sha256": "47f4c38b8088eb21a85fec5b8c2380b31f4d7fb8ded87107f7504e65cf595f1f"
+        }
+      ],
+      "runtime_source_id": null,
+      "runtime_consumed": null,
+      "purchased_sku": null,
+      "manual_revision": null
+    },
+    {
+      "source_id": "W2R3-96b63eea-LG-PRODUCT-DIMENSIONS",
+      "capture_id": "lg-bei3hrble-conditions",
+      "document_model": "BEI3HRBLE",
+      "upstream_document_id": "MD10666831",
+      "source_role": "official_product_document",
+      "document_version": "html-sha256:c7514f921ea72ab55e4890bd262e897b93900aeac55049f92a82d889573fe30c",
+      "values": {
+        "axis_order": "W-H-D",
+        "mm": [
+          575,
+          59,
+          515
+        ]
+      },
+      "scope": "제품 외형",
+      "locators": [
+        {
+          "node_key": "product_dimensions",
+          "kind": "html_text",
+          "path": "/html[1]/body[1]/div[5]/section[1]/div[6]/section[1]/div[1]/div[2]/div[4]/ul[1]/li[3]/dl[1]",
+          "line": 31778,
+          "column": 2971,
+          "ancestor_ids": [
+            "S:4",
+            "tab-panel-spec",
+            "pdp-pc-specs-more"
+          ],
+          "normalized_text_sha256": "1a2f19876753f4098249ed08fab81cc605ce69b2635891c28b066afe1e45a59f"
+        }
+      ],
+      "runtime_source_id": null,
+      "runtime_consumed": null,
+      "purchased_sku": null,
+      "manual_revision": null
+    },
+    {
+      "source_id": "W2R3-96b63eea-LG-INSTALLATION-SPACE",
+      "capture_id": "lg-bei3hrble-conditions",
+      "document_model": "BEI3HRBLE",
+      "upstream_document_id": "MD10666831",
+      "source_role": "official_product_document",
+      "document_version": "html-sha256:c7514f921ea72ab55e4890bd262e897b93900aeac55049f92a82d889573fe30c",
+      "values": {
+        "installation_space_mm": 65,
+        "axis_mapping_confirmed": false
+      },
+      "scope": "안내의 깊이 표현·타공 H 구분",
+      "locators": [
+        {
+          "node_key": "installation_space",
+          "kind": "html_text",
+          "path": "/html[1]/body[1]/div[5]/section[1]/div[4]/div[1]/div[1]/section[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[21]/main[1]/div[1]/div[1]/section[2]/div[1]/div[2]/div[1]/div[2]/div[3]/div[1]/span[4]",
+          "line": 31061,
+          "column": 19,
+          "ancestor_ids": [
+            "S:4",
+            "tab-panel-overview",
+            "overview",
+            "rowkhn3wr5f",
+            "colkhn3wr5g",
+            "iw_placeholder1605685870705",
+            "iw_comp1756328453493"
+          ],
+          "normalized_text_sha256": "7ef2feddd02d50af015e2d0fb45e7413d8516089d0546e7ea5fafd00c994c5ea"
+        }
+      ],
+      "runtime_source_id": null,
+      "runtime_consumed": null,
+      "purchased_sku": null,
+      "manual_revision": null
+    },
+    {
+      "source_id": "W2R3-96b63eea-LG-DISHWASHER-GAP",
+      "capture_id": "lg-bei3hrble-conditions",
+      "document_model": "BEI3HRBLE",
+      "upstream_document_id": "MD10666831",
+      "source_role": "official_product_document",
+      "document_version": "html-sha256:c7514f921ea72ab55e4890bd262e897b93900aeac55049f92a82d889573fe30c",
+      "values": {
+        "gap_mm": 75,
+        "endpoint": "electric_range_bottom_to_dishwasher",
+        "same_brand_serial_installation_context": "LG-LG",
+        "case_may_be_needed": true
+      },
+      "scope": "연속 설치 조건",
+      "locators": [
+        {
+          "node_key": "dishwasher_gap",
+          "kind": "html_text",
+          "path": "/html[1]/body[1]/div[5]/section[1]/div[4]/div[1]/div[1]/section[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[21]/main[1]/div[1]/div[1]/section[2]/div[1]/div[2]/div[1]/div[2]/div[3]/div[1]/span[6]",
+          "line": 31063,
+          "column": 19,
+          "ancestor_ids": [
+            "S:4",
+            "tab-panel-overview",
+            "overview",
+            "rowkhn3wr5f",
+            "colkhn3wr5g",
+            "iw_placeholder1605685870705",
+            "iw_comp1756328453493"
+          ],
+          "normalized_text_sha256": "9074f2d7c84c1d983cd273b41f383c27449143cef6c00e7c3ccbe07de467b284"
+        },
+        {
+          "node_key": "installation_context",
+          "kind": "html_text",
+          "path": "/html[1]/body[1]/div[5]/section[1]/div[4]/div[1]/div[1]/section[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[21]/main[1]/div[1]/div[1]/section[2]/div[1]/div[2]/div[1]/div[2]/div[3]/div[1]",
+          "line": 31056,
+          "column": 14,
+          "ancestor_ids": [
+            "S:4",
+            "tab-panel-overview",
+            "overview",
+            "rowkhn3wr5f",
+            "colkhn3wr5g",
+            "iw_placeholder1605685870705",
+            "iw_comp1756328453493"
+          ],
+          "normalized_text_sha256": "294a48d33c9283ea88938a145b66589b8325e34e68d61b26fc181210c8f7a0ea"
+        }
+      ],
+      "runtime_source_id": null,
+      "runtime_consumed": null,
+      "purchased_sku": null,
+      "manual_revision": null
+    },
+    {
+      "source_id": "W2R3-96b63eea-LG-GENERIC-FAQ",
+      "capture_id": "lg-bei3hrble-conditions",
+      "document_model": "BEI3HRBLE",
+      "upstream_document_id": "MD10666831",
+      "source_role": "official_product_document",
+      "document_version": "html-sha256:c7514f921ea72ab55e4890bd262e897b93900aeac55049f92a82d889573fe30c",
+      "values": {
+        "advertised_max_ratio": 2.3,
+        "exact_test_model": null,
+        "matching_test_controls_confirmed": false
+      },
+      "scope": "공통 FAQ와 모델시험 분리",
+      "locators": [
+        {
+          "node_key": "generic_faq",
+          "kind": "html_text",
+          "path": "/html[1]/body[1]/div[5]/section[1]/section[2]/div[1]/div[2]/div[1]/div[3]/div[1]/div[1]/p[1]",
+          "line": 31874,
+          "column": 2796,
+          "ancestor_ids": [
+            "S:4",
+            "radix-:R1768tjsveqfcq:"
+          ],
+          "normalized_text_sha256": "6f3bbd7c11fa8202dd31d9a2d152131b8f31b9d3ee8e46180d430e8212236d9d"
+        }
+      ],
+      "runtime_source_id": null,
+      "runtime_consumed": null,
+      "purchased_sku": null,
+      "manual_revision": null
+    }
+  ],
+  "samsung_web_observations": {
+    "url": "https://www.samsung.com/sec/refrigerators/french-door-rm70f63r231-d2c/RM70F63R231/",
+    "original_entity_pin_received": false,
+    "failed_entity_is_not_product_document": true,
+    "document_revision": null,
+    "rows": [
+      {
+        "source_id": "W2R3-96b63eea-SS-PAGE-GAPS",
+        "locator": "제품페이지 설치 섹션·영상 설명(웹 추출 245~253행)",
+        "values": {
+          "side_mm_each": 4,
+          "top_mm_illustrated": 20,
+          "top_basis": "manufacturer_video_description",
+          "legacy_model": "RF60DB9KF2AP",
+          "legacy_side_mm_each": 12,
+          "legacy_top_mm": 47
+        },
+        "status": "공식 웹 표시 확인; 실제 HTML·설치 설명서 핀 미확인"
+      },
+      {
+        "source_id": "W2R3-96b63eea-SS-DEPTH-BASELINE",
+        "locator": "제품페이지 내부공간 각주(웹 추출 315~330행)",
+        "values": {
+          "reference_model": "RF60DB9KF2AP",
+          "fridge_depth_mm": 551,
+          "claimed_fridge_depth_increase_mm": 49.5
+        },
+        "status": "자사 비교 대상 확인; LG T876 비교·팔 도달 실측 미확인"
+      }
+    ],
+    "observation_recorded_at": "2026-10-08T10:57:35Z"
+  },
+  "reuse": [
+    {
+      "issue": 235,
+      "source_commit": "eab85d48385f965eef48c07a6cdd8f6fd9851c62",
+      "path": "data/research/r8-public-research-20261007/competitors/01a114f6/comparison.json",
+      "status": "기존 비교 값·한계 재사용; 검증 스크립트 재실행0"
+    },
+    {
+      "pr": 282,
+      "source_commit": "ce4032c3a72abc863f6dde16f9948abe1b1df0fc",
+      "status": "김치냉장고·광파오븐 설명서 후보·조건 검수 재사용"
+    },
+    {
+      "pr": 295,
+      "source_commit": "1cd994e0865cacf94ad1d6f60c6e781d998d4215",
+      "status": "공식 모델 목록 연결 재사용"
+    }
+  ],
+  "restrictions": {
+    "model_calls": 0,
+    "ocr_calls": 0,
+    "operating_api_calls": 0,
+    "server_start_restart": 0,
+    "legacy_225_or_11_reruns": 0,
+    "manual_ci_reruns": 0,
+    "mail_sends": 0
+  }
+}
