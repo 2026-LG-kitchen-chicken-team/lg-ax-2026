@@ -1,0 +1,91 @@
+{
+  "id": "DATA-W2-01a108a8-7b67e6",
+  "base_commit": "eab85d48385f965eef48c07a6cdd8f6fd9851c62",
+  "automations_global_and_four_members": "OFF",
+  "model_execution": {
+    "calls": 0,
+    "model_id": null,
+    "model_config_pin": null,
+    "request_input": null,
+    "response_output": null,
+    "failure": null,
+    "reason": "User forbids model/OCR reruns in DATA W2; no shared model endpoint probe made."
+  },
+  "OCR_calls": 0,
+  "existing_collector_runs": 0,
+  "product_or_adapter_code_runs": 0,
+  "DB_API_ZIP_or_independent_evaluation_audit": false,
+  "public_HTTP_GETs": 6,
+  "source_inputs": "input-pins.json",
+  "static_attempts": [
+    {
+      "attempt": 1,
+      "passed": true,
+      "checks": 1101,
+      "private_original_result_and_source_preserved": true,
+      "execution_source_sha256": "b8b31b2480190b6a91b8b63833a02dde529e857b858908b520202d1643d06151",
+      "change_after_attempt": "Refine the 5 non-numeric footnote axes from a blanket match to 미확인; automatic output remains 검증 불가."
+    },
+    {
+      "attempt": 2,
+      "passed": true,
+      "checks": 1101,
+      "execution_source_sha256": "fa56b47c9f0e26317a2e11776f29f9b637f01ea52870de5453dbaf219778b6e9",
+      "saved_log_sha256": "f85481333d73d014dc19dcd74efb0edef50a4eee29b8ee1adbd2eb53153569ec"
+    }
+  ],
+  "original_failures": [
+    {
+      "step": "managed app worktree",
+      "error": "fatal: invalid reference",
+      "resolution": "Use actual nested LGAX repository for separate CLI worktree; no original checkout reset."
+    },
+    {
+      "step": "immutable PR intake saved path",
+      "error": "Windows long path limit",
+      "resolution": "Preserve partial files and receive fixed head/path/SHA into short hash filenames."
+    },
+    {
+      "step": "additional same-owner reservation",
+      "observed_at": "2026-10-08T02:28:40.969018+00:00",
+      "exit_code": 1,
+      "error": "{\"ok\": false, \"error\": \"controller rejected operation (409): manual work conflicts with an existing running/orphaned owner\"}\n",
+      "resolution": "Read conflict rule; release own initial lease then reserve one own combined scope. Do not release other session leases."
+    },
+    {
+      "step": "parent-process gh name lookup",
+      "error": "WinError 2",
+      "resolution": "Use the verified absolute portable GH executable; no authentication file shared."
+    },
+    {
+      "step": "initial staged diff whitespace check",
+      "exit": 2,
+      "error": "Preserved Windows CRLF CR treated as trailing whitespace",
+      "resolution": "Use the repository immutable-artifact convention -text -whitespace for this new folder only; inspect actual trailing spaces separately and compare staged artifact bytes with executed/source bytes."
+    }
+  ],
+  "own_reservation_lifecycle": [
+    {
+      "action": "release",
+      "reservation_id": "manual-data-w2-01a108a8-7b67e6",
+      "exit_code": 0,
+      "result": {
+        "released": true
+      },
+      "at": "2026-10-08T02:30:16.250889+00:00"
+    },
+    {
+      "action": "reserve",
+      "reservation_id": "manual-data-w2-final-01a108a8-7b67e6",
+      "exit_code": 0,
+      "result": {
+        "reserved": true,
+        "reservation_id": "manual-data-w2-final-01a108a8-7b67e6",
+        "expires_at": 1791430220.1159494
+      },
+      "at": "2026-10-08T02:30:20.221256+00:00"
+    }
+  ],
+  "current_own_reservation_id": "manual-data-w2-final-01a108a8-7b67e6",
+  "release_receipt_location": "Actual release is recorded after publication in #16 and private publication receipt; this file does not predeclare release."
+}
