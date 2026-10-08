@@ -45,6 +45,18 @@ export function selectFilteredSources(sources: ResearchSource[], filters: Resear
 export function koreanSourceLimitations(bundle: ResearchBundle): string[] {
   const manifest = bundle.collection_manifest; const reviews = bundle.sources.filter(source => source.source_type === 'review');
   const limits: string[] = [];
+  if (manifest.purpose === 'new_kitchen_appliance_public_source_intake') {
+    const previews = reviews.filter(source => source.coverage === 'excerpt').length;
+    if (previews && manifest.source_excerpt_count_is_not_independent_review_count === true) {
+      limits.push(`공개 제품 페이지의 후기 미리보기 발췌 ${previews}건입니다. 전체 후기 본문·전체 후기 수와 독립적인 후기 수는 확인되지 않았습니다.`);
+    }
+    const missingOriginalIds = reviews.filter(source => source.metadata?.original_review_id === null).length;
+    if (missingOriginalIds) limits.push(`후기 ${missingOriginalIds}/${reviews.length}건의 사이트 원 후기 ID가 미확인입니다. 화면의 자료 ID는 수집용 식별자이며 사이트 원 후기 ID가 아닙니다.`);
+    if (!reviews.length && bundle.sources.length && bundle.sources.every(source => source.source_role.startsWith('official_'))) {
+      limits.push('고객 후기 0건입니다. 현재 자료는 공식 제품 기능·참고 설명만 포함하며 고객의 불편이나 불편 해결을 확인·승인한 근거가 아닙니다.');
+    }
+    if (manifest.demonstration_approved === false) limits.push('확장 자료는 수집 검토 중이며 시연용 자료 사용은 아직 승인되지 않았습니다.');
+  }
   if (Array.isArray(manifest.limitations) && manifest.limitations.some(item => typeof item === 'string' && /purposive|representative|임의|표본/i.test(item))) {
     limits.push('화면에서 골라 수집한 표본입니다. 전체 시장이나 전체 고객의 불편 발생 비율을 대표하지 않습니다.');
   }

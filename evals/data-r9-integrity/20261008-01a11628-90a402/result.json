@@ -1,0 +1,88 @@
+{
+  "record_id": "DATA-R9-INTEGRITY-20261008-01a11628-90a402",
+  "status": "PASS",
+  "checks": {
+    "checked": 873,
+    "passed": 873
+  },
+  "base_commit": "dc0ccc05916c637b2e0c2cc268a061dfa655c0b7",
+  "audit_code_sha256": "ba197af0a922b346060b6cab63a2a9e08ce15b8feb2ed2ed6f0c56ba8296f0d4",
+  "reused_pr246": {
+    "status": "PASS",
+    "unique_reviews": 238,
+    "producer_head": "6fd98c01b3c6f1abf4741df2130a485142eeeae4",
+    "new_excel_or_db_full_audit": false
+  },
+  "bundles": [
+    {
+      "group": "fridge",
+      "sources": 58,
+      "reviews": 48,
+      "input_sha256": "75423a9844a468ad5e64e9086e43b68649335faf0c7c68b82f3a949ebf6bf4dc",
+      "output_sha256": "523dcf1ec8e4291dc73bd0b51cea0be4765912e9e5b7993cf1d55af389876655",
+      "input_bundle_id": "LGE-D1-D2-fridge-20261007-01a10600-v1",
+      "output_bundle_id": "LGE-R9-fridge-development-20261008-v1"
+    },
+    {
+      "group": "dishwasher",
+      "sources": 73,
+      "reviews": 48,
+      "input_sha256": "e922c51dd7f1f805953fd8e4df4ea1a75479ad8da0e2ba500b541acd720e84d0",
+      "output_sha256": "fbc233a429c6ec1ceeb1571ce509ecad7d9494fe5388a0524fd3e64bfa0639ff",
+      "input_bundle_id": "LGE-D1-D2-dishwasher-20261007-01a10600-v2-care",
+      "output_bundle_id": "LGE-R9-dishwasher-development-20261008-v1"
+    },
+    {
+      "group": "microwave",
+      "sources": 53,
+      "reviews": 45,
+      "input_sha256": "457461ebd8cf13a1be6b171ed1a80802d33ed3b5714118179afef11ce1b87a5d",
+      "output_sha256": "c9cf7d3d9f8853ceaa49c853dafc4a7ae6745508aa6519676a77ba40b9b334ae",
+      "input_bundle_id": "LGE-D1-D2-microwave-20261007-01a10600-v1",
+      "output_bundle_id": "LGE-R9-microwave-development-20261008-v1"
+    }
+  ],
+  "source_count": 184,
+  "development_review_count": 141,
+  "changed_sources": [
+    {
+      "source_id": "D2-DUE-CARE-DW-INTERNAL-CLEAN-P39",
+      "fields": [
+        "/metadata/continuation_pages"
+      ]
+    },
+    {
+      "source_id": "D2-DUE-CARE-DW-TUB-CITRIC-P41",
+      "fields": [
+        "/metadata/continuation_pages"
+      ]
+    },
+    {
+      "source_id": "D2-DUE-CARE-DW-TUB-VINEGAR-P42",
+      "fields": [
+        "/metadata/continuation_pages"
+      ]
+    },
+    {
+      "source_id": "D2-DUE-CARE-DW-NOZZLE-P42",
+      "fields": [
+        "/metadata/continuation_pages"
+      ]
+    },
+    {
+      "source_id": "D2-DUE-CARE-DW-STORAGE-P43",
+      "fields": [
+        "/metadata/continuation_pages"
+      ]
+    }
+  ],
+  "care_native_citations": 14,
+  "manual_reference_citations": 5,
+  "actual_pdf_files": 5,
+  "failures": [],
+  "model_calls": 0,
+  "ocr_calls": 0,
+  "network_calls": 0,
+  "production_writes": 0,
+  "scope": "Immutable input and citation integrity; not runtime/semantic/PM approval"
+}

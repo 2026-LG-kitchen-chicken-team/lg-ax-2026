@@ -117,12 +117,12 @@ class ManualReferenceInputTests(unittest.TestCase):
         cli = importlib.util.module_from_spec(cli_spec)
         cli_spec.loader.exec_module(cli)
         paths = cli.research_bundle_paths()
-        self.assertEqual(len(paths), 8)
-        self.assertEqual(paths[-1], ROOT / adapter.OUTPUT / adapter.MANUAL_REFERENCE_FILE)
-        self.assertEqual(len(set(paths)), 8)
+        self.assertEqual(len(paths), 10)
+        self.assertEqual(paths[7], ROOT / adapter.OUTPUT / adapter.MANUAL_REFERENCE_FILE)
+        self.assertEqual(len(set(paths)), 10)
         workspace = ResearchWorkspace(self.output.parent / "list-only.sqlite3", paths, planner=None)
         rows = workspace.list_bundles()["bundles"]
-        self.assertEqual(len(rows), 8)
+        self.assertEqual(len(rows), 10)
         references = [row for row in rows if row["bundle_id"] == adapter.MANUAL_REFERENCE_ID]
         self.assertEqual(len(references), 1)
         self.assertEqual(references[0]["source_count"], 5)
