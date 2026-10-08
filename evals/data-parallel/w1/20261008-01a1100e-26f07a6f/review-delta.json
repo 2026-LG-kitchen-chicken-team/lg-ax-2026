@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "record_id": "DATA-W1-01a1100e-26f07a6f",
+  "review_kind": "recipient_receipt_and_comparison_scope_delta",
+  "base_commit": "eab85d48385f965eef48c07a6cdd8f6fd9851c62",
+  "previous_w1_head": "0a34871e7a46bc2599cca5dd264877b258ac0178",
+  "independent_final_scorer": false,
+  "approved_accuracy": null,
+  "new_intake": {
+    "core_recipient_statements": 2,
+    "new_model_output_files_received": 0,
+    "new_approved_model_field_values_received": 0,
+    "scope": "CORE statements plus inspected public W1/R9 artifacts; not an exhaustive PM storage search"
+  },
+  "reused_evidence": {
+    "source_pins": 17,
+    "report_findings": 10,
+    "selected_report_excerpts": 23,
+    "source_spans": 44,
+    "verification_owner": "previous W1 plus CORE recipient statement",
+    "rerun_here": false
+  },
+  "runs": [
+    {
+      "run_id": "run-1f83d846191941aea21153897b944ec1",
+      "revision_declared": 0,
+      "declared_output_sha256": "4e84728d07aedff38cc30c26f839abce2ae54719e341954f27dff353c79ed3d2",
+      "actual_output_sha256": null,
+      "original_input_sha256": null,
+      "generation_commit": null,
+      "model_native_receipt": null,
+      "all_call_usage": null,
+      "all_failures_retries": null,
+      "parent_link_verified": null,
+      "full_output_semantic_verdict": null,
+      "constraints_count_declared": 1,
+      "recipient_scope": "CORE reported not received; PM existing storage location unconfirmed"
+    },
+    {
+      "run_id": "run-754268c6b0cb41bba50c5b8d713332d9",
+      "revision_declared": 1,
+      "declared_output_sha256": "0fd3a2047a7fd884af1c89e6d87ef46e83a446f5b277d18c838876bf63427c1d",
+      "actual_output_sha256": null,
+      "original_input_sha256": null,
+      "generation_commit": null,
+      "model_native_receipt": null,
+      "all_call_usage": null,
+      "all_failures_retries": null,
+      "parent_run_declared": "run-1f83d846191941aea21153897b944ec1",
+      "parent_brief_declared": "brief-fe7412d6635c4822988f8d42ae6acddc",
+      "parent_link_verified": null,
+      "full_output_semantic_verdict": null,
+      "constraints_count_declared": 5,
+      "recipient_scope": "CORE reported not received; PM existing storage location unconfirmed"
+    }
+  ],
+  "confirmations": [
+    {
+      "id": "RECEIPT-01",
+      "status": "확인",
+      "subject": "CORE received previous PR279 source-linked diagnostic artifacts",
+      "basis_comment": 6051149074,
+      "limit": "Not raw model JSON receipt, quality approval, independent scoring or PM acceptance."
+    },
+    {
+      "id": "RECEIPT-02",
+      "status": "확인",
+      "subject": "CORE states no current two-run, seven-input-pair or four-query AI-output intake",
+      "basis_comment": 6051070034,
+      "limit": "Recipient's holdings only; not a PM-wide non-generation determination."
+    },
+    {
+      "id": "SOURCE-01",
+      "status": "확인",
+      "subject": "Seven reused PR279 reference files match their pinned Git blobs in remote PR file metadata",
+      "limit": "File-source identity; no model output or new source-span experiment."
+    }
+  ],
+  "conflicting_substitutions": [
+    {
+      "id": "SUB-01",
+      "status": "상충",
+      "offered_substitute": "Two current public R9 runs as canonical seven synthetic input pairs",
+      "reason": "The two inspected R9 runs use six public selected sources, while seven candidate inputs are different synthetic case/model/document identities with 1/2/3 sources; paired Agent/baseline original outputs were not received.",
+      "eligible": false,
+      "actual_runtime_product_version_error": null
+    },
+    {
+      "id": "SUB-02",
+      "status": "상충",
+      "offered_substitute": "Normal/condition revision as controlled same-conditions Agent/general-LLM A/B",
+      "reason": "The declared normal constraints count is 1, condition revision is 5; the method pair is not received. Revision behavior can be reviewed separately.",
+      "eligible": false,
+      "actual_runtime_product_version_error": null
+    },
+    {
+      "id": "SUB-03",
+      "status": "상충",
+      "offered_substitute": "Historical six legacy/synthetic cases or saved retrieval ranks as current output",
+      "reason": "CORE explicitly reports other input/schema/version, and retrieval/policy disposition is not an AI answer/hold/question.",
+      "eligible": false,
+      "actual_runtime_product_version_error": null
+    }
+  ],
+  "same_seven": {
+    "case_count_from_public_metadata": 7,
+    "group_count": 6,
+    "source_kind": "synthetic",
+    "public_metadata_commit": "d5d33c46a5f27d7ccd805713c784ec4c9f0ace55",
+    "existing_original_output_intake": 0,
+    "verified_matching_pairs": 0,
+    "complete_input_delivery_verified": null,
+    "whole_attempt_usage": null,
+    "approved_score": null,
+    "case_ids": [
+      "NEW-R5-NORMAL",
+      "NEW-R5-DUPLICATE-FEATURE",
+      "NEW-R5-MODEL-VERSION-CONFUSION",
+      "NEW-R5-CONFLICTING-REVIEWS",
+      "NEW-R5-MISSING-EVIDENCE",
+      "NEW-R5-SPECIFICATION-CHANGE",
+      "NEW-R5-SPECIFICATION-CHANGE-BEFORE"
+    ]
+  },
+  "no_gold_queries": [
+    {
+      "query_id": "FR-04",
+      "status": "미확인",
+      "existing_ai_answer_received": false,
+      "existing_ai_hold_or_question_received": false,
+      "original_output_sha256": null,
+      "ai_semantic_verdict": null,
+      "approved_accuracy": null,
+      "source_diagnostic_reused_from_pr": 279
+    },
+    {
+      "query_id": "FR-05",
+      "status": "미확인",
+      "existing_ai_answer_received": false,
+      "existing_ai_hold_or_question_received": false,
+      "original_output_sha256": null,
+      "ai_semantic_verdict": null,
+      "approved_accuracy": null,
+      "source_diagnostic_reused_from_pr": 279
+    },
+    {
+      "query_id": "DW-05",
+      "status": "미확인",
+      "existing_ai_answer_received": false,
+      "existing_ai_hold_or_question_received": false,
+      "original_output_sha256": null,
+      "ai_semantic_verdict": null,
+      "approved_accuracy": null,
+      "source_diagnostic_reused_from_pr": 279
+    },
+    {
+      "query_id": "MW-05",
+      "status": "미확인",
+      "existing_ai_answer_received": false,
+      "existing_ai_hold_or_question_received": false,
+      "original_output_sha256": null,
+      "ai_semantic_verdict": null,
+      "approved_accuracy": null,
+      "source_diagnostic_reused_from_pr": 279
+    }
+  ],
+  "scoring_decisions_owner": "PM: Gold approval, independence approval and final independent scorer",
+  "contacts": {
+    "mail_owner": "W3",
+    "email_send_count": 0,
+    "existing_intake_request": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/15#issuecomment-6050694450",
+    "duplicate_request_count": 0
+  },
+  "execution_limits": {
+    "new_model_calls": 0,
+    "ocr_reruns": 0,
+    "completed_225_experiments_rerun": 0,
+    "completed_11_rescore_rerun": 0,
+    "producer_54_file_44_span_audit_rerun": 0,
+    "new_product_tests": 0,
+    "db_api_mcp_calls": 0,
+    "server_start_or_restart": 0,
+    "existing_file_edits": 0,
+    "personal_readme_edits": 0,
+    "other_window_file_edits": 0
+  },
+  "next_one": "Receive one existing run's approved source-ID plus exact output field path/value or raw JSON through the existing W3 intake; review that received scope before waiting for whole usage/Gold/ZIP packet."
+}
