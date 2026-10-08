@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from collections import Counter
 from copy import deepcopy
+from itertools import pairwise
 
 from jsonschema import Draft202012Validator
 from lgax_contracts.research import validate_research_bundle
@@ -142,7 +143,7 @@ class PublicEvidence:
                 codes.append("order_requires_explicit_anchor")
         else:
             steps = row["ordered_steps"]
-            if any(left["end"] > right["start"] for left, right in zip(steps, steps[1:])):
+            if any(left["end"] > right["start"] for left, right in pairwise(steps)):
                 codes.append("procedure_order_not_source_order")
         return codes
 

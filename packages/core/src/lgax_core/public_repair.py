@@ -11,7 +11,11 @@ from copy import deepcopy
 from uuid import uuid4
 
 from jsonschema import Draft202012Validator, ValidationError
-from lgax_contracts.research import load_research_schema, validate_planning_brief, validate_research_bundle
+from lgax_contracts.research import (
+    load_research_schema,
+    validate_planning_brief,
+    validate_research_bundle,
+)
 
 from .errors import DomainError
 from .model_client import StructuredModelResult
@@ -301,8 +305,8 @@ def repair_public_brief(model_caller, bundle: dict, previous: dict, feedback: li
         result["runtime"]["summary_projection_applied"] = False
         # An unmapped or separately reported meaning issue cannot be cleared by
         # repairing two fields. The previous report is retained, not certified.
-        if residual or result["runtime"]["inherited_item_issues"] or evidence.audit["issues"]:
-            if result["status"] != "needs_sources":
-                result["status"] = "partial"
+        if ((residual or result["runtime"]["inherited_item_issues"] or evidence.audit["issues"])
+                and result["status"] != "needs_sources"):
+            result["status"] = "partial"
     validate_planning_brief(result)
     return result

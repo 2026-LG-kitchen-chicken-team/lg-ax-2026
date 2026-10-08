@@ -8,7 +8,11 @@ import unittest
 from copy import deepcopy
 from pathlib import Path
 
-from lgax_core.public_evidence import HYPOTHESIS_LABEL, PublicEvidence, affected_feedback
+from lgax_core.public_evidence import (
+    HYPOTHESIS_LABEL,
+    PublicEvidence,
+    affected_feedback,
+)
 from lgax_core.public_planning import PublicPlanner, source_facts
 from lgax_core.public_repair import repair_public_brief
 from test_public_repair import MANUAL, observed_draft
