@@ -146,7 +146,8 @@ export function documentVersionView(source: ResearchSource): { label: string; va
     : { label: '문서판', value, note: null };
 }
 export function researchGroupLabel(group: string): string {
-  return ({ fridge: '냉장고', microwave: '전자레인지', dishwasher: '식기세척기' } as Record<string, string>)[group] ?? group;
+  return ({ fridge: '냉장고', microwave: '전자레인지', dishwasher: '식기세척기',
+    kimchi_refrigerator: '김치냉장고', lightwave_oven: '광파오븐' } as Record<string, string>)[group] ?? group;
 }
 export function researchScopeLabel(scope: ResearchBundle['analysis_scope']): string { return scope === 'exact_model' ? '정확 모델 분석' : '제품군 탐색'; }
 export function filterResearchSources(sources: ResearchSource[], query: string, type: ResearchSource['source_type'] | 'all'): ResearchSource[] {
