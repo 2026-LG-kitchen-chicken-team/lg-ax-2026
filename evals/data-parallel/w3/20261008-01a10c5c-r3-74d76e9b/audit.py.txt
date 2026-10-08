@@ -1,0 +1,135 @@
+import ast
+import csv
+import hashlib
+import json
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[3]
+INPUTS = ROOT / 'inputs'
+pins = json.loads((HERE / 'source-pins.json').read_bytes())
+sources = {}
+for pin in pins['git_files']:
+    raw = (INPUTS / pin['audit_input']).read_bytes()
+    assert len(raw) == pin['bytes'], pin['id']
+    assert hashlib.sha256(raw).hexdigest() == pin['sha256'], pin['id']
+    assert hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest() == pin['git_blob'], pin['id']
+    sources[pin['id']] = raw
+assert len(sources) == 30
+for pin in pins['native_comments']:
+    value = json.loads((INPUTS / 'comments' / (str(pin['id']) + '.json')).read_bytes())
+    assert value['user']['login'] == pin['actor'] == 'unknownamed'
+    assert value['id'] == pin['id'] and value['html_url'] == pin['url']
+    assert value['created_at'] == pin['created_at'] and value['updated_at'] == pin['updated_at']
+    assert len(value['body'].encode()) == pin['body_utf8_bytes']
+    assert hashlib.sha256(value['body'].encode()).hexdigest() == pin['body_utf8_sha256']
+
+def original(name):
+    matches = [p for p in pins['git_files'] if p['source_commit'] == pins['record_head'] and p['source_path'].endswith('/' + name)]
+    assert len(matches) == 1, name
+    return json.loads(sources[matches[0]['id']])
+
+proof = original('serving-proof.json')
+hashes = json.loads((HERE / 'proof-hashes.json').read_bytes())
+assert len(hashes['rows']) == len(proof['proof_files']) == 19
+for row in hashes['rows']:
+    pin = next(x for x in pins['git_files'] if x['id'] == row['source_pin'])
+    expected = proof['proof_files'][row['name']]['sha256']
+    assert row['declared_sha256'] == row['actual_received_file_sha256'] == expected == hashlib.sha256(sources[pin['id']]).hexdigest()
+    assert row['bytes'] == len(sources[pin['id']]) and row['matches'] is True
+
+deployment = original('deployment.json')
+assert deployment['source'] == proof['deployed_source_commit'] == pins['producer_declared_deployed_source']
+assert deployment['native_context_per_slot'] == proof['context_tokens_per_slot'] == 16384
+for path in ['scripts/serve_shared_research_prototype.py', 'scripts/serve_research_prototype.py', 'packages/core/src/lgax_core/public_planning.py', 'packages/core/src/lgax_core/model_client.py']:
+    pairs = [p for p in pins['git_files'] if p['source_path'] == path]
+    assert len(pairs) == 2 and len({p['git_blob'] for p in pairs}) == 1 and len({p['sha256'] for p in pairs}) == 1
+    assert {p['source_commit'] for p in pairs} == {pins['record_head'], deployment['source']}
+serve = next(p for p in pins['git_files'] if p['source_path'] == 'scripts/serve_shared_research_prototype.py' and p['source_commit'] == deployment['source'])
+tree = ast.parse(sources[serve['id']])
+calls = [n for n in ast.walk(tree) if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr == 'from_model_client']
+assert len(calls) == 2
+for call in calls:
+    kw = {x.arg: ast.literal_eval(x.value) for x in call.keywords}
+    assert kw['max_source_characters'] == 1000 and kw['max_prompt_characters'] == 9000 and kw['max_model_calls'] == 4
+
+native = original('four-native-traces.json')
+public = original('four-public-runs.json')
+binding = original('four-source-sha-bindings.json')
+public_by_id = {x['run_id']: x for x in public['runs']}
+bind_by_id = {x['run_id']: x for x in binding['runs']}
+assert len(public_by_id) == len(bind_by_id) == len(native['runs']) == 4
+assert set(public_by_id) == set(bind_by_id) == {x['run_id'] for x in native['runs']}
+fields = json.loads((HERE / 'native-field-intake.json').read_bytes())
+assert len(fields['calls']) == fields['call_count'] == 9
+assert len(fields['runs']) == 4
+def pointer(value, path):
+    for key in path.split('/')[1:]:
+        value = value[int(key)] if isinstance(value, list) else value[key]
+    return value
+field_count = 0
+for row in fields['calls']:
+    raw = pointer(json.loads(sources[row['native_source_pin']]), row['native_pointer'])
+    corroboration = pointer(json.loads(sources[row['binding_source_pin']]), row['binding_pointer'])
+    assert raw == corroboration == row['exact_original_fields']
+    assert row['actual_prompt_raw_bytes'] is row['actual_wire_request_body'] is row['actual_response_raw_text'] is row['complete_input_delivered'] is None
+    assert raw['call_index'] == row['call_index']
+    assert raw['status'] == 'returned' and raw['adapter'] == 'llama.cpp' and raw['transport_api'] == '/completion'
+    assert raw['native_stop_type'] == 'eos' and raw['done_reason'] == 'stop' and raw['response_present'] is True
+    assert raw['native_alias_matches_pin'] is raw['backend_schema_enforced'] is True
+    assert 0 <= raw['native_id_slot'] < 4
+    assert 0 <= raw['native_prompt_processed_count'] <= raw['prompt_eval_count'] <= 16384
+    assert 0 <= raw['eval_count'] <= 4096
+    assert len(raw['prompt_sha256']) == len(raw['schema_sha256']) == 64
+    field_count += len(raw)
+assert field_count == fields['original_call_fields'] == 198
+prompt_sum = sum(r['exact_original_fields']['prompt_eval_count'] for r in fields['calls'])
+generated_sum = sum(r['exact_original_fields']['eval_count'] for r in fields['calls'])
+assert prompt_sum == fields['native_tokens_including_cache_sum'] == proof['prompt_tokens_evaluated_including_cache'] == 24328
+assert generated_sum == fields['native_generated_tokens_sum'] == proof['generated_tokens'] == 7893
+assert sum(r['exact_original_fields']['stage'] == 'repair_fields' for r in fields['calls']) == 1
+pack = next(p for p in pins['git_files'] if p['source_path'].endswith('/dishwasher.research-bundle.json'))
+assert pack['sha256'] == binding['expected_registered_pack_sha256']
+for row in fields['runs']:
+    n = next(x for x in native['runs'] if x['run_id'] == row['run_id'])
+    p = public_by_id[row['run_id']]
+    b = bind_by_id[row['run_id']]
+    assert n['call_count'] == p['call_count'] == b['call_count'] == row['original_report_call_count']
+    assert n['raw_brief_sha256'] == b['raw_brief_sha256'] == row['declared_raw_brief_sha256']
+    assert n['model_trace_sha256'] == b['model_trace_sha256'] == row['declared_model_trace_sha256']
+    assert n['model_calls'] == b['model_calls']
+    assert row['actual_raw_brief_file_sha256'] is row['actual_full_model_trace_file_sha256'] is row['actual_generation_process_commit_independently_observed'] is None
+    assert row['registered_pack_received_file_sha256'] == row['registered_pack_sha256_reported'] == pack['sha256']
+    assert row['reported_source_binding_booleans'] == b['expected_match']
+    assert row['actual_output_body_received'] is row['same_7_input_comparison'] is False
+
+csvrows = list(csv.DictReader((HERE / 'native-calls.csv').open(encoding='utf-8', newline='')))
+assert len(csvrows) == 9
+for csvrow, row in zip(csvrows, fields['calls']):
+    assert csvrow['run_id'] == row['run_id'] and int(csvrow['call_index']) == row['call_index']
+    assert csvrow['prompt_sha256'] == row['exact_original_fields']['prompt_sha256']
+    assert csvrow['complete_input_delivered'] == 'UNCONFIRMED'
+
+boundary = json.loads((HERE / 'run-boundaries.json').read_bytes())
+requested_ids = {r['run_id'] for r in boundary['requested_original_pair']}
+assert requested_ids == {'run-1f83d846191941aea21153897b944ec1', 'run-754268c6b0cb41bba50c5b8d713332d9'}
+assert requested_ids.isdisjoint(public_by_id)
+for row in boundary['requested_original_pair']:
+    assert row['actual_original_json_or_first_field_received'] is False
+    assert row['actual_file_sha256'] is row['generation_commit'] is row['complete_input_delivered'] is None
+gates = json.loads((HERE / 'delivery-gates.json').read_bytes())
+assert gates['new_4_runs_execution_complete_input_delivered'] is gates['original_pair_execution_complete_input_delivered'] is None
+assert gates['formatted_prompt_bytes_and_SHA_received'] is gates['native_wire_prompt_raw_received'] is False
+failures = json.loads((HERE / 'failure-reuse.json').read_bytes())
+cpu = original('native-cpu-rejected-traces.json')
+assert len(failures['native_cpu_rejected_runs']) == len(cpu['runs']) == 4
+for row, original_row in zip(failures['native_cpu_rejected_runs'], cpu['runs']):
+    assert row['run_id'] == original_row['run_id'] and row['calls'] == original_row['model_calls']
+    assert row['calls'][0]['status'] == 'rejected' and row['calls'][0]['error_reason'] == 'timeout' and row['new_retry'] is False
+assert len(failures['ollama_serial_trial_runs']) == 4
+handoff = json.loads((HERE / 'handoff-needs.json').read_bytes())
+assert handoff['requests'][2]['receiver_ZIP_received_last_CORE_report'] == 0
+assert handoff['requests'][2]['approved_transport_recipient_scope_received'] is False
+assert handoff['requests'][0]['first_field_needs_complete_usage_Gold_packet'] is False
+assert handoff['requests'][3]['approved_original_captures_received'] is False
+print(json.dumps({'status': 'PASS_NEW_NATIVE_METADATA_DATA_AUDIT', 'git_file_pins': 30, 'CORE_comment_bodies': 2, 'original_proof_files': 19, 'new_parallel_runs': 4, 'native_calls': 9, 'exact_call_fields': 198, 'repair_fields_calls': 1, 'native_prompt_tokens_including_cache': prompt_sum, 'generated_tokens': generated_sum, 'preserved_CPU_failures': 4, 'original_pair_raw_files_or_first_fields': 0, 'actual_full_input_delivery': None, 'model_OCR_and_completed_experiments_reexecuted': 0}))

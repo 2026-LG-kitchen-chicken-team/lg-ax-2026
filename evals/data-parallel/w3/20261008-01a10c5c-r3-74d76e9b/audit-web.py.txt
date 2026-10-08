@@ -1,0 +1,67 @@
+import hashlib
+import json
+from pathlib import Path
+
+HERE=Path(__file__).resolve().parent
+ROOT=HERE.parents[3]
+INPUTS=ROOT/'inputs'
+value=json.loads((HERE/'web-output-intake.json').read_bytes())
+files={}
+for pin in value['git_files']:
+    raw=(INPUTS/pin['audit_input']).read_bytes()
+    assert len(raw)==pin['bytes'] and hashlib.sha256(raw).hexdigest()==pin['sha256']
+    assert hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()==pin['git_blob']
+    files[pin['id']]=raw
+assert len(files)==5
+assert files['W1']==files['W3']
+normal=json.loads(files['W1'])
+report=json.loads(files['W2'])
+bundle=json.loads(files['W5'])
+brief=normal['result']
+assert normal['status']=='completed' and brief['status']=='complete'
+assert brief['run_id']==value['normal_run_id']=='run-5ccd95da25934e5789951fb1402e95ba'
+assert value['normal_original_public_job_response_bytes']==len(files['W1'])==6961
+assert value['normal_original_public_job_response_sha256']==hashlib.sha256(files['W1']).hexdigest()==report['runs'][0]['response_file_sha256']
+canonical=json.dumps(brief,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()
+assert value['normal_brief_canonical_sha256']==hashlib.sha256(canonical).hexdigest()==report['runs'][0]['result_canonical_sha256']
+assert brief['runtime']['bundle_sha256']==hashlib.sha256(files['W5']).hexdigest()==report['bundle']['listed_bundle_sha256']
+assert brief['bundle_id']==report['bundle']['bundle_id']==bundle['bundle_id']
+ids=brief['runtime']['user_selected_source_ids']
+assert len(ids)==len(set(ids))==brief['runtime']['input_source_count']==6
+assert ids==report['selection']['ids_in_click_order']==value['normal_source_ids']
+assert set(ids)==set(brief['runtime']['selected_source_ids'])=={s['source_id'] for s in brief['source_facts']}
+sourceids={s['source_id'] for s in bundle['sources']}
+assert set(ids)<=sourceids
+refs=set()
+for polarity in ['positive','negative','mixed']:
+    for item in brief['summaries'][polarity]:refs.update(item['source_ids'])
+coverage=brief['runtime']['summary_reference_coverage']
+assert refs==set(coverage['covered_source_ids'])
+assert len(refs)==coverage['covered_customer_source_count']==3
+assert coverage['denominator_customer_source_count']==4 and coverage['coverage_ratio']==3/4
+assert coverage['classification_approved'] is False
+def pointer(obj,path):
+    for key in path.split('/')[1:]:obj=obj[int(key)] if isinstance(obj,list) else obj[key]
+    return obj
+assert len(value['normal_actual_fields'])==28
+for field in value['normal_actual_fields']:
+    assert field['source_pin']=='W1' and field['origin_run_id']==brief['run_id']
+    assert pointer(normal,field['json_pointer'])==field['exact_actual_value']
+assert len(value['changed_reported_fields'])==15
+for field in value['changed_reported_fields']:
+    assert field['source_pin']=='W2'
+    assert pointer(report,field['json_pointer'])==field['exact_reported_value']
+assert report['runs'][1]['run_id']=='run-97dbc6493b964100ab0d0ff5037fa0ed'
+assert report['runs'][1]['previous_brief_id']==brief['brief_id']==value['declared_parent_brief_from_WEB_report']
+assert report['runs'][1]['constraints']==brief['constraints']+['하드웨어 변경 없이 개선']
+assert value['changed_full_original_response_received'] is False
+assert value['whole_input_and_native_wire_verified'] is None
+assert value['independent_semantic_quality_approved'] is value['same_7_input_agent_baseline_comparison'] is False
+assert value['model_calls_by_this_window']==0
+for pin in value['native_comments']:
+    c=json.loads((INPUTS/'comments'/(str(pin['id'])+'.json')).read_bytes())
+    assert c['user']['login']==pin['actor'] and c['html_url']==pin['url']
+    assert hashlib.sha256(c['body'].encode()).hexdigest()==pin['body_utf8_sha256']
+    assert len(c['body'].encode())==pin['body_utf8_bytes']
+    assert c['created_at']==pin['created_at'] and c['updated_at']==pin['updated_at']
+print(json.dumps({'status':'PASS_NEW_WEB_ACTUAL_OUTPUT_INTAKE_ONLY','source_pins':5,'actual_public_normal_response_file':1,'bytes':6961,'actual_fields':28,'changed_report_fields':15,'normal_selected_ids_bound_to_current_pack':6,'returned_summary_reference_coverage':0.75,'classification_or_Gold_approved':False,'original_requested_two_runs_replaced':False,'actual_whole_input_delivered':None,'model_OCR_or_completed_experiments_reexecuted':0}))

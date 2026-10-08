@@ -1,0 +1,174 @@
+{
+  "status": "PASS_NEW_DATA_AUDIT_AND_RULES_ONLY",
+  "main": "eab85d48385f965eef48c07a6cdd8f6fd9851c62",
+  "record_head": "8c18ac9b453711cee4af2e4bd30e4c4a4d444754",
+  "reported_deploy": "e4092eb25503a691e540fcea9224c5e85bf000bc",
+  "checks": [
+    {
+      "name": "native-metadata-audit",
+      "argv": [
+        "python",
+        "-I",
+        "-B",
+        "evals/data-parallel/w3/20261008-01a10c5c-r3-74d76e9b/audit.py.txt"
+      ],
+      "exit_code": 0,
+      "log_sha256": "5e1205051b3ab7df42f75506e352664170f2a919cc13b524e91bbd0cca7907a4",
+      "container_boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "image_pin": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+      "network": "none",
+      "readonly_workspace": true,
+      "authentication_mounted": false,
+      "ZIP_Gold_mail_controller_mounted": false,
+      "new_generation_or_product_reexecution": false,
+      "checked_at_utc": "2026-10-08T06:19:57.403940+00:00"
+    },
+    {
+      "name": "agent-rules",
+      "argv": [
+        "python",
+        "-I",
+        "-B",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log_sha256": "56b21f915cb5a695479359f4ca6063582b0b9bcbdaee1869782a2a805a2a82cd",
+      "container_boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "image_pin": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+      "network": "none",
+      "readonly_workspace": true,
+      "authentication_mounted": false,
+      "ZIP_Gold_mail_controller_mounted": false,
+      "new_generation_or_product_reexecution": false,
+      "checked_at_utc": "2026-10-08T06:20:00.305121+00:00"
+    },
+    {
+      "name": "web-original-intake-audit",
+      "argv": [
+        "python",
+        "-I",
+        "-B",
+        "evals/data-parallel/w3/20261008-01a10c5c-r3-74d76e9b/audit-web.py.txt"
+      ],
+      "exit_code": 0,
+      "log_sha256": "d69e151f99fe9b9d957c77bd502cf911daf26ed8d46eaf691e09f0e0f7fcf4ba",
+      "container_boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "image_pin": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+      "network": "none",
+      "readonly_workspace": true,
+      "authentication_ZIP_Gold_mail_controller_mounted": false,
+      "new_model_OCR_or_product_calls": 0,
+      "checked_at_utc": "2026-10-08T06:39:46.179893+00:00"
+    }
+  ],
+  "existing_files_changed": 0,
+  "model_OCR_calls": 0,
+  "225_11_109_51_reexecutions": 0,
+  "whole_input_delivered": null,
+  "PM_final_acceptance": false,
+  "host_read_orchestration_failure_preserved_outside_repository": "functions.exec ReferenceError: rs is not defined after read-only calls; no model or mutation; corrected binding",
+  "prior_app_create_worktree_invalid_ref_reused_native_safe_fallback": true,
+  "audit_source_sha256": "3694506c4fff30c4668d79f8ac213fbb42ecff6febe52b2f52f25369c7c4593e",
+  "actual_original_pair_output_or_first_field_received": 0,
+  "actual_complete_input_delivered": null,
+  "prepublication_preparation_error_preserved": {
+    "phase": "controller-readback-file-save",
+    "type": "FileNotFoundError",
+    "fixed": true,
+    "model_Git_controller_mutations_before_failure": 0
+  },
+  "failed_checks_preserved": [
+    {
+      "name": "web-original-intake-audit",
+      "argv": [
+        "python",
+        "-I",
+        "-B",
+        "evals/data-parallel/w3/20261008-01a10c5c-r3-74d76e9b/audit-web.py.txt"
+      ],
+      "exit_code": 1,
+      "log_sha256": "839f3037c47640e4d8ed15edbd2ce1f0f5b407e3fae88eb1d528b32f9d2b6343",
+      "container_boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "image_pin": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+      "network": "none",
+      "readonly_workspace": true,
+      "authentication_ZIP_Gold_mail_controller_mounted": false,
+      "new_model_OCR_or_product_calls": 0,
+      "checked_at_utc": "2026-10-08T06:38:21.916886+00:00",
+      "failure_reason": "own auditor assumed id; canonical ResearchSource uses source_id",
+      "original_log_preserved": "web-original-intake-audit-failed.log",
+      "auditor_before_fix_sha256": "aa62a47bd06eafe247cb53d76577808561d5cfd9cf2b68035c9834e654601e2f"
+    }
+  ],
+  "late_actual_fridge_public_output_intake": {
+    "original_file": 1,
+    "actual_fields": 28,
+    "changed_report_fields": 15,
+    "extra_source_pins": 5,
+    "extra_comments": 2,
+    "whole_input": null,
+    "original_requested_pair_received": 0
+  },
+  "audit_web_source_sha256": "676365556c91f39bb27805cd55997986263039fbb9d841e6641603244636ed3c"
+}

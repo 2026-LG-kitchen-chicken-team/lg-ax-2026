@@ -1,0 +1,40 @@
+{
+  "source_metadata_received": "4 fixed-run producer source binding fields and current registered pack file SHA match",
+  "actual_run_source_input_snapshot_received": false,
+  "stage_prompt_raw_received": false,
+  "formatted_prompt_bytes_and_SHA_received": false,
+  "native_wire_prompt_raw_received": false,
+  "provider_counters_received_for_new_4_runs": true,
+  "output_completion_metadata_received_for_new_4_runs": true,
+  "original_pair_execution_complete_input_delivered": null,
+  "new_4_runs_execution_complete_input_delivered": null,
+  "max_context_per_slot_reported": 16384,
+  "max_output_per_call_reported": 4096,
+  "input_counter_basis": "native tokens_evaluated including cache; not unique input tokens or billable paid-API usage",
+  "boundaries": [
+    {
+      "boundary": "source selection/prefix",
+      "status": "current code audit only, reuse PR289; original source_facts hashes are not delivered text"
+    },
+    {
+      "boundary": "stage and repair routing",
+      "status": "9 stage labels received including repair_fields; actual prompt/source coverage unreceived"
+    },
+    {
+      "boundary": "formatted request",
+      "status": "source code renders a Qwen template and separate JSON schema; actual bytes/SHA unreceived"
+    },
+    {
+      "boundary": "wire/provider",
+      "status": "9 caller prompt hashes and token metadata received; request prompt and provider-token input comparison unreceived"
+    },
+    {
+      "boundary": "output completion",
+      "status": "9 EOS/stop metadata entries received; original response/repair feedback absent"
+    },
+    {
+      "boundary": "stored/API/MCP/same DB restart",
+      "status": "producer saved flags/source-binding metadata received; direct original bodies and before/after pair absent"
+    }
+  ]
+}
