@@ -1,0 +1,68 @@
+{
+  "id": "DATA-W2-01a108a8-r2-0350",
+  "base_commit": "eab85d48385f965eef48c07a6cdd8f6fd9851c62",
+  "prior_PR280_head": "507218bee95ac1f0f86259ca5942751b24a3ad03",
+  "branch": "codex/data-w2-01a108a8-r2-0350",
+  "reserved_paths": [
+    "evals/data-parallel/w2/2026-10-08-01a108a8-r2-0350",
+    "docs/작업기록/세션/신진하/data-w2-20261008-01a108a8-r2-0350.md",
+    "docs/작업근거/세션/신진하/data-w2-20261008-01a108a8-r2-0350.md"
+  ],
+  "reservation_id": "manual-data-w2-01a108a8-r2-0350",
+  "automation_global_and_four_members": "OFF",
+  "source_inspection_program_sha256": "c73bc2a55a36cc46b0e080407db7365326942c241739fc2ca15f53ecfea1ea84",
+  "source_inspection_log_sha256": "f1e224b99eddbcd843b04ec564f483bb16d0cc5550a239a819787e4016fef7bd",
+  "source_checks": 53,
+  "source_checks_passed": true,
+  "postinspection_editorial_clarification": {
+    "artifact": "consumer-evidence.json",
+    "before_sha256": "13fafb86e4b6a9273f4d12c41e9693e392c3a85882e5895a9e3b51c5ab5709fd",
+    "after_sha256": "e3e16ba9cb6076f24e11cc2f3fb8070a0ff72a7dca1245c9e519849369510d36",
+    "scope": "Explicitly distinguish global saved10-bundle browser summary from exact Source ID selection/export or model-production receipt. No source facts, approvals, tests or numeric results changed."
+  },
+  "execution_counters": {
+    "model_calls": 0,
+    "model_id": null,
+    "model_configuration": null,
+    "model_input": null,
+    "model_output": null,
+    "model_failure": null,
+    "OCR_calls": 0,
+    "old225_runs": 0,
+    "old11_rescoring": 0,
+    "prior1101_rechecks": 0,
+    "old_collector_runs": 0,
+    "product_code_or_tests_run": 0,
+    "live_DB_API_audits": 0,
+    "ZIP_or_independent_eval_audits": 0,
+    "Gold_approval_or_final_scorer_selection": 0,
+    "email_read_or_send": 0,
+    "new_public_HTTP_GETs": 5,
+    "new_PDF_URLs": 3,
+    "new_unique_PDFs": 2,
+    "new_native_PDF_pages_read": 100,
+    "new_rendered_pages_viewed": 5
+  },
+  "original_failures": [
+    {
+      "step": "optional first catalogue parser",
+      "failure": "ModuleNotFoundError: bs4",
+      "network_requests_before_failure": 0,
+      "resolution": "Use standard HTMLParser; do not install or alter an existing environment."
+    },
+    {
+      "step": "web support-page lookup",
+      "failure": "Tool unable to render model support pages/find terms; not evidence of no manual",
+      "resolution": "Bounded normal public HTTP confirmed visible model catalogue and exact PDF hrefs."
+    },
+    {
+      "step": "read-only path probes",
+      "failure": "Missing optional md/test paths and quoted Windows rg glob",
+      "resolution": "Use actual JSON/file list/confirmed source paths; no deletion or source changes."
+    }
+  ],
+  "duplicate_document_handling": "Three URL request receipts preserved, including two ML32 aliases that returned identical bytes/SHA; count content2, not independent PDF3. All files are in the new private run; no previous run file changed.",
+  "PM_request_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/148#issuecomment-6052081322",
+  "mail_owner": "W3",
+  "final_release": "Observed after publication and linked in #16/private receipt; not predeclared."
+}

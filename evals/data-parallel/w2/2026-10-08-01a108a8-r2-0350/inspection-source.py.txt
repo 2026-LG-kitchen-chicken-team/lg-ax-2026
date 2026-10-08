@@ -1,0 +1,289 @@
+"""Read fixed source artifacts and new manual captures only; no repository imports or product execution."""
+import csv
+import hashlib
+import json
+import re
+import subprocess
+from collections import Counter
+from datetime import datetime, timezone
+from pathlib import Path
+
+RUN = Path(__file__).parent
+WORKSPACE = Path(r'C:\Users\user\Documents\ChatGPT\LG공모전')
+ROOT = WORKSPACE / '.worktrees/data-w2-20261008-01a108a8-r2-0350'
+OLD = WORKSPACE / '.worktrees/data-w2-20261008-01a108a8-7b67e6'
+OUT = ROOT / 'evals/data-parallel/w2/2026-10-08-01a108a8-r2-0350'
+BASE = 'eab85d48385f965eef48c07a6cdd8f6fd9851c62'
+PR280 = '507218bee95ac1f0f86259ca5942751b24a3ad03'
+ID = 'DATA-W2-01a108a8-r2-0350'
+PINS, CHECKS = [], []
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def read(path):
+    raw = (ROOT / path).read_bytes()
+    PINS.append({'commit': BASE, 'path': path, 'bytes': len(raw), 'sha256': sha(raw)})
+    return json.loads(raw) if path.endswith('.json') else raw
+
+
+def prior(name):
+    path = 'evals/data-parallel/w2/2026-10-08-01a108a8-7b67e6/' + name
+    raw = subprocess.run(['git', '-c', 'safe.directory=' + OLD.as_posix(), 'show', PR280 + ':' + path],
+                         cwd=OLD, capture_output=True, check=True).stdout
+    PINS.append({'commit': PR280, 'path': path, 'bytes': len(raw), 'sha256': sha(raw), 'merged': False})
+    return json.loads(raw)
+
+
+def save(name, value):
+    (OUT / name).write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+
+def check(label, value, source_id=None):
+    CHECKS.append({'check': label, 'passed': bool(value), 'source_id': source_id})
+
+
+def canonical(value):
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode()
+
+
+old_table = prior('table-review.json')
+old_trend = prior('trend-review.json')
+old_candidates = prior('review-candidates.json')
+old_manuals = prior('manual-gap-review.json')
+old_inspection = prior('inspection-result.json')
+current_records = read('data/research/r8-public-research-20261007/records.json')
+draft = read('data/research/r8-public-research-20261007/trend-annotations/01a114f6/annotation.draft.json')
+check('prior141/238 identity retained without replaying prior1101/225/11',
+      len(current_records) == 238 and len(draft['rows']) == 141 and not draft['pm_approved'])
+check('prior141 monthly/season/null and annotation change0 retained',
+      old_trend['month_denominator'] == old_trend['season_denominator'] == old_trend['changed_annotation_rows'] == 0
+      and old_trend['ratio'] is None)
+core_rows = json.loads((RUN / 'issues-280-comments.json').read_bytes())
+core = next(r for r in core_rows if r['id'] == 6051149643 and r['user']['login'] == 'unknownamed')
+core_receipt = {'url': core['html_url'], 'actor': core['user']['login'], 'at': core['created_at'],
+                'body_sha256': sha(core['body'].encode()), 'input_PR_head': PR280,
+                'kind': 'authored CORE intake acknowledgement, not a PM/production/independent approval',
+                'four_candidate_source_and_body_date_model_received_as_reported': True,
+                'CORE_scope_as_reported': 'private C3/C4/X1 source/time/role notes; production141 and runtime input unchanged',
+                'detail_HTML_byte_identity': '상충: later dynamic detail HTML differs from the earlier capture',
+                'normalized_body_and_displayed_date_identity': '확인: reported by CORE, not refetched by W2 R2',
+                'PM_classification_approval': False}
+save('table-intake-status.json', {'id': ID, 'prior_manual_reference': {'head': PR280, 'items': 6, 'axes': 54,
+     'manual_statuses': old_table['manual_axis_status_counts']}, 'new_automatic_output_received': False,
+     'actual_generated_comparison_status': '검증 불가', 'producer_commit': None, 'producer_version': None,
+     'producer_configuration': None, 'approved_adapter_commit': None, 'adapter_version': None,
+     'adapter_configuration': None, 'automatic_cell_row_column_model_number_unit_footnote_page_bbox_status': '검증 불가',
+     'automatic_accuracy': None, 'automatic_error_count': None, 'R9_planning_graph_used_as_table_graph': False,
+     'completed_225_replayed': False, '11_questions_rescored': False, 'OCR_or_model_calls': 0,
+     'CORE_intake': core_receipt, 'PM_request_url': 'https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/14#issuecomment-6050704556'})
+save('trend-approval-status.json', {'id': ID, 'source_count': 238, 'development_rows': 141,
+     'prior_result_version': PR280, 'reused_quote_bindings': 292, 'reused_saved_empty_queries': 36,
+     'old_1101_checks_reexecuted': False, 'partition_counts_reused': old_trend['partitions'],
+     'review_ID_duplicates_in141_reused': old_trend['review_id_duplicates_in_141'],
+     'posting_date_unknown_in_development': 141, 'classification_version': draft['annotation_version'],
+     'classification_approved': False, 'PM_correction_Source_IDs_received': [], 'annotation_rows_changed': 0,
+     'month_denominator': 0, 'season_denominator': 0, 'dated_topic_numerator': 0, 'ratio': None,
+     'prior_candidate_ids': [r['candidate_id'] for r in old_candidates['candidates']],
+     'candidate_approval': False, 'new_candidates_merged_into238_or141': 0, 'CORE_intake': core_receipt})
+
+# Inspect ten existing expansion sources; do not recollect them.
+kp = 'data/research/r9-kitchen-intake-20261008/'
+manifest = read(kp + 'manifest.json')
+intake = read(kp + 'runtime-intake.manifest.json')
+all_sources = read(kp + 'official-and-preview-sources.json')['sources']
+source_map = {s['source_id']: s for s in all_sources}
+expansion_rows = []
+condition_notes = {
+ 'LGE-R9-Z330MEEF11-OFFICIAL-MODEL-SUMMARY': '327L/3-door page model; subscription3–6year/contract and customer-fault exclusion; ±0.3℃ must retain separate upper-compartment/internal-test limitations.',
+ 'LGE-R9-Z330MEEF11-OFFICIAL-PACKAGED-KIMCHI-CONDITIONS': 'Barcode packaging is limited to listed kimchi brands/types; ThinQ installation/registration, same Wi-Fi for initial connection and data environment for remote use. Not all homemade/packaged kimchi.',
+ 'LGE-R9-Z330MEEF11-OFFICIAL-COOLING-TEST-LIMITS': 'Upper-compartment time-average variation; 25℃ ambient, empty kimchi container, factory medium setting and manufacturer internal test. Not measured customer results.',
+ 'LGE-R9-ML32WW1-OFFICIAL-REMOTE-SETTING': 'Wi-Fi product-page remote setting statement; actual purchased SKU/app-version compatibility and remote cooking start are not established by this excerpt.',
+ 'LGE-R9-ML32WW1-OFFICIAL-MULTICLEAN': 'Official deodorization/steam-clean app feature paragraph; not a complete procedure or a customer report, and not transferable to ordinary microwaves.',
+ 'LGE-R9-ML32WW1-OFFICIAL-THINQ-RECIPE': 'ThinQ oven connection required; captured page mentions Android7+/iOS14+ and illustrated images. Not proof of installed app/current-device compatibility.',
+ 'LGE-R9-ML32WW1-OFFICIAL-THINQ-COMPATIBILITY': 'ML32*W*/D*B*2*A/WD503A*B family patterns; Wi-Fi and registration plus explicitly supported combinations; listed11 recipes per linked device, not all products.'}
+for info in manifest['bundles']:
+    bundle = read(kp + info['file'])
+    raw = (ROOT / kp / info['file']).read_bytes()
+    check('expansion:fixed bundle SHA/size/count', sha(raw) == info['sha256'] and len(raw) == info['bytes']
+          and len(bundle['sources']) == info['source_count'], info['bundle_id'])
+    for source in bundle['sources']:
+        sid = source['source_id']; meta = source['metadata']
+        check('expansion:source object and excerpt SHA unchanged', source == source_map[sid]
+              and sha(source['text'].encode()) == meta['original_excerpt_sha256'], sid)
+        check('expansion:unapproved date/purchase/evaluation preserve', source['published_at'] is None
+              and source['purchased_model'] is None and not meta['independent_evaluation_approved'], sid)
+        expansion_rows.append({'source_id': sid, 'bundle_id': bundle['bundle_id'], 'page_model': source['page_model'],
+             'url': source['url'], 'producer_document_version': source['document_version'],
+             'received_HTML_snapshot_version': 'html-sha256:' + meta['capture_sha256'],
+             'excerpt_sha256': meta['original_excerpt_sha256'], 'node_text_sha256': meta['node_text_sha256'],
+             'locator': source['locator'], 'source_role': source['source_role'], 'coverage': source['coverage'],
+             'link_check_status': '확인', 'model_application_status': 'page association only; exact purchased SKU 미확인',
+             'conditions': condition_notes.get(sid, 'Selected review preview only; local source ID is not the original site review ID, full body/rating/date/buyer SKU unknown.'),
+             'original_review_id': meta.get('original_review_id'), 'published_at': None, 'purchased_model': None,
+             'time_denominator_increment': 0, 'review_frequency_approved': False,
+             'new_manual_candidates_are_separate': True, 'source_objects_modified': False})
+save('expansion-source-review.json', {'id': ID, 'rows': expansion_rows, 'sources': 10,
+     'kimchi_sources': 6, 'kimchi_review_preview_count': 3, 'lightwave_official_count': 4,
+     'official_count': 7, 'confirmed_independent_customer_review_count': 0, 'new_usage_QA_count': 0,
+     'producer_declared_manual_count_at_capture': 0, 'posting_denominator': 0, 'ratio': None,
+     'fact_semantic_model_quality_or_market_demand_approved': False})
+
+# Twelve official competitor excerpts and their adapter lineage.
+cp = 'data/research/r8-public-research-20261007/competitors/01a114f6/'
+official = read(cp + 'official-sources.json')
+comparison = read(cp + 'comparison.json')
+ap = 'data/research/r8-public-competitor-adapter-20261007/'
+adapter = read(ap + 'manifest.json'); lineage = read(ap + 'lineage.json')
+adapted = read(ap + 'sources.json'); comp_bundle = read(ap + 'fridge.development.research-bundle.json')
+baseline = read('data/research/r8-public-research-20261007/bundles/fridge.development.research-bundle.json')
+check('competitor:54 baseline objects copied without alteration', comp_bundle['sources'][:54] == baseline['sources'])
+check('competitor:66 sources with12 official additions', len(comp_bundle['sources']) == 66 and len(adapted) == 12
+      and comp_bundle['sources'][54:] == adapted)
+original_excerpts = {e['id']: (page, e) for page in official['sources'] for e in page['excerpts']}
+competitor_rows = []
+for source in adapted:
+    page, excerpt = original_excerpts[source['metadata']['origin_excerpt_id']]
+    sid = source['source_id']
+    check('competitor:exact source/excerpt/version/model/locator chain', source['text'] == excerpt['text']
+          and sha(source['text'].encode()) == excerpt['text_sha256'] == source['metadata']['text_sha256']
+          and source['document_version'] == page['capture_version'] and source['page_model'] == page['model_id']
+          and source['url'] == page['final_url'], sid)
+    competitor_rows.append({'source_id': sid, 'origin_excerpt_id': excerpt['id'], 'model_id': source['page_model'],
+          'document_version': source['document_version'], 'source_url': source['url'],
+          'source_text_sha256': excerpt['text_sha256'], 'source_role': source['source_role'],
+          'locator': source['locator'], 'binding_status': '확인', 'customer_discomfort_denominator_increment': 0,
+          'claim_is_independent_measurement': False, 'same_conditions_quality_comparison_approved': False})
+save('competitor-source-review.json', {'id': ID, 'rows': competitor_rows, 'official_source_excerpts': 12,
+     'official_page_count': 3, 'models': ['T876MEE1H1', 'RM70F63R231'],
+     'comparison_conditions': comparison['comparability'], 'same_capacity_and_installation_claim_status': '상충: 870/640L and freestanding/KitchenFit Max differ',
+     'depth_basis': 'LG918mm versus Samsung697mm with rear handle /683mm without rear handle; common basis/internal reach is unverified',
+     'source_material_presence_is_customer_burden_resolution': False, 'agent_first_problem_id': comparison['problem']['first_problem_id'],
+     'exact_buyer_SKU': None, 'new_model_planning_run_proven': False, 'source_adapter_is_automatic_table_adapter': False,
+     'original_adapter_pin': {k: adapter[k] for k in ('adapter_version', 'adapter_script_sha256', 'producer_head')},
+     'approved_accuracy_or_Gold': False})
+
+# Four QA source objects comprise two different pre-purchase/installation pairs, not use reviews.
+legacy = read('data/research/r8-public-official-expansion-20261007/sources.json')
+dish = read('data/research/r9-public-runtime-20261008/dishwasher.research-bundle.json')
+qa = [s for s in legacy + dish['sources'] if s['source_type'] == 'qa']
+qa_rows = []
+for s in qa:
+    declared = s['metadata'].get('text_sha256', s['metadata'].get('excerpt_sha256'))
+    check('QA:received excerpt SHA/role/published-date locator', sha(s['text'].encode()) == declared
+          and s['source_role'] in ('customer_question', 'official_answer') and s['published_at'] is not None, s['source_id'])
+    qa_rows.append({'source_id': s['source_id'], 'url': s['url'], 'page_model': s['page_model'],
+          'source_role': s['source_role'], 'published_at_as_received': s['published_at'],
+          'excerpt_sha256': declared, 'locator': s['locator'], 'status': '확인: received excerpt and provenance',
+          'usage_review_eligible': False, 'purchased_model': s['purchased_model'],
+          'usage_scope': 'purchase availability' if s['page_model'] == 'MW25S' else 'installation space inquiry',
+          'independently_received_full_question_or_answer': False})
+save('qa-scope-review.json', {'id': ID, 'source_objects': qa_rows, 'qa_pairs_received': 2,
+     'customer_product_use_experience_pairs': 0, 'customer_discomfort_review_denominator_increment': 0,
+     'dated_QA_does_not_increase_141_review_trend_denominator': True,
+     'DUE_question_written_value': {'value': '119~120', 'unit': 'mm', 'interpretation': None, 'status': '미확인: original unit meaning; no automatic cm conversion'},
+     'DUE_answer_600mm': '확인: inside-cabinet depth in received quote',
+     'DUE_answer_590mm_and567_to600mm': '미확인 in W2: producer records full-answer verification outside the selected quote; original full answer needed to independently verify door-clearance/pipe-compression/engineer conditions',
+     'MW25S_answer': 'dated purchase inquiry and uncertainty about sales; not a current-stock or future-sale guarantee',
+     'manufacturer_FAQs_are_customer_reviews': False})
+
+# New official catalogue PDF references: three download URLs, two unique documents.
+catalogues = json.loads((RUN / 'new-manual-catalogue-receipts.json').read_bytes())
+pdf_receipts = json.loads((RUN / 'new-manual-pdf-receipts.json').read_bytes())
+manual_rows = []
+for model, expected_version, page_refs in [('Z330MEEF11', 'MFL67704818 Rev.00_072525', [(2, '공용으로'), (9, '2.4 GHz'), (10, '모델마다')]),
+                                          ('ML32WW1', 'MFL68822502 Rev.25_090425', [(2, '공용으로'), (17, '2.4 GHz'), (18, '버전에 따라'), (13, '철 수세미')])]:
+    refs = [r for r in pdf_receipts if r['model_id'] == model]
+    cat = next(r for r in catalogues if r['model_id'] == model)
+    raw = (RUN / refs[0]['private_original_file']).read_bytes()
+    pages = json.loads((RUN / (model + '-new-pdf-native.json')).read_bytes())
+    cover = pages[0]['text']
+    version = re.search(r'(MFL\d+)\s+(Rev\.\d+_\d{6})', cover)
+    actual_version = version.group(1) + ' ' + version.group(2)
+    check('new manual:PDF SHA/catalogue target/native edition/unique alias', actual_version == expected_version
+          and all(r['pdf_sha256'] == sha(raw) for r in refs) and cat['model_id_in_visible_text'], model)
+    spans = []
+    for number, anchor in page_refs:
+        p = pages[number - 1]; a = p['text'].index(anchor); b = a + len(anchor)
+        check('new manual:exact short-anchor position in native page', p['text'][a:b] == anchor, model + '-p' + str(number))
+        spans.append({'pdf_page_1_based': number, 'printed_page': number, 'anchor': anchor,
+             'native_char_range': [a, b], 'native_page_sha256': p['sha256'], 'anchor_sha256': sha(anchor.encode()),
+             'range_basis': '0-based Unicode codepoints, end exclusive, PDFium native page text; no OCR'})
+    manual_rows.append({'candidate_id': 'W2-R2-MANUAL-' + model, 'candidate_version': 'data-w2-manual-candidates.20261008.01a108a8-r2-0350.v1',
+          'catalogue_model': model, 'catalogue_url': cat['final_url'], 'catalogue_sha256': cat['sha256'],
+          'catalogue_observed_at': cat['observed_at'], 'PDF_URLs': [r['pdf_url'] for r in refs],
+          'PDF_catalogue_date_labels': [r['catalogue_context'] for r in refs], 'PDF_observed_at': refs[0]['observed_at'],
+          'PDF_sha256': sha(raw), 'PDF_bytes': len(raw), 'pages': len(pages), 'document_version': actual_version,
+          'cover_model_scope': 'common kimchi-refrigerator manual; exact SKU absent' if model.startswith('Z') else 'ML32 series; exact ML32WW1 SKU absent',
+          'common_manual_disclaimer_page': 2, 'model_to_catalogue_document_link': '확인',
+          'exact_optional_features_and_purchase_time_edition': '미확인/conditional', 'purchased_model': None, 'purchase_date': None,
+          'manual_feature_conditions': '2.4GHz only,5GHz unsupported; app version/model-dependent; Bluetooth*1 conditional. ML32 remote features additionally require actual Wi-Fi/SmartThinQ logos as visually checked on p18.',
+          'native_logo_glyphs_are_not_model_identifiers': True, 'inspected_source_spans': spans,
+          'render_hashes': {p.name: sha(p.read_bytes()) for p in RUN.glob(model + '-*.png')},
+          'new_unique_document_count': 1, 'download_aliases_are_independent_documents': False,
+          'existing_15_model_candidates_modified': False, 'runtime_registry_inserted': False,
+          'approved_source_or_Gold': False, 'native_text_extractor': 'PDFium, new documents only', 'model_OCR_calls': 0})
+save('manual-candidates.json', {'id': ID, 'candidates': manual_rows, 'new_model_catalogues': 2,
+     'download_URL_count': 3, 'unique_PDF_SHA_count': 2, 'PDF_pages': 100, 'candidate_model_count': 2,
+     'existing_15_models_reused_from_PR270_via_fixed_PR280': True, 'existing15_approved_total_changed': False,
+     'candidate_sources_added_to_runtime_or_aggregation': 0, 'confirmed_purchased_SKUs': 0,
+     'confirmed_purchase_time_revisions': 0, 'posting_denominator_increment': 0})
+
+# Consumption is checked by source-code references, saved consumer receipts and authored acknowledgement only.
+read('scripts/serve_research_prototype.py')
+validation = read('evals/pm-r9/20261008/kitchen-intake-validation.json')
+manual_reference = read('data/research/r9-public-runtime-20261008/manual-reference.manifest.json')
+manual_excerpts = read('data/research/r9-public-runtime-20261008/manual-excerpts.manifest.json')
+reference_bundle = read('data/research/r9-public-runtime-20261008/microwave.manual-reference.research-bundle.json')
+read('evals/pm-r9/20261008/compact-guide-live-semantic-review.json')
+consumer_rows = [
+ {'material': 'existing15 manuals', 'received': '확인: fixed catalogue + original SHA audit reused', 'source_code_registry': 'reference subset5 microwave models, not all15', 'saved_consumer': 'reference5 registration receipts, no blanket exact-SKU or model-quality approval'},
+ {'material': 'competitor12 excerpt adapter', 'received': '확인: exact original/adapter provenance', 'source_code_registry': '확인: separate66-source fridge legacy bundle', 'saved_consumer': 'registry candidate/source adapter only; exact selected problem/model-run consumption 미확인'},
+ {'material': 'kimchi6 sources/preview3', 'received': '확인: source SHA/model/conditions; original review IDs unknown', 'source_code_registry': '확인: appended separate bundle', 'saved_consumer': 'saved 10-bundle source selection/export browser receipt; semantic planning source consumption 미확인'},
+ {'material': 'lightwave4 official sources', 'received': '확인: source SHA/model/conditions; customer reviews0', 'source_code_registry': '확인: appended separate bundle', 'saved_consumer': 'saved 10-bundle source selection/export browser receipt; semantic planning source consumption 미확인'},
+ {'material': 'PR280 review candidates4', 'received': 'CORE authored intake confirmed for fixed507218b', 'source_code_registry': 'unchanged/not inserted', 'saved_consumer': 'private C3/C4/X1 notes as CORE reported; production/approved141 consumption0'},
+ {'material': 'new Z330/ML32 manual candidates2', 'received': 'W2 R2 catalogue/PDF/native/visual evidence', 'source_code_registry': 'not inserted', 'saved_consumer': '미확인: new separate candidate evidence awaiting PM/consumer intake'}]
+check('consumer:saved browser count10 has no model or semantic approval', validation['browser_summary']['source_bundle_count'] == 10
+      and validation['browser_summary']['model_calls'] == 0 and not validation['semantic_model_approval'])
+check('consumer:reference5 model scope retained', len(reference_bundle['sources']) == manual_reference['source_count'] == 5
+      and len(manual_excerpts['covered_base_models']) == 5)
+save('consumer-evidence.json', {'id': ID, 'rows': consumer_rows, 'current_live_API_DB_or_model_called': False,
+     'saved_browser_receipt_commit': validation['browser_e2e']['source_commit'],
+     'producer_runtime_registered_false_is_historical_capture_state': True,
+     'intake_runtime_registry_after_manual_start_is_not_current_service_liveness': True,
+     'source_registration_or_reading_is_not_Gold_semantic_or_market_approval': True,
+     'CORE_receipt': core_receipt})
+
+findings = [
+ {'id': 'W2-R2-01', 'status': '미확인', 'subject': 'automatic table graph/approved adapter', 'reason': 'No actual generated output/pin received; planning graph cannot substitute.'},
+ {'id': 'W2-R2-02', 'status': '미확인', 'subject': '141 topic/date approval', 'reason': 'No PM approved version or correction Source ID; keep rows unchanged and month/season denominator0/ratio null.'},
+ {'id': 'W2-R2-03', 'status': '확인', 'subject': 'two newly linked official manuals', 'reason': 'Catalogue model links and document revision/SHA/native/cover verified; aliases3/content2.'},
+ {'id': 'W2-R2-04', 'status': '상충', 'subject': 'unqualified same-condition competitor superiority', 'reason': '870 vs640L, freestanding vsKitchenFit Max and rear-handle depth bases differ. This conflicts with an equal-condition premise; it is not a manufacturer-source factual error.'},
+ {'id': 'W2-R2-05', 'status': '상충', 'subject': 'every exact SKU has every common-manual feature', 'reason': 'Both manuals explicitly declare common scope, and feature/model/app/optional-logo conditions. Do not promote common guidance to every purchased SKU.'},
+ {'id': 'W2-R2-06', 'status': '미확인', 'subject': 'DUE installation 119~120 unit and unquoted answer facts', 'reason': 'Keep written mm. Cabinet600 is quoted; door590/conditional567–600 are producer full-answer claims outside the received excerpt.'},
+ {'id': 'W2-R2-07', 'status': '확인', 'subject': 'two Q&A roles and dated provenance', 'reason': 'Purchase availability and installation inquiry pairs; neither is confirmed product-use discomfort.'},
+ {'id': 'W2-R2-08', 'status': '미확인', 'subject': 'expanded/competitor semantic production consumption', 'reason': 'Source-code registration and saved browser reading are confirmed; actual selected problem/planning input and approval are separate.'}]
+save('findings.json', {'id': ID, 'rows': findings, 'interpretation': 'Source/provenance inspection; no Gold or final scorer decision.'})
+flat = [{'finding_id': f['id'], 'status': f['status'], 'subject': f['subject'], 'reason': f['reason']} for f in findings]
+with (OUT / 'findings.csv').open('w', encoding='utf-8', newline='') as stream:
+    w = csv.DictWriter(stream, fieldnames=list(flat[0])); w.writeheader(); w.writerows(flat)
+save('input-pins.json', {'id': ID, 'main_commit': BASE, 'prior_PR280_commit': PR280,
+     'pins': list({(p['commit'], p['path']): p for p in PINS}.values()),
+     'new_catalogues': [{k: r[k] for k in ('model_id', 'requested_url', 'final_url', 'observed_at', 'http_status', 'bytes', 'sha256')} for r in catalogues],
+     'new_downloads': [{k: r[k] for k in ('candidate_id', 'model_id', 'pdf_url', 'catalogue_response_sha256', 'observed_at', 'http_status', 'bytes', 'pdf_sha256')} for r in pdf_receipts]})
+failed = [r for r in CHECKS if not r['passed']]
+save('inspection-result.json', {'id': ID, 'checked_at': datetime.now(timezone.utc).isoformat(), 'base_commit': BASE,
+     'checks': CHECKS, 'passed': not failed, 'failures': failed, 'scope': 'new material/source/consumer-provenance inspection only',
+     'completed225_replayed': False, '11_questions_rescored': False, 'prior1101_reexecuted': False,
+     'OCR_model_calls': 0, 'product_collector_or_tests_run': False, 'live_DB_API_checked': False,
+     'model_output_semantically_graded': False, 'Gold_or_final_scorer_selected': False, 'email_accessed': False,
+     'new_unique_manual_PDFs': 2, 'confirmed_customer_use_reviews_or_QA_added': 0,
+     'approved_time_denominator_increment': 0, 'ratio': None})
+(OUT / 'inspection-source.py.txt').write_bytes(Path(__file__).read_bytes())
+print(json.dumps({'checks': len(CHECKS), 'passed': not failed, 'failures': failed, 'new_unique_manual_PDFs': 2,
+                  'expansion_sources': len(expansion_rows), 'competitor_sources': len(competitor_rows), 'QA_source_objects': len(qa_rows),
+                  'finding_statuses': dict(Counter(f['status'] for f in findings)), 'automatic_table_status': '검증 불가'}, ensure_ascii=False))
+if failed:
+    raise SystemExit(1)
