@@ -322,7 +322,11 @@ class ResidentOllamaAdapterTests(unittest.TestCase):
                 "method": request.method, "path": request.url.path,
                 "body": json.loads(request.content) if request.content else None,
             })
-            return httpx.Response(200, json={"mock_transport_only": True})
+            # The real adapter consumes iter_raw(); keep this transport response unread.
+            content = json.dumps({"mock_transport_only": True}).encode("utf-8")
+            return httpx.Response(
+                200, stream=httpx.ByteStream(content), headers={"Content-Type": "application/json"}
+            )
 
         config = ModelConfig("http://127.0.0.1:19191", "test-model:q4", "a" * 64)
         return SHARED.ResidentOllamaAdapter(
