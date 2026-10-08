@@ -14,3 +14,7 @@
 현재 연결의 기획 대화 목록이며 브라우저/쿠키를 바꿨을 때 모든 과거 대화를 자동 승계하는 기능은 아니다. 목적·조건을 다듬는 상품기획 흐름이고 범용 자유대화 챗봇 완성을 주장하지 않는다. 실제 고객 원문과 제안 장면·빈도/인과·구매 모델/게시일 미확인의 한계를 유지한다. 기존 큰 JS 청크 경고의 한도를 올리지 않았다.
 
 메일 관련 검색은 DATA 후속/지원 기준 회신을 찾았다. 이번 WEB UI 작업에서 메일을 새로 보내거나 DATA 결과를 대신 승인하지 않았다. 자동화 OFF·새 합성리뷰0·Actions 월5달러 상한·보호 검사 유지. CI와 병합 상태는 PR의 실제 최신 조회 및 후속 delivery 기록을 따른다.
+
+## 공유·정식 병합 상태
+
+[실제 게시/읽기 증거](publish-readback.json): PR284/c20df44 push·OPEN, Issue234 댓글6055583919와 Notion LG/대시보드 갱신·이전 본문 전체 보존 확인. 최신 CI4는 실제 steps0·결제/지출한도 annotations로 차단됐다. main eab85d4는 유지하며 보호/월5달러를 우회하지 않았다. [문서/규칙 gate](gates-validation.json)는 c20df44 PASS, [React 체크](react-review.json)는 고정 코드의 manual review다. 이후 기록-only commit의 코드 bytes는 검증/배포725616c와 동일하게 확인한다.

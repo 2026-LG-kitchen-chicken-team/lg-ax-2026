@@ -23,3 +23,5 @@ web-only 배포에서 모델 PID1216649·터널PID1187003·unit/4슬롯/16K·보
 세부 receipt·원 실패/SHA·화면·실모델/배포 provenance는 [고정 검수 근거](../../../../evals/pm-r9/20261008/chat-ui/README.md)에 연결한다. [Figma](https://www.figma.com/design/uxM9HUb2RMXyVzkIVOwwU6?node-id=5-294)와 [공유 프로토타입](https://consumption-tied-mens-alleged.trycloudflare.com/)을 사용자에게 제공한다. 자연어 선호를 받아 Figma 수정→실제 웹 구현→화면 검수로 진행하며 자동 양방향 동기화를 약속하지 않는다.
 
 남은 것은 필수 CI/정식 병합·운영 인수, CORE 독립 의미/언어 품질·사용자 검토·제출물이다. 이번 시각 작업으로 부모 Done이나 공식 상태를 올리지 않는다. 기존 DATA 관련 메일/PR 인수는 별도 큐이며 개인정보를 공개 문서로 복사하거나 다른 팀원의 결과를 대신 완료 기록하지 않았다. 현재 연결 밖의 대화 자동 승계는 후속 범위다. 자동화 OFF·새 합성리뷰0·새 유료모델API0·월5달러 상한 유지.
+
+종료 공유: PR284를 c20df44로 push하고 최종 범위의 제목/본문으로 갱신·채팅에 연결했다. Issue234의 [수동 결과 댓글](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/234#issuecomment-6055583919)을 게시했고 Notion LG/대시보드 새 화면 결정을 갱신·재조회했다. 두 페이지의 이전 본문 전체 보존/새 Figma 링크/unknown0을 확인했다. 새 CI4는 steps0에서 결제/지출한도로 차단됐으며 실제 annotations를 보존했다. 보호나 월5달러 상한을 바꾸거나 병합하지 않았다. 규칙·계약·phase2·문서 gate는 c20df44의 격리 실행에서 PASS다. 실제 배포 코드와 결과 검수는 725616c에 고정하고 이후 기록-only commit을 구분한다.

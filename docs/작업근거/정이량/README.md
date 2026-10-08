@@ -5,7 +5,7 @@
 
 - 최신 자연어 요청에 따라 밝은 대화형 기획 작업실·카드/그래프·원문 패널과 편집 가능한 Figma를 구현·검수·공유 배포했다. Figma 보류는 이번 직접 요청으로 해제했으며 자동화는 OFF다.
 - [상세 기록](2026-10-08/정이량-E061-CHAT-PLANNING-UI.md) · [Figma 디자인](https://www.figma.com/design/uxM9HUb2RMXyVzkIVOwwU6?node-id=5-294) · [공유 서빙](../../pm/prototype-sharing-20261008.md).
-- 같은 Qwen·4슬롯·자료/계약을 보존한다. 검수·배포·main 인수·모델 품질은 실제 증거로 각각 판정한다.
+- 같은 Qwen·4슬롯·자료/계약을 보존한다. 화면과 실제 조건 수정은 검수·배포 완료다. PR284는 필수 CI 결제/지출 차단으로 미병합이며 main 인수·의미 품질은 별도다.
 - 직전 요약 원바이트 [snapshot](2026-10-08/014-prior-resume.txt).
 
 <!-- member-log:owner-updates:end -->
