@@ -1,0 +1,119 @@
+{
+  "audit": "PASS_NEW_DATA_AND_RULES_ONLY",
+  "execution_type": "New standalone source-length/input-receipt data audit only; no repository import or product/model execution",
+  "new_model_OCR_calls": 0,
+  "old_225_11_reexecuted": false,
+  "actual_input_complete_verified": null,
+  "old_operating_experiments_reexecuted": false,
+  "checks": [
+    {
+      "check": "input-receipt-audit",
+      "exit_code": 0,
+      "argv": [
+        "python",
+        "-I",
+        "-B",
+        "evals/data-parallel/w3/20261008-01a10c5c-r2-6d50a29f/audit-source.py.txt"
+      ],
+      "log_sha256": "33059eeef58a12678706d956e21435f70f1beecd17a2a2b442659650fb74acf0",
+      "container_boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "image_pin": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+      "source_code_commit": "eab85d48385f965eef48c07a6cdd8f6fd9851c62",
+      "network": "none",
+      "authentication_mounted": false,
+      "private_ZIP_Gold_mail_controller_mounted": false,
+      "finished_at_utc": "2026-10-08T05:24:44.153500+00:00",
+      "scope": "Standalone new source-length/input-receipt data audit and exact rule check only."
+    },
+    {
+      "check": "agent-rules",
+      "exit_code": 0,
+      "argv": [
+        "python",
+        "-I",
+        "-B",
+        "scripts/sync_agent_rules.py",
+        "--check"
+      ],
+      "log_sha256": "56b21f915cb5a695479359f4ca6063582b0b9bcbdaee1869782a2a805a2a82cd",
+      "container_boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "image_pin": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+      "source_code_commit": "eab85d48385f965eef48c07a6cdd8f6fd9851c62",
+      "network": "none",
+      "authentication_mounted": false,
+      "private_ZIP_Gold_mail_controller_mounted": false,
+      "finished_at_utc": "2026-10-08T05:24:47.117077+00:00",
+      "scope": "Standalone new source-length/input-receipt data audit and exact rule check only."
+    }
+  ],
+  "preparation_failures_preserved": "preparation-history.json",
+  "executed_source_auditor_sha256": "5fdeb86a75b022313073941291497f48c10a85f4348739f84fb9def0ad6ce520",
+  "published_source_auditor_sha256": "42f68ba79e4ca29edaccb3b47d6e396563086ec2b7198b35557cb8dd4ac24f3e",
+  "postcheck_publication_normalization": {
+    "only_removed_trailing_EOF_blank_lines": true,
+    "changed_new_files": [
+      {
+        "path": "evals/data-parallel/w3/20261008-01a10c5c-r2-6d50a29f/README.md",
+        "before_sha256": "b0782fe771bc3f50206e6b596c1adf6e203d70f54e8e12b77748c706bdabaf99",
+        "after_sha256": "e2254a11335ec3da98196a700b158c70e8def4df61d53e051e0c24064131fb47",
+        "only_EOF_blank_lines_removed": true
+      },
+      {
+        "path": "evals/data-parallel/w3/20261008-01a10c5c-r2-6d50a29f/audit-source.py.txt",
+        "before_sha256": "5fdeb86a75b022313073941291497f48c10a85f4348739f84fb9def0ad6ce520",
+        "after_sha256": "42f68ba79e4ca29edaccb3b47d6e396563086ec2b7198b35557cb8dd4ac24f3e",
+        "only_EOF_blank_lines_removed": true
+      },
+      {
+        "path": "evals/data-parallel/w3/20261008-01a10c5c-r2-6d50a29f/work-record.md",
+        "before_sha256": "3670985afeef934b4ee8c9da0d071480eee9d9d07a7e0336b20dc66126c34bda",
+        "after_sha256": "269ee23deae219e4da14c7bc998f12a6d3f9184f380cb982a98a06ca64ac865d",
+        "only_EOF_blank_lines_removed": true
+      },
+      {
+        "path": "docs/작업기록/세션/신진하/DATA-W3-01a10c5c-r2-6d50a29f.md",
+        "before_sha256": "a084c3e4a27b298cf54d3c5725171a82c136682806b711e12ab0c83ea62440be",
+        "after_sha256": "e438006eb45f6ba2b76a7449dea4dbfea29cac7033707ce6ea78ef84926f83e2",
+        "only_EOF_blank_lines_removed": true
+      },
+      {
+        "path": "docs/작업근거/세션/신진하/DATA-W3-01a10c5c-r2-6d50a29f-E.md",
+        "before_sha256": "ce04bbcac4028d84a8fffa75cc1700c5dc192a8d3fbbc53d87ef3106dc7b4224",
+        "after_sha256": "e09d40b7746a0b4cd4e18811d3598f2b918b5d04a984e491cddf35bf7ff32043",
+        "only_EOF_blank_lines_removed": true
+      }
+    ],
+    "execution_logic_or_input_data_changed": false,
+    "no_broadened_or_repeated_checks": true
+  }
+}
