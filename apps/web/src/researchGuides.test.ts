@@ -83,9 +83,9 @@ describe('official reference guide export', () => {
     const result = guideResponse(); const transport = transportFor(result); const saved: Array<{ name: string; content: string }> = [];
     vi.spyOn(views, 'download').mockImplementation((name, _type, content) => { saved.push({ name, content }); });
     const { host } = await panel(transport);
-    const htmlButton = [...host.querySelectorAll<HTMLButtonElement>('button')].find(button => button.textContent === '선택 공식자료 안내서 HTML')!;
+    const htmlButton = [...host.querySelectorAll<HTMLButtonElement>('button')].find(button => button.textContent === '공식 자료 안내서 (.html)')!;
     expect(htmlButton.disabled).toBe(true);
-    await click(host, '표시 자료 모두 선택'); await click(host, '선택 공식자료 안내서 HTML'); await click(host, '선택 공식자료 안내서 Markdown');
+    await click(host, '표시 자료 모두 선택'); await click(host, '공식 자료 안내서 (.html)'); await click(host, '공식 자료 안내서 (.md)');
     expect(saved).toEqual([{ name: `official-guide-${bundle.bundle_id}.html`, content: result.html }, { name: `official-guide-${bundle.bundle_id}.md`, content: result.markdown }]);
     expect(host.querySelector('#guide-export-only')).toBeNull();
     expect(host.querySelector('iframe')).toBeNull(); expect(host.textContent).toContain('구매 SKU의 적용을 확정하지 않습니다');
@@ -97,7 +97,7 @@ describe('official reference guide export', () => {
     const transport = transportFor(); const { host, root } = await panel(transport); await click(host, '표시 자료 모두 선택');
     let finish!: (value: Response) => void; transport.mockImplementation(() => new Promise<Response>(resolve => { finish = resolve; }));
     const save = vi.spyOn(views, 'download').mockImplementation(() => {});
-    await act(async () => { const button = [...host.querySelectorAll<HTMLButtonElement>('button')].find(item => item.textContent === '선택 공식자료 안내서 HTML')!; button.click(); button.click(); });
+    await act(async () => { const button = [...host.querySelectorAll<HTMLButtonElement>('button')].find(item => item.textContent === '공식 자료 안내서 (.html)')!; button.click(); button.click(); });
     expect(transport.mock.calls.filter(call => call[0] === '/api/research/guides')).toHaveLength(1);
     expect(host.querySelector('[role="status"]')?.textContent).toContain('모델은 호출하지 않습니다');
     expect([...host.querySelectorAll<HTMLInputElement>('.research-source-check input')].every(item => item.disabled)).toBe(true);
@@ -117,10 +117,10 @@ describe('official reference guide export', () => {
     await act(async () => { const token = host.querySelector<HTMLInputElement>('#research-token')!; Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(token, 'a'.repeat(40)); token.dispatchEvent(new Event('input', { bubbles: true })); });
     await act(async () => host.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })));
     const options = host.querySelector('#research-bundle')!.textContent!;
-    expect(options).toContain('R9 기본 자료'); expect(options).toContain('이전 보존 자료'); expect(options).toContain('설명서 참고 · 리뷰 없음'); expect(options).toContain('자료 5 / 리뷰 0');
+    expect(options).toContain('리뷰·제품 문서'); expect(options).toContain('보관 자료'); expect(options).toContain('제품 문서'); expect(options).toContain('5건');
     const transport = transportFor(); const mounted = await panel(transport); await click(mounted.host, '표시 자료 모두 선택');
     transport.mockResolvedValue(response({ error: { code: 'DATASET_MISMATCH', message: '자료 버전을 다시 확인해 주세요.' } }, 409));
-    const save = vi.spyOn(views, 'download').mockImplementation(() => {}); await click(mounted.host, '선택 공식자료 안내서 HTML');
+    const save = vi.spyOn(views, 'download').mockImplementation(() => {}); await click(mounted.host, '공식 자료 안내서 (.html)');
     expect(mounted.host.querySelector('[role="alert"]')?.textContent).toContain('자료 버전');
     expect(mounted.host.querySelectorAll('.research-source-row')).toHaveLength(5); expect(save).not.toHaveBeenCalled();
     expect(mounted.host.querySelector('[role="status"]')).toBeNull();

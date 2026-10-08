@@ -115,7 +115,7 @@ describe('actual-source research screen state and revision flow', () => {
     input.dispatchEvent(new Event('input', { bubbles: true }));
   }); };
   const click = async (text: string) => { await act(async () => {
-    const button = [...host.querySelectorAll<HTMLButtonElement>('button')].find(item => item.textContent === text);
+    const button = [...host.querySelectorAll<HTMLButtonElement>('button')].find(item => (item.getAttribute('aria-label') ?? item.textContent) === text);
     if (!button) throw new Error(`missing ${text}`); button.click();
   }); };
   const connect = async () => { await enter('#research-token', 'x'.repeat(40)); await act(async () => host.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))); };
@@ -305,7 +305,7 @@ describe('actual-source research screen state and revision flow', () => {
     const fetch = api(); vi.stubGlobal('fetch', fetch); await act(async () => root.render(createElement(ResearchPlanningView))); await connect(); await choose();
     let finish!: (value: Response) => void;
     fetch.mockImplementation(() => new Promise<Response>(resolve => { finish = resolve; }));
-    await act(async () => { const button = [...host.querySelectorAll<HTMLButtonElement>('button')].find(item => item.textContent === '기획 시작')!; button.click(); button.click(); });
+    await act(async () => { const button = host.querySelector<HTMLButtonElement>('.chat-send')!; button.click(); button.click(); });
     expect(fetch.mock.calls.filter(call => call[1]?.method === 'POST')).toHaveLength(1);
     await click('연결 해제'); await act(async () => finish(response(heldBrief())));
     expect(host.querySelector('[aria-label="실제 자료 기획 결과"]')).toBeNull(); expect(host.textContent).toContain('자료 연결을 기다리고');
