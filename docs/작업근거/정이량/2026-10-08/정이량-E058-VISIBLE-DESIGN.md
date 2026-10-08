@@ -20,3 +20,9 @@
 사용자 브라우저의 실제73원문/48리뷰와 저장조건 기획을 불러와2560px·390px에서 시각 검수했다. 원문6선택, 설정/원문/결과/관계 이동 시 선택6·저장입력6 유지, 제목 포커스를 확인했다. 모바일 문서너비375px/viewport390px으로 가로 넘침이 없고 한 열 결과가 표시된다. 임시viewport를 해제하고 기본 데스크톱으로 복귀했다. 데스크톱 개요/결과/그래프·모바일 결과4스크린샷을 사용자 outputs에 저장했다.
 
 공개 범위 근거는 [visible-design-review.json](../../../../evals/pm-r9/20261008/visible-design-review.json)에 연결한다. 저장된 AI 초안의 의미 오류·실모델 수정·독립 품질 검수는 기존 큐에 남아 있다.
+
+## 최종 고정 빌드·범위 분리
+
+2caeb44279c459ce8c9a3b88d54da481b6118aea의 최종 CSS/이력 제목을 인증 없는 Docker에서 한 번 빌드해 tsc -b/Vite PASS·source_changed[]·모델0을 확인했다. 별도12개 규칙/계약/하네스/기록/문서/manifest/MCP/시나리오 검사는 통과했다. 도구가 추가한 전체 Ruff 스캔은134건/75파일에서 실패했으며 해당75파일은 시작main eab85d4와 원바이트 동일이고 Python/설정/워크플로 diff0이다. 현재 GitHub 워크플로에는 Ruff 명령이 없다. 별도 기존 lint 잔여로 기록하며 전체 검사 통과로 숨기거나 범위 밖 코드를 수정하지 않는다.
+
+직전 owner README2개의 원바이트 snapshot에 .gitattributes -text를 적용하고 Git index/원파일 bytes 동등을 확인했다. Git 첫 text 정규화가 있었으므로 원바이트를 다시 stage해 보존했다. 최종 후속 commit은 증거/원 snapshot·기록만이며 제품 TSX/CSS는 고정2ca와 동일하게 대조한다. 필수 remote CI·PR/병합은 별도 상태다.
