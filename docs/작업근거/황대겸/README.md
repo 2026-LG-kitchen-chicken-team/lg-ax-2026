@@ -1,6 +1,9 @@
 # 황대겸 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-08 CORE-R9-INTEGRATION-INTAKE-01a10729-01: PM 통합 고정버전 native/공개 집계/공식 안내서 기존34검사와 받은 원문/출력 발췌 검토; 제품·모델0, 실제 효과·raw/HTTP-MCP/PM 인수 미완료.
+- [상세](2026-10-08/CORE-R9-INTEGRATION-INTAKE-01a10729-01.md) · [고정 통합/검증](../../../evals/core-manual-quality/20261008/r9-integration-intake/README.md).
+
 - 2026-10-08 CORE-C3-COMPARISON-GUARD-01a10729-01: 원 후기848850/D3 비교 조건을 실제 기획 지침에 전달; 설치·용량·외형/접근·기존 기능 한계 보존. 실모델0·효과/PM 인수 미검증. 기존36검사/원문/정적 검사 PASS.
 - [상세](2026-10-08/CORE-C3-COMPARISON-GUARD-01a10729-01.md) · [원문/고정 조건](../../../evals/core-manual-quality/20261008/c3-comparison-guard/README.md).
 
