@@ -19,3 +19,18 @@ PR267은 기존CI4SUCCESS/OPEN, PR272/273/281/282/283은 각CI4FAILURE/OPEN·리
 새 운영/recipient 증빙이 없어 준비 PR을 추가하지 않고 기존PR283을 유지한다. 완료225/11·109HTTP/51재시작·기존producer/모델/OCR·운영 호출/DB/서버재시작/메일 중복 발송0. 기존코드·자료·개인README·타창 파일 수정0.
 
 **다음 하나:** PM의 기존 전송 경로·수신자/PC·input-only 범위 승인을 받은 뒤 같은 ZIP 전달과 CORE 수신증 대조. Gold·전체raw/usage·자동표·최종채점 완료를 ZIP 전송의 추가 선행조건으로 붙이지 않는다.
+
+## 이후 도착한 PM284 부분 필드 인수
+
+위 미수신/로컬 기록은 첫 조회 시점이다. 이후 [PM 공유 서빙 보고6052368609](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/234#issuecomment-6052368609)와 PR284 `02ba9913efc0c449aa4f3cb46727162f2057cd71`에서 기존 보존된 새 run 필드를 받았다. [원JSON 파일](sources/pm284-serving-proof.json) 4,387bytes/SHA `0673d71dd84c2855e5f2c34a1aa9549ce84ff7d11b4d61af3bc5752145f4edd0`를 원 Git blob과 같은 바이트로 복사했다. 이 새 범위는 부분 PR로 게시한다.
+
+| 연결 | 판정·한계 |
+| --- | --- |
+| 새 run/brief | `run-f0ebcae46f5e4bbd8f087161fd801ce5` / `brief-b95f90365f1d46968ae0707b2cae7f28`. 현재 필요한 정상1f83/조건754268 원파일과 별도 ID이며 대체하지 않음 |
+| 선택Source6 | PM record의 /actual_generation/runs/0/runtime/user_selected_source_ids 6개가 main 고정 dishwasher catalog에 각1회 존재. 원text·loaded version/input SHA는 runtime record에 없어 보존 판정null |
+| 모델 | runtime.model은 명시적null 유지. runtime.model_digest와 models.models[0].digest가 내부 일치. 서비스 name은 별도 qwen3.8:27b-q4_K_M이며 null 필드를 자동 채우지 않음 |
+| page_model·구매SKU | 후기 page_model은 DUE4BGL1E/DFE5BGE/DUE6BGL2E, purchased_model4개 모두null/strict eligibility false. 공용 설명서2개 page_model/purchased_model null. 카탈로그 사실을 실제 선택 시점의 정확SKU 인증으로 바꾸지 않음 |
+| 판본·시간 | catalog의 document_version/PDF49쪽·text SHA만 참조 pin으로 연결. posted_at·구매당시판본은 미확인 유지. page-only/현재 참조 tag와 실제 구매판본은 구분 |
+| usage·원wire·DB | discover/plan 각 input/output tokens 명시적null 유지. 원모델 답변/public output SHA·HTTP/MCP 원envelope·DB snapshot/같은DB 전후 미수신. 새 브라우저별 SQLite라는 PM 안내는 기존DB 동일성 증명이 아님 |
+
+[W1 인계 필드·경로·scope](pm284-intake.json). 받은 범위는 runtime/선택 ID/모델 필드이며 problem/concept 원문은 없다. W1의 기존두run 의미 검수·동일7/무Gold4 답변을 대신하지 않는다. 공개 사이트 새호출/모델/DB/서비스 재실행0. 새 필드의 인수·출처 대조만 수행했다.
