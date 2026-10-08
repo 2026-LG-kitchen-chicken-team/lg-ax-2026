@@ -1,0 +1,62 @@
+{
+  "source_commit": "5beedded4717415ad9c5cc081a017cd55b319509",
+  "execution_id": "pm-parallel4-668e0b9d9df549779da62a8a54a49ca1",
+  "phase": "web",
+  "returncode": 0,
+  "stopped_reason": null,
+  "artifacts": "C:\\LGAX-execution\\jeongiryang\\pm-parallel4-668e0b9d9df549779da62a8a54a49ca1-artifacts",
+  "boundary": {
+    "backend": "docker",
+    "image_id": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+    "role": "validator",
+    "uid": 1000,
+    "readonly_root": true,
+    "caps_dropped": true,
+    "no_new_privileges": true,
+    "network": "none",
+    "mount_targets": [
+      "/artifacts",
+      "/workspace"
+    ],
+    "publisher_credentials_mounted": false,
+    "ai_profile_mounted": false
+  },
+  "validation": {
+    "phase": "web",
+    "commands": [
+      {
+        "command": [
+          "node",
+          "node_modules/vitest/vitest.mjs",
+          "run",
+          "src/researchFlow.test.ts",
+          "src/researchSelection.test.ts",
+          "src/researchSourcesPanel.test.ts",
+          "src/researchGraph.test.ts",
+          "src/researchIntake.test.ts",
+          "src/researchKitchenIntake.test.ts",
+          "src/conceptStoryboard.test.ts",
+          "src/researchGuides.test.ts"
+        ],
+        "returncode": 0
+      },
+      {
+        "command": [
+          "node",
+          "--test",
+          "scripts/safe-ci.check.mjs"
+        ],
+        "returncode": 0
+      },
+      {
+        "command": [
+          "npm",
+          "run",
+          "build"
+        ],
+        "returncode": 0
+      }
+    ],
+    "model_calls": 0
+  }
+}

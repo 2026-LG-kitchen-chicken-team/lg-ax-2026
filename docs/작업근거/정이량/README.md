@@ -1,12 +1,12 @@
 # 정이량 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
-## 최신 재개 요약 — 정이량-E059-SHARED-PROTOTYPE
+## 최신 재개 요약 — 정이량-E060-PARALLEL-FOUR
 
-- 사용자 지시로 팀원용 공유 웹·API·Qwen27B를 종료 예약 없는 연구실 서비스로 배포했다. 범위·주소·한계는 [공유 서빙](../../pm/prototype-sharing-20261008.md)을 따른다.
-- 실제 공개 웹 선택6·모델2콜·기획 complete 확인. main 병합/독립 의미 품질/부모 Done은 별개이며 자동 Worker OFF·Figma0·새 합성리뷰0다.
-- [012/E059 상세](2026-10-08/정이량-E059-SHARED-PROTOTYPE.md) · [수동 큐](../../pm/manual-queue-20261008.json). 서버 장애/재부팅과 Quick Tunnel 주소 변경의 제한을 보존한다.
-- 직전 입구의 원바이트 [snapshot](2026-10-08/012-prior-resume.txt).
+- 사용자 지시의 실제 모델4 동시 요청을 공유 링크에 배포했다. Qwen27B 같은 GGUF·GPU3·native4슬롯·16K 문맥 분리를 사용한다. 주소/수명은 [공유 서빙](../../pm/prototype-sharing-20261008.md)을 따른다.
+- 실제 독립4세션 기획·저장·소유자 격리와 GPU4슬롯을 확인했다. 구조적 완주와 의미 품질·main 병합·CI·부모 Done은 별개다. 자동 Worker OFF·Figma0·새 합성리뷰0.
+- [013/E060 상세](2026-10-08/정이량-E060-PARALLEL-FOUR.md) · [수동 큐](../../pm/manual-queue-20261008.json). 원 CPU timeout·Ollama 강제1 및 WEB 실패를 보존했다.
+- 직전 입구의 원바이트 [snapshot](2026-10-08/013-prior-resume.txt).
 
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.
