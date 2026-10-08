@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, createElement } from 'react';
+import { act, createElement, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -8,12 +8,13 @@ import App from './App';
 import { heldBrief, REAL_RESEARCH_BUNDLE } from './fixtures/research-test-data';
 import * as views from './PlanningViews';
 import type { PlanningBrief } from './research';
+import { createSharedSessionLoader } from './sharedSession';
 
 describe('actual-source research screen state and revision flow', () => {
   let host: HTMLDivElement; let root: Root;
   const response = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
   beforeEach(() => { vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true); host = document.createElement('div'); document.body.append(host); root = createRoot(host); });
-  afterEach(async () => { await act(async () => root.unmount()); host.remove(); vi.unstubAllGlobals(); });
+  afterEach(async () => { if (host.isConnected) await act(async () => root.unmount()); host.remove(); vi.unstubAllGlobals(); });
   const enter = async (selector: string, value: string) => { await act(async () => {
     const input = host.querySelector<HTMLInputElement | HTMLTextAreaElement>(selector)!;
     const prototype = input.tagName === 'TEXTAREA' ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
@@ -35,9 +36,64 @@ describe('actual-source research screen state and revision flow', () => {
     });
   }
   it('opens the new flow independently of legacy bootstrap or synthetic example controls', async () => {
-    const fetch = vi.fn(); vi.stubGlobal('fetch', fetch); await act(async () => root.render(createElement(App)));
+    const fetch = vi.fn().mockResolvedValue(response({}, 404)); vi.stubGlobal('fetch', fetch); await act(async () => root.render(createElement(App)));
     expect(host.querySelector('[aria-label="실제 자료 작업실 연결"]')).not.toBeNull();
-    expect(host.textContent).not.toContain('계약 fixture'); expect(fetch).not.toHaveBeenCalled();
+    expect(host.textContent).not.toContain('계약 fixture'); expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch.mock.calls[0][0]).toBe('/api/prototype/session');
+    expect(host.querySelector('#research-token')).not.toBeNull();
+    expect(host.querySelectorAll('nav[aria-label="기획 작업 영역"] button')).toHaveLength(6);
+  });
+  it('connects a shared link once in StrictMode and retains the real-source planning flow without a token form or legacy menus', async () => {
+    const token = 's'.repeat(48);
+    const fetch = vi.fn().mockImplementation(async (url: string, options?: RequestInit) => {
+      if (url === '/api/prototype/session') return response({ shared_prototype: true, token });
+      if (url.endsWith('/bundles')) return response({ bundles: [{ bundle_id: REAL_RESEARCH_BUNDLE.bundle_id, product_group: 'fridge', analysis_scope: 'product_group', source_count: 1, review_count: 1 }] });
+      if (url.includes('/bundles/')) return response(REAL_RESEARCH_BUNDLE);
+      if (url.endsWith('/planning-runs') && options?.method === 'POST') return response(heldBrief());
+      return response({}, 404);
+    });
+    vi.stubGlobal('fetch', fetch);
+    await act(async () => root.render(createElement(StrictMode, null, createElement(App))));
+    expect(fetch.mock.calls.filter(call => call[0] === '/api/prototype/session')).toHaveLength(1);
+    expect(fetch.mock.calls.filter(call => call[0].endsWith('/bundles'))).toHaveLength(1);
+    expect(fetch.mock.calls[0][1]).toMatchObject({ method: 'GET', credentials: 'same-origin', cache: 'no-store' });
+    expect(host.querySelector('#research-token')).toBeNull();
+    expect(host.querySelectorAll('nav[aria-label="기획 작업 영역"] button')).toHaveLength(1);
+    expect(host.textContent).toContain('공유 프로토타입 연결됨');
+    expect(host.textContent).not.toContain(token); expect(host.textContent).not.toContain('계약 fixture');
+    await choose(); expect(host.textContent).toContain(REAL_RESEARCH_BUNDLE.sources[0].text);
+    await click('새 기획 생성');
+    const writes = fetch.mock.calls.filter(call => call[1]?.method === 'POST');
+    expect(writes).toHaveLength(1);
+    expect(new Headers(writes[0][1]?.headers).get('Authorization')).toBe(`Bearer ${token}`);
+    expect(host.querySelector('[aria-label="실제 자료 기획 결과"]')).not.toBeNull();
+    expect(fetch.mock.calls.some(call => call[0] === '/api/bootstrap' || call[0].startsWith('/api/workspace'))).toBe(false);
+  });
+  it('does not connect or update the screen from a shared-session response arriving after unmount', async () => {
+    let finish!: (value: Response) => void;
+    const fetch = vi.fn().mockImplementation(() => new Promise<Response>(resolve => { finish = resolve; }));
+    vi.stubGlobal('fetch', fetch);
+    await act(async () => root.render(createElement(StrictMode, null, createElement(App))));
+    expect(fetch).toHaveBeenCalledTimes(1);
+    await act(async () => root.unmount()); host.remove();
+    await act(async () => finish(response({ shared_prototype: true, token: 's'.repeat(48) })));
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(host.textContent).toBe('');
+  });
+  it('keeps shared-session failures explicit and does not silently expose the manual or legacy interface', async () => {
+    const fetch = vi.fn().mockResolvedValue(response({}, 503)); vi.stubGlobal('fetch', fetch);
+    await act(async () => root.render(createElement(App)));
+    expect(host.querySelector('[role="alert"]')?.textContent).toContain('공유 프로토타입 연결을 확인하지 못했습니다');
+    expect(host.querySelector('#research-token')).toBeNull();
+    expect(host.querySelectorAll('nav[aria-label="기획 작업 영역"] button')).toHaveLength(1);
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+  it('rejects a malformed shared credential without persisting it or automatically repeating the session request', async () => {
+    const transport = vi.fn().mockResolvedValue(response({ shared_prototype: true, token: 'invalid session value' }));
+    const load = createSharedSessionLoader(transport);
+    await expect(load()).rejects.toThrow('공유 프로토타입 연결을 확인하지 못했습니다');
+    await expect(load()).rejects.toThrow('공유 프로토타입 연결을 확인하지 못했습니다');
+    expect(transport).toHaveBeenCalledTimes(1);
   });
   it('does not fetch or offer invented results before authentication, and clearly shows endpoint pending', async () => {
     const fetch = vi.fn().mockResolvedValue(response({ error: { code: 'NOT_IMPLEMENTED' } }, 501)); vi.stubGlobal('fetch', fetch);

@@ -10,6 +10,7 @@ import { buildConceptStoryboard, exportConceptStoryboard } from './conceptStoryb
 import { coverageText, summaryCoverageView } from './researchCoverage';
 import { planningInputScopeLabel } from './researchSelection';
 import type { PlanningBrief, ResearchBundle, ResearchBundleSummary, ResearchProblem } from './research';
+import type { SharedPrototypeSession } from './sharedSession';
 import './research.css';
 
 const GOALS = ['고객 자료에서 아직 남은 사용 부담을 찾아 개선안을 제안하기', '설치·첫 사용 과정의 경험 개선하기', '기존 기능과 고객 기대의 차이를 비교하기', '경쟁 제품과 차별화할 기회 탐색하기'];
@@ -93,7 +94,11 @@ function BriefResult({ brief, bundle, onInspect, onReuseProblem }: { brief: Plan
   </section>;
 }
 
-export function ResearchPlanningView() {
+export function ResearchPlanningView({ sharedSession, sharedConnectionState }: {
+  sharedSession?: SharedPrototypeSession;
+  sharedConnectionState?: 'checking' | 'unavailable';
+} = {}) {
+  const sharedMode = Boolean(sharedSession || sharedConnectionState);
   const [tokenInput, setTokenInput] = useState('');
   const client = useRef<ResearchClient | null>(null);
   const generation = useRef(0);
@@ -122,12 +127,21 @@ export function ResearchPlanningView() {
   function resetResults() { setBundle(null); setBundleChoice(''); setHistory([]); setRunChoice(''); setInspectId(''); setRestoreId(''); setSelectedSourceIds([]); }
   async function connect(event: FormEvent) {
     event.preventDefault(); if (busyRef.current) return;
+    await connectToken(tokenInput.trim());
+  }
+  async function connectToken(token: string) {
+    if (busyRef.current) return;
     const operation = begin(); resetResults(); setConnected(false); setBundles([]);
-    const token = tokenInput.trim(); const next = new ResearchClient(() => token); client.current = next; setTokenInput('');
+    const next = new ResearchClient(() => token); client.current = next; setTokenInput('');
     try { const listed = await next.listBundles(operation.signal); if (operation.current !== generation.current) return; setBundles(listed); setConnected(true); }
     catch (failure) { if (operation.current === generation.current) { setError(errorMessage(failure)); client.current = null; } }
     finally { if (operation.current === generation.current) { busyRef.current = false; setBusy(false); } }
   }
+  useEffect(() => {
+    if (!sharedSession) return;
+    void connectToken(sharedSession.token);
+    return () => { generation.current++; controller.current?.abort(); client.current = null; busyRef.current = false; };
+  }, [sharedSession]);
   function disconnect() {
     generation.current++; controller.current?.abort(); client.current = null; busyRef.current = false;
     setBusy(false); setConnected(false); setBundles([]); setTokenInput(''); resetResults(); setError('');
@@ -184,7 +198,7 @@ export function ResearchPlanningView() {
         <p className="research-overview-footnote">{selected ? '현재 선택과 저장된 기획의 입력 범위는 서로 다를 수 있습니다. 결과에서 입력 범위를 확인하세요.' : '수집되지 않은 경험은 만들지 않습니다. 자료의 한계도 함께 확인합니다.'}</p>
       </aside>
     </section>
-    <section className="research-connection panel" aria-label="실제 자료 작업실 연결"><div><strong>{connected ? '실제 자료 작업실 연결됨' : '실제 자료 작업실 연결'}</strong><p>작업실 토큰은 현재 화면 메모리에만 보관됩니다. 공개 원문만 이 흐름에 사용합니다.</p></div>{connected ? <button type="button" className="secondary-button" onClick={disconnect}>연결 해제</button> : <form onSubmit={connect}><label className="sr-only" htmlFor="research-token">실제 자료 작업실 토큰</label><input id="research-token" type="password" autoComplete="off" spellCheck={false} placeholder="작업실 토큰" value={tokenInput} onChange={event => setTokenInput(event.target.value)} disabled={busy} /><button className="primary-button" type="submit" disabled={busy || !tokenInput.trim()}>{busy ? '연결 중…' : '실제 자료 연결'}</button></form>}</section>
+    <section className="research-connection panel" aria-label="실제 자료 작업실 연결"><div><strong>{sharedMode ? connected ? '공유 프로토타입 연결됨' : '공유 프로토타입 연결 확인' : connected ? '실제 자료 작업실 연결됨' : '실제 자료 작업실 연결'}</strong><p>{sharedMode ? '이 링크에서 실제 자료로 기획 초안을 만들 수 있습니다. AI 초안은 원문과 대조해 검토해 주세요.' : '작업실 토큰은 현재 화면 메모리에만 보관됩니다. 공개 원문만 이 흐름에 사용합니다.'}</p></div>{sharedMode ? <div>{busy || sharedConnectionState === 'checking' ? <span role="status">공유 자료 연결 중…</span> : !connected && sharedSession ? <button type="button" className="secondary-button" onClick={() => void connectToken(sharedSession.token)}>다시 연결</button> : null}</div> : connected ? <button type="button" className="secondary-button" onClick={disconnect}>연결 해제</button> : <form onSubmit={connect}><label className="sr-only" htmlFor="research-token">실제 자료 작업실 토큰</label><input id="research-token" type="password" autoComplete="off" spellCheck={false} placeholder="작업실 토큰" value={tokenInput} onChange={event => setTokenInput(event.target.value)} disabled={busy} /><button className="primary-button" type="submit" disabled={busy || !tokenInput.trim()}>{busy ? '연결 중…' : '실제 자료 연결'}</button></form>}</section>
     {error ? <div className="research-error" role="alert"><strong>요청을 완료하지 못했습니다</strong><p>{error}</p><p>기존 결과가 있다면 그대로 보존됩니다. 저장 요청은 자동 재전송하지 않습니다.</p></div> : null}
     {!connected ? <section className="research-empty panel"><h2>자료 연결을 기다리고 있습니다</h2><p>서버에 연결하면 등록된 실제 자료 묶음이 표시됩니다.<br />합성 리뷰나 미리 만들어 둔 기획 결과로 대신 표시하지 않습니다.</p></section> : <>
       {bundle ? <WorkspaceNavigation hasResult={selected !== null} /> : null}

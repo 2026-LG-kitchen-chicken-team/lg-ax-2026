@@ -13,6 +13,8 @@ import type { DataMode, Feature, PlanningRequest, RunSnapshot } from './planning
 import { PendingJudgement } from './PendingJudgement';
 import { ReviewTrendsPanel } from './ReviewTrendsPanel';
 import { ResearchPlanningView } from './ResearchPlanningView';
+import { createSharedSessionLoader } from './sharedSession';
+import type { SharedPrototypeSession } from './sharedSession';
 import { ConceptsView, download, FixtureBanner, HistoryView, ModeSwitch, RequestInsights, ServerEvidenceSearch, WorkspaceBar } from './PlanningViews';
 import { currentEvidenceForSnapshot } from './EvidenceTracePanel';
 import type { MeasureControls } from './PlanningViews';
@@ -176,7 +178,22 @@ const SAVED_TITLE: Record<string, string> = {
 
 export default function App() {
   const [view, setView] = useState<View>('research');
-  const researchActive = view === 'research';
+  const [loadSharedSession] = useState(() => createSharedSessionLoader());
+  const [sharedAccess, setSharedAccess] = useState<
+    { status: 'checking' | 'manual' } | { status: 'shared'; session: SharedPrototypeSession } | { status: 'error'; message: string }
+  >({ status: 'checking' });
+  const researchOnly = sharedAccess.status !== 'manual';
+  const researchActive = researchOnly || view === 'research';
+  useEffect(() => {
+    let current = true;
+    void loadSharedSession().then(session => {
+      if (!current) return;
+      setSharedAccess(session ? { status: 'shared', session } : { status: 'manual' });
+    }).catch(() => {
+      if (current) setSharedAccess({ status: 'error', message: '공유 프로토타입 연결을 확인하지 못했습니다. 링크를 다시 열어 주세요.' });
+    });
+    return () => { current = false; };
+  }, [loadSharedSession]);
   const [group, setGroup] = useState<ProductGroup>('fridge');
   const [modelChoice, setModelChoice] = useState('');
   const [type, setType] = useState('all');
@@ -351,7 +368,7 @@ export default function App() {
   const allModelEvidence = data?.evidence.filter(item => item.model_id === modelId) ?? [];
   const visibleEvidence = modelId ? filterEvidence(data?.evidence ?? [], { modelId, query: visibleQuery, type }) : [];
   const selected = visibleEvidence.find(item => item.id === selectedId) ?? visibleEvidence[0];
-  const currentNav = NAV.find(item => item.id === view)!;
+  const currentNav = NAV.find(item => item.id === (researchActive ? 'research' : view))!;
 
   function selectGroup(next: ProductGroup) {
     if (mode === 'fixture' && next !== FIXTURE_ORIGINAL_REQUEST.product_group) return;
@@ -374,18 +391,19 @@ export default function App() {
     if (next === 'live') setState({ status: 'loading' });
   }
 
-  return <div className={`workspace${view === 'research' ? ' research-shell' : ''}`}>
+  return <div className={`workspace${researchActive ? ' research-shell' : ''}`}>
     <a href="#main-content" className="skip-link">본문으로 이동</a>
     <aside className="sidebar">
       <div className="brand"><img className="brand-icon" src="/kitchen-evidence-icon.png" alt="" width="44" height="44" decoding="async" aria-hidden="true" /><div><strong>KITCHEN</strong><span>PLANNING WORKSPACE</span></div></div>
       <div className="sidebar-project"><span className="eyebrow">LG AX HACKATHON</span><strong>키친 상품기획 Agent</strong><span>키친에서치킨먹기</span></div>
-      <nav aria-label="기획 작업 영역">{NAV.map(item => <button key={item.id} className={`nav-item ${view === item.id ? 'active' : ''}`} aria-current={view === item.id ? 'page' : undefined} onClick={() => setView(item.id)}><span className="nav-number">{item.number}</span>{item.label}{view === item.id ? <ArrowIcon /> : null}</button>)}</nav>
+      <nav aria-label="기획 작업 영역">{NAV.filter(item => !researchOnly || item.id === 'research').map(item => <button key={item.id} className={`nav-item ${currentNav.id === item.id ? 'active' : ''}`} aria-current={currentNav.id === item.id ? 'page' : undefined} onClick={() => setView(item.id)}><span className="nav-number">{item.number}</span>{item.label}{currentNav.id === item.id ? <ArrowIcon /> : null}</button>)}</nav>
       <div className="sidebar-lower"><p>고객의 말에서<br /><strong>새로운 기회의 근거로.</strong></p><div className="sidebar-stage"><span className="status-dot" />개발 프레임워크 · v0.1</div></div>
     </aside>
     <div className="main-shell">
-      <header className="topbar"><div className="breadcrumb">상품기획 작업실<span>/</span><strong>{currentNav.label}</strong></div><div className="topbar-right">{view === 'research' ? <span className="connection-status">실제 공개 자료 · 근거와 개선 장면</span> : <><ModeSwitch mode={mode} onChange={changeMode} /><div className="connection-status">{mode === 'fixture' ? <><span className="status-dot loading" />fixture 사용 · 공통 API 요청 안 함</> : <><span className={`status-dot ${active.status}`} />{active.status === 'ready' ? workspace.connection === 'connected' ? '인증된 작업실 자료 연결됨' : '공통 API 연결됨' : active.status === 'loading' ? '자료 API 연결 확인 중' : '자료 API 연결 오류'}</>}</div></>}</div></header>
+      <header className="topbar"><div className="breadcrumb">상품기획 작업실<span>/</span><strong>{currentNav.label}</strong></div><div className="topbar-right">{researchActive ? <span className="connection-status">{sharedAccess.status === 'shared' ? '공유 프로토타입 · AI 초안 검토' : '실제 공개 자료 · 근거와 개선 장면'}</span> : <><ModeSwitch mode={mode} onChange={changeMode} /><div className="connection-status">{mode === 'fixture' ? <><span className="status-dot loading" />fixture 사용 · 공통 API 요청 안 함</> : <><span className={`status-dot ${active.status}`} />{active.status === 'ready' ? workspace.connection === 'connected' ? '인증된 작업실 자료 연결됨' : '공통 API 연결됨' : active.status === 'loading' ? '자료 API 연결 확인 중' : '자료 API 연결 오류'}</>}</div></>}</div></header>
       <main id="main-content">
-        {view === 'research' ? <ResearchPlanningView /> : <>
+        {sharedAccess.status === 'error' ? <p className="research-error" role="alert">{sharedAccess.message}</p> : null}
+        {researchActive ? <ResearchPlanningView sharedSession={sharedAccess.status === 'shared' ? sharedAccess.session : undefined} sharedConnectionState={sharedAccess.status === 'checking' ? 'checking' : sharedAccess.status === 'error' ? 'unavailable' : undefined} /> : <>
         <section className="hero"><div><p className="eyebrow">EVIDENCE-LED KITCHEN PLANNING</p><h1>근거에서 시작하는<br />키친 기획.</h1><p>고객의 불편과 제품의 기능을 함께 살펴보고,<br className="desktop-break" /> 아직 해결되지 않은 기회를 검토하는 작업실입니다.</p></div><div className="hero-stats"><div><strong>{data?.products.length ?? '—'}</strong><span>등록된 모델</span></div><div><strong>{data?.evidence.length ?? '—'}</strong><span>조회 가능한 근거</span></div><p>{mode === 'fixture' ? `계약 fixture · FRIDGE-A 예시만 포함` : data ? `공통 계약 ${data.contract_version} · ${bootstrapSourceSummary(data)}` : '공통 API에서 자료를 불러옵니다'}</p></div></section>
         {mode === 'live' && sourceWarnings.length ? <div className="scope-notice" role="note" data-source-warnings><strong>현재 자료의 확인 범위</strong><ul>{sourceWarnings.map((warning, index) => <li key={index}>{warning}</li>)}</ul></div> : null}
         {mode === 'fixture' ? <FixtureBanner /> : <WorkspaceBar workspace={scopedWorkspace} onScopeChange={() => setFormSeed(value => value + 1)} />}
