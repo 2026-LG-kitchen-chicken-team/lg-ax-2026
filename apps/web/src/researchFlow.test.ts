@@ -46,6 +46,24 @@ describe('actual-source research screen state and revision flow', () => {
     await connect(); expect(host.textContent).toContain('연결 대기'); expect(host.textContent).not.toContain('기획 초안 생성 완료');
     expect(host.querySelector<HTMLInputElement>('#research-token')!.value).toBe('');
   });
+  // First-user walkthrough (record 070): a copied URL replaced the token, and the source checkboxes were not found before a bundle was chosen.
+  it('says why a pasted value is not a token without echoing it or calling the server', async () => {
+    const fetch = vi.fn(); vi.stubGlobal('fetch', fetch);
+    await act(async () => root.render(createElement(ResearchPlanningView)));
+    await enter('#research-token', 'http://127.0.0.1:5175/');
+    await act(async () => host.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })));
+    expect(fetch).not.toHaveBeenCalled();
+    expect(host.textContent).toContain('작업실 토큰 형식이 아닙니다(입력 22자). 토큰은 공백 없는 32~256자입니다.');
+    expect(host.textContent).not.toContain('127.0.0.1:5175');
+  });
+  it('tells a connected user where the source checkboxes appear until a bundle is chosen', async () => {
+    vi.stubGlobal('fetch', api()); await act(async () => root.render(createElement(ResearchPlanningView)));
+    await connect();
+    const hint = '자료 묶음을 고르면 아래에 원문 목록·선택 체크박스·내보내기 버튼이 표시됩니다.';
+    expect(host.textContent).toContain(hint);
+    await choose();
+    expect(host.textContent).not.toContain(hint); expect(host.querySelector('[aria-label="실제 자료 원문"]')).not.toBeNull();
+  });
   it('uses actual source text, keeps absent negative summaries and creates a captured condition revision', async () => {
     const fetch = api(); vi.stubGlobal('fetch', fetch); await act(async () => root.render(createElement(ResearchPlanningView)));
     await connect(); await choose();
