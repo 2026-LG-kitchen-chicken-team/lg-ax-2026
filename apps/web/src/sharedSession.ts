@@ -1,4 +1,19 @@
 export type SharedPrototypeSession = Readonly<{ token: string; shared_prototype: true }>;
+const PENDING_JOB_KEY = 'lgax.research.pending-job';
+export function pendingResearchJob(): string | null {
+  try {
+    const id = sessionStorage.getItem(PENDING_JOB_KEY);
+    return id && /^[a-f0-9]{32}$/.test(id) ? id : null;
+  } catch { return null; }
+}
+/** Only an opaque job ID is kept in this tab. Credentials and request bodies remain in memory. */
+export function retainResearchJob(id: string): void {
+  if (!/^[a-f0-9]{32}$/.test(id)) return;
+  try { sessionStorage.setItem(PENDING_JOB_KEY, id); } catch { /* Storage may be disabled. */ }
+}
+export function forgetResearchJob(id: string): void {
+  try { if (sessionStorage.getItem(PENDING_JOB_KEY) === id) sessionStorage.removeItem(PENDING_JOB_KEY); } catch { /* No credential fallback. */ }
+}
 
 /** One in-memory check per mounted app, including StrictMode's effect replay. */
 export function createSharedSessionLoader(transport: typeof fetch = (input, init) => fetch(input, init)) {

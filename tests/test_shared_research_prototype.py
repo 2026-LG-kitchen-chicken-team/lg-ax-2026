@@ -73,6 +73,9 @@ class RecordingBackend:
         self.calls = []
         self.model_calls = 0
         self.hold_next_model = False
+        self.hold_all_models = False
+        self.active_models = 0
+        self.peak_active_models = 0
         self.model_started = asyncio.Event()
         self.model_release = asyncio.Event()
 
@@ -91,10 +94,15 @@ class RecordingBackend:
         })
         if scope["method"] == "POST" and scope["path"] == "/api/research/planning-runs":
             self.model_calls += 1
-            if self.hold_next_model:
-                self.hold_next_model = False
-                self.model_started.set()
-                await self.model_release.wait()
+            self.active_models += 1
+            self.peak_active_models = max(self.peak_active_models, self.active_models)
+            try:
+                if self.hold_next_model or self.hold_all_models:
+                    self.hold_next_model = False
+                    self.model_started.set()
+                    await self.model_release.wait()
+            finally:
+                self.active_models -= 1
         return await JSONResponse({
             "mock_transport_only": True, "principal_id": principal.id,
             "path": scope["path"], "received_bytes": len(body),
@@ -105,7 +113,8 @@ class SharedGatewayTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.static = Path(self.temp.name)
+        self.static = Path(self.temp.name) / "static"
+        self.static.mkdir()
         (self.static / "index.html").write_text(
             "<!doctype html><title>Transport test only</title><h1>Static boundary</h1>",
             encoding="utf-8",
@@ -113,14 +122,18 @@ class SharedGatewayTests(unittest.IsolatedAsyncioTestCase):
         self.registry = SHARED.SessionRegistry(SIGNING_KEY)
         self.backend = RecordingBackend(self.registry)
         self.app = SHARED.SharedGateway(
-            self.backend, self.registry, self.static, ORIGIN, "test-release"
+            self.backend, self.registry, self.static, ORIGIN, "test-release",
+            queue_path=Path(self.temp.name) / "queue.sqlite3",
         )
+        await self.app.queue.start()
         self.client = httpx.AsyncClient(
             transport=httpx.ASGITransport(app=self.app), base_url=ORIGIN
         )
         self.token = self.registry.token(SESSION_A)
 
     async def asyncTearDown(self):
+        self.backend.model_release.set()
+        await self.app.queue.close()
         await self.client.aclose()
 
     def headers(self, *, post=False):
@@ -217,7 +230,7 @@ class SharedGatewayTests(unittest.IsolatedAsyncioTestCase):
         health = await self.client.get("/health")
         self.assertEqual(health.json(), {
             "status": "ok", "prototype": True, "release": "test-release",
-            "scheduled_shutdown": False,
+            "scheduled_shutdown": False, "serving_parallelism": 4,
         })
 
     async def test_research_get_normalizes_loopback_headers_and_preserves_auth_and_query(self):
@@ -246,20 +259,38 @@ class SharedGatewayTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.json()["error"]["code"], "UNAUTHORIZED")
         self.assertEqual(self.backend.calls, [])
 
-    async def test_two_planning_posts_admit_one_while_reads_and_guides_remain_available(self):
-        self.backend.hold_next_model = True
-        first = asyncio.create_task(self.client.post(
-            "/api/research/planning-runs", headers=self.headers(post=True), json={}
-        ))
+    async def test_four_planning_posts_run_together_and_fifth_waits_while_reads_are_available(self):
+        self.backend.hold_all_models = True
+        sessions = [SESSION_A, SESSION_B, "c" * 32, "d" * 32, "e" * 32]
+        jobs = []
         try:
-            await asyncio.wait_for(self.backend.model_started.wait(), timeout=3)
-            busy = await asyncio.wait_for(self.client.post(
+            for session in sessions:
+                response = await self.client.post("/api/research/planning-runs", headers={
+                    "Authorization": "Bearer " + self.registry.token(session), "Origin": ORIGIN,
+                }, json={})
+                self.assertEqual(response.status_code, 202)
+                self.assertEqual(response.headers["cache-control"], "no-store")
+                self.assertEqual(response.json()["poll_after_ms"], 1000)
+                jobs.append(response.json()["job_id"])
+
+            async def four_started():
+                while self.backend.model_calls < 4:
+                    await asyncio.sleep(0.01)
+
+            await asyncio.wait_for(four_started(), timeout=3)
+            self.assertEqual((self.backend.active_models, self.backend.peak_active_models), (4, 4))
+            for index, session in enumerate(sessions):
+                state = await self.client.get("/api/prototype/jobs/" + jobs[index], headers={
+                    "Authorization": "Bearer " + self.registry.token(session),
+                })
+                self.assertEqual(state.json()["status"], "running" if index < 4 else "queued")
+                self.assertEqual(state.json()["queue_position"], 0 if index < 4 else 1)
+            duplicate = await self.client.post(
                 "/api/research/planning-runs", headers=self.headers(post=True), json={}
-            ), timeout=3)
-            self.assertEqual(busy.status_code, 503)
-            self.assertEqual(busy.json()["error"]["code"], "MODEL_BUSY")
-            self.assertEqual(busy.headers["cache-control"], "no-store")
-            self.assertEqual(self.backend.model_calls, 1)
+            )
+            self.assertEqual(duplicate.status_code, 409)
+            self.assertEqual(duplicate.json()["error"]["code"], "JOB_ALREADY_ACTIVE")
+            self.assertEqual(self.backend.model_calls, 4)
             read = await asyncio.wait_for(self.client.get(
                 "/api/research/bundles", headers=self.headers()
             ), timeout=3)
@@ -269,14 +300,30 @@ class SharedGatewayTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual((read.status_code, guide.status_code), (200, 200))
         finally:
             self.backend.model_release.set()
-            completed = await asyncio.wait_for(first, timeout=3)
-        self.assertEqual(completed.status_code, 200)
-        self.assertFalse(self.app.model_lock.locked())
+
+        async def finished():
+            snapshots = [self.app.queue.get(job_id, "shared-prototype." + session)
+                         for job_id, session in zip(jobs, sessions, strict=True)]
+            while any(snapshot["status"] in {"running", "queued"} for snapshot in snapshots):
+                await asyncio.sleep(0.01)
+                snapshots = [self.app.queue.get(job_id, "shared-prototype." + session)
+                             for job_id, session in zip(jobs, sessions, strict=True)]
+            return snapshots
+
+        completed = await asyncio.wait_for(finished(), timeout=3)
+        self.assertEqual(self.backend.model_calls, 5)
+        self.assertEqual(self.backend.peak_active_models, 4)
+        for snapshot, session in zip(completed, sessions, strict=True):
+            self.assertEqual(snapshot["status"], "completed")
+            self.assertIsNone(snapshot["queue_position"])
+            self.assertEqual(snapshot["result"], {
+                "mock_transport_only": True, "principal_id": "shared-prototype." + session,
+                "path": "/api/research/planning-runs", "received_bytes": 2,
+            })
         later = await self.client.post(
             "/api/research/planning-runs", headers=self.headers(post=True), json={}
         )
-        self.assertEqual(later.status_code, 200)
-        self.assertEqual(self.backend.model_calls, 2)
+        self.assertEqual(later.status_code, 202)
 
     async def test_chunked_and_false_content_length_cannot_bypass_actual_body_limit(self):
         async def oversized_chunks():
@@ -297,7 +344,48 @@ class SharedGatewayTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(falsely_short.status_code, 413)
         self.assertEqual(self.backend.calls, [])
         self.assertEqual(self.backend.model_calls, 0)
-        self.assertFalse(self.app.model_lock.locked())
+        self.assertEqual(self.backend.active_models, 0)
+
+    async def test_current_job_lookup_recovers_lost_acceptance_and_exposes_only_own_latest(self):
+        missing = await self.client.get('/api/prototype/jobs/current', headers=self.headers())
+        self.assertEqual(missing.status_code, 404)
+        self.backend.hold_next_model = True
+        accepted = await self.client.post('/api/research/planning-runs',
+                                          headers=self.headers(post=True), json={})
+        self.assertEqual(accepted.status_code, 202)
+        await asyncio.wait_for(self.backend.model_started.wait(), timeout=3)
+        other_headers = {'Authorization': 'Bearer ' + self.registry.token(SESSION_B)}
+        other = await self.client.post('/api/research/planning-runs',
+                                       headers={**other_headers, 'Origin': ORIGIN}, json={})
+        self.assertEqual(other.status_code, 202)
+        recovered = await self.client.get('/api/prototype/jobs/current', headers=self.headers())
+        self.assertEqual(recovered.status_code, 200)
+        self.assertEqual((recovered.json()['job_id'], recovered.json()['status']),
+                         (accepted.json()['job_id'], 'running'))
+        self.assertEqual(recovered.headers['cache-control'], 'no-store')
+        other_current = await self.client.get('/api/prototype/jobs/current', headers=other_headers)
+        self.assertEqual(other_current.json()['job_id'], other.json()['job_id'])
+        self.assertNotEqual(other_current.json()['job_id'], recovered.json()['job_id'])
+        empty_owner = await self.client.get('/api/prototype/jobs/current', headers={
+            'Authorization': 'Bearer ' + self.registry.token('c' * 32),
+        })
+        self.assertEqual(empty_owner.status_code, 404)
+        self.assertNotIn('result', empty_owner.json())
+        unauthenticated = await self.client.get('/api/prototype/jobs/current')
+        self.assertEqual(unauthenticated.status_code, 401)
+        self.backend.model_release.set()
+
+        async def latest_completed():
+            while True:
+                response = await self.client.get('/api/prototype/jobs/current', headers=self.headers())
+                if response.json()['status'] == 'completed':
+                    return response.json()
+                await asyncio.sleep(0.01)
+
+        completed = await asyncio.wait_for(latest_completed(), timeout=3)
+        self.assertEqual(completed['job_id'], accepted.json()['job_id'])
+        self.assertEqual(completed['result']['principal_id'], 'shared-prototype.' + SESSION_A)
+        self.assertEqual(self.backend.model_calls, 2)
 
     async def test_exact_body_limit_is_replayed_byte_for_byte_once_to_backend(self):
         body = b"x" * 32768 + b"y" * 32768

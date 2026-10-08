@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { download } from './PlanningViews';
 import { ResearchClient } from './researchClient';
+import type { ResearchPlanProgress } from './researchClient';
 import { ResearchRelationsGraph } from './ResearchRelationsGraph';
 import { ResearchSourcesPanel } from './ResearchSourcesPanel';
 import { ResearchSourceLinks as SourceLinks } from './ResearchSourceLinks';
@@ -11,6 +12,7 @@ import { coverageText, summaryCoverageView } from './researchCoverage';
 import { planningInputScopeLabel } from './researchSelection';
 import type { PlanningBrief, ResearchBundle, ResearchBundleSummary, ResearchProblem } from './research';
 import type { SharedPrototypeSession } from './sharedSession';
+import { forgetResearchJob, pendingResearchJob, retainResearchJob } from './sharedSession';
 import './research.css';
 
 const GOALS = ['고객 자료에서 아직 남은 사용 부담을 찾아 개선안을 제안하기', '설치·첫 사용 과정의 경험 개선하기', '기존 기능과 고객 기대의 차이를 비교하기', '경쟁 제품과 차별화할 기회 탐색하기'];
@@ -57,6 +59,9 @@ function bundleUsageLabel(bundle: ResearchBundleSummary): string {
 /** V1 first stage: export one concept as a 30–45 s future-concept storyboard (no image/voice/video model is called). */
 function StoryboardActions({ brief, bundle, conceptId, title }: { brief: PlanningBrief; bundle: ResearchBundle; conceptId: string; title: string }) {
   const [error, setError] = useState('');
+  const [jobProgress, setJobProgress] = useState<ResearchPlanProgress | null>(null);
+  const [savedJobId, setSavedJobId] = useState(pendingResearchJob);
+  const [jobRecoveryNotice, setJobRecoveryNotice] = useState('');
   const save = (format: 'json' | 'markdown') => {
     try {
       const result = exportConceptStoryboard(buildConceptStoryboard(bundle, brief, conceptId));
@@ -132,6 +137,7 @@ export function ResearchPlanningView({ sharedSession, sharedConnectionState }: {
   async function connectToken(token: string) {
     if (busyRef.current) return;
     const operation = begin(); resetResults(); setConnected(false); setBundles([]);
+    setJobProgress(null); setJobRecoveryNotice('');
     const next = new ResearchClient(() => token); client.current = next; setTokenInput('');
     try { const listed = await next.listBundles(operation.signal); if (operation.current !== generation.current) return; setBundles(listed); setConnected(true); }
     catch (failure) { if (operation.current === generation.current) { setError(errorMessage(failure)); client.current = null; } }
@@ -145,6 +151,7 @@ export function ResearchPlanningView({ sharedSession, sharedConnectionState }: {
   function disconnect() {
     generation.current++; controller.current?.abort(); client.current = null; busyRef.current = false;
     setBusy(false); setConnected(false); setBundles([]); setTokenInput(''); resetResults(); setError('');
+    setJobProgress(null); setJobRecoveryNotice('');
     setGoal(GOALS[0]); setConstraints([CONSTRAINTS[1]]); setExtraConstraints('');
   }
   async function chooseBundle(id: string) {
@@ -163,11 +170,37 @@ export function ResearchPlanningView({ sharedSession, sharedConnectionState }: {
       setError('기획 목적이나 조건을 바꾼 뒤 조건 변경을 실행해 주세요.'); return;
     }
     const api = client.current; const capturedBundle = bundle; const operation = begin();
+    setJobProgress(null); setJobRecoveryNotice('');
     try {
       const brief = await api.createPlan(capturedBundle, { bundle_id: capturedBundle.bundle_id, goal: goal.trim(), constraints: chosenConstraints, previous_run_id: previous?.run_id ?? null,
-        ...(!previous && useSelection ? { selected_source_ids: [...selectedSourceIds] } : {}) }, previous, operation.signal);
+        ...(!previous && useSelection ? { selected_source_ids: [...selectedSourceIds] } : {}) }, previous, operation.signal, status => {
+        if (operation.current !== generation.current) return;
+        setJobProgress(status);
+        if (status.status === 'queued' || status.status === 'running') { retainResearchJob(status.job_id); setSavedJobId(status.job_id); }
+        else { forgetResearchJob(status.job_id); setSavedJobId(value => value === status.job_id ? null : value); }
+      });
       if (operation.current !== generation.current) return;
       setHistory(items => [...items.filter(item => item.run_id !== brief.run_id), brief]); setRunChoice(brief.run_id);
+    } catch (failure) { if (operation.current === generation.current) setError(errorMessage(failure)); }
+    finally { if (operation.current === generation.current) { busyRef.current = false; setBusy(false); } }
+  }
+  async function recoverJob() {
+    if (!client.current || busyRef.current || !sharedMode && !savedJobId) return;
+    const api = client.current; const operation = begin(); setJobRecoveryNotice('');
+    try {
+      const job = sharedMode ? await api.getCurrentJobStatus(operation.signal) : await api.getJobStatus(savedJobId!, operation.signal);
+      if (operation.current !== generation.current) return;
+      setJobProgress({ job_id: job.job_id, status: job.status, queue_position: job.queue_position });
+      if (job.status === 'queued' || job.status === 'running') { retainResearchJob(job.job_id); setSavedJobId(job.job_id); }
+      if (job.status === 'completed') {
+        const result = job.result as Record<string, unknown>;
+        if (typeof result.bundle_id !== 'string' || !/^[A-Za-z0-9_-]{1,200}$/.test(result.bundle_id)
+          || typeof result.run_id !== 'string' || !/^[A-Za-z0-9_-]{1,200}$/.test(result.run_id)
+          || !bundles.some(item => item.bundle_id === result.bundle_id)) throw new Error('완료된 요청의 실행 ID·자료 묶음을 현재 등록 자료에서 확인하지 못했습니다. 결과를 자동으로 복원하지 않습니다.');
+        setRestoreId(result.run_id);
+        setJobRecoveryNotice(`서버 처리는 완료됐습니다. 이 상태 조회만으로 자료 선택·기획 결과를 복원하지 않습니다. 자료 묶음 ${result.bundle_id}를 선택한 뒤 실행 ID ${result.run_id}로 ‘불러오기’를 눌러 주세요. 결과는 기존 자료 버전·원문 범위 검사 후 표시됩니다.`);
+      }
+      if (job.status === 'failed') { forgetResearchJob(job.job_id); setSavedJobId(null); setError(job.error!.message); }
     } catch (failure) { if (operation.current === generation.current) setError(errorMessage(failure)); }
     finally { if (operation.current === generation.current) { busyRef.current = false; setBusy(false); } }
   }
@@ -199,6 +232,8 @@ export function ResearchPlanningView({ sharedSession, sharedConnectionState }: {
       </aside>
     </section>
     <section className="research-connection panel" aria-label="실제 자료 작업실 연결"><div><strong>{sharedMode ? connected ? '공유 프로토타입 연결됨' : '공유 프로토타입 연결 확인' : connected ? '실제 자료 작업실 연결됨' : '실제 자료 작업실 연결'}</strong><p>{sharedMode ? '이 링크에서 실제 자료로 기획 초안을 만들 수 있습니다. AI 초안은 원문과 대조해 검토해 주세요.' : '작업실 토큰은 현재 화면 메모리에만 보관됩니다. 공개 원문만 이 흐름에 사용합니다.'}</p></div>{sharedMode ? <div>{busy || sharedConnectionState === 'checking' ? <span role="status">공유 자료 연결 중…</span> : !connected && sharedSession ? <button type="button" className="secondary-button" onClick={() => void connectToken(sharedSession.token)}>다시 연결</button> : null}</div> : connected ? <button type="button" className="secondary-button" onClick={disconnect}>연결 해제</button> : <form onSubmit={connect}><label className="sr-only" htmlFor="research-token">실제 자료 작업실 토큰</label><input id="research-token" type="password" autoComplete="off" spellCheck={false} placeholder="작업실 토큰" value={tokenInput} onChange={event => setTokenInput(event.target.value)} disabled={busy} /><button className="primary-button" type="submit" disabled={busy || !tokenInput.trim()}>{busy ? '연결 중…' : '실제 자료 연결'}</button></form>}</section>
+    {jobProgress ? <section className="research-note" aria-label="접수한 기획 요청 상태" role="status"><strong>{error && (jobProgress.status === 'queued' || jobProgress.status === 'running') ? '요청 상태 확인 중단' : jobProgress.status === 'queued' ? `기획 요청 접수됨 · 대기 순서 ${jobProgress.queue_position ?? '확인 중'}` : jobProgress.status === 'running' ? '기획 생성 실행 중' : jobProgress.status === 'completed' ? '서버 기획 요청 처리 완료' : '기획 생성 실패'}</strong><p>접수한 요청은 다시 보내지 않습니다. 대기·실행 중에도 원문 검색과 필터를 사용할 수 있습니다.</p>{jobRecoveryNotice ? <p>{jobRecoveryNotice}</p> : null}</section> : null}
+    {(savedJobId || sharedMode) && connected ? <section className="research-note" aria-label="접수한 요청 상태 복구"><p>{savedJobId ? '이 탭에서 접수한 요청 ID가 남아 있습니다.' : '접수 응답을 받지 못했거나 화면을 다시 열었다면 요청 상태를 확인해 주세요.'} 현재 연결의 접근 권한으로 상태만 조회하며, 새 기획을 자동으로 접수하지 않습니다.</p><button type="button" className="secondary-button" disabled={busy} onClick={() => void recoverJob()}>접수한 요청 상태 확인</button></section> : null}
     {error ? <div className="research-error" role="alert"><strong>요청을 완료하지 못했습니다</strong><p>{error}</p><p>기존 결과가 있다면 그대로 보존됩니다. 저장 요청은 자동 재전송하지 않습니다.</p></div> : null}
     {!connected ? <section className="research-empty panel"><h2>자료 연결을 기다리고 있습니다</h2><p>서버에 연결하면 등록된 실제 자료 묶음이 표시됩니다.<br />합성 리뷰나 미리 만들어 둔 기획 결과로 대신 표시하지 않습니다.</p></section> : <>
       {bundle ? <WorkspaceNavigation hasResult={selected !== null} /> : null}

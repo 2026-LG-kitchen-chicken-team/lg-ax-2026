@@ -9,12 +9,105 @@ import { heldBrief, REAL_RESEARCH_BUNDLE } from './fixtures/research-test-data';
 import * as views from './PlanningViews';
 import type { PlanningBrief } from './research';
 import { createSharedSessionLoader } from './sharedSession';
+import { ResearchClient } from './researchClient';
+import type { ResearchPlanProgress } from './researchClient';
+
+describe('accepted research jobs use a single POST and bounded authenticated status reads', () => {
+  const jobId = '1'.repeat(32);
+  const credential = () => 'a'.repeat(40);
+  const response = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+  const input = () => ({ bundle_id: REAL_RESEARCH_BUNDLE.bundle_id, goal: heldBrief().goal, constraints: heldBrief().constraints, previous_run_id: null });
+  const queued = () => ({ job_id: jobId, status: 'queued', queue_position: 2, poll_after_ms: 1000 });
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+  it('reports queued, running and validated completion while preserving memory Bearer and POST1', async () => {
+    const reads = [
+      { ...queued(), queue_position: 1 },
+      { ...queued(), status: 'running', queue_position: 0 },
+      { ...queued(), status: 'completed', queue_position: null, result: heldBrief() },
+    ];
+    const transport = vi.fn().mockImplementation((_url: string, options?: RequestInit) => Promise.resolve(response(options?.method === 'POST' ? queued() : reads.shift(), options?.method === 'POST' ? 202 : 200)));
+    const states: ResearchPlanProgress[] = [];
+    const pending = new ResearchClient(credential, transport).createPlan(REAL_RESEARCH_BUNDLE, input(), null, undefined, state => states.push(state));
+    await vi.advanceTimersByTimeAsync(0);
+    expect(states.map(state => state.status)).toEqual(['queued']);
+    await vi.advanceTimersByTimeAsync(3000);
+    expect(await pending).toEqual(heldBrief());
+    expect(states.map(state => state.status)).toEqual(['queued', 'queued', 'running', 'completed']);
+    expect(transport.mock.calls.filter(call => call[1]?.method === 'POST')).toHaveLength(1);
+    expect(transport.mock.calls.slice(1).every(call => call[0] === `/api/prototype/jobs/${jobId}` && call[1]?.method === 'GET')).toBe(true);
+    expect(transport.mock.calls.every(call => new Headers(call[1]?.headers).get('Authorization') === `Bearer ${credential()}`)).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+  it('returns the backend failure message without a completed callback, retry or remaining timer', async () => {
+    const transport = vi.fn().mockImplementation((_url: string, options?: RequestInit) => Promise.resolve(response(options?.method === 'POST' ? queued()
+      : { ...queued(), status: 'failed', queue_position: null, error: { code: 'MODEL_UNAVAILABLE', message: '모델 요청을 완료하지 못했습니다.' } }, options?.method === 'POST' ? 202 : 200)));
+    const states: ResearchPlanProgress[] = [];
+    const pending = new ResearchClient(credential, transport).createPlan(REAL_RESEARCH_BUNDLE, input(), null, undefined, state => states.push(state));
+    const checked = expect(pending).rejects.toThrow('모델 요청을 완료하지 못했습니다');
+    await vi.advanceTimersByTimeAsync(1000); await checked;
+    expect(states.map(state => state.status)).toEqual(['queued', 'failed']);
+    expect(transport).toHaveBeenCalledTimes(2); expect(vi.getTimerCount()).toBe(0);
+  });
+  it('applies the existing exact input-scope check to the completed result before reporting completion', async () => {
+    const result = heldBrief();
+    result.source_facts = REAL_RESEARCH_BUNDLE.sources.map(source => ({ source_id: source.source_id, facts: source.facts }));
+    result.runtime = { input_scope: 'full_bundle', user_selected_source_ids: REAL_RESEARCH_BUNDLE.sources.map(source => source.source_id) };
+    const transport = vi.fn().mockImplementation((_url: string, options?: RequestInit) => Promise.resolve(response(options?.method === 'POST' ? queued()
+      : { ...queued(), status: 'completed', queue_position: null, result }, options?.method === 'POST' ? 202 : 200)));
+    const states: ResearchPlanProgress[] = [];
+    const pending = new ResearchClient(credential, transport).createPlan(REAL_RESEARCH_BUNDLE, { ...input(), selected_source_ids: REAL_RESEARCH_BUNDLE.sources.map(source => source.source_id) }, null, undefined, state => states.push(state));
+    const checked = expect(pending).rejects.toThrow('입력 근거 범위');
+    await vi.advanceTimersByTimeAsync(1000); await checked;
+    expect(states.map(state => state.status)).toEqual(['queued']);
+    expect(transport).toHaveBeenCalledTimes(2); expect(vi.getTimerCount()).toBe(0);
+  });
+  it('rejects another job ID from the polling route and never resubmits the request', async () => {
+    const transport = vi.fn().mockImplementation((_url: string, options?: RequestInit) => Promise.resolve(response(options?.method === 'POST' ? queued()
+      : { ...queued(), job_id: '2'.repeat(32) }, options?.method === 'POST' ? 202 : 200)));
+    const pending = new ResearchClient(credential, transport).createPlan(REAL_RESEARCH_BUNDLE, input(), null);
+    const checked = expect(pending).rejects.toThrow('상태 응답');
+    await vi.advanceTimersByTimeAsync(1000); await checked;
+    expect(transport).toHaveBeenCalledTimes(2); expect(vi.getTimerCount()).toBe(0);
+  });
+  it('aborts a pending GET, cleans its timers and ignores a late completed response', async () => {
+    const controller = new AbortController(); let finish!: (value: Response) => void;
+    const transport = vi.fn().mockImplementation((_url: string, options?: RequestInit) => options?.method === 'POST' ? Promise.resolve(response(queued(), 202)) : new Promise<Response>(resolve => { finish = resolve; }));
+    const states: ResearchPlanProgress[] = [];
+    const pending = new ResearchClient(credential, transport).createPlan(REAL_RESEARCH_BUNDLE, input(), null, controller.signal, state => states.push(state));
+    const checked = expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+    await vi.advanceTimersByTimeAsync(1000); controller.abort(); await checked;
+    finish(response({ ...queued(), status: 'completed', queue_position: null, result: heldBrief() }));
+    await vi.advanceTimersByTimeAsync(0);
+    expect(transport.mock.calls[1][1]?.signal?.aborted).toBe(true);
+    expect(states.map(state => state.status)).toEqual(['queued']);
+    expect(transport).toHaveBeenCalledTimes(2); expect(vi.getTimerCount()).toBe(0);
+  });
+  it('stops after 25 minutes even when transport ignores abort, without a blind POST retry', async () => {
+    const transport = vi.fn().mockImplementation(() => new Promise<Response>(() => {}));
+    const pending = new ResearchClient(credential, transport).createPlan(REAL_RESEARCH_BUNDLE, input(), null);
+    const checked = expect(pending).rejects.toThrow('25분');
+    await vi.advanceTimersByTimeAsync(25 * 60 * 1000); await checked;
+    expect(transport).toHaveBeenCalledTimes(1);
+    expect(transport.mock.calls[0][1]?.signal?.aborted).toBe(true); expect(vi.getTimerCount()).toBe(0);
+  });
+  it('finds the current principal job without an accepted job ID and treats no job as an explicit 404', async () => {
+    const transport = vi.fn().mockResolvedValue(response(queued()));
+    const client = new ResearchClient(credential, transport);
+    expect((await client.getCurrentJobStatus()).job_id).toBe(jobId);
+    expect(transport.mock.calls[0][0]).toBe('/api/prototype/jobs/current');
+    expect(transport.mock.calls[0][1]?.method).toBe('GET');
+    transport.mockResolvedValue(response({ error: { code: 'NOT_FOUND' } }, 404));
+    await expect(client.getCurrentJobStatus()).rejects.toThrow('접수한 기획 요청을 찾지 못했습니다');
+    expect(transport.mock.calls.every(call => call[1]?.method === 'GET')).toBe(true); expect(vi.getTimerCount()).toBe(0);
+  });
+});
 
 describe('actual-source research screen state and revision flow', () => {
   let host: HTMLDivElement; let root: Root;
   const response = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
-  beforeEach(() => { vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true); host = document.createElement('div'); document.body.append(host); root = createRoot(host); });
-  afterEach(async () => { if (host.isConnected) await act(async () => root.unmount()); host.remove(); vi.unstubAllGlobals(); });
+  beforeEach(() => { vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true); sessionStorage.clear(); host = document.createElement('div'); document.body.append(host); root = createRoot(host); });
+  afterEach(async () => { if (host.isConnected) await act(async () => root.unmount()); host.remove(); vi.useRealTimers(); vi.unstubAllGlobals(); });
   const enter = async (selector: string, value: string) => { await act(async () => {
     const input = host.querySelector<HTMLInputElement | HTMLTextAreaElement>(selector)!;
     const prototype = input.tagName === 'TEXTAREA' ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
@@ -79,6 +172,84 @@ describe('actual-source research screen state and revision flow', () => {
     await act(async () => finish(response({ shared_prototype: true, token: 's'.repeat(48) })));
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(host.textContent).toBe('');
+  });
+  it('shows accepted queue and running states while original-text filters remain usable, with only job_id stored', async () => {
+    const fetch = api(); vi.stubGlobal('fetch', fetch);
+    await act(async () => root.render(createElement(ResearchPlanningView))); await connect(); await choose();
+    const jobId = '3'.repeat(32);
+    const states = [
+      { job_id: jobId, status: 'running', queue_position: 0, poll_after_ms: 1000 },
+      { job_id: jobId, status: 'completed', queue_position: null, poll_after_ms: 1000, result: heldBrief() },
+    ];
+    fetch.mockImplementation(async (url: string, options?: RequestInit) => {
+      if (options?.method === 'POST') return response({ job_id: jobId, status: 'queued', queue_position: 1, poll_after_ms: 1000 }, 202);
+      if (url === `/api/prototype/jobs/${jobId}`) return response(states.shift());
+      return response({}, 404);
+    });
+    vi.useFakeTimers(); await click('새 기획 생성');
+    expect(host.querySelector('[aria-label="접수한 기획 요청 상태"]')?.textContent).toContain('대기 순서 1');
+    expect(Object.keys(sessionStorage)).toEqual(['lgax.research.pending-job']);
+    expect(sessionStorage.getItem('lgax.research.pending-job')).toBe(jobId);
+    expect(host.querySelector<HTMLInputElement>('#research-keyword')!.disabled).toBe(false);
+    await enter('#research-keyword', 'no-matching-original-for-this-test'); expect(host.querySelectorAll('.research-source-row')).toHaveLength(0);
+    await enter('#research-keyword', ''); expect(host.querySelectorAll('.research-source-row')).toHaveLength(1);
+    await act(async () => vi.advanceTimersByTimeAsync(1000));
+    expect(host.querySelector('[aria-label="접수한 기획 요청 상태"]')?.textContent).toContain('기획 생성 실행 중');
+    await act(async () => vi.advanceTimersByTimeAsync(1000));
+    expect(host.querySelector('[aria-label="실제 자료 기획 결과"]')).not.toBeNull();
+    expect(host.querySelector('[aria-label="접수한 기획 요청 상태"]')?.textContent).toContain('처리 완료');
+    expect(sessionStorage.getItem('lgax.research.pending-job')).toBeNull();
+    expect(fetch.mock.calls.filter(call => call[1]?.method === 'POST')).toHaveLength(1);
+  });
+  it('shows a queued job failure with its message while preserving original-source browsing', async () => {
+    const fetch = api(); vi.stubGlobal('fetch', fetch);
+    await act(async () => root.render(createElement(ResearchPlanningView))); await connect(); await choose();
+    const jobId = '4'.repeat(32);
+    fetch.mockImplementation(async (_url: string, options?: RequestInit) => response(options?.method === 'POST'
+      ? { job_id: jobId, status: 'queued', queue_position: 1, poll_after_ms: 1000 }
+      : { job_id: jobId, status: 'failed', queue_position: null, poll_after_ms: 1000, error: { code: 'MODEL_UNAVAILABLE', message: '모델 실행을 완료하지 못했습니다.' } }, options?.method === 'POST' ? 202 : 200));
+    vi.useFakeTimers(); await click('새 기획 생성'); await act(async () => vi.advanceTimersByTimeAsync(1000));
+    expect(host.querySelector('[aria-label="접수한 기획 요청 상태"]')?.textContent).toContain('기획 생성 실패');
+    expect(host.querySelector('[role="alert"]')?.textContent).toContain('모델 실행을 완료하지 못했습니다');
+    expect(host.textContent).toContain(REAL_RESEARCH_BUNDLE.sources[0].text);
+    expect(host.querySelector('[aria-label="실제 자료 기획 결과"]')).toBeNull();
+    expect(fetch.mock.calls.filter(call => call[1]?.method === 'POST')).toHaveLength(1);
+    expect(sessionStorage.getItem('lgax.research.pending-job')).toBeNull();
+  });
+  it('restores only a saved job status through the current principal and does not retry its original POST', async () => {
+    const jobId = '5'.repeat(32); sessionStorage.setItem('lgax.research.pending-job', jobId);
+    const fetch = api(); vi.stubGlobal('fetch', fetch);
+    await act(async () => root.render(createElement(ResearchPlanningView))); await connect();
+    expect(fetch.mock.calls.some(call => String(call[0]).includes('/api/prototype/jobs/'))).toBe(false);
+    fetch.mockImplementation(async () => response({ job_id: jobId, status: 'completed', queue_position: null, poll_after_ms: 1000, result: heldBrief() }));
+    await click('접수한 요청 상태 확인');
+    expect(host.textContent).toContain('이 상태 조회만으로 자료 선택·기획 결과를 복원하지 않습니다');
+    expect(host.textContent).toContain(REAL_RESEARCH_BUNDLE.bundle_id); expect(host.textContent).toContain(heldBrief().run_id);
+    expect(host.querySelector('[aria-label="실제 자료 기획 결과"]')).toBeNull();
+    const reads = fetch.mock.calls.filter(call => call[0] === `/api/prototype/jobs/${jobId}`);
+    expect(reads).toHaveLength(1); expect(reads[0][1]?.method).toBe('GET');
+    expect(new Headers(reads[0][1]?.headers).get('Authorization')).toBe(`Bearer ${'x'.repeat(40)}`);
+    expect(fetch.mock.calls.filter(call => call[1]?.method === 'POST')).toHaveLength(0);
+    expect(Object.keys(sessionStorage)).toEqual(['lgax.research.pending-job']);
+  });
+  it('recovers an owner job through GET current after the first accepted response is lost, without POST replay', async () => {
+    const jobId = '6'.repeat(32);
+    const fetch = api(); vi.stubGlobal('fetch', fetch);
+    await act(async () => root.render(createElement(ResearchPlanningView, { sharedSession: { shared_prototype: true, token: 's'.repeat(48) } }))); await choose();
+    fetch.mockImplementation(async (url: string, options?: RequestInit) => {
+      if (options?.method === 'POST') throw new Error('transport response lost');
+      if (url === '/api/prototype/jobs/current') return response({ job_id: jobId, status: 'running', queue_position: 0, poll_after_ms: 1000 });
+      return response({}, 404);
+    });
+    await click('새 기획 생성');
+    expect(sessionStorage.getItem('lgax.research.pending-job')).toBeNull();
+    expect(host.querySelector('[role="alert"]')?.textContent).toContain('연결할 수 없습니다');
+    await click('접수한 요청 상태 확인');
+    expect(host.querySelector('[aria-label="접수한 기획 요청 상태"]')?.textContent).toContain('기획 생성 실행 중');
+    expect(fetch.mock.calls.filter(call => call[0] === '/api/prototype/jobs/current')).toHaveLength(1);
+    expect(fetch.mock.calls.filter(call => call[1]?.method === 'POST')).toHaveLength(1);
+    expect(sessionStorage.getItem('lgax.research.pending-job')).toBe(jobId);
+    expect(host.querySelector('[aria-label="실제 자료 기획 결과"]')).toBeNull();
   });
   it('keeps shared-session failures explicit and does not silently expose the manual or legacy interface', async () => {
     const fetch = vi.fn().mockResolvedValue(response({}, 503)); vi.stubGlobal('fetch', fetch);
