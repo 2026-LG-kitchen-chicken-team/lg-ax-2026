@@ -1,0 +1,67 @@
+{
+  "id": "20261008-01a11628-d95c2b",
+  "at": "2026-10-08T03:45:28.088509+00:00",
+  "exit_code": 0,
+  "stdout": {
+    "passed": 12,
+    "failed": 0
+  },
+  "attempts": 1,
+  "input_files": [
+    {
+      "file": "check_correction.py",
+      "bytes": 3884,
+      "sha256": "b07bb811db0d3b5f8096efb5aa6c1a1f7602f4e67f12d4cdda1af7609a9c1212"
+    },
+    {
+      "file": "correction.json",
+      "bytes": 3009,
+      "sha256": "88612ac88a28a4905cc6638a5bcdcf8eafaa537f47ffccf3d48de11443f4afd3"
+    },
+    {
+      "file": "identity-date-delta.json",
+      "bytes": 10982,
+      "sha256": "ae35bb6cbbdddf81c8d314175b3c77e4c1acbd4705273fc40a1d0bb4d579aa2d"
+    },
+    {
+      "file": "new-claims.json",
+      "bytes": 6017,
+      "sha256": "dd96e47f95cad668e3de915464f0bf6959d06b2a6a9e5e43f8f491b8906c5e41"
+    },
+    {
+      "file": "new-sidecar.json",
+      "bytes": 17502,
+      "sha256": "8fb966bc70e00cca395742464d7cac7f7d740033677b50b68109a2ce0134d85e"
+    },
+    {
+      "file": "old-claims.json",
+      "bytes": 5371,
+      "sha256": "7d67592a9291b05b1c8170e7b65db25c94766c963ac51a93ed9c288f291e4e93"
+    },
+    {
+      "file": "old-sidecar.json",
+      "bytes": 16679,
+      "sha256": "c98d4546a0281e2901d1bba276ddaf0758838aa523f57cca97d1c22873255bf2"
+    },
+    {
+      "file": "purchase-edition.json",
+      "bytes": 4673,
+      "sha256": "ed8749902e6c42f1e70d9d02501a5d7d6863faf62ff68d503581d0885578e0d0"
+    },
+    {
+      "file": "receiver-update.json",
+      "bytes": 6248,
+      "sha256": "cd8a8ddb4650280d5652b2a5735c4c9439a19c82ed0cbc2ee5093e43754080a4"
+    }
+  ],
+  "credentials_network_git_profile_access": false,
+  "old_tests_rerun": false,
+  "source_script": "check_correction_20261008_d95c2b.py",
+  "source_script_sha256": "b07bb811db0d3b5f8096efb5aa6c1a1f7602f4e67f12d4cdda1af7609a9c1212",
+  "human_semantic_review": [
+    "MFL67704818p26: independently scoped bullets and subordinate sensor rationale",
+    "MFL68822502p4: exception in same bullet; p11 decorative door versus condensation note"
+  ],
+  "limitations": "12 assertions validate changed data/reference boundaries; PDF semantic reading is a separate manual review. They do not approve operation or PM policy.",
+  "command_template": "docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --user 65534:65534 --mount type=bind,source=<owned absolute correction-in>,target=/input,readonly --mount type=bind,source=<owned absolute correction-out>,target=/output --entrypoint python sha256:d2b9d2d0d1da29f3226a8293340d63f58877a03b7189d3982123ff6995e8e01c -I /input/check_correction.py"
+}

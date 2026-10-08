@@ -1,0 +1,126 @@
+{
+  "version": "manual-model-scope.20261008.01a11628-c73f9a.v2",
+  "production_updated": false,
+  "source_pins": "evidence-pins.json",
+  "rendered_dom": "model-scope-observation.json",
+  "claims": [
+    {
+      "id": "K-SIZE",
+      "model": "Z330MEEF11",
+      "result": "corroborated_current_model_spec",
+      "basis": [
+        "expanded PDP size/capacity/install type",
+        "MFL67704818 Rev.00_072525 p26"
+      ],
+      "facts": {
+        "capacity_l": 327,
+        "size_w_h_d_mm": [
+          666,
+          1787,
+          737
+        ],
+        "installation": "freestanding"
+      },
+      "limit": "External dimensions do not establish internal usable reach, tray clearance, or every buyer installation."
+    },
+    {
+      "id": "K-CONTROL",
+      "model": "Z330MEEF11",
+      "result": "corroborated_current_model_feature",
+      "basis": [
+        "expanded PDP inside top display",
+        "MFL67704818 p11 conditional internal control illustration",
+        "review808186 prior body retained"
+      ],
+      "fact": "Current model specification supports the review context about opening the door to access the internal control.",
+      "limit": "Review purchaser SKU and physical operation are not independently authenticated; no new design approved."
+    },
+    {
+      "id": "K-GUARD",
+      "model": "Z330MEEF11",
+      "result": "feature_presence_confirmed_mechanism_not_generalized",
+      "basis": [
+        "expanded PDP cold-air guard upper/middle/lower",
+        "PDP auto-closing specification X",
+        "review808186 and prior original blog"
+      ],
+      "fact": "Guard presence is documented. Review guard closure behavior is a customer report; do not equate it with the separate auto-closing specification without feature-definition evidence.",
+      "limit": "The auto-closing X specification does not contradict reported guard closure and is not used to infer the guard mechanism."
+    },
+    {
+      "id": "K-CONTAINERS",
+      "model": "Z330MEEF11",
+      "result": "common_illustration_narrowed_to_current_model",
+      "basis": [
+        "expanded PDP4 containers: middle2 at11.3L/lower2 at17.1L; upper sold separately",
+        "MFL67704818 p11 illustration and p12 model-dependent supply/count warning"
+      ],
+      "fact": "Do not infer the number of included containers from the shared manual illustration.",
+      "limit": "Current sales specification does not prove delivered accessories for each historic purchaser."
+    },
+    {
+      "id": "K-REMOVAL",
+      "model": "Z330MEEF11",
+      "result": "shared_manual_procedure_with_model_conditions",
+      "basis": [
+        "MFL67704818 p18 upper shelf removal; p19 reassembly/conditional cover/cleaning limit; p19-20 drawer removal and conditional inner basket",
+        "expanded PDP2 tempered-glass shelves and guard presence"
+      ],
+      "fact": "Upper shelf: unload, open/push guard, lift rear and pull. Middle/lower drawer: empty containers, close guard, lift/remove drawer, then detach basket when fitted. Middle basket handling requires upper door open.",
+      "limit": "Some models lack cover/basket; their presence is not independently confirmed for this exact SKU. Preserve lower shelf cleaning-only removal-use restriction. No load, force, dimensions, manufacturing design or actual operation verified."
+    },
+    {
+      "id": "K-INSTALL",
+      "model": "Z330MEEF11",
+      "result": "conditional_shared_manual_scope_preserved",
+      "basis": [
+        "MFL67704818 p26"
+      ],
+      "fact": "Two independent installation bullets: product to ceiling/walls at least10cm; product door top to refrigerator enclosure at least2.5cm. The subordinate illumination-sensor explanation is conditional on applicable models; do not narrow the parent2.5cm instruction to sensor-equipped models.",
+      "limit": "The10cm and2.5cm distances have different endpoints and do not replace one another. Shared-manual instructions do not prove this SKU has a sensor or that a particular site is suitable."
+    },
+    {
+      "id": "O-INSTALL",
+      "model": "ML32WW1",
+      "result": "prior_exact_model_QA_and_shared_manual_reused",
+      "basis": [
+        "Q&A465636 vendor answer names ML32WW1",
+        "MFL68822502 Rev.25_090425 p11/p57",
+        "MFL68822502 p4 installation restriction with dedicated built-in-model exception; p11 decorative-door prohibition and separate condensation note"
+      ],
+      "facts": {
+        "size_without_handle_mm": [
+          527,
+          389,
+          472
+        ],
+        "size_with_handle_mm": [
+          527,
+          389,
+          518
+        ],
+        "top_clearance_cm_min": 20,
+        "left_right_rear_clearance_cm_min": 10
+      },
+      "limit": "Q55x40x55 has no unit. Preserve p4 enclosed-space/cabinet restriction and dedicated built-in-model exception, without assuming the exception applies to ML32WW1. The p11 condensation note is not installation permission. Current Rev25 does not establish the edition/accessories delivered to2024 purchasers."
+    },
+    {
+      "id": "O-VESSELS",
+      "model": "ML32WW1",
+      "result": "prior_QA_link_and_visual_continuation_review_reused",
+      "basis": [
+        "Q&A443494 manufacturer linked manual; answer table images not transcribed",
+        "MFL68822502 p20/p21 continuation/p24"
+      ],
+      "fact": "Microwave-mode supplied enamel tray caution, supplied rack allowed with the function-select microwave floor position, grill-only pan not allowed. General food/drink metal-container restriction remains separate.",
+      "limit": "No unqualified metal-container permission; no retroactive purchase-time manual/accessory certification."
+    }
+  ],
+  "approval": "DATA research applicability notes only; not PM adoption, field installation approval, or operational success",
+  "purchased_sku_unresolved": [
+    "six native LG review rows",
+    "prior blog224375944885"
+  ],
+  "manual_purchase_revision_unresolved": true,
+  "supersedes_commit": "94f0800e30c4d653a07c32ed3b8f0dd2f793d44a"
+}

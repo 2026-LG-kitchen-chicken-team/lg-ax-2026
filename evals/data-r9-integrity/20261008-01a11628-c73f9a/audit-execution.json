@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-08T02:18:21.158691+00:00",
+  "command": "docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --user 65534:65534 --mount type=bind,source=<owned .scratch/audit-in>,target=/input,readonly --mount type=bind,source=<owned .scratch/audit-out>,target=/output --entrypoint python sha256:d2b9d2d0d1da29f3226a8293340d63f58877a03b7189d3982123ff6995e8e01c -I /input/audit_delta.py --input /input --output /output",
+  "image": "sha256:d2b9d2d0d1da29f3226a8293340d63f58877a03b7189d3982123ff6995e8e01c",
+  "exit_code": 0,
+  "stdout": {
+    "passed": 80,
+    "failed": 0,
+    "rows": 6
+  },
+  "attempts": 1,
+  "script_sha256": "e9b9c82b9bea09fb68667b66d6727241b48fa7e1b92b5d40c70b6df540a72c91",
+  "credentials_git_or_user_profile_mounted": false,
+  "repository_production_code_run": false,
+  "network": "none",
+  "model_calls": 0,
+  "ocr_calls": 0,
+  "old_audits_rerun": false,
+  "result_sha256": "7c1ae6fca5872fc57024505a68339ef8ce260ab243f4e0287b912effca347320",
+  "delta_sha256": "ae35bb6cbbdddf81c8d314175b3c77e4c1acbd4705273fc40a1d0bb4d579aa2d",
+  "manual_rendering": "Existing SHA-pinned PDF via bundled pypdfium2 on host; no repository imports; native text reused; visual pages11/18/19/20 reviewed.",
+  "audited_input_file_hashes": {
+    "audit_delta.py": "e9b9c82b9bea09fb68667b66d6727241b48fa7e1b92b5d40c70b6df540a72c91",
+    "d1-membership.json": "8292183cea25c7b682f863aa29f8dfcccb2e45a8e49cb7431913d616dc97d072",
+    "evidence-pins.json": "859fd089d4224d5a2fa3767bf71ccc22d4bc407fdbba08acf9d30ddc264c518c",
+    "kimchi-list.html": "1c6a50d8f88cb622bdd944697abf395ebcd576d62fb617fa2321fce6770e42ea",
+    "kimchi-manual-text.json": "4042afa5ad66d26de34b0122779ab9827bc6d2f1edf5200cbf894192e0d00160",
+    "kimchi-manual.pdf": "594b38d6cedfeb2607651c078f031157e5f3d6d5a0fc72d40b4ed0da941ea14a",
+    "model-scope-observation.json": "a385abf9704936703135008593de15d7517268008a90cb3fcda2ea296527327b",
+    "oven-list.html": "3bc1572d0b692ae64a51371496643d5396a83dd3382d200db46f497758b2b9ad",
+    "oven-manual-b.pdf": "812ba8f2d60933d5dd610b897cec39fa5ee934d59c5e59cf86b586e6b79f96f9",
+    "oven-manual-b.text.json": "1093d00dfe52229d2a2a4e4e8b373ed28ee6d566b365b94f3f9b36ee5cd3f938",
+    "oven-qa-443494.html": "78ae201dda41b8c30c0c8e481c341b21728a3f20d0bb89a6fcb9469c71ad047c",
+    "oven-qa-465636.html": "9849f5f3f806c67d5f4c844b1e7ce0aa248fdda725dec7cfa35870b1960c261d",
+    "prior-date-candidates.json": "e3fa45bc606e12138a522de5f0b47689281a02b84bb035fc2cae965e5598cafa",
+    "prior-sources.sidecar.json": "c98d4546a0281e2901d1bba276ddaf0758838aa523f57cca97d1c22873255bf2",
+    "r9-original-sources.json": "fd94e0cc16ad05bd54902752c81c580fda5c6c1a0c648dc66c20a89e098690c1"
+  },
+  "post_audit_observation_change": {
+    "field_rename": "facts.auto_closing_door -> facts.auto_closing_feature; value remains false",
+    "reason": "Rendered label says auto-closing; do not add an unverified door-specific definition.",
+    "all_other_observation_values_equal": true,
+    "audited_assertions_affected": false,
+    "final_observation_sha256": "cc8897a8a5bb689c88356a28df6c00126a1a8baa92bf1dcce7dc8968acbaa775",
+    "full_audit_rerun": false
+  }
+}
