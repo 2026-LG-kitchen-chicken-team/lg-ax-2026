@@ -1,0 +1,113 @@
+"""Check new W1 locations and missing-evidence boundaries, never semantic scores.
+
+Only saved public source views and this W1 result directory are read.
+No project imports, network, model/OCR, DB, mail, ZIP or historical tests.
+"""
+import argparse
+from datetime import datetime, timezone
+import hashlib
+import json
+from pathlib import Path
+
+
+def read(path):
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def pointer(document, path):
+    value = document
+    for token in path.split("/")[1:]:
+        key = token.replace("~1", "/").replace("~0", "~")
+        value = value[int(key)] if isinstance(value, list) else value[key]
+    return value
+
+
+def main():
+    args = argparse.ArgumentParser()
+    args.add_argument("--sources", required=True, type=Path)
+    args.add_argument("--results", required=True, type=Path)
+    ns = args.parse_args()
+    bundle = read(ns.sources / "main-fridge-bundle.json")
+    normal_views = list(ns.sources.glob("*__run-5ccd95da.job-response.json"))
+    report_views = list(ns.sources.glob("*__results.json"))
+    assert len(normal_views) == len(report_views) == 1, "use the pinned source views"
+    normal = read(normal_views[0])
+    changed_report = read(report_views[0])
+    original_intake = read(ns.sources / "w3-published-intake.json")
+    index = {x["source_id"]: x for x in bundle["sources"]}
+    normal_review = read(ns.results / "normal-semantic-review.json")
+    changed_review = read(ns.results / "changed-semantic-review.json")
+    sources = read(ns.results / "source-anchors.json")
+    conditions = read(ns.results / "execution-conditions.json")
+    comparisons = read(ns.results / "comparison-intake.json")
+    no_gold = read(ns.results / "no-gold-diagnostics.json")
+    checks = []
+    for review, original, kind in (
+        (normal_review, normal, "actual_persisted_public_job_response"),
+        (changed_review, changed_report, "WEB_reported_partial_fields_not_full_raw_changed_response"),
+    ):
+        assert review["approved_accuracy_score"] is None
+        assert review["final_independent_score"] is None
+        for row in review["rows"]:
+            assert row["output_kind"] == kind
+            if row["output_pointer"] is not None:
+                pointer(original, row["output_pointer"])
+            else:
+                assert row["id"] == "C07" and row["status"] == "미확인"
+            assert all(sid in index for sid in row["source_ids"])
+            assert row["approved_accuracy_score"] is None
+            assert row["final_independent_score"] is None
+            checks.append({"row_id": row["id"], "pointer_and_SourceID_valid": True})
+    anchors = {x["anchor_id"]: x for x in sources["anchors"]}
+    for anchor in anchors.values():
+        text = index[anchor["source_id"]]["text"]
+        begin, end = anchor["source_range"]
+        assert text[begin:end] == anchor["quote"]
+        assert hashlib.sha256(anchor["quote"].encode("utf-8")).hexdigest() == anchor["quote_sha256"]
+        assert anchor["source_text_sha256_reused"] == index[anchor["source_id"]]["metadata"]["text_sha256"]
+    for row in normal_review["rows"] + changed_review["rows"]:
+        assert all(aid in anchors for aid in row["source_anchor_ids"])
+    runtime = normal["result"]["runtime"]
+    customer_ids = {sid for sid in runtime["user_selected_source_ids"] if index[sid]["source_type"] == "review"}
+    citations = {sid for rows in normal["result"]["summaries"].values() for row in rows for sid in row["source_ids"]}
+    coverage = runtime["summary_reference_coverage"]
+    assert len(customer_ids) == 4 and len(citations & customer_ids) == 3
+    assert coverage["coverage_ratio"] == 0.75 and coverage["classification_approved"] is False
+    assert all(not row["facts"] for row in normal["result"]["source_facts"])
+    assert changed_report["runs"][1]["previous_brief_id"] == normal["result"]["brief_id"]
+    assert changed_report["runs"][1]["constraints"] != normal["result"]["constraints"]
+    assert original_intake["changed_full_original_response_received"] is False
+    assert conditions["normal"]["native_full_usage"] is None
+    assert conditions["normal"]["actual_generation_process_commit"] is None
+    assert conditions["changed"]["full_original_response_sha256"] is None
+    assert conditions["same_condition_AB"] is False
+    assert conditions["canonical7_comparison_accepted"] is False
+    assert len(comparisons["rows"]) == 7
+    assert all(row["comparison_accepted"] is False and row["Agent_original_output"] is None and row["general_LLM_original_output"] is None for row in comparisons["rows"])
+    assert {x["query_id"] for x in no_gold["rows"]} == {"FR-04", "FR-05", "DW-05", "MW-05"}
+    assert all(x["actual_AI_response"] is None and x["AI_semantic_verdict"] is None and x["approved_accuracy_score"] is None for x in no_gold["rows"])
+    output = {
+        "record_id": normal_review["record_id"],
+        "observed_at": datetime.now(timezone.utc).isoformat(),
+        "validation_source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "result": "PASS",
+        "checks_kind": "new pointer/span/reference and missing-evidence boundary checks only",
+        "manual_semantic_judgments_automatically_validated": False,
+        "row_pointer_checks": checks,
+        "anchor_spans_verified": len(anchors),
+        "selected_source_reference_count": len(sources["source_refs"]),
+        "summary_citation_basis_preserved": "3/4 customer references; not classification or market accuracy",
+        "W3_original_file_SHA_intake_checks_reperformed": False,
+        "canonical7_pairs_accepted": 0,
+        "noGold4_AI_responses_received": 0,
+        "Gold_or_final_independent_score_created": False,
+        "model_OCR_product_or_completed225_11_execution": 0,
+    }
+    destination = ns.results / "validation.json"
+    assert not destination.exists(), "preserve previous results; use a new run folder"
+    destination.write_bytes((json.dumps(output, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
+    print(json.dumps({k: output[k] for k in ["result", "validation_source_sha256", "anchor_spans_verified", "selected_source_reference_count", "manual_semantic_judgments_automatically_validated"]}, ensure_ascii=False))
+
+
+if __name__ == "__main__":
+    main()
