@@ -304,7 +304,11 @@ def repair_public_brief(model_caller, bundle: dict, previous: dict, feedback: li
         result["runtime"]["private_evidence"] = evidence.audit
         result["runtime"]["field_claim_dependencies"] = field_claims
         result["runtime"]["residual_field_claim_issues"] = residual
-        result["runtime"]["inherited_item_issues"] = deepcopy(previous["runtime"].get("item_issues", []))
+        inherited = deepcopy(previous["runtime"].get("inherited_item_issues", []))
+        for issue in previous["runtime"].get("item_issues", []):
+            if issue not in inherited:
+                inherited.append(deepcopy(issue))
+        result["runtime"]["inherited_item_issues"] = inherited
         result["runtime"]["private_summary_projection"] = evidence.summary_projection(set(processed or []))
         result["runtime"]["summary_projection_applied"] = False
         # An unmapped or separately reported meaning issue cannot be cleared by

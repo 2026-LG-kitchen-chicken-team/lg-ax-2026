@@ -58,6 +58,8 @@ class PublicEvidenceTests(unittest.TestCase):
             claim(mixed, "performance", "건조도 잘 되고 성능은 좋은 것 같습니다", polarity="positive"),
             claim(positive, "satisfied", positive["text"], polarity="positive"),
             claim(install, "intent", "기사가 설치하기 싫은것 같아", kind="customer_inference", actor="기사"),
+            claim(install, "reschedule", "설지일 전날 저녁 일방적 연기 요구.", polarity="negative"),
+            claim(install, "unexplained", "설치할 위치에대해 사전 헙의나 설명없고", polarity="negative"),
             claim(install, "return", "반송함.", polarity="negative"),
         ], "official_actions": [self.action()]}
 
@@ -109,7 +111,7 @@ class PublicEvidenceTests(unittest.TestCase):
         bad["customer_claims"][3]["source_id"] = POSITIVE
         ledger = self.ledger(bad)
         self.assertEqual(len(ledger.audit["issues"]), 3)
-        self.assertEqual(len(ledger.audit["claims"]), 9)
+        self.assertEqual(len(ledger.audit["claims"]), 11)
         self.assertEqual(ledger.summary_projection({MIXED})["summaries"]["mixed"][0]["source_ids"], [MIXED])
         self.assertEqual(ledger.audit["raw_candidates"], bad)
         self.assertFalse(ledger.audit["semantic_quality_verified"])
@@ -198,6 +200,7 @@ class PublicEvidenceTests(unittest.TestCase):
         again = repair_public_brief(caller, self.bundle, result, feedback, evidence=ledger, field_claims=bindings)
         self.assertEqual(len(calls), 2)
         self.assertTrue(all(row["status"] == "failed" for row in again["runtime"]["repair_outcomes"]))
+        self.assertEqual(again["runtime"]["inherited_item_issues"], before["runtime"]["item_issues"])
 
     def test_bad_patch_keeps_original_item_and_inference_cannot_be_displayed_as_observed_history(self):
         ledger, previous = self.ledger(), self.previous()
