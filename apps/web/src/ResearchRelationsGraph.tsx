@@ -26,7 +26,7 @@ export function ResearchRelationsGraph({ bundle, brief, onInspect, onReuseProble
     if (node.kind === 'problem') setProblemChoice(node.id);
   }
   return <section className="research-relations research-card" aria-label="문제 주변 관계 그래프">
-    <div className="research-card-title"><h3>문제 주변의 근거 연결</h3><span className="research-chip">선택한 실행의 관계 기록</span></div>
+    <div className="research-card-title"><h3 id="research-relations" tabIndex={-1}>문제 주변의 근거 연결</h3><span className="research-chip">선택한 실행의 관계 기록</span></div>
     <p>반대 근거와 제안의 연결을 좁혀 보고, 기존 대응 비교와 다음 기획 조건에 활용하세요. 화살표는 저장된 연결 방향입니다.</p>
     <p className="research-note">점선은 AI 추론입니다. 실선도 사실·효과가 검증됐다는 뜻은 아닙니다. ‘함께 언급’은 원인 관계나 발생 빈도를 뜻하지 않습니다.</p>
     {!problem ? <p className="research-muted">연결할 문제를 아직 확인하지 못했습니다. 기획 결과의 추가 자료 필요 사항을 확인해 주세요.</p> : <>

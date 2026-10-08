@@ -72,7 +72,7 @@ export function ResearchSourcesPanel({ bundle, brief, inspectId, onInspect, onCl
     finally { if (generation === exportGeneration.current) { exportBusy.current = false; guideAbort.current = null; setExporting(false); setGuideFormat(null); } }
   }
   return <section className="research-sources panel" aria-label="실제 자료 원문" ref={panelRef}>
-    <div className="research-card-title"><h2>3. 원문과 사실 확인</h2><span>{sources.length} / {bundle.sources.length}건</span></div>
+    <div className="research-card-title"><h2 id="research-sources" tabIndex={-1}>2. 원문과 사실 확인</h2><span>{sources.length} / {bundle.sources.length}건</span></div>
     <div className="research-source-filter-grid">
       <label>키워드로 원문 필터<input id="research-keyword" type="search" value={filters.query} onChange={event => update({ query: event.target.value })} placeholder="예: 소음 세척" /></label>
       <label>원문 자료 유형<select id="research-source-type" value={filters.type} onChange={event => update({ type: event.target.value as ResearchSourceFilters['type'] })}><option value="all">모든 자료</option>{Object.entries(RESEARCH_TYPE_LABEL).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
