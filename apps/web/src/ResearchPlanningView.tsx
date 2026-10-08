@@ -18,6 +18,7 @@ const STATUS = { complete: '기획 초안 생성 완료', partial: '일부 근�
 const CONCEPT_STATUS = { draft: '제안 초안', supported: '근거 연결됨', needs_sources: '근거 보강 필요' };
 function errorMessage(error: unknown): string { return error instanceof Error ? error.message : '요청을 처리하지 못했습니다.'; }
 function bundleUsageLabel(bundle: ResearchBundleSummary): string {
+  if (bundle.bundle_id.includes('-public-intake-')) return '확장 자료 · 수집 검토 중';
   if (bundle.bundle_id.includes('-manual-reference-')) return '설명서 참고 · 리뷰 없음';
   if (bundle.bundle_id.startsWith('LGE-R9-')) return 'R9 기본 자료';
   if (bundle.bundle_id.startsWith('LGE-R8-')) return '이전 보존 자료';
