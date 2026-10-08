@@ -8,7 +8,8 @@ import type { Page } from '@playwright/test';
 // Expectations are computed here from those same bundle files, not from web code. Opt-in: skipped unless
 // LGAX_E2E_RESEARCH_TOKEN_FILE and LGAX_E2E_RESEARCH_BUNDLE_DIR are set. Run the test Vite on an origin the server allows
 // for writes (LGAX_E2E_PORT=5175), never the user's 5173. No model is called; the planning-off check runs only when the
-// server reports research planning disabled.
+// server reports research planning disabled. Record 최길웅-20261008-068 added the selected-source planning request and the
+// official-guide export checks for the R9 prototype (scripts/serve_research_prototype.py).
 const tokenFile = process.env.LGAX_E2E_RESEARCH_TOKEN_FILE;
 const bundleDir = process.env.LGAX_E2E_RESEARCH_BUNDLE_DIR;
 const workspace = process.env.LGAX_WORKSPACE_PROXY;
@@ -55,9 +56,12 @@ test.describe('real-source research flow', () => {
       await expect(page.locator('.research-setup .research-note').first()).toContainText(`실제 원문 ${bundle.sources.length}건 · 리뷰 ${reviews.length}건`);
       await expect(sourcesPanel(page).locator('.research-card-title span').first()).toHaveText(`${bundle.sources.length} / ${bundle.sources.length}건`);
       await expect(sourcesPanel(page).locator('select').nth(2).locator('option').nth(1)).toHaveText(`확인된 게시일만 · ${confirmed}건`);
-      const firstReview = sourcesPanel(page).locator('.research-source-row').filter({ hasText: reviews[0].source_id }).first();
-      if (reviews[0].purchased_model === null) await expect(firstReview).toContainText('구매 모델 미확인');
-      if (!postingDay(reviews[0])) await expect(firstReview).toContainText('게시일 미확인');
+      // A document-only bundle (e.g. the R9 manual reference, 0 reviews) has no review row to check.
+      if (reviews.length) {
+        const firstReview = sourcesPanel(page).locator('.research-source-row').filter({ hasText: reviews[0].source_id }).first();
+        if (reviews[0].purchased_model === null) await expect(firstReview).toContainText('구매 모델 미확인');
+        if (!postingDay(reviews[0])) await expect(firstReview).toContainText('게시일 미확인');
+      }
       if (reviews.some(review => review.purchased_model === null)) {
         await expect(sourcesPanel(page).getByRole('region', { name: '자료의 핵심 한계' })).toContainText(`구매 모델이 미확인`);
       }
@@ -126,9 +130,56 @@ test.describe('real-source research flow', () => {
     await connect(page);
     await choose(page, bundles()[0]);
     const response = page.waitForResponse(item => item.url().endsWith('/api/research/planning-runs') && item.request().method() === 'POST');
-    await page.getByRole('button', { name: '새 기획 생성' }).click();
+    await page.getByRole('button', { name: '새 기획 생성', exact: true }).click();
     expect((await response).status()).toBe(501);
     await expect(page.locator('.research-error')).toContainText('요청을 완료하지 못했습니다');
     await expect(page.getByRole('region', { name: '실제 자료 기획 결과' })).toHaveCount(0);
+  });
+
+  test('a selected-source plan request sends only the chosen IDs, in bundle order, with the listed bundle hash', async ({ page, request }) => {
+    test.skip(!workspace, 'LGAX_WORKSPACE_PROXY not set');
+    const health = await (await request.get(`${workspace}/health`)).json() as { research_planning_enabled?: boolean };
+    test.skip(health.research_planning_enabled !== false, 'server has research planning enabled');
+    const listing = page.waitForResponse(item => item.url().endsWith('/api/research/bundles') && item.request().method() === 'GET');
+    await connect(page);
+    const listed = (await (await listing).json()) as { bundles: { bundle_id: string; bundle_sha256?: string }[] };
+    const bundle = bundles().find(item => item.sources.filter(source => source.source_type === 'review').length >= 3)!;
+    await choose(page, bundle);
+    const checks = sourcesPanel(page).locator('.research-source-check input');
+    // Check the third row before the first so the request must restore bundle order itself.
+    await checks.nth(2).check();
+    await checks.nth(0).check();
+    const posted = page.waitForRequest(item => item.url().endsWith('/api/research/planning-runs') && item.method() === 'POST');
+    await page.getByRole('button', { name: /^선택 근거로 새 기획 생성/ }).click();
+    const body = (await posted).postDataJSON() as { bundle_id: string; selected_source_ids?: string[]; bundle_sha256?: string };
+    expect(body.bundle_id).toBe(bundle.bundle_id);
+    expect(body.selected_source_ids).toEqual([bundle.sources[0].source_id, bundle.sources[2].source_id]);
+    expect(body.bundle_sha256).toBe(listed.bundles.find(item => item.bundle_id === bundle.bundle_id)?.bundle_sha256);
+    await expect(page.locator('.research-error')).toContainText('요청을 완료하지 못했습니다');
+    await expect(page.getByRole('region', { name: '실제 자료 기획 결과' })).toHaveCount(0);
+  });
+
+  test('the official-source guide exports only chosen official originals and refuses a review in the selection', async ({ page }) => {
+    const official = bundles().find(item => item.sources.length && item.sources.every(source => source.source_type !== 'review' && source.source_type !== 'qa'));
+    test.skip(!official, 'no document-only bundle in LGAX_E2E_RESEARCH_BUNDLE_DIR');
+    await connect(page);
+    await choose(page, official!);
+    await sourcesPanel(page).getByRole('button', { name: '표시 자료 모두 선택' }).click();
+    const [download] = await Promise.all([page.waitForEvent('download'), sourcesPanel(page).getByRole('button', { name: '선택 공식자료 안내서 Markdown' }).click()]);
+    const markdown = readFileSync((await download.path())!, 'utf8');
+    for (const source of official!.sources) expect(markdown, source.source_id).toContain(source.text.trim().split(/\r?\n/)[0].slice(0, 20));
+    const mixed = bundles().find(item => item.sources.some(source => source.source_type === 'review') && item.sources.some(source => ['manual', 'faq', 'installation', 'spec'].includes(source.source_type)));
+    if (!mixed) return;
+    await choose(page, mixed);
+    const review = mixed.sources.findIndex(source => source.source_type === 'review');
+    const document = mixed.sources.findIndex(source => source.source_type !== 'review' && source.source_type !== 'qa');
+    const checks = sourcesPanel(page).locator('.research-source-check input');
+    await checks.nth(review).check();
+    await checks.nth(document).check();
+    let guideRequests = 0;
+    page.on('request', item => { if (item.url().endsWith('/api/research/guides')) guideRequests += 1; });
+    await sourcesPanel(page).getByRole('button', { name: '선택 공식자료 안내서 Markdown' }).click();
+    await expect(sourcesPanel(page).getByRole('alert')).toBeVisible();
+    expect(guideRequests).toBe(0);
   });
 });
