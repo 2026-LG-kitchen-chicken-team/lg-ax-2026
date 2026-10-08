@@ -23,3 +23,5 @@ DATA 지원 세션이 김치 Z330MEEF11 공개 후기 미리보기3·공식설�
 ## 검수·한계
 
 확장 자료/CLI/WEB에 필요한 계약·통합 검사와 새 PR exact-head CI·병합은 결과 확인 후 issue234에 확정한다. 이 문서는 인수 전 source snapshot이다. parent Done, 새 생성영상, 넓은 독립평가·실제사용자검토·제출재현은 미완료다. 사용자에게 추가 토큰/결제/설치 작업을 넘기지 않는다. [근거](../../../작업근거/정이량/2026-10-08/정이량-E057-KITCHEN-INTAKE.md)와 [수동 큐](../../../pm/manual-queue-20261008.json)를 따른다.
+
+추가 인수: 자료 등록/보존 집중12검사가 cd164bce3783e1fa9c6233ab1b9d8eccf9a1cafd의 고정 zero-auth Docker에서 PASS. WEB 실제2검사·build/typecheck PASS. 실제API 10개 등록·신규2 전체 source/facts/hash·저장 정상/조건 재시작 뒤 전체 public 동일, 브라우저 김치3후기 filter/선택 확인. 신규 모델0이다. Git 원byte 보존 속성을 적용했다.
