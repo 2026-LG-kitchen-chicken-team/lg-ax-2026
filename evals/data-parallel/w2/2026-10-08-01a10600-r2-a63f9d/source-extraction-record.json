@@ -1,0 +1,96 @@
+{
+  "review_public_capture_receipts": [
+    {
+      "model": "ML32WW1",
+      "url": "https://www.lge.co.kr/mkt/review/MD08044721/pdpReviewListPopup",
+      "final_url": "https://www.lge.co.kr/mkt/review/MD08044721/pdpReviewListPopup",
+      "captured_at_kst": "2026-10-08T15:28:02.908235+09:00",
+      "HTTP": 200,
+      "bytes": 157036,
+      "sha256": "3bc1572d0b692ae64a51371496643d5396a83dd3382d200db46f497758b2b9ad",
+      "file": "ML32WW1-review-list.html",
+      "source_body_emitted": false,
+      "user_agent_override": false
+    },
+    {
+      "model": "Z330MEEF11",
+      "url": "https://www.lge.co.kr/mkt/review/MD10545829/pdpReviewListPopup",
+      "final_url": "https://www.lge.co.kr/mkt/review/MD10545829/pdpReviewListPopup",
+      "captured_at_kst": "2026-10-08T15:28:02.910035+09:00",
+      "HTTP": 200,
+      "bytes": 205244,
+      "sha256": "848eed68d0c94655dbdf06035cb736a74940f3683800e3e7749b65fe5068d409",
+      "file": "Z330MEEF11-review-list.html",
+      "source_body_emitted": false,
+      "user_agent_override": false
+    }
+  ],
+  "public_UI_GET_attempts": 2,
+  "earlier_web_tool_attempts": 2,
+  "earlier_web_results": "ML32 tool timeout, kimchi readable; no access bypass",
+  "HTML_raw_and_authors_media_full_body_published": false,
+  "PDF_extraction_execution": {
+    "checked_at_kst": "2026-10-08T15:38:19.357846+09:00",
+    "command": [
+      "python",
+      "-B",
+      "/input/extract_three_pages.py",
+      "--input",
+      "/input",
+      "--output",
+      "/artifacts"
+    ],
+    "image": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+    "user": "1000:1000",
+    "network": "none",
+    "readonly_root": true,
+    "mounts": [
+      {
+        "destination": "/artifacts",
+        "read_only": false
+      },
+      {
+        "destination": "/input",
+        "read_only": true
+      }
+    ],
+    "credentials_or_reviewer_answers_mounted": false,
+    "exit_code": 0,
+    "code_sha256": "873d685e3cafc238e76076f86496286df4c55d69ae42b860464fb41830272751",
+    "log_sha256": "34f23463c0a282a2b1d2c7f61cf368c9fd027ce307ed44e0bbc111c5df028572",
+    "new_model_API_or_installs": 0
+  },
+  "bundled_pypdf_version": "6.10.0",
+  "bundled_library_file_manifest_SHA256": "638d4288ac5acca859d4454137dab789aa240f95c62c987a449a9dffd7f5d1a1",
+  "bundled_library_reused_without_install": true,
+  "PDF_bytes_reused": [
+    {
+      "model": "Z330MEEF11",
+      "sha256": "594b38d6cedfeb2607651c078f031157e5f3d6d5a0fc72d40b4ed0da941ea14a",
+      "bytes": 1951716,
+      "requested_physical_pages": [
+        26
+      ],
+      "document_version": "MFL67704818 Rev.00_072525",
+      "reused_not_downloaded": true
+    },
+    {
+      "model": "ML32WW1",
+      "sha256": "812ba8f2d60933d5dd610b897cec39fa5ee934d59c5e59cf86b586e6b79f96f9",
+      "bytes": 10668156,
+      "requested_physical_pages": [
+        4,
+        11
+      ],
+      "document_version": "MFL68822502 Rev.25_090425",
+      "reused_not_downloaded": true
+    }
+  ],
+  "PDF_native_text_and_render_sha_basis": "original PDF bytes, newly extracted three page text, existing producer PNG visually checked; not table-graph performance",
+  "helper_failures_preserved": [
+    "wrong bundled-runtime path in one version probe (before parsing); corrected to existing primary runtime",
+    "one inline shell quote inspection SyntaxError; retained captures reused via owned file helper",
+    "existing minimal Docker images have no PDF module; existing bundled pypdf6.10 copied to offline input, no install"
+  ],
+  "model_OCR_or_new_dependency_install": 0
+}

@@ -1,0 +1,21 @@
+"""Two normal public UI URLs, once each; keep raw private, no authors or review text emitted."""
+from pathlib import Path
+from hashlib import sha256
+from datetime import datetime,timezone,timedelta
+from concurrent.futures import ThreadPoolExecutor
+import json,urllib.request,sys
+sys.stdout.reconfigure(encoding='utf-8');C=Path(__file__).resolve().parent;private=C/'private-source-capture';private.mkdir(exist_ok=True)
+targets=[('ML32WW1','https://www.lge.co.kr/mkt/review/MD08044721/pdpReviewListPopup'),('Z330MEEF11','https://www.lge.co.kr/mkt/review/MD10545829/pdpReviewListPopup')]
+def read(target):
+    model,url=target;path=private/(model+'-review-list.html')
+    assert not path.exists(),'Do not repeat a retained capture'
+    stamp=datetime.now(timezone(timedelta(hours=9))).isoformat()
+    try:
+        with urllib.request.urlopen(url,timeout=25) as response:
+            status=response.status;final=response.geturl();raw=response.read()
+        path.write_bytes(raw)
+        return {'model':model,'url':url,'final_url':final,'captured_at_kst':stamp,'HTTP':status,'bytes':len(raw),'sha256':sha256(raw).hexdigest(),'file':path.name,'source_body_emitted':False,'user_agent_override':False}
+    except Exception as exc:
+        return {'model':model,'url':url,'captured_at_kst':stamp,'HTTP':getattr(exc,'code',None),'error_type':type(exc).__name__,'state':'not verified; do not bypass or retry','source_body_emitted':False}
+with ThreadPoolExecutor(max_workers=2) as pool: rows=list(pool.map(read,targets))
+(C/'review-list-capture-receipt.json').write_bytes(json.dumps(rows,ensure_ascii=False,indent=2).encode());print(json.dumps(rows,ensure_ascii=False))

@@ -1,0 +1,53 @@
+"""Inspect exact six public DOM rows; keep text private and emit only provenance/date facts."""
+from pathlib import Path
+from hashlib import sha256
+from html.parser import HTMLParser
+from datetime import datetime,timezone,timedelta
+import json,re,sys,unicodedata
+sys.stdout.reconfigure(encoding='utf-8');C=Path(__file__).resolve().parent
+class Parser(HTMLParser):
+    def __init__(self,text):
+        super().__init__(convert_charrefs=True);self.text=text;self.lines=[0];self.nodes=[];self.stack=[]
+        self.lines.extend(m.end() for m in re.finditer('\n',text))
+    def char_position(self):
+        line,col=self.getpos();return self.lines[line-1]+col
+    def handle_starttag(self,tag,attrs):
+        n={'tag':tag,'attrs':dict(attrs),'start':self.char_position(),'end':None,'texts':[],'children':[]}
+        if self.stack:self.stack[-1]['children'].append(n)
+        self.nodes.append(n)
+        if tag=='br':
+            for p in self.stack:p['texts'].append('\n')
+        if tag not in ['area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr']:self.stack.append(n)
+        else:n['end']=self.char_position()+len(self.get_starttag_text())
+    def handle_endtag(self,tag):
+        for i in range(len(self.stack)-1,-1,-1):
+            if self.stack[i]['tag']==tag:
+                end=self.char_position()+len('</'+tag+'>')
+                for n in self.stack[i:]:n['end']=end
+                del self.stack[i:];return
+    def handle_data(self,data):
+        if not any(p['tag'] in ['script','style'] for p in self.stack):
+            for n in self.stack:n['texts'].append(data)
+def clean(n):return ' '.join(unicodedata.normalize('NFKC',''.join(n['texts'])).split())
+pins=json.loads((C/'new-pins.json').read_text('utf-8'));expected=next(v['json']['rows'] for k,v in pins['files'].items() if k.endswith('identity-date-delta.json'))
+receipts={r['model']:r for r in json.loads((C/'review-list-capture-receipt.json').read_text('utf-8'))}
+parsers={}
+for model,r in receipts.items():
+    assert r['HTTP']==200;text=(C/'private-source-capture'/r['file']).read_bytes().decode('utf-8');p=Parser(text);p.feed(text);parsers[model]=p
+rows=[]
+for old in expected:
+    p=parsers[old['page_model']];rec=receipts[old['page_model']]
+    cards=[n for n in p.nodes if n['tag']=='li' and n['attrs'].get('data-review-id')==old['original_review_id'] and n['attrs'].get('data-model-id')==old['listing_model_id']]
+    assert len(cards)==1,old['original_review_id'];card=cards[0]
+    inside=[n for n in p.nodes if n['start']>=card['start'] and n['end'] is not None and n['end']<=card['end']]
+    messages=[n for n in inside if 'message' in n['attrs'].get('class','').split()]
+    assert len(messages)==1;message=messages[0];body=clean(message);bodysha=sha256(body.encode()).hexdigest()
+    assert bodysha==old['normalized_body_sha256'],old['original_review_id']+' body changed'
+    date_nodes=[n for n in inside if '구매 일자' in clean(n) and re.search(r'\d{4}\.\d{2}\.\d{2}',clean(n))]
+    assert date_nodes;date_node=min(date_nodes,key=lambda n:n['end']-n['start']);display=clean(date_node)
+    date=re.search(r'\d{4}\.\d{2}\.\d{2}',display).group().replace('.','-');assert date==old['displayed_purchase_date']
+    labelsha=sha256(('구매 일자 '+date).encode()).hexdigest()
+    rows.append({'alias':old['source_id_alias'],'existing_r9_source_id_alias':old['existing_r9_source_id_alias'],'review_id':old['original_review_id'],'listing_model_id':old['listing_model_id'],'page_model':old['page_model'],'url':rec['url'],'displayed_date':date,'date_role':'displayed_purchase_date','published_at':None,'actual_purchased_SKU':None,'purchase_time_manual_revision':None,'approved_time_denominator_contribution':0,'topic_approved':False,'cohort_added':False,'independent_current_original_checked':True,'producer_CORE_intake_reused':True,'capture_version':rec['captured_at_kst'],'current_HTML_SHA256':rec['sha256'],'producer_HTML_SHA256':old['capture_sha256'],'HTML_SHA_same_as_producer':rec['sha256']==old['capture_sha256'],'body_normalization':'HTMLParser one entity decode, br to LF, NFKC then whitespace collapse','body_SHA256':bodysha,'body_SHA_same_as_producer':True,'body_locator':{'selector':f'li[data-model-id="{old["listing_model_id"]}"][data-review-id="{old["original_review_id"]}"] .message','char_start':message['start'],'char_end':message['end'],'offset_basis':'zero-based Unicode chars in this exact HTML capture'},'date_label_locator':{'selector':f'li[data-review-id="{old["original_review_id"]}"] '+date_node['tag']+'.'+'.'.join(date_node['attrs'].get('class','').split()),'char_start':date_node['start'],'char_end':date_node['end'],'label_and_date_SHA256':labelsha},'first_publication_or_edit_time_confirmed':False,'raw_author_media_and_full_body_published':False})
+out={'version':'w2-independent-date-role.20261008.01a10600-r2-a63f9d.v1','checked_at_kst':datetime.now(timezone(timedelta(hours=9))).isoformat(),'rows':rows,'count':len(rows),'new_approved_posting_dates':0,'raw_assets_private':True,'new_reviews_added':0,'old238_or141_changed':False}
+(C/'independent-date-role.json').write_bytes(json.dumps(out,ensure_ascii=False,indent=2).encode())
+print(json.dumps({'rows':len(rows),'models':[r['page_model'] for r in rows],'purchase_label_and_dates_match':True,'body_sha_matches':6,'HTML_SHA_changed_rows':[r['review_id'] for r in rows if not r['HTML_SHA_same_as_producer']],'posting_dates':0,'time_denominator':0,'new_reviews_added':0},ensure_ascii=False))
