@@ -46,3 +46,9 @@
 [메일·댓글·PR 근거](source-receipts.json) · [현재 발신 핀](sender-current.json) · [재사용 검증](reuse-verification.json).
 
 CORE의 디스크나 PM의 비공개 운영 DB에 직접 접근하지 않았다. 확인하지 못한 외부 전달은 알 수 없다. GitHub 댓글 새로고침1회 연결 중단은 기록했고, 메일에 연결된 정확한 두 댓글을 재조회해 회복했다. 새 모델/OCR/수집/서버 재시작/자동화ON/생산 파일 변경은 0이다.
+
+## 실제 게시와 동시 작업 인수
+
+- [PR272](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/272)를 게시하고 PM 검수를 요청했다. [#234 인계 댓글](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/234#issuecomment-6049997210)을 인증 계정으로 게시한 뒤 본문 일치를 재조회했다. 요청 게시만 확인했으며 상대 읽기/회신/승인은 아직 확인하지 못했다.
+- 게시 중 발견한 [PR269](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/269) `2672f00b2a9ac5bad38e7b523f67e2814d0ec144`의 본문·파일목록을 읽었다. 기존 DATA 표 담당 창의6참고Source·14anchor 및 최신2run 보고 인수이며 실제 원출력/자동표/ZIP 수신은 여전히 미완료라고 명시한다. 이 창에서 검사를 반복하지 않는다.
+- [PR270](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/270) `33b6312721c79f234f035fbe408f7d570fa6c36d`의 본문·파일목록도 확인했다. 15모델 적용범위/공식FAQ/새 날짜 관측의 별도 reference이고 원238/개발141과 draft를 유지한다. 표시일 관측을 게시일 확정으로 바꾸지 않으며 운영 bundle에 미등록이다. 이 두 PR은 OPEN으로, 이 창이 원자료 검사를 새로 수행하거나 PM 인수를 대신하지 않았다.
