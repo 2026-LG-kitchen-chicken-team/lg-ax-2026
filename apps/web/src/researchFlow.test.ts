@@ -81,6 +81,28 @@ describe('actual-source research screen state and revision flow', () => {
     await click('연결 해제'); await act(async () => finish(response(heldBrief())));
     expect(host.querySelector('[aria-label="실제 자료 기획 결과"]')).toBeNull(); expect(host.textContent).toContain('자료 연결을 기다리고');
   });
+  it('navigates to sources and saved results without a request or changing the planning selection', async () => {
+    const fetch = api(); vi.stubGlobal('fetch', fetch);
+    await act(async () => root.render(createElement(ResearchPlanningView))); await connect(); await choose();
+    const navigation = host.querySelector('nav[aria-label="실제 자료 작업실 바로가기"]')!;
+    expect(navigation.querySelector('a[href="#research-results"]')).toBeNull();
+    const select = host.querySelector<HTMLInputElement>('.research-source-check input')!;
+    await act(async () => select.click());
+    const beforeNavigation = fetch.mock.calls.length;
+    await act(async () => navigation.querySelector<HTMLAnchorElement>('a[href="#research-sources"]')!.click());
+    expect(document.activeElement?.id).toBe('research-sources');
+    expect(fetch.mock.calls).toHaveLength(beforeNavigation);
+    expect(select.checked).toBe(true);
+    await click('새 기획 생성');
+    expect(document.activeElement?.id).toBe('research-results');
+    expect(navigation.querySelector('a[href="#research-concepts"]')).not.toBeNull();
+    expect(host.querySelector('[aria-label="첫 문제의 기획 연결 요약"]')?.textContent).toContain('명시적으로 연결된 개선안이 없습니다');
+    const beforeResultNavigation = fetch.mock.calls.length;
+    await act(async () => navigation.querySelector<HTMLAnchorElement>('a[href="#research-relations"]')!.click());
+    expect(document.activeElement?.id).toBe('research-relations');
+    expect(fetch.mock.calls).toHaveLength(beforeResultNavigation);
+    expect(select.checked).toBe(true);
+  });
   it('keeps actual source browsing available when model generation is not activated', async () => {
     const fetch = api(); vi.stubGlobal('fetch', fetch); await act(async () => root.render(createElement(ResearchPlanningView))); await connect(); await choose();
     fetch.mockImplementation(() => Promise.resolve(response({ error: { code: 'NOT_IMPLEMENTED' } }, 501)));

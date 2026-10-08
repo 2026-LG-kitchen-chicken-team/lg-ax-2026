@@ -374,7 +374,7 @@ export default function App() {
     if (next === 'live') setState({ status: 'loading' });
   }
 
-  return <div className="workspace">
+  return <div className={`workspace${view === 'research' ? ' research-shell' : ''}`}>
     <a href="#main-content" className="skip-link">본문으로 이동</a>
     <aside className="sidebar">
       <div className="brand"><img className="brand-icon" src="/kitchen-evidence-icon.png" alt="" width="44" height="44" decoding="async" aria-hidden="true" /><div><strong>KITCHEN</strong><span>PLANNING WORKSPACE</span></div></div>
