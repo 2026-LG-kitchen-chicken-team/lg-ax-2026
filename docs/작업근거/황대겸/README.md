@@ -1,6 +1,9 @@
 # 황대겸 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-08 CORE-R9-TYPED-EVIDENCE-01a10729-01: PM CF1/CF2/CF3 내부 원문 레코드·조건부 문서·국소 수리 구현/실제-source11·관련62검사/Ruff PASS. 모델0·native 생성/저장/실제 의미·PM 인수 미완료.
+- [상세](2026-10-08/CORE-R9-TYPED-EVIDENCE-01a10729-01.md) · [설계·출처·고정 검사·PM 연결 의존](../../../evals/core-manual-quality/20261008/r9-typed-evidence/README.md).
+
 - 2026-10-08 CORE-R9-INTEGRATION-INTAKE-01a10729-01: PM 통합 고정버전 native/공개 집계/공식 안내서 기존34검사와 받은 원문/출력 발췌 검토; 제품·모델0, 실제 효과·raw/HTTP-MCP/PM 인수 미완료.
 - [상세](2026-10-08/CORE-R9-INTEGRATION-INTAKE-01a10729-01.md) · [고정 통합/검증](../../../evals/core-manual-quality/20261008/r9-integration-intake/README.md).
 
