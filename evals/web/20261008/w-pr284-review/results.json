@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "record": "최길웅-20261008-072",
+  "date": "2026-10-08",
+  "scope": "WEB pre-merge review of PM PR #284 (includes #275) in a local worktree; no push to the PM branch. Research server 18969 model off; test public API 18898; ports closed afterwards.",
+  "heads": {
+    "first": "8c18ac9b453711cee4af2e4bd30e4c4a4d444754",
+    "second": "c20df44 (conversation UI R9-UI2, pushed during this review)"
+  },
+  "R1_full_vitest": {
+    "8c18ac9": {
+      "exit": 1,
+      "failed": 23,
+      "passed": 621,
+      "files": {
+        "measurement.scope": 8,
+        "publicProfileFlow": 7,
+        "planning": 5,
+        "webIntake": 2,
+        "projectModelScope": 1
+      },
+      "cause": "jsdom /api/prototype/session not 404 -> sharedAccess error -> researchOnly nav -> enterLegacyEvidence cannot find 근거 대조",
+      "typecheck": 0,
+      "build": 0
+    },
+    "c20df44": {
+      "exit": 0,
+      "passed": 648,
+      "skipped": 9,
+      "note": "fixed by test changes in 5 files"
+    }
+  },
+  "R2_session_check_non_404": {
+    "repro": "public API proxy target down -> Vite proxy 500 for /api/prototype/session",
+    "observed_8c18ac9_chrome": {
+      "session_status": 500,
+      "nav": [
+        "00 실제 자료 기획"
+      ],
+      "alert": "공유 프로토타입 연결을 확인하지 못했습니다. 링크를 다시 열어 주세요.",
+      "token_form": "absent (sharedMode true, no session)"
+    },
+    "control_public_api_up": {
+      "session_status": 404,
+      "nav_count": 6,
+      "alerts": 0
+    },
+    "research_e2e_public_api_down": "test 1 failed at connect after 4.0m; run stopped",
+    "c20df44_logic": "unchanged: error -> researchOnly; token form only when !sharedMode",
+    "suggestion": "fall back to manual mode with a notice on non-404 failure; stub the session route in tests"
+  },
+  "merge_with_pr268": {
+    "8c18ac9": {
+      "conflict": "ResearchPlanningView.tsx one line",
+      "resolution": "PM view + bundle hint",
+      "typecheck": 0,
+      "build": 0,
+      "vitest": "same 23 failures, PR268 tests pass (623 passed)",
+      "research_e2e_public_api_up": "7 passed"
+    },
+    "c20df44": {
+      "conflict": "ResearchPlanningView.tsx",
+      "resolution": "PM conversation view (already has an equivalent pre-bundle hint)",
+      "pr268_hint_test": "fails on new UI -> hint change and test removed from PR268 in this record"
+    }
+  },
+  "research_e2e_on_c20df44": {
+    "connect_selectors_made_ui_neutral_locally": true,
+    "result": "1 passed / 6 failed (60 s per test)",
+    "breakages": [
+      ".research-setup .research-note bundle count note removed",
+      "source detail h3 shows 'LG 공개 후기 767844' instead of the source ID",
+      "selection export download did not start (panel/button structure)",
+      "'새 기획 생성' button not present",
+      "'선택 근거로 새 기획 생성' replaced by '선택 원문만 사용' checkbox + start",
+      "'표시 자료 모두 선택' not found inside region '실제 자료 원문'"
+    ],
+    "plan": "update the E2E for the conversation UI after #284 merges (PM still iterating)"
+  },
+  "not_supported": [
+    "merge approval",
+    "shared deployment behaviour beyond the observed paths",
+    "CI (billing blocked)"
+  ]
+}
