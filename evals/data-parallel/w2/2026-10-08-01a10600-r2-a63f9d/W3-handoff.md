@@ -1,9 +1,0 @@
-# W3 다음 작업 — DATA-W2-R2-01a10600-r2-a63f9d
-
-이번 W2는 ZIP·운영 DB·메일을 실행하지 않았다. W3는 다음 순서로 받은 첫 부분부터 진행할 수 있다.
-
-1. **지금 받을 수 있는 기존 원파일부터:** [WEB 정상 job-response JSON](https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/blob/fe79561a85ad56466d6bb1d34e5250bdc8d4c913/evals/web/20261008/w1-shared-prototype/run-5ccd95da.job-response.json), head `fe79561a85ad56466d6bb1d34e5250bdc8d4c913`, 6,961bytes/SHA `f8fdcb43e5b8d3a433869be3678b01150086be21ed0a04651fa0d82ba5100e06`. 실제새run `run-5ccd95da25934e5789951fb1402e95ba`/brief `brief-0c4a6ca193c74093807662c53721ea13`의 파일이며 canonical result SHA `dbb239d1dbe7aa91dec4b4da6903ed79a92ad1732497cc3cb74063b14c1f44bf`가 WEB 기록과 일치한다. W3가 자기 수신 bytes/SHA·run/brief·Source6·고정 main 묶음SHA를 대조한 뒤 W1에 정확 필드를 넘긴다. SourceFact에는 ID/facts만 있고 원모델·판본·위치는 [W2 메타 대조표](runtime-source-metadata.csv)의 고정 pack join이다. 이를 원HTTP wire/native prompt/전체입력 전달 증명으로 바꾸지 않는다.
-2. **수정·과거 실행은 별도로:** `run-97dbc6493b964100ab0d0ff5037fa0ed`는 현재 WEB results의 일부필드만 수신했다. 전체 수정 원JSON·actual fields/generation code·stage/formatted prompt/native input·같은 DB/HTTP-MCP 원증빙은 승인된 첫 부분부터 받는다. 기존 정상1f83/조건754268·canonical7 Agent/일반LLM·무Gold4를 이 새run으로 대체하지 않는다. CORE의 새F1수정은 PR271/c603edd5이며 PM 채택·수정 뒤 실제 결과는 별도다. 전체Gold/usage/자동표 완료를 일부필드 착수조건으로 붙이지 않는다.
-3. **평가ZIP은 승인된 기존 경로에서:** 기존 input-only ZIP11,106bytes/SHA `e73d3393ad43e0bb9cf5f19944cc6c23c3fa69c72a1a140d6d680037e89ffaa8`/11-entry는 sender pin이다. PM이 기존 비공개경로·양쪽PC/수신자·input-only읽기범위를 인계하면 원ZIP부터 전달하고 CORE receiver SHA/bytes/11-entry 수신증을 별도로 확인한다. 현재receiver0을 발신/PR/README수신으로 바꾸지 않는다. Gold/독립검토자/채점 승인은 PM.
-
-PR289의 최초 REJECTED 보고는 보존됐고 새보고6053330784/ACCEPTED6053335339로 형식 문제는 해소됐다. 다시 미완료로 배정하지 않는다. `/lgax-report`와 JSON fenced object 하나만 쓰고 형식과 품질·PM승인/병합/Done을 구분한다. 기존 요청 #15/6050694450과 기존 전송 조율을 재사용한다. 이 문서는 새메일·모델호출·운영변경·다른 PC 접근 승인이 아니다.

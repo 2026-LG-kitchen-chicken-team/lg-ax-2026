@@ -10,4 +10,5 @@
 
 각unit완료: 직접후기6date/bodysource검수; 직접원PDF3쪽설치정정조건; 새PM4run/WEB1snapshot자료보존대조. source hashes/canonical receipt는실제받은원파일/독립계산이며generation전송/AI의미/PM승인/부모Done미완료. 원파일SHA/범위·Secret/relative links·staged exactbytes·동일headremote읽기수신을확인한다. 개인README및공통Schema/API/MCP/CORE/WEB/타창파일변경0.
 
-다음W2하나: 기존요청의실제자동표2페이지+승인adapter 인수후원PDF셀/단위/각주/bbox대조. W3는준비된기존WEB새정상JSON부터수신/출처보존대조→W1필드인계, 나머지승인원입력/수정출력·같은DB/ZIP은해당인계만대기. 사용자지금새설치/로그인/비용/Gold검토자결정을내릴필요없고 PM기존인계를사용한다.
+
+후속 정리: 사용자 요청으로 내부 미래 작업목록·연결을 현재 PR에서 제거하고 로컬 메모에 보관했다. 원 source 검사60개·실행 코드/자료 바이트는 그대로이며 문서 정리만 수행했다.
