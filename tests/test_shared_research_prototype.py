@@ -402,6 +402,37 @@ class SharedGatewayTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(self.backend.calls), 1)
         self.assertEqual(self.backend.calls[0]["body"], body)
 
+    async def test_draining_rejects_new_planning_but_preserves_existing_job_and_get(self):
+        self.backend.hold_next_model = True
+        accepted = await self.client.post('/api/research/planning-runs',
+                                          headers=self.headers(post=True), json={})
+        await asyncio.wait_for(self.backend.model_started.wait(), timeout=3)
+        marker = self.app.queue.path.parent / 'draining'
+        marker.touch()
+        rejected = await self.client.post('/api/research/planning-runs', headers={
+            'Authorization': 'Bearer ' + self.registry.token(SESSION_B), 'Origin': ORIGIN,
+        }, json={})
+        self.assertEqual(rejected.status_code, 503)
+        self.assertEqual(rejected.json()['error']['code'], 'PROTOTYPE_UPDATING')
+        current = await self.client.get('/api/prototype/jobs/current', headers=self.headers())
+        self.assertEqual(current.json()['job_id'], accepted.json()['job_id'])
+        self.assertEqual(current.json()['status'], 'running')
+        listing = await self.client.get('/api/research/metadata-only', headers=self.headers())
+        self.assertEqual(listing.status_code, 200)
+        self.assertEqual(self.backend.model_calls, 1)
+        self.backend.model_release.set()
+
+        async def finished():
+            while True:
+                result = await self.client.get('/api/prototype/jobs/current', headers=self.headers())
+                if result.json()['status'] == 'completed':
+                    return result.json()
+                await asyncio.sleep(0.01)
+
+        completed = await asyncio.wait_for(finished(), timeout=3)
+        self.assertEqual(completed['job_id'], accepted.json()['job_id'])
+        self.assertEqual(self.backend.model_calls, 1)
+
 
 class ResidentOllamaAdapterTests(unittest.TestCase):
     def adapter(self, requests):

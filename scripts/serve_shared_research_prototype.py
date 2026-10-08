@@ -6,9 +6,11 @@ import asyncio
 import hashlib
 import hmac
 import json
+import os
 import re
 import secrets
 import sqlite3
+import stat
 import sys
 from contextlib import contextmanager
 from datetime import UTC, datetime
@@ -35,6 +37,16 @@ COOKIE = 'lgax_prototype_session'
 SESSION = re.compile(r'[a-f0-9]{32}')
 MAX_REQUEST_BYTES = 65536
 MAX_JOB_RESPONSE_BYTES = 2 * 1024 * 1024
+SHARED_MODEL_ID = 'qwen3.8:27b-q4_K_M'
+SHARED_MANIFEST_SHA = '25b843619e944cd0ae6069f94ff4e5e26a16e109ccbc0a66a0f05979ed70098e'
+SHARED_GGUF_SHA = 'f5f1dd8920d417aac2718b0bda3403da274301efdd6760b4f0f4b864ff2ad57d'
+SHARED_GGUF_BYTES = 16810714464
+SHARED_PARAMS_SHA = '448d29437397713495b408d51b4ccbc5ba95240a7583643efb2304921950b111'
+
+
+def _model_failure(reason):
+    return DomainError('MODEL_UNAVAILABLE', '고정한 모델의 안전한 호출·revision 확인을 완료하지 못했습니다.',
+                       {'reason': reason})
 
 
 class SessionRegistry(TokenRegistry):
@@ -68,11 +80,174 @@ class ResidentOllamaAdapter(OllamaAdapter):
         return super()._request(method, path, deadline, body)
 
 
+class ResidentLlamaAdapter(OllamaAdapter):
+    """Serving-only native transport; the launcher verifies binary and GGUF bytes.
+
+    Inherit bounded HTTP, native/local schema validation, and ModelConfig budgets.
+    Local manifest/params and GGUF identity plus real /props are checked on both
+    sides of each generation; /api/tags is never fabricated.
+    """
+
+    def __init__(self, config, model_store: Path, **kwargs):
+        if (config.endpoint != 'http://127.0.0.1:18875' or config.model_id != SHARED_MODEL_ID
+                or config.expected_digest != SHARED_MANIFEST_SHA
+                or config.context_tokens != 16384 or config.api_mode != 'generate' or config.thinking):
+            raise DomainError('INVALID_ARGUMENT', '공유 llama.cpp의 고정 모델 설정을 확인해 주세요.',
+                              {'reason': 'shared_native_configuration_mismatch'})
+        self.model_store = Path(model_store)
+        if not self.model_store.is_absolute():
+            raise ValueError('An absolute, launcher-verified model store is required')
+        self.model_path = self.model_store / 'blobs' / ('sha256-' + SHARED_GGUF_SHA)
+        self.model_alias = config.model_id + '@' + config.expected_digest
+        super().__init__(config, **kwargs)
+
+    @staticmethod
+    def _identity(info):
+        return (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
+
+    @classmethod
+    def _small_pinned_file(cls, path, digest):
+        before = path.lstat()
+        if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1 or before.st_size > 8192:
+            raise _model_failure('invalid_service_identity')
+        with path.open('rb') as stream:
+            opened = os.fstat(stream.fileno())
+            # Cross-API ctime differs on Windows; descriptor and path are each
+            # independently stable, with device/inode/size/mtime matched.
+            if cls._identity(before)[:4] != cls._identity(opened)[:4]:
+                raise _model_failure('service_identity_changed')
+            raw = stream.read(8193)
+            if cls._identity(opened) != cls._identity(os.fstat(stream.fileno())):
+                raise _model_failure('service_identity_changed')
+        if (cls._identity(before) != cls._identity(path.lstat()) or len(raw) > 8192
+                or hashlib.sha256(raw).hexdigest() != digest):
+            raise _model_failure('model_revision_mismatch')
+        return json.loads(raw), cls._identity(before)
+
+    def _verify_pin(self, deadline):
+        try:
+            manifest_path = (self.model_store / 'manifests' / 'registry.ollama.ai' / 'library'
+                             / 'qwen3.8' / '27b-q4_K_M')
+            manifest, manifest_identity = self._small_pinned_file(manifest_path, SHARED_MANIFEST_SHA)
+            model_layers = [layer for layer in manifest['layers']
+                            if layer.get('mediaType') == 'application/vnd.ollama.image.model']
+            params_layers = [layer for layer in manifest['layers']
+                             if layer.get('mediaType') == 'application/vnd.ollama.image.params']
+            if (len(model_layers) != 1 or model_layers[0].get('digest') != 'sha256:' + SHARED_GGUF_SHA
+                    or model_layers[0].get('size') != SHARED_GGUF_BYTES
+                    or len(params_layers) != 1 or params_layers[0].get('digest') != 'sha256:' + SHARED_PARAMS_SHA):
+                raise _model_failure('model_revision_mismatch')
+            params, params_identity = self._small_pinned_file(
+                self.model_store / 'blobs' / ('sha256-' + SHARED_PARAMS_SHA), SHARED_PARAMS_SHA)
+            if params != {'min_p': 0, 'presence_penalty': 0, 'repeat_penalty': 1,
+                          'temperature': 1, 'top_k': 20, 'top_p': 0.95}:
+                raise _model_failure('model_revision_mismatch')
+            info = self.model_path.lstat()
+            if (not stat.S_ISREG(info.st_mode) or info.st_nlink != 1 or info.st_size != SHARED_GGUF_BYTES):
+                raise _model_failure('invalid_service_identity')
+            identity = [manifest_identity, params_identity, self._identity(info)]
+        except DomainError:
+            raise
+        except (OSError, ValueError, TypeError, KeyError):
+            raise _model_failure('invalid_service_identity') from None
+        props = self._request('GET', '/props', deadline)
+        settings = props.get('default_generation_settings')
+        if (props.get('model_alias') != self.model_alias
+                or props.get('model_path') != str(self.model_path)
+                or type(props.get('total_slots')) is not int or props['total_slots'] != 4
+                or not isinstance(settings, dict) or type(settings.get('n_ctx')) is not int
+                or settings['n_ctx'] != self.config.context_tokens or props.get('is_sleeping') is not False):
+            raise _model_failure('unexpected_service')
+        return {'native_model_alias': self.model_alias, 'native_parallelism': 4,
+                'gguf_sha256': SHARED_GGUF_SHA, 'params_sha256': SHARED_PARAMS_SHA,
+                'model_files_identity_sha256': hashlib.sha256(json.dumps(identity).encode()).hexdigest(),
+                'pin_scope': 'local_manifest_params_and_file_identity_plus_native_props',
+                'gguf_byte_verification': 'launcher_required'}
+
+    @staticmethod
+    def _render_prompt(prompt):
+        # Exact one-user, no-tool, think=false branch of Ollama v0.34.0
+        # model/renderers/qwen35.go (Qwen3.5 and Qwen3.8 both emit this prefill).
+        return ('<|im_start|>user\n' + prompt.strip() + '<|im_end|>\n'
+                '<|im_start|>assistant\n<think>\n\n</think>\n\n')
+
+    def _native_settings(self):
+        config = self.config
+        return {'temperature': config.temperature, 'seed': 42,
+                'n_predict': config.max_output_tokens,
+                'top_k': 20 if config.top_k is None else config.top_k,
+                'top_p': 0.95 if config.top_p is None else config.top_p,
+                'min_p': 0 if config.min_p is None else config.min_p,
+                'repeat_penalty': 1, 'presence_penalty': 0, 'frequency_penalty': 0}
+
+    def _generate(self, prompt, schema, deadline):
+        started = self._clock()
+        rendered = self._render_prompt(prompt)
+        budget = self.prompt_budget
+        if (len(rendered) > budget.max_characters
+                or len(rendered.encode('utf-8')) > budget.max_utf8_bytes):
+            raise DomainError('INVALID_ARGUMENT', '모델 호출 설정·입력·스키마가 유효하지 않습니다.',
+                              {'reason': 'prompt_too_large'})
+        native = self._request('POST', '/completion', deadline, {
+            'prompt': rendered, 'json_schema': schema, 'stream': False,
+            'cache_prompt': True, **self._native_settings(),
+        })
+        if native.get('model') != self.model_alias:
+            raise _model_failure('response_model_mismatch')
+        if native.get('stop') is not True or native.get('stop_type') not in {'eos', 'word', 'limit'}:
+            raise _model_failure('generation_incomplete')
+        if type(native.get('truncated')) is not bool or not isinstance(native.get('content'), str):
+            raise _model_failure('invalid_transport_response')
+        counts = [native.get('tokens_evaluated'), native.get('tokens_predicted')]
+        timings = native.get('timings')
+        if (any(type(value) is not int or value < 0 for value in counts) or not isinstance(timings, dict)):
+            raise _model_failure('invalid_transport_response')
+        for name in ('prompt_n', 'predicted_n'):
+            if type(timings.get(name)) is not int or timings[name] < 0:
+                raise _model_failure('invalid_transport_response')
+        if (timings['predicted_n'] != counts[1] or timings['prompt_n'] > counts[0]
+                or counts[0] > self.config.context_tokens or counts[1] > self.config.max_output_tokens):
+            raise _model_failure('invalid_transport_response')
+        for name in ('prompt_ms', 'predicted_ms'):
+            value = timings.get(name)
+            if (type(value) not in (int, float)
+                    or not 0 <= value <= self.config.timeout_seconds * 1000):
+                raise _model_failure('invalid_transport_response')
+        slot = native.get('id_slot')
+        if type(slot) is not int or not 0 <= slot < 4:
+            raise _model_failure('invalid_transport_response')
+        self._native_metrics = {'native_id_slot': slot, 'native_stop_type': native['stop_type'],
+            'native_prompt_processed_count': timings['prompt_n'],
+            'native_prompt_eval_duration_ns': round(timings['prompt_ms'] * 1000000),
+            'native_eval_duration_ns': round(timings['predicted_ms'] * 1000000),
+            'total_duration_basis': 'completion_http_wall_time',
+            'prompt_eval_count_basis': 'native_tokens_evaluated_full_prompt_including_cache'}
+        return {'model': self.config.model_id, 'response': native['content'], 'done': True,
+                'done_reason': 'length' if native['truncated'] or native['stop_type'] == 'limit' else 'stop',
+                'prompt_eval_count': counts[0], 'eval_count': counts[1],
+                'total_duration': round((self._clock() - started) * 1000000000)}
+
+    def generate(self, prompt, schema):
+        result = super().generate(prompt, schema)
+        result['metadata'].update({'adapter': 'llama.cpp', 'transport_api': '/completion',
+            'prompt_template': 'ollama-v0.34.0-qwen35-single-user-think-false',
+            'native_generation_settings': self._native_settings(), **self._native_metrics})
+        return result
+
+
 class ResidentPlanner:
+    def __init__(self, model_store: Path | None = None):
+        self.model_store = model_store
+
     def _client(self):
         with StructuredModelClient.from_env() as configured:
             config = configured.adapter.config
-        return StructuredModelClient(ResidentOllamaAdapter(config))
+        engine = os.environ.get('LGAX_SHARED_MODEL_ENGINE', 'ollama')
+        if engine == 'ollama':
+            return StructuredModelClient(ResidentOllamaAdapter(config))
+        if engine != 'llama.cpp' or self.model_store is None:
+            raise DomainError('INVALID_ARGUMENT', '공유 모델 엔진 설정을 확인해 주세요.')
+        return StructuredModelClient(ResidentLlamaAdapter(config, self.model_store))
 
     def run(self, bundle, goal, constraints, previous=None):
         with self._client() as client:
@@ -410,6 +585,8 @@ class SharedGateway:
             if method == 'POST' and path == '/api/research/planning-runs':
                 try:
                     principal = self.registry.authenticate(headers.get('authorization'))
+                    if (self.queue.path.parent / 'draining').exists():
+                        raise DomainError('PROTOTYPE_UPDATING', '서버 업데이트 중입니다. 잠시 후 다시 요청해 주세요.')
                     if not self.queue.started:
                         raise DomainError('QUEUE_NOT_READY', '기획 접수 준비를 기다려 주세요.')
                     job = self.queue.enqueue(principal.id, bytes(body), headers.get('x-lgax-client', 'web'))
@@ -443,7 +620,8 @@ def main():
             stream.write(secrets.token_bytes(32))
         keyfile.chmod(0o600)
     registry = SessionRegistry(keyfile.read_bytes())
-    workspace = ResearchWorkspace(state / 'research.sqlite3', research_bundle_paths(root), ResidentPlanner())
+    workspace = ResearchWorkspace(state / 'research.sqlite3', research_bundle_paths(root),
+                                  ResidentPlanner(Path(config['model_store'])))
     backend = create_workspace_app(state / 'workspace.sqlite3', registry, research_workspace=workspace)
     app = SharedGateway(backend, registry, root / 'apps/web/dist', config['public_origin'], config['release'],
                         queue_path=state / 'queue.sqlite3')
