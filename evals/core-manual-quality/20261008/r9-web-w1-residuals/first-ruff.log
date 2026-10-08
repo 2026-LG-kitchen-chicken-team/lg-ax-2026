@@ -1,0 +1,12 @@
+B023 Function definition does not bind loop variable `text`
+   --> tests/test_public_hardware_constraint.py:106:96
+    |
+104 |         for text, accepted in cases:
+105 |             with self.subTest(text=text):
+106 |                 result = repair_public_brief(lambda prompt, schema: {"patch": {"after_steps": [text]}},
+    |                                                                                                ^^^^
+107 |                                              self.bundle, self.previous, self.feedback(["after_steps"]))
+108 |                 self.assertEqual(result["runtime"]["repair_outcomes"][0]["status"],
+    |
+
+Found 1 error.

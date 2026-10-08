@@ -1,0 +1,37 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "public-core",
+      "command": [
+        "python",
+        "-B",
+        "-c",
+        "import unittest; l=unittest.TestLoader(); s=unittest.TestSuite([l.discover('tests',pattern='test_public_planning*.py'),l.discover('tests',pattern='test_public_repair*.py'),l.discover('tests',pattern='test_public_hardware_constraint.py')]); r=unittest.TextTestRunner(verbosity=2).run(s); raise SystemExit(not r.wasSuccessful())"
+      ],
+      "exit_code": 0,
+      "log_sha256": "14951b0a33345a3c95c8340fffa38947ae0f2acd19d4f25d572741aa79789ad2"
+    },
+    {
+      "name": "ruff",
+      "command": [
+        "python",
+        "-m",
+        "ruff",
+        "check",
+        "--no-cache",
+        "packages/core/src/lgax_core/public_planning.py",
+        "packages/core/src/lgax_core/public_repair.py",
+        "tests/test_public_hardware_constraint.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    }
+  ],
+  "new_model_calls": 0,
+  "network": "none",
+  "read_only": true,
+  "credentials_mounted": false,
+  "uid": 65534,
+  "semantic_model_quality_verified": false
+}
