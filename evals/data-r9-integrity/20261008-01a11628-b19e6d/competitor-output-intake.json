@@ -1,0 +1,65 @@
+{
+  "issue": 235,
+  "observed_at": "2026-10-08T01:48:21.198898+00:00",
+  "baseline_comparison_path": "data/research/r8-public-research-20261007/competitors/01a114f6/comparison.json",
+  "comparison_guard_path": "evals/core-manual-quality/20261008/c3-comparison-guard/context.json",
+  "actual_planning_output_received": false,
+  "actual_output_sha256": null,
+  "planning_run_id": null,
+  "latest_available_evidence": "C3 source-grounded instruction guard; kind explicitly not model output. PR273 concerns dishwasher normal/condition excerpts, not this fridge comparison.",
+  "matrix": [
+    {
+      "criterion": "정확한 비교 모델",
+      "expected": [
+        "T876MEE1H1",
+        "RM70F63R231"
+      ],
+      "actual_output_value": null,
+      "status": "awaiting_output"
+    },
+    {
+      "criterion": "용량",
+      "expected_l": [
+        870,
+        640
+      ],
+      "nominal_difference_l": 230,
+      "same_basis_verified": false,
+      "actual_output_value": null,
+      "status": "awaiting_output"
+    },
+    {
+      "criterion": "설치 형태·사용자 조건",
+      "expected": "LG freestanding vs Samsung KitchenFit Max; 원 후기848850은 설치공간 때문에 키친핏 포기",
+      "actual_output_value": null,
+      "status": "awaiting_output"
+    },
+    {
+      "criterion": "외형 깊이 기준",
+      "expected": "LG918mm(handle basis unconfirmed), Samsung697mm rear handle included/683mm excluded. 내부 도달 거리와 동일하지 않음.",
+      "actual_output_value": null,
+      "status": "awaiting_output"
+    },
+    {
+      "criterion": "시점·시험조건",
+      "expected": "LG2026-04, exact Samsung release null. 공통 도달/청소 시험 미수행.",
+      "actual_output_value": null,
+      "status": "awaiting_output"
+    },
+    {
+      "criterion": "기능 존재·불편 맥락",
+      "expected": "문서화된 접이선반은 기존 기능; 인출식선반 미언급은 부재 아님. 원 후기의 수납/편리성 만족과 접근 아쉬움 함께 보존.",
+      "actual_output_value": null,
+      "status": "awaiting_output"
+    }
+  ],
+  "request_existing_export_only": [
+    "실제 fridge PlanningBrief/JSON 전체, run_id·저장시각·output SHA/bytes",
+    "generation code commit·input 조건/first_problem_id·selected source ID/hash와 bundle version",
+    "비교 필드의 source/evidence ID·quote/location·수치/조건·보류 사유",
+    "이미 존재하는 호출 trace/usage와 모델 pin; 없으면 없음/미수신 유지"
+  ],
+  "new_model_run_requested": false,
+  "PM_approved": false,
+  "parent_done": false
+}
