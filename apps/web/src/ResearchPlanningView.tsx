@@ -26,7 +26,7 @@ function jumpToSection(id: string) {
   heading?.focus({ preventScroll: true });
   heading?.scrollIntoView?.({ behavior: 'auto', block: 'start' });
 }
-function PlanOverview({ brief }: { brief: PlanningBrief }) {
+function PlanOverview({ brief, onShowConcepts }: { brief: PlanningBrief; onShowConcepts: () => void }) {
   const problem = brief.problems[0];
   const comparison = problem ? brief.comparisons.find(item => item.problem_id === problem.id) : undefined;
   const concept = problem ? brief.concepts.find(item => item.problem_ids.includes(problem.id)) : undefined;
@@ -35,7 +35,7 @@ function PlanOverview({ brief }: { brief: PlanningBrief }) {
     <div className="research-plan-path">
       <article><span>고객 경험</span><h4>{problem?.title ?? '확인한 문제 없음'}</h4><p>{problem?.description ?? '자료와 미확인 사항을 먼저 살펴보세요.'}</p>{problem ? <a href="#research-problems" onClick={event => { event.preventDefault(); jumpToSection('research-problems'); }}>문제·반대 근거 보기 ↗</a> : null}</article>
       <article><span>기존 제품</span><h4>{comparison?.product ?? '연결된 제품 대조 없음'}</h4><p>{comparison?.existing_response ?? '이 문제와 명시적으로 연결된 대조 자료가 없습니다.'}</p>{comparison ? <a href="#research-comparisons" onClick={event => { event.preventDefault(); jumpToSection('research-comparisons'); }}>기존 대응·남은 부담 보기 ↗</a> : null}</article>
-      <article><span>개선 제안</span><h4>{concept?.title ?? '연결된 개선안 없음'}</h4><p>{concept?.mechanism ?? '이 문제와 명시적으로 연결된 개선안이 없습니다.'}</p>{concept ? <a href="#research-concepts" onClick={event => { event.preventDefault(); jumpToSection('research-concepts'); }}>개선 전후 장면 보기 ↗</a> : null}</article>
+      <article><span>개선 제안</span><h4>{concept?.title ?? '연결된 개선안 없음'}</h4><p>{concept?.mechanism ?? '이 문제와 명시적으로 연결된 개선안이 없습니다.'}</p>{concept ? <a href="#research-concepts" onClick={event => { event.preventDefault(); onShowConcepts(); }}>개선 전후 장면 보기 ↗</a> : null}</article>
     </div>
     <p className="research-muted">첫 문제와 명시적으로 연결된 항목만 표시합니다. 요약·기획은 검토할 초안이며 검증된 고객 경험이나 성능을 뜻하지 않습니다.</p>
   </section>;
@@ -66,6 +66,13 @@ function StoryboardActions({ brief, bundle, conceptId, title }: { brief: Plannin
 function BriefResult({ brief, bundle, onInspect, onReuseProblem }: { brief: PlanningBrief; bundle: ResearchBundle; onInspect: (id: string) => void; onReuseProblem: (problem: ResearchProblem) => void }) {
   const [exportError, setExportError] = useState('');
   const [tab, setTab] = useState<'insights' | 'concepts' | 'relations'>('insights');
+  const [conceptJump, setConceptJump] = useState(false);
+  useEffect(() => {
+    if (tab === 'concepts' && conceptJump) {
+      jumpToSection('research-concepts');
+      setConceptJump(false);
+    }
+  }, [tab, conceptJump]);
   const exportPlan = (format: 'json' | 'markdown') => {
     try {
       const result = exportResearchPlan(bundle, brief);
@@ -87,7 +94,7 @@ function BriefResult({ brief, bundle, onInspect, onReuseProblem }: { brief: Plan
     {exportError ? <p className="research-error" role="alert">파일을 내보내지 못했습니다: {exportError}</p> : null}
     <p className="research-note" data-planning-input-scope>{planningInputScopeLabel(brief)}. 이 결과가 사용한 근거입니다. 원문 선택을 바꿔도 기존 결과는 유지됩니다.</p>
     <p className="research-note">개선 후 장면은 제안 시나리오입니다. 실제 제품의 성능이나 검증된 효과로 단정하지 않습니다.</p>
-    <div id="chat-panel-insights" role="tabpanel" aria-labelledby="chat-tab-insights" hidden={tab !== 'insights'}><PlanOverview brief={brief} />
+    <div id="chat-panel-insights" role="tabpanel" aria-labelledby="chat-tab-insights" hidden={tab !== 'insights'}><PlanOverview brief={brief} onShowConcepts={() => { setTab('concepts'); setConceptJump(true); }} />
     <div className="research-summary-grid">{([['positive', '좋았던 경험', '01'], ['negative', '불편·부정 경험', '02'], ['mixed', '혼합·조건부 경험', '03']] as const).map(([key, title, number]) => <section className={`research-card summary-${key}`} key={key}><span className="research-summary-eyebrow">{number} · 리뷰 요약</span><h3>{title}</h3>{coverage.state === 'ok' ? <p className="research-muted" data-summary-polarity-coverage={key}>고객 원문 {coverage.value.polaritySources[key]}건 인용 · 요약 {coverage.value.summaryItems[key]}개</p> : null}{brief.summaries[key].length ? brief.summaries[key].map((item, index) => <div key={index}><p>{item.text}</p><SourceLinks ids={item.source_ids} bundle={bundle} onInspect={onInspect} /></div>) : <p className="research-muted">이 실행에서 확인된 요약 없음</p>}</section>)}</div>
     <p className={coverage.state === 'malformed' ? 'research-note research-coverage-malformed' : 'research-note'} data-summary-coverage={coverage.state}>{coverageText(coverage)}</p>
     <section aria-label="문제와 반대 근거"><h3 className="research-section-heading" id="research-problems" tabIndex={-1}>어떤 부담이 남아 있나요?</h3>{brief.problems.length ? <div className="research-card-grid">{brief.problems.map(problem => <article className="research-card" key={problem.id}><h4>{problem.title}</h4><p>{problem.description}</p><SourceLinks ids={problem.source_ids} bundle={bundle} onInspect={onInspect} /><div className="research-counter"><strong>반대 근거도 확인</strong><SourceLinks ids={problem.counter_source_ids} bundle={bundle} onInspect={onInspect} /></div><p className="research-muted">분석 범위: {problem.scope_caveat || '별도 기재 없음'}</p></article>)}</div> : <p className="research-note">현재 자료에서 제안으로 연결할 문제를 확인하지 못했습니다. 원문과 미확인 사항을 확인해 주세요.</p>}</section>

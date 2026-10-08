@@ -333,6 +333,11 @@ describe('actual-source research screen state and revision flow', () => {
     expect(host.querySelector('#chat-tab-insights')!.getAttribute('aria-selected')).toBe('true');
     expect(document.activeElement?.id).toBe('chat-tab-insights');
     expect(fetch.mock.calls).toHaveLength(reads);
+    await act(async () => host.querySelector<HTMLAnchorElement>('a[href="#research-concepts"]')!.click());
+    expect(host.querySelector<HTMLElement>('#chat-panel-concepts')!.hidden).toBe(false);
+    expect(host.querySelector('#chat-tab-concepts')!.getAttribute('aria-selected')).toBe('true');
+    expect(document.activeElement?.id).toBe('research-concepts');
+    expect(fetch.mock.calls).toHaveLength(reads);
   });
   it('starts a separate conversation without deleting the saved result and reopens it without a POST', async () => {
     const fetch = api(); vi.stubGlobal('fetch', fetch);
