@@ -1,0 +1,221 @@
+"""Read only saved intake; create this W3 window's new provenance records.
+
+No product imports, network, credentials, model/OCR, database, or scoring calls.
+"""
+import argparse
+import csv
+import hashlib
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+from urllib.parse import quote
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def read_json(path):
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def pointer(document, path):
+    value = document
+    for part in path.strip("/").split("/"):
+        value = value[int(part)] if isinstance(value, list) else value[part]
+    return value
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("private_run", type=Path)
+    parser.add_argument("worktree", type=Path)
+    args = parser.parse_args()
+    run, wt = args.private_run.resolve(), args.worktree.resolve()
+    record = "DATA-W3-01a108a8-0443-f472c9"
+    prefix = "evals/data-parallel/w3/2026-10-08-01a108a8-0443-f472c9"
+    out = wt / prefix
+    if out.exists():
+        raise RuntimeError("Preserve previous output; use a new folder for another attempt")
+    out.mkdir(parents=True)
+    base = "eab85d48385f965eef48c07a6cdd8f6fd9851c62"
+    repo_url = "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026"
+    observed = datetime.now(timezone.utc).isoformat()
+    pins = read_json(run / "immutable-source-pins.json")
+    blob_dir = run / "immutable-source-blobs"
+    checked = []
+    for pin in pins:
+        raw = (blob_dir / pin["private_local_name"]).read_bytes()
+        git_blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
+        ok = len(raw) == pin["bytes"] and sha(raw) == pin["sha256"] and git_blob == pin["git_blob"]
+        checked.append({"input_id": pin["id"], "bytes_sha256_git_blob_match": ok})
+        if not ok:
+            raise RuntimeError("Fixed source identity mismatch: " + pin["id"])
+    public_pins = [{k: v for k, v in p.items() if k != "private_local_name"} for p in pins]
+    for p in public_pins:
+        p["url"] = repo_url + "/blob/" + p["producer_commit"] + "/" + quote(p["repo_path"], safe="/")
+    pm_pin = next(p for p in public_pins if p["id"] == "pr284-serving-proof.json")
+    pm = read_json(blob_dir / "pr284-serving-proof.json")
+    paths = [
+        "/deployed_source", "/actual_generation/runs/0/run_id",
+        "/actual_generation/runs/0/brief_id", "/actual_generation/runs/0/source_count",
+        "/actual_generation/runs/0/runtime/user_selected_source_ids",
+        "/actual_generation/runs/0/runtime/model", "/actual_generation/runs/0/runtime/model_digest",
+        "/model_name", "/actual_generation/attempts/0/created_at",
+        "/actual_generation/attempts/0/finished_at", "/actual_generation/runs/0/calls",
+        "/independent_semantic_quality_verified", "/merged_to_main",
+    ]
+    fields = [{"json_pointer": p, "value": pointer(pm, p), "evidence_role": "exact published PM report field"} for p in paths]
+    handoff = {
+        "record_id": record, "recipient_window": "W1", "source_pin": pm_pin,
+        "received_kind": "published PM report bytes; not original public run JSON or wire response",
+        "read_scope": "User-authorized read-only inspection of this fixed published report; no server, DB, private logs or Gold access",
+        "fields": fields, "semantic_review_owner": "W1",
+        "actual_output_json_received": False, "actual_output_json_sha256": None,
+        "wire_sha256": None, "parsed_operating_payload_equality": None,
+        "db_snapshot_identity": None, "same_db_before_after_equality": None,
+        "native_usage_received": False,
+        "preserved_nulls": ["runtime.model", "calls[].input_tokens", "calls[].output_tokens", "calls[].elapsed_seconds"],
+        "not_substitutable_for": [
+            "run-1f83d846191941aea21153897b944ec1 original output",
+            "run-754268c6b0cb41bba50c5b8d713332d9 original output",
+            "canonical seven-input Agent/general-LLM pair", "no-Gold four actual AI answers",
+            "input-only archive receipt", "Gold or independent-score approval",
+        ],
+    }
+    receipts = []
+    for n in [281, 282]:
+        pr = read_json(run / f"pr-{n}.json")
+        comments = read_json(run / f"pr-{n}-comments.json")
+        for c in comments:
+            if c["user"]["login"] == "unknownamed":
+                receipts.append({"pr": n, "producer_head": pr["head"]["sha"], "comment_id": c["id"],
+                                 "actor": c["user"]["login"], "created_at": c["created_at"],
+                                 "body_sha256_utf8": sha(c["body"].encode("utf-8")), "url": c["html_url"],
+                                 "role": "CORE authenticated public receipt, not W3 original-file receipt"})
+    core282 = next(r for r in receipts if r["pr"] == 282)
+    qa = {
+        "source": core282,
+        "new_since_prior_W3_capture": "PR283 followup-intake records a W2 producer comment; the later CORE receipt is now pinned",
+        "question_id": "470877", "page_model": "DUE6BGL2E",
+        "producer_reported_html_sha256": "1941dbeb99f2cab9a595240f3fcbe0576a71437e4699204119296877b0c7f487",
+        "producer_reported_locator": 'li[data-que-no="470877"] div.answer-content',
+        "producer_reported_answer_dimensions_mm": {"inside": 600, "front_of_door": 590, "conditional_inside_range": [567, 600]},
+        "producer_reported_conditions": ["water/drain pipe compression risk", "installation engineer confirmation"],
+        "question_written_unit": "119~120mm", "question_unit_interpretation": None,
+        "W3_original_html_received": False, "W3_original_html_actual_sha256": None,
+        "original_excerpt_was_incomplete_not_false": True,
+        "consumer_usage_or_installation_feasibility_approved": False,
+        "repeat_full_answer_mail_request": False, "source_interpretation_owner": "W2",
+        "ML32_scope_followup": "CORE reports outer-surface rough/iron-pad caution separately from interior/enamel soft stainless-pad instructions; W3 performs no manual reinterpretation",
+    }
+    sender = read_json(run / "sender-current.json")
+    if not sender["matches_expected"]:
+        raise RuntimeError("Original input-only archive changed")
+    prior_zip = read_json(blob_dir / "pr283-archive-intake.json")
+    archive = {
+        "filename": "input-only.zip", "sender_bytes": sender["bytes"], "sender_sha256": sender["sha256"],
+        "sender_whole_file_matches": True, "prior_11_entry_metadata_reused": True,
+        "member_content_checks_reexecuted": False,
+        "prior_metadata_published_head": prior_zip["published_metadata_head"],
+        "PM_route_recipient_PC_mapping_input_only_scope": "not received in inspected thread/comments",
+        "actual_transfer_attempted": False, "actual_transfer_completed": False,
+        "receiver_actual_bytes": None, "receiver_actual_sha256": None, "receiver_actual_entry_receipt": None,
+        "receiver_last_report_url": prior_zip["receiver_state_source"],
+        "receiver_last_report_at": prior_zip["receiver_reported_at"], "receiver_last_report_zip_files": 0,
+        "receiver_latest_local_state": "not directly accessible by W3",
+        "existing_route_request_url": repo_url + "/issues/15#issuecomment-6049909352",
+        "separate_dependencies_not_transfer_prerequisites": ["Gold", "whole operational packet", "automatic table graph", "final independent scoring"],
+    }
+    spec = read_json(blob_dir / "pr267-required-exports.json")
+    previous = read_json(blob_dir / "pr283-operating-intake.json")
+    operation = {
+        "reuse_previous": {"pr": 267, "head": "3219307c72a0d190ed95f1b279c14350b02ccda2", "url": repo_url + "/pull/267#issuecomment-6049909890"},
+        "required_ids": [x["id"] for x in spec["required"]],
+        "prior_saved_run_declarations": previous["saved_runs"],
+        "new_operating_original_files_received": 0,
+        "PM284_report_received": True, "same_previous_DB_identity_proven": False,
+        "wire_bytes_sha256": None, "parsed_payload_equality": None,
+        "wrong_product_or_document_version_runtime_link_audit": "UNCONFIRMED: operating original payload/snapshot not received",
+        "producer_reports_and_generator_receipts_preserved": True,
+        "PM_actual_execution_not_denied": True,
+        "first_valid_authorized_subset_can_be_reviewed": True,
+        "new_model_OCR_server_restart_operating_recalls": 0,
+    }
+    mail = read_json(run / "mail-evidence.json")
+    confirmation = mail["confirmation"]
+    required_flags = ["read_succeeded", "thread_same", "SENT", "to_same", "subject_same", "new_body_exact_prefix"]
+    if not all(confirmation.get(x) for x in required_flags) or confirmation["attachment_count"] != 0:
+        raise RuntimeError("Actual mail SENT confirmation is incomplete")
+    coverage = {
+        "prior_same_thread_SENT_messages_read": len(mail["prior_messages"]),
+        "old_requests_reused": ["private ZIP route/PC/input-only", "R9 existing originals", "same7/noGold4", "automatic table/adapter", "141 classification", "date/SKU/purchase edition", "Gold/independence/final scorer", "CI owner/status"],
+        "new_delta_only": ["PM284 existing run output or exact approved output fields", "W2 precise source consumption receipt", "designated scorer existing evaluation result handoff"],
+        "new_MAIL_SENT_confirmed": True, "new_messages_sent": 1,
+        "same_thread_recipient_subject_new_body_confirmed": True, "attachments": 0,
+        "requested_new_body_sha256": mail["requested_body_sha256"],
+        "qa_full_answer_repeat_request": False,
+        "search_failure_preserved": "Initial extra incoming search RATE_LIMIT_EXCEEDED; later exact PM sender scoped search succeeded with zero matching IDs",
+        "incoming_search_scope_exhaustive": False,
+        "private_addresses_thread_ids_body_and_receipt": "retained only in new private run",
+        "SENT_is_not_PM_reply_or_CORE_archive_receipt": True,
+    }
+    ci = []
+    for n in [267, 272, 273, 281, 282, 283, 284]:
+        original = read_json(run / f"ci-{n}.json")
+        rows = []
+        for check in original["checks"]:
+            billing = any("job was not started because recent account payments have failed or your spending limit" in a["message"] for a in check["annotations"])
+            rows.append({k: check[k] for k in ["check_id", "job_id", "name", "status", "conclusion", "run_id", "url", "executed_steps"]} | {"billing_or_limit_prestart_annotation": billing})
+        ci.append({"pr": n, "fixed_head": original["head"], "open": original["open"], "merged": original["merged"],
+                   "PM_review_count_in_read_scope": original["reviews_count"], "observed_at": original["observed_at"], "checks": rows})
+    gold = {"PM_owner": "jeongiryang", "final_Gold_independence_designated_scorer_approval_received": False,
+            "designated_scorer_result_received": False, "existing_FR01_only_approval_preserved": repo_url + "/issues/14#issuecomment-6029600741",
+            "FR01_approval_is_not_all_Gold_or_final_scorer_approval": True, "W3_scoring_runs": 0,
+            "completed225_and11_replays": 0}
+    findings = [
+        {"id": "W3-D01", "status": "확인", "claim": "Original sender ZIP bytes/SHA match; prior member metadata reused", "source": "handoff-state.json#/archive"},
+        {"id": "W3-D02", "status": "미확인", "claim": "Approved transport/PC/read scope and actual CORE SHA/size/11-entry receipt", "source": "handoff-state.json#/archive"},
+        {"id": "W3-D03", "status": "확인", "claim": "PM284 fixed report bytes and 13 exact public field pointers can be handed to W1", "source": "new-partial-fields.json"},
+        {"id": "W3-D04", "status": "상충", "claim": "Treating new run-f0 report as the two earlier raw outputs or canonical7 comparison conflicts with fixed run identity/scope", "source": "new-partial-fields.json#/not_substitutable_for", "runtime_bug_confirmed": False},
+        {"id": "W3-D05", "status": "미확인", "claim": "R9 original HTTP/MCP wire, parsed payload equality, saved/native usage and same-DB before/after integrity", "source": "handoff-state.json#/operation"},
+        {"id": "W3-D06", "status": "확인", "claim": "CORE282 authenticated full-QA receipt now pins locator/SHA/conditions; W3 has not received raw HTML", "source": "core-followup.json"},
+        {"id": "W3-D07", "status": "미확인", "claim": "Final Gold/independence/scorer approval and designated evaluator results", "source": "handoff-state.json#/evaluation"},
+        {"id": "W3-D08", "status": "확인", "claim": "One incremental same-thread email is actually SENT; recipient/subject/body confirmed; no attachment", "source": "mail-coverage.json"},
+        {"id": "W3-D09", "status": "확인", "claim": "PR267 CI4 success preserved; other six read PRs have 24 jobs stopped before start, not product test failures", "source": "ci-state.json"},
+    ]
+    records = {
+        "source-pins.json": public_pins, "receipt-pins.json": receipts, "new-partial-fields.json": handoff,
+        "core-followup.json": qa, "handoff-state.json": {"record_id": record, "observed_at": observed, "base_main": base,
+                                                          "archive": archive, "operation": operation, "evaluation": gold},
+        "mail-coverage.json": coverage, "ci-state.json": ci, "findings.json": findings,
+    }
+    def write_json(name, value):
+        (out / name).write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    for name, value in records.items():
+        write_json(name, value)
+    (out / ".gitattributes").write_text("*.json -text -whitespace\n*.csv -text -whitespace\ninspection-source.py.txt -text -whitespace\n", encoding="utf-8")
+    with (out / "findings.csv").open("w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=["id", "status", "claim", "source"])
+        writer.writeheader()
+        writer.writerows({k: x[k] for k in writer.fieldnames} for x in findings)
+    source = Path(__file__).read_bytes()
+    (out / "inspection-source.py.txt").write_bytes(source)
+    verification = {"record_id": record, "source_sha256": sha(source), "fixed_source_identity_checks": checked,
+                    "exact_PM_report_field_count": len(fields), "CORE_receipt_count": len(receipts),
+                    "same_thread_mail_exact_confirmation": True, "ci_checks_read": sum(len(x["checks"]) for x in ci),
+                    "checks_kind": "new provenance/metadata inspection; not product, model, quality or old experiment tests",
+                    "producer_checks_replayed": False, "result": "PASS"}
+    write_json("verification.json", verification)
+    write_json("execution-record.json", {"record_id": record, "observed_at": observed, "base_main": base,
+                                         "execution_source_sha256": sha(source), "network_calls_from_inspection": 0,
+                                         "product_code_executed": False, "model_or_OCR_calls": 0,
+                                         "HTTP109_restart51_225_11_replays": 0, "new_model_output_generated": False,
+                                         "failures_preserved": ["app worktree invalid reference; separate LGAX Git worktree fallback", "incoming mail search temporary RATE_LIMIT_EXCEEDED; bounded later exact sender query succeeded"],
+                                         "automation_ON_billing_workflow_or_CI_rerun_changes": 0})
+    print(json.dumps({"output": str(out), "fixed_blobs": len(pins), "exact_fields": len(fields),
+                      "findings": len(findings), "verification": "PASS", "mail_SENT": True}, ensure_ascii=False))
+
+
+if __name__ == "__main__":
+    main()

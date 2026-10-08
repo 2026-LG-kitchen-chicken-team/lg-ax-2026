@@ -1,0 +1,72 @@
+"""Bind new PM report IDs to fixed published sources; no runtime or scoring."""
+import argparse
+import hashlib
+import json
+import subprocess
+from pathlib import Path
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("worktree", type=Path)
+    args = parser.parse_args()
+    wt = args.worktree.resolve()
+    out = wt / "evals/data-parallel/w3/2026-10-08-01a108a8-0443-f472c9"
+    output = out / "selected-source-bindings.json"
+    if output.exists():
+        raise RuntimeError("Preserve existing selection inspection")
+    base = "eab85d48385f965eef48c07a6cdd8f6fd9851c62"
+    path = "data/research/r9-public-runtime-20261008/dishwasher.research-bundle.json"
+    git = ["git", "-c", "safe.directory=" + wt.as_posix(), "-C", str(wt)]
+    raw = subprocess.check_output(git + ["show", base + ":" + path], timeout=15)
+    blob_id = subprocess.check_output(git + ["rev-parse", base + ":" + path], timeout=15).decode().strip()
+    calculated_blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
+    if calculated_blob != blob_id:
+        raise RuntimeError("Fixed main bundle bytes differ from its Git blob ID")
+    bundle = json.loads(raw)
+    handoff = json.loads((out / "new-partial-fields.json").read_text(encoding="utf-8"))
+    selected = next(f["value"] for f in handoff["fields"] if f["json_pointer"].endswith("user_selected_source_ids"))
+    rows = []
+    for source_id in selected:
+        matches = [s for s in bundle["sources"] if s["source_id"] == source_id]
+        if len(matches) != 1:
+            raise RuntimeError("Selected source ID is missing or ambiguous in fixed main")
+        source = matches[0]
+        metadata = source.get("metadata", {})
+        text_sha = hashlib.sha256(source["text"].encode("utf-8")).hexdigest()
+        if text_sha != metadata["text_sha256"]:
+            raise RuntimeError("Selected fixed source text hash mismatch")
+        rows.append({"source_id": source_id, "match_count_in_fixed_main": len(matches),
+                     "product_group": source["product_group"], "page_model": source["page_model"],
+                     "purchased_model": source["purchased_model"], "source_type": source["source_type"],
+                     "source_role": source["source_role"], "document_version": source["document_version"],
+                     "url": source["url"], "locator": source["locator"], "text_sha256": text_sha,
+                     "text_sha256_matches": True, "pdf_sha256": metadata.get("pdf_sha256"),
+                     "published_at": source["published_at"], "date_kind": source["date_kind"],
+                     "purchase_date": metadata.get("purchase_date"),
+                     "manual_time_alignment": metadata.get("manual_time_alignment"),
+                     "strict_exact_model_eligible_for_model_input": metadata.get("strict_exact_model_eligible_for_model_input"),
+                     "applicability": metadata.get("applicability")})
+    result = {"record_id": "DATA-W3-01a108a8-0443-f472c9", "source_pin": {
+                  "producer_commit": base, "repo_path": path, "bytes": len(raw),
+                  "sha256": hashlib.sha256(raw).hexdigest(), "git_blob": blob_id,
+                  "bundle_id": bundle["bundle_id"]},
+              "source_scope": "New report-selected IDs resolved against fixed main candidate bundle; no actual loaded run snapshot received",
+              "rows": rows, "all_six_ID_text_hash_links_match": True,
+              "distinct_nonnull_page_models": sorted({r["page_model"] for r in rows if r["page_model"]}),
+              "actual_run_source_facts_document_version_comparison": None,
+              "actual_run_bundle_SHA_matches_this_main_bundle": None,
+              "wrong_runtime_product_version_link_confirmed": False,
+              "single_exact_purchase_model_claim_supported": False,
+              "customer_review_posting_dates_or_purchase_time_editions_inferred": False,
+              "semantic_review_owner": "W1", "product_model_or_OCR_calls": 0,
+              "inspection_source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
+    output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    (out / "selection-inspection-source.py.txt").write_bytes(Path(__file__).read_bytes())
+    print(json.dumps({"new_selection_links": len(rows), "text_hash_links": "PASS",
+                      "distinct_page_models": result["distinct_nonnull_page_models"],
+                      "actual_run_snapshot_received": False}))
+
+
+if __name__ == "__main__":
+    main()
