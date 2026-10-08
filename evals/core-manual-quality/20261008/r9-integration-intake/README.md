@@ -8,3 +8,5 @@
 - [최초 환경 실패 포함 로그](consumer-initial.log) · [남은11검사](consumer-recovery.log).
 
 실제 model raw/usage·전체 stored brief와 같은 HTTP/MCP 원 수신은 직접 받지 않았다. 구매 SKU/구매시점 문서 적용은 미확인이다. 출력 발췌에 남은 증상·주체·시간순서·혼합 의견 오류와 최신 출력 잘림은 성공으로 바꾸지 않는다. 유한 세션을 반복하거나 출력/수리 예산을 늘리지 않았다. PM 승인/병합/통합 인수·부모 Done을 대신하지 않는다. 먼저 받은 각 자료는 그 입력만으로 가능한 검토부터 이어간다.
+
+추가 실제 입력 인수: R9 전자레인지 공식 설명서 참고5종을 기존 생성기로 HTML/Markdown/JSON 출력했다. [원 수신/버전·SHA](official-reference/official-reference-intake.json) · [HTML/Markdown/JSON 원 출력 ZIP](official-reference/r9-microwave-reference.zip) · [원 바이트/SHA](official-reference/archive-manifest.json). 순서·원문·facts·metadata 정확 보존, 구매 SKU 미확인/공식 참고 범위 유지, 모델0이다. PM PR262는 2026-10-08T00:06:40Z에 병합됐고 기존 CORE PR251도 병합 확인했다. 최신 main `dc0ccc05916c637b2e0c2cc268a061dfa655c0b7`의 제품/data/test tree는 검수 head a6da6784와 동일하다. 실제 모델 품질·부모 완료/최종 인수는 별도로 남긴다.
