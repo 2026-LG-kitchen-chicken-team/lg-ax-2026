@@ -46,6 +46,16 @@ describe('actual-source research screen state and revision flow', () => {
     await connect(); expect(host.textContent).toContain('연결 대기'); expect(host.textContent).not.toContain('기획 초안 생성 완료');
     expect(host.querySelector<HTMLInputElement>('#research-token')!.value).toBe('');
   });
+  // First-user walkthrough (record 070): a copied URL replaced the token; the bundle hint moved to the PM conversation UI (#284, record 072).
+  it('says why a pasted value is not a token without echoing it or calling the server', async () => {
+    const fetch = vi.fn(); vi.stubGlobal('fetch', fetch);
+    await act(async () => root.render(createElement(ResearchPlanningView)));
+    await enter('#research-token', 'http://127.0.0.1:5175/');
+    await act(async () => host.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })));
+    expect(fetch).not.toHaveBeenCalled();
+    expect(host.textContent).toContain('작업실 토큰 형식이 아닙니다(입력 22자). 토큰은 공백 없는 32~256자입니다.');
+    expect(host.textContent).not.toContain('127.0.0.1:5175');
+  });
   it('uses actual source text, keeps absent negative summaries and creates a captured condition revision', async () => {
     const fetch = api(); vi.stubGlobal('fetch', fetch); await act(async () => root.render(createElement(ResearchPlanningView)));
     await connect(); await choose();

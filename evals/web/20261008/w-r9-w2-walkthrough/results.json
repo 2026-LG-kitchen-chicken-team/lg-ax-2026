@@ -1,0 +1,146 @@
+{
+  "schema_version": "1.0",
+  "record": "최길웅-20261008-070",
+  "date": "2026-10-08",
+  "scope": "W2 browser file save of selected-source and official-guide exports, and first-user walkthrough findings. Model off; no planning result.",
+  "code": {
+    "branch": "codex/web-r9-e2e-update",
+    "base_commit": "a8c6c3fdb00d82447881a219bb97c0ce9c3ed587",
+    "main_included": "eab85d48385f965eef48c07a6cdd8f6fd9851c62"
+  },
+  "server": {
+    "script": "scripts/serve_research_prototype.py",
+    "port": 18969,
+    "enable_model": false,
+    "health": {
+      "research_connected": true,
+      "research_planning_enabled": false
+    },
+    "registered_bundles": 10
+  },
+  "web": {
+    "vite_port": 5175,
+    "browser": "Chrome (Playwright channel=chrome, headed, automated by AI at the user's request)"
+  },
+  "bundles_sha256_prefix_match_main": {
+    "dishwasher": "fbc233a429c6ec1c",
+    "microwave.manual-reference": "dfd4d3c3f5e6284f"
+  },
+  "saved_files": {
+    "selected-dishwasher.json": {
+      "bytes": 12167,
+      "sha256": "21623c94c71fcbdd27fef6cd15845b5b0d233c5efbdbf06621a40dc8e724dee6"
+    },
+    "selected-dishwasher.md": {
+      "bytes": 7072,
+      "sha256": "a54e7969164542f4410c5ad7a628abf2721e3d30b21403db07547b44f71c2f95"
+    },
+    "guide-microwave-manual.md": {
+      "bytes": 8481,
+      "sha256": "96aefc393fe52f853f9eef04b0d676297591ed102c9a9be21cde20eb84f18673"
+    },
+    "guide-microwave-manual.html": {
+      "bytes": 11256,
+      "sha256": "7de2567f66101e12496475009c6634cbbe57efdb54332a93c377389b6a8804d6"
+    }
+  },
+  "walk_log": {
+    "steps": [
+      {
+        "button": "선택 자료 JSON",
+        "suggested": "LGE-R9-dishwasher-development-20261008-v1-selection-2ae9deb0c23b.json",
+        "saved": "selected-dishwasher.json"
+      },
+      {
+        "button": "선택 자료 Markdown",
+        "suggested": "LGE-R9-dishwasher-development-20261008-v1-selection-2ae9deb0c23b.md",
+        "saved": "selected-dishwasher.md"
+      },
+      {
+        "button": "선택 공식자료 안내서 Markdown",
+        "suggested": "official-guide-LGE-R9-microwave-manual-reference-20261008-v1.md",
+        "saved": "guide-microwave-manual.md"
+      },
+      {
+        "button": "선택 공식자료 안내서 HTML",
+        "suggested": "official-guide-LGE-R9-microwave-manual-reference-20261008-v1.html",
+        "saved": "guide-microwave-manual.html"
+      }
+    ],
+    "selected": [
+      "LGE-R8-REVIEW-767844",
+      "LGE-R8-REVIEW-691193",
+      "LGE-R8-REVIEW-528042"
+    ],
+    "guide_requests_after_guides": 2,
+    "refusal_pair": {
+      "review": "LGE-R8-REVIEW-767844",
+      "official": "DUE6BGL2E-MANUAL-D12"
+    },
+    "refusal": {
+      "alert": "공식 설명서·FAQ·설치 안내·공식 답변만 선택해 주세요. 제외할 자료: LGE-R8-REVIEW-767844. 선택을 자동으로 누락하지 않습니다.",
+      "guide_requests_added": 0,
+      "downloaded": false
+    }
+  },
+  "independent_checks": {
+    "selection_json": {
+      "source_ids_in_bundle_order": true,
+      "sources_identical_to_bundle_objects": true,
+      "bundle_id": "LGE-R9-dishwasher-development-20261008-v1-selection-2ae9deb0c23b",
+      "bundle_id_is_parent_plus_selection_suffix": true,
+      "source_type_counts_recomputed_for_selection": {
+        "review": 3
+      },
+      "original_collection_manifest_kept": true
+    },
+    "selection_md": {
+      "ids_present": true,
+      "first_lines_present": true
+    },
+    "guide": {
+      "sources": 5,
+      "md_ids": true,
+      "md_first_lines": true,
+      "html_ids": true,
+      "html_first_lines": true,
+      "html_has_script_tag": false,
+      "html_starts_doctype": true,
+      "html_sha256_equals_pm_e057_and_data_pr267_reported": "7de2567f66101e12496475009c6634cbbe57efdb54332a93c377389b6a8804d6"
+    },
+    "refusal": {
+      "alert_shown": true,
+      "guide_requests_added": 0,
+      "downloaded": false
+    }
+  },
+  "first_user_findings": [
+    {
+      "id": "U1",
+      "observed": "User pasted after copying the page URL; the client refused locally with only '작업실 토큰을 확인해 주세요.' and no request reached the server (server log had no browser request).",
+      "cause": "client length/whitespace check (researchClient.request) gave no reason",
+      "fix": "message now states length and whitespace and the 32~256 rule without echoing the value",
+      "verified": "browser pane: '작업실 토큰 형식이 아닙니다(입력 22자). …'; unit test asserts no fetch and no echo"
+    },
+    {
+      "id": "U2",
+      "observed": "After connecting, user could not find the source checkboxes ('체크리스트가 없는데').",
+      "cause": "before a bundle is chosen nothing renders below the setup section",
+      "fix": "hint under the bundle select until a bundle is chosen",
+      "verified": "Chrome: hint count 1 before, 0 after choosing; console errors 0; unit test"
+    }
+  ],
+  "checks_after_fix": {
+    "web_vitest": "exit 0, 630 passed / 9 skipped",
+    "typecheck": "exit 0",
+    "build": "exit 0",
+    "research_e2e_6_bundles": "exit 0, 7 passed"
+  },
+  "not_supported": [
+    "human Save As dialog (files were saved by Playwright download.saveAs, not a person)",
+    "planning result screen, plan JSON/Markdown save (no stored brief available)",
+    "model quality",
+    "CI run of the opt-in e2e"
+  ],
+  "token_handling": "test token read from a private credential file; never printed, committed or typed into the transcript"
+}

@@ -170,12 +170,24 @@ test.describe('real-source research flow', () => {
   });
 
   test('the official-source guide exports only chosen official originals and refuses a review in the selection', async ({ page }) => {
+    // The guide takes the same public official documents/answers as the guide contract; an official spec is not one.
     const official = bundles().find(item => item.sources.length && item.sources.every(officialGuideSource));
-    test.skip(!official, 'no guide-eligible official-only bundle in LGAX_E2E_RESEARCH_BUNDLE_DIR');
+    const specOnly = bundles().find(item => item.sources.length && item.sources.every(source => source.source_role === 'official_specification'));
+    test.skip(!official && !specOnly, 'no guide-eligible official-only or spec-only bundle in LGAX_E2E_RESEARCH_BUNDLE_DIR');
     await connect(page);
+    let guideRequests = 0;
+    page.on('request', item => { if (item.url().endsWith('/api/research/guides')) guideRequests += 1; });
+    if (specOnly) {
+      await choose(page, specOnly);
+      await sourcesPanel(page).getByRole('button', { name: '표시 자료 모두 선택' }).click();
+      await sourcesPanel(page).getByRole('button', { name: '선택 공식자료 안내서 Markdown' }).click();
+      await expect(sourcesPanel(page).getByRole('alert')).toBeVisible();
+      expect(guideRequests).toBe(0);
+    }
+    if (!official) return;
     await choose(page, official!);
     await sourcesPanel(page).getByRole('button', { name: '표시 자료 모두 선택' }).click();
-    const [download] = await Promise.all([page.waitForEvent('download'), sourcesPanel(page).getByRole('button', { name: '선택 공식자료 안내서 Markdown' }).click()]);
+    const [download] = await Promise.all([page.waitForEvent('download', { timeout: 30_000 }), sourcesPanel(page).getByRole('button', { name: '선택 공식자료 안내서 Markdown' }).click()]);
     const markdown = readFileSync((await download.path())!, 'utf8');
     for (const source of official!.sources) expect(markdown, source.source_id).toContain(source.text.trim().split(/\r?\n/)[0].slice(0, 20));
     const mixed = bundles().find(item => item.sources.some(source => source.source_type === 'review') && item.sources.some(officialGuideSource));
@@ -186,10 +198,9 @@ test.describe('real-source research flow', () => {
     const checks = sourcesPanel(page).locator('.research-source-check input');
     await checks.nth(review).check();
     await checks.nth(document).check();
-    let guideRequests = 0;
-    page.on('request', item => { if (item.url().endsWith('/api/research/guides')) guideRequests += 1; });
+    const before = guideRequests;
     await sourcesPanel(page).getByRole('button', { name: '선택 공식자료 안내서 Markdown' }).click();
     await expect(sourcesPanel(page).getByRole('alert')).toBeVisible();
-    expect(guideRequests).toBe(0);
+    expect(guideRequests).toBe(before);
   });
 });

@@ -15,7 +15,8 @@ export class ResearchClient {
   constructor(private readonly credential: () => string, private readonly transport: typeof fetch = (input, init) => fetch(input, init)) {}
   private async request(path: string, signal?: AbortSignal, input?: ResearchPlanningInput | ResearchGuideInput): Promise<unknown> {
     const token = this.credential();
-    if (token.length < 32 || token.length > 256 || /\s/.test(token)) throw new ApiError('UNAUTHORIZED', '작업실 토큰을 확인해 주세요.');
+    // Say why the value cannot be a token (length/whitespace) without echoing it, e.g. when a copied URL replaced it.
+    if (token.length < 32 || token.length > 256 || /\s/.test(token)) throw new ApiError('UNAUTHORIZED', `작업실 토큰 형식이 아닙니다(입력 ${token.length}자${/\s/.test(token) ? '·공백 포함' : ''}). 토큰은 공백 없는 32~256자입니다. 다른 값이 붙여넣어지지 않았는지 확인해 주세요.`);
     let response: Response;
     try {
       response = await this.transport(`/api/research/${path}`, {
