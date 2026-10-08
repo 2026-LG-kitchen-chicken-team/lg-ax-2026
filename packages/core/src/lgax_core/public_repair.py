@@ -6,7 +6,6 @@ Failures preserve the original item and produce private, structured diagnostics.
 from __future__ import annotations
 
 import json
-import re
 from copy import deepcopy
 from uuid import uuid4
 
@@ -32,6 +31,7 @@ from .public_planning import (
     _strings,
     apply_field_patch,
     claim_issues,
+    hardware_constraint_violated,
     is_customer_source,
     source_facts,
     summary_reference_coverage,
@@ -111,15 +111,11 @@ def _patch_issues(kind: str, candidate: dict, fields: set[str], catalog: dict, c
         issues.append({"code": "problem_requires_customer_source", "field": "source_ids"})
     if kind == "Concept" and candidate["status"] == "supported":
         issues.append({"code": "draft_has_no_independent_quality_approval", "field": "status"})
-    no_hardware = kind == "Concept" and any(re.search(
-        r"하드웨어.{0,8}(?:불가|없이)|센서.{0,8}불가|기기.{0,8}제어.{0,8}불가", constraint)
-        for constraint in constraints)
     for field in fields - {"source_ids", "counter_source_ids", "status"}:
         for _, text in _strings(candidate[field]):
             issues.extend(claim_issues(field, text, cited))
-            if (no_hardware and field in {"mechanism", "proposed_changes", "after_steps"}
-                    and re.search(r"센서.{0,8}(?:추가|탑재)|(?:새|신규)\s*부품|(?:기기|원격).{0,8}제어|(?:가열)?출력.{0,8}변경", text)
-                    and not re.search(r"없이|하지\s*않|변경\s*불가|추가\s*불가|제어\s*불가", text)):
+            if (kind == "Concept" and field in {"mechanism", "proposed_changes", "after_steps"}
+                    and hardware_constraint_violated(text, constraints)):
                 issues.append({"code": "explicit_no_hardware_constraint", "field": field})
     return issues
 

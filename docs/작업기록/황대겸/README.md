@@ -1,6 +1,9 @@
 # 황대겸 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-08 CORE-R9-W1-RESIDUALS-01a10729-01: WEB 실제 냉장고 원응답·수정 일부 필드에서 구조 변경 조건 위반 재현/CORE 보완, 비교·강도·혼합 맥락 지침과 X1 부분 검토. 실모델0·실제 수정 결과/PM 인수 미완료.
+- [상세](2026-10-08/CORE-R9-W1-RESIDUALS-01a10729-01.md) · [원문/원응답·실패·격리 검증](../../../evals/core-manual-quality/20261008/r9-web-w1-residuals/README.md).
+
 - 2026-10-08 CORE-R9-TYPED-EVIDENCE-01a10729-01: PM CF1/CF2/CF3 내부 원문 레코드·조건부 문서·국소 수리 구현/실제-source11·관련62검사/Ruff PASS. 모델0·native 생성/저장/실제 의미·PM 인수 미완료.
 - [상세](2026-10-08/CORE-R9-TYPED-EVIDENCE-01a10729-01.md) · [설계·출처·고정 검사·PM 연결 의존](../../../evals/core-manual-quality/20261008/r9-typed-evidence/README.md).
 

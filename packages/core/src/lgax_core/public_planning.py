@@ -70,6 +70,8 @@ INSTRUCTIONS = (
     "웹 입력만으로 원인·잔류물 위치를 확정하지 마세요. 증상 확인과 검증된 안내·고객지원 연결을 "
     "가상 경험으로 구체화하고, 원인이 미확인이라는 한계를 보존하세요. 긍정·부정·"
     "혼합 의견과 초기 불편 뒤 적응을 구별하고 반대 자료도 보존하세요. "
+    "'이전보다 소리가 들린다'를 '소음이 크다'로 강도를 높이지 마세요. 설치기사의 친절과 "
+    "얼음이 늦게 언다는 관찰이 함께 있으면 각각의 맥락을 담은 혼합 의견으로 보존하세요. "
     "부담·힘듦·편리함을 통증 발생·치료·완화의 증거로 확대하지 마세요. 고객이 직접 말한 "
     "허리가 편하다는 경험은 보존하되 측정한 통증 개선이나 일반 효능으로 바꾸지 마세요. "
     "제품 만족과 배송·설치·케어 불만은 서로 다른 맥락으로 유지하세요. 고객지원 연결·관리 "
@@ -78,19 +80,53 @@ INSTRUCTIONS = (
     "분류하지 마세요. experience_scope와 usage_problem_sample_eligible을 보존하세요. "
     "기존/경쟁제품을 비교할 때 고객이 이미 포기한 설치 방식과 용량·설치공간·규격의 측정 기준·"
     "출시 시점 차이를 비교 한계에 보존하세요. 고객의 설치 제약에 맞지 않는 대안을 해결로 "
-    "확정하거나 수납 만족을 무시한 작은 용량 교체를 일률적으로 추천하지 마세요. 제품 외형 "
-    "깊이와 내부 도달 거리·접근성은 다르며 외형 수치만으로 접근이나 청소 부담이 줄었다고 "
+    "확정하거나 수납 만족을 무시한 작은 용량 교체를 일률적으로 추천하지 마세요. "
+    "existing_response에는 현재 제품의 확인된 해결 방식·고객의 실제 대처를 쓰고, "
+    "불편 원문을 반복해 해결 방식으로 채우지 마세요. 해당 문제의 기존 대응이 자료에 없으면 "
+    "미확인으로 표시하고 remaining_burden과 구분하세요. 선택된 설명서라도 냉장실 접이선반을 "
+    "냉동실 전면 턱의 해결로, 일반 통풍 간격을 얼음 지연의 확인된 원인으로 쓰지 마세요. "
+    "제품 외형 깊이와 내부 도달 거리·접근성은 다르며 외형 수치만으로 접근이나 청소 부담이 줄었다고 "
     "주장하지 마세요. 이미 문서화된 접이선반 등은 기존 방식으로 비교하고 새 발명으로 "
     "제안하지 마세요. 발췌에 인출식 선반 등이 언급되지 않았으면 기능 부재가 아닌 미확인으로 "
     "보존하세요. 서로 다른 설치·용량·측정 조건의 우열과 새 기획의 효과는 확인이 필요합니다. 새 수치를 "
     "만들지 마세요. 가설은 가설로 표시하고, 자료가 부족해도 확인된 문제를 바탕으로 유용한 임시 "
     "개선안과 필요한 최소 확인 정보를 만드세요. 조사 계획만으로 기획을 대신하지 마세요. "
     "기획에는 사용자, 사용 상황, 실제 보게 될 안내/행동의 전후 단계와 시각 장면을 포함하세요. "
+    "하드웨어 변경 없이 개선하는 조건이면 턱·선반의 높이/구조 재설계·제거·변경도 제안하지 "
+    "마세요. 제목만 안내로 바꾸고 mechanism·proposed_changes·after_steps에 구조 변경을 "
+    "남기지 말고, 확인된 범위의 웹 안내·확인 요청·고객지원 경험으로 구체화하세요. "
     "안전 사용은 공식 원문 범위의 안내로 연결하고 가열시간/출력 등 검증하지 않은 설정을 추천하지 "
     "마세요. source_ids는 이번 호출에서 제공된 ID만 사용합니다. 모든 제안은 draft 또는 "
     "needs_sources이며 독립 품질 승인을 주장하지 않습니다."
     + PUBLIC_PROVENANCE_GUIDE
 )
+
+
+_NO_HARDWARE_CONSTRAINT = re.compile(
+    r"하드웨어.{0,8}(?:불가|없이)|센서.{0,8}불가|기기.{0,8}제어.{0,8}불가"
+)
+_HARDWARE_ACTION = re.compile(
+    r"센서.{0,8}(?:추가|탑재)|(?:새|신규)\s*부품(?:\s*추가)?"
+    r"|(?:기기|원격).{0,8}제어|(?:가열)?출력.{0,8}변경"
+    r"|(?:턱|선반|부품|하드웨어|기기\s*구조)[^,;.!?\n]{0,48}?"
+    r"(?:재설계|제거|낮추|낮아|조정|변경|대체)"
+)
+_ACTION_NEGATED = re.compile(
+    r"\s*(?:없이|불가|(?:하지|하지는)\s*(?:않|말)|(?:하지|할)\s*수\s*없)"
+)
+
+
+def hardware_constraint_violated(text: str, constraints: list[str]) -> bool:
+    """Check explicit hardware actions, never rewrite a proposal's meaning.
+
+    Negation belongs to the matched action. An unrelated 'without new parts'
+    must not conceal the observed freezer-lip redesign later in the same text.
+    This bounded guard does not establish semantic or product quality approval.
+    """
+    if not any(_NO_HARDWARE_CONSTRAINT.search(constraint) for constraint in constraints):
+        return False
+    return any(not _ACTION_NEGATED.match(text[match.end():]) for match in _HARDWARE_ACTION.finditer(text))
+
 
 def summary_reference_coverage(summaries: dict, input_customer_ids: set[str],
                                successful_discovery_ids: set[str]) -> dict:
@@ -469,14 +505,12 @@ class PublicPlanner:
                     result.append({"field": "counter_source_ids", "code": "unknown_counter_source"})
             if definition == "Concept" and item.get("status") == "supported":
                 result.append({"field": "status", "code": "draft_has_no_independent_quality_approval"})
-            if definition == "Concept" and any(re.search(r"하드웨어.{0,8}(?:불가|없이)|센서.{0,8}불가|기기.{0,8}제어.{0,8}불가", constraint)
-                                               for constraint in constraints):
+            if definition == "Concept":
                 for field in ("mechanism", "proposed_changes", "after_steps"):
                     for _, text in _strings(item.get(field)):
-                        if (re.search(r"센서.{0,8}(?:추가|탑재)|(?:새|신규)\s*부품|(?:기기|원격).{0,8}제어|(?:가열)?출력.{0,8}변경", text)
-                                and not re.search(r"없이|하지\s*않|변경\s*불가|추가\s*불가|제어\s*불가", text)):
+                        if hardware_constraint_violated(text, constraints):
                             result.append({"field": field, "code": "explicit_no_hardware_constraint",
-                                           "message": "웹 안내와 고객지원 범위로 수정하고 실제 기기 제어·추가 부품을 제안하지 마세요."})
+                                           "message": "웹 안내와 고객지원 범위로 수정하고 실제 기기 제어·추가 부품·턱/선반 구조 변경을 제안하지 마세요."})
             return result
 
         def checked(item, definition, context_sources):
