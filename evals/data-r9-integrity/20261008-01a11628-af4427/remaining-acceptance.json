@@ -1,0 +1,136 @@
+{
+  "record_id": "DATA-MAIL-FOLLOWUP-20261008-01a11628-af4427",
+  "not_a_shared_schema_or_new_assignment": true,
+  "transport": {
+    "priority": 1,
+    "existing_request_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/15#issuecomment-6049909352",
+    "missing": [
+      "Existing approved endpoint/client or shared route",
+      "Sender and CORE receiver PC mapping",
+      "Recipient read scope and approval reference"
+    ],
+    "prohibited_payloads": [
+      "Gold",
+      "reviewer answers",
+      "method key",
+      "demo-only payloads"
+    ],
+    "expected_zip": {
+      "bytes": 11106,
+      "entry_count": 11,
+      "sha256": "e73d3393ad43e0bb9cf5f19944cc6c23c3fa69c72a1a140d6d680037e89ffaa8"
+    },
+    "receiver_required": [
+      "Authenticated CORE receipt UTC and origin",
+      "Actual ZIP SHA256/bytes",
+      "Actual11-entry paths/bytes/SHA256",
+      "Metadata/case/group/source/model/version pins"
+    ],
+    "receiver_actual_values": null
+  },
+  "operations": {
+    "priority": 1,
+    "existing_request_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/267#issuecomment-6049909890",
+    "exact_requirements": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/blob/3219307c72a0d190ed95f1b279c14350b02ccda2/evals/data-r9-integrity/20261008-01a11628-b71e06/required-exports.json",
+    "existing_only": true,
+    "missing_before_restart_capture_must_stay_missing": true
+  },
+  "automatic_table": {
+    "priority": 2,
+    "manual_sidecar_sha256": "7b0d6ae500aeabc093600cdd950df4fe9903e2f1d0800234ea7526c7c559af99",
+    "document_pins": [
+      {
+        "id": "DUE",
+        "model_id": "DUE6BGL2E",
+        "version": "MFL71959117 Rev.07_030626",
+        "page": 57,
+        "pdf_sha256": "ff60f78ab8326c40b9a3446f11b49531b8f0c823a310ba98366716b633ba63f5"
+      },
+      {
+        "id": "MW",
+        "model_id": "MW23FDI",
+        "version": "MFL68822538 Rev.00_120925",
+        "page": 37,
+        "pdf_sha256": "3ceec78295d02352fd467309bc613cf59c9bf7bce0bae3e9d5de3ad4bae2f7bc"
+      }
+    ],
+    "required_automatic_fields": [
+      "Producer full commit and parser/model revision/settings and existing run ID",
+      "Raw graph path/bytes/SHA256",
+      "Rows/columns/spans and header-to-model-to-value relation",
+      "Quantity/unit and installation/condition cell",
+      "Footnote marker/text/applicable cell IDs",
+      "Original PDF SHA/version/page/bbox and native anchor mapping",
+      "Approved adapter full commit and PM approval URL",
+      "CORE actually consumed Evidence/model/version/input SHA receipt"
+    ],
+    "fixed_manual_cases": [
+      {
+        "id": "DUE-FREE-STANDARD",
+        "canonical_evidence_ids": [
+          "DATA003-DUE6BGL2E-D03"
+        ]
+      },
+      {
+        "id": "DUE-FREE-TOP-REMOVED",
+        "canonical_evidence_ids": [
+          "DATA003-DUE6BGL2E-D03"
+        ]
+      },
+      {
+        "id": "DUE-BUILTIN",
+        "canonical_evidence_ids": [
+          "DATA003-DUE6BGL2E-D03"
+        ]
+      },
+      {
+        "id": "MW-CONSUMPTION",
+        "canonical_evidence_ids": [
+          "DATA003-MW23FDI-M06",
+          "DATA003-MW23FDI-M07"
+        ]
+      },
+      {
+        "id": "MW-RF-OUTPUT",
+        "canonical_evidence_ids": [
+          "DATA003-MW23FDI-M06"
+        ]
+      }
+    ],
+    "guard_cases": [
+      "DUE built-in598x815x567mm; do not inherit DFE845mm or top-removal condition",
+      "MW electric input1570W differs from maxRF output1000W*1; short-duration footnote stays linked",
+      "M06 includes output+footnote; M07 is consumption only; features[] and buyerSKUunknown stay unchanged"
+    ],
+    "R9_planning_evidence_graph_proves_automatic_PDF_table_extraction": false,
+    "automatic_accuracy": null,
+    "automatic_error_count": null
+  },
+  "topics": {
+    "priority": 2,
+    "draft_version": "r8-development-topic-draft.20261008.01a114f6.v1",
+    "annotation_sha256": "871c4618737f380e24725854aa8f37c665c3a8de8eca9775c3e65ca679211409",
+    "sources_sha256": "e47f77303b83597a9c146e96f10cd1ff505d480e9f53abb80448178e481a1162",
+    "WEB_receipt_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/16#issuecomment-6043200182",
+    "needed_decision": [
+      "Approve exact version for explicit usage scope OR give source IDs and corrected semantic criteria",
+      "If corrections, assigned DATA owner updates only affected rows and new version/hash",
+      "WEB consumes same approved version and provides actual result receipt"
+    ],
+    "no_dates_means_no_monthly_chart": true,
+    "classification_approved": false
+  },
+  "independent_evaluation": {
+    "same_input_raw_and_usage_received": false,
+    "new_model_calls_requested": false,
+    "needed_existing_artifacts": [
+      "Canonical input SHA matching fixed7inputs/6groups",
+      "Agent and baseline full inputs, original outputs including rejected/failed/retried calls",
+      "Code/data/model revision/digest/settings/output-budget pins",
+      "Per-attempt and full-request usage/time; missing values null",
+      "PM-approved Gold/split and independent scorer separate from candidates/implementation"
+    ],
+    "measured_work_time_reduction": null,
+    "token_savings": null
+  }
+}
