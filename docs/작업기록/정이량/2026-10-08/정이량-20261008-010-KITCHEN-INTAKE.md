@@ -25,3 +25,7 @@ DATA 지원 세션이 김치 Z330MEEF11 공개 후기 미리보기3·공식설�
 확장 자료/CLI/WEB에 필요한 계약·통합 검사와 새 PR exact-head CI·병합은 결과 확인 후 issue234에 확정한다. 이 문서는 인수 전 source snapshot이다. parent Done, 새 생성영상, 넓은 독립평가·실제사용자검토·제출재현은 미완료다. 사용자에게 추가 토큰/결제/설치 작업을 넘기지 않는다. [근거](../../../작업근거/정이량/2026-10-08/정이량-E057-KITCHEN-INTAKE.md)와 [수동 큐](../../../pm/manual-queue-20261008.json)를 따른다.
 
 추가 인수: 자료 등록/보존 집중12검사가 cd164bce3783e1fa9c6233ab1b9d8eccf9a1cafd의 고정 zero-auth Docker에서 PASS. WEB 실제2검사·build/typecheck PASS. 실제API 10개 등록·신규2 전체 source/facts/hash·저장 정상/조건 재시작 뒤 전체 public 동일, 브라우저 김치3후기 filter/선택 확인. 신규 모델0이다. Git 원byte 보존 속성을 적용했다.
+
+최신 후속: WEB263 original1b44460을 PR264에 보존 통합하고 안내서 가능한 자료 predicate를 수정했다. spec-only 광파자료를 안내서 양성후보로 고르던 P2와 undefined끼리 hash비교 통과를 보완했다. 39e6a31의 zero-auth guest 10묶음 실제7 E2E/skip0/flaky0/model0·source_changed0 PASS(실행e8f09f5459bd4806bc13e3a17016f20a). [검사 증빙](../../../../evals/pm-r9/20261008/kitchen-intake-validation.json). 기존 WEB원기록은 수정하지 않았다.
+
+사용자 직접 새생성 확인을 위해 동일digest27B의 별도 유한 수동 시연세션을 연결했다. GPU3시작전6321MiB, 보호GPU1/외부서비스 무변경. API동일credential/DB·research_planning_enabled true, actualmodel tags pin동일; 새생성호출0. 세션한도 local1700/remote1800초이며 자동화/예약Worker와 별개다. 이전 종료와 조회모드는 그 당시 snapshot으로 보존한다. 기간 뒤 새생성은 수동 서비스 재준비가 필요하다.

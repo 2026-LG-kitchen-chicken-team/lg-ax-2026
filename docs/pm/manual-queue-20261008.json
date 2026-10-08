@@ -3,7 +3,7 @@
   "mode": "manual",
   "automation_enabled": false,
   "user_directive": "자동화 OFF. 중단된 미완료만 이어서 진행하고 완료 작업은 재사용한다. 기존·새 작업을 배정하고 현재 대화의 수동 진행 중 큐·검수·통합을 관리한다.",
-  "updated_at": "2026-10-08T09:11:53+09:00",
+  "updated_at": "2026-10-08T09:23:27+09:00",
   "base_commit": "dc0ccc05916c637b2e0c2cc268a061dfa655c0b7",
   "queue_issue": 234,
   "original_completed_tasks": [
@@ -1227,6 +1227,12 @@
       "head": "c0116fb026eabd24a6d2276451cea86070205ee4",
       "state": "merged_main_original_commit_preserved_pr262",
       "model_quality_verified": false
+    },
+    {
+      "pr": 263,
+      "head": "1b44460e22d705525f261b831b6afa3657e81a5d",
+      "state": "reviewed_original_commit_integrated_with_p2_test_fix_in_pr264",
+      "model_quality_verified": false
     }
   ],
   "events": [
@@ -1249,13 +1255,18 @@
       "type": "manual_integration_confirmed",
       "at": "2026-10-08T09:11:53+09:00",
       "detail": "PR262 exact a6da678 CI4 PASS→main dc0ccc0, original246–261 preserved; current normal/condition2calls each retained and semantics partial. Official guide browser bytes equal API. Owned model session cleanup true/foreign signals0; no automation."
+    },
+    {
+      "type": "manual_new_intake_browser_verified",
+      "at": "2026-10-08T09:23:27+09:00",
+      "detail": "10 actual bundles·7 E2E PASS/skip0/model0, source registration12 PASS. New263 original commit retained and spec-only guide predicate P2 fixed. Same pinned27B finite manual demo connected; no scheduled automation."
     }
   ],
   "implementation_head_before_status_docs": "f02f9c561c86ad74217f29eabfeb71eae290af43 (merged with PM changes)",
   "manual_preview": {
     "url": "http://127.0.0.1:5175",
     "api": "http://127.0.0.1:18969",
-    "model_generation_enabled": false,
+    "model_generation_enabled": true,
     "registered_bundle_counts": [
       73,
       58,
@@ -1270,13 +1281,18 @@
     ],
     "latest_stored_run": "run-754268c6b0cb41bba50c5b8d713332d9",
     "quality": "Internal draft; normal and condition generated, remaining source interpretation errors explicitly unapproved",
-    "generation_mode": "source_saved_plan_and_official_guide_available_new_model_execution_manual_only",
+    "generation_mode": "finite_owned_manual_demo_session_model_enabled_then_manual_readonly_restart",
     "new_intake_scope": {
       "kimchi_review_previews": 3,
       "lightwave_customer_sources": 0,
       "new_qa": 0,
       "new_manual_pdfs": 0,
       "full_reviews_verified": false
+    },
+    "model_session": {
+      "local_max_seconds": 1700,
+      "automation_enabled": false,
+      "endpoint_temporary": true
     }
   },
   "previous_queue": "docs/pm/manual-queue-20261007.json",
