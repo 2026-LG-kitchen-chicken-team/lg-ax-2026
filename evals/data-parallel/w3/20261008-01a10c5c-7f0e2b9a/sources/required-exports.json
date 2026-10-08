@@ -1,0 +1,69 @@
+{
+  "record_id": "DATA-R9-RUNTIME-20261008-01a11628-b71e06",
+  "status": "UNCONFIRMED_PENDING_EXISTING_EXPORTS",
+  "owner_for_operating_exports": "PM jeongiryang",
+  "audit_recipient": "DATA ginaginaring",
+  "request_new_model_or_restart": false,
+  "request_automation_on": false,
+  "delivery": "Existing approved private path or sanitized immutable exports in a pinned PR; no secrets in comments. Preserve raw private originals and label any redaction.",
+  "common_manifest_fields": [
+    "producer and consumer full commit SHAs",
+    "capture UTC timestamps and per-file relative path/bytes/SHA256",
+    "actual loaded bundle_id and bundle_sha256",
+    "DB stable nonsecret identity and consistently pseudonymized owner binding",
+    "raw-versus-sanitized encoding/serialization rules and redaction record",
+    "original capture source and authenticated recipient receipt"
+  ],
+  "required": [
+    {
+      "id": "R9-OPS-01",
+      "kind": "runtime_pin",
+      "items": ["actual loaded bundle registry including original R9 73/58/53 and reference5, with new/legacy packs separate", "deployment/source commit, source path/SHA, model manifest/settings pin", "stable DB identity, preserved existing principal binding and approval scope"],
+      "received": false
+    },
+    {
+      "id": "R9-OPS-02",
+      "kind": "actual_http",
+      "items": ["GET /api/research/bundles", "GET /api/research/bundles/{bundle_id} for all three R9 bundles and manual-reference bundle", "POST /api/research/guides: original request bundle_id/source_ids/bundle_sha256 and original response including JSON/HTML/Markdown"],
+      "capture_fields": ["method", "path", "arguments", "status", "timestamp", "response bytes", "SHA256", "size"],
+      "must_preserve": ["full Source ID/text/facts/locator/metadata/document_version", "page_model versus purchased_model", "unknown dates/nulls", "selected source order"],
+      "received": false
+    },
+    {
+      "id": "R9-OPS-03",
+      "kind": "actual_stdio_mcp",
+      "items": ["list_research_bundles", "get_research_bundle(bundle_id)", "create_research_guide(bundle_id, source_ids, bundle_sha256)", "get_research_run(run_id) for the same stored runs as HTTP"],
+      "capture_fields": ["tool name", "original arguments", "raw result/envelope bytes", "timestamp", "SHA256", "size", "HTTP-to-MCP bundle/run mapping"],
+      "comparison": "Keep wire byte hashes separate from parsed payload equality.",
+      "received": false
+    },
+    {
+      "id": "R9-OPS-04",
+      "kind": "saved_normal_revision",
+      "run_ids": ["run-1f83d846191941aea21153897b944ec1", "run-754268c6b0cb41bba50c5b8d713332d9"],
+      "reported_public_output_sha256": ["4e84728d07aedff38cc30c26f839abce2ae54719e341954f27dff353c79ed3d2", "0fd3a2047a7fd884af1c89e6d87ef46e83a446f5b277d18c838876bf63427c1d"],
+      "items": ["original stored public GET JSON with byte serialization/size/SHA", "selected_source_ids, source_facts snapshots, bundle SHA, constraints and input scope", "brief_id/revision/previous_brief_id/parent run", "original response/failure/usage artifacts for already executed attempts; mark absent fields unknown, not zero"],
+      "received": false
+    },
+    {
+      "id": "R9-OPS-05",
+      "kind": "database_rows",
+      "items": ["read-only consistent schema and relevant research_runs rows: run_id, stable owner alias, bundle_id, bundle_sha256, brief", "related research_attempts rows: attempt_id, owner alias, bundle_id/SHA, request, status, run_id, original errors/rejected brief, created_at/finished_at", "DB snapshot identity and logical-row hash; include existing WAL checkpoint/snapshot method if relevant"],
+      "not_equivalent": ["producer research-238.sqlite3", "isolated-workspace.research.sqlite3 with zero runs", "in-memory bundle metadata alone"],
+      "received": false
+    },
+    {
+      "id": "R9-OPS-06",
+      "kind": "existing_same_db_restart",
+      "items": ["existing restart receipt with pre/post timestamps, process identity and same state-dir/DB identity", "same run/bundle queries before and after: original bytes/SHA/size and corresponding MCP results", "consistent pre/post schema and logical-row snapshots with failures/history retained", "explicit marker if any originally requested pre-restart export was not captured"],
+      "no_new_restart_requested": true,
+      "received": false
+    },
+    {
+      "id": "R9-OPS-07",
+      "kind": "pm_acceptance",
+      "items": ["explicit fixed commit/artifact list and scope accepted by PM", "separate file receipt, runtime application, source semantic review and parent-task approval", "confirm allowed review/export access without sharing credentials"],
+      "received": false
+    }
+  ]
+}

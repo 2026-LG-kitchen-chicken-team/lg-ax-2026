@@ -1,0 +1,120 @@
+{
+  "status": "PASS",
+  "received_data_audit": {
+    "status": "PASS",
+    "source_pins_verified": 6,
+    "comment_body_hashes_verified": 4,
+    "operating_export_rows": 7,
+    "dependency_rows": 9,
+    "existing_PR_jobs": 12,
+    "archive_member_tests_reexecuted": false,
+    "Gold_read": false,
+    "new_model_OCR_calls": 0,
+    "225_11_reexecuted": false,
+    "scope": "Received artifact bytes/source consistency only, not actual operating output or model quality."
+  },
+  "checks": [
+    {
+      "check": "intake-data-audit",
+      "exit_code": 0,
+      "container_boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "image_pin": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+      "log_sha256": "0b627604b356994e376e99b4181444a6e14c7ebec3f4f177da90fc28350a3589",
+      "finished_at_utc": "2026-10-08T04:12:47.723257+00:00",
+      "source_commit": "eab85d48385f965eef48c07a6cdd8f6fd9851c62",
+      "authentication_mounted": false,
+      "private_inputs_ZIP_Gold_mail_controller_mounted": false,
+      "network": "none",
+      "scope": "Standalone received-data audit and existing AGENTS/CLAUDE equality check, not old experiment/model rerun.",
+      "public_representation": "Execution metadata; exact argv/full original receipt retained in W3 control."
+    },
+    {
+      "check": "agent-rules",
+      "exit_code": 0,
+      "container_boundary": {
+        "backend": "docker",
+        "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+        "role": "validator",
+        "uid": 1000,
+        "readonly_root": true,
+        "caps_dropped": true,
+        "no_new_privileges": true,
+        "network": "none",
+        "mount_targets": [
+          "/artifacts",
+          "/workspace"
+        ],
+        "publisher_credentials_mounted": false,
+        "ai_profile_mounted": false
+      },
+      "image_pin": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+      "log_sha256": "56b21f915cb5a695479359f4ca6063582b0b9bcbdaee1869782a2a805a2a82cd",
+      "finished_at_utc": "2026-10-08T04:12:50.540885+00:00",
+      "source_commit": "eab85d48385f965eef48c07a6cdd8f6fd9851c62",
+      "authentication_mounted": false,
+      "private_inputs_ZIP_Gold_mail_controller_mounted": false,
+      "network": "none",
+      "scope": "Standalone received-data audit and existing AGENTS/CLAUDE equality check, not old experiment/model rerun.",
+      "public_representation": "Execution metadata; exact argv/full original receipt retained in W3 control."
+    }
+  ],
+  "not_operating_or_model_quality_approval": true,
+  "final_followup_data_audit": {
+    "status": "PASS",
+    "source_pins_verified": 8,
+    "comment_body_hashes_verified": 6,
+    "operating_export_rows": 7,
+    "dependency_rows": 9,
+    "existing_PR_jobs": 20,
+    "archive_member_tests_reexecuted": false,
+    "Gold_read": false,
+    "new_model_OCR_calls": 0,
+    "225_11_reexecuted": false,
+    "scope": "Final newly received followup artifact bytes/source consistency; not actual operating output or model quality. Prior AGENTS check is reused unchanged."
+  },
+  "final_followup_check_receipt": {
+    "check": "intake-data-audit",
+    "exit_code": 0,
+    "container_boundary": {
+      "backend": "docker",
+      "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+      "role": "validator",
+      "uid": 1000,
+      "readonly_root": true,
+      "caps_dropped": true,
+      "no_new_privileges": true,
+      "network": "none",
+      "mount_targets": [
+        "/artifacts",
+        "/workspace"
+      ],
+      "publisher_credentials_mounted": false,
+      "ai_profile_mounted": false
+    },
+    "image_pin": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+    "log_sha256": "a7ca94d08bc3aa9b2370dd104b19ff45a90603267a96e5302bf4d8975b5467e2",
+    "finished_at_utc": "2026-10-08T04:27:15.921285+00:00",
+    "source_commit": "eab85d48385f965eef48c07a6cdd8f6fd9851c62",
+    "authentication_mounted": false,
+    "private_inputs_ZIP_Gold_mail_controller_mounted": false,
+    "network": "none",
+    "scope": "Standalone received-data audit and existing AGENTS/CLAUDE equality check, not old experiment/model rerun.",
+    "public_representation": "Execution metadata only; exact inline program/full receipt retained outside Git in W3 control."
+  },
+  "agent_rules_v4_reused_unchanged": true
+}
