@@ -1,0 +1,81 @@
+{
+  "record": "DATA-W2-01a1100e-r2-76097b75",
+  "status": "partial independent source review",
+  "actual_R9_model_response_or_consumption_graded": false,
+  "scope_checks": [
+    {
+      "id": "CAT-R2-01",
+      "status": "확인",
+      "subject": "Exact current catalog model/SKU/MD ID in one HTML card",
+      "catalog_card_count": 4,
+      "card_identity_fields_agree": true,
+      "scope": "This captured care-solution catalog only; purchased-unit identity unconfirmed"
+    },
+    {
+      "id": "CAT-R2-02",
+      "status": "상충",
+      "claim_target": "T876MEE1H1",
+      "candidate_source_model": "Y324GB7",
+      "candidate_field": "ice_maker_label",
+      "decision": "Reject transfer across distinct model cards",
+      "actual_pipeline_error_observed": false
+    },
+    {
+      "id": "CAT-R2-03",
+      "status": "상충",
+      "claim_target": "T876MEE1H1",
+      "candidate_source_model": "Y324SS7SK",
+      "candidate_field": "ice_maker_label",
+      "decision": "Reject transfer across distinct model cards",
+      "actual_pipeline_error_observed": false
+    },
+    {
+      "id": "CAT-R2-04",
+      "status": "상충",
+      "claim_target": "Y324GB3S",
+      "candidate_source_model": "Y324GB7",
+      "candidate_field": "ice_maker_label",
+      "decision": "Distinct exact variant/card and field values; shared prefix is insufficient",
+      "actual_pipeline_error_observed": false
+    }
+  ],
+  "remaining_existing_claims": [
+    {
+      "id": "SKU-F03",
+      "status": "미확인",
+      "missing": "Exact holder part/BOM and factory inclusion"
+    },
+    {
+      "id": "SKU-F04",
+      "status": "미확인",
+      "new_catalog_alias_received": true,
+      "missing": "Factory ice-maker/handle/bin inclusion; .CKOR catalog alias is not BOM"
+    },
+    {
+      "id": "SKU-M02",
+      "status": "미확인",
+      "missing": "Explicit user-created time/power save/recall procedure or supported denial for exact model"
+    },
+    {
+      "id": "PENDING26-UI2",
+      "status": "미확인",
+      "missing": "Actual approved per-Source field binding/consumption values through W3"
+    }
+  ],
+  "initial_reader_failure": {
+    "mode": "li-only card reader",
+    "result": "no matches",
+    "diagnosis": "Observed source uses div.card-list-item",
+    "meaning": "Reader assumption failed; product absence was not inferred",
+    "corrected_on_same_captured_body": true
+  },
+  "public_page_error": {
+    "url": "https://www.lge.co.kr/product/microwaves-and-ovens/mw23fdi?modelId=MD10738847&pdpType=PURCHASE",
+    "tool_result": "Internal Error",
+    "model_support_absence_inferred": false
+  },
+  "limits": [
+    "Catalog metadata does not prove factory parts, purchase-time edition, individual review posting dates, PM approval, or R9 operating consumption.",
+    "Candidate source conflicts are manual source decisions, not new automatic model/OCR accuracy measurements."
+  ]
+}
