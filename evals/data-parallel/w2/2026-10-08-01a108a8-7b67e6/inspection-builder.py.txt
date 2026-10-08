@@ -1,0 +1,412 @@
+"""Trusted standalone data inspection; no repository imports, model, OCR, collector or API execution."""
+import csv
+import hashlib
+import html
+import io
+import json
+import re
+import unicodedata
+from collections import Counter
+from datetime import datetime, timezone
+from html.parser import HTMLParser
+from pathlib import Path
+
+RUN = Path(__file__).parent
+WORKSPACE = Path(r'C:\Users\user\Documents\ChatGPT\LG공모전')
+ROOT = WORKSPACE / '.worktrees/data-w2-20261008-01a108a8-7b67e6'
+OUT = ROOT / 'evals/data-parallel/w2/2026-10-08-01a108a8-7b67e6'
+BASE = 'eab85d48385f965eef48c07a6cdd8f6fd9851c62'
+ID = 'DATA-W2-01a108a8-7b67e6'
+PINS = []
+CHECKS = []
+ERRORS = []
+
+
+def digest(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def read(relative):
+    raw = (ROOT / relative).read_bytes()
+    PINS.append({'commit': BASE, 'path': relative, 'bytes': len(raw), 'sha256': digest(raw)})
+    return json.loads(raw) if relative.endswith('.json') else raw
+
+
+def pr270(name):
+    index = json.loads((RUN / 'intake270/index.json').read_text(encoding='utf-8'))
+    row = next(x for x in index if x['path'].endswith('/' + name))
+    raw = (RUN / 'intake270' / row['local_file']).read_bytes()
+    PINS.append({'commit': row['head'], 'path': row['path'], 'bytes': len(raw), 'sha256': digest(raw), 'merged': False})
+    return json.loads(raw)
+
+
+def check(label, passed, source_id=None):
+    row = {'check': label, 'passed': bool(passed)}
+    if source_id:
+        row['source_id'] = source_id
+    CHECKS.append(row)
+    if not passed:
+        ERRORS.append(row)
+    return bool(passed)
+
+
+def write(name, obj):
+    (OUT / name).write_text(json.dumps(obj, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+
+def write_csv(name, rows):
+    with (OUT / name).open('w', encoding='utf-8', newline='') as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def normalized(text):
+    return ' '.join(unicodedata.normalize('NFKC', text).split())
+
+
+class VisibleText(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.parts = []
+        self.ignore = 0
+
+    def handle_starttag(self, tag, attrs):
+        if tag in ('script', 'style'):
+            self.ignore += 1
+
+    def handle_endtag(self, tag):
+        if tag in ('script', 'style') and self.ignore:
+            self.ignore -= 1
+        if tag in ('div', 'p', 'td', 'th', 'li', 'tr'):
+            self.parts.append('\n')
+
+    def handle_data(self, value):
+        if not self.ignore:
+            self.parts.append(value)
+
+
+def visible(text):
+    parser = VisibleText()
+    parser.feed(text)
+    return html.unescape(''.join(parser.parts)).strip()
+
+
+# Reuse fixed original PDF/render/native and existing manual table relationships.
+side = read('data/research/r8-public-research-20261007/table-grounding/01a114f6/table-evidence-sidecar.json')
+native = {}
+documents = {}
+for doc in side['documents']:
+    documents[doc['id']] = doc
+    for kind in ('pdf', 'native', 'render'):
+        ref = doc[kind]
+        raw = read(ref['path'])
+        check('table:' + kind + ':fixed SHA and bytes', digest(raw) == ref['sha256'] and len(raw) == ref['bytes'], doc['model_id'])
+        if kind == 'native':
+            native[doc['id']] = raw.decode('utf-8')
+for rel in ('evals/data003-ocr-review/20261006-01a10c5c/renders/DUE6BGL2E-p57-table-detail-300dpi.png',
+            'evals/data003-ocr-review/20261006-01a10c5c/renders/MW23FDI-p37-table-detail-300dpi.png'):
+    read(rel)
+dataset = read(side['dataset_pin']['path'])
+check('table:canonical dataset saved SHA', PINS[-1]['sha256'] == side['dataset_pin']['sha256'])
+evidence = {x['id']: x for x in dataset['evidence']}
+for mapping in side['canonical_mapping']:
+    record = evidence[mapping['evidence_id']]
+    doc_key = 'DUE' if mapping['model_id'].startswith('DUE') else 'MW'
+    a, b = mapping['native_quote_range']
+    check('table:canonical continuous quote, model, edition, locator, empty features',
+          record['text'] == native[doc_key][a:b]
+          and digest(record['text'].encode()) == mapping['canonical_text_sha256']
+          and record['model_id'] == mapping['model_id']
+          and record['document_version'] == mapping['document_version']
+          and record['locator'] == mapping['locator'] and record['feature_ids'] == [], mapping['evidence_id'])
+
+expected_values = {'DUE-FREE-STANDARD': {'width_mm': 598, 'height_mm': 845, 'depth_mm': 600},
+                   'DUE-FREE-TOP-REMOVED': {'width_mm': 598, 'height_mm': 815, 'depth_mm': 567},
+                   'DUE-BUILTIN': {'width_mm': 598, 'height_mm': 815, 'depth_mm': 567},
+                   'MW-CONSUMPTION': 1570, 'MW-RF-OUTPUT': 1000}
+table_rows = []
+for item in side['cells'] + side['footnotes']:
+    doc = documents[item['document']]
+    a, b = item['source']['native_range']
+    span = native[item['document']][a:b]
+    valid_span = check('table:native text range and SHA', digest(span.encode()) == item['source']['span_sha256'], item['id'])
+    if item['id'] in expected_values:
+        check('table:visual source value reused', item.get('values', item.get('value')) == expected_values[item['id']], item['id'])
+    if item['id'] == 'DUE-BUILTIN':
+        check('table:DUE built-in column distinct from DFE top removed', item['column_family'] == 'DUE' and item['condition'] is None)
+    if item['id'] == 'MW-RF-OUTPUT':
+        check('table:max output links M06 and footnote, not M07', item['maximum'] is True and item['footnote_ids'] == ['MW-FN1']
+              and item['canonical_evidence_ids'] == ['DATA003-MW23FDI-M06'])
+    is_footnote = item['id'] == 'MW-FN1'
+    family = item.get('column_family')
+    if item['document'] == 'DUE':
+        applicable_models = doc['column_headers'][family]['family']
+    else:
+        applicable_models = doc['column_headers']['23'] + doc['column_headers']['25']
+    observations = {
+        'cell': None if is_footnote else item['id'],
+        'row': None if is_footnote else item['row'],
+        'column': None if is_footnote else family,
+        'model': {'document_reference': doc['model_id'], 'applicable_column_models': applicable_models,
+                  'exact_purchased_SKU_verified': False,
+                  'document_reference_model_in_this_column': doc['model_id'] in applicable_models
+                      if item['document'] == 'MW' else family == 'DUE'},
+        'number': item.get('values', item.get('value')),
+        'unit': item.get('unit'),
+        'condition': {'installation_type': item.get('installation_type'), 'condition': item.get('condition'),
+                      'maximum': item.get('maximum'), 'quantity': item.get('quantity'),
+                      'footnote_meaning': item.get('meaning')},
+        'footnote': {'reference_ids': ['MW-FN1'] if is_footnote else item.get('footnote_ids', []),
+                     'linked_cell': 'MW-RF-OUTPUT' if is_footnote or item['id'] == 'MW-RF-OUTPUT' else None,
+                     'canonical_evidence_ids': item['canonical_evidence_ids']},
+        'page_location': {'source_page_number': doc['page'], 'native_range': [a, b],
+                          'pdf_sha256': doc['pdf']['sha256'], 'fixed_render': doc['render']['path'],
+                          'automatic_cell_bbox': None}
+    }
+    for axis, observed in observations.items():
+        applicable = observed is not None
+        manual_status = ('일치' if valid_span else '오류') if applicable else '미확인'
+        table_rows.append({'item_id': item['id'], 'axis': axis, 'document_model_reference': doc['model_id'],
+                           'document_version': doc['version'], 'source_page_number': doc['page'],
+                           'manual_reference_status': manual_status, 'axis_applies_to_item': applicable,
+                           'manual_observed_value': observed,
+                           'basis': 'existing manual sidecar and native span; original fixed table detail visually reread by this Codex',
+                           'automatic_observed_value': None, 'automatic_status': '검증 불가',
+                           'producer_commit': None, 'adapter_commit': None,
+                           'native_range': [a, b], 'cell_bbox': None,
+                           'notes': ('Manual page/native location only; geometric cell bbox remains unconfirmed.' if axis == 'page_location'
+                                     else 'Footnote has no independent numeric cell/row/column/unit value; not scored as a matching numeric cell.' if not applicable
+                                     else 'Declared manual relationship only; buyer SKU, automatic prediction and PM approval are not inferred.')})
+old_ocr = read('evals/data003-ocr-review/20261006-01a10c5c/review.json')
+old_ocr2 = read('evals/data003-ocr-review/20261006T111943Z-01a10f51/review.json')
+old_missing = read('evals/data14-auto-table-link-audit/20261007-01a1100e/findings.json')
+write('table-review.json', {'id': ID, 'base_commit': BASE, 'manual_reference_version': side['version'],
+      'kind': 'manual_reference_reuse_and_blocked_automatic_comparison', 'manual_axes': len(table_rows), 'rows': table_rows,
+      'manual_axis_status_counts': dict(Counter(r['manual_reference_status'] for r in table_rows)),
+      'manual_axis_counts_are_not_independent_accuracy_measurements': True,
+      'automatic_table_graph_received': False, 'approved_adapter_received': False,
+      'producer_pin': {'commit': None, 'version': None, 'configuration': None},
+      'adapter_pin': {'commit': None, 'version': None, 'configuration': None, 'pm_approval': None},
+      'automatic_accuracy': None, 'automatic_error_count': None, 'geometric_cell_bbox_comparison': '미확인',
+      'r9_planning_evidence_graph_consumed_as_table_graph': False,
+      'reused_ocr_summary': old_ocr['summary'], 'reused_other_manual_review_counts': old_ocr2['counts'],
+      'reused_missing_output_findings': old_missing,
+      'model_or_ocr_calls': 0, 'producer_or_adapter_code_run': False, 'whole_issue14_done': False})
+write_csv('table-review.csv', table_rows)
+
+# Inspect the fixed 141-row draft and saved empty-date outputs; do not execute the collector.
+prefix = 'data/research/r8-public-research-20261007/trend-annotations/01a114f6/'
+annotations = read(prefix + 'annotation.draft.json')
+sources_obj = read(prefix + 'development-sources.json')
+members = read(prefix + 'draft-memberships.json')
+parts = read(prefix + 'partition-memberships.json')['original_review_id_memberships']
+date_meta = read(prefix + 'date-only.metadata.json')
+empty = read(prefix + 'empty-collector-checks.json')
+projection = read(prefix + 'projection.date-only.dataset.json')
+records = read('data/research/r8-public-research-20261007/records.json')
+sources = {x['source_id']: x for x in sources_obj['sources']}
+record_map = {x['original_review_id']: x for x in records}
+rows = annotations['rows']
+check('trend:fixed draft and approved flags unchanged', annotations['status'] == 'draft' and annotations['pm_approved'] is False and annotations['gold'] is False)
+check('trend:141 unique row/Source IDs', len(rows) == len(sources) == len({r['source_id'] for r in rows}) == len({r['original_review_id'] for r in rows}) == 141)
+check('trend:same annotation version', annotations['annotation_version'] == sources_obj['annotation_version'] == members['annotation_version'])
+partition_sets = {k: set(v) for k, v in parts.items()}
+for a, sa in partition_sets.items():
+    for b, sb in partition_sets.items():
+        if a < b:
+            check('trend:disjoint partitions ' + a + '/' + b, not (sa & sb))
+check('trend:development141 + other97 = distinct238', len(set.union(*partition_sets.values())) == len(records) == 238
+      and {r['original_review_id'] for r in rows} == partition_sets['development'])
+topic_ids = {x['topic_id'] for x in annotations['taxonomy']}
+quote_count = 0
+row_audits = []
+derived_topics = {topic: {p: set() for p in ('positive', 'negative', 'neutral', 'uncertain')} for topic in topic_ids}
+group_ids = {}
+for row in rows:
+    sid = row['source_id']; rid = row['original_review_id']; source = sources[sid]
+    quotes_ok = True
+    for aspect in row['aspects']:
+        quote_count += 1
+        loc = aspect['text_range']; start, end = loc['start'], loc['end']
+        quotes_ok = check('trend:quote exact codepoint range/hash/topic',
+             loc['unit'] == 'unicode_codepoint' and loc['end_exclusive'] is True and 0 <= start <= end <= len(source['text'])
+             and source['text'][start:end] == aspect['quote'] and digest(aspect['quote'].encode()) == aspect['quote_sha256']
+             and aspect['topic_id'] in topic_ids, sid) and quotes_ok
+        derived_topics[aspect['topic_id']][aspect['polarity']].add(rid)
+    source_ok = check('trend:source/original ID/text/edition/locator/development binding',
+           source['metadata']['original_review_id'] == rid and source['text'] == record_map[rid]['text']
+           and digest(source['text'].encode()) == row['text_sha256']
+           and source['document_version'] == row['reference_document_version']
+           and source['url'] == row['source_url'] and source['locator'] == row['source_locator']
+           and row['split'] == source['metadata']['split'] == record_map[rid]['split'] == 'development', sid)
+    date_ok = check('trend:unknown dates and buyer SKU remain null/unapproved',
+          row['published_at'] is None and source['published_at'] is None and row['actual_purchased_model_id'] is None
+          and source['purchased_model'] is None and row['approved'] is False, sid)
+    check('trend:declared topics equal aspect topic set', set(row['topic_ids']) == {x['topic_id'] for x in row['aspects']}, sid)
+    group_ids.setdefault(row['product_group'], set()).add(rid)
+    row_audits.append({'source_id': sid, 'original_review_id': rid, 'split': 'development', 'source_link_status': '일치' if source_ok else '오류',
+                       'quote_link_status': '일치' if quotes_ok else '오류', 'published_at': None, 'time_denominator_eligible': False,
+                       'source_text_sha256': row['text_sha256'], 'document_version': row['reference_document_version'],
+                       'classification_version': annotations['annotation_version'], 'classification_semantics_status': '미확인: PM 승인 미수신',
+                       'annotation_changed': False})
+check('trend:292 fixed quote bindings', quote_count == 292)
+opinions = Counter(row['overall_opinion'] for row in rows)
+check('trend:fixed opinion counts', dict(opinions) == members['overall_opinion_counts'])
+for group, ids in group_ids.items():
+    check('trend:group membership ' + group, ids == set(members['group_memberships'][group]))
+topic_counts = []
+for topic, pols in derived_topics.items():
+    for polarity, ids in pols.items():
+        check('trend:topic/polarity membership ' + topic + '/' + polarity, ids == set(members['topic_polarity_memberships'][topic][polarity]))
+    unique_ids = set.union(*pols.values())
+    topic_counts.append({'topic_id': topic, 'draft_unique_source_count': len(unique_ids), 'development_sample_denominator': 141,
+                         'draft_count_is_approved_frequency': False, 'month_denominator': 0, 'season_denominator': 0,
+                         'dated_topic_numerator': 0, 'ratio': None, 'multi_polarity_ids_count_once_per_topic': True})
+check('trend:every saved topic ratio is null', all(v is None for v in members['topic_ratios'].values()))
+check('trend:date-only141 are unclassified/null/no topics', len(date_meta['rows']) == 141 and all(x['published_at'] is None and x['topic_ids'] == [] and x['classification_status'] == 'unclassified' for x in date_meta['rows']))
+projection_reviews = {x['id']: x for x in projection['reviews']}
+for row in date_meta['rows']:
+    check('trend:date-only original Source/hash projection', row['source_id'] in sources
+          and projection_reviews[row['review_id']]['text'] == sources[row['source_id']]['text']
+          and row['text_sha256'] == digest(sources[row['source_id']]['text'].encode()), row['source_id'])
+for query in empty['queries']:
+    aggregate = query['aggregate']; counts = aggregate['counts']
+    check('trend:saved date exclusions reconcile', counts['input_review_count'] == 141
+          and counts['excluded_out_of_scope_count'] + counts['in_scope_review_count'] == 141
+          and counts['excluded_undated_count'] == counts['in_scope_review_count']
+          and counts['eligible_unique_review_count'] == counts['duplicate_count'] == counts['excluded_outside_period_count'] == 0)
+    check('trend:saved month/season zero denominator/null numerator/membership',
+          all(b['total_reviews'] == 0 and all(t['topic_review_count'] == t['evidence_count'] == 0 and t['ratio'] is None and t['evidence_ids'] == [] for t in b['topics']) for b in aggregate['buckets'])
+          and all(ids == [] for bucket in query['memberships'].values() for ids in bucket.values()))
+for pair in annotations['counterexample_pairs']:
+    check('trend:counterexample IDs stay in development/no causal promotion', set(pair['original_review_ids']) <= partition_sets['development']
+          and pair['causal_or_same_sku_conclusion'] is False)
+write('trend-review.json', {'id': ID, 'base_commit': BASE, 'method': 'static read-only inspection; saved collector outputs reused, not reexecuted',
+      'annotation_version': annotations['annotation_version'], 'taxonomy_version': annotations['topic_taxonomy_version'],
+      'classification_approved': False, 'specific_PM_correction_Source_IDs_received': [], 'changed_annotation_rows': 0,
+      'unique_original_review_count': 238, 'selected_development_count': 141, 'other_partition_excluded_count': 97,
+      'partitions': {k: len(v) for k, v in partition_sets.items()}, 'groups': {k: len(v) for k, v in group_ids.items()},
+      'quote_bindings_checked': quote_count, 'draft_topic_count': len(topic_ids), 'draft_opinion_counts': dict(opinions),
+      'review_id_duplicates_in_141': 0, 'development_unknown_publication_dates': 141,
+      'new_candidates_added_to_approved_aggregation': 0, 'source_text_rows_copied_here': 0,
+      'exclusion_order': '238 distinct sources -> development141 (exclude97) -> dated eligible0 (exclude selected141). These exclusion groups are disjoint; per-page legacy queries further filter within141.',
+      'saved_empty_output_count': len(empty['queries']), 'collector_reexecuted': False,
+      'month_denominator': 0, 'season_denominator': 0, 'dated_topic_numerator': 0, 'ratio': None,
+      'semantic_accuracy': None, 'topics': topic_counts, 'rows': row_audits,
+      'limits': ['No independent evaluation approval', 'No runtime/DB/API/restart audit', 'Draft counts are neither approved classification nor market frequencies']})
+write_csv('trend-row-review.csv', row_audits)
+
+# Preserve the 15-model/19-document-link candidates and PR270 boundary evidence.
+manuals = pr270('manual-applicability.sidecar.json')
+faq = pr270('usage-qa.sidecar.json')
+old_dates = pr270('review-dates.sidecar.json')
+acquisition = read('data/reference/data-remaining-intake/20261008-01a1100e/manual-acquisition.json')
+pdf_receipts = json.loads((RUN / 'manual-existing-pdf-hashes.json').read_text(encoding='utf-8'))
+check('manual:all19 reused raw PDF references match previous SHA', len(pdf_receipts) == 19 and all(x['matches_declared'] is True for x in pdf_receipts))
+check('manual:15 candidates/19links/15unique PDFs preserved', len(manuals['models']) == 15 and len(manuals['manual_references']) == 19 and len({x['pdf_sha256'] for x in manuals['manual_references']}) == 15)
+manual_gap_rows = []
+for model in manuals['models']:
+    refs = [x for x in manuals['manual_references'] if x['model_id'] == model['model_id']]
+    original = next(m for m in acquisition['models'] if m['model_id'] == model['model_id'])
+    available = {c.get('pdf_sha256') for c in original['candidates']}
+    check('manual:PR270 references match original15-model acquisition', all(x['pdf_sha256'] in available for x in refs), model['model_id'])
+    manual_gap_rows.append({'model_id': model['model_id'], 'support_url': model['support_url'],
+      'model_document_link_status': model['document_to_model_status'], 'manual_scope_status': model['manual_scope_status'],
+      'references': [{k: x[k] for k in ('reference_id', 'manual_url', 'document_version', 'pdf_sha256', 'support_listed_date')} for x in refs],
+      'existing_raw_PDF_SHA_match': True, 'purchased_model': None, 'purchase_time_manual_revision': None,
+      'purchase_SKU_link_status': '미확인', 'purchase_edition_link_status': '미확인',
+      'optional_feature_applicability_status': '미확인', 'all_model_features_confirmed': False})
+check('manual:no buyer/purchase-time feature promotion', all(m['purchased_model'] is None and m['purchase_time_revision_status'] == 'UNCONFIRMED' for m in manuals['models']))
+check('FAQ:manufacturer content not customer discomfort denominator', faq['individual_customer_question_answer_pairs'] == faq['confirmed_customer_discomfort_cases'] == faq['customer_review_denominator'] == 0)
+check('old date candidate:SSG remains separate/null', old_dates['time_denominator'] == 0 and old_dates['ratio'] is None and all(x['published_at'] is None for x in old_dates['reviews']))
+write('manual-gap-review.json', {'id': ID, 'models': manual_gap_rows, 'counts': manuals['counts'],
+      'existing_pdf_reference_rows_read': 19, 'existing_unique_PDF_SHAs_read': 15,
+      'new_PDF_downloads': 0, 'new_PDF_native_extractions': 0, 'new_OCR_calls': 0,
+      'verified_buyer_SKUs': 0, 'verified_purchase_time_editions': 0,
+      'faq_count_reused': 3, 'faq_customer_use_QA_pairs': 0, 'faq_customer_discomfort_denominator': 0,
+      'known_common_vs_exact_cleaning_scope_differences': faq['scope_differences'],
+      'existing_SSG_candidate': {'id': 'SRCF-SSG-REVIEW-1253886798', 'published_at': None, 'ratio': None, 'appended_to_141': False},
+      'upstream_claims_are_not_new_PM_approval': True})
+
+# Four newly observed seller-hosted public review candidates, stored separately.
+captures = json.loads((RUN / 'new-source-http-receipts-complete.json').read_text(encoding='utf-8'))
+capture_map = {r['id']: r for r in captures}
+raw_list = (RUN / 'vendor-review-list.bin').read_bytes(); list_html = raw_list.decode('utf-8')
+private_rows = json.loads((RUN / 'vendor-4-full-excerpts-private.json').read_text(encoding='utf-8'))
+norm_existing = {digest(normalized(x['text']).encode()): x['original_review_id'] for x in records}
+selected = {'9737': ('DUE5BGL1E', '설거지를 편하게', '세척과 설치에 만족한다고 보고한다. 성능 시험/확인 구매SKU 증거는 아니다.'),
+            '4943': ('DFE5BGE', '프리스탠딩이 가능한', '이전 기기의 고장과 새 기기의 설치 후 만족을 구분해야 한다. 이전 고장을 현재 모델 결함으로 옮기지 않는다.'),
+            '4211': ('D502MEE33', '넓고 많이 들어가서', '이전 냉장고의 상태와 새 냉장고 수납 만족을 구분한다. 고객이 언급한 용량은 공식 사양 검증이 아니다.'),
+            '4465': ('DUE5BGL1E', '세척 기능 모두 만족스럽습니다.', '세척과 상담에 만족한다는 보고다. 다른 후기와 조건이 같은지/정확 구매SKU인지 미확인이다.')}
+candidates = []
+for old in private_rows:
+    rid = old['board_id']; model, quote, summary = selected[rid]; fields = old['fields']; body = fields['content']['text']
+    raw = (RUN / ('vendor-review-' + rid + '.bin')).read_bytes(); detail = raw.decode('utf-8'); detail_text = normalized(visible(detail))
+    display_date = fields['date']['text']; iso_date = re.sub(r'\s+', '', display_date).replace('.', '-').strip('-')
+    body_present = normalized(body) in detail_text; date_present = iso_date in detail_text
+    check('candidate:source ID/detail date/list body/short quote linkage', capture_map['vendor-review-' + rid]['status_code'] == 200
+          and body_present and date_present and quote in body and model in fields['product_name']['text'], 'W2-THEBESTLG-3001-' + rid)
+    match = norm_existing.get(digest(normalized(body).encode()))
+    refs = next(m['references'] for m in manual_gap_rows if m['model_id'] == model)
+    chronologies = []
+    for ref in refs:
+        version_date = re.search(r'Rev\.\d+_(\d{6})', ref['document_version'])
+        revision_date = datetime.strptime(version_date.group(1), '%m%d%y').date().isoformat() if version_date else None
+        chronologies.append({'reference_id': ref['reference_id'], 'document_version': ref['document_version'], 'pdf_sha256': ref['pdf_sha256'],
+                             'revision_date_label': revision_date, 'reference_revision_label_after_review_display_date': revision_date > iso_date if revision_date else None,
+                             'purchase_time_edition_bound': False})
+    candidates.append({'candidate_id': 'W2-THEBESTLG-3001-' + rid, 'version': 'data-w2-candidates.20261008.01a108a8-7b67e6.v1',
+      'original_source_id': {'provider': 'thebestlg.com', 'board_no': '3001', 'post_no': rid},
+      'source_url': capture_map['vendor-review-' + rid]['url'], 'list_url': capture_map['vendor-review-list']['url'],
+      'source_type': 'review', 'source_role': 'customer_experience_candidate', 'hosting_context': 'seller-hosted public review board; customer attribution claimed by host, not independently authenticated',
+      'observed_at': capture_map['vendor-review-' + rid]['observed_at'], 'source_response_sha256': digest(raw),
+      'list_response_sha256': digest(raw_list), 'body_text_sha256': fields['content']['sha256'],
+      'normalized_body_text_sha256': digest(normalized(body).encode()), 'body_characters': len(body),
+      'excerpt': quote, 'excerpt_sha256': digest(quote.encode()), 'summary': summary,
+      'locator': {'basis': '0-based end-exclusive Unicode characters in preserved decoded UTF-8 list HTML',
+                  'post_selector': '[cnb_type=param_read] contains ?no=' + rid + '&board_no=3001',
+                  'content_range': fields['content']['html_range'], 'date_range': fields['date']['html_range'],
+                  'detail_date_range': [detail.index(iso_date), detail.index(iso_date) + len(iso_date)] if date_present else None,
+                  'list_body_and_detail_body_match_after_NFKC_whitespace': body_present},
+      'displayed_page_model': model, 'purchased_model': None, 'purchase_date': None,
+      'review_display_date': display_date, 'review_display_date_iso': iso_date, 'date_precision': 'day',
+      'date_evidence': {'list_field': 'cnb_type=date', 'detail_date_value': iso_date, 'detail_related_post_table_heading': '작성일' if '작성일' in detail_text else None,
+                        'first_posting_vs_edit_semantics': 'unconfirmed', 'timezone': None, 'collected_at_is_posting_date': False},
+      'published_at': None, 'date_and_topic_PM_approved': False, 'time_denominator_eligible': False,
+      'manual_reference_chronology': chronologies, 'known_exact_body_matches_in_fixed238': [match] if match else [],
+      'duplicate_scope': 'Exact normalized full selected body versus fixed238 and four candidates; wider repost history/independent customer provenance unconfirmed.',
+      'new_independent_customers_approved': False, 'added_to_existing_records_or_aggregation': False,
+      'quarantined_from_approved_aggregation': True, 'private_raw_alias': 'data-w2-01a108a8-7b67e6/' + capture_map['vendor-review-' + rid]['private_file'],
+      'full_body_author_or_images_republished': False})
+check('candidate:four distinct source IDs and bodies', len({x['candidate_id'] for x in candidates}) == len({x['normalized_body_text_sha256'] for x in candidates}) == 4)
+write('review-candidates.json', {'id': ID, 'base_commit': BASE, 'candidate_count': 4, 'candidates': candidates,
+      'existing238_and_development141_unchanged': True, 'new_approved_publication_dates': 0, 'approved_time_denominator_increment': 0,
+      'ratio': None, 'model_or_ocr_calls': 0, 'new_individual_customer_use_QA_pairs': 0})
+safe_receipts = [{k: v for k, v in r.items() if k != 'private_file'} for r in captures]
+write('new-source-receipts.json', {'method': 'six bounded ordinary public HTTP GETs, no existing collector, hidden API, login, retry or access bypass',
+      'requests': safe_receipts, 'raw_HTML_and_customer_identity_retained_only_privately': True,
+      'MW20GDN_QA': {'http_status': capture_map['lg-mw20gdn-qa']['status_code'], 'response_sha256': capture_map['lg-mw20gdn-qa']['response_sha256'],
+                    'individual_use_question_ID_body_answer_date_received': False,
+                    'status': '검증 불가: initial public page does not provide a usable linked individual use Q&A record',
+                    'manufacturer_FAQ_used_as_customer_QA': False}})
+
+for number in (270, 272):
+    index = json.loads((RUN / ('intake' + str(number)) / 'index.json').read_text(encoding='utf-8'))
+    PINS.extend({'commit': r['head'], 'path': r['path'], 'sha256': r['sha256'], 'bytes': r['bytes'], 'merged': False} for r in index)
+write('input-pins.json', {'id': ID, 'base_commit': BASE, 'pins': list({(p['commit'], p['path']): p for p in PINS}.values()),
+      'existing_original15_PDF_hash_reuse': [{k: v for k, v in r.items() if k != 'local_locator'} for r in pdf_receipts],
+      'run_scope': 'Static DATA source inspection and four separate public review candidates. No product/runtime/evaluation approval.'})
+write('inspection-result.json', {'id': ID, 'base_commit': BASE, 'inspected_at': datetime.now(timezone.utc).isoformat(),
+      'checks': CHECKS, 'passed': not ERRORS, 'failures': ERRORS, 'structural_check_count': len(CHECKS),
+      'manual_table_axes': len(table_rows), 'automatic_graph_status': '검증 불가', 'automatic_accuracy': None, 'automatic_error_count': None,
+      'draft_rows_unchanged': 141, 'draft_quote_bindings': quote_count, 'new_review_candidates': len(candidates),
+      'new_approved_posting_dates': 0, 'confirmed_buyer_SKUs': 0, 'confirmed_purchase_time_editions': 0,
+      'month_and_season_denominator': 0, 'ratio': None, 'new_model_OCR_calls': 0, 'old_collector_reexecutions': 0,
+      'independent_evaluation_approval': False, 'DB_API_or_ZIP_audit': False, 'PM_approval_or_parent_Done': False})
+(OUT / 'inspection-builder.py.txt').write_bytes(Path(__file__).read_bytes())
+print(json.dumps({'checks': len(CHECKS), 'passed': not ERRORS, 'failures': ERRORS, 'manual_table_axes': len(table_rows),
+                  'draft_rows': len(rows), 'quote_bindings': quote_count, 'manual_models': len(manual_gap_rows),
+                  'new_review_candidates': len(candidates), 'automatic_status': '검증 불가'}, ensure_ascii=False))
+if ERRORS:
+    raise SystemExit(1)
