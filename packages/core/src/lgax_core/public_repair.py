@@ -119,13 +119,24 @@ def _patch_issues(kind: str, candidate: dict, fields: set[str], catalog: dict, c
     return issues
 
 
+def _inherited_processed_sources(bundle: dict, previous: dict) -> list[str] | None:
+    """Keep original processing order; repair input is a separate source selection."""
+    processed = previous["runtime"].get("processed_source_ids")
+    catalog = {source["source_id"] for source in bundle["sources"]}
+    if (not isinstance(processed, list)
+            or any(not isinstance(eid, str) or eid not in catalog for eid in processed)
+            or len(processed) != len(set(processed))):
+        return None
+    return deepcopy(processed)
+
+
 def _inherited_summary_coverage(bundle: dict, previous: dict) -> dict | None:
     """Retain only exact reference math; missing legacy metadata stays unknown."""
     raw = previous["runtime"].get("summary_reference_coverage")
     if not isinstance(raw, dict):
         return None
-    denominator = raw.get("denominator_source_ids")
-    if not isinstance(denominator, list) or any(not isinstance(eid, str) for eid in denominator):
+    processed = _inherited_processed_sources(bundle, previous)
+    if processed is None:
         return None
     customer_ids, groups = set(), set()
     for source in bundle["sources"]:
@@ -133,7 +144,7 @@ def _inherited_summary_coverage(bundle: dict, previous: dict) -> dict | None:
         if is_customer_source(source) and group not in groups:
             customer_ids.add(source["source_id"])
             groups.add(group)
-    expected = summary_reference_coverage(previous["summaries"], customer_ids, set(denominator))
+    expected = summary_reference_coverage(previous["summaries"], customer_ids, set(processed))
     if _digest(raw) != _digest(expected):
         return None
     return deepcopy(raw)
@@ -251,6 +262,10 @@ def repair_public_brief(model_caller, bundle: dict, previous: dict, feedback: li
                          "correction_budget": corrections.snapshot}
     # Summary fields are immutable in this path. A new repair call does not
     # establish a new discovery denominator, including when that call fails.
+    result["runtime"].pop("processed_source_ids", None)
+    processed = _inherited_processed_sources(bundle, previous)
+    if processed is not None:
+        result["runtime"]["processed_source_ids"] = processed
     result["runtime"].pop("summary_reference_coverage", None)
     result["runtime"].pop("summary_reference_coverage_inheritance", None)
     if "summary_reference_coverage" in previous["runtime"]:

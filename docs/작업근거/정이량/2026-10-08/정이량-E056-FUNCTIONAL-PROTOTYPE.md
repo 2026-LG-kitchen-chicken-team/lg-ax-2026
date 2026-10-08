@@ -37,4 +37,11 @@ R9 운영 입력 SHA: 냉장고 `523dcf1ec8e4291dc73bd0b51cea0be4765912e9e5b7993
 - 공통 출처 지침을244자로 줄이고 기대 시간의 구체 숫자 예시를 삭제해 규칙과 원문을 분리했다. trusted native 의견 지침과 원schema/수치검사/2수리/4call은 그대로다. 지정3검사 및 두 파일 Ruff PASS; 실제 정상/조건 후속은 별도 결과다.
 - 첫 LG 전용 모델 종료 receipt: owned_server_stopped=true, existing_services_changed=false, foreign_process_signals=0, gpu_after_cleanup used6321MiB/free42220MiB/util0. 새 추가 유한 수동 세션의 receipt를 원 세션 파일과 구분해 보존한다.
 
-새 통합 head 필수CI·원격 병합은 결과 확인 후 추가한다. 본 기록은 부모 Done·외부 사용자 테스트 완료를 주장하지 않는다.
+## 현재 코드의 실제 생성과 연결 인수
+
+- `run-1f83d846191941aea21153897b944ec1`, `run-754268c6b0cb41bba50c5b8d713332d9`: 각각2call·0repair, 선택6 facts exact·revision0/1·이전brief 연결, 구조적 status complete. 본문의 의미/분류 승인은 false이다. 정상은 기존기능 새발명금지1조건, revision은 앱/웹·추가하드웨어/비용 제한과 확인기록·미해결문의 조건을 사용했다. 서로 다른 조건이므로 순수 통제 A/B라고 표현하지 않는다.
+- 통합 PR262 `220352d62cf3bc2f894f5355ed5a33eb0488d76e`의 python-and-harness/web push/PR4체크 PASS: runs37705035157/37705040400. 새 processed_source_ids 국소수리 수정 이후 head에는 다시 필수CI를 확인한다.
+- 마지막 P2 독립 diff검수: 이전수리의 원coverage는 있었으나 processed_source_ids가 없어서 공개 집계가 invalid였다. 검증된 원처리목록과 실제 요약으로 coverage를 재집계·비교해 함께 보존한다. 호출/수리한도·원facts·원summary·원문불변 및 malformed/주입/분모불일치 거절을 확인한 관련8검사/Ruff PASS, 이후0분모 보강1검사 PASS.
+- 원238 page_model 분포: fridge79/6, microwave79/6, dishwasher80/6; development141의 각제품군6모델 연결. 정확 purchased SKU·posted date확정0, Q405MEE133 개발표본1. page model은 실제 구매 모델 증거가 아니다.
+
+원격 병합의 최신 main/CI 결과는 issue234를 공식 후속으로 사용한다. 본 source 기록은 병합 전 snapshot이며 부모 Done·외부 사용자 테스트 완료를 주장하지 않는다.
