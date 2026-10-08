@@ -1,0 +1,139 @@
+
+ RUN  v4.1.11 /tmp/lgax-validation-source/apps/web
+
+ ✓ src/realModelReplay.test.ts (29 tests) 993ms
+ ✓ src/researchFlow.test.ts (26 tests) 678ms
+ ✓ src/planning.test.ts (42 tests) 483ms
+ ✓ src/reviewTrendsPanel.test.ts (26 tests) 467ms
+ ✓ src/liveWorkspace.state.test.ts (21 tests) 75ms
+ ✓ src/liveResults.test.ts (23 tests) 310ms
+ ✓ src/round2Live.test.ts (18 tests) 307ms
+ ✓ src/measurement.scope.test.ts (8 tests) 770ms
+ ✓ src/publicProfileFlow.test.ts (7 tests) 611ms
+ ✓ src/terminalUx.test.ts (29 tests) 209ms
+stderr | src/reviewTrends.test.ts > synthetic fixtures are contract-valid and internally consistent > month aggregate
+unknown format "date" ignored in schema at path "#/$defs/ReviewTrendDate"
+unknown format "date" ignored in schema at path "#/$defs/ReviewTrendDate"
+unknown format "date" ignored in schema at path "#/$defs/ReviewTrendDate"
+unknown format "date" ignored in schema at path "#/$defs/ReviewTrendDate"
+unknown format "date" ignored in schema at path "#/$defs/ReviewTrendDate"
+unknown format "date" ignored in schema at path "#/$defs/ReviewTrendDate"
+unknown format "date" ignored in schema at path "#/$defs/ReviewTrendDate"
+unknown format "date" ignored in schema at path "#/$defs/ReviewTrendDate"
+unknown format "date" ignored in schema at path "#/$defs/ReviewTrendDate"
+unknown format "date" ignored in schema at path "#/$defs/ReviewTrendDate"
+unknown format "date" ignored in schema at path "#/$defs/ReviewTrendDate"
+unknown format "date" ignored in schema at path "#/$defs/ReviewTrendDate"
+
+ ✓ src/reviewTrends.test.ts (11 tests) 91ms
+ ✓ src/revisionTimeline.test.ts (22 tests) 63ms
+ ✓ src/liveWorkspace.test.ts (12 tests | 1 skipped) 29ms
+ ✓ src/judgement.test.ts (47 tests) 66ms
+ ✓ src/caseMatrix.test.ts (37 tests) 252ms
+ ✓ src/researchGuides.test.ts (6 tests) 132ms
+ ✓ src/coreRecords.test.ts (20 tests) 177ms
+ ✓ src/evidenceTracePanel.test.ts (12 tests) 14ms
+ ✓ src/conceptTextChanges.test.ts (10 tests) 134ms
+ ✓ src/workspace.test.ts (14 tests | 1 skipped) 69ms
+ ✓ src/researchCoverage.test.ts (19 tests) 8ms
+ ✓ src/researchSourcesPanel.test.ts (4 tests) 100ms
+stderr | src/researchKitchenIntake.test.ts > actual kitchen public intake labels and scope > connects with the real client, labels R9 intake before defaults and reuses original filtering/selection without any POST
+An update to ResearchSourcesPanel inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ✓ src/researchKitchenIntake.test.ts (2 tests) 165ms
+ ✓ src/manualFlow.test.ts (7 tests) 125ms
+ ✓ src/researchSelection.test.ts (9 tests) 40ms
+ ✓ src/researchGraph.test.ts (6 tests) 50ms
+ ✓ src/researchSources.test.ts (6 tests) 24ms
+ ✓ src/reviewTrendsSnapshot.test.ts (5 tests) 49ms
+ ✓ src/webIntake.test.ts (6 tests) 270ms
+ ✓ src/executionSafety.test.ts (15 tests) 58ms
+ ✓ src/research.test.ts (6 tests) 24ms
+ ✓ src/reasonText.test.ts (5 tests) 45ms
+ ✓ src/conceptStoryboard.test.ts (5 tests) 10ms
+ ✓ src/clarificationPanel.test.ts (5 tests) 56ms
+ ✓ src/projectModelScope.test.ts (1 test) 211ms
+ ✓ src/measurement.test.ts (8 tests) 6ms
+ ✓ src/groundingDetails.test.ts (4 tests) 76ms
+ ↓ src/liveCaseMatrix.test.ts (1 test | 1 skipped)
+ ✓ src/reviewTrendsMention.test.ts (3 tests) 35ms
+ ✓ src/correctionBudgetFailure.test.ts (2 tests) 25ms
+ ✓ src/reviewTrendsContracts.test.ts (73 tests) 314ms
+ ✓ src/reviewTrendsClient.test.ts (5 tests) 40ms
+ ✓ src/domain.test.ts (8 tests) 4ms
+ ↓ src/publicValidationProjection.test.ts (1 test | 1 skipped)
+ ✓ src/api.test.ts (7 tests) 33ms
+ ✓ src/researchLocator.test.ts (3 tests) 3ms
+ ↓ src/livePlanning.test.ts (1 test | 1 skipped)
+ ↓ src/liveTerminal.test.ts (1 test | 1 skipped)
+ ✓ src/liveModelProof.test.ts (10 tests) 15ms
+ ✓ src/terminalLabels.test.ts (3 tests) 29ms
+ ↓ src/researchIntake.test.ts (3 tests | 3 skipped)
+ ✓ src/researchConversations.test.ts (3 tests) 3ms
+
+ Test Files  47 passed | 5 skipped (52)
+      Tests  648 passed | 9 skipped (657)
+   Start at  07:57:00
+   Duration  27.50s (transform 948ms, setup 0ms, import 9.32s, tests 7.75s, environment 6.40s)
+
+TAP version 13
+# Subtest: only a refused connection means free; a connected server is busy
+ok 1 - only a refused connection means free; a connected server is busy
+  ---
+  duration_ms: 0.602558
+  type: 'test'
+  ...
+# Subtest: permissions, network errors and timeout are unknown rather than free
+ok 2 - permissions, network errors and timeout are unknown rather than free
+  ---
+  duration_ms: 1.046897
+  type: 'test'
+  ...
+# Subtest: unknown observation and busy port never invoke installation
+ok 3 - unknown observation and busy port never invoke installation
+  ---
+  duration_ms: 0.236739
+  type: 'test'
+  ...
+# Subtest: all observed ports free permits exactly one install and propagates its result
+ok 4 - all observed ports free permits exactly one install and propagates its result
+  ---
+  duration_ms: 0.136713
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 41.143862
+
+> @lgax/planning-workspace@0.1.0 build
+> tsc -b && vite build
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 244 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.67 kB │ gzip:   0.45 kB
+dist/assets/index-jXHK0nUo.css   79.69 kB │ gzip:  16.45 kB
+dist/assets/index-DOQeDyUz.js   713.07 kB │ gzip: 210.39 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 2.11s

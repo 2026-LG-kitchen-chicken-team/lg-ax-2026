@@ -74,8 +74,8 @@ describe('actual kitchen public intake labels and scope', () => {
     await act(async () => view.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })));
     const options = [...view.querySelectorAll<HTMLOptionElement>('#research-bundle option')].filter(option => option.value);
     expect(options).toHaveLength(2);
-    expect(options.every(option => option.textContent?.includes('확장 자료 · 수집 검토 중'))).toBe(true);
-    expect(options.some(option => option.textContent?.includes('R9 기본 자료'))).toBe(false);
+    expect(options.every(option => option.textContent?.includes('추가 수집 자료'))).toBe(true);
+    expect(options.some(option => option.textContent?.includes('리뷰·제품 문서'))).toBe(false);
     expect(options[0].textContent).toContain('김치냉장고'); expect(options[1].textContent).toContain('광파오븐');
     await choose(view, '#research-bundle', kimchi.bundle_id);
     expect(view.querySelectorAll('.research-source-row')).toHaveLength(6);
@@ -84,7 +84,7 @@ describe('actual kitchen public intake labels and scope', () => {
     expect(view.querySelectorAll('.research-source-row')).toHaveLength(3);
     const selected = kimchi.sources.find(source => source.source_type === 'review')!;
     await act(async () => view.querySelector<HTMLInputElement>('.research-source-check input')!.click());
-    await click(view, '선택 자료 JSON'); await vi.waitFor(() => expect(saved).toHaveLength(1));
+    await click(view, '자료 파일 (.json)'); await vi.waitFor(() => expect(saved).toHaveLength(1));
     const exported = JSON.parse(saved[0]);
     expect(exported.sources).toEqual([selected]);
     expect(exported.collection_manifest.planning_executed).toBe(false);

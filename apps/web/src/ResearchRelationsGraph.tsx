@@ -2,6 +2,7 @@ import { useId, useMemo, useState } from 'react';
 import { buildResearchGraph, GRAPH_NODE_HEIGHT, GRAPH_NODE_WIDTH, graphEdgePath, RELATION_LABEL } from './researchGraph';
 import type { RelationOrigin, RelationType, ResearchGraphNode } from './researchGraph';
 import type { PlanningBrief, ResearchBundle, ResearchProblem } from './research';
+import { ResearchSourceLinks } from './ResearchSourceLinks';
 
 const KIND_LABEL = { source: '원문', problem: '문제', concept: '개선안', comparison: '제품 대조' };
 function originLabel(inferred: boolean): string { return inferred ? 'AI 추론' : '기록된 연결 · 추론 표시 없음'; }
@@ -26,7 +27,7 @@ export function ResearchRelationsGraph({ bundle, brief, onInspect, onReuseProble
     if (node.kind === 'problem') setProblemChoice(node.id);
   }
   return <section className="research-relations research-card" aria-label="문제 주변 관계 그래프">
-    <div className="research-card-title"><h3>문제 주변의 근거 연결</h3><span className="research-chip">선택한 실행의 관계 기록</span></div>
+    <div className="research-card-title"><h3 id="research-relations" tabIndex={-1}>문제 주변의 근거 연결</h3><span className="research-chip">선택한 실행의 관계 기록</span></div>
     <p>반대 근거와 제안의 연결을 좁혀 보고, 기존 대응 비교와 다음 기획 조건에 활용하세요. 화살표는 저장된 연결 방향입니다.</p>
     <p className="research-note">점선은 AI 추론입니다. 실선도 사실·효과가 검증됐다는 뜻은 아닙니다. ‘함께 언급’은 원인 관계나 발생 빈도를 뜻하지 않습니다.</p>
     {!problem ? <p className="research-muted">연결할 문제를 아직 확인하지 못했습니다. 기획 결과의 추가 자료 필요 사항을 확인해 주세요.</p> : <>
@@ -39,10 +40,10 @@ export function ResearchRelationsGraph({ bundle, brief, onInspect, onReuseProble
         <defs><marker id={`${graphicId}-arrow`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#728863" /></marker></defs>
         <text x="35" y="30" className="research-graph-column">원문</text><text x="370" y="30" className="research-graph-column">관찰한 문제</text><text x="705" y="30" className="research-graph-column">기획·대조</text>
         {graph.edges.map(edge => <path key={edge.id} d={graphEdgePath(nodeById.get(edge.from_id)!, nodeById.get(edge.to_id)!)} fill="none" stroke={edge.relation === 'contradicts' ? '#ab765a' : '#728863'} strokeWidth="2" strokeDasharray={edge.inferred ? '6 4' : undefined} markerEnd={`url(#${graphicId}-arrow)`} data-relation={edge.relation}><title>{RELATION_LABEL[edge.relation]} · {originLabel(edge.inferred)}</title></path>)}
-        {graph.nodes.map(node => <g key={`${node.kind}:${node.id}`} className={`research-graph-node graph-node-${node.kind}`} role="button" tabIndex={0} aria-label={`${KIND_LABEL[node.kind]}: ${node.title}`} transform={`translate(${node.x},${node.y})`} onClick={() => selectNode(node)} onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectNode(node); } }}><rect width={GRAPH_NODE_WIDTH} height={GRAPH_NODE_HEIGHT} rx="9" /><text x="12" y="20" className="research-graph-node-kind">{KIND_LABEL[node.kind]} · {shorten(node.id, 24)}</text><text x="12" y="44">{shorten(node.title, 20)}</text><title>{node.title}</title></g>)}
+        {graph.nodes.map(node => <g key={`${node.kind}:${node.id}`} className={`research-graph-node graph-node-${node.kind}`} role="button" tabIndex={0} aria-label={`${KIND_LABEL[node.kind]}: ${node.title}`} transform={`translate(${node.x},${node.y})`} onClick={() => selectNode(node)} onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectNode(node); } }}><rect width={GRAPH_NODE_WIDTH} height={GRAPH_NODE_HEIGHT} rx="9" /><text x="12" y="20" className="research-graph-node-kind">{KIND_LABEL[node.kind]}</text><text x="12" y="44">{shorten(node.title, 20)}</text><title>{node.title}</title></g>)}
       </svg></div>}
-      {selectedNode ? <div className="research-graph-detail" aria-label="선택한 관계 노드"><strong>{KIND_LABEL[selectedNode.kind]} · {selectedNode.title}</strong><p>{selectedNode.detail}</p><div className="research-citations">{[...new Set(selectedNode.source_ids)].map(id => <button type="button" key={id} onClick={() => onInspect(id)}>{id} 원문 확인</button>)}</div></div> : null}
-      <details className="research-graph-list" open><summary>관계를 목록으로 확인 · {graph.edges.length}건</summary><ul>{graph.edges.map(edge => <li key={edge.id}><div><button type="button" onClick={() => selectNode(nodeById.get(edge.from_id)!)}>{nodeById.get(edge.from_id)!.title}</button><span>→ {RELATION_LABEL[edge.relation]} →</span><button type="button" onClick={() => selectNode(nodeById.get(edge.to_id)!)}>{nodeById.get(edge.to_id)!.title}</button></div><p>{originLabel(edge.inferred)} · 연결 출처 {edge.source_ids.length}건</p><div className="research-citations">{edge.source_ids.length ? [...new Set(edge.source_ids)].map(id => <button type="button" key={id} onClick={() => onInspect(id)}>{id} 원문 확인</button>) : <span>연결 출처 미제공</span>}</div></li>)}</ul></details>
+      {selectedNode ? <div className="research-graph-detail" aria-label="선택한 관계 노드"><strong>{KIND_LABEL[selectedNode.kind]} · {selectedNode.title}</strong><p>{selectedNode.detail}</p><ResearchSourceLinks ids={selectedNode.source_ids} bundle={bundle} onInspect={onInspect} /></div> : null}
+      <details className="research-graph-list" open><summary>관계를 목록으로 확인 · {graph.edges.length}건</summary><ul>{graph.edges.map(edge => <li key={edge.id}><div><button type="button" onClick={() => selectNode(nodeById.get(edge.from_id)!)}>{nodeById.get(edge.from_id)!.title}</button><span>→ {RELATION_LABEL[edge.relation]} →</span><button type="button" onClick={() => selectNode(nodeById.get(edge.to_id)!)}>{nodeById.get(edge.to_id)!.title}</button></div><p>{originLabel(edge.inferred)} · 연결 출처 {edge.source_ids.length}건</p><ResearchSourceLinks ids={edge.source_ids} bundle={bundle} onInspect={onInspect} /></li>)}</ul></details>
     </>}
   </section>;
 }

@@ -43,7 +43,7 @@ describe('source filters, plain-language limits and selection UI', () => {
     const host = await mount();
     await click(host, '표시 자료 모두 선택'); await changeSelect(host, '원문 자료 유형', 'review');
     expect(host.textContent).toContain('현재 필터 밖 선택 1건');
-    await click(host, '선택 자료 JSON');
+    await click(host, '자료 파일 (.json)');
     await vi.waitFor(() => expect(downloaded).toHaveLength(1));
     const exported = JSON.parse(downloaded[0].content);
     expect(exported.sources[0]).toEqual(source); expect(exported.collection_manifest.planning_executed).toBe(false);
@@ -59,7 +59,7 @@ describe('source filters, plain-language limits and selection UI', () => {
     expect(host.querySelector('[data-source-locator]')?.textContent).toBe('원문 위치: 25쪽 · 항목 「출력 조절」');
     expect(host.querySelector('.research-source-detail li')?.textContent).toContain('위치 25쪽 · 항목 「출력 조절」');
     expect(host.querySelector('.research-locator-technical')).toBeNull();
-    await click(host, '표시 자료 모두 선택'); await click(host, '선택 자료 Markdown');
+    await click(host, '표시 자료 모두 선택'); await click(host, '자료 노트 (.md)');
     await vi.waitFor(() => expect(downloaded).toHaveLength(1));
     expect(downloaded[0]).toContain('원문 위치: 25쪽 · 항목 「출력 조절」');
     expect(downloaded[0]).toContain('(위치: 25쪽 · 항목 「출력 조절」)');

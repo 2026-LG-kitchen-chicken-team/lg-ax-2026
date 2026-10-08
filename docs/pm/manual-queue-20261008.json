@@ -3,7 +3,7 @@
   "mode": "manual",
   "automation_enabled": false,
   "user_directive": "자동화 OFF. 중단된 미완료만 이어서 진행하고 완료 작업은 재사용한다. 기존·새 작업을 배정하고 현재 대화의 수동 진행 중 큐·검수·통합을 관리한다.",
-  "updated_at": "2026-10-08T09:23:27+09:00",
+  "updated_at": "2026-10-08T17:04:28+09:00",
   "base_commit": "dc0ccc05916c637b2e0c2cc268a061dfa655c0b7",
   "queue_issue": 234,
   "original_completed_tasks": [
@@ -507,6 +507,26 @@
       ],
       "previous_state": "queued_dependency",
       "follow_up": "별도 두 묶음의 원ID/게시일/구매SKU 미확인·전체후기 미확인 보존. 추가 Q&A/설명서 확보·독립평가승인 잔여."
+    },
+    {
+      "id": "R9-UI2",
+      "owner": "jeongiryang",
+      "support_for": "choigilung",
+      "executor": "current_chat_manual_support",
+      "priority": 0,
+      "state": "prototype_deployed_browser_verified_required_ci_merge_pending",
+      "title": "밝은 대화형 기획 작업실·Figma 자연어 변경·개발 문구 정리",
+      "parent": "W1",
+      "user_directive": "1번 + 3번에다가, 챗지피티나 클로드의 대화방 같은 느낌",
+      "source_commit": "725616c0f061d6ef14df2fffb1f42ef3fcd2b10b",
+      "pull_request": 284,
+      "evidence": "evals/pm-r9/20261008/chat-ui/README.md",
+      "automation_enabled": false,
+      "remaining": [
+        "필수 CI/정식 병합·운영 인수",
+        "독립 의미 품질과 한국어 생성 일관성은 CORE 후속",
+        "연결 밖의 대화 목록 자동 복원은 후속 범위"
+      ]
     }
   ],
   "legacy_open_issues": [
@@ -1364,6 +1384,21 @@
       "state": "implemented_cli_and_web_pending_exact_head_ci_merge",
       "title": "김치냉장고·광파오븐 별도 원문 조회/선택 연결",
       "parent": "X2"
+    },
+    {
+      "id": "R9-UI1",
+      "owner": "jeongiryang",
+      "support_for": "choigilung",
+      "executor": "current_chat_manual_support",
+      "priority": 0,
+      "state": "implemented_visual_review_pass_required_ci_and_merge_pending",
+      "title": "실제 자료 기획의 화면 계층·탐색·전후 장면·반응형 디자인",
+      "parent": "W1",
+      "user_directive": "눈에 보이는 디자인도 잘잡혀야함",
+      "started_at": "2026-10-08T10:30:00+09:00",
+      "baseline_main": "eab85d48385f965eef48c07a6cdd8f6fd9851c62",
+      "automation_enabled": false,
+      "acceptance_limits": "기능·품질 보완과 병행. 실제 수치/명시 관계만 표시. 필수 CI·병합 전 공식 통합/부모 Done 아님."
     }
   ],
   "acceptance_limits": {
@@ -1375,5 +1410,5 @@
     "market_frequency_estimated": false,
     "whole_parent_tasks_done": false
   },
-  "snapshot_scope": "PR262 merged; new kitchen intake source snapshot before its own CI/merge. Issue234 is latest manual status."
+  "snapshot_scope": "R9 UI2 수동 후속 배포/검수. 기존 인수/실패와 공식 Done을 보존하고 Issue234의 최신 수동 기록을 따른다."
 }

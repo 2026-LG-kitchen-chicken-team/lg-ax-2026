@@ -1,0 +1,60 @@
+{
+  "source_commit": "3e32280fc62c8f4e43a7ec6ce1d943a2cb11ef78",
+  "execution_id": "pm-parallel4-aae3c40ff3ff4fe5863dc35a637be6a3",
+  "phase": "gates",
+  "returncode": 0,
+  "stopped_reason": null,
+  "artifacts": "C:\\LGAX-execution\\jeongiryang\\pm-parallel4-aae3c40ff3ff4fe5863dc35a637be6a3-artifacts",
+  "boundary": {
+    "backend": "docker",
+    "image_id": "sha256:5a234dd63a42d34e8ea3d47b93174be88d33635c34d07d048c66ce486ac831e5",
+    "role": "validator",
+    "uid": 1000,
+    "readonly_root": true,
+    "caps_dropped": true,
+    "no_new_privileges": true,
+    "network": "none",
+    "mount_targets": [
+      "/artifacts",
+      "/workspace"
+    ],
+    "publisher_credentials_mounted": false,
+    "ai_profile_mounted": false
+  },
+  "validation": {
+    "phase": "gates",
+    "commands": [
+      {
+        "command": [
+          "/tmp/lgax-share-validation-venv/bin/python",
+          "scripts/sync_agent_rules.py",
+          "--check"
+        ],
+        "returncode": 0
+      },
+      {
+        "command": [
+          "/tmp/lgax-share-validation-venv/bin/python",
+          "scripts/check_contracts.py"
+        ],
+        "returncode": 0
+      },
+      {
+        "command": [
+          "/tmp/lgax-share-validation-venv/bin/python",
+          "scripts/phase2.py",
+          "validate"
+        ],
+        "returncode": 0
+      },
+      {
+        "command": [
+          "/tmp/lgax-share-validation-venv/bin/python",
+          "scripts/check_document_navigation.py"
+        ],
+        "returncode": 0
+      }
+    ],
+    "model_calls": 0
+  }
+}

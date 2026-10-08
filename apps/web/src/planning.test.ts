@@ -5,7 +5,7 @@ import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
-import { enterLegacyEvidence } from './fixtures/legacy-test-navigation';
+import { enterLegacyEvidence, installManualSessionFixture } from './fixtures/legacy-test-navigation';
 import { HistoryView } from './PlanningViews';
 import type { MeasureControls } from './PlanningViews';
 import datasetSource from '../../../data/demo/dataset.json';
@@ -43,7 +43,7 @@ describe('fixture and live view scope', () => {
     vi.unstubAllGlobals();
   });
 
-  async function mount() { await act(async () => root.render(createElement(App))); await act(async () => { enterLegacyEvidence(host); }); }
+  async function mount() { installManualSessionFixture(); await act(async () => root.render(createElement(App))); await act(async () => { enterLegacyEvidence(host); }); }
   async function click(selector: string, label: string) {
     const button = [...host.querySelectorAll<HTMLButtonElement>(selector)].find(item => item.textContent?.includes(label));
     expect(button, label).toBeDefined();

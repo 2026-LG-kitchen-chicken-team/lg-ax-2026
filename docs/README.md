@@ -16,6 +16,7 @@
 | 공식 규정과 제출 요건은? | [대회 요건](대회요건.md), [2차 안내](2차제출_평가안내_2026-10-03.md), [공식 자료](../자료/README.md) | 공식 원문·사용자 보고·해석·미확인을 구분한다. 원본 HWP/PDF와 양식을 보존한다. |
 | 무엇을 신청했나? | [제출 원고](../기획/제출제안서_원고.md), [채택 설계](../기획/채택안_Agent설계.md), [31요구](../harness/phase2/requirements.json) | 채택안·제출 약속이 기준이다. 기획 폴더의 Kitchen Gap/Recovery/Rehearsal·후보 비교는 탐색 당시 자료다. 초기 설계 필드는 현재 코드 계약과 구분한다. |
 | 공통 구현 계약·설치 방법은? | [JSON Schema](../packages/contracts/schemas/lgax.schema.json), [bootstrap](bootstrap/README.md), [작업실](pm/workspace.md), [판단 계약](core/judgement-contract.md), [모델 어댑터](pm/model-adapters.md) | 실제 코드 계약·잠금 파일과 연결해 본다. 고정 source-proof·서비스 배포와 로컬 문서 수정을 구분한다. |
+| 팀원에게 공유할 프로토타입은? | [수동 공유 서빙](pm/prototype-sharing-20261008.md), 정이량 날짜별 공유 근거 | PM이 관리하는 사용자 승인 서빙·접속/세션/종료 범위. 기존 작업실 규격을 재사용하며 main 인수·모델 의미 품질·개발 자동화와 구분한다. |
 | 웹·MCP·Skill은 어디인가? | [작업실](pm/workspace.md), [Skill 연결](pm/skills.md), [실행 안내](bootstrap/README.md) | `apps/web`, `apps/api`, `apps/mcp`, `packages/core`, `skills/*/SKILL.md`. 웹과 MCP는 같은 코어를 소비하며 필수 Skill 경로를 유지한다. |
 | 검수·품질·제출이 실제 끝났나? | [평가](pm/evaluation.md), [제출](pm/submission.md), [phase2](../harness/phase2/README.md), 관련 PR·불변 실행 근거 | 테스트·실모델·재생·브라우저·PM 인수·병합·통합·최종 Done을 별도로 확인한다. 미측정과 실패를 보존한다. |
 | 자료와 실행 증거는 어디인가? | 관련 작업 패킷·개인 근거의 고정 파일 링크 | `data/`는 버전 있는 입력/원문/검색자료, `evals/`는 실행·비교·인수의 출력/README/manifest다. 하위 README에서 source kind·commit·버전·해시·한계를 먼저 읽는다. 경로가 비슷해도 다른 실행을 합치지 않는다. |
