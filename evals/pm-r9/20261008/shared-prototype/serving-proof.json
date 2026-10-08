@@ -1,0 +1,127 @@
+{
+  "checked_at_kst": "2026-10-08 13:35 KST",
+  "public_url": "https://consumption-tied-mens-alleged.trycloudflare.com/",
+  "deployed_source": "0541ba02457055d28e3f7021fbaf907a2ca86bfb",
+  "main": "eab85d48385f965eef48c07a6cdd8f6fd9851c62",
+  "merged_to_main": false,
+  "scheduled_shutdown": false,
+  "automation_worker_enabled": false,
+  "public_smoke": {
+    "bootstrap_status": 200,
+    "session_signed": true,
+    "health": 200,
+    "bundles": 200,
+    "unauthenticated_research": 401,
+    "foreign_origin": 403,
+    "post_without_origin": 403,
+    "old_workspace_hidden": 404,
+    "model_endpoint_hidden": 404,
+    "bundle_count": 10
+  },
+  "actual_generation": {
+    "attempts": [
+      {
+        "status": "completed",
+        "run_id": "run-f0ebcae46f5e4bbd8f087161fd801ce5",
+        "error_code": null,
+        "error_reason": null,
+        "created_at": "2026-10-08T04:31:39.694837+00:00",
+        "finished_at": "2026-10-08T04:33:07.870907+00:00"
+      }
+    ],
+    "runs": [
+      {
+        "run_id": "run-f0ebcae46f5e4bbd8f087161fd801ce5",
+        "source_count": 6,
+        "status": "complete",
+        "brief_id": "brief-b95f90365f1d46968ae0707b2cae7f28",
+        "concept_count": 1,
+        "runtime": {
+          "model": null,
+          "model_digest": "25b843619e944cd0ae6069f94ff4e5e26a16e109ccbc0a66a0f05979ed70098e",
+          "execution_kind": "public_research_planner",
+          "max_model_calls": 4,
+          "input_scope": "user_selected_sources",
+          "user_selected_source_ids": [
+            "LGE-R8-REVIEW-853593",
+            "LGE-R8-REVIEW-800073",
+            "LGE-R8-REVIEW-752651",
+            "LGE-R8-REVIEW-645400",
+            "D2-DUE-CARE-DW-ODOR-DEVICE-P49",
+            "D2-DUE-CARE-DW-ODOR-FISHY-P49"
+          ]
+        },
+        "calls": [
+          {
+            "stage": "discover",
+            "status": "returned",
+            "elapsed_seconds": null,
+            "error_code": null,
+            "error_reason": null,
+            "input_tokens": null,
+            "output_tokens": null
+          },
+          {
+            "stage": "plan",
+            "status": "returned",
+            "elapsed_seconds": null,
+            "error_code": null,
+            "error_reason": null,
+            "input_tokens": null,
+            "output_tokens": null
+          }
+        ]
+      }
+    ],
+    "models": {
+      "models": [
+        {
+          "name": "qwen3.8:27b-q4_K_M",
+          "model": "qwen3.8:27b-q4_K_M",
+          "size": 17601470135,
+          "digest": "25b843619e944cd0ae6069f94ff4e5e26a16e109ccbc0a66a0f05979ed70098e",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen35",
+            "families": [
+              "qwen35"
+            ],
+            "parameter_size": "27.3B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2319-01-18T13:20:24.699051634+09:00",
+          "size_vram": 17601470135,
+          "context_length": 16384
+        }
+      ]
+    },
+    "services": "Restart=always\nRuntimeMaxUSec=infinity\nNRestarts=0\nId=lgax-shared-prototype-model.service\nActiveState=active\nSubState=running\n\nRestart=always\nRuntimeMaxUSec=infinity\nNRestarts=0\nId=lgax-shared-prototype-web.service\nActiveState=active\nSubState=running\n\nRestart=always\nRuntimeMaxUSec=infinity\nNRestarts=0\nId=lgax-shared-prototype-tunnel.service\nActiveState=active\nSubState=running\n"
+  },
+  "model_name": "qwen3.8:27b-q4_K_M",
+  "warm_preload_requests": 1,
+  "planning_model_calls": 2,
+  "repairs": 0,
+  "generation_seconds": 88.176,
+  "independent_semantic_quality_verified": false,
+  "new_synthetic_reviews": 0,
+  "new_video_files": 0,
+  "validation": {
+    "web_pass": 46,
+    "optional_data_skip": 3,
+    "safe_ci_pass": 4,
+    "web_build": "PASS",
+    "selected_backend_pass": 61,
+    "new_gateway_tests": 13,
+    "contract_rules_phase2_navigation": "PASS",
+    "github_ci": "not_claimed"
+  },
+  "limitations": [
+    "Quick Tunnel process recreation can change hostname",
+    "Model cache is tmpfs: reboot requires restoring the pinned model",
+    "AI draft can contain semantic errors; original sources require review",
+    "One planning request at a time; a concurrent request gets MODEL_BUSY",
+    "Browser session cookie deletion or browser change creates a new isolated workspace"
+  ],
+  "credential_values_recorded": false
+}
