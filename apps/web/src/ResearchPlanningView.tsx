@@ -59,9 +59,6 @@ function bundleUsageLabel(bundle: ResearchBundleSummary): string {
 /** V1 first stage: export one concept as a 30–45 s future-concept storyboard (no image/voice/video model is called). */
 function StoryboardActions({ brief, bundle, conceptId, title }: { brief: PlanningBrief; bundle: ResearchBundle; conceptId: string; title: string }) {
   const [error, setError] = useState('');
-  const [jobProgress, setJobProgress] = useState<ResearchPlanProgress | null>(null);
-  const [savedJobId, setSavedJobId] = useState(pendingResearchJob);
-  const [jobRecoveryNotice, setJobRecoveryNotice] = useState('');
   const save = (format: 'json' | 'markdown') => {
     try {
       const result = exportConceptStoryboard(buildConceptStoryboard(bundle, brief, conceptId));
@@ -112,6 +109,9 @@ export function ResearchPlanningView({ sharedSession, sharedConnectionState }: {
   const busyRef = useRef(false);
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState('');
+  const [jobProgress, setJobProgress] = useState<ResearchPlanProgress | null>(null);
+  const [savedJobId, setSavedJobId] = useState(pendingResearchJob);
+  const [jobRecoveryNotice, setJobRecoveryNotice] = useState('');
   const [bundles, setBundles] = useState<ResearchBundleSummary[]>([]);
   const [bundle, setBundle] = useState<ResearchBundle | null>(null);
   const [bundleChoice, setBundleChoice] = useState('');
