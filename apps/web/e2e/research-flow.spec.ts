@@ -16,7 +16,7 @@ const workspace = process.env.LGAX_WORKSPACE_PROXY;
 
 interface Source {
   source_id: string; source_type: string; text: string; page_model: string | null; purchased_model: string | null;
-  published_at: string | null; date_kind: string; document_version?: string | null; locator: Record<string, unknown>;
+  published_at: string | null; date_kind: string; document_version?: string | null; locator: Record<string, unknown>; source_role: string;
 }
 interface Bundle { bundle_id: string; sources: Source[] }
 
@@ -160,26 +160,38 @@ test.describe('real-source research flow', () => {
   });
 
   test('the official-source guide exports only chosen official originals and refuses a review in the selection', async ({ page }) => {
-    const official = bundles().find(item => item.sources.length && item.sources.every(source => source.source_type !== 'review' && source.source_type !== 'qa'));
-    test.skip(!official, 'no document-only bundle in LGAX_E2E_RESEARCH_BUNDLE_DIR');
+    // The guide takes official documents and official answers only (researchClient OFFICIAL roles); an official spec is not one.
+    const guideRole = (source: Source) => source.source_role === 'official_document' || source.source_role === 'official_answer';
+    const official = bundles().find(item => item.sources.length && item.sources.every(guideRole));
+    const specOnly = bundles().find(item => item.sources.length && item.sources.every(source => source.source_role === 'official_specification'));
+    test.skip(!official && !specOnly, 'no official-document or spec-only bundle in LGAX_E2E_RESEARCH_BUNDLE_DIR');
     await connect(page);
+    let guideRequests = 0;
+    page.on('request', item => { if (item.url().endsWith('/api/research/guides')) guideRequests += 1; });
+    if (specOnly) {
+      await choose(page, specOnly);
+      await sourcesPanel(page).getByRole('button', { name: '표시 자료 모두 선택' }).click();
+      await sourcesPanel(page).getByRole('button', { name: '선택 공식자료 안내서 Markdown' }).click();
+      await expect(sourcesPanel(page).getByRole('alert')).toBeVisible();
+      expect(guideRequests).toBe(0);
+    }
+    if (!official) return;
     await choose(page, official!);
     await sourcesPanel(page).getByRole('button', { name: '표시 자료 모두 선택' }).click();
-    const [download] = await Promise.all([page.waitForEvent('download'), sourcesPanel(page).getByRole('button', { name: '선택 공식자료 안내서 Markdown' }).click()]);
+    const [download] = await Promise.all([page.waitForEvent('download', { timeout: 30_000 }), sourcesPanel(page).getByRole('button', { name: '선택 공식자료 안내서 Markdown' }).click()]);
     const markdown = readFileSync((await download.path())!, 'utf8');
     for (const source of official!.sources) expect(markdown, source.source_id).toContain(source.text.trim().split(/\r?\n/)[0].slice(0, 20));
-    const mixed = bundles().find(item => item.sources.some(source => source.source_type === 'review') && item.sources.some(source => ['manual', 'faq', 'installation', 'spec'].includes(source.source_type)));
+    const mixed = bundles().find(item => item.sources.some(source => source.source_type === 'review') && item.sources.some(guideRole));
     if (!mixed) return;
     await choose(page, mixed);
     const review = mixed.sources.findIndex(source => source.source_type === 'review');
-    const document = mixed.sources.findIndex(source => source.source_type !== 'review' && source.source_type !== 'qa');
+    const document = mixed.sources.findIndex(guideRole);
     const checks = sourcesPanel(page).locator('.research-source-check input');
     await checks.nth(review).check();
     await checks.nth(document).check();
-    let guideRequests = 0;
-    page.on('request', item => { if (item.url().endsWith('/api/research/guides')) guideRequests += 1; });
+    const before = guideRequests;
     await sourcesPanel(page).getByRole('button', { name: '선택 공식자료 안내서 Markdown' }).click();
     await expect(sourcesPanel(page).getByRole('alert')).toBeVisible();
-    expect(guideRequests).toBe(0);
+    expect(guideRequests).toBe(before);
   });
 });
