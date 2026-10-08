@@ -1,0 +1,13 @@
+# 정상 결과 — W1 원문 대조
+
+대상 `run-1f83d846191941aea21153897b944ec1`. 받은 것은 PM report의 일부 발췌이며 실제 원 JSON/연속 인용/정확 필드 위치는 미확인이다. 아래는 Gold 없는 출처 진단이다.
+
+| report 항목·대상 필드 | 받은 발췌 | 원문과 의미 대조 | 미확인 |
+| --- | --- | --- | --- |
+| CG-N-01<br>problems[problem-1].description<br>comparisons[comparison-1].remaining_burden<br>concepts[concept-1].target_user<br>concepts[concept-1].source_ids<br>concepts[concept-1].assumptions | 고객은 다리가 아파서 / 관절 부담 재발 / 관절 질환으로 손세척이 어려운 사용자 | 아픈 주체는 배우자다. '고객'만 있는 발췌는 구매자/배우자 중 누구를 뜻하는지 문맥 확인이 필요하며 구매자 통증으로 확정하면 미지원이다. 관절 질환·부담 재발은 제공 원문에 없다. 새 대상 고객군은 가설로 제시할 수 있지만 가설 표시와 실제 경험 출처 연결 여부는 원 concept 전체를 받아야 확인할 수 있다. | 실제 description/target_user/assumptions/source_ids 전체. 공식 문서만 인용했다는 보고는 원 source_ids 미수신 상태에서 독립 확인하지 않음. |
+| CG-N-02<br>problems[problem-1].description<br>concepts[concept-1].before_steps<br>concepts[concept-1].visual_scenes<br>concepts[concept-1].assumptions | 냄새를 인지하고 회전날개 등 부품을 수동으로 청소 / 냄새가 지속되어 / 수동으로 부품을 분해 청소 / 청소 방법을 몰라 포기하거나 불완전하게 청소 | 청소 언급과 물비린내 발생·손설거지 복귀는 있다. 청소를 냄새 치료로 시작했는지, 이후 지속/재발했는지, 부품 분해·방법 무지·포기·불완전 청소 여부는 확인되지 않는다. 원문은 청소 언급 뒤 '어느 순간'을 쓰므로 정확 발생시점/치료 순서를 만들지 않는다. 제안된 가상 장면이라면 그 자리에서 가설임을 표시해야 한다. | actual before_steps/visual_scenes와 같은 자리의 가설 표시·assumptions·scope_caveat 전체. 원문에 없는 항목은 현실에서도 없었다는 증거가 아님. |
+| CG-N-03<br>summaries.mixed[0]<br>summaries.negative<br>summaries.positive[0]<br>summaries.mixed | 출력 예시 없음 — 보고 항목만 수신 | 752651의 편리함은 구매 희망이고 실제 편리해졌다는 명시적 사용 만족은 없다. 853593에는 편리함·건조/성능 만족과 투입 준비에 대한 당황이 함께 있다. 다만 이 finding에는 출력 예시가 없어 실제 분류 위치나 어느 표현이 완전히 빠졌는지는 독립 확인할 수 없다. 별점이나 건수4/4로 분류를 승인하지 않는다. | summaries positive/negative/mixed 전체와 각 source_ids. PM의 누락 보고를 모델 출력의 실제 부재 확인으로 바꾸지 않음. |
+| CG-N-04<br>concepts[concept-1].after_steps<br>concepts[concept-1].proposed_changes<br>concepts[concept-1].visual_scenes<br>concepts[concept-1].validation_questions | 잔수량(80~100ml 기준) 확인 및 배수 방법을 단계별로 안내 / 세척조 청소 절차를 영상 또는 이미지로 제공 / 정확하게 청소 | 80~100 ml는 원문에 있는 수치이지만 '보다 많은 경우' 조건이 붙는다. 전원 켜기→3초 누름→취소 선택은 조건부 수동 조작이며 자동 신규 기능·고객이 실제 수행한 조치·해결 보장과 다르다. p49는 다른 청소 절을 참조한다. 영상/이미지 제안은 가능하지만 이 발췌만으로 세부 청소·분해법의 정확성이나 실행 결과를 확정할 수 없다. | 해당 고객의 잔수량·정확 구매 SKU/구매시점 판본·참조 청소 절·검증되지 않은 제안임을 표시한 actual after/proposed/scene/question 필드. |
+| CG-N-05<br>comparisons[comparison-1].existing_response | 회전날개 등 청소 수행, 세제/린스 변경 | 회전날개 청소는 고객이 보고한 행동이고 세제/린스 변경은 제조사의 조건별 안내다. 같은 목록에 병기하더라도 역할을 나눠야 실제 고객이 두 조치를 했다는 이력이나 자동 제품 기능으로 읽히지 않는다. 발췌만으로 '자동 청소라고 선언했다'거나 '문제가 해결됐다고 선언했다'는 추가 오류를 만들지는 않는다. | actual existing_response 전체의 역할 표지와 비교 한계, 고객의 세제/린스 변경 여부. |
+
+[상세 source ID·판본·locator·원문 인용/범위/SHA](excerpt-source-review.json) · [선택 발췌의 report 위치](report-excerpt-index.csv). `CG-N-03` 누락 판단은 raw 미수신 상태에서 확정하지 않는다. W1 파생 anchor ID는 원문 위치 참조이며 실제 모델 출력 Evidence ID가 아니다.

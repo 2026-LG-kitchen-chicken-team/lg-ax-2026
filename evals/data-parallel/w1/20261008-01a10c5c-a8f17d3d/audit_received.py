@@ -1,0 +1,281 @@
+"""Audit frozen public records; never generate, score Gold, or contact a service."""
+
+from __future__ import annotations
+
+import csv
+import hashlib
+import io
+import json
+from collections import Counter
+from pathlib import Path
+
+ROOT = Path(__file__).parent
+OUT = Path('/artifacts')
+RUN_IDS = (
+    'run-1f83d846191941aea21153897b944ec1',
+    'run-754268c6b0cb41bba50c5b8d713332d9',
+)
+NO_GOLD_IDS = ('FR-04', 'FR-05', 'DW-05', 'MW-05')
+
+
+def sha(raw: bytes) -> str:
+    return hashlib.sha256(raw).hexdigest()
+
+
+def read_json(name: str):
+    return json.loads((ROOT / name).read_bytes())
+
+
+def save_json(name: str, value) -> None:
+    (OUT / name).write_bytes(
+        (json.dumps(value, ensure_ascii=False, indent=2) + '\n').encode('utf-8'),
+    )
+
+
+def save_csv(name: str, rows: list[dict]) -> None:
+    stream = io.StringIO(newline='')
+    writer = csv.DictWriter(stream, fieldnames=list(rows[0]), lineterminator='\n')
+    writer.writeheader()
+    for row in rows:
+        writer.writerow({key: json.dumps(value, ensure_ascii=False) if isinstance(value, (dict, list)) else value for key, value in row.items()})
+    (OUT / name).write_bytes(stream.getvalue().encode('utf-8'))
+
+
+def anchors(quotes: dict, sources: dict) -> list[dict]:
+    found = []
+    for source_id, values in quotes.items():
+        source = sources[source_id]
+        text = source['text']
+        for quote in values:
+            start = text.index(quote)
+            end = start + len(quote)
+            assert text[start:end] == quote
+            found.append({
+                'anchor_id': f'W1-{source_id}@{start}:{end}#{sha(quote.encode("utf-8"))[:12]}',
+                'anchor_id_kind': 'W1_derived_source_text_anchor_not_model_output_evidence_ID',
+                'source_id': source_id,
+                'quote': quote,
+                'source_range': [start, end],
+                'range_kind': 'zero_based_half_open_Unicode_code_points_in_supplied_source_text',
+                'quote_sha256': sha(quote.encode('utf-8')),
+                'source_text_sha256': sha(text.encode('utf-8')),
+                'document_version': source.get('document_version'),
+                'source_role': source.get('source_role', 'prepared_manual_evidence_excerpt'),
+                'source_url': source.get('url'),
+                'source_locator': source.get('locator'),
+                'pdf_sha256_declared_by_original_auditor': source.get('metadata', {}).get('pdf_sha256'),
+                'original_manual_evidence_id_declared': source.get('metadata', {}).get('audit_evidence_id'),
+                'original_pdf_reopened_by_W1': False,
+            })
+    return found
+
+
+def main() -> None:
+    pins = read_json('source-pins.json')
+    for row in pins['files']:
+        raw = (ROOT / row['name']).read_bytes()
+        assert len(raw) == row['bytes'] and sha(raw) == row['raw_sha256']
+        assert hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest() == row['git_blob_sha1']
+    assert len(pins['files']) == 17
+
+    report = read_json('sources/r9-review.json')
+    compact = read_json('sources/pr273-compact-intake.json')
+    actions = read_json('sources/core-next-actions.json')
+    assert actions['evidence_review_sha256'] == sha((ROOT / 'sources/r9-review.json').read_bytes())
+    assert tuple(run['run_id'] for run in report['runs']) == RUN_IDS
+    assert [run['revision'] for run in report['runs']] == [0, 1]
+    normal, changed = report['runs']
+    assert changed['parent_run_id'] == normal['run_id']
+    assert normal['constraints'] != changed['constraints']
+    assert not report['independent_semantic_quality_verified']
+    assert not compact['source_pins']['original_full_output_json_received']
+    assert len(normal['constraints']) == 1 and len(changed['constraints']) == 5
+
+    bundle = read_json('sources/dishwasher-bundle.json')
+    sources = {source['source_id']: source for source in bundle['sources']}
+    notes = read_json('review-notes.json')
+    by_id = {row['id']: row for row in notes['findings']}
+    assert len(by_id) == 10
+    findings = []
+    examples = []
+    run_rows = []
+    for index, run in enumerate(report['runs']):
+        declared = compact['run_rows'][index]
+        assert declared['run_id'] == run['run_id']
+        assert declared['declared_public_output_sha256'] == run['public_output_sha256']
+        assert declared['declared_constraints'] == run['constraints']
+        trace = run['trace_observations']
+        run_rows.append({
+            'run_id': run['run_id'], 'revision_declared': run['revision'],
+            'declared_public_output_sha256': run['public_output_sha256'],
+            'actual_model_output_file_received': False, 'actual_model_output_raw_sha256': None,
+            'output_hash_encoding_receipt_received': False,
+            'actual_input_received': False, 'actual_canonical_input_sha256': None,
+            'generation_code_commit_received': None,
+            'report_baseline_short_commit_not_generation_proof': actions['baseline_commit'],
+            'publication_main_not_generation_commit': pins['main_at_start'],
+            'declared_bundle_id': run['bundle_id'],
+            'frozen_reference_bundle_sha256': sha((ROOT / 'sources/dishwasher-bundle.json').read_bytes()),
+            'loaded_bundle_bytes_receipt_received': False,
+            'selected_source_count_declared': run['input_source_count'],
+            'full_input_delivery_verified_by_W1': None,
+            'model_id_declared': trace['model_id'], 'model_digest_declared': trace['revision_pin'],
+            'model_native_receipt_received': False,
+            'model_context_declared': trace['context_tokens'], 'output_budget_declared': trace['max_output_tokens'],
+            'model_calls_declared': trace['model_calls'], 'repair_calls_declared': trace['repair_calls'],
+            'generated_output_tokens_declared_partial': trace.get('generated_output_tokens'),
+            'all_call_usage_received': False, 'measured_total_input_tokens': None,
+            'measured_total_output_tokens': None, 'measured_cost': None,
+            'failures_retries_raw_received': False,
+            'parent_run_declared': run.get('parent_run_id'), 'previous_brief_declared': run.get('previous_brief_id'),
+            'raw_parent_link_verified': False, 'constraints_declared': run['constraints'],
+            'controlled_same_input_AB': False, 'approved_accuracy_score': None,
+        })
+        for position, finding in enumerate(run['findings']):
+            note = by_id[finding['id']]
+            assert set(note['source_quotes']).issubset(set(finding['source_ids']))
+            source_anchors = anchors(note['source_quotes'], sources)
+            report_pointer = f'/runs/{index}/findings/{position}'
+            row = {
+                'finding_id': finding['id'], 'run_id': run['run_id'],
+                'review_dimensions': note['dimensions'], 'report_pointer': report_pointer,
+                'reported_fields': finding['fields'], 'exact_original_output_field_verified': False,
+                'received_PM_report_examples': finding.get('output_examples', []),
+                'verified_verbatim_model_quotation': False,
+                'source_anchors': source_anchors, 'W1_source_diagnostic': note['diagnosis'],
+                'missing_evidence': note['missing_evidence'],
+                'actual_full_output_semantic_verdict': None, 'approved_accuracy_score': None,
+            }
+            findings.append(row)
+            for example_index, example in enumerate(row['received_PM_report_examples']):
+                examples.append({
+                    'run_id': run['run_id'], 'finding_id': finding['id'],
+                    'report_example_pointer': f'{report_pointer}/output_examples/{example_index}',
+                    'received_report_example': example,
+                    'report_example_sha256': sha(example.encode('utf-8')),
+                    'explicit_ellipsis_in_excerpt': '...' in example or '…' in example,
+                    'exact_original_output_field': None, 'verbatim_model_json_verified': False,
+                    'source_anchor_ids': [anchor['anchor_id'] for anchor in source_anchors],
+                })
+    assert len(findings) == 10 and len(examples) == 23
+    assert next(row for row in findings if row['finding_id'] == 'CG-N-03')['received_PM_report_examples'] == []
+    save_json('run-provenance.json', run_rows)
+    save_csv('run-provenance.csv', run_rows)
+    save_json('excerpt-source-review.json', findings)
+    save_csv('normal-source-review.csv', [row for row in findings if row['run_id'] == RUN_IDS[0]])
+    save_csv('changed-source-review.csv', [row for row in findings if row['run_id'] == RUN_IDS[1]])
+    save_csv('report-excerpt-index.csv', examples)
+
+    sender = read_json('sources/sender-verification.json')
+    candidates = read_json('sources/candidate-validation.json')['rows']
+    candidate_map = {row['case_id']: row for row in candidates}
+    pairs = []
+    for binding in sender['input_bindings']:
+        candidate = candidate_map[binding['case_id']]
+        assert candidate['input_sha256'] == binding['raw_file_sha256']
+        assert candidate['canonical_input_sha256'] == binding['canonical_input_sha256']
+        assert binding['source_kind'] == 'synthetic'
+        pairs.append({
+            'case_id': binding['case_id'], 'group_id': binding['group_id'], 'role': binding['role'],
+            'expected_input_path': binding['path'],
+            'producer_metadata_raw_input_sha256': binding['raw_file_sha256'],
+            'producer_metadata_canonical_input_sha256': binding['canonical_input_sha256'],
+            'W1_actual_raw_input_sha256': None, 'input_contents_read_by_W1_this_task': False,
+            'producer_raw_input_git_commit': sender['raw_input_producer_git_head'],
+            'public_metadata_commit': sender['published_metadata_head'],
+            'model_id_in_input': binding['model_id'], 'document_version': binding['document_version'],
+            'source_kind': binding['source_kind'], 'source_count': binding['source_count'],
+            'agent_original_output_sha256': None, 'general_LLM_original_output_sha256': None,
+            'agent_full_input_receipt': None, 'general_LLM_full_input_receipt': None,
+            'matching_conditions_receipt': None, 'matching_model_settings_receipt': None,
+            'agent_generation_commit': None, 'baseline_executor_commit': None,
+            'original_failure_retry_usage_received': False, 'actual_evaluation_eligible': False,
+            'comparison_status': 'not_comparable_existing_outputs_and_receipts_not_received',
+            'approved_score': None,
+        })
+    assert len(pairs) == 7 and len({row['group_id'] for row in pairs}) == 6
+    assert sum(row['role'] == 'primary' for row in pairs) == 6
+    save_json('same-seven-input-comparison.json', {
+        'private_archive_opened_by_W1_this_task': False,
+        'archive_sha256_in_received_public_sender_metadata': sender['archive']['sha256'],
+        'actual_archive_sha256_recomputed_by_W1_this_task': None,
+        'rows': pairs,
+        'R9_pair_exclusion': 'R9 reports six selected public product-group sources; candidate inputs are distinct synthetic inputs with 1/2/3 sources and different model/document identities. No identical-input receipt exists. R9 also changes constraints. Do not substitute these two runs for the seven input pairs.',
+        'all_attempt_accounting_rule': 'Keep original failures, retries, stage calls and usage; absent usage is null. Compare complete input/source/condition projections and declared model/context/sampling/output contract before eligibility. Method-specific prompts and executor commits are recorded separately, not assumed identical.',
+    })
+    save_csv('same-seven-input-comparison.csv', pairs)
+
+    queries = {row['id']: row for row in read_json('sources/retrieval-queries.json')}
+    corpus = {row['id']: row for row in read_json('sources/retrieval-corpus.json')}
+    maps = {row['query_id']: row for row in read_json('sources/question-evidence-map.json')['rows']}
+    attempts = [json.loads(line) for line in (ROOT / 'sources/retrieval-attempts.jsonl').read_text('utf-8').splitlines()]
+    subset = [row for row in attempts if row['query_id'] in NO_GOLD_IDS]
+    assert len(subset) == 60
+    no_gold_rows = []
+    ranks = []
+    returned_ids = set()
+    for note in notes['no_gold_diagnostics']:
+        qid = note['query_id']
+        query = queries[qid]
+        mapping = maps[qid]
+        assert not mapping['ranking_metric_applicable'] and mapping['unchanged_old_gold_ids'] == []
+        selected = [row for row in subset if row['query_id'] == qid]
+        assert len(selected) == 15
+        assert Counter(row['repeat'] for row in selected) == Counter({1: 3, 2: 3, 3: 3, 4: 3, 5: 3})
+        for method in sorted({row['method'] for row in selected}):
+            repeats = [row for row in selected if row['method'] == method]
+            assert len(repeats) == 5
+            assert len({json.dumps(row['top3'], sort_keys=True) for row in repeats}) == 1
+            first = repeats[0]
+            assert first['requested_model'] == query['model_id']
+            assert first['requested_version'] == query['document_version']
+            for item in first['top3']:
+                source = corpus[item['id']]
+                assert sha(source['text'].encode('utf-8')) == item['raw_text_sha256']
+                assert source['model_id'] == first['requested_model'] == item['model_id']
+                assert source['document_version'] == first['requested_version'] == item['document_version']
+                returned_ids.add(item['id'])
+            ranks.append({
+                'query_id': qid, 'method': method, 'saved_repeat_count': 5,
+                'retrieval_policy_status': first['retrieval_status'],
+                'returned_evidence_ids': [item['id'] for item in first['top3']],
+                'ranked_text_and_model_version_verified': True,
+                'natural_language_AI_answer_received': False,
+                'ranking_is_not_semantic_AI_answer': True,
+            })
+        no_gold_rows.append({
+            'query_id': qid, 'original_query': query['query'],
+            'model_id': query['model_id'], 'requested_document_version': query['document_version'],
+            'saved_retrieval_rows_read': len(selected),
+            'existing_policy_expected_disposition_not_Gold': mapping['expected_response'],
+            'actual_AI_response_received': False, 'actual_AI_response': None,
+            'source_anchors': anchors(note['source_quotes'], corpus),
+            'W1_source_diagnostic': note['diagnosis'], 'missing_evidence': note['needed'],
+            'AI_semantic_verdict': None, 'approved_accuracy_score': None,
+        })
+    assert len(ranks) == 12 and len(no_gold_rows) == 4
+    save_json('no-gold-source-diagnostics.json', no_gold_rows)
+    save_csv('no-gold-source-diagnostics.csv', no_gold_rows)
+    save_csv('saved-no-gold-retrieval-context.csv', ranks)
+    save_json('verification.json', {
+        'status': 'PASS_for_frozen_bytes_references_and_diagnostic_boundaries',
+        'frozen_Git_files': len(pins['files']), 'run_declarations': len(run_rows),
+        'source_linked_report_findings': len(findings), 'report_examples_only': len(examples),
+        'report_only_summary_finding_without_output_example': ['CG-N-03'],
+        'source_quote_anchors_checked': sum(len(row['source_anchors']) for row in findings + no_gold_rows),
+        'expected_input_bindings_from_public_metadata': len(pairs),
+        'comparable_original_Agent_LLM_pairs': 0,
+        'saved_no_gold_retrieval_rows_read': len(subset), 'method_query_groups': len(ranks),
+        'unique_returned_manual_evidence_texts_verified': len(returned_ids),
+        'full_original_R9_model_JSON_files_received': 0, 'actual_no_gold_AI_responses_received': 0,
+        'new_model_calls': 0, 'new_OCR_calls': 0, 'new_retrieval_runs': 0,
+        'completed_225_or_approved_11_rescore_reexecuted': False,
+        'private_input_Gold_ZIP_opened_this_task': False,
+        'approved_accuracy_score': None, 'final_independent_scoring': False, 'parent_done': False,
+        'limitation': 'SHA/span/metadata checks do not automate semantic entailment. W1 diagnoses supplied original texts and report excerpts only; full output, actual model receipt/usage and approved evaluation remain unconfirmed.',
+    })
+    print('PASS: 17 frozen Git files; two declared runs; 23 report excerpts; seven metadata bindings; four no-Gold source diagnostics. No model/OCR/retrieval or approved-11 rescoring.')
+
+
+if __name__ == '__main__':
+    main()
