@@ -1,5 +1,5 @@
 {
-  "version": "data-expansion.20261008.01a11628-b19e6d.v1",
+  "version": "data-expansion.20261008.01a11628-b19e6d.v2",
   "observed_at": "2026-10-08T01:48:21.198898+00:00",
   "canonical_schema_modified": false,
   "stage": "prepared_pending_PM_admission",
@@ -288,7 +288,7 @@
         {
           "page": 26,
           "scope": "냉장고 치수·설치 공간",
-          "paraphrase": "설명서 치수표의 A/B/C는 666/1787/737 mm. 천장·벽면 최소 10 cm와 조도센서 적용 모델에 한한 상단 설치장 2.5 cm 조건을 구분한다. 공용 문서의 모든 옵션을 해당 SKU의 기능으로 확정하지 않는다."
+          "paraphrase": "설명서 A/B/C 치수는 666/1787/737 mm. 제품↔천장·벽면 최소10 cm와 제품 문 위쪽↔냉장고 설치장 최소2.5 cm는 측정 대상이 다른 독립 설치 지시다. 2.5 cm 아래의 조도센서 동작 설명에 적용 모델 단서가 붙으며, 그 단서를 상위2.5 cm 지시 전체에 붙여 범위를 좁히지 않는다. 공용판으로 해당 SKU의 센서 장착이나 현장 설치 적합성을 확정하지 않는다."
         }
       ]
     },
@@ -308,6 +308,7 @@
       "applicability": "exact PDP and Q&A point to MFL68822502; shared ML32 series document",
       "visual_pages": [
         1,
+        4,
         11,
         20,
         21,
@@ -315,6 +316,7 @@
       ],
       "native_text_pages": [
         2,
+        4,
         11,
         13,
         14,
@@ -332,7 +334,10 @@
             "left_right_rear_min_cm": 10,
             "floor_height_min_cm": 85
           },
-          "note": "밀폐 수납장 설치·눈높이 이상 설치 제한 등 본문 조건을 보존; 설치 적합성 자동 승인 아님"
+          "note": "p11 상단/좌우/후면 간격·높이·눈높이와 장식 문 뒤 설치 금지 조건을 유지한다. p4의 밀폐 공간/수납장 설치 제한은 빌트인전용 모델 예외를 함께 보존한다. p11 결로 안내는 설치 허용이나 예외 승인으로 해석하지 않는다. 공용판의 예외가 이 정확 모델에 해당한다고 추정하지 않는다.",
+          "related_pages": [
+            4
+          ]
         },
         {
           "page": 20,
@@ -372,5 +377,10 @@
   "existing_preview_reused_count": 3,
   "qa_count": 2,
   "manual_pdf_count": 2,
-  "new_synthetic_reviews": 0
+  "new_synthetic_reviews": 0,
+  "supersedes": {
+    "version": "data-expansion.20261008.01a11628-b19e6d.v1",
+    "commit": "913036481a01028959220f267b841a8338fbc895",
+    "change": "Manual scope notes only. Review dates/identities follow PR278; original collection fields are retained as historical observations."
+  }
 }
