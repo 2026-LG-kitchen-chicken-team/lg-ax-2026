@@ -2,6 +2,8 @@
 
 기록 ID: DATA-R9-RUNTIME-20261008-01a11628-b71e06 · 신진하/ginaginaring.
 
+게시 후 확인: PR265와 PR266이 main `eab85d48385f965eef48c07a6cdd8f6fd9851c62`에 병합됐다. 이 감사가 받은19파일 및 PR266 제출12파일 모두 원바이트가 같다. [통합 관찰](integration-observation.json)에 고정했다. 아래 이전 조회의 open/미병합 상태는 당시 기록으로 유지하며 운영 export 수신·승인은 여전히 별도다.
+
 기준 main **6aa300a6bb0ba07f7812bf96297da834a61cbd33** (PR264 병합). PR266의 입력 검수 pin `dc0ccc05916c637b2e0c2cc268a061dfa655c0b7` 이후 변경을 읽었다. 이전 감사의50개 Git blob 대조 항목은 현재 main에서도 원바이트가 같아 238건/184 Source/141 후기/인용19 검사를 재실행하지 않았다.
 
 ## 확보한 범위
