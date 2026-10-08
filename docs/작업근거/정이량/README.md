@@ -1,12 +1,12 @@
 # 정이량 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
-## 최신 재개 요약 — 정이량-E060-PARALLEL-FOUR
+## 최신 재개 요약 — 정이량-E061-CHAT-PLANNING-UI
 
-- 사용자 지시의 실제 모델4 동시 요청을 공유 링크에 배포했다. Qwen27B 같은 GGUF·GPU3·native4슬롯·16K 문맥 분리를 사용한다. 주소/수명은 [공유 서빙](../../pm/prototype-sharing-20261008.md)을 따른다.
-- 실제 독립4세션 기획·저장·소유자 격리와 GPU4슬롯을 확인했다. 구조적 완주와 의미 품질·main 병합·CI·부모 Done은 별개다. 자동 Worker OFF·Figma0·새 합성리뷰0.
-- [013/E060 상세](2026-10-08/정이량-E060-PARALLEL-FOUR.md) · [수동 큐](../../pm/manual-queue-20261008.json). 원 CPU timeout·Ollama 강제1 및 WEB 실패를 보존했다.
-- 직전 입구의 원바이트 [snapshot](2026-10-08/013-prior-resume.txt).
+- 최신 자연어 요청에 따라 밝은 대화형 기획 작업실·카드/그래프·원문 패널을 구현 중이다. Figma 보류는 이번 직접 요청으로 해제했으며 자동화는 OFF다.
+- [상세 기록](2026-10-08/정이량-E061-CHAT-PLANNING-UI.md) · [Figma 디자인](https://www.figma.com/design/uxM9HUb2RMXyVzkIVOwwU6?node-id=5-294) · [공유 서빙](../../pm/prototype-sharing-20261008.md).
+- 같은 Qwen·4슬롯·자료/계약을 보존한다. 검수·배포·main 인수·모델 품질은 실제 증거로 각각 판정한다.
+- 직전 요약 원바이트 [snapshot](2026-10-08/014-prior-resume.txt).
 
 <!-- member-log:owner-updates:end -->
 기존 원문의 기계적 분할·탐색 목차입니다. 새 수행·판정·완료 상태를 추가하지 않습니다.

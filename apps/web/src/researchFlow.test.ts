@@ -152,10 +152,12 @@ describe('actual-source research screen state and revision flow', () => {
     expect(fetch.mock.calls[0][1]).toMatchObject({ method: 'GET', credentials: 'same-origin', cache: 'no-store' });
     expect(host.querySelector('#research-token')).toBeNull();
     expect(host.querySelectorAll('nav[aria-label="기획 작업 영역"] button')).toHaveLength(1);
-    expect(host.textContent).toContain('공유 프로토타입 연결됨');
+    expect(host.querySelector('[aria-label="기획 대화"]')).not.toBeNull();
+    expect(host.textContent).not.toContain('공유 프로토타입 연결됨');
+    expect(host.textContent).not.toContain('개발 프레임워크');
     expect(host.textContent).not.toContain(token); expect(host.textContent).not.toContain('계약 fixture');
     await choose(); expect(host.textContent).toContain(REAL_RESEARCH_BUNDLE.sources[0].text);
-    await click('새 기획 생성');
+    await click('기획 시작');
     const writes = fetch.mock.calls.filter(call => call[1]?.method === 'POST');
     expect(writes).toHaveLength(1);
     expect(new Headers(writes[0][1]?.headers).get('Authorization')).toBe(`Bearer ${token}`);
@@ -186,7 +188,7 @@ describe('actual-source research screen state and revision flow', () => {
       if (url === `/api/prototype/jobs/${jobId}`) return response(states.shift());
       return response({}, 404);
     });
-    vi.useFakeTimers(); await click('새 기획 생성');
+    vi.useFakeTimers(); await click('기획 시작');
     expect(host.querySelector('[aria-label="접수한 기획 요청 상태"]')?.textContent).toContain('대기 순서 1');
     expect(Object.keys(sessionStorage)).toEqual(['lgax.research.pending-job']);
     expect(sessionStorage.getItem('lgax.research.pending-job')).toBe(jobId);
@@ -208,7 +210,7 @@ describe('actual-source research screen state and revision flow', () => {
     fetch.mockImplementation(async (_url: string, options?: RequestInit) => response(options?.method === 'POST'
       ? { job_id: jobId, status: 'queued', queue_position: 1, poll_after_ms: 1000 }
       : { job_id: jobId, status: 'failed', queue_position: null, poll_after_ms: 1000, error: { code: 'MODEL_UNAVAILABLE', message: '모델 실행을 완료하지 못했습니다.' } }, options?.method === 'POST' ? 202 : 200));
-    vi.useFakeTimers(); await click('새 기획 생성'); await act(async () => vi.advanceTimersByTimeAsync(1000));
+    vi.useFakeTimers(); await click('기획 시작'); await act(async () => vi.advanceTimersByTimeAsync(1000));
     expect(host.querySelector('[aria-label="접수한 기획 요청 상태"]')?.textContent).toContain('기획 생성 실패');
     expect(host.querySelector('[role="alert"]')?.textContent).toContain('모델 실행을 완료하지 못했습니다');
     expect(host.textContent).toContain(REAL_RESEARCH_BUNDLE.sources[0].text);
@@ -241,7 +243,7 @@ describe('actual-source research screen state and revision flow', () => {
       if (url === '/api/prototype/jobs/current') return response({ job_id: jobId, status: 'running', queue_position: 0, poll_after_ms: 1000 });
       return response({}, 404);
     });
-    await click('새 기획 생성');
+    await click('기획 시작');
     expect(sessionStorage.getItem('lgax.research.pending-job')).toBeNull();
     expect(host.querySelector('[role="alert"]')?.textContent).toContain('연결할 수 없습니다');
     await click('접수한 요청 상태 확인');
@@ -270,7 +272,7 @@ describe('actual-source research screen state and revision flow', () => {
     const fetch = vi.fn().mockResolvedValue(response({ error: { code: 'NOT_IMPLEMENTED' } }, 501)); vi.stubGlobal('fetch', fetch);
     await act(async () => root.render(createElement(ResearchPlanningView)));
     expect(fetch).not.toHaveBeenCalled(); expect(host.querySelector('[aria-label="실제 자료 기획 결과"]')).toBeNull();
-    await connect(); expect(host.textContent).toContain('연결 대기'); expect(host.textContent).not.toContain('기획 초안 생성 완료');
+    await connect(); expect(host.textContent).toContain('자료 연결을 기다리고'); expect(host.textContent).not.toContain('기획 초안 생성 완료');
     expect(host.querySelector<HTMLInputElement>('#research-token')!.value).toBe('');
   });
   it('uses actual source text, keeps absent negative summaries and creates a captured condition revision', async () => {
@@ -279,10 +281,10 @@ describe('actual-source research screen state and revision flow', () => {
     expect(host.textContent).toContain(REAL_RESEARCH_BUNDLE.sources[0].text);
     expect(host.textContent).toContain('구매 모델 미확인');
     expect(host.querySelector('[required]')).toBeNull();
-    await click('새 기획 생성');
+    await click('기획 시작');
     expect(host.textContent).toContain('추가 자료 필요');
     expect(host.querySelector('.summary-negative')!.textContent).toContain('확인된 요약 없음');
-    await click('현재 결과에서 조건 변경'); expect(host.textContent).toContain('목적이나 조건을 바꾼 뒤');
+    await click('조건 반영'); expect(host.textContent).toContain('목적이나 조건을 바꾼 뒤');
     expect(fetch.mock.calls.filter(call => call[1]?.method === 'POST')).toHaveLength(1);
     await enter('#research-extra-constraints', '하드웨어 변경 없이 개선');
     fetch.mockImplementation(async (url: string, options?: RequestInit) => {
@@ -292,7 +294,7 @@ describe('actual-source research screen state and revision flow', () => {
       }
       return response({}, 404);
     });
-    await click('현재 결과에서 조건 변경');
+    await click('조건 반영');
     const writes = fetch.mock.calls.filter(call => call[1]?.method === 'POST');
     expect(JSON.parse(String(writes[1][1].body)).previous_run_id).toBe(heldBrief().run_id);
     expect(host.querySelectorAll('#research-run-choice option')).toHaveLength(3);
@@ -303,37 +305,52 @@ describe('actual-source research screen state and revision flow', () => {
     const fetch = api(); vi.stubGlobal('fetch', fetch); await act(async () => root.render(createElement(ResearchPlanningView))); await connect(); await choose();
     let finish!: (value: Response) => void;
     fetch.mockImplementation(() => new Promise<Response>(resolve => { finish = resolve; }));
-    await act(async () => { const button = [...host.querySelectorAll<HTMLButtonElement>('button')].find(item => item.textContent === '새 기획 생성')!; button.click(); button.click(); });
+    await act(async () => { const button = [...host.querySelectorAll<HTMLButtonElement>('button')].find(item => item.textContent === '기획 시작')!; button.click(); button.click(); });
     expect(fetch.mock.calls.filter(call => call[1]?.method === 'POST')).toHaveLength(1);
     await click('연결 해제'); await act(async () => finish(response(heldBrief())));
     expect(host.querySelector('[aria-label="실제 자료 기획 결과"]')).toBeNull(); expect(host.textContent).toContain('자료 연결을 기다리고');
   });
-  it('navigates to sources and saved results without a request or changing the planning selection', async () => {
+  it('switches result tabs and the evidence pane without a request or changing original selections', async () => {
     const fetch = api(); vi.stubGlobal('fetch', fetch);
     await act(async () => root.render(createElement(ResearchPlanningView))); await connect(); await choose();
-    const navigation = host.querySelector('nav[aria-label="실제 자료 작업실 바로가기"]')!;
-    expect(navigation.querySelector('a[href="#research-results"]')).toBeNull();
     const select = host.querySelector<HTMLInputElement>('.research-source-check input')!;
     await act(async () => select.click());
-    const beforeNavigation = fetch.mock.calls.length;
-    await act(async () => navigation.querySelector<HTMLAnchorElement>('a[href="#research-sources"]')!.click());
-    expect(document.activeElement?.id).toBe('research-sources');
-    expect(fetch.mock.calls).toHaveLength(beforeNavigation);
-    expect(select.checked).toBe(true);
-    await click('새 기획 생성');
+    const before = fetch.mock.calls.length;
+    await act(async () => host.querySelector<HTMLButtonElement>('.chat-header button')!.click());
+    expect(host.querySelector<HTMLElement>('#chat-evidence')!.hidden).toBe(true);
+    await act(async () => host.querySelector<HTMLButtonElement>('.chat-header button')!.click());
+    expect(host.querySelector<HTMLElement>('#chat-evidence')!.hidden).toBe(false);
+    expect(select.checked).toBe(true); expect(fetch.mock.calls).toHaveLength(before);
+    await click('기획 시작');
     expect(document.activeElement?.id).toBe('research-results');
-    expect(navigation.querySelector('a[href="#research-concepts"]')).not.toBeNull();
-    expect(host.querySelector('[aria-label="첫 문제의 기획 연결 요약"]')?.textContent).toContain('명시적으로 연결된 개선안이 없습니다');
-    const beforeResultNavigation = fetch.mock.calls.length;
-    await act(async () => navigation.querySelector<HTMLAnchorElement>('a[href="#research-relations"]')!.click());
-    expect(document.activeElement?.id).toBe('research-relations');
-    expect(fetch.mock.calls).toHaveLength(beforeResultNavigation);
-    expect(select.checked).toBe(true);
+    const reads = fetch.mock.calls.length;
+    await click('관계 그래프');
+    expect(host.querySelector<HTMLElement>('#chat-panel-relations')!.hidden).toBe(false);
+    expect(host.querySelector<HTMLElement>('#chat-panel-insights')!.hidden).toBe(true);
+    expect(select.checked).toBe(true); expect(fetch.mock.calls).toHaveLength(reads);
+    const tab = host.querySelector<HTMLButtonElement>('#chat-tab-relations')!;
+    await act(async () => tab.dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true })));
+    expect(host.querySelector('#chat-tab-insights')!.getAttribute('aria-selected')).toBe('true');
+    expect(document.activeElement?.id).toBe('chat-tab-insights');
+    expect(fetch.mock.calls).toHaveLength(reads);
+  });
+  it('starts a separate conversation without deleting the saved result and reopens it without a POST', async () => {
+    const fetch = api(); vi.stubGlobal('fetch', fetch);
+    await act(async () => root.render(createElement(ResearchPlanningView))); await connect(); await choose();
+    await click('기획 시작');
+    expect(host.querySelectorAll('nav[aria-label="저장된 기획 대화"] button')).toHaveLength(1);
+    const before = fetch.mock.calls.length;
+    await click('+ 새 기획');
+    expect(host.querySelector('[aria-label="실제 자료 기획 결과"]')).toBeNull();
+    await act(async () => host.querySelector<HTMLButtonElement>('nav[aria-label="저장된 기획 대화"] button')!.click());
+    expect(host.querySelector('[aria-label="실제 자료 기획 결과"]')).not.toBeNull();
+    expect(fetch.mock.calls).toHaveLength(before);
+    expect(host.querySelectorAll('.chat-send')).toHaveLength(1);
   });
   it('keeps actual source browsing available when model generation is not activated', async () => {
     const fetch = api(); vi.stubGlobal('fetch', fetch); await act(async () => root.render(createElement(ResearchPlanningView))); await connect(); await choose();
     fetch.mockImplementation(() => Promise.resolve(response({ error: { code: 'NOT_IMPLEMENTED' } }, 501)));
-    await click('새 기획 생성');
+    await click('기획 시작');
     expect(host.textContent).toContain('실제 자료 조회는 연결됐습니다. 모델 실행 활성화를 기다리고 있습니다.');
     expect(host.querySelectorAll('.research-source-row')).toHaveLength(1);
     expect(host.textContent).toContain(REAL_RESEARCH_BUNDLE.sources[0].text);
@@ -357,10 +374,10 @@ describe('actual-source research screen state and revision flow', () => {
       return response({ error: { code: 'NOT_FOUND' } }, 404);
     });
     vi.stubGlobal('fetch', fetch); await act(async () => root.render(createElement(ResearchPlanningView)));
-    await connect(); await choose(); await click('새 기획 생성');
+    await connect(); await choose(); await click('기획 시작');
     expect(host.querySelector('[aria-label="깊은 칸 안쪽 보기 콘셉트 스토리보드"]')?.textContent).toContain('실제 성능 증거가 아닙니다');
     const requests = fetch.mock.calls.length;
-    await click('스토리보드 Markdown');
+    await click('영상 구성안 (.md)');
     expect(fetch.mock.calls).toHaveLength(requests);
     expect(downloads).toHaveLength(1);
     expect(downloads[0].name).toBe('storyboard-TEST-held-run-r0-CONCEPT-T1.md');
@@ -389,7 +406,9 @@ describe('actual-source research screen state and revision flow', () => {
   });
   it('plans from an explicit source selection and inherits that range after the current checkboxes change', async () => {
     const fetch = api(); vi.stubGlobal('fetch', fetch); await act(async () => root.render(createElement(ResearchPlanningView))); await connect(); await choose();
-    const selectedButton = () => [...host.querySelectorAll<HTMLButtonElement>('button')].find(item => item.textContent?.startsWith('선택 근거로 새 기획 생성'))!;
+    const selectedButton = () => host.querySelector<HTMLButtonElement>('.chat-send')!;
+    const scope = host.querySelector<HTMLInputElement>('.chat-selection-mode input')!;
+    await act(async () => scope.click());
     expect(selectedButton().disabled).toBe(true);
     await click('표시 자료 모두 선택'); expect(selectedButton().disabled).toBe(false);
     const first = heldBrief(); first.source_facts = REAL_RESEARCH_BUNDLE.sources.map(source => ({ source_id: source.source_id, facts: source.facts }));
@@ -399,15 +418,16 @@ describe('actual-source research screen state and revision flow', () => {
     const firstRequest = JSON.parse(String(fetch.mock.calls.filter(call => call[1]?.method === 'POST')[0][1].body));
     expect(firstRequest.selected_source_ids).toEqual(first.runtime.user_selected_source_ids);
     expect(host.querySelector('[data-planning-input-scope]')?.textContent).toContain('사용자 선택 원문 1건');
-    await click('전체 선택 해제'); expect(selectedButton().disabled).toBe(true);
+    await click('전체 선택 해제');
+    expect(scope.disabled).toBe(true); // Revisions inherit the captured scope, even after checkbox changes.
     await enter('#research-extra-constraints', '하드웨어 변경 없이 개선');
     const next = { ...first, run_id: 'TEST-selected-next-run', brief_id: 'TEST-selected-next', revision: 1, previous_brief_id: first.brief_id,
       constraints: [...first.constraints, '하드웨어 변경 없이 개선'] };
-    fetch.mockResolvedValue(response(next)); await click('현재 결과에서 조건 변경');
+    fetch.mockResolvedValue(response(next)); await click('조건 반영');
     const revisionRequest = JSON.parse(String(fetch.mock.calls.filter(call => call[1]?.method === 'POST')[1][1].body));
     expect(revisionRequest).not.toHaveProperty('selected_source_ids'); expect(revisionRequest.previous_run_id).toBe(first.run_id);
     expect(host.querySelector('[data-planning-input-scope]')?.textContent).toContain('사용자 선택 원문 1건');
-    expect(host.querySelector('#research-run-choice')?.textContent).toContain(next.run_id);
+    expect(host.querySelector('#research-run-choice')?.textContent).toContain(next.goal);
   });
   // Record 최길웅-20261008-067: summary citation coverage is shown only from a consistent runtime block; absent stays absent.
   it('shows summary citation coverage from the brief and says so when it is not provided', async () => {
@@ -425,12 +445,12 @@ describe('actual-source research screen state and revision flow', () => {
       return response({ error: { code: 'NOT_FOUND' } }, 404);
     });
     vi.stubGlobal('fetch', fetch); await act(async () => root.render(createElement(ResearchPlanningView)));
-    await connect(); await choose(); await click('새 기획 생성');
+    await connect(); await choose(); await click('기획 시작');
     expect(host.querySelector('[data-summary-coverage="ok"]')?.textContent).toContain('처리된 고객 원문 1건 중 1건 인용(인용률 100%)');
     expect(host.querySelector('[data-summary-polarity-coverage="positive"]')?.textContent).toBe('고객 원문 1건 인용 · 요약 1개');
     await act(async () => root.render(createElement('div')));
     vi.stubGlobal('fetch', api()); await act(async () => root.render(createElement(ResearchPlanningView)));
-    await connect(); await choose(); await click('새 기획 생성');
+    await connect(); await choose(); await click('기획 시작');
     expect(host.querySelector('[data-summary-coverage="not_provided"]')?.textContent).toContain('제공되지 않았습니다');
     expect(host.querySelector('[data-summary-polarity-coverage]')).toBeNull();
   });
