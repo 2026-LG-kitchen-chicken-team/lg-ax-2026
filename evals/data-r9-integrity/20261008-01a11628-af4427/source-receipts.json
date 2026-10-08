@@ -1,0 +1,322 @@
+{
+  "record_id": "DATA-MAIL-FOLLOWUP-20261008-01a11628-af4427",
+  "checked_at_utc": "2026-10-08T00:55:50.992599+00:00",
+  "authenticated_owner": "ginaginaring",
+  "worktree_base": "eab85d48385f965eef48c07a6cdd8f6fd9851c62",
+  "remote_main": "eab85d48385f965eef48c07a6cdd8f6fd9851c62",
+  "manual_queue": {
+    "path": "docs/pm/manual-queue-20261008.json",
+    "updated_at": "2026-10-08T09:23:27+09:00",
+    "automation_enabled": false,
+    "DATA_tasks": [
+      {
+        "id": "D1",
+        "title": "중단된 실제 리뷰 179+59건 통합과 실행 입력",
+        "owner": "ginaginaring",
+        "priority": 0,
+        "issues": [
+          12,
+          13,
+          16,
+          148
+        ],
+        "depends": [
+          "P0"
+        ],
+        "state": "accepted_actual_development_input_141_of_238",
+        "executor": "local_support/remaining_and_data",
+        "paths": [
+          "scripts/build_public_review_db.py",
+          "scripts/build_research_bundle.py",
+          "data/research/r8-public-research-20261007/"
+        ],
+        "acceptance": [
+          "기존238건의 원문/중복/기존split를 보존한 통합 DB·Excel·제품군 ResearchBundle을 만든다.",
+          "SKU·게시일 미상은 null, 추천순·별점 편향과 분모를 표시한다.",
+          "기존CSV/BM25/파서 완료 기능을 다시 만들지 않는다."
+        ],
+        "previous_state": "implemented_delivered_pending_pr245_integration"
+      },
+      {
+        "id": "D2",
+        "title": "설명서·공개 질문·FAQ·설치 자료 첫 제품군 팩",
+        "owner": "ginaginaring",
+        "priority": 0,
+        "issues": [
+          12,
+          13
+        ],
+        "depends": [
+          "P0"
+        ],
+        "state": "official_care14_manual15_received_reference5_live_api_mcp_verified",
+        "executor": "local_support/remaining_and_data",
+        "paths": [
+          "scripts/build_research_bundle.py",
+          "data/research/r8-public-research-20261007/"
+        ],
+        "acceptance": [
+          "기존설명서3개를 재사용하고 적용모델·판본·쪽을 보존한다.",
+          "정상공개FAQ/설치/확인가능Q&A를 별도source_type으로 추가한다.",
+          "Q&A 접근미확인을 질문없음으로 표시하거나 합성으로 채우지 않는다."
+        ],
+        "previous_state": "partially_implemented"
+      },
+      {
+        "id": "D3",
+        "title": "문제 중심 경쟁제품 공식 근거 확보",
+        "owner": "ginaginaring",
+        "priority": 0,
+        "issues": [
+          235,
+          244
+        ],
+        "depends": [
+          "P0"
+        ],
+        "state": "accepted_source_adapter_new_product_quality_pending",
+        "executor": "local_support/remaining_and_data",
+        "paths": [
+          "data/research/r8-public-research-20261007/competitors/"
+        ],
+        "acceptance": [
+          "첫문제의 비교가능 경쟁제품1개 이상을 공식자료로 대조한다.",
+          "용량/설치/시기/시험조건 차이와 미확인을 기록한다.",
+          "공식자료에 안보인다는 이유로 기능부재를 단정하지 않는다."
+        ],
+        "implementation_commit": "7503429c443bfca0e847b93e85e476f83fccd657",
+        "follow_up": "PR244 official12 converted into separate66-source fridge ResearchBundle; preview registration only, no new fridge model run or quality/parent Done.",
+        "previous_state": "implemented_adapted_preview_registered_quality_pending"
+      },
+      {
+        "id": "D4",
+        "title": "실제 자료 표본·중복·독립 평가 구분",
+        "owner": "ginaginaring",
+        "priority": 0,
+        "issues": [
+          14,
+          15,
+          148,
+          246
+        ],
+        "depends": [
+          "D1"
+        ],
+        "state": "accepted_frozen238_audit_original246_merged_pr262",
+        "executor": null,
+        "paths": [
+          "data/research/r8-public-research-20261007/"
+        ],
+        "acceptance": [
+          "중복·재게시 계보와 기존격리/개발/평가/시연 구분을 보존한다.",
+          "새독립자료의 노출·중복·표본 편향을 기록한다.",
+          "실제게시일 없는 자료에 월/계절 추세를 생성하지 않는다.",
+          "검색·재정렬·OCR 실제 비교와 FR01 원자료 정답 인수의 중단된 잔여는 기존 도구로 이어가고 완료된 실험은 반복하지 않는다."
+        ],
+        "follow_up": "확장 미리보기 자료는 기존238·개발141에 합치지 않고 별도 인수한다.",
+        "previous_state": "audit_prepared_format_and_findings_pending"
+      }
+    ]
+  },
+  "source_comments": [
+    {
+      "id": 6042536901,
+      "author": "unknownamed",
+      "created_at": "2026-10-07T16:46:16Z",
+      "updated_at": "2026-10-07T16:46:16Z",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/257#issuecomment-6042536901",
+      "body_sha256": "87457bef453db4219bbbe6b98423b7f243a95b2c3464a09de306f7350173ce37",
+      "reading": "CORE reports zero actual input-only ZIP receipt"
+    },
+    {
+      "id": 6042666462,
+      "author": "unknownamed",
+      "created_at": "2026-10-07T17:00:55Z",
+      "updated_at": "2026-10-07T17:00:55Z",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/258#issuecomment-6042666462",
+      "body_sha256": "bd29a66c1a7d1a287bf715e9cf816048f3aead4474eb5b9202c30694700a663a",
+      "reading": "CORE reports manual table sidecar actual receipt; automatic graph/approved adapter absent"
+    },
+    {
+      "id": 6043200182,
+      "author": "choigilung",
+      "created_at": "2026-10-07T17:28:22Z",
+      "updated_at": "2026-10-07T17:28:22Z",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/16#issuecomment-6043200182",
+      "body_sha256": "8578d1f0cf0c97aa4557b6210c9e04aa6df447b20cba1d315e835d3390818b46",
+      "reading": "WEB reports141draft actual receipt/integrity; classification approval and UI consumption separate"
+    },
+    {
+      "id": 6042785774,
+      "author": "ginaginaring",
+      "created_at": "2026-10-07T17:05:46Z",
+      "updated_at": "2026-10-07T17:05:46Z",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/14#issuecomment-6042785774",
+      "body_sha256": "7d6b114afcfb7d694f0c88c516965c34b50999c031dfa1e55391804f814202d6",
+      "reading": "DATA other-window ownership and automatic graph requirements"
+    },
+    {
+      "id": 6049788632,
+      "author": "jeongiryang",
+      "created_at": "2026-10-08T00:43:18Z",
+      "updated_at": "2026-10-08T00:43:18Z",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/28#issuecomment-6049788632",
+      "body_sha256": "830aa555cfb95f2e33cd47d495210862c5490907a4c3fe58659d51a79a9b1746",
+      "reading": "PM latest main checkpoint; runtime report separate from independent raw receipt"
+    },
+    {
+      "id": 6049909352,
+      "author": "ginaginaring",
+      "created_at": "2026-10-08T00:54:15Z",
+      "updated_at": "2026-10-08T00:54:15Z",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/issues/15#issuecomment-6049909352",
+      "body_sha256": "b5ace602c2709f7a94b479cf8c6a10f82e61bafb63cfc733d215ed84eba95b8d",
+      "reading": "Already-published coordination from separate DATA window; request publication is not recipient receipt or approval."
+    },
+    {
+      "id": 6049909890,
+      "author": "ginaginaring",
+      "created_at": "2026-10-08T00:54:18Z",
+      "updated_at": "2026-10-08T00:54:18Z",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/267#issuecomment-6049909890",
+      "body_sha256": "3c78d9edf244f6538e0c5a0bf8f4054adec1eafa35587a6b56b064292d3433af",
+      "reading": "Already-published coordination from separate DATA window; request publication is not recipient receipt or approval."
+    }
+  ],
+  "pull_requests": [
+    {
+      "number": 257,
+      "state": "closed",
+      "merged_at": "2026-10-08T00:06:42Z",
+      "head": "9fade5ddd8d014d1fac4c70a2d23bf7cd6470924",
+      "merge_commit": "dc0ccc05916c637b2e0c2cc268a061dfa655c0b7",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/257"
+    },
+    {
+      "number": 258,
+      "state": "closed",
+      "merged_at": "2026-10-08T00:06:42Z",
+      "head": "a6e81a9b76f1360c72cdeb8dc1a6dec107614467",
+      "merge_commit": "dc0ccc05916c637b2e0c2cc268a061dfa655c0b7",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/258"
+    },
+    {
+      "number": 259,
+      "state": "closed",
+      "merged_at": "2026-10-08T00:06:42Z",
+      "head": "9516caa27f05330830aa91d725d4bd8902bf4d9e",
+      "merge_commit": "dc0ccc05916c637b2e0c2cc268a061dfa655c0b7",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/259"
+    },
+    {
+      "number": 262,
+      "state": "closed",
+      "merged_at": "2026-10-08T00:06:40Z",
+      "head": "a6da6784db60e99645fd57017d37ba1403af9cd1",
+      "merge_commit": "dc0ccc05916c637b2e0c2cc268a061dfa655c0b7",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/262"
+    },
+    {
+      "number": 264,
+      "state": "closed",
+      "merged_at": "2026-10-08T00:27:46Z",
+      "head": "0e5757bcc5f732220c6b4bd847b0973da98b157f",
+      "merge_commit": "6aa300a6bb0ba07f7812bf96297da834a61cbd33",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/264"
+    },
+    {
+      "number": 265,
+      "state": "closed",
+      "merged_at": "2026-10-08T00:35:53Z",
+      "head": "f1e0f587dd99813f54490471e9ac0fe64e636cf3",
+      "merge_commit": "36bd1c5e60d220baebba9f7d76de6cba05cf2627",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/265"
+    },
+    {
+      "number": 266,
+      "state": "closed",
+      "merged_at": "2026-10-08T00:40:04Z",
+      "head": "146550e3056bd12158c12d9e6f12bdb41b858a16",
+      "merge_commit": "eab85d48385f965eef48c07a6cdd8f6fd9851c62",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/266"
+    },
+    {
+      "number": 267,
+      "state": "open",
+      "merged_at": null,
+      "head": "3219307c72a0d190ed95f1b279c14350b02ccda2",
+      "merge_commit": "aab5fa67433fb84a821e4c6997e74bdebb770598",
+      "url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/pull/267"
+    }
+  ],
+  "PR267_checks": [
+    {
+      "name": "web",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "python-and-harness",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "web",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "python-and-harness",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "mail": {
+    "owner": "신진하",
+    "query": "after:2026/10/07 (\"lg-ax-2026\" OR \"input-only\" OR \"DATA\")",
+    "messages_returned": 35,
+    "older_page_exists": true,
+    "latest_checkpoint_read_message_id": "1a118f74208ee32a",
+    "previously_read_unresolved_message_ids": [
+      "1a117428aaafb545",
+      "1a1174ffbed94674",
+      "1a11769180494490",
+      "1a11774b20226865"
+    ],
+    "mail_state_modified": false,
+    "incremental_query": "after:1791420300 (\"lg-ax-2026\" OR \"input-only\" OR \"DATA\")",
+    "incremental_results": 1,
+    "incremental_next_page": false,
+    "coordination_message": {
+      "id": "1a11902538b76cde",
+      "sent_at": "2026-10-08T00:55:44Z",
+      "labels_observed": [
+        "SENT"
+      ],
+      "record_id": "DATA-PM-COORD-20261008-01a1100e",
+      "own_window_sent": false,
+      "pm_read_or_reply_confirmed": false,
+      "reading": "Another DATA window already sent exact ZIP route and R9 export/PR267 review request; reuse it and do not resend."
+    }
+  },
+  "project": {
+    "url": "https://github.com/orgs/2026-LG-kitchen-chicken-team/projects/1",
+    "observed_issues": [
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "read_only": true,
+    "formal_parent_done_asserted": false,
+    "stale_reports_note": "Some DATA reports still reference2026-10-06. Read alongside merged PRs; not evidence of no work."
+  },
+  "inspection_errors": [
+    {
+      "step": "refresh comments after00:51",
+      "issue": 267,
+      "error": "RemoteDisconnected; other issues succeeded; retry exact referenced comment below"
+    }
+  ]
+}

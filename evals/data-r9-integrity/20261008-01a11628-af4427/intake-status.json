@@ -1,0 +1,99 @@
+{
+  "record_id": "DATA-MAIL-FOLLOWUP-20261008-01a11628-af4427",
+  "base_commit": "eab85d48385f965eef48c07a6cdd8f6fd9851c62",
+  "items": [
+    {
+      "id": "REVIEW-INTEGRITY",
+      "task": "SKU/date/dedup/split and R9 change audit",
+      "file_preparation": "complete",
+      "actual_receipt": "PR246/262 and PR266 merged",
+      "runtime_application": "not asserted by input audit",
+      "semantic_review": "source citation/applicability checked; full Agent quality separate",
+      "pm_approval": "PR266 merged; parent Done not asserted",
+      "DATA_action": "Reuse238-row audit and873-check R9 delta; no rerun",
+      "remaining": "Exact purchase SKU and posted date remain unknown; not a hash/audit failure",
+      "owner": "DATA for future evidence; PM for parent acceptance"
+    },
+    {
+      "id": "FR01-RESCORE",
+      "task": "Approved fixed225-row /11-question offline rescore",
+      "file_preparation": "complete",
+      "actual_receipt": "merged approved-rescore.json",
+      "runtime_application": "not applicable to offline rescoring",
+      "semantic_review": "11 supported questions complete; four no-Gold semantic responses not included",
+      "pm_approval": "FR01 correction authorization already recorded; independent quality not approved",
+      "DATA_action": "Reuse existing rescore unchanged",
+      "remaining": "Only existing four no-Gold semantic responses when handed over; never infer missing Gold or repeat225 rows",
+      "owner": "CORE/PM response owner then DATA"
+    },
+    {
+      "id": "INPUT-ONLY",
+      "task": "Exact private ZIP handoff",
+      "file_preparation": "complete; sender pins reconfirmed",
+      "actual_receipt": "CORE latest actual report ZIP0",
+      "runtime_application": "not received",
+      "semantic_review": "not started from actual received input-only bundle",
+      "pm_approval": "transport and independent evaluator scope outstanding",
+      "DATA_action": "After existing approved cross-PC route: transfer exact11106-byte ZIP plus metadata, compare CORE11-entry receipt",
+      "remaining": "Route/client/mapping/read scope/approval and authenticated actual receipt",
+      "owner": "PM route; DATA transfer; CORE receiver"
+    },
+    {
+      "id": "PAIRED-RAW",
+      "task": "Same seven-input Agent/general LLM raw output and usage",
+      "file_preparation": "not received",
+      "actual_receipt": "no matched raw/full-input/failure/retry/usage receipt",
+      "runtime_application": "unknown; not zero and not equivalent to R9 runs",
+      "semantic_review": "pending actual output and independent scorer",
+      "pm_approval": "Gold/split/scorer separate",
+      "DATA_action": "Match existing outputs only by canonical input SHA, code/model/settings and all-call usage; keep unavailable fields null",
+      "remaining": "Existing output artifacts or explicit not-produced reply; no model invocation under this task",
+      "owner": "Existing execution owner/PM then DATA"
+    },
+    {
+      "id": "R9-OPERATIONS",
+      "task": "Actual API/MCP/saved run/same DB restart",
+      "file_preparation": "CORE deterministic export actually received; PM actual execution reported",
+      "actual_receipt": "Only generated guide ZIP received; operating envelopes/raw/DB/restart pair not received",
+      "runtime_application": "PM reported verified; DATA independent raw comparison unconfirmed",
+      "semantic_review": "PM report partial/unapproved; PR267 is integrity scope",
+      "pm_approval": "PR267 open with four successful CI jobs at pinned head",
+      "DATA_action": "Compare only newly received exports to existing184/141/ref5 pins; reuse previous48 checks",
+      "remaining": "Seven existing-export requirements linked; do not restart or regenerate missing pre-state",
+      "owner": "PM export; DATA comparison",
+      "requirements_url": "https://github.com/2026-LG-kitchen-chicken-team/lg-ax-2026/blob/3219307c72a0d190ed95f1b279c14350b02ccda2/evals/data-r9-integrity/20261008-01a11628-b71e06/required-exports.json"
+    },
+    {
+      "id": "AUTO-TABLE",
+      "task": "Automatic table cell/header/unit/footnote binding",
+      "file_preparation": "Manual sidecar5 cells+1 footnote+3 Evidence complete",
+      "actual_receipt": "CORE confirmed manual9977-byte sidecar",
+      "runtime_application": "Automatic graph/approved production adapter not received",
+      "semantic_review": "Manual expectations verified; automatic accuracy/error_count null",
+      "pm_approval": "Automatic producer/adapter approval outstanding",
+      "DATA_action": "Compare actual automatic output with fixed manual source anchors, preserve observed mismatches; no OCR rerun",
+      "remaining": "Same two PDFs/pages automatic graph, producer pin, approved adapter pin, actual CORE consumption receipt",
+      "owner": "PM designates producer/adapter; existing DATA table window validates; CORE consumes"
+    },
+    {
+      "id": "TOPIC-141",
+      "task": "Review topic/opinion draft handoff",
+      "file_preparation": "141 development draft rows complete",
+      "actual_receipt": "WEB and CORE actual file/integrity receipt recorded",
+      "runtime_application": "Approved classification/chart not verified",
+      "semantic_review": "Draft, not Gold; accuracy null",
+      "pm_approval": "Pending version-specific classification approval or correction source IDs",
+      "DATA_action": "After review, correct only identified draft rows in assigned owner window and re-pin; do not reclassify all141",
+      "remaining": "PM classification decision; approved version/consumer pin and WEB actual receipt/display. Published dates unknown: monthly denominator0/ratio null",
+      "owner": "PM semantic approval; existing DATA owner correction; WEB integration"
+    }
+  ],
+  "overall_mail_tasks_complete": false,
+  "new_model_calls": 0,
+  "new_ocr_calls": 0,
+  "operating_restarts": 0,
+  "production_file_changes": 0,
+  "repeated_completed_audits": 0,
+  "new_runtime_evidence_received": false,
+  "reason": "Pending external artifacts/route/approval; file preparation and request delivery do not satisfy receiver or runtime gates"
+}
