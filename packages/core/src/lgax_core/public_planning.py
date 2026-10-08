@@ -26,6 +26,7 @@ from .errors import DomainError
 from .judgement_contract import MAX_REVISIONS
 from .model_client import StructuredModelResult
 from .prompt_context import PUBLIC_PROVENANCE_GUIDE
+from .public_evidence import PublicEvidence
 from .retrieval import tokenize
 
 ModelCaller = Callable[[str, dict], dict | StructuredModelResult]
@@ -295,7 +296,8 @@ class PublicPlanner:
 
     def __init__(self, model_caller: ModelCaller, *, runtime_metadata: dict | None = None,
                  max_model_calls: int = 12, max_problems: int = 3,
-                 max_prompt_characters: int = 10000, max_source_characters: int = 1600):
+                 max_prompt_characters: int = 10000, max_source_characters: int = 1600,
+                 evidence: PublicEvidence | None = None):
         if not callable(model_caller):
             raise TypeError("model_caller must accept (prompt, schema)")
         if any(type(value) is not int for value in (max_model_calls, max_problems, max_prompt_characters,
@@ -308,6 +310,9 @@ class PublicPlanner:
         self.max_model_calls, self.max_problems = max_model_calls, max_problems
         self.max_prompt_characters = max_prompt_characters
         self.max_source_characters = max_source_characters
+        if evidence is not None and not isinstance(evidence, PublicEvidence):
+            raise TypeError("Evidence must be an owner-supplied private source ledger")
+        self.evidence = evidence
 
     @classmethod
     def from_model_client(cls, client, **kwargs):
@@ -334,18 +339,24 @@ class PublicPlanner:
             "scope_caveat", "paired_source_id", "registry_scope", "topic_tags",
             "applicability", "source_scope_notes", "native_unit_caution", "continuation_pages",
         ) if key in metadata}
+        if self.evidence is not None:
+            row["private_evidence_candidates"] = self.evidence.source_context(source["source_id"])
         return row
 
-    def repair(self, bundle: dict, previous: dict, feedback: list[dict]) -> dict:
+    def repair(self, bundle: dict, previous: dict, feedback: list[dict], *,
+               field_claims: list[dict] | None = None) -> dict:
         """Repair only independently flagged fields, with one call per item."""
         from .public_repair import repair_public_brief
 
         return repair_public_brief(self.model_caller, bundle, previous, feedback,
                                    runtime_metadata=self.runtime_metadata,
-                                   max_model_calls=min(4, self.max_model_calls))
+                                   max_model_calls=min(4, self.max_model_calls),
+                                   evidence=self.evidence, field_claims=field_claims)
 
     def run(self, bundle: dict, goal: str, constraints: list[str], previous: dict | None = None) -> dict:
         validate_research_bundle(bundle)
+        if self.evidence is not None:
+            self.evidence.require_bundle(bundle)
         bundle = deepcopy(bundle)
         if not isinstance(goal, str) or not goal.strip() or len(goal) > 1000:
             raise ValueError("goal must be a nonempty string of at most 1000 characters")
@@ -657,5 +668,11 @@ class PublicPlanner:
                             "item_issues": issues, "max_model_calls": self.max_model_calls,
                             "correction_budget": corrections.snapshot,
                             "max_repairs_per_item": 1, "market_frequency_estimated": False}
+        if self.evidence is not None:
+            brief["runtime"]["private_evidence"] = self.evidence.audit
+            brief["runtime"]["private_summary_projection"] = self.evidence.summary_projection(discovery_sources)
+            # Existing summaries/coverage are the original generation output.
+            # Separate candidate projection cannot silently rewrite that audit.
+            brief["runtime"]["summary_projection_applied"] = False
         validate_planning_brief(brief)
         return brief

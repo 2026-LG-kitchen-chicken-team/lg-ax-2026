@@ -15,6 +15,7 @@ from lgax_contracts.research import load_research_schema, validate_planning_brie
 
 from .errors import DomainError
 from .model_client import StructuredModelResult
+from .public_evidence import PublicEvidence
 from .public_planning import (
     _MODEL_ERROR_CODES,
     _MODEL_ERROR_REASONS,
@@ -152,9 +153,18 @@ def _inherited_summary_coverage(bundle: dict, previous: dict) -> dict | None:
 
 def repair_public_brief(model_caller, bundle: dict, previous: dict, feedback: list[dict], *,
                         runtime_metadata: dict | None = None, max_prompt_characters: int = 26000,
-                        max_source_characters: int = 1800, max_model_calls: int = 4) -> dict:
+                        max_source_characters: int = 1800, max_model_calls: int = 4,
+                        evidence: PublicEvidence | None = None, field_claims: list[dict] | None = None) -> dict:
     """Patch only requested fields once each; retain failed items byte-for-byte."""
     validate_feedback(bundle, previous, feedback)
+    if evidence is not None and not isinstance(evidence, PublicEvidence):
+        raise ValueError("Repair evidence must be a private source ledger")
+    if field_claims is not None and (evidence is None or not isinstance(field_claims, list)):
+        raise ValueError("Field dependencies require a private source ledger and a list")
+    field_claims = deepcopy(field_claims or [])
+    if evidence is not None:
+        evidence.require_bundle(bundle)
+        evidence.field_issues(previous, field_claims)  # Validate bindings before opening a model connection.
     if not callable(model_caller):
         raise ValueError("A repair caller must accept a prompt and schema")  # noqa: TRY004 -- one input-error type
     if (type(max_prompt_characters) is not int or not 4000 <= max_prompt_characters <= 40000
@@ -170,7 +180,8 @@ def repair_public_brief(model_caller, bundle: dict, previous: dict, feedback: li
                   revision=previous["revision"] + 1, previous_brief_id=previous["brief_id"])
     trace, issues, outcomes, selected_ids = [], [], [], set()
     corrections = _correction_budget(previous)
-    context_builder = PublicPlanner(model_caller, max_source_characters=max_source_characters)._source_context
+    context_builder = PublicPlanner(model_caller, max_source_characters=max_source_characters,
+                                    evidence=evidence)._source_context
     definitions = load_research_schema()["$defs"]
     removed_by_item = {}
     for request in feedback:
@@ -220,6 +231,12 @@ def repair_public_brief(model_caller, bundle: dict, previous: dict, feedback: li
             candidate = apply_field_patch(original, data["patch"], fields)
             Draft202012Validator(_definition_schema(kind)).validate(candidate)
             candidate_issues = _patch_issues(kind, candidate, fields, catalog, previous["constraints"])
+            if evidence is not None:
+                candidate_brief = deepcopy(result)
+                candidate_brief[collection][position] = candidate
+                bindings = [binding for binding in field_claims if binding["item_kind"] == kind
+                            and binding["item_id"] == item_id and binding["field"].split(".")[0] in fields]
+                candidate_issues.extend(evidence.field_issues(candidate_brief, bindings))
             if candidate_issues:
                 issues.append({"kind": kind, "item_id": item_id, "issues": candidate_issues})
                 record["status"] = "rejected"
@@ -274,5 +291,18 @@ def repair_public_brief(model_caller, bundle: dict, previous: dict, feedback: li
             "preserved" if coverage is not None else "invalid_previous_metadata")
         if coverage is not None:
             result["runtime"]["summary_reference_coverage"] = coverage
+    if evidence is not None:
+        residual = evidence.field_issues(result, field_claims)
+        result["runtime"]["private_evidence"] = evidence.audit
+        result["runtime"]["field_claim_dependencies"] = field_claims
+        result["runtime"]["residual_field_claim_issues"] = residual
+        result["runtime"]["inherited_item_issues"] = deepcopy(previous["runtime"].get("item_issues", []))
+        result["runtime"]["private_summary_projection"] = evidence.summary_projection(set(processed or []))
+        result["runtime"]["summary_projection_applied"] = False
+        # An unmapped or separately reported meaning issue cannot be cleared by
+        # repairing two fields. The previous report is retained, not certified.
+        if residual or result["runtime"]["inherited_item_issues"] or evidence.audit["issues"]:
+            if result["status"] != "needs_sources":
+                result["status"] = "partial"
     validate_planning_brief(result)
     return result
