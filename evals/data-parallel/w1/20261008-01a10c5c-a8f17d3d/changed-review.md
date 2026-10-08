@@ -1,0 +1,13 @@
+# 조건 변경 결과 — W1 원문 대조
+
+대상 `run-754268c6b0cb41bba50c5b8d713332d9`. 받은 것은 PM report의 일부 발췌이며 실제 원 JSON/연속 인용/정확 필드 위치는 미확인이다. 아래는 Gold 없는 출처 진단이다.
+
+| report 항목·대상 필드 | 받은 발췌 | 원문과 의미 대조 | 미확인 |
+| --- | --- | --- | --- |
+| CG-C-01<br>problems[problem-1].description | 고객은 다리가 아파서 / 청소했음에도 | 배우자의 다리 불편을 구매자의 통증으로 확정하면 원문 경계를 넘는다. '청소했음에도'는 원문 청소 언급을 요약할 수 있으나 냄새를 없애려 치료했고 실패했다는 의미로 사용하면 미확인 결과를 보간한다. 약한 발췌와 전체 문맥의 차이를 남기고 정당한 caveat가 다른 필드의 확정적 주장을 실제로 제한하는지 원 JSON에서 확인해야 한다. | description 전체의 주체 지시와 청소 목적/결과 문맥, caveat 전체. |
+| CG-C-02<br>comparisons[comparison-1].remaining_burden<br>concepts[concept-1].use_context<br>concepts[concept-1].before_steps<br>concepts[concept-1].visual_scenes<br>concepts[concept-1].assumptions | 매뉴얼의 일반적 안내가 ... 해결하지 못했거나 / 매뉴얼을 찾아보거나 기억나지 않아 혼란스러워함 / 직접 청소했으나 냄새가 지속되거나 재발함 / 고객지원에 전화하여 | 설명서 열람·기억 혼란·문서 안내의 실패/미실행·청소 후 지속/재발·고객지원 전화는 고객 원문에 없다. 가능성/가설로 논의할 수 있지만 실제 before/history로 승격할 수 없다. '... 해결하지 못했거나'는 보고서의 생략 표시가 들어 있어 연속 모델 인용으로 검증하지 않는다. 이것을 설명서 존재만으로 해결을 보장한 오류로 다시 이름 붙이지 않는다. | remaining_burden/use_context/before/scenes/assumptions 전체와 생략 없는 발췌. |
+| CG-C-03<br>concepts[concept-1].after_steps<br>concepts[concept-1].assumptions<br>concepts[concept-1].validation_questions | 사용 기간(1개월) | 1개월은 청소 언급 주변 시점이고 원문 총 사용은 약3달이다. '사용 기간(1개월)'을 총 사용 이력으로 상담에 전달한다면 역할 혼동이다. 미래 고객의 기간 입력 예시라면 해당 숫자를 이 고객의 확정 사실로 자동 채우지 말고 확인 질문으로 받아야 한다. | actual after_steps와 입력/예시 표지·확인 질문·assumptions. 발췌만으로 실제 상담 전송이 일어났다고 주장하지 않음. |
+| CG-C-04<br>summaries.mixed<br>summaries.positive[0]<br>summaries.negative[0] | 초기 기대와 실제 사용 경험 간에 괴리가 있다 / 기사가 설치를 거부하여 | 기대와 실제 경험의 괴리는 표현할 수 있지만 구매 희망을 실제 긍정 사용의 절반으로 계산할 근거는 아니다. 853593의 두 경험은 함께 보존할 필요가 있다. 645400은 고객이 느낀 기사 태도와 반송을 보고했으며 명시적 기사 거부/확정 동기와 다르다. report의 mixed/positive-only 배치는 실제 summaries 전체를 받아야 확인할 수 있다. | summaries 세 배열 전체와 source 연결, 기사 거부를 확인할 별도 원문. |
+| CG-C-05<br>comparisons[comparison-1].existing_response<br>concepts[concept-1].after_steps<br>concepts[concept-1].mechanism<br>concepts[concept-1].proposed_changes<br>concepts[concept-1].assumptions<br>concepts[concept-1].validation_questions | 배수(전원 3초 누름) / 모든 기본 조치(세제 변경, 애벌세척, 배수)를 수행했음에도 / 고객이 취해야 할 최소한의 조치 | 세제 향·특정 음식물·잔수량은 서로 다른 조건 분기다. 세제 변경·애벌·배수를 모든 고객이 먼저 완료해야 상담 가능한 최소 조치로 만들 근거가 없다. 3초는 원문 수치이지만 전원 켜기와 취소 선택·잔수 조건을 잃은 독립 작동법은 불충분하다. 기존 앱/웹에 안내·기록·문의 흐름을 연결하는 제안은 기존 조작 기능의 발명과 다르며 효용/속도·비용·중복 승인은 미확인이다. | actual 조건 분기/assumptions/questions/after_steps, 정확 모델·판본과 참조 절. 모든조치 실패 가설이 전체 원문 조건으로 확대됐는지 raw에서 확인 필요. |
+
+[상세 source ID·판본·locator·원문 인용/범위/SHA](excerpt-source-review.json) · [선택 발췌의 report 위치](report-excerpt-index.csv). `CG-N-03` 누락 판단은 raw 미수신 상태에서 확정하지 않는다. W1 파생 anchor ID는 원문 위치 참조이며 실제 모델 출력 Evidence ID가 아니다.

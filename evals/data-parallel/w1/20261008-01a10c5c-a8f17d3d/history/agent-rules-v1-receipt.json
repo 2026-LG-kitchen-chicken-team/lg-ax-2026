@@ -1,0 +1,33 @@
+{
+  "name": "agent-rules",
+  "argv": [
+    "python",
+    "scripts/sync_agent_rules.py",
+    "--check"
+  ],
+  "exit_code": 0,
+  "boundary": {
+    "backend": "docker",
+    "image_id": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+    "role": "validator",
+    "uid": 1000,
+    "readonly_root": true,
+    "caps_dropped": true,
+    "no_new_privileges": true,
+    "network": "none",
+    "mount_targets": [
+      "/artifacts",
+      "/workspace"
+    ],
+    "publisher_credentials_mounted": false,
+    "ai_profile_mounted": false
+  },
+  "image_pin": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+  "main_source_pin": "eab85d48385f965eef48c07a6cdd8f6fd9851c62",
+  "source_audit_sha256": "6f96cd2bfc64490af2410fc443be9584a0e4a309c166dcbd78f5e6b1519bb849",
+  "review_notes_sha256": "bf9f109413600b7b069957af1735e6e7547995ced7a6f176bf9c9f9ad3bdd9ad",
+  "log_sha256": "56b21f915cb5a695479359f4ca6063582b0b9bcbdaee1869782a2a805a2a82cd",
+  "finished_at_utc": "2026-10-08T02:18:35.597527+00:00",
+  "new_model_OCR_retrieval_calls": 0,
+  "completed_225_11_rescore_reexecuted": false
+}
