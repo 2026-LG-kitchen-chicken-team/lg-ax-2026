@@ -178,6 +178,7 @@ class PublicEvidenceTests(unittest.TestCase):
         feedback = affected_feedback(issues[:2], message="지적된 원문 연결 필드만 수정합니다.")
         result = repair_public_brief(caller, self.bundle, previous, feedback, evidence=ledger, field_claims=bindings)
         self.assertEqual(len(calls), 2)
+        self.assertTrue(all("private_field_claim_dependencies" in prompt for prompt, _ in calls))
         self.assertEqual(result["runtime"]["correction_budget"]["revision_count"], 2)
         self.assertEqual([row["status"] for row in result["runtime"]["repair_outcomes"]], ["accepted", "accepted"])
         self.assertEqual({row["path"] for row in result["runtime"]["residual_field_claim_issues"]}, {"target_user", "visual_scenes.1.before"})
@@ -189,6 +190,11 @@ class PublicEvidenceTests(unittest.TestCase):
         self.assertEqual(result["revision"], 1)
         self.assertEqual(previous, before)
         self.assertEqual(result["concepts"][0]["target_user"], before["concepts"][0]["target_user"])
+        from lgax_api.research_planning import public_research_brief
+
+        public = public_research_brief(result, "0" * 64, self.bundle)
+        for key in ("private_evidence", "field_claim_dependencies", "inherited_item_issues", "private_summary_projection"):
+            self.assertNotIn(key, public["runtime"])
         again = repair_public_brief(caller, self.bundle, result, feedback, evidence=ledger, field_claims=bindings)
         self.assertEqual(len(calls), 2)
         self.assertTrue(all(row["status"] == "failed" for row in again["runtime"]["repair_outcomes"]))

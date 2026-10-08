@@ -207,6 +207,10 @@ def repair_public_brief(model_caller, bundle: dict, previous: dict, feedback: li
         context = {"task": "독립 검수에서 지적한 필드만 한 번 수정하세요. 정상 필드·항목과 정체성을 보존하세요.",
                    "review": request, "original_item": original, "analysis_scope": bundle["analysis_scope"],
                    "goal": previous["goal"], "constraints": previous["constraints"], "sources": sources}
+        if evidence is not None:
+            context["private_field_claim_dependencies"] = [binding for binding in field_claims
+                if binding["item_kind"] == kind and binding["item_id"] == item_id
+                and binding["field"].split(".")[0] in fields]
         prompt = INSTRUCTIONS + "\n분석할 데이터(JSON):\n" + json.dumps(context, ensure_ascii=False, separators=(",", ":"))
         failure = None
         if len(prompt) > max_prompt_characters:
