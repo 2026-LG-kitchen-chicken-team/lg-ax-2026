@@ -21,7 +21,7 @@ npm ci --prefix apps/web
 uv run --no-sync python scripts/serve_research_prototype.py --help
 ```
 
-현재 CLI는 새 R9 기본 자료 3개·기존 저장 결과를 위한 legacy 자료 4개·설명서 참고 묶음 1개, 총 8개를 등록한다. 새 버전의 ID가 분리되어 있으므로 기존 입력 자료를 덮어쓰지 않는다. 웹 목록에서도 **R9 기본 자료 / 이전 보존 자료 / 설명서 참고·리뷰 없음**을 구분한다.
+현재 CLI는 새 R9 기본 자료 3개·기존 저장 결과를 위한 legacy 자료 4개·설명서 참고 묶음 1개·확장 수집 후보 2개, 총 10개를 등록한다. 기존 8개 입력과 저장 결과는 보존한다. 웹 목록에서도 **R9 기본 자료 / 이전 보존 자료 / 설명서 참고·리뷰 없음 / 확장 자료·수집 검토 중**을 구분한다.
 
 | 새 기본 자료 | 자료 / 리뷰 | 위치 |
 |---|---:|---|
@@ -29,10 +29,14 @@ uv run --no-sync python scripts/serve_research_prototype.py --help
 | 냉장고 R9 | 58 / 48 | `data/research/r9-public-runtime-20261008/fridge.research-bundle.json` |
 | 전자레인지 R9 | 53 / 45 | `data/research/r9-public-runtime-20261008/microwave.research-bundle.json` |
 | 전자레인지 설명서 참고 | 5 / 0 | `data/research/r9-public-runtime-20261008/microwave.manual-reference.research-bundle.json` |
+| 김치냉장고 확장 수집 후보 | 6 / 미리보기 3 | `data/research/r9-kitchen-intake-20261008/kimchi_refrigerator.research-bundle.json` |
+| 광파오븐 확장 수집 후보 | 4 / 0 | `data/research/r9-kitchen-intake-20261008/lightwave_oven.research-bundle.json` |
 
 legacy 4개는 `data/research/r8-public-official-expansion-20261007/bundles/*.json` 3개와 `data/research/r8-public-competitor-adapter-20261007/fridge.development.research-bundle.json`이다. 새 설명서 참고 묶음의 ID는 `LGE-R9-microwave-manual-reference-20261008-v1`이며, 공식 설명서 5종의 참고 발췌·리뷰 0건이다. 설명서만 보고 새로운 고객 불편을 발견했다고 표시하지 않는다. 표의 수량은 현재 등록 파일 기준이며, 실제 웹 자료 목록을 다시 확인한다.
 
 이 흐름은 실제 공개 리뷰·질문/공식 답변·문서 발췌를 사용한다. 원문에서 확인하지 못한 구매 SKU·게시일은 미확인으로 남으며, 전체 시장을 대표하는 표본으로 해석하지 않는다. 예전 합성자료 화면과는 별도인 **실제 자료 작업실**을 사용한다.
+
+확장 후보는 기존 실제 후기238건·개발141건에 합치지 않는다. 김치냉장고는 공개 페이지의 미리보기3건으로 원후기ID·전체본문·날짜·구매SKU를 확인하지 못했다. 광파오븐은 공식기능4건·고객원문0건이다. 두 후보의 신규 Q&A·설명서 PDF는0개다. 원producer의 `runtime_registered:false`는 수집 당시 기록으로 보존하고, 별도 `runtime-intake.manifest.json`의 CLI 인수와 실제 API 목록 등록을 구분한다. 조회·필터·선택 가능 여부는 새 제품군의 의미 품질·시연/독립평가 승인과 별개다.
 
 ## 2. 인증 파일은 한 번 만들고 보존
 
