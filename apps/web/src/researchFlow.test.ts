@@ -235,7 +235,7 @@ describe('actual-source research screen state and revision flow', () => {
   it('recovers an owner job through GET current after the first accepted response is lost, without POST replay', async () => {
     const jobId = '6'.repeat(32);
     const fetch = api(); vi.stubGlobal('fetch', fetch);
-    await act(async () => root.render(createElement(ResearchPlanningView, { sharedSession: { shared_prototype: true as const, token: 's'.repeat(48) } }))); await choose();
+    await act(async () => root.render(createElement<NonNullable<Parameters<typeof ResearchPlanningView>[0]>>(ResearchPlanningView, { sharedSession: { shared_prototype: true, token: 's'.repeat(48) } }))); await choose();
     fetch.mockImplementation(async (url: string, options?: RequestInit) => {
       if (options?.method === 'POST') throw new Error('transport response lost');
       if (url === '/api/prototype/jobs/current') return response({ job_id: jobId, status: 'running', queue_position: 0, poll_after_ms: 1000 });
