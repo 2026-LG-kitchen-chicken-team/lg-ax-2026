@@ -1,6 +1,7 @@
 # 황대겸 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
+- CORE-R9-UI2-LANGUAGE-01a10729-01: PM UI2 원 제목/readback 인수 후 한국어 요청의 사용자용 생성 언어를 공유 지침에 명시했다. 원문 인용·ID/facts 보존, 자동 번역/새모델0. [상세](2026-10-08/CORE-R9-UI2-LANGUAGE-01a10729-01.md) · [고정 근거](../../../evals/core-manual-quality/20261008/r9-ui2-language/README.md). 실제 모델 효과·PM 인수는 별도 대기.
 - 2026-10-08 CORE-R9-W1-RESIDUALS-01a10729-01: WEB 실제 냉장고 원응답·수정 일부 필드에서 구조 변경 조건 위반 재현/CORE 보완, 비교·강도·혼합 맥락 지침과 X1 부분 검토. 실모델0·실제 수정 결과/PM 인수 미완료.
 - [상세](2026-10-08/CORE-R9-W1-RESIDUALS-01a10729-01.md) · [원문/원응답·실패·격리 검증](../../../evals/core-manual-quality/20261008/r9-web-w1-residuals/README.md).
 
