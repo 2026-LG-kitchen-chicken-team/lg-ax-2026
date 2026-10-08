@@ -333,11 +333,6 @@ describe('actual-source research screen state and revision flow', () => {
     expect(host.querySelector('#chat-tab-insights')!.getAttribute('aria-selected')).toBe('true');
     expect(document.activeElement?.id).toBe('chat-tab-insights');
     expect(fetch.mock.calls).toHaveLength(reads);
-    await act(async () => host.querySelector<HTMLAnchorElement>('a[href="#research-concepts"]')!.click());
-    expect(host.querySelector<HTMLElement>('#chat-panel-concepts')!.hidden).toBe(false);
-    expect(host.querySelector('#chat-tab-concepts')!.getAttribute('aria-selected')).toBe('true');
-    expect(document.activeElement?.id).toBe('research-concepts');
-    expect(fetch.mock.calls).toHaveLength(reads);
   });
   it('starts a separate conversation without deleting the saved result and reopens it without a POST', async () => {
     const fetch = api(); vi.stubGlobal('fetch', fetch);
@@ -382,6 +377,11 @@ describe('actual-source research screen state and revision flow', () => {
     await connect(); await choose(); await click('기획 시작');
     expect(host.querySelector('[aria-label="깊은 칸 안쪽 보기 콘셉트 스토리보드"]')?.textContent).toContain('실제 성능 증거가 아닙니다');
     const requests = fetch.mock.calls.length;
+    await act(async () => host.querySelector<HTMLAnchorElement>('a[href="#research-concepts"]')!.click());
+    expect(host.querySelector<HTMLElement>('#chat-panel-concepts')!.hidden).toBe(false);
+    expect(host.querySelector('#chat-tab-concepts')!.getAttribute('aria-selected')).toBe('true');
+    expect(document.activeElement?.id).toBe('research-concepts');
+    expect(fetch.mock.calls).toHaveLength(requests);
     await click('영상 구성안 (.md)');
     expect(fetch.mock.calls).toHaveLength(requests);
     expect(downloads).toHaveLength(1);
