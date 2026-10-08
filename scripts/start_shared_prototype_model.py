@@ -13,6 +13,7 @@ BINARY_SHA = '103220f734bf8b4f4dad26637720fd41400c5ad95d7b02eb7b9d8e16ad1c8f27'
 PARALLEL_REQUESTS = 4
 LLAMA_BINARY_SHA = '234b05b2138264f8fb263c3205e85f4c290e8afe5067e280a4f6f90cdac5696b'
 GGUF_SHA = 'f5f1dd8920d417aac2718b0bda3403da274301efdd6760b4f0f4b864ff2ad57d'
+CUDA_BACKEND_SHA = 'e3797d7ca38b5260ce9de01a9839c688a2507ddac45ed44f205494648ea4e098'
 
 
 def file_sha256(path):
@@ -53,18 +54,22 @@ def main():
         (root / name).mkdir(mode=0o700, exist_ok=True)
     if config.get('model_engine') == 'llama.cpp':
         native = binary.parent.parent / 'lib/ollama/llama-server'
+        cuda = native.parent / 'cuda_v13/libggml-cuda.so'
         gguf = store / 'blobs' / ('sha256-' + GGUF_SHA)
-        if file_sha256(native) != LLAMA_BINARY_SHA or file_sha256(gguf) != GGUF_SHA:
+        if (file_sha256(native) != LLAMA_BINARY_SHA or file_sha256(gguf) != GGUF_SHA
+                or file_sha256(cuda) != CUDA_BACKEND_SHA):
             raise RuntimeError('Pinned native runner or GGUF changed')
         env = {'PATH': '/usr/local/bin:/usr/bin:/bin', 'HOME': str(root / 'home'),
             'XDG_CONFIG_HOME': str(root / 'config'), 'XDG_CACHE_HOME': str(root / 'cache'),
             'XDG_RUNTIME_DIR': str(root / 'runtime'), 'TMPDIR': str(root / 'tmp'),
-            'CUDA_VISIBLE_DEVICES': GPU, 'GGML_VK_VISIBLE_DEVICES': '-1'}
+            'CUDA_VISIBLE_DEVICES': GPU, 'GGML_VK_VISIBLE_DEVICES': '-1',
+            'GGML_BACKEND_PATH': str(cuda),
+            'LD_LIBRARY_PATH': str(native.parent) + ':' + str(cuda.parent)}
         # Text-only serving: separate KV streams, 16K per slot, no image encoder.
         args = [str(native), '--model', str(gguf), '--alias', 'qwen3.8:27b-q4_K_M@' + DIGEST,
             '--host', '127.0.0.1', '--port', '18875', '--offline', '--no-webui',
             '--ctx-size', str(16384 * PARALLEL_REQUESTS), '--parallel', str(PARALLEL_REQUESTS),
-            '--no-kv-unified', '--no-context-shift', '--cont-batching', '--gpu-layers', 'all',
+            '--no-kv-unified', '--no-context-shift', '--cont-batching', '--gpu-layers', 'all', '--device', 'CUDA0',
             '--flash-attn', 'auto', '--batch-size', '1024', '--ubatch-size', '1024',
             '--no-jinja', '--chat-template', 'chatml', '--reasoning', 'off', '--slots', '--metrics']
         os.execve(str(native), args, env)

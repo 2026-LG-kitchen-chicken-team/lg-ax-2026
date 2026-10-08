@@ -20,6 +20,10 @@ class SharedModelSettingsTests(unittest.TestCase):
         self.native = root / 'lib/ollama/llama-server'
         self.native.parent.mkdir(parents=True)
         self.native.write_bytes(b'local-native-runner-never-executed')
+        self.cuda = self.native.parent / 'cuda_v13/libggml-cuda.so'
+        self.cuda.parent.mkdir(parents=True)
+        self.cuda_bytes = b'local-cuda-backend-bytes-never-loaded'
+        self.cuda.write_bytes(self.cuda_bytes)
         store = root / 'models'
         blob_root = store / 'blobs'
         blob_root.mkdir(parents=True)
@@ -44,6 +48,7 @@ class SharedModelSettingsTests(unittest.TestCase):
             'model_store': str(store), 'state_dir': str(root / 'state')}))
         self.binary_sha = hashlib.sha256(self.binary.read_bytes()).hexdigest()
         self.native_sha = hashlib.sha256(self.native.read_bytes()).hexdigest()
+        self.cuda_sha = hashlib.sha256(self.cuda_bytes).hexdigest()
         self.manifest_sha = hashlib.sha256(manifest.read_bytes()).hexdigest()
 
     def engine(self, name):
@@ -56,6 +61,7 @@ class SharedModelSettingsTests(unittest.TestCase):
                 patch.object(launcher, 'DIGEST', self.manifest_sha), \
                 patch.object(launcher, 'LLAMA_BINARY_SHA', self.native_sha), \
                 patch.object(launcher, 'GGUF_SHA', self.gguf_sha), \
+                patch.object(launcher, 'CUDA_BACKEND_SHA', self.cuda_sha), \
                 patch('sys.argv', ['launcher', '--config', str(self.config)]), \
                 patch.object(launcher.socket, 'socket') as socket, \
                 patch.object(launcher.subprocess, 'check_output', return_value=memory) as probe, \
@@ -101,6 +107,8 @@ class SharedModelSettingsTests(unittest.TestCase):
             'LGAX_MODEL_ENDPOINT': 'https://test-only.example',
             'OLLAMA_HOST': '0.0.0.0:11434',
             'CUDA_VISIBLE_DEVICES': '0,1',
+            'LD_LIBRARY_PATH': '/test-only/foreign-library-directory',
+            'GGML_BACKEND_PATH': '/test-only/foreign-backend.so',
         }
         with patch.dict(launcher.os.environ, inherited):
             probe, (binary, args, env) = self.launch()
@@ -113,6 +121,7 @@ class SharedModelSettingsTests(unittest.TestCase):
         self.assertEqual(args[args.index('--ctx-size') + 1], '65536')
         self.assertEqual(args[args.index('--host') + 1], '127.0.0.1')
         self.assertEqual(args[args.index('--port') + 1], '18875')
+        self.assertEqual(args[args.index('--device') + 1], 'CUDA0')
         self.assertEqual(args[args.index('--alias') + 1], 'qwen3.8:27b-q4_K_M@' + self.manifest_sha)
         self.assertEqual(args[args.index('--reasoning') + 1], 'off')
         for flag in ('--no-kv-unified', '--no-context-shift', '--cont-batching', '--offline', '--no-webui'):
@@ -122,8 +131,12 @@ class SharedModelSettingsTests(unittest.TestCase):
         self.assertNotIn(str(self.projector), args)
         self.assertEqual(env['CUDA_VISIBLE_DEVICES'], own_gpu3)
         self.assertEqual(env['GGML_VK_VISIBLE_DEVICES'], '-1')
+        self.assertEqual(env['GGML_BACKEND_PATH'], str(self.cuda))
+        self.assertEqual(env['LD_LIBRARY_PATH'], str(self.native.parent) + ':' + str(self.cuda.parent))
+        self.assertNotEqual(env['GGML_BACKEND_PATH'], inherited['GGML_BACKEND_PATH'])
+        self.assertNotIn(inherited['LD_LIBRARY_PATH'], env['LD_LIBRARY_PATH'])
         for name in inherited:
-            if name != 'CUDA_VISIBLE_DEVICES':
+            if name not in {'CUDA_VISIBLE_DEVICES', 'LD_LIBRARY_PATH', 'GGML_BACKEND_PATH'}:
                 self.assertNotIn(name, env)
         self.assertTrue(Path(env['HOME']).is_relative_to(Path(self.temp.name) / 'state/model-runtime'))
 
@@ -138,6 +151,12 @@ class SharedModelSettingsTests(unittest.TestCase):
         changed = bytes(value ^ 1 for value in self.gguf_bytes)
         self.assertEqual(len(changed), len(self.gguf_bytes))
         self.gguf.write_bytes(changed)
+        with self.assertRaisesRegex(RuntimeError, 'Pinned native runner or GGUF changed'):
+            self.launch()
+
+    def test_native_cuda_backend_hash_change_is_rejected_without_any_exec(self):
+        self.engine('llama.cpp')
+        self.cuda.write_bytes(bytes(value ^ 1 for value in self.cuda_bytes))
         with self.assertRaisesRegex(RuntimeError, 'Pinned native runner or GGUF changed'):
             self.launch()
 
