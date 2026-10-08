@@ -1,0 +1,131 @@
+{
+  "tested_head": "a6da6784db60e99645fd57017d37ba1403af9cd1",
+  "base": "ef29aa8ff80e9ca3f4e344c48c9acec62ad8769f",
+  "integration_PR": 262,
+  "bundle_id": "LGE-R9-dishwasher-development-20261008-v1",
+  "bundle_sha256": "fbc233a429c6ec1ceeb1571ce509ecad7d9494fe5388a0524fd3e64bfa0639ff",
+  "semantic_review_path": "evals/pm-r9/20261008/semantic-review.json",
+  "semantic_review_sha256": "9bbc412a06002c53b4cf3935442a5a8488b869c867167b8d3862b51d223d157f",
+  "source_pins": [
+    {
+      "source_id": "LGE-R8-REVIEW-752651",
+      "text_sha256": "7798f3f8413d5b3dde2c0a82626e800799ee4b3b5ba8025e4ee65143611d0d85",
+      "purchased_model": null,
+      "document_version": "MFL71959117 Rev.07_030626"
+    },
+    {
+      "source_id": "LGE-R8-REVIEW-853593",
+      "text_sha256": "5b38c79373ca3ae7f67b3accb77b9c508d0a1df1259d9eaf33443fbf1544f647",
+      "purchased_model": null,
+      "document_version": "LG-PDP-MD10804836-sha256-7d84cefe0b33126b"
+    },
+    {
+      "source_id": "LGE-R8-REVIEW-800073",
+      "text_sha256": "8e1c7d0a302e972e55a9f6dfee26454239a2696a164e2b43a63bf77543e4c1d2",
+      "purchased_model": null,
+      "document_version": "LG-PDP-MD10492840-sha256-1656230726a7218c"
+    },
+    {
+      "source_id": "LGE-R8-REVIEW-645400",
+      "text_sha256": "eb1547cf996de76f006e1c7d24a4aa0245f0eeb785856d8caf099fba5457e939",
+      "purchased_model": null,
+      "document_version": "MFL71959117 Rev.07_030626"
+    },
+    {
+      "source_id": "D2-DUE-CARE-DW-ODOR-FISHY-P49",
+      "text_sha256": "1b9a9a2d5509c14cacda4c423b90dbf8565daeec7c07d50ec7bb4fda7fb48848",
+      "purchased_model": null,
+      "document_version": "MFL71959117 Rev.07_030626"
+    },
+    {
+      "source_id": "D2-DUE-CARE-DW-ODOR-DEVICE-P49",
+      "text_sha256": "9991626b622fc0d572d01126cbf02cfd49a40ac86b15e49875226170a87c43fd",
+      "purchased_model": null,
+      "document_version": "MFL71959117 Rev.07_030626"
+    }
+  ],
+  "source_assessment": [
+    {
+      "source_id": "LGE-R8-REVIEW-752651",
+      "anchor": "집사람이 다리가 많이 아파해서",
+      "interpretation": "불편한 사람은 배우자이며 구매자의 질환·관절/허리 통증·통증 완화는 확인되지 않았다.",
+      "PM_output_examples": [
+        "고객은 다리가 아파서",
+        "특히 관절/허리 통증 등"
+      ],
+      "boundary": "PM가 게시한 해당 출력 발췌만 대조; 원 full response 미수신",
+      "start": 0,
+      "end": 16,
+      "text_sha256": "7798f3f8413d5b3dde2c0a82626e800799ee4b3b5ba8025e4ee65143611d0d85"
+    },
+    {
+      "source_id": "LGE-R8-REVIEW-752651",
+      "anchor": "어느 순간부터 컵, 그릇등에서 물비린내가 나기 시작했습니다.",
+      "interpretation": "냄새 시작 시점은 미정이다. 청소 언급 뒤의 냄새가 검증된 치료 실패인지, 세척력 저하·잔여물이 관찰됐는지는 알 수 없다.",
+      "PM_output_examples": [
+        "세척력 저하",
+        "청소 후에도 지속된 냄새"
+      ],
+      "boundary": "약 한 달 청소 언급·총 약 세 달 사용/손설거지 전환을 합산하지 않는다.",
+      "start": 89,
+      "end": 122,
+      "text_sha256": "7798f3f8413d5b3dde2c0a82626e800799ee4b3b5ba8025e4ee65143611d0d85"
+    },
+    {
+      "source_id": "LGE-R8-REVIEW-853593",
+      "anchor": "좀 당황스럽지만",
+      "interpretation": "편리함·건조/성능 만족과 소모품 사용에 대한 당황이 함께 있다. 긍정 원문 인용을 보존해도 혼합 의견 표시는 별도 검증 대상이다.",
+      "PM_output_examples": [],
+      "boundary": "별점/coverage_ratio를 의미 분류 승인으로 사용하지 않는다.",
+      "start": 44,
+      "end": 52,
+      "text_sha256": "5b38c79373ca3ae7f67b3accb77b9c508d0a1df1259d9eaf33443fbf1544f647"
+    },
+    {
+      "source_id": "LGE-R8-REVIEW-645400",
+      "anchor": "기사가 설치하기 싫은것 같아",
+      "interpretation": "설치 의도는 고객 추측이다. 실제 기사 거부 의지가 확인됐다고 바꾸지 않는다.",
+      "PM_output_examples": [
+        "기사님의 설치 거부 의지"
+      ],
+      "boundary": "원문의 일방 연기·사전 설명 부재·반송과 의도 추론을 구분한다.",
+      "start": 43,
+      "end": 58,
+      "text_sha256": "eb1547cf996de76f006e1c7d24a4aa0245f0eeb785856d8caf099fba5457e939"
+    }
+  ],
+  "received_packet": "Published PM source-linked output excerpts and diagnostic notes only",
+  "full_raw_response_received": false,
+  "same_live_HTTP_MCP_received": false,
+  "reviewer_model_calls": 0,
+  "new_tests": 0,
+  "actual_model_quality_verified": false,
+  "PM_acceptance": false,
+  "run_references": [
+    {
+      "run_id": "run-a4d943ee4a75463c9fdcc206d8e0d0a2",
+      "public_output_sha256": "710d049187292580b0388b6a9efabc513877b11ea57d690e384e7395ddc1a614",
+      "verdict": "requires_targeted_semantic_repair"
+    },
+    {
+      "run_id": "run-1313f2b8d99e4ef4828a4db875015709",
+      "public_output_sha256": "a56547b38c2f593687fb5271016509d9f3bd577a11314fd8254a05c1e2f5bac4",
+      "verdict": "condition_flow_operates_but_semantic_errors_persist"
+    },
+    {
+      "run_id": "run-de49db0645744cf0bede63db0ed030e0",
+      "public_output_sha256": "78f2e9c633c2cdbb0142dd84a0eede58b646d827941c981554eae86a592e484d",
+      "verdict": "discovery_partially_improved_but_planning_blocked_before_model_call"
+    },
+    {
+      "run_id": "run-134d345ae29d4db98d98e2b579d5016d",
+      "public_output_sha256": "3f292f7e5d69055e67b8d4a779b46a0e354784eb1d543eea7a8302ecc3728509",
+      "verdict": "prompt_budget_no_longer_blocks_but_instruction_echo_rejects_problem"
+    },
+    {
+      "run_id": "run-4b4769df607a4552800cfbddccb3a476",
+      "public_output_sha256": "179a8899548f5e4a6f115cd8916e07937da2f71898f1e847551ed6f502bec414",
+      "verdict": "anti_echo_effect_not_evaluable_output_truncated"
+    }
+  ]
+}
