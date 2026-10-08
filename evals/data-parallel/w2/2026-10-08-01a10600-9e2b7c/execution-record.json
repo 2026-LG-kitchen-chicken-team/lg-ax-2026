@@ -1,0 +1,31 @@
+{
+  "checked_at_kst": "2026-10-08T13:56:38.630281+09:00",
+  "command": [
+    "python",
+    "-B",
+    "/input/verify_new_sidecars.py",
+    "--input",
+    "/input",
+    "--output",
+    "/artifacts"
+  ],
+  "image": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+  "user": "1000:1000",
+  "network": "none",
+  "readonly_root": true,
+  "mounts": [
+    {
+      "destination": "/artifacts",
+      "read_only": false
+    },
+    {
+      "destination": "/input",
+      "read_only": true
+    }
+  ],
+  "credentials_or_reviewer_answers_mounted": false,
+  "exit_code": 0,
+  "code_sha256": "b707a6bd9bad00f300fb8bf4bafba0b42b96b7ccde60982d50f756b3536bb8e6",
+  "log_sha256": "e5eeb7779ab72b34659a9fb3600a5b492d3c163aadf732afd822371d7a38b34a",
+  "new_model_API_or_installs": 0
+}

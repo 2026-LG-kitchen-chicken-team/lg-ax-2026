@@ -1,0 +1,40 @@
+"""New sidecar/source checks only. No old suite, model, OCR or production module."""
+import argparse,json,csv,re
+from pathlib import Path
+from hashlib import sha256
+from datetime import datetime,timedelta,timezone
+ap=argparse.ArgumentParser();ap.add_argument('--input',type=Path,required=True);ap.add_argument('--output',type=Path,required=True);args=ap.parse_args()
+root=args.input;unit=root/'evals/data-parallel/w2/2026-10-08-01a10600-9e2b7c';checks=[]
+def check(name,value):
+ checks.append({'check':name,'pass':bool(value)});assert value,name
+def read(name):return json.loads((unit/name).read_bytes())
+qa=read('qa470877-inspection.json');rows=qa['rows'];answer=(root/'new-source-for-verification/answer.txt').read_text('utf-8');question=(root/'new-source-for-verification/question.txt').read_text('utf-8');raw=(root/'new-source-for-verification/html-capture.html').read_bytes()
+check('Retained actual HTML equals DATA captured SHA',sha256(raw).hexdigest()==qa['captured_source']['html_sha256'])
+check('Full answer equals captured normalized body SHA',sha256(answer.encode()).hexdigest()==qa['captured_source']['answer_sha256_utf8_ws_normalized'])
+check('Question exact written unit retained', '119~120mm' in question and rows[0]['unit']=='mm' and rows[0]['interpretation'] is None and rows[0]['value']==[119,120])
+check('Six new QA fields, five grounded answer fields and one interpreted-unknown question',len(rows)==6 and sum(r['status']=='확인' for r in rows)==5 and rows[0]['status']=='미확인')
+for r in rows:
+ original=question if r['role']=='question' else answer;a,b=r['quote_normalized_character_range']
+ check(r['finding_id']+' original quote range',original[a:b]==r['short_quote'])
+ check(r['finding_id']+' exact model/source/locator/zero denominator',r['model']=='DUE6BGL2E' and r['source_id'] in ['D2-DW-QA-470877-Q','D2-DW-QA-470877-A'] and r['locator'].startswith('li[data-que-no="470877"]') and r['use_discomfort_denominator_increment']==0 and r['installation_possible_for_requester'] is None)
+check('Inside depth versus door opening fields remain separate',rows[1]['value']==600 and rows[2]['value']==590 and rows[1]['field']!=rows[2]['field'])
+check('Conditional depth, pipe risk and engineer check all retained',rows[3]['value']==[567,600] and '가능할 수' in answer and '급, 배수관 눌림' in answer and '설치 엔지니어 확인' in answer and all(r['conditions'] for r in rows[3:6]))
+csvrows=list(csv.DictReader((unit/'qa470877-inspection.csv').read_text('utf-8').splitlines()))
+check('New CSV rows retain JSON ID/model/source/status',len(csvrows)==6 and all(c['ID']==r['finding_id'] and c['Source ID']==r['source_id'] and c['모델']==r['model'] and c['판정']==r['status'] for c,r in zip(csvrows,rows)))
+table=read('automatic-table-intake.json')
+check('No automatic graph or approved adapter means unknown accuracy/error',table['actual_automatic_table_graph_received'] is False and table['approved_adapter_pin_received'] is False and table['actual_accuracy'] is None and table['actual_error_count'] is None and table['status']=='검증 불가')
+check('No manual/planning/competitor adapter substitution',not any(table[k] for k in ['manual_success_as_automatic_accuracy','R9_planning_graph_as_table_output','competitor_source_adapter_as_table_adapter']))
+trend=read('trend-approval-intake.json')
+check('Unapproved classification and date counts retained',trend['classification_approved'] is False and trend['rows_changed']==0 and trend['month_denominator']==0 and trend['season_denominator']==0 and trend['ratio'] is None and trend['new_candidates_merged_into_existing_denominator']==0 and trend['Q&A_date_review_denominator_increment']==0)
+consumer=read('source-consumer-receipt.json');crows=consumer['rows'];selected=consumer['named_run_selected_source_ids']
+check('New receipt scoped to six selected IDs and pending26 distinct source references',len(selected)==6 and len(crows)==26 and len({r['source_id'] for r in crows})==26 and not set(selected)&{r['source_id'] for r in crows})
+check('One named run nonselection is not global consumption failure',consumer['not_a_global_no_runs_exist_claim'] is True and all(r['present_in_this_named_run_selection'] is False and r['actual_consumption_in_any_other_run'] is None and r['actual_consumption_body_or_prompt_SHA_received'] is None for r in crows))
+check('Original capture version retained for ten expanded sources',all(r['source_HTML_capture_version'] is not None for r in crows if r['category'] in ['kimchi','lightwave']))
+check('Notes receipt does not become runtime/PM adoption',consumer['CORE_new_intake']['runtime_consumption_or_PM_approval'] is False and all(r['PM_production_adoption_approved'] is False and r['buyer_SKU'] is None and r['buyer_time_document_version'] is None and r['trend_denominator_increment']==0 for r in crows))
+manual=read('manual-condition-followup.json')
+check('CORE manual image inspection stays reported/reused, not new DATA PDF work',manual['DATA_new_PDF_downloads']==0 and manual['DATA_new_PDF_100page_or_cover_repeat_read'] is False and manual['purchased_SKU_confirmed'] is False and manual['purchase_time_revision_confirmed'] is False)
+check('Shared manual surface/inside and optional logo/model conditions retained',len(manual['preserved_conditions'])==4 and any('exterior' in v or 'external surface' in v for v in manual['preserved_conditions']))
+for name in unit.glob('*.json'):json.loads(name.read_bytes())
+check('New sidecar JSON syntax',True)
+result={'checked_at_kst':datetime.now(timezone(timedelta(hours=9))).isoformat(),'scope':'New six QA fields and new26-to-selected6 receipt mapping; prior source/238/141/1101/53/225/11/manual54 checks not rerun','result':'PASS','check_count':len(checks),'checks':checks,'automatic_table_accuracy':None,'review_topic_accuracy':None,'parent_Done':False,'model_OCR_DB_API_mail_calls':0}
+args.output.mkdir(parents=True,exist_ok=True);(args.output/'verification.json').write_bytes((json.dumps(result,ensure_ascii=False,indent=2)+'\n').encode());print(json.dumps({'result':'PASS','new_source_checks':len(checks),'model_OCR_or_old_tests_run':0},ensure_ascii=False))

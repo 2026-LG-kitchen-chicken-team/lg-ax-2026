@@ -1,0 +1,15 @@
+# DATA-W2-01a10600-9e2b7c — 2026-10-08T13:55:43.902960+09:00
+
+사용자 직접 지시: 신진하 DATA의 W2 검수, 최신main/PM/개인README·PR280/282·#14/#148·CORE6052228755를 읽고 별도codex/data-w2 고유branch/worktree·새eval폴더 사용. Q&A 원답변·자동table/adapter 인수·분류/날짜/SKU/판본/정확Source ID 소비 receipt 대조. 기존 코드/자료/개인README/다른 창 파일 읽기 전용, 모델/OCR·225/11·완료검사 반복0. AI 의미 W1, ZIP/운영DB/메일 W3, 메일 발송 금지. 새 sidecar 부분PR·#16 보고·막힘 #14/#148의 기존 요청 중복 없이 tag.
+
+의도·범위: 기존238/141·292/36·공식15모델 및 PR280/282를 재사용하고 변경된 인계만 검사. CORE의 원답변 확인을 내 확인으로 대신하지 않고 직접 공식GET200·전체 답변·정확DOM·단위/조건·시각/SHA를 읽었다. 질문의119~120mm는 원단위로 보존하고 cm 해석을 만들지 않았다. 공식600/590/조건부567–600mm와 급·배수관 눌림·현장 엔지니어 확인을 분리했다. 특정 사용자의 실제 설치 가능/구매/사용 불편은 미확인.
+
+현재main eab85d48385f965eef48c07a6cdd8f6fd9851c62; PR280 507218bee95ac1f0f86259ca5942751b24a3ad03; PR282 ce4032c3a72abc863f6dde16f9948abe1b1df0fc; 추가 수신 PM PR284 02ba9913efc0c449aa4f3cb46727162f2057cd71의 기존 serving-proof 선택6 Source ID. 실행 배포 source0541ba02457055d28e3f7021fbaf907a2ca86bfb와 기록head는 다르며 main 병합/승인도 미완료다. 이6 ID는 확장/경쟁/Q&A26 ID와 겹치지 않아서 해당 실행 선택미포함으로만 기록했다. 이전1,101/53/225/11/수동54축·제품 검사를 이 창의 새 실행으로 재표시하지 않았다.
+
+원 실패: 앱 worktree 생성은 invalid reference로 실패해 기존 인증된 Git 저장소의 fetched main에서 native별도worktree를 생성했다. 최초 web 도구는 공개Q&A를 읽지 못했고 정상publicGET은 성공했다. 첫 추출기는 HTMLParser.offset 내부int와 메서드가 충돌해 실패했으며 첫GETbody는 파싱 전 미보존이었다. char_position 수정·raw 우선보존 후 다음 정상GET 캡처를 새 시각/SHA로 남겼고 이후파싱은 그 보존HTML만 재사용했다. CORE의 보고HTML SHA와 현재DATA계산SHA가 같으며 CORE 원파일 직접 수신은 아님. 다른 source원본문/파일/실패/사용량은 변경하지 않았다. 예약 helper의 OFF/off 대소문자 가정을 수정했고, 실제 고유경로 예약 요청은 controller409로 거절됐다. 그 시점에 같은 계정 W3예약이 활성인 것을 관찰했으며 다른 예약을 해제/변경하지 않았다. 이후 적법한 본인예약의 실제 결과는 별도 실행수신증으로 기록한다.
+
+막힘: 자동 graph/승인adapter, PM 승인분류/지적Source ID, 후기 날짜 의미·정확 구매SKU·구매 당시판본, 받은26 source의 다른 실제 실행소비/채택receipt. 준비/파일읽기/원문직접확인/운영적용/의미검수/PM승인/최종채점/부모Done을 분리했다.
+
+새 검수·공개 제외: 공개CSV/JSON·원문짧은quote/범위·pin·기존파일보존·비밀/경로·zero-auth audit·staged blob/head를 검사한다. 원HTML·작성자·사진·전문/privateGold·ZIP원문은Git에 포함하지 않는다. 모델/OCR/운영프로브·서버/DB/메일/유료API·자동화ON·한도/CI설정변경0. 비용이 아닌 CI 실행 시작 제한은 게시 후 실제수신증에 기록하며 검사 성공으로 대체하지 않는다.
+
+다음 하나: #14 기존graph/adapter pin의 첫유효출력 인수→W2원PDF연결검수. #148 기존요청 중 원답변항목만 이번독립확인으로 갱신, 날짜/분류/소비 인계가 오면 해당Source ID/field부터 대조. 사용자가 지금 별도 도구 설치/모델 선택/Gold채점자 지정할 필요는 없다.

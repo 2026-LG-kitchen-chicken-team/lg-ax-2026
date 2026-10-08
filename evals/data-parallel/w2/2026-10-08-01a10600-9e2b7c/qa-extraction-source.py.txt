@@ -1,0 +1,68 @@
+"""One normal public GET of the requested official Q&A; raw material stays private."""
+from pathlib import Path
+from urllib.request import Request,urlopen
+from urllib.parse import urlsplit
+from html.parser import HTMLParser
+from hashlib import sha256
+from datetime import datetime,timedelta,timezone
+import json,sys,re
+sys.stdout.reconfigure(encoding='utf-8');root=Path(__file__).resolve().parent
+url='https://www.lge.co.kr/model/qna/qna-detail?modelId=MD10492836&questionNo=470877'
+private=root/'private-source-capture';private.mkdir(exist_ok=True)
+if (private/'qa470877.html').exists():
+ raw=(private/'qa470877.html').read_bytes(); prior=json.loads((private/'raw-capture-receipt.json').read_bytes());http=prior['http'];stamp=http['capture_time_kst'];assert sha256(raw).hexdigest()==prior['sha256']
+else:
+ with urlopen(Request(url,headers={'User-Agent':'Mozilla/5.0','Accept':'text/html'}),timeout=45) as response:
+  assert response.status==200 and urlsplit(response.url).hostname=='www.lge.co.kr'
+  raw=response.read(8*1024*1024+1);assert len(raw)<=8*1024*1024
+  http={'status':response.status,'url':response.url,'content_type':response.headers.get('Content-Type'),'date':response.headers.get('Date')}
+ (private/'qa470877.html').write_bytes(raw)
+ stamp=datetime.now(timezone(timedelta(hours=9))).isoformat()
+ http['capture_time_kst']=stamp
+ (private/'raw-capture-receipt.json').write_bytes(json.dumps({'http':http,'sha256':sha256(raw).hexdigest(),'bytes':len(raw)},ensure_ascii=False,indent=2).encode())
+text=raw.decode('utf-8');lines=text.splitlines(keepends=True);starts=[];pos=0
+for line in lines:starts.append(pos);pos+=len(line)
+class Node:
+ def __init__(self,tag,attrs,start,parent):self.tag=tag;self.attrs=dict(attrs);self.start=start;self.end=None;self.parent=parent;self.children=[]
+class DOM(HTMLParser):
+ def __init__(self):super().__init__(convert_charrefs=True);self.top=Node('document',[],0,None);self.current=self.top;self.nodes=[]
+ def char_position(self):l,col=self.getpos();return starts[l-1]+col
+ def handle_starttag(self,tag,attrs):
+  n=Node(tag,attrs,self.char_position(),self.current);self.current.children.append(n);self.nodes.append(n)
+  if tag in {'area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr'}:n.end=self.char_position()+len(self.get_starttag_text())
+  else:self.current=n
+ def handle_startendtag(self,tag,attrs):
+  self.handle_starttag(tag,attrs)
+  if self.current.tag==tag:self.current.end=self.char_position()+len(self.get_starttag_text());self.current=self.current.parent
+ def handle_endtag(self,tag):
+  n=self.current
+  while n and n.tag!=tag:n=n.parent
+  if n:
+   n.end=text.find('>',self.char_position())+1;self.current=n.parent or self.top
+ def handle_data(self,data):self.current.children.append(data)
+def content(n):
+ if isinstance(n,str):return n
+ if n.tag in {'script','style','noscript'}:return ''
+ return ''.join(content(v)+ ('\n' if isinstance(v,Node) and v.tag in {'p','br','div','li'} else '') for v in n.children)
+def under(n,ancestor):
+ while n:
+  if n is ancestor:return True
+  n=n.parent
+ return False
+dom=DOM();dom.feed(text)
+li=[n for n in dom.nodes if n.tag=='li' and n.attrs.get('data-que-no')=='470877'];assert len(li)==1
+inside=[n for n in dom.nodes if under(n,li[0])]
+answers=[n for n in inside if n.tag=='div' and 'answer-content' in n.attrs.get('class','').split()];assert len(answers)==1
+answer=answers[0];answer_text=re.sub(r'\s+',' ',content(answer)).strip()
+questions=[n for n in inside if 'qna-detail-question' in n.attrs.get('class','').split()];assert len(questions)==1
+question=questions[0];question_text=re.sub(r'\s+',' ',content(question)).strip()
+assert '119~120mm' in question_text
+private=root/'private-source-capture';private.mkdir(exist_ok=True)
+(private/'qa470877.html').write_bytes(raw)
+(private/'qa470877-answer.txt').write_bytes(answer_text.encode('utf-8'))
+(private/'qa470877-question.txt').write_bytes(question_text.encode('utf-8'))
+receipt={'capture_id':'W2-QA470877-20261008-01a10600-9e2b7c','checked_at_kst':stamp,'http':http,'html_sha256':sha256(raw).hexdigest(),'html_bytes':len(raw),'core_html_sha256':'1941dbeb99f2cab9a595240f3fcbe0576a71437e4699204119296877b0c7f487','same_raw_html_as_core':sha256(raw).hexdigest()=='1941dbeb99f2cab9a595240f3fcbe0576a71437e4699204119296877b0c7f487','answer_selector':'li[data-que-no="470877"] div.answer-content','answer_sha256_utf8_ws_normalized':sha256(answer_text.encode('utf-8')).hexdigest(),'answer_locator':{'html_character_start':answer.start,'html_character_end':answer.end,'html_line_start':text.count('\n',0,answer.start)+1,'html_line_end':text.count('\n',0,answer.end)+1},'private_raw_body_not_published':True,'core_confirmed_and_DATA_independent_confirmation_separate':True,'purchased_sku_verified':False,'installation_possible_for_requester':None}
+(root/'qa-capture-receipt.json').write_bytes(json.dumps(receipt,ensure_ascii=False,indent=2).encode())
+receipt.update({'question_selector':'li[data-que-no="470877"] .qna-detail-question','question_sha256_utf8_ws_normalized':sha256(question_text.encode('utf-8')).hexdigest(),'question_locator':{'html_character_start':question.start,'html_character_end':question.end,'html_line_start':text.count('\n',0,question.start)+1,'html_line_end':text.count('\n',0,question.end)+1},'question_written_range':'119~120','question_written_unit':'mm','question_interpretation':None,'date_nodes':[{'class':n.attrs.get('class'), 'displayed_text':content(n).strip()} for n in inside if n.attrs.get('class')=='date'],'full_original_CORE_bytes_received_here':False,'capture_sha_comparison':'DATA computed capture hash versus CORE authored reported hash, not direct CORE file comparison'})
+(root/'qa-capture-receipt.json').write_bytes(json.dumps(receipt,ensure_ascii=False,indent=2).encode())
+print(json.dumps(receipt,ensure_ascii=False))
