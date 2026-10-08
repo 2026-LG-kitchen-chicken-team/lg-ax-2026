@@ -1,0 +1,7 @@
+id,dimension,received,remaining,verdict
+INPUT-01,Original input scope and generation code,PM review selected6/scope/count and current Git source references,Generation-time stored input or approved source-linked input snapshot; exact generation code commit,UNCONFIRMED
+INPUT-02,Additional source-text prefix clipping,Current launcher limit1000 and selected source lengths63..550; prefix bytes equal originals for6/6,Original run actual source snapshot and effective max_source_characters,CONDITIONAL_CODE_CHECK_PASS_NOT_EXECUTION_PROOF
+INPUT-03,Per-stage source coverage and planner prompt,PM reported normal5062/6448 and changed5172/6859 chars; current batching/selection code,Existing discover/plan source ID lists and actual planner prompt SHA/bytes,UNCONFIRMED
+INPUT-04,Client formatting and wire body,Current client retains supplied prompt and records formatted chars/UTF8/SHA after return; size overflow rejects,Original formatted prompt/native format and request body receipt; size/hash comparison,UNCONFIRMED
+INPUT-05,Provider input token/context admission,Reported context16384/output4096; these are settings,Existing native prompt_eval_count/context receipt or exact prompt/tokenizer evidence tied to original run,UNCONFIRMED
+INPUT-06,Output completion is separate from input completeness,Reported output_truncated=false in both successful runs; current done_reason=length rejects outputs,Original native response/status; never use output flag or stored source_facts to claim complete input,UNCONFIRMED

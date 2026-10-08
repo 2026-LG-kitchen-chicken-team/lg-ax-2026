@@ -1,0 +1,93 @@
+import ast,csv,hashlib,json,pathlib,re
+root=pathlib.Path.cwd();unit='evals/data-parallel/w3/20261008-01a10c5c-r2-6d50a29f';folder=root/unit
+def read(name):return json.loads((folder/name).read_bytes())
+pins=read('source-pins.json')
+for pin in pins['git_files']:
+    raw=(root/'inputs'/pin['path']).read_bytes()
+    assert len(raw)==pin['bytes'] and hashlib.sha256(raw).hexdigest()==pin['sha256'],pin['path']
+    assert hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()==pin['git_blob_sha1']
+    assert pin['generation_code_commit'] is None
+review=json.loads((root/'inputs/evals/pm-r9/20261008/compact-guide-live-semantic-review.json').read_bytes())
+intake=read('run-intake.json')
+assert len(intake['runs'])==2 and len(intake['received_reported_metadata'])==26
+def get(obj,p):
+    for key in p.strip('/').split('/'):obj=obj[int(key)] if isinstance(obj,list) else obj[key]
+    return obj
+for f in intake['received_reported_metadata']:
+    assert get(review,f['json_pointer'])==f['value'] and 'not original' in f['receipt_kind']
+for i,run in enumerate(intake['runs']):
+    assert run['run_id']==review['runs'][i]['run_id']
+    assert run['declared_public_output_sha256']==review['runs'][i]['public_output_sha256']
+    assert run['actual_public_output_sha256'] is None and run['actual_public_output_bytes'] is None
+    assert run['generation_code_commit'] is None and run['input_complete_verified'] is None
+    assert not run['actual_public_output_file_received'] and not run['original_stage_input_prompt_received']
+    assert len(run['constraints_reported'])==(1 if i==0 else 5)
+assert intake['runs'][1]['parent_run_id_reported']==intake['runs'][0]['run_id']
+assert intake['original_JSON_files_received_count']==intake['actual_original_output_fields_received_count']==0
+with (folder/'run-intake.csv').open(encoding='utf-8',newline='') as f:
+    rows=list(csv.DictReader(f))
+assert [x['run_id'] for x in rows]==[x['run_id'] for x in intake['runs']]
+assert all(x['actual_sha256']=='UNCONFIRMED' for x in rows)
+data=read('input-delivery-audit.json')
+bundle=json.loads((root/'inputs/data/research/r9-public-runtime-20261008/dishwasher.research-bundle.json').read_bytes())
+tree=ast.parse((root/'inputs/scripts/serve_research_prototype.py').read_text(encoding='utf-8'))
+calls=[n for n in ast.walk(tree) if isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute) and n.func.attr=='from_model_client' and any(k.arg=='max_source_characters' for k in n.keywords)]
+assert len(calls)==1
+settings={k.arg:ast.literal_eval(k.value) for k in calls[0].keywords if k.arg in {'max_source_characters','max_prompt_characters','max_model_calls'}}
+assert settings==data['current_launcher_settings']=={'max_model_calls':4,'max_prompt_characters':9000,'max_source_characters':1000}
+planner=(root/'inputs/packages/core/src/lgax_core/public_planning.py').read_text(encoding='utf-8')
+parsed=ast.parse(planner);ctx=next(n for n in ast.walk(parsed) if isinstance(n,ast.FunctionDef) and n.name=='_source_context')
+assert 'source["text"][:self.max_source_characters]' in ast.get_source_segment(planner,ctx)
+client=(root/'inputs/packages/core/src/lgax_core/model_client.py').read_text(encoding='utf-8')
+assert 'formatted_prompt_sha256' in client and 'formatted_prompt_utf8_bytes' in client and 'output_truncated' in client
+assert len(data['source_length_checks'])==6
+for row in data['source_length_checks']:
+    source=next(s for s in bundle['sources'] if s['source_id']==row['source_id'])
+    text=source['text'];raw=text.encode();part=text[:1000]
+    assert row['characters']==len(text) and row['utf8_bytes']==len(raw)
+    assert row['source_text_sha256']==hashlib.sha256(raw).hexdigest()
+    assert row['projected_prefix_sha256']==hashlib.sha256(part.encode()).hexdigest()
+    assert part==text and row['additional_characters_removed_by_current_limit']==0
+    assert row['code_level_no_additional_clipping'] is True
+    assert row['generation_time_input_no_clipping_verified'] is None
+assert [min(x['characters'] for x in data['source_length_checks']),max(x['characters'] for x in data['source_length_checks'])]==[63,550]
+assert sum(x['characters'] for x in data['source_length_checks'])==data['total_reference_source_characters']==1345
+assert sum(x['utf8_bytes'] for x in data['source_length_checks'])==data['total_reference_source_utf8_bytes']==3213
+assert sum(x['source_coverage']=='full' for x in data['source_length_checks'])==4
+assert sum(x['source_coverage']=='excerpt' for x in data['source_length_checks'])==2
+assert data['overall_actual_input_complete_verified'] is None
+for row in data['reported_stage_metadata']:
+    assert row['reported_output_truncated'] is False
+    for key in ('actual_raw_prompt_sha256','actual_formatted_prompt_sha256','actual_wire_body_sha256','native_prompt_eval_count','input_complete_verified'):
+        assert row[key] is None
+assert len(data['checks'])==6
+with (folder/'input-delivery-checks.csv').open(encoding='utf-8',newline='') as f:
+    rows=list(csv.DictReader(f))
+assert rows==data['checks']
+reused=read('receipt-reuse.json')
+assert len(reused['comments'])==3
+for row in reused['comments']:
+    assert row['author']=='unknownamed'
+    assert hashlib.sha256(row['body'].encode()).hexdigest()==row['body_utf8_sha256']
+for pin,row in zip(pins['receipt_comments'],reused['comments']):
+    assert pin['id']==row['id'] and pin['body_utf8_sha256']==row['body_utf8_sha256']
+remaining=read('remaining-handoffs.json')
+assert not remaining['first_original_field']['partial_original_received']
+ziprow=remaining['input_ZIP']
+assert ziprow['expected_bytes']==11106 and ziprow['prior_expected_entry_count']==11
+assert not ziprow['actually_transferred_this_session'] and ziprow['actual_receiver_sha256'] is None
+assert not ziprow['Gold_full_raw_usage_automatic_graph_final_score_are_delivery_prerequisites']
+assert remaining['existing_mail_reused']['new_mail_sent_this_session']==0
+assert remaining['operating_intake']['new_DB_API_MCP_or_restart_actions_this_session']==0
+assert (root/'AGENTS.md').read_bytes()==(root/'CLAUDE.md').read_bytes()
+for p in root.rglob('*'):
+    if not p.is_file() or '/inputs/' in p.as_posix():continue
+    if not ('/evals/data-parallel/w3/' in p.as_posix() or '/docs/' in p.as_posix()):continue
+    text=p.read_text(encoding='utf-8')
+    assert not re.search(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}',text),p
+    if p.suffix=='.json':json.loads(text)
+    if p.suffix=='.md':
+        for dest in re.findall(r'\]\(([^)]+)\)',text):
+            if re.match(r'[a-z][a-z0-9+.-]*:',dest):continue
+            assert (p.parent/dest.split('#')[0]).resolve().is_file(),(str(p),dest)
+print(json.dumps({'status':'PASS','Git_pins_verified':6,'CORE_comment_bodies_verified':3,'reported_PM_fields_verified':26,'reported_original_runs':2,'reference_source_prefixes_equal':6,'conditional_reference_characters':1345,'conditional_reference_utf8_bytes':3213,'actual_original_output_files_received':0,'actual_model_input_complete_verified':None,'new_model_OCR_calls':0,'225_11_reexecuted':False,'scope':'New source-length/input-receipt qualification only. Reported traces and current Git source are not original-run/native/wire proof.'},ensure_ascii=False))
