@@ -3,8 +3,8 @@
   "mode": "manual",
   "automation_enabled": false,
   "user_directive": "자동화 OFF. 중단된 미완료만 이어서 진행하고 완료 작업은 재사용한다. 기존·새 작업을 배정하고 현재 대화의 수동 진행 중 큐·검수·통합을 관리한다.",
-  "updated_at": "2026-10-08T08:50:19+09:00",
-  "base_commit": "ef29aa8ff80e9ca3f4e344c48c9acec62ad8769f",
+  "updated_at": "2026-10-08T09:23:27+09:00",
+  "base_commit": "dc0ccc05916c637b2e0c2cc268a061dfa655c0b7",
   "queue_issue": 234,
   "original_completed_tasks": [
     "P2-CORE-001",
@@ -141,7 +141,7 @@
       "depends": [
         "D1"
       ],
-      "state": "frozen_238_independent_audit_followups_reviewed_locally_integrated",
+      "state": "accepted_frozen238_audit_original246_merged_pr262",
       "executor": null,
       "paths": [
         "data/research/r8-public-research-20261007/"
@@ -152,7 +152,7 @@
         "실제게시일 없는 자료에 월/계절 추세를 생성하지 않는다.",
         "검색·재정렬·OCR 실제 비교와 FR01 원자료 정답 인수의 중단된 잔여는 기존 도구로 이어가고 완료된 실험은 반복하지 않는다."
       ],
-      "follow_up": "PR246 independent audit has not run: producer paths/fields adapter + unknown extra Excel ID and fixed product-map findings must be addressed first. No old collection rerun.",
+      "follow_up": "확장 미리보기 자료는 기존238·개발141에 합치지 않고 별도 인수한다.",
       "previous_state": "audit_prepared_format_and_findings_pending"
     },
     {
@@ -216,7 +216,7 @@
       "depends": [
         "P0"
       ],
-      "state": "native_boundary_and_provenance_improved_live_echo_followup_pending",
+      "state": "native_item_boundary_and_coverage_repair_merged_semantics_partial",
       "executor": "local_support/failure_scope_review",
       "paths": [
         "packages/core/src/lgax_core/public_planning.py",
@@ -228,7 +228,7 @@
         "기능존재를 고객불편 해결로 바꾸지 않는다.",
         "틀린항목에 좁은수정을 하고 유효후보를 보존한다."
       ],
-      "follow_up": "Focused review-only field repair preserves healthy items and fixes actor/function/hypothesis errors; onset/use-end chronology precision still needs work. Legacy exact-model global deletion remains separate residual.",
+      "follow_up": "R9-CF1 고객 관찰/희망/추정·주체/시간 구조화부터 구현. 원문 없는 청소실패/질환/총기간을 만들지 않는다.",
       "previous_state": "partially_fixed_semantic_followup_pending"
     },
     {
@@ -248,7 +248,7 @@
         "C1",
         "C2"
       ],
-      "state": "live_normal_revision_available_selected_scope_quality_partial",
+      "state": "live_normal_and_condition_selected6_saved_semantics_partial",
       "executor": "local_support/failure_scope_review",
       "paths": [
         "packages/core/src/lgax_core/public_planning.py",
@@ -260,7 +260,8 @@
         "조건변경이 같은자료의 새revision에 반영된다."
       ],
       "implementation_commit": "4d5f46cfb552dd58d3029017d28653a16a87549e",
-      "previous_state": "draft_flow_and_revisions_tested_quality_partial"
+      "previous_state": "draft_flow_and_revisions_tested_quality_partial",
+      "follow_up": "R9-CF2 공식 조치의 조건·순서·SKU와 R9-CF3 장면/상담 claim 의존성 연결. 현재 생성complete는 의미승인이 아니다."
     },
     {
       "id": "C4",
@@ -274,7 +275,7 @@
         "D1",
         "C3"
       ],
-      "state": "trusted_coverage_live_verified_sentiment_accuracy_partial",
+      "state": "summary_coverage_preserved_polarity_precision_pending",
       "executor": "local_support/failure_scope_review",
       "paths": [
         "packages/core/src/lgax_core/public_planning.py"
@@ -284,7 +285,7 @@
         "건수·분모는코드, 의미해석은LLM으로 구분한다.",
         "근거·반대사례·추론관계를 후속기획에 전달한다."
       ],
-      "follow_up": "853593 positive→mixed classification and official-omitted 861559 burden→pain-relief expansion remain localized semantic findings; no market frequency estimate.",
+      "follow_up": "752651 희망을 실제 긍정으로, 853593 양면후기를 positive-only로 바꾸는 분류 오류를 수정한다.",
       "previous_state": "implemented_summary_semantics_pending"
     },
     {
@@ -326,7 +327,7 @@
         "C4",
         "W1"
       ],
-      "state": "selected_scope_connected_browser_export_bytes_received_final_save_unconfirmed",
+      "state": "selected_scope_and_official_guide_web_export_bytes_verified",
       "executor": "local_support/qwen_test_route",
       "paths": [
         "apps/web/"
@@ -337,7 +338,7 @@
         "선택근거를 다른제품/UX/사용안내/서비스기획에 넣는다."
       ],
       "implementation_commit": "b29dc62541c1602a6558d73473e379c4065d0f53",
-      "follow_up": "Keyword/related terms/posted-date and selected evidence serialization tested. Actual Chrome JSON download event/file still unconfirmed after one narrow helper fix.",
+      "follow_up": "선택근거6의 새기획/조건이력·공식참고 안내서 버튼 연결 완료. 브라우저 native Save As 최종완료는 미확인으로 남긴다.",
       "previous_state": "implemented_filter_export_download_unconfirmed"
     },
     {
@@ -378,7 +379,7 @@
         "D2",
         "C3"
       ],
-      "state": "official_reference_guide_api_mcp_web_implemented_live_api_mcp_identical",
+      "state": "official_reference_guide_api_mcp_web_implemented",
       "executor": "local_support/failure_scope_review",
       "paths": [
         "packages/core/src/lgax_core/",
@@ -390,7 +391,8 @@
         "공식제품기능과 미래기획을 구분한다."
       ],
       "implementation_commit": "5b364d81027e0e25d9ad40269407dc133faf9dc8",
-      "previous_state": "implemented_official_guides_concept_draft_pending"
+      "previous_state": "implemented_official_guides_concept_draft_pending",
+      "follow_up": "공식원문 모음 안내서는 완료. 새콘셉트 설명서는 CORE 의미수정 뒤 실제 유용성과 시나리오로 검토한다."
     },
     {
       "id": "P1",
@@ -402,7 +404,7 @@
         152
       ],
       "depends": [],
-      "state": "original_pr246_261_locally_integrated_latest251_f02_new_required_ci_pending",
+      "state": "pr262_merged_main_ci4_pass_original16_preserved",
       "executor": "current_chat",
       "paths": [
         "docs/pm/",
@@ -414,7 +416,8 @@
         "완료된과거병합/검사를 반복하지 않고 필요한현재변경만 확인한다.",
         "로컬미커밋/원실패/역사를 보존하고 새WEB/API/MCP의run/version을 맞춘다."
       ],
-      "previous_state": "integration_pr245_ci_pending"
+      "previous_state": "integration_pr245_ci_pending",
+      "follow_up": "신규제품군 인수·조회 후보 연결을 별도 PR로 검수한다. 부모 전체Done이나 자동Worker 활성화는 하지 않는다."
     },
     {
       "id": "P2",
@@ -437,7 +440,7 @@
         "W1",
         "P1"
       ],
-      "state": "usable_internal_prototype_quality_review_in_progress",
+      "state": "internal_draft_prototype_available_quality_not_approved",
       "executor": null,
       "paths": [
         "docs/pm/",
@@ -450,7 +453,7 @@
         "발표/시연영상/소스ZIP·README·실행Skill을 같은버전으로 재현한다.",
         "최종 단계에서 세 제품군·두 AI 호스트 연결의 미완료를 확인하고 이전 인수 증거는 재사용한다."
       ],
-      "follow_up": "Actual-source internal draft walkthrough can begin. Broad independent quality, three-product live run, two host integration, five Skills, paired baseline and final submission remain.",
+      "follow_up": "실제 사용자 walkthrough·세제품/독립평가/두호스트/다섯Skill/제출 재현은 남는다.",
       "previous_state": "internal_draft_prototype_test_ready_final_acceptance_pending"
     },
     {
@@ -490,7 +493,7 @@
       "depends": [
         "P2"
       ],
-      "state": "manual15_received_reference5_live_remaining_reviews_new_groups_pending",
+      "state": "kimchi_review_preview3_and_lightwave_official4_intake_connecting",
       "executor": null,
       "paths": [
         "data/research/",
@@ -502,7 +505,8 @@
         "인덕션/전기레인지/정수기를 순차확대한다.",
         "메뉴만 늘려 구현완료로 표시하지 않는다."
       ],
-      "previous_state": "queued_dependency"
+      "previous_state": "queued_dependency",
+      "follow_up": "별도 두 묶음의 원ID/게시일/구매SKU 미확인·전체후기 미확인 보존. 추가 Q&A/설명서 확보·독립평가승인 잔여."
     }
   ],
   "legacy_open_issues": [
@@ -1124,7 +1128,7 @@
     },
     {
       "pr": 246,
-      "state": "reviewed_latest_followups_locally_merged",
+      "state": "merged_main_original_commit_preserved_pr262",
       "head": "6f63c90db53177066d6d78a97483d73c73d5821a",
       "scope": "manual D4 audit preparation; producer format adapter and two P2 findings",
       "previous_review": {
@@ -1137,91 +1141,97 @@
     {
       "pr": 247,
       "head": "7ef977e269233480e535e1186334e52cdfb234ce",
-      "state": "reviewed_locally_merged_original_commit_preserved",
+      "state": "merged_main_original_commit_preserved_pr262",
       "model_quality_verified": false
     },
     {
       "pr": 248,
       "head": "68b822108f8bdbadb2352ffa0554ab332c1d0db2",
-      "state": "reviewed_locally_merged_original_commit_preserved",
+      "state": "merged_main_original_commit_preserved_pr262",
       "model_quality_verified": false
     },
     {
       "pr": 249,
       "head": "e6b2d084a6e2850cf38aca410b79200e97d96a52",
-      "state": "reviewed_locally_merged_original_commit_preserved",
+      "state": "merged_main_original_commit_preserved_pr262",
       "model_quality_verified": false
     },
     {
       "pr": 250,
       "head": "1b93fb7bd3d8b13545c65c45c269c8edc510c420",
-      "state": "reviewed_locally_merged_original_commit_preserved",
+      "state": "merged_main_original_commit_preserved_pr262",
       "model_quality_verified": false
     },
     {
       "pr": 251,
       "head": "f02f9c561c86ad74217f29eabfeb71eae290af43",
-      "state": "reviewed_locally_merged_original_commit_preserved",
+      "state": "merged_main_original_commit_preserved_pr262",
       "model_quality_verified": false
     },
     {
       "pr": 252,
       "head": "78a1906369479eb2336cecc3a134895a814f95b1",
-      "state": "reviewed_locally_merged_original_commit_preserved",
+      "state": "merged_main_original_commit_preserved_pr262",
       "model_quality_verified": false
     },
     {
       "pr": 253,
       "head": "0c6b061aed2268442f453da255cb482f0548b83f",
-      "state": "reviewed_locally_merged_original_commit_preserved",
+      "state": "merged_main_original_commit_preserved_pr262",
       "model_quality_verified": false
     },
     {
       "pr": 254,
       "head": "94b560de72f91795cfd50aada9e17d6773383ae1",
-      "state": "reviewed_locally_merged_original_commit_preserved",
+      "state": "merged_main_original_commit_preserved_pr262",
       "model_quality_verified": false
     },
     {
       "pr": 255,
       "head": "299360d0650a9bdeacafd4f92730f340298b5032",
-      "state": "reviewed_locally_merged_original_commit_preserved",
+      "state": "merged_main_original_commit_preserved_pr262",
       "model_quality_verified": false
     },
     {
       "pr": 256,
       "head": "2c20546beda90a91e506ce56b96b61ac1041f0e7",
-      "state": "reviewed_locally_merged_original_commit_preserved",
+      "state": "merged_main_original_commit_preserved_pr262",
       "model_quality_verified": false
     },
     {
       "pr": 257,
       "head": "9fade5ddd8d014d1fac4c70a2d23bf7cd6470924",
-      "state": "reviewed_locally_merged_original_commit_preserved",
+      "state": "merged_main_original_commit_preserved_pr262",
       "model_quality_verified": false
     },
     {
       "pr": 258,
       "head": "a6e81a9b76f1360c72cdeb8dc1a6dec107614467",
-      "state": "reviewed_locally_merged_original_commit_preserved",
+      "state": "merged_main_original_commit_preserved_pr262",
       "model_quality_verified": false
     },
     {
       "pr": 259,
       "head": "9516caa27f05330830aa91d725d4bd8902bf4d9e",
-      "state": "reviewed_locally_merged_original_commit_preserved",
+      "state": "merged_main_original_commit_preserved_pr262",
       "model_quality_verified": false
     },
     {
       "pr": 260,
       "head": "c775adaa27ede8c486a8fabbb24a1de18a1367de",
-      "state": "reviewed_locally_merged_original_commit_preserved",
+      "state": "merged_main_original_commit_preserved_pr262",
       "model_quality_verified": false
     },
     {
       "pr": 261,
       "head": "c0116fb026eabd24a6d2276451cea86070205ee4",
-      "state": "reviewed_locally_merged_original_commit_preserved",
+      "state": "merged_main_original_commit_preserved_pr262",
+      "model_quality_verified": false
+    },
+    {
+      "pr": 263,
+      "head": "1b44460e22d705525f261b831b6afa3657e81a5d",
+      "state": "reviewed_original_commit_integrated_with_p2_test_fix_in_pr264",
       "model_quality_verified": false
     }
   ],
@@ -1240,6 +1250,16 @@
       "type": "manual_functional_progress",
       "at": "2026-10-08T08:50:19+09:00",
       "detail": "Source selection and frozen revisions wired; official reference guide live API/stdio MCP identical; manual15 received; latest CORE251 comparison guidance merged. Native and selected-source model results retained; semantic quality partial, instructions echo recheck pending. Automations OFF."
+    },
+    {
+      "type": "manual_integration_confirmed",
+      "at": "2026-10-08T09:11:53+09:00",
+      "detail": "PR262 exact a6da678 CI4 PASS→main dc0ccc0, original246–261 preserved; current normal/condition2calls each retained and semantics partial. Official guide browser bytes equal API. Owned model session cleanup true/foreign signals0; no automation."
+    },
+    {
+      "type": "manual_new_intake_browser_verified",
+      "at": "2026-10-08T09:23:27+09:00",
+      "detail": "10 actual bundles·7 E2E PASS/skip0/model0, source registration12 PASS. New263 original commit retained and spec-only guide predicate P2 fixed. Same pinned27B finite manual demo connected; no scheduled automation."
     }
   ],
   "implementation_head_before_status_docs": "f02f9c561c86ad74217f29eabfeb71eae290af43 (merged with PM changes)",
@@ -1255,14 +1275,28 @@
       54,
       51,
       66,
-      5
+      5,
+      6,
+      4
     ],
-    "latest_stored_run": "run-134d345ae29d4db98d98e2b579d5016d",
-    "quality": "Internal draft prototype; instructions-echo fix real-model recheck running; no semantic approval",
-    "generation_mode": "finite_owned_manual_test_session_then_list_only"
+    "latest_stored_run": "run-754268c6b0cb41bba50c5b8d713332d9",
+    "quality": "Internal draft; normal and condition generated, remaining source interpretation errors explicitly unapproved",
+    "generation_mode": "finite_owned_manual_demo_session_model_enabled_then_manual_readonly_restart",
+    "new_intake_scope": {
+      "kimchi_review_previews": 3,
+      "lightwave_customer_sources": 0,
+      "new_qa": 0,
+      "new_manual_pdfs": 0,
+      "full_reviews_verified": false
+    },
+    "model_session": {
+      "local_max_seconds": 1700,
+      "automation_enabled": false,
+      "endpoint_temporary": true
+    }
   },
   "previous_queue": "docs/pm/manual-queue-20261007.json",
-  "current_support_branch": "codex/pm-r9-functional-prototype-20261008",
+  "current_support_branch": "codex/pm-r9-kitchen-intake-20261008",
   "followups": [
     {
       "id": "R9-S1",
@@ -1276,7 +1310,7 @@
       "id": "R9-X1",
       "owner": "jeongiryang",
       "executor": "current_chat_support",
-      "state": "implemented_live_api_mcp_verified_browser_final_save_unconfirmed",
+      "state": "live_api_mcp_and_browser_bytes_equal_native_final_save_unconfirmed",
       "title": "공식 원문 안내서 HTML·Markdown 웹/MCP 연결",
       "parent": "X1"
     },
@@ -1284,17 +1318,52 @@
       "id": "R9-Q1",
       "owner": "unknownamed",
       "executor": "current_chat_support",
-      "state": "doing",
-      "title": "없는 증상·신체부위·시간순서 발명 최소 지침 수정과 새 선택표본 실모델 1건",
+      "state": "bounded_normal_condition_recheck_complete_semantics_partial",
+      "title": "지침 echo 제거 후 실제 정상/조건2건 완료·주체/기간/행동/극성 잔여 독립검수",
       "parent": "C2"
     },
     {
       "id": "R9-P1",
       "owner": "jeongiryang",
       "executor": "current_chat",
-      "state": "doing",
+      "state": "merged_main_pr262_ci4_pass",
       "title": "통합 PR 필수CI·원 commit보존 merge·공식 수동 큐",
       "parent": "P1"
+    },
+    {
+      "id": "R9-CF1",
+      "owner": "unknownamed",
+      "executor": "current_chat_support_candidate",
+      "state": "pending_implementation",
+      "title": "고객 관찰·희망·추정/주체·시간을 인용 위치와 묶어 요약에 소비",
+      "parent": "C2",
+      "acceptance_plan": "evals/pm-r9/20261008/core-next-actions.json"
+    },
+    {
+      "id": "R9-CF2",
+      "owner": "unknownamed",
+      "executor": "current_chat_support_candidate",
+      "state": "pending_implementation",
+      "title": "설명서 조치의 적용 조건·수치·순서를 근거와 함께 보존",
+      "parent": "C3",
+      "acceptance_plan": "evals/pm-r9/20261008/core-next-actions.json"
+    },
+    {
+      "id": "R9-CF3",
+      "owner": "unknownamed",
+      "executor": "current_chat_support_candidate",
+      "state": "pending_implementation",
+      "title": "기획 장면·상담 정보를 검증된 claim에서 조립하고 영향 필드만 수리",
+      "parent": "C3",
+      "acceptance_plan": "evals/pm-r9/20261008/core-next-actions.json"
+    },
+    {
+      "id": "R9-K1",
+      "owner": "ginaginaring",
+      "executor": "current_chat_support",
+      "state": "implemented_cli_and_web_pending_exact_head_ci_merge",
+      "title": "김치냉장고·광파오븐 별도 원문 조회/선택 연결",
+      "parent": "X2"
     }
   ],
   "acceptance_limits": {
@@ -1305,5 +1374,6 @@
     "purchased_sku_verified": false,
     "market_frequency_estimated": false,
     "whole_parent_tasks_done": false
-  }
+  },
+  "snapshot_scope": "PR262 merged; new kitchen intake source snapshot before its own CI/merge. Issue234 is latest manual status."
 }

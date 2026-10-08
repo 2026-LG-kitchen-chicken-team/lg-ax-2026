@@ -16,14 +16,17 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def research_bundle_paths(root: Path = ROOT) -> list[Path]:
-    """Keep seven existing run inputs and add one document-only manual reference."""
+    """Preserve eight existing inputs and append two limited public kitchen intakes."""
     edition = root / 'data/research/r9-public-runtime-20261008'
     paths = [edition / f'{group}.research-bundle.json' for group in ('dishwasher', 'fridge', 'microwave')]
     paths += sorted((root / 'data/research/r8-public-official-expansion-20261007/bundles').glob('*.json'))
     paths.append(root / 'data/research/r8-public-competitor-adapter-20261007/fridge.development.research-bundle.json')
     paths.append(edition / 'microwave.manual-reference.research-bundle.json')
-    if len(paths) != 8 or any(not path.is_file() for path in paths):
-        raise ValueError('Prepare the three R9 actual-source bundles and the separate manual reference.')
+    kitchen_intake = root / 'data/research/r9-kitchen-intake-20261008'
+    paths += [kitchen_intake / f'{group}.research-bundle.json'
+              for group in ('kimchi_refrigerator', 'lightwave_oven')]
+    if len(paths) != 10 or any(not path.is_file() for path in paths):
+        raise ValueError('Prepare the eight existing R9 inputs and the two separate kitchen intake bundles.')
     return paths
 
 

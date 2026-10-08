@@ -1,0 +1,99 @@
+{
+  "recorded_at_utc": "2026-10-08T00:28:09.481057+00:00",
+  "image": "sha256:d2b9d2d0d1da29f3226a8293340d63f58877a03b7189d3982123ff6995e8e01c",
+  "network": "none",
+  "read_only_root": true,
+  "uid": "10001:10001",
+  "auth_mounts": 0,
+  "repository_imports": 0,
+  "source_mounts": "staged input, receipt and audit script only; readonly",
+  "output_mount": "dedicated check-output only",
+  "attempts": [
+    {
+      "attempt": 1,
+      "exit_code": 0,
+      "checks": {
+        "checked": 863,
+        "passed": 863
+      },
+      "audit_code_sha256": "c1aa4948573cbdee379680f1bf3a984cbb282b8abdbbc51b6ffbfdceeec82475",
+      "failures": []
+    },
+    {
+      "attempt": 2,
+      "exit_code": 1,
+      "checks": {
+        "checked": 873,
+        "passed": 870,
+        "failed": 3
+      },
+      "audit_code_sha256": "2a8d26ab027bdb4eb05f9c9316111c65a0b4b52fc9b41cfe01b66d4433421f4e",
+      "failures": [
+        {
+          "check": "R9-MANUAL-MW25B-CLEAN-P12:catalogue_selection_and_pdf_bytes",
+          "detail": null
+        },
+        {
+          "check": "R9-MANUAL-MWJ25E-CLEAN-P12:catalogue_selection_and_pdf_bytes",
+          "detail": null
+        },
+        {
+          "check": "R9-MANUAL-MWE25HD-CLEAN-P12:catalogue_selection_and_pdf_bytes",
+          "detail": null
+        }
+      ]
+    },
+    {
+      "attempt": 3,
+      "exit_code": 0,
+      "checks": {
+        "checked": 873,
+        "passed": 873
+      },
+      "audit_code_sha256": "ba197af0a922b346060b6cab63a2a9e08ce15b8feb2ed2ed6f0c56ba8296f0d4",
+      "failures": []
+    }
+  ],
+  "attempt2_correction": "Own checker used historical catalogue cover_version(null for 3); corrected to observed_cover_versions_normalized, independently checked against actual PDF cover. Producer/catalogue bytes unchanged.",
+  "native_pdf_reader": {
+    "execution": "bundled installed PDFium library via isolated Python -I inline tool command; no repository imports",
+    "pypdfium2_version": "5.13.0",
+    "native_page_count": 19,
+    "pdf_files": 5,
+    "ocr_calls": 0,
+    "new_pdf_downloads": 0,
+    "native_snapshots": [
+      {
+        "file": "1057211db93d44912b220fb15af012fdde18b24d3aa07ef275b00106f0252164.json",
+        "sha256": "bd5dbbea0eaad57de6f51f7fb25f80b36d28261e33299eee4e0f4646a252a97e",
+        "bytes": 3264
+      },
+      {
+        "file": "430ae616fa6d1463fa991e302c50248bd47e76cdf8a51e28da487d6a3d934988.json",
+        "sha256": "1158a6b0cd7a3f1efa96537e6ae82393af58aac116c5e7bb11c7bf7a74c9f3cf",
+        "bytes": 3288
+      },
+      {
+        "file": "4ccc7fbd2a753c05637a093214d708139cc9c7db9a6f4fb4aeba31ff3317109f.json",
+        "sha256": "cbc672c184dd65aee400d8a8f66ea396428916f33a861a2d6608637cc7dc89d5",
+        "bytes": 3301
+      },
+      {
+        "file": "743444a78daeca56dffc177146fb2bcef29d79628f1a48602b83f63acdaa6a4e.json",
+        "sha256": "f955a05e1491d8b8e25864d03477fb547833b3c97241817d6556af208c7e527c",
+        "bytes": 3364
+      },
+      {
+        "file": "ff60f78ab8326c40b9a3446f11b49531b8f0c823a310ba98366716b633ba63f5.json",
+        "sha256": "e6b62bbdcaa9535847ce3d4cc6c530dc2f36d9946e3b36829a1ed4a52e4b390a",
+        "bytes": 23365
+      }
+    ]
+  },
+  "model_calls": 0,
+  "ocr_calls": 0,
+  "operating_http_calls": 0,
+  "server_restarts": 0,
+  "automation_changes": 0,
+  "producer_writes": 0
+}

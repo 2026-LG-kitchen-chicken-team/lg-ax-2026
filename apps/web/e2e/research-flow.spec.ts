@@ -16,7 +16,8 @@ const workspace = process.env.LGAX_WORKSPACE_PROXY;
 
 interface Source {
   source_id: string; source_type: string; text: string; page_model: string | null; purchased_model: string | null;
-  published_at: string | null; date_kind: string; document_version?: string | null; locator: Record<string, unknown>; source_role: string;
+  published_at: string | null; date_kind: string; document_version?: string | null; locator: Record<string, unknown>;
+  source_kind: string; source_role: string; url: string;
 }
 interface Bundle { bundle_id: string; sources: Source[] }
 
@@ -24,6 +25,13 @@ const bundles = (): Bundle[] => readdirSync(bundleDir!).filter(name => name.ends
   .map(name => JSON.parse(readFileSync(join(bundleDir!, name), 'utf8')) as Bundle);
 const postingDay = (source: Source) => source.date_kind === 'posting' && source.published_at && /^\d{4}-\d{2}-\d{2}/.test(source.published_at);
 const sourcesPanel = (page: Page) => page.getByRole('region', { name: '실제 자료 원문' });
+// Independent expectation from the public guide contract, not a web implementation import.
+function officialGuideSource(source: Source): boolean {
+  if (source.source_kind !== 'public' || !['manual', 'faq', 'installation', 'qa'].includes(source.source_type)
+      || !['official_document', 'official_answer'].includes(source.source_role)) return false;
+  let host: string; try { host = new URL(source.url).hostname.toLowerCase(); } catch { return false; }
+  return ['lge.com', 'lge.co.kr', 'samsung.com', 'samsungsvc.co.kr'].some(domain => host === domain || host.endsWith(`.${domain}`));
+}
 
 async function connect(page: Page) {
   const token = (JSON.parse(readFileSync(tokenFile!, 'utf8')) as { token: string }).token;
@@ -154,17 +162,18 @@ test.describe('real-source research flow', () => {
     const body = (await posted).postDataJSON() as { bundle_id: string; selected_source_ids?: string[]; bundle_sha256?: string };
     expect(body.bundle_id).toBe(bundle.bundle_id);
     expect(body.selected_source_ids).toEqual([bundle.sources[0].source_id, bundle.sources[2].source_id]);
-    expect(body.bundle_sha256).toBe(listed.bundles.find(item => item.bundle_id === bundle.bundle_id)?.bundle_sha256);
+    const expectedHash = listed.bundles.find(item => item.bundle_id === bundle.bundle_id)?.bundle_sha256;
+    expect(expectedHash).toMatch(/^[a-f0-9]{64}$/);
+    expect(body.bundle_sha256).toBe(expectedHash);
     await expect(page.locator('.research-error')).toContainText('요청을 완료하지 못했습니다');
     await expect(page.getByRole('region', { name: '실제 자료 기획 결과' })).toHaveCount(0);
   });
 
   test('the official-source guide exports only chosen official originals and refuses a review in the selection', async ({ page }) => {
-    // The guide takes official documents and official answers only (researchClient OFFICIAL roles); an official spec is not one.
-    const guideRole = (source: Source) => source.source_role === 'official_document' || source.source_role === 'official_answer';
-    const official = bundles().find(item => item.sources.length && item.sources.every(guideRole));
+    // The guide takes the same public official documents/answers as the guide contract; an official spec is not one.
+    const official = bundles().find(item => item.sources.length && item.sources.every(officialGuideSource));
     const specOnly = bundles().find(item => item.sources.length && item.sources.every(source => source.source_role === 'official_specification'));
-    test.skip(!official && !specOnly, 'no official-document or spec-only bundle in LGAX_E2E_RESEARCH_BUNDLE_DIR');
+    test.skip(!official && !specOnly, 'no guide-eligible official-only or spec-only bundle in LGAX_E2E_RESEARCH_BUNDLE_DIR');
     await connect(page);
     let guideRequests = 0;
     page.on('request', item => { if (item.url().endsWith('/api/research/guides')) guideRequests += 1; });
@@ -181,11 +190,11 @@ test.describe('real-source research flow', () => {
     const [download] = await Promise.all([page.waitForEvent('download', { timeout: 30_000 }), sourcesPanel(page).getByRole('button', { name: '선택 공식자료 안내서 Markdown' }).click()]);
     const markdown = readFileSync((await download.path())!, 'utf8');
     for (const source of official!.sources) expect(markdown, source.source_id).toContain(source.text.trim().split(/\r?\n/)[0].slice(0, 20));
-    const mixed = bundles().find(item => item.sources.some(source => source.source_type === 'review') && item.sources.some(guideRole));
+    const mixed = bundles().find(item => item.sources.some(source => source.source_type === 'review') && item.sources.some(officialGuideSource));
     if (!mixed) return;
     await choose(page, mixed);
     const review = mixed.sources.findIndex(source => source.source_type === 'review');
-    const document = mixed.sources.findIndex(guideRole);
+    const document = mixed.sources.findIndex(officialGuideSource);
     const checks = sourcesPanel(page).locator('.research-source-check input');
     await checks.nth(review).check();
     await checks.nth(document).check();
