@@ -1,0 +1,14 @@
+{
+  "observation_source": "Actual Docker build tool result 7c034e, before pause at 2026-10-05T20:52:08+09:00",
+  "exit_code": 1,
+  "requested_base_image": "sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+  "resolved_reference_from_actual_log": "docker.io/library/sha256:1bdbf6c2dd816f852d816d12e219ee1326febfa11d3f0f52d5eb1f6cc598bde3",
+  "diagnostic_excerpt": "error getting credentials - err: exec: \"docker-credential-desktop\": executable file not found in %PATH%, out: ``",
+  "new_image_created": false,
+  "proposed_fix_not_executed": [
+    "Use the verified existing local base tag and compare its exact image ID before build, rather than bare sha256 FROM parsed as registry name",
+    "Add the existing Docker resources/bin directory to this task process PATH for its credential helper, not global environment",
+    "Build an offline task-only pypdf6.10.0 extractor venv using already verified wheel SHA; repeat exact-image isolation and dependency checks"
+  ],
+  "original_worker_image_and_configuration_unchanged": true
+}
