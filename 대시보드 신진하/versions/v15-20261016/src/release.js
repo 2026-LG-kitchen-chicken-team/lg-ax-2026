@@ -1,0 +1,366 @@
+/** Product-v0.15.0 observations. Product text and native logs are data, not code. */
+import {normalizeActivity,activityPresentation} from './releaseActivity.js';
+export const RELEASE_SKILLS = Object.freeze([
+  { id: 'evidence-retrieval', label: '자료 조회', node: 'retrieve' },
+  { id: 'web-evidence-collection', label: '웹 근거 수집', node: 'retrieve' },
+  { id: 'needs-structuring', label: '니즈 구조화', node: 'structure' },
+  { id: 'feature-comparison', label: '기능 대조', node: 'compare' },
+  { id: 'concept-writing', label: '콘셉트 작성', node: 'concept' },
+  { id: 'review-and-revise', label: '검토·수정', node: 'validate' },
+].map(Object.freeze));
+export const RELEASE_ROLES = Object.freeze([
+  { id: 'product_official_researcher', label: '공식 자료 조사자' },
+  { id: 'product_review_researcher', label: '후기 조사·분석자' },
+  { id: 'product_evidence_reviewer', label: '근거 검토자' },
+].map(Object.freeze));
+const SKILLS = new Map(RELEASE_SKILLS.map(skill => [skill.id, skill]));
+const ROLES = new Map(RELEASE_ROLES.map(role => [role.id, role]));
+const NODES = { retrieve: '자료 업무', structure: '니즈 구조화', compare: '기능 대조', concept: '콘셉트 작성', validate: '검토·수정' };
+const ACTORS = new Set(['main', ...ROLES.keys(), 'other_subagent', 'unknown_subagent']);
+const EVENT_NODES = new Set([...ACTORS, ...SKILLS.keys(), 'unknown_skill']);
+const KINDS = new Set(['lifecycle', 'tool', 'delegate', 'handback', 'handback_delivered', 'notification', 'request', 'subagent', 'skill_op', 'skill_load', 'shell', 'file', 'web', 'turn_cancelled', 'turn_end', 'session']);
+const HOOKS = new Set(['PreToolUse', 'PostToolUse', 'PostToolUseFailure', 'UserPromptSubmit', 'Stop', 'SubagentStart', 'SubagentStop', 'SessionStart', 'SessionEnd']);
+const AREAS = new Set(['exports', 'web_evidence', 'catalogs', 'deliverables', 'conversation', 'runtime', 'skills', 'agents', 'docs', 'data', 'tools', 'web', 'outside', 'harness']);
+const PROGRAMS = new Set(['ls', 'dir', 'cat', 'type', 'head', 'tail', 'find', 'grep', 'rg', 'wc', 'pwd', 'cd', 'echo', 'mkdir', 'cp', 'mv', 'rm', 'python', 'python3', 'py', 'uv', 'git', 'sed', 'awk', 'jq', 'curl', 'wget', 'sort', 'uniq', 'node', 'npm', 'npx', 'get-childitem', 'get-content', 'set-location', 'test-path', 'select-string', 'new-item', 'remove-item', 'copy-item', 'move-item', 'invoke-webrequest', 'out-file', 'set-content', 'get-item', 'write-output', 'measure-object', 'product_doctor', 'other']);
+const DEFAULTS = Object.freeze({ pollMs: 2000, timeoutMs: 8000, staleMs: 20000, sourceStaleMs: 120000, freshnessMs: 1000 });
+PROGRAMS.add('product-doctor.py');
+class ReleaseError extends Error { constructor(code, message) { super(message); this.name = 'ReleaseError'; this.code = code; } }
+const invalid = field => { throw new ReleaseError('schema', `릴리즈 관찰 응답 형식이 맞지 않습니다 (${field}).`); };
+const object = (value, field) => value && typeof value === 'object' && !Array.isArray(value) ? value : invalid(field);
+const array = (value, field, max = 2000) => Array.isArray(value) && value.length <= max ? value : invalid(field);
+const integer = (value, field, max = Number.MAX_SAFE_INTEGER) => Number.isSafeInteger(value) && value >= 0 && value <= max ? value : invalid(field);
+const boolean = (value, field) => typeof value === 'boolean' ? value : invalid(field);
+const option = (value, allowed, field) => allowed.has(value) ? value : invalid(field);
+function cleanText(value, field, limit = 500) {
+  if (typeof value !== 'string') invalid(field);
+  return value.replace(/\u001b\[[0-?]*[ -/]*[@-~]/g, '').replace(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2060-\u206f]/g, '').trim().slice(0, limit);
+}
+function id(value, field, nullable = true) {
+  if (value == null && nullable) return null;
+  if (typeof value !== 'string' || !/^[A-Za-z0-9_.:-]{1,200}$/.test(value)) invalid(field);
+  return value;
+}
+function timestamp(value, field, nullable = true) {
+  if (value == null && nullable) return null;
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:\d{2})$/.test(value) || !Number.isFinite(Date.parse(value))) invalid(field);
+  return value;
+}
+function hash(value, field, nullable = true) {
+  if (value == null && nullable) return null;
+  if (typeof value !== 'string' || !/^[a-f0-9]{64}$/i.test(value)) invalid(field);
+  return value.toLowerCase();
+}
+function freeze(value) { if (value && typeof value === 'object' && !Object.isFrozen(value)) { Object.values(value).forEach(freeze); Object.freeze(value); } return value; }
+function binding(value, field) {
+  if (value == null) return null;
+  const raw = object(value, field);
+  return { session_id: id(raw.session_id, `${field}.session_id`, false), turn_id: id(raw.turn_id, `${field}.turn_id`, false), request_key: id(raw.request_key, `${field}.request_key`, false) };
+}
+function details(value) {
+  const raw = object(value ?? {}, 'event.detail'), out = {};
+  for (const key of ['interrupted', 'background', 'accepted', 'other_skill_operation']) if (raw[key] != null) out[key] = boolean(raw[key], `detail.${key}`);
+  if (raw.duration_ms != null) { if (typeof raw.duration_ms !== 'number' || !Number.isFinite(raw.duration_ms) || raw.duration_ms < 0) invalid('duration_ms'); out.duration_ms = raw.duration_ms; }
+  if (raw.exit_code != null) { if (!Number.isSafeInteger(raw.exit_code)) invalid('exit_code'); out.exit_code = raw.exit_code; }
+  for (const key of ['result_version', 'revision_count']) if (raw[key] != null) out[key] = integer(raw[key], key, key === 'revision_count' ? 2 : 3);
+  for (const key of ['reason', 'error', 'turn_status', 'response_status', 'launched_agent_id', 'from_agent_id']) if (raw[key] != null) out[key] = id(raw[key], `detail.${key}`, false);
+  if (raw.host != null) { if (typeof raw.host !== 'string' || raw.host.length > 253 || !/^[A-Za-z0-9.:-]+$/.test(raw.host)) invalid('host'); out.host = raw.host; }
+  if (raw.area != null) out.area = option(raw.area, AREAS, 'detail.area');
+  if (raw.skill != null) out.skill = option(raw.skill, new Set(SKILLS.keys()), 'detail.skill');
+  if (raw.programs != null) out.programs = array(raw.programs, 'programs', 30).map(program => option(program, PROGRAMS, 'program'));
+  if (raw.business_binding != null) out.business_binding = binding(raw.business_binding, 'detail.business_binding');
+  return out;
+}
+function database(value) {
+  if (value == null) return null;
+  const raw = object(value, 'db'), available = boolean(raw.available, 'db.available');
+  const state = option(raw.binding_status, new Set(['matched', 'unmatched', 'unavailable']), 'db.binding_status');
+  const common = { available, binding_status: state, binding: null, read_at: timestamp(raw.read_at, 'db.read_at') };
+  if (!available || state !== 'matched') return common; // Never expose another request's payload or counts.
+  common.binding = binding(raw.binding, 'db.binding'); if (!common.binding) invalid('db.binding');
+  const optionalCount = (value, field) => value == null ? null : integer(value, field);
+  const nullableText = (value, field, limit = 120) => value == null ? null : cleanText(value, field, limit);
+  const workflow = raw.workflow == null ? null : object(raw.workflow, 'workflow');
+  common.workflow = workflow ? { research_id: id(workflow.research_id, 'research_id', false), started_at: timestamp(workflow.started_at, 'workflow.started_at'), budget_seconds: optionalCount(workflow.budget_seconds, 'budget_seconds'), research_stopped_at: timestamp(workflow.research_stopped_at, 'research_stopped_at'), finished_at: timestamp(workflow.finished_at, 'finished_at') } : null;
+  common.workflow_events = array(raw.workflow_events ?? [], 'workflow_events', 100).map(value => {
+    const item = object(value, 'workflow_event');
+    const out = { kind: option(item.kind, new Set(['research_plan', 'source_scan', 'research_stop', 'analysis_scope', 'finish']), 'workflow_event.kind'), observed_at: timestamp(item.observed_at, 'workflow_event.observed_at', false) };
+    for (const key of ['product', 'host', 'page', 'status', 'source_type', 'code', 'layout_review']) if (item[key] != null) out[key] = cleanText(item[key], `workflow_event.${key}`, 150);
+    for (const key of ['reviews', 'sources']) if (item[key] != null) out[key] = integer(item[key], `workflow_event.${key}`);
+    return out;
+  });
+  const turn = raw.turn == null ? null : object(raw.turn, 'turn');
+  common.turn = turn ? { turn_id: id(turn.turn_id, 'turn.turn_id', false), status: id(turn.status, 'turn.status'), revision_count: turn.revision_count == null ? null : integer(turn.revision_count, 'turn.revision_count', 2), result_version: turn.result_version == null ? null : integer(turn.result_version, 'turn.result_version', 3), valid: boolean(turn.valid, 'turn.valid'), created_at: timestamp(turn.created_at, 'turn.created_at') } : null;
+  const request = raw.request == null ? null : object(raw.request, 'request');
+  common.request = request ? { turn_id: id(request.turn_id, 'request.turn_id'), request_key: id(request.request_key, 'request.request_key'), status: id(request.status, 'request.status') } : null;
+  if (common.turn && common.turn.turn_id !== common.binding.turn_id || common.request && (common.request.turn_id !== common.binding.turn_id || common.request.request_key !== common.binding.request_key)) invalid('db.binding consistency');
+  common.results = optionalCount(raw.results, 'db.results');
+  common.candidates = array(raw.candidates ?? [], 'candidates', 3).map(value => {
+    const item = object(value, 'candidate'), counts = object(item.counts ?? {}, 'candidate.counts');
+    const out = { result_version: item.result_version == null ? null : integer(item.result_version, 'candidate.result_version', 3), created_at: timestamp(item.created_at, 'candidate.created_at'), status: id(item.status, 'candidate.status'), counts: {} };
+    for (const key of ['pains', 'existing_features', 'remaining_pains', 'concepts']) out.counts[key] = optionalCount(counts[key], `candidate.${key}`);
+    for (const key of ['contract_valid', 'structural_valid', 'acceptance_ready']) if (item[key] != null) out[key] = boolean(item[key], `candidate.${key}`);
+    if (item.semantic_status != null) out.semantic_status = nullableText(item.semantic_status, 'semantic_status');
+    return out;
+  });
+  common.evidence_delivered = optionalCount(raw.evidence_delivered, 'evidence_delivered'); common.evidence_reviews = optionalCount(raw.evidence_reviews, 'evidence_reviews');
+  common.cancelled = raw.cancelled == null ? null : boolean(raw.cancelled, 'db.cancelled');
+  const latest = raw.latest_export == null ? null : object(raw.latest_export, 'latest_export');
+  common.latest_export = latest ? { available: boolean(latest.available, 'latest_export.available'), created_at: timestamp(latest.created_at, 'latest_export.created_at') } : null;
+  return common;
+}
+
+export function normalizeReleaseSnapshot(input) {
+  const raw = object(input, 'snapshot'), source = object(raw.source, 'source');
+  if (raw.schema_version !== 1 || source.kind !== 'lgax_release_observer' || source.release !== 'product-v0.15.0') invalid('source/version');
+  const seen = new Map();
+  const events = array(raw.events, 'events', 1500).flatMap(value => {
+    const item = object(value, 'event'); if (item.v !== 1) invalid('event.v');
+    const event = {
+      v: 1, id: id(item.id, 'event.id', false), ts: timestamp(item.ts, 'event.ts', false), ts_basis: option(item.ts_basis, new Set(['hook_received', 'codex_log', 'reader_received']), 'ts_basis'),
+      src: option(item.src, new Set(['codex', 'claude']), 'event.src'), hook: option(item.hook, HOOKS, 'event.hook'), session: id(item.session, 'event.session'), prompt_id: id(item.prompt_id, 'event.prompt_id'), agent_id: id(item.agent_id, 'event.agent_id'),
+      actor: option(item.actor, ACTORS, 'event.actor'), tool: id(item.tool, 'event.tool'), call: id(item.call, 'event.call'), kind: option(item.kind, KINDS, 'event.kind'), node: option(item.node, EVENT_NODES, 'event.node'),
+      op: id(item.op, 'event.op'), ops: array(item.ops ?? [], 'event.ops', 8).map(value => { const op = object(value, 'event.ops[]'); return { skill: option(op.skill, new Set(SKILLS.keys()), 'op.skill'), op: id(op.op, 'op.op', false) }; }),
+      phase: option(item.phase, new Set(['start', 'end', 'fail', 'point']), 'event.phase'), basis: option(item.basis, new Set(['observed', 'instruction_loaded', 'command_based_mapping']), 'event.basis'), detail: details(item.detail),
+    };
+    if (event.kind === 'skill_op' && (!SKILLS.has(event.node) || event.basis !== 'command_based_mapping')) invalid('skill_op.basis');
+    if (event.kind === 'skill_load' && (!SKILLS.has(event.node) && event.node !== 'unknown_skill' || event.basis !== 'instruction_loaded')) invalid('skill_load.basis');
+    const encoded = JSON.stringify(event); if (seen.has(event.id)) { if (seen.get(event.id) !== encoded) invalid('event.id conflict'); return []; } seen.set(event.id, encoded);
+    return [event];
+  });
+  return freeze({ schema_version: 1, source: { kind: 'lgax_release_observer', release: 'product-v0.15.0', engine: option(source.engine, new Set(['codex', 'claude']), 'source.engine'), observed_at: timestamp(source.observed_at, 'source.observed_at', false), source_updated_at: timestamp(source.source_updated_at, 'source.source_updated_at'), observer_status: option(source.observer_status, new Set(['waiting_for_session', 'observing', 'recorded']), 'source.observer_status'), asset_sha256: hash(source.asset_sha256, 'asset_sha256'), product_install_sha256: hash(source.product_install_sha256, 'product_install_sha256', false) }, events, activity:normalizeActivity(raw.activity), db: database(raw.db), notices: array(raw.notices ?? [], 'notices', 50).map(value => cleanText(value, 'notice', 700)) });
+}
+
+const byTime = (a, b) => Date.parse(a.ts) - Date.parse(b.ts);
+const sameBinding = (a, b) => Boolean(a && b && ['session_id', 'turn_id', 'request_key'].every(key => a[key] === b[key]));
+const mainEvent = event => event.actor === 'main' && !event.agent_id;
+const callKey = event => [event.src, event.session, event.prompt_id || '', event.agent_id || 'main', event.call || `unpaired:${event.id}`].join('|');
+function labelFor(event) {
+  const skill = SKILLS.get(event.node), role = ROLES.get(event.node) || ROLES.get(event.actor);
+  if (event.kind === 'skill_load') return `${skill?.label || '미확인 Skill'} 지침 읽기 관측`;
+  if (event.kind === 'skill_op') return `${skill.label} · ${event.op || '작업 이름 미제공'} · 명령 경로 관측`;
+  if (event.kind === 'delegate') return `${role?.label || '기타 역할'} 위임 호출 관측${event.detail.background ? ' · 비동기 시작 응답' : ''}`;
+  if (event.kind === 'subagent') return `${role?.label || '기타 하위 에이전트'} ${event.phase === 'start' ? '시작' : '종료'} 관측`;
+  if (event.kind === 'turn_cancelled') return '네이티브 turn 취소 관측 · Tool 종료 결과는 별도 확인';
+  if (event.kind === 'turn_end') return '메인 최종 응답 종료 관측';
+  if (event.kind === 'request') return '네이티브 요청 접수 관측';
+  if (event.kind === 'web') return `웹 Tool 관측${event.detail.host ? ` · ${event.detail.host}` : ''}`;
+  if (event.kind === 'shell') return '일반 코드·셸 Tool 관측 · Skill 호출과 구분';
+  if (event.kind === 'file') return '파일 Tool 관측';
+  if (event.kind === 'handback' || event.kind === 'handback_delivered') return '하위 에이전트 반환 전달 관측';
+  if (event.kind === 'tool') return `${event.tool || '네이티브 Tool'} 호출 관측`;
+  return '네이티브 세션 사건 관측';
+}
+function spansFor(events) {
+  const spans = [], pending = new Map(), cancelled = new Map();
+  const turnKey = event => JSON.stringify([event.session, event.prompt_id]);
+  for (const event of events) {
+    if (mainEvent(event) && ['turn_cancelled', 'turn_end'].includes(event.kind) || event.kind === 'session' && event.phase === 'end') {
+      const cancellation = event.kind === 'turn_cancelled';
+      if (cancellation) cancelled.set(turnKey(event), Date.parse(event.ts));
+      for (const span of pending.values()) {
+        if (span.status !== 'open') continue;
+        const sameTurn = span.start.prompt_id === event.prompt_id;
+        if (event.kind === 'session' || (mainEvent(span.start) && sameTurn)) { span.status = cancellation ? 'cancelled' : 'unknown'; span.closedBy = event.id; span.endedAt = event.ts; span.resultKnown = false; }
+      }
+      continue;
+    }
+    if (!['start', 'end', 'fail'].includes(event.phase) || event.kind === 'session') continue;
+    const key = event.kind === 'subagent' ? `role|${event.session}|${event.agent_id || `unpaired:${event.id}`}` : callKey(event);
+    if (event.phase === 'start') {
+      if (!pending.has(key)) { const span = { id: event.id, key, start: event, end: null, status: 'open', resultKnown: false, endedAt: null, closedBy: null }; pending.set(key, span); spans.push(span); }
+    } else {
+      const span = pending.get(key);
+      const cancelledAt = cancelled.get(turnKey(event));
+      const cancelledBeforeEnd = cancelledAt != null && (!span || Date.parse(span.start.ts) <= cancelledAt);
+      if (span) {
+        if (span.status === 'cancelled' || cancelledBeforeEnd) { span.lateEnd = event; continue; }
+        span.end = event; span.endedAt = event.ts; span.status = event.phase === 'fail' ? 'failed' : event.detail.accepted === false ? 'rejected' : 'completed'; span.resultKnown = true;
+      } else spans.push({ id: event.id, key, start: event, end: event, status: cancelledBeforeEnd ? 'cancelled' : event.phase === 'fail' ? 'failed' : event.detail.accepted === false ? 'rejected' : 'completed', resultKnown: !cancelledBeforeEnd, endedAt: event.ts, startUnobserved: true });
+    }
+  }
+  return spans;
+}
+
+export function deriveReleaseView(snapshot, connection = {}, nowMs = Date.now()) {
+  const data = snapshot ? normalizeReleaseSnapshot(snapshot) : null;
+  const received = connection.lastReceivedAt ? nowMs - Date.parse(connection.lastReceivedAt) : null;
+  const observed = data ? nowMs - Date.parse(data.source.observed_at) : null;
+  let connectionStatus = connection.status || 'disconnected';
+  if (['connected', 'error', 'stale'].includes(connectionStatus) && data && (received === null || received >= (connection.staleAfterMs ?? DEFAULTS.staleMs) || observed === null || observed >= (connection.staleAfterMs ?? DEFAULTS.staleMs) || observed < -5000)) connectionStatus = 'stale';
+  const connected = connectionStatus === 'connected';
+  const engineEvents = (data?.events || []).filter(event => event.src === data.source.engine).sort(byTime);
+  const main = engineEvents.filter(event => mainEvent(event) && event.session);
+  const anchors = main.filter(event => event.kind === 'request' || event.kind === 'session' && event.phase === 'start');
+  const anchor = anchors.at(-1), sessionId = anchor?.session || main.at(-1)?.session || null;
+  const sessionEvents = sessionId ? engineEvents.filter(event => event.session === sessionId) : [];
+  const sessionStart = sessionEvents.findLastIndex(event => mainEvent(event) && event.kind === 'session' && event.phase === 'start');
+  const sessionMain = sessionEvents.slice(Math.max(0, sessionStart)).filter(mainEvent);
+  const latestRequest = sessionMain.filter(event => event.kind === 'request').at(-1);
+  const promptId = latestRequest ? latestRequest.prompt_id : sessionStart >= 0 ? null : anchor?.prompt_id || null;
+  const floor = latestRequest ? sessionEvents.indexOf(latestRequest) : Math.max(0, sessionStart);
+  const eligibleMain = sessionEvents.slice(floor).filter(event => mainEvent(event) && event.prompt_id === promptId);
+  const linkedChildren = new Set(eligibleMain.filter(event => event.kind === 'delegate').map(event => event.detail.launched_agent_id).filter(Boolean));
+  const currentEvents = anchor ? sessionEvents.slice(floor).filter(event => mainEvent(event) ? event.prompt_id === promptId : Boolean(event.agent_id) && (linkedChildren.has(event.agent_id) || Boolean(promptId) && event.prompt_id === promptId)) : [];
+  const turnMarker = anchor ? eligibleMain.filter(event => ['request', 'turn_end', 'turn_cancelled'].includes(event.kind)).at(-1) : null;
+  const events = [...sessionEvents].sort(byTime);
+  const spans = spansFor(events), lastEventAt = events.at(-1)?.ts || null;
+  const currentEventAt = currentEvents.at(-1)?.ts || null;
+  const eventAge = currentEventAt ? Math.max(0, nowMs - Date.parse(currentEventAt)) : null;
+  const observationFresh = connected && data?.source.observer_status === 'observing' && eventAge !== null && eventAge < (connection.sourceStaleAfterMs ?? DEFAULTS.sourceStaleMs) && Date.parse(currentEventAt) <= nowMs + 5000;
+  const latestMainCancelled = turnMarker?.kind === 'turn_cancelled';
+  const currentIds = new Set(currentEvents.map(event => event.id));
+  const activeSpans = observationFresh && !latestMainCancelled ? spans.filter(span => span.status === 'open' && currentIds.has(span.start.id) && span.start.kind !== 'skill_load') : [];
+  const activeSkills = [...new Set(activeSpans.filter(span => span.start.kind === 'skill_op').map(span => span.start.node))];
+  const activeNodes = [...new Set(activeSkills.map(skill => SKILLS.get(skill).node))];
+  const activity=activityPresentation(data?.activity,sessionId,promptId,connected,nowMs);
+  if(activity?.working&&!activeNodes.length)activeNodes.push(activity.reported_stage||'overview');
+  let boundDb = null, bindingState = data?.db?.available ? 'unmatched' : 'unavailable';
+  if (data?.db?.binding_status === 'matched' && data.db.binding && currentEvents.some(event => mainEvent(event) && sameBinding(event.detail.business_binding, data.db.binding))) { bindingState = 'matched'; boundDb = data.db; }
+  const candidate = boundDb?.candidates?.findLast(item => item.result_version === boundDb.turn?.result_version) || null;
+  const counts = { events: events.length, skills: new Set(events.filter(event => ['skill_op', 'skill_load'].includes(event.kind) && SKILLS.has(event.node)).map(event => event.node)).size, toolCalls: spans.filter(span => span.start.kind !== 'subagent').length, openCalls: spans.filter(span => span.status === 'open').length, results: boundDb?.results ?? null, evidenceDelivered: boundDb?.evidence_delivered ?? null, evidenceReviews: boundDb?.evidence_reviews ?? null, pains: candidate?.counts.pains ?? null, existingFeatures: candidate?.counts.existing_features ?? null, remainingPains: candidate?.counts.remaining_pains ?? null, concepts: candidate?.counts.concepts ?? null };
+  const usedSkills = RELEASE_SKILLS.map(skill => {
+    const related = events.filter(event => event.node === skill.id && ['skill_load', 'skill_op'].includes(event.kind));
+    const operations = related.filter(event => event.kind === 'skill_op'), relevantSpans = spans.filter(span => span.start.node === skill.id && span.start.kind === 'skill_op');
+    const latest = relevantSpans.at(-1), active = activeSkills.includes(skill.id), loaded = related.some(event => event.kind === 'skill_load')||Boolean(activity?.skill_reads.some(r=>r.id===skill.id));
+    const status = active ? 'running' : latest?.status === 'failed' ? 'failed' : latest?.status === 'rejected' ? 'review' : latest?.status === 'cancelled' ? 'cancelled' : latest?.status === 'completed' ? 'completed' : operations.length ? 'unknown' : loaded ? 'loaded' : 'idle';
+    const statusLabel = { running: 'Skill 명령 진행', failed: 'Skill 명령 실패', review: '저장 확인 필요', cancelled: '취소 · 종료 결과 미확인', completed: 'Skill 명령 완료', unknown: '명령 종료 미확인', loaded: '지침 조회 확인', idle: '실행 기록 없음' }[status];
+    const read=activity?.skill_reads.find(r=>r.id===skill.id);
+    const displayEvents=read&&!related.some(e=>e.kind==='skill_load')?[...related,{id:'read-'+skill.id,ts:read.time,time:read.time,kind:'skill_load',node:skill.id,actor:'main',phase:'end',basis:'command_result',message:skill.label+' 지침 조회 명령 완료'}]:related;
+    return { ...skill, used: related.length > 0||loaded, instructionLoaded: loaded, operationObserved: operations.length > 0, status, statusLabel, active, events: displayEvents, lastEventAt: displayEvents.at(-1)?.ts || null, basis: operations.length ? 'command_based_mapping' : loaded ? 'instruction_loaded' : null, task: related.length ? labelFor(related.at(-1)) : loaded?'지침 조회 명령 확인 · Skill 업무 실행 대기':'실제 Skill 실행 기록이 아직 없습니다.' };
+  });
+  const nodes = Object.fromEntries(Object.entries(NODES).map(([node, label]) => {
+    const skills = usedSkills.filter(skill => skill.node === node), related = [...events.filter(event => SKILLS.get(event.node)?.node === node),...skills.flatMap(skill=>skill.events.filter(event=>event.basis==='command_result'))].sort(byTime);
+    const active = activeNodes.includes(node), latest = related.at(-1), lastSkill = latest ? skills.find(skill => skill.id === latest.node) : skills.find(skill=>skill.instructionLoaded);
+    const status = active ? 'running' : lastSkill?.status || 'idle';
+    return [node, { id: node, label, status, statusLabel: active ? (activeSkills.some(id=>SKILLS.get(id).node===node)?'Skill 명령 진행':'CLI 진행 보고') : lastSkill?.statusLabel || '실행 기록 없음', task: active&&activity?.reported_stage===node?activity.text:latest ? labelFor(latest) : lastSkill?.instructionLoaded?'Skill 지침 조회 확인 · 업무 실행 대기':'이 공간의 Skill 실행 기록이 아직 없습니다.', skills, actor: latest?.actor || null, actors: [...new Set(related.map(event => event.actor))], events: related, activity: latest ? { eventId: latest.id, time: latest.ts, message: labelFor(latest), basis: latest.basis } : null, active, grouped: node === 'retrieve' }];
+  }));
+  const roles = RELEASE_ROLES.flatMap(role => {
+    const related = events.filter(event => event.node === role.id || event.actor === role.id);
+    if (!related.length) return [];
+    const nativeStarts = related.filter(event => event.kind === 'subagent' && event.phase === 'start' && event.agent_id);
+    const roleSpans = spans.filter(span => span.start.kind === 'subagent' && span.start.node === role.id && span.start.agent_id);
+    const active = roleSpans.some(span => activeSpans.includes(span));
+    const last = related.at(-1), returned = roleSpans.at(-1)?.status === 'completed';
+    return [{ ...role, used: true, active, status: active ? 'running' : returned ? 'completed' : nativeStarts.length ? 'unknown' : 'requested', statusLabel: active ? '네이티브 역할 시작 관측 · 종료 미관측' : returned ? '네이티브 역할 종료 관측' : nativeStarts.length ? '네이티브 역할 시작 관측 · 현재 종료 결과 미확인' : '위임 요청 관측 · 실행/종료 미확인', agentIds: [...new Set(related.map(event => event.agent_id || event.detail.launched_agent_id).filter(Boolean))], events: related, task: labelFor(last), lastEventAt: last.ts }];
+  });
+  const product = boundDb?.workflow_events?.filter(event => event.kind === 'research_plan' && event.product).at(-1)?.product || null;
+  const latestActive = activeSpans.at(-1)?.start;
+  const recentEvents = events.slice(-3).reverse().map(event => ({ ...event, time: event.ts, at: event.ts, message: labelFor(event), factoryNode: SKILLS.get(event.node)?.node || null }));
+  let header, nextAction;
+  if (connectionStatus === 'connecting') header = { state: 'connecting', text: '릴리즈 관찰 연결 확인 중', detail: '추가 모델 호출 없이 관찰 데이터를 읽습니다.' };
+  else if (connectionStatus === 'disconnected') header = { state: 'disconnected', text: '릴리즈 하네스 연결 대기', detail: data ? '마지막 관찰 기록을 보존했습니다.' : '설치 제품의 실제 관측 파일을 아직 읽지 않았습니다.' };
+  else if (connectionStatus === 'stale') header = { state: 'stale', text: '릴리즈 관찰 수신 오래됨', detail: '마지막 관측 기록입니다. 원격 프로세스의 중지나 완료를 뜻하지 않습니다.' };
+  else if (connectionStatus === 'error' || !data) header = { state: 'error', text: '릴리즈 관찰 연결 확인 필요', detail: connection.error || '관찰 데이터를 읽지 못했습니다.' };
+  else if (!events.length || data.source.observer_status === 'waiting_for_session') header = { state: 'waiting', text: `릴리즈 연결됨 · ${data.source.engine === 'codex' ? 'Codex' : 'Claude Code'} 세션 대기`, detail: '실제 사용 사건이 기록되면 표시합니다. 가상 사건을 만들지 않습니다.' };
+  else if (latestMainCancelled) header = { state: 'cancelled', text: '네이티브 turn 취소 관측', detail: '열린 Tool의 종료 결과와 원격 프로세스 종료는 별도 확인이 필요합니다.' };
+  else if (latestActive) header = { state: 'active', text: labelFor(latestActive), detail: latestActive.kind === 'skill_op' ? '명령 경로에 따른 Tool 관찰입니다. Skill의 의미 판단이나 성공을 자동 인증하지 않습니다.' : '네이티브 사건을 관측한 범위이며 모델 내부 상태를 뜻하지 않습니다.' };
+  else if (turnMarker?.kind === 'turn_end') header = { state: 'recorded', text: '메인 최종 응답 종료 관측', detail: '데이터 저장·원문 의미 승인·전체 프로세스 종료와 구분합니다.' };
+  else header = { state: 'recorded', text: '릴리즈 연결됨 · 마지막 관측 기록', detail: spans.some(span => span.status === 'open') ? '열린 호출의 종료 결과를 아직 관측하지 못했습니다. 현재 실행 여부를 단정하지 않습니다.' : '기록된 사건을 표시합니다. 현재 실행 여부는 추가 관측이 필요합니다.' };
+  if(activity&&connected){header={state:activity.working?'active':activity.state==='cancelled'?'cancelled':'recorded',text:activity.text,detail:activity.reported?'CLI의 공개 진행 보고입니다. 실제 Skill 명령 호출 기록과 구분합니다.':'선택한 네이티브 요청의 시작·완료와 명령 결과를 표시합니다.'};}
+  nextAction = connectionStatus === 'disconnected' || connectionStatus === 'error' ? '로컬 관찰 읽기 서버 주소와 Bearer 키로 연결하세요.' : connectionStatus === 'stale' ? '읽기 연결을 확인하고 상태를 다시 읽으세요.' : !events.length ? '관찰기가 설치 제품의 실제 네이티브 세션을 기록할 때까지 기다리세요.' : 'Skill·역할의 실제 기록과 현재 버전의 저장 결과를 확인하세요.';
+  if(activity&&connected)nextAction=activity.next;
+  return freeze({ readonly: true, sourceMode: 'release', activity, mainActive:Boolean(activity?.working), header, nextAction, connectionStatus, nodes, activeNodes, activeSkills, skills: usedSkills, roles, actors: [...new Set(events.map(event => event.actor))].filter(actor => actor === 'main' || ROLES.has(actor)), recentEvents:activity?activity.actions.filter(a=>a.code!=='local_command').slice(-3).reverse():recentEvents, events, spans, sessionId, promptId, product, bindingState, binding: boundDb?.binding || null, database: boundDb, counts, lastEventAt, sourceAgeSeconds: data?.source.source_updated_at ? Math.max(0, (nowMs - Date.parse(data.source.source_updated_at)) / 1000) : null, observationFresh: Boolean(observationFresh), notices: data?.notices || [] });
+}
+
+function endpointFor(value) {
+  let url;
+  try { url = new URL(value); } catch { throw new ReleaseError('url', '로컬 읽기 서버 주소를 확인해 주세요.'); }
+  if (url.protocol !== 'http:' || !['localhost', '127.0.0.1'].includes(url.hostname.toLowerCase()) || url.username || url.password || url.search || url.hash || !['/', '/api/harness/snapshot'].includes(url.pathname)) throw new ReleaseError('url', 'http://localhost 또는 http://127.0.0.1의 읽기 서버만 연결할 수 있습니다. 키를 URL에 넣지 마세요.');
+  return { url: url.origin, endpoint: `${url.origin}/api/harness/snapshot` };
+}
+
+export class ReleaseStore {
+  #state; #listeners = new Set(); #token = ''; #endpoint = ''; #fetch; #clock; #setTimer; #clearTimer; #Abort;
+  #pollTimer = null; #freshnessTimer = null; #controller = null; #generation = 0; #request = 0; #options;
+  constructor(options = {}) {
+    this.#fetch = options.fetchImpl || globalThis.fetch?.bind(globalThis);
+    this.#clock = options.clock || (() => Date.now());
+    this.#setTimer = options.setTimer || globalThis.setTimeout.bind(globalThis);
+    this.#clearTimer = options.clearTimer || globalThis.clearTimeout.bind(globalThis);
+    this.#Abort = options.AbortControllerImpl || globalThis.AbortController;
+    this.#options = { ...DEFAULTS };
+    for (const name of Object.keys(DEFAULTS)) if (options[name] != null) { const value = options[name]; if (!Number.isFinite(value) || value < 1 || value > 3600000) throw new ReleaseError('option', '읽기 연결 시간 설정이 맞지 않습니다.'); this.#options[name] = value; }
+    const connection = { status: 'disconnected', url: '', lastReceivedAt: null, error: null, staleAfterMs: this.#options.staleMs, sourceStaleAfterMs: this.#options.sourceStaleMs };
+    this.#state = { snapshot: null, connection, view: deriveReleaseView(null, connection, this.#clock()) };
+    this.getSnapshot = () => this.#state;
+    this.subscribe = listener => { this.#listeners.add(listener); return () => this.#listeners.delete(listener); };
+  }
+  #publish(snapshot = this.#state.snapshot, patch = {}) {
+    let connection = { ...this.#state.connection, ...patch };
+    const view = deriveReleaseView(snapshot, connection, this.#clock());
+    if (['connected', 'error'].includes(connection.status) && view.connectionStatus === 'stale') connection = { ...connection, status: 'stale' };
+    this.#state = freeze({ snapshot, connection, view });
+    this.#listeners.forEach(listener => listener());
+  }
+  #clearTimers() {
+    if (this.#pollTimer !== null) this.#clearTimer(this.#pollTimer);
+    if (this.#freshnessTimer !== null) this.#clearTimer(this.#freshnessTimer);
+    this.#pollTimer = null; this.#freshnessTimer = null;
+  }
+  #scheduleFreshness(generation) {
+    if (generation !== this.#generation || !this.#endpoint) return;
+    this.#freshnessTimer = this.#setTimer(() => {
+      if (generation !== this.#generation || !this.#endpoint) return;
+      this.#publish(); this.#scheduleFreshness(generation);
+    }, this.#options.freshnessMs);
+  }
+  #schedulePoll(generation) {
+    if (this.#pollTimer !== null) this.#clearTimer(this.#pollTimer);
+    if (generation !== this.#generation || !this.#endpoint) return;
+    this.#pollTimer = this.#setTimer(() => { this.#pollTimer = null; if (generation === this.#generation) this.refresh().catch(() => {}); }, this.#options.pollMs);
+  }
+  async connect({ url, token = '' } = {}) {
+    const target = endpointFor(url);
+    if (typeof token !== 'string' || token.length > 4096 || /[\s\u0000-\u001f\u007f]/.test(token)) throw new ReleaseError('token', 'Bearer 키 형식을 확인해 주세요.');
+    if (typeof this.#fetch !== 'function' || typeof this.#Abort !== 'function') throw new ReleaseError('runtime', '이 환경에서 읽기 연결을 사용할 수 없습니다.');
+    this.#generation++; this.#request++; this.#controller?.abort(); this.#clearTimers();
+    this.#endpoint = target.endpoint; this.#token = token;
+    this.#publish(this.#state.snapshot, { status: 'connecting', url: target.url, error: null });
+    this.#scheduleFreshness(this.#generation);
+    return this.refresh();
+  }
+  async refresh() {
+    if (!this.#endpoint) throw new ReleaseError('disconnected', '읽기 서버에 연결한 뒤 새로 읽을 수 있습니다.');
+    const generation = this.#generation, request = ++this.#request;
+    this.#controller?.abort();
+    const controller = new this.#Abort(); this.#controller = controller;
+    if (this.#pollTimer !== null) { this.#clearTimer(this.#pollTimer); this.#pollTimer = null; }
+    const headers = { Accept: 'application/json' };
+    if (this.#token) headers.Authorization = `Bearer ${this.#token}`;
+    let timer;
+    const stillCurrent = () => generation === this.#generation && request === this.#request && Boolean(this.#endpoint);
+    try {
+      const timeout = new Promise((_, reject) => { timer = this.#setTimer(() => { reject(new ReleaseError('timeout', '하네스 읽기 응답 시간이 초과되었습니다.')); controller.abort(); }, this.#options.timeoutMs); });
+      const cancelled = new Promise((_, reject) => controller.signal.addEventListener('abort', () => reject(new ReleaseError('cancelled', '이전 읽기 요청을 취소했습니다.')), { once: true }));
+      const read = (async () => {
+        const response = await this.#fetch(this.#endpoint, { method: 'GET', headers, cache: 'no-store', credentials: 'omit', redirect: 'error', signal: controller.signal });
+        if (!response?.ok) throw new ReleaseError('http', response?.status === 401 || response?.status === 403 ? '하네스 읽기 인증을 확인해 주세요.' : '하네스 읽기 응답을 받지 못했습니다.');
+        return normalizeReleaseSnapshot(await response.json());
+      })();
+      const snapshot = await Promise.race([read, timeout, cancelled]);
+      if (!stillCurrent()) return null;
+      if (this.#state.snapshot && Date.parse(snapshot.source.observed_at) < Date.parse(this.#state.snapshot.source.observed_at)) {
+        this.#publish(this.#state.snapshot, { status: 'stale', error: '이전 관측 응답을 건너뛰었습니다. 마지막 수신 기록을 보존합니다.' });
+        return null;
+      }
+      this.#publish(snapshot, { status: 'connected', lastReceivedAt: new Date(this.#clock()).toISOString(), error: null });
+      return snapshot;
+    } catch (error) {
+      if (!stillCurrent()) return null;
+      const safe = error instanceof ReleaseError ? error : new ReleaseError('network', '하네스 읽기 연결을 확인해 주세요.');
+      this.#publish(this.#state.snapshot, { status: 'error', error: safe.message });
+      throw safe;
+    } finally {
+      if (timer !== undefined) this.#clearTimer(timer);
+      if (stillCurrent()) { this.#controller = null; this.#schedulePoll(generation); }
+    }
+  }
+  disconnect() {
+    this.#generation++; this.#request++; this.#controller?.abort(); this.#controller = null;
+    this.#clearTimers(); this.#token = ''; this.#endpoint = '';
+    this.#publish(this.#state.snapshot, { status: 'disconnected', error: null });
+  }
+}
+export function createReleaseStore(options = {}) { return new ReleaseStore(options); }
+export const releaseStore = createReleaseStore();
+export default releaseStore;
