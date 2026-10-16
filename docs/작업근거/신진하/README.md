@@ -1,6 +1,7 @@
 # 신진하 — 작업근거 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-16 별도 UI 보존: [KITCHEN AX v15 팀 저장소 보존·접근권한 확인](2026-10-16/신진하-20261016-KITCHEN-AX-V15-TEAM-SNAPSHOT.md). 기존 v5·제품 코드를 유지하고 새 버전 폴더/브랜치에만 추가.
 - 2026-10-15 별도 UI 보존: [KITCHEN AX 공장 대시보드 독립 스냅샷](2026-10-15/신진하-E-20261015-KITCHEN-AX-DASHBOARD-SNAPSHOT.md). 새 폴더·보존 브랜치만 사용하며 팀 제품 통합/PM 인수와 구분한다.
 
 ## 작성자의 최신 재개 요약
