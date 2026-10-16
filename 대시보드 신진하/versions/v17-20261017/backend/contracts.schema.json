@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kitchen-ax.local/contracts/v1",
+  "title": "KITCHEN AX execution contracts v1",
+  "$defs": {
+    "stageId": {"enum": ["retrieve", "structure", "compare", "concept", "validate"]},
+    "source": {
+      "type": "object",
+      "required": ["id", "type", "modelId", "text", "source", "synthetic"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "type": {"enum": ["review", "feature"]},
+        "modelId": {"type": "string", "minLength": 1},
+        "model": {"type": "string"},
+        "text": {"type": "string"},
+        "source": {"type": "string"},
+        "page": {"type": ["string", "integer"]},
+        "location": {"type": "string"},
+        "version": {"type": ["string", "number"]},
+        "condition": {"type": "string"},
+        "synthetic": {"type": "boolean"}
+      },
+      "additionalProperties": true
+    },
+    "result": {
+      "type": "object",
+      "required": ["summary", "activity", "items", "sources", "warnings", "assumptions"],
+      "properties": {
+        "summary": {"type": "string"},
+        "activity": {"type": "string"},
+        "items": {"type": "array", "items": {"type": "object"}},
+        "sources": {"type": "array", "items": {"$ref": "#/$defs/source"}},
+        "warnings": {"type": "array", "items": {"type": "string"}},
+        "assumptions": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": true
+    },
+    "stageRequest": {
+      "type": "object",
+      "required": ["stage", "context"],
+      "properties": {
+        "stage": {"$ref": "#/$defs/stageId"},
+        "context": {
+          "type": "object",
+          "properties": {
+            "request": {"type": "string"},
+            "reviews": {"type": ["array", "string"]},
+            "models": {"type": ["array", "object"]},
+            "conditions": {"type": ["object", "string"]},
+            "results": {"type": "object"},
+            "decisions": {"type": "object", "additionalProperties": {"enum": ["include", "hold"]}}
+          }
+        }
+      }
+    },
+    "event": {
+      "type": "object",
+      "required": ["id", "runId", "type", "timestamp", "message"],
+      "properties": {
+        "id": {"type": "string"},
+        "runId": {"type": "string"},
+        "stage": {"$ref": "#/$defs/stageId"},
+        "type": {"enum": ["started", "stage_started", "stage_completed", "paused", "resumed", "stopped", "awaiting_user", "user_decision", "revision", "completed", "failed"]},
+        "timestamp": {"type": "string", "format": "date-time"},
+        "message": {"type": "string"},
+        "processed": {"type": "integer", "minimum": 0},
+        "total": {"type": ["integer", "null"], "minimum": 0}
+      },
+      "additionalProperties": true
+    },
+    "run": {
+      "type": "object",
+      "required": ["id", "mode", "status", "request", "results", "events"],
+      "properties": {
+        "id": {"type": "string"},
+        "mode": {"enum": ["local_rules", "llm_plan"]},
+        "status": {"enum": ["idle", "running", "paused", "awaiting_user", "stopped", "completed", "failed"]},
+        "request": {"type": "object"},
+        "results": {"type": "object"},
+        "events": {"type": "array", "items": {"$ref": "#/$defs/event"}},
+        "revisionCount": {"type": "integer", "minimum": 0, "maximum": 2}
+      },
+      "additionalProperties": true
+    },
+    "llmPlan": {
+      "type": "object",
+      "required": ["summary", "steps", "assumptions"],
+      "properties": {
+        "summary": {"type": "string", "minLength": 1},
+        "steps": {
+          "type": "array", "minItems": 5, "maxItems": 5,
+          "items": {"type": "object", "required": ["stage", "goal", "sourceIds"], "properties": {
+            "stage": {"$ref": "#/$defs/stageId"},
+            "goal": {"type": "string", "minLength": 1},
+            "sourceIds": {"type": "array", "items": {"type": "string"}}
+          }}
+        },
+        "assumptions": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  },
+  "$ref": "#/$defs/stageRequest"
+}
