@@ -1,0 +1,64 @@
+/* Approved ivory/sage art is decorative. All signs remain real buttons. */
+.station-state-short,.artwork-active-badge{display:none}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label{
+ width:var(--fascia-width,150px);min-width:0;max-width:none;height:var(--sign-height,28px);min-height:0;padding:0 3px;display:flex;align-items:center;justify-content:center;gap:0;
+ border:0;border-radius:3px;background:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;animation:none;color:#fffdf2;
+}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label .station-kind,
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label .station-actor,
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label .factory-station-caption,
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label .station-state-full{display:none}
+.fullscreen-app .factory-scene.has-illustrated-workshops .station-sign-row{gap:5px;padding:0;transform:rotate(var(--fascia-angle,0deg));}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label .factory-station-title strong{font-size:var(--fascia-font,13px);line-height:1.2;letter-spacing:-.45px;font-weight:700;color:#fffdf2;text-shadow:0 1px 2px #304438;overflow:visible}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label .factory-station-number{font-size:calc(var(--fascia-font,13px) - 1px);color:#e2edcf;font-weight:700}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label .factory-station-state{font-size:8px;padding:1px 4px;background:#e6ead911;border-color:#c6d0b66b;color:#f4f7e8}
+.fullscreen-app .factory-scene.has-illustrated-workshops .station-state-short{display:inline}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label:hover{background:#f2eadb15;outline:1px solid #f5e5bf}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label.is-selected{outline:2px solid #80ac9a;outline-offset:2px}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label.status-running{outline:1px solid #f6b55f;outline-offset:1px}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label:is(.status-running,.status-helper,.status-reported,.status-paused) .artwork-active-badge{
+ position:absolute;right:0;top:var(--active-offset,-90px);display:flex;align-items:center;gap:4px;max-width:230px;padding:5px 8px;background:#eb9c3c;color:#fff;border:1px solid #ffe8a9;border-radius:8px;box-shadow:0 2px 8px #bf843a26;font-size:10px;white-space:nowrap;line-height:1.3;pointer-events:none;
+}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label.status-helper .artwork-active-badge{background:#8f73a3;border-color:#e9d6fa}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label.status-reported .artwork-active-badge{background:#7093a4;border-color:#d9edf1}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label.status-paused .artwork-active-badge{background:#9a9078;border-color:#e1d7bd}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-label-leaders path{visibility:hidden!important}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-planner-label,.fullscreen-app .factory-scene.has-illustrated-workshops .factory-planner-label.is-selected{width:125px;padding:5px 7px;border-radius:5px;background:#fdfbf1f5;border:1px solid #b4bda4;box-shadow:0 2px 5px #54635220}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-planner-label .factory-planner-eyebrow{display:none}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-planner-label strong{font-size:12px;margin:0;line-height:1.3;color:#3f5747}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-planner-label.status-running{background:#ffb45d;border-color:#f19032}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-scene-grain{background:linear-gradient(160deg,#fffbec08,transparent 55%,#b9b6a40c);box-shadow:inset 0 0 50px #8c8a6910}
+@media(max-width:760px){
+ .fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label .factory-station-state{font-size:6px;padding:1px 2px}
+ .fullscreen-app .factory-scene.has-illustrated-workshops .station-sign-row{gap:3px}
+ .fullscreen-app .factory-scene.has-illustrated-workshops .factory-planner-label,.fullscreen-app .factory-scene.has-illustrated-workshops .factory-planner-label.is-selected{width:110px;padding:4px}
+ .fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label .artwork-active-badge{font-size:8px;padding:3px 5px}
+}
+
+/* Override legacy short-screen card rules only for attached fascia signs. */
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label{height:var(--sign-height,28px)!important;min-height:0!important;padding:0 3px!important}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label .station-sign-row{padding:0!important}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label::before,.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label::after{display:none!important}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-planner-label .factory-planner-eyebrow{display:none!important}
+
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label{background:transparent!important;box-shadow:none!important;border:0!important}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label[data-compact-plate="true"]{background:#354d40f5!important;box-shadow:0 1px 3px #3a4c3a30!important;border:1px solid #bfc6af!important}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label .factory-station-title strong{font-size:var(--fascia-font,12px)!important}
+
+/* Reference 2: unobtrusive header, same existing controls and one-line real status. */
+.fullscreen-app:has(.has-illustrated-workshops) .topbar{top:13px;height:38px}
+.fullscreen-app:has(.has-illustrated-workshops) .brand{padding:7px 10px;border-radius:7px;box-shadow:0 3px 12px #6d72570d}
+.fullscreen-app:has(.has-illustrated-workshops) .brand b{font-size:17px}
+.fullscreen-app:has(.has-illustrated-workshops) .header-work-status{padding:7px 10px;border-radius:7px;box-shadow:none}
+.fullscreen-app:has(.has-illustrated-workshops) .mobile-menu-toggle{padding:7px 9px}
+@media(max-width:760px){.fullscreen-app:has(.has-illustrated-workshops) .topbar{top:9px}.fullscreen-app:has(.has-illustrated-workshops) .brand{padding:7px}.fullscreen-app:has(.has-illustrated-workshops) .brand b{font-size:14px}.fullscreen-app:has(.has-illustrated-workshops) .header-work-status{font-size:9px;padding:7px 5px}}
+
+/* Match typography to the actual green face; status lives above an active room. */
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label .factory-station-state{display:none!important}
+.fullscreen-app .factory-scene.has-illustrated-workshops .station-sign-row{display:flex!important;align-items:center;justify-content:center;width:100%;height:100%;max-width:100%;gap:4px;white-space:nowrap;overflow:hidden}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-title{min-width:0;flex:0 1 auto;overflow:hidden}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-number{flex:0 0 auto;font-size:var(--fascia-font)!important}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label .factory-station-title strong{display:block;white-space:nowrap;letter-spacing:-.3px;line-height:1.35;font-size:var(--fascia-font)!important}
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-station-label{padding:0 2px!important;outline-offset:0}
+
+.fullscreen-app .factory-scene.has-illustrated-workshops .factory-planner-label{width:var(--planner-width,125px)!important}.fullscreen-app .factory-scene.has-illustrated-workshops .factory-planner-label strong{font-size:var(--planner-font,12px)!important}
