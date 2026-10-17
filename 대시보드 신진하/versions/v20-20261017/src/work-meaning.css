@@ -1,0 +1,105 @@
+/* Use the existing room signs and drawer; the factory keeps the full viewport. */
+.station-sign-row{display:flex;align-items:center;gap:7px;min-width:0;width:100%}
+.fullscreen-app .factory-scene.has-work-meaning .factory-station-label{display:flex;flex-direction:column;align-items:stretch;gap:3px;height:auto;min-height:54px;padding:6px 8px}
+.fullscreen-app .factory-scene.has-work-meaning .factory-station-label.status-running{min-height:68px}
+.station-kind{display:flex;align-items:center;gap:4px;font-size:8px;font-weight:700;letter-spacing:.3px;color:#d8deb8}
+.fullscreen-app .factory-scene.has-work-meaning .factory-station-caption{display:block;margin:0;color:#edf0df;font-size:10px;letter-spacing:-.2px;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fullscreen-app .factory-scene.has-work-meaning .factory-station-label.status-running .station-kind{color:#ffcb85}
+.fullscreen-app .factory-scene.has-work-meaning .factory-station-label.status-running .factory-station-state{font-size:9px;padding:4px 6px}
+.station-actor{display:flex;align-items:center;gap:4px;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:9px;font-weight:700;line-height:1.4;border-radius:4px;padding:2px 5px;background:#eef1e512;color:#f3efda}
+.station-actor.helper{background:#eee5ff;color:#68468d;border:1px solid #cab1e6}
+.fullscreen-app .factory-scene .factory-station-label.is-reported{border-color:#9ab8c7;background:#34515a}
+.fullscreen-app .factory-scene .factory-station-label.is-reported .factory-station-state{background:#d8e9ef;color:#305b70;border-color:#a4cadb}
+.fullscreen-app .factory-scene .factory-station-label.has-helper:not(.status-running) .factory-station-state{background:#eee4fa;color:#68468d;border-color:#bda0dc}
+.fullscreen-app .factory-scene.has-work-meaning .factory-planner-label{width:190px;padding:6px 9px}
+.fullscreen-app .factory-scene.has-work-meaning .factory-planner-label .factory-planner-eyebrow{display:flex;letter-spacing:.3px;font-size:8px;color:#786c4d}
+.fullscreen-app .factory-scene.has-work-meaning .factory-planner-label>span:last-child{display:block;font-size:9px;line-height:1.3;margin-top:3px;color:#68785b}
+.fullscreen-app .factory-scene.has-work-meaning .factory-planner-label strong{font-size:14px;margin:2px 0}
+.fullscreen-app .factory-scene.has-work-meaning .factory-planner-label.status-running{border-color:#e8ac52;box-shadow:0 0 18px #e6aa4744}
+.factory-scene.has-work-meaning .factory-scene-legend{font-size:10px;color:#546347;font-weight:600;gap:9px}
+.factory-scene.has-work-meaning .factory-scene-legend>span:last-child{color:#59664d}
+.work-meaning{padding:0!important;display:grid;gap:10px;background:none!important;border:0!important}
+.work-meaning .meaning-tool,.work-meaning .meaning-person{padding:14px;border:1px solid #e0d0af;border-radius:10px;background:#fff9ee}
+.work-meaning .meaning-person{border-color:#c9b1df;background:#faf5ff}
+.work-meaning>div>span{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:#8a632d}
+.work-meaning .meaning-person>span{color:#73528d}
+.work-meaning h2{font-size:18px!important;line-height:1.4;margin:9px 0 5px!important;color:#33472f}
+.work-meaning p{font-size:13px!important;line-height:1.75!important;margin:5px 0!important;color:#56684d}
+.work-meaning .meaning-person p{color:#705b7d}
+.work-meaning .meaning-tool>b{display:inline-block;background:#efe2c7;color:#795c32;border-radius:5px;padding:4px 7px;font-size:11px;margin-top:6px}
+.work-meaning .meaning-link{display:flex;align-items:center;gap:5px;flex-wrap:wrap;background:#edf2e7;border-radius:7px;padding:9px!important;font-size:11px!important;font-weight:700}
+.meaning-agents article{display:grid;gap:4px;border-left:3px solid #af8bcb;padding:8px 11px;margin:9px 0;background:#fcf9ff;border-radius:0 7px 7px 0}
+.meaning-agents article b{display:flex;align-items:center;gap:5px;font-size:12px;color:#6b4d83}
+.meaning-agents article span{font-size:12px;color:#635e69}
+.meaning-agents article small{font-size:10px;color:#8b8092;overflow-wrap:anywhere}
+.factory-guide>h2{font-size:21px!important;line-height:1.5}
+.factory-guide>p{font-size:13px;line-height:1.9;color:#5f7056}
+.guide-key{display:flex;gap:11px;padding:14px 0;border-bottom:1px solid #e5e9dd}
+.guide-key>svg{flex:none;width:22px;color:#bd853e}
+.guide-key.person>svg{color:#8860a4}
+.guide-key b{font-size:14px;color:#465b3c}
+.guide-key p{font-size:13px;line-height:1.85;margin:6px 0;color:#64735b}
+.factory-guide ol{padding-left:22px}.factory-guide li{margin:13px 0}.factory-guide li b{display:block;font-size:13px}.factory-guide li span{font-size:12px;line-height:1.8;color:#6c795e}
+.factory-guide>a{display:inline-flex;align-items:center;gap:6px;color:#6b8358;font-size:12px}
+.harness-current details{font-size:11px;line-height:1.7;color:#7b846f}.harness-current summary{cursor:pointer}
+@media(max-width:760px){
+ .fullscreen-app .factory-scene.has-work-meaning .factory-station-label{padding:5px 6px;min-height:53px;gap:2px}
+ .fullscreen-app .factory-scene.has-work-meaning .factory-station-label.status-running{min-height:69px}
+ .station-sign-row{gap:4px}.station-kind{font-size:7px;gap:3px}.station-kind svg{width:9px;height:9px}
+ .fullscreen-app .factory-scene.has-work-meaning .factory-station-caption{font-size:8px}
+ .fullscreen-app .factory-scene.has-work-meaning .factory-station-label.status-running .factory-station-state{font-size:7px;padding:3px}
+ .station-actor{font-size:8px;padding:1px 3px}
+ .fullscreen-app .factory-scene.has-work-meaning .factory-planner-label{width:151px;padding:5px 6px}
+ .fullscreen-app .factory-scene.has-work-meaning .factory-planner-label strong{font-size:12px}
+ .fullscreen-app .factory-scene.has-work-meaning .factory-planner-label>span:last-child{font-size:7px}
+ .fullscreen-app .factory-scene.has-work-meaning .factory-planner-label .factory-planner-eyebrow{font-size:7px}
+ .factory-scene.has-work-meaning .factory-scene-legend{font-size:7px;gap:6px}
+}
+@media(max-height:500px){.fullscreen-app .factory-scene.has-work-meaning .factory-station-caption,.fullscreen-app .factory-scene.has-work-meaning .factory-planner-label>span:last-child{display:none}.fullscreen-app .factory-scene.has-work-meaning .factory-station-label{min-height:39px}.fullscreen-app .factory-scene.has-work-meaning .factory-station-label.status-running{min-height:53px}}
+
+
+.meaning-query{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:10px 0;color:#58685f;font-size:12px}.meaning-query span{flex-basis:100%;line-height:1.6}.meaning-unbound{border-top:1px dashed #ced8d2;padding-top:12px}.meaning-unbound>p{font-size:12px;line-height:1.6;color:#65736a}
+
+/* Keep signs outside researcher routes. State color uses the same real planner flag. */
+.factory-label-leaders{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none;overflow:visible}.factory-label-leaders path{fill:none;stroke:#8e9d82;stroke-width:1;stroke-linecap:round;opacity:.52}.factory-label-leaders path.is-working{stroke:#d58c3a;opacity:.75}
+.fullscreen-app .factory-scene.has-work-meaning .factory-station-label.status-running .factory-station-title strong{font-size:16px}
+.fullscreen-app .factory-scene .factory-planner-label.status-running{background:linear-gradient(125deg,#ffbd69,#f59a38);border:1px solid #ef963d;border-top:3px solid #ef822a;box-shadow:0 3px 0 #cd8b41,0 0 20px #f9a13b55;color:#573716}
+.fullscreen-app .factory-scene.has-work-meaning .factory-planner-label.status-running .factory-planner-eyebrow,.fullscreen-app .factory-scene.has-work-meaning .factory-planner-label.status-running>.factory-planner-caption{color:#704615}.fullscreen-app .factory-scene .factory-planner-label.status-running .factory-planner-eyebrow i{background:#fff4d8;box-shadow:0 0 5px #fff2d5}
+@media(max-width:760px){.fullscreen-app .factory-scene.has-work-meaning .factory-station-label.status-running .factory-station-title strong{font-size:13px}}
+
+.fullscreen-app .factory-scene.has-work-meaning .factory-station-label{gap:2px}.fullscreen-app .factory-scene.has-work-meaning .station-kind{font-size:7px;line-height:1.1}.fullscreen-app .factory-scene.has-work-meaning .factory-station-caption{font-size:9px;line-height:1.2}.fullscreen-app .factory-scene.has-work-meaning .station-actor{font-size:8px;line-height:1.2;padding:1px 4px}.fullscreen-app .factory-scene.has-work-meaning .factory-station-title{line-height:1.15}.fullscreen-app .factory-scene.has-work-meaning .factory-station-state{line-height:1.1}.fullscreen-app .factory-scene.has-work-meaning.many-active-rooms .factory-station-label.status-running .factory-station-title strong{font-size:14px}.fullscreen-app .factory-scene.has-work-meaning.many-active-rooms .factory-station-label.status-running .factory-station-state{font-size:7px;padding:3px 4px}.fullscreen-app .factory-scene.has-work-meaning.many-active-rooms .factory-planner-label{width:160px}.factory-label-leaders path{opacity:.32}.factory-label-leaders path.is-working{opacity:.5}
+
+/* On phones, keep the name and Skill state on a short sign; details stay in the drawer. */
+@media(max-width:760px){
+ .fullscreen-app .factory-scene.has-work-meaning .factory-station-label:not(.status-running),
+ .fullscreen-app .factory-scene.has-work-meaning.many-active-rooms .factory-station-label{height:34px;min-height:34px;padding:5px 6px;justify-content:center}
+ .fullscreen-app .factory-scene.has-work-meaning .factory-station-label:not(.status-running) .factory-station-caption,
+ .fullscreen-app .factory-scene.has-work-meaning .factory-station-label:not(.status-running) .station-actor,
+ .fullscreen-app .factory-scene.has-work-meaning.many-active-rooms .factory-station-caption,
+ .fullscreen-app .factory-scene.has-work-meaning.many-active-rooms .station-actor{display:none}
+ .fullscreen-app .factory-scene.has-work-meaning .factory-station-label:not(.status-running) .station-kind,
+ .fullscreen-app .factory-scene.has-work-meaning.many-active-rooms .station-kind{position:absolute;left:6px;top:9px;font-size:0}
+ .fullscreen-app .factory-scene.has-work-meaning .factory-station-label:not(.status-running) .station-sign-row,
+ .fullscreen-app .factory-scene.has-work-meaning.many-active-rooms .station-sign-row{padding-left:12px}
+ .fullscreen-app .factory-scene.has-work-meaning.many-active-rooms .factory-station-label.status-running .factory-station-title strong{font-size:12px}
+ .fullscreen-app .factory-scene.has-work-meaning.many-active-rooms .factory-station-label.status-running .factory-station-state{font-size:6.5px;padding:3px 2px}
+ .fullscreen-app .factory-scene.has-work-meaning.many-active-rooms .factory-station-number{font-size:9px}
+}
+
+@media(max-height:500px){
+ .fullscreen-app .factory-scene.has-work-meaning .factory-station-label{height:38px;min-height:38px;padding:5px 7px;justify-content:center}
+ .fullscreen-app .factory-scene.has-work-meaning .factory-station-label .factory-station-caption,
+ .fullscreen-app .factory-scene.has-work-meaning .factory-station-label .station-actor{display:none}
+ .fullscreen-app .factory-scene.has-work-meaning .factory-station-label .station-kind{position:absolute;left:7px;top:11px;font-size:0}
+ .fullscreen-app .factory-scene.has-work-meaning .station-sign-row{padding-left:13px}
+ .fullscreen-app .factory-scene.has-work-meaning .factory-station-label.status-running .factory-station-title strong{font-size:14px}
+}
+
+@media(max-width:760px) and (min-height:501px){
+ .fullscreen-app .factory-scene.has-work-meaning .factory-station-label:not(.status-running) .factory-station-title strong{font-size:12px}
+ .fullscreen-app .factory-scene.has-work-meaning .factory-station-label:not(.status-running) .factory-station-state{font-size:7px;padding:3px}
+ .fullscreen-app .factory-scene.has-work-meaning .factory-station-label:not(.status-running){height:28px;min-height:28px;padding:3px 6px}
+ .fullscreen-app .factory-scene.has-work-meaning.many-active-rooms .factory-station-label{height:26px;min-height:26px;padding:3px 6px}
+ .fullscreen-app .factory-scene.has-work-meaning .factory-station-label:not(.status-running) .station-kind,
+ .fullscreen-app .factory-scene.has-work-meaning.many-active-rooms .station-kind{top:6px}
+}
