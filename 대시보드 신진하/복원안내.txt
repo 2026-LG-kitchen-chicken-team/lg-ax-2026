@@ -1,0 +1,59 @@
+대시보드 신진하 — 독립 소스 스냅샷 복원 안내
+기준 날짜: 2026-10-15 KST (Asia/Seoul)
+
+원본 공개 Site: https://kitchen-ax-factory-20261015.tlswlsgk7174.chatgpt.site/
+원본 Site 버전: 5
+원본 source commit: f49db0e0146fd4d06937ae26063f77224f78cd67
+원본 소스 폴더: outputs/kitchen-ax-factory
+이 백업의 실행 폴더: 대시보드 신진하
+
+1. 백업 범위
+원본 git ls-files로 확인한 추적 파일 31개를 기준으로 복사했습니다.
+README에는 백업 안내와 미리보기 링크를 앞에 추가했으며 원본 설명·실행 명령은 아래에 그대로 남겼습니다.
+업로드한 실제 CSV/PDF·자격 증명·브라우저 저장 데이터·SQLite 실행 DB·node_modules·dist는 포함하지 않습니다.
+기본 자료는 가상 모델 3개와 합성 리뷰 42개입니다. 실제 LLM 연결 없이 브라우저 또는 Python 로컬 규칙으로 작동합니다.
+
+2. 웹 로컬 실행
+Node.js 22 이상이 필요합니다. PowerShell/터미널에서 이 파일이 있는 폴더로 이동합니다.
+팀 저장소 최상위가 아니라 대시보드 신진하 폴더 안에서 다음 명령을 실행하세요.
+
+npm ci
+npm run dev
+
+출력되는 localhost 주소를 브라우저에서 엽니다. npm ci는 package-lock.json의 버전을 사용합니다.
+
+3. 웹 빌드와 검사
+같은 폴더에서 실행합니다.
+
+npm test
+npm run build
+
+빌드 결과는 dist 폴더에 새로 생성됩니다. 소스 백업에는 미리 생성된 dist를 포함하지 않습니다.
+
+4. Python 실행기 선택 실행
+Python 3.10 이상이 필요하며 현재 backend는 표준 라이브러리만 사용합니다.
+별도 터미널에서도 이 파일이 있는 폴더로 이동한 뒤 실행합니다.
+
+python -m backend.server --port 8032
+
+웹 설정에서 http://127.0.0.1:8032 를 입력해 연결 확인합니다.
+Python을 실행하지 않아도 웹은 브라우저 로컬 규칙 모드로 사용할 수 있습니다.
+공개 HTTPS Site에서 로컬 서버 연결은 브라우저 네트워크 정책에 따라 제한될 수 있으므로 로컬 웹에서 먼저 사용하세요.
+Python 검사는 python -m unittest discover -s backend/tests -v 로 실행합니다.
+SQLite 데이터는 실행 시 이 복사본의 backend/data/runs.sqlite3에 새로 생성됩니다.
+원본 DB나 팀 저장소의 다른 Agent/서비스를 자동으로 연결하지 않습니다.
+
+5. 원본 Site 연결 비활성화
+원본 .openai/hosting.json은 기존 Site project_id를 가리키므로 자동 배포 대상이 혼동되지 않도록 활성 경로에 두지 않았습니다.
+바이트가 같은 참고 사본은 backup/hosting.original.json에 보관했습니다.
+그 파일을 그대로 활성 .openai/hosting.json으로 복사하면 기존 Site를 배포 대상으로 사용할 수 있으므로 주의하세요.
+새 독립 Site를 배포하려면 새 Site를 생성하고 그 새 project_id로 배포 설정을 별도로 작성하세요.
+이 백업을 GitHub에 저장하거나 npm run dev를 실행하는 것만으로 기존 Site가 갱신되지는 않습니다.
+
+6. 무결성 확인
+SNAPSHOT-MANIFEST.json에는 이 파일·README·미리보기를 포함한 각 파일의 SHA-256을 기록했습니다.
+매니페스트 자신은 자기 참조를 피하려고 해시 목록에서 제외했습니다.
+원본 소스의 상대 경로와 복사본 경로, README 추가 및 hosting 파일 이동 내역을 함께 기록했습니다.
+프리뷰 이미지도 별도의 outputs 원본 파일과 바이트가 같게 복사했습니다.
+
+아래 README.md 및 backend/README.md에서 구현 범위와 실제 연결 대기 항목을 확인하세요.

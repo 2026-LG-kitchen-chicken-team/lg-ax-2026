@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-17",
+  "time_zone": "Asia/Seoul",
+  "purpose": "Apply approved warm premium lab A design to the live interactive factory",
+  "baseline_site_source": "b5f8f3ad92166f7f7991ba134f8040feac07bc41",
+  "reference": "outputs/factory-visual-directions-20261017/01-premium-research-lab.png",
+  "source_scope": [
+    "src/FactoryScene.jsx",
+    "src/factory-workshop.js",
+    "src/premium-lab.js",
+    "src/workshop.css"
+  ],
+  "unchanged": [
+    "main.jsx and all input/result handlers",
+    "engine.js and planner.js",
+    "factory-layout.js: parallel scaling/viewport projection",
+    "ResearcherCharacters.js and PNGs/researcher-motion.js",
+    "office/release stores and backend",
+    "all previous preserved v5/v15/v16 snapshots"
+  ],
+  "checks": {
+    "node": {
+      "passed": 115,
+      "total": 115,
+      "exit_code": 0,
+      "log": "web-tests.log"
+    },
+    "build": {
+      "exit_code": 0,
+      "log": "build.log",
+      "warning": "existing bundle size >500KB warning"
+    }
+  },
+  "browser_qa": {
+    "desktop_actual_css": "1600x1000",
+    "mobile_actual_css": "390x844; scrollWidth390",
+    "views": [
+      "whole factory",
+      "concept detail and Escape back",
+      "mobile whole factory and source-detail sheet",
+      "existing CLI record panel"
+    ],
+    "parallel": "explicit motion preview3/5 active rooms; original scale/pop/character patrol retained; not a native CLI execution",
+    "webgl": "researchers ready; browser errors/warnings0",
+    "decoration": "only per-workroom props; peripheral carts hide near enlarged workspaces or compact layout; greenery instanced and static furniture grouped per material",
+    "public": {
+      "asset": "/assets/index-D4oP0kBU.js",
+      "viewport": "1600x1000",
+      "retained": {
+        "reviews": 42,
+        "models": 3,
+        "concepts": 3,
+        "requirements": 9
+      },
+      "checks": [
+        "whole factory/5 readable names",
+        "concept panel with saved actual results",
+        "Escape restores full field",
+        "browser errors/warnings0"
+      ],
+      "screenshots": [
+        "public-default.png",
+        "public-detail.png"
+      ]
+    }
+  },
+  "native_cli_business_run": "not_run",
+  "runtime_api_changes": 0,
+  "new_paid_model_calls": 0,
+  "deployment": {
+    "site_version": 17,
+    "source_commit": "27eae107a0337deb4845d5ad8e789597aa479ea0",
+    "url": "https://kitchen-ax-factory-20261015.tlswlsgk7174.chatgpt.site/",
+    "status": "succeeded"
+  }
+}
