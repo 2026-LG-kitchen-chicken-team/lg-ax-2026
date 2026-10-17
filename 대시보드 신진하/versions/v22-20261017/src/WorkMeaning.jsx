@@ -1,0 +1,17 @@
+import React from 'react';
+import {Wrench,UserRound,BookOpen,ExternalLink} from 'lucide-react';
+import {PRODUCT_SKILLS,PRODUCT_ROLES,VERIFIED_PRODUCT,actorLabel} from './skill-catalog.js';
+
+export function WorkMeaning({room,view}){
+ return <section className="work-meaning" aria-label="Skill과 담당 AI 구분">
+  <div className="meaning-tool"><span><Wrench size={16}/>Skill · 일하는 방법</span><h2>{room?.label||'필요한 방법을 골라 써요'}</h2><p>{room?.description||'자료 찾기, 비교하기, 아이디어 만들기처럼 AI가 사용할 수 있는 작업 방법이에요.'}</p><b>{room?.statusLabel||'지금 사용 중인 방법은 구역에 표시돼요'}</b></div>
+  <div className="meaning-person"><span><UserRound size={16}/>Agent · 일하는 AI</span><h2>{room?.actors.length?room.actors.map(a=>a.label).join(' · '):room?.helpers.length?room.helpers.map(a=>a.label).join(' · '):room?.reporting?'메인 기획 AI':'담당 기록을 기다려요'}</h2><p>{room?.confirmed?(room.actors.length?'이 AI가 위의 Skill을 사용하고 있어요.':'Skill 작업은 확인했어요. 담당 AI의 연결은 확인 중이에요.'):room?.helperActive?'도우미 시작 기록을 확인했어요. 어떤 Skill을 쓰는지는 아직 확인 중이에요.':'Skill 설명서를 읽은 것과 실제로 사용하는 것은 달라요.'}</p></div>
+  {room?.confirmed&&<p className="meaning-link"><UserRound size={13}/>담당 AI <span>→</span><Wrench size={13}/>{room.label} Skill 사용</p>}
+  {view?.instructionQuery&&<p className="meaning-query"><BookOpen size={14}/><b>{view.instructionQuery.label}</b><span>{view.instructionQuery.detail}</span></p>}
+  {view?.agents?.length>0&&<div className="meaning-agents"><h3>이번 요청의 실제 도우미</h3>{view.agents.map(a=><article key={a.id}><b><UserRound size={13}/>{actorLabel(a.role)}</b><span>{a.statusLabel}</span><small>실행 ID · {a.id}</small>{a.activeSkills.length>0&&<small>사용 중 · {a.activeSkills.map(id=>PRODUCT_SKILLS.find(s=>s.id===id)?.label||id).join(' · ')}</small>}</article>)}</div>}
+  {view?.unboundAgents?.length>0&&<div className="meaning-agents meaning-unbound"><h3>같은 세션에서 본 도우미</h3><p>이번 질문의 도우미인지는 연결 확인이 안 됐어요. 이 기록만으로 공장에 ‘작업 중’을 켜지 않아요.</p>{view.unboundAgents.map(a=><article key={a.id}><b><UserRound size={13}/>{actorLabel(a.role)}</b><span>{a.statusLabel}</span><small>실행 ID · {a.id}</small>{a.observedSkills.length>0&&<small>기록에 나온 Skill · {a.observedSkills.map(id=>PRODUCT_SKILLS.find(s=>s.id===id)?.label||id).join(' · ')}</small>}<small>이번 질문과 연결 미확인</small></article>)}</div>}
+ </section>;
+}
+export function FactoryGuide(){
+ return <section className="factory-guide"><h2>이 공장은 무엇을 보여주나요?</h2><p>CLI에서 AI가 하는 일을 공장 모습으로 보여줘요. 공장 그림 자체가 AI를 실행하지는 않아요.</p><div className="guide-key"><Wrench/><div><b>Skill = 일하는 방법</b><p>가위를 골라 쓰듯, AI가 필요한 작업 방법을 골라 써요. 주황색 ‘SKILL 사용 중’이 켜지면 작업 명령이 확인된 거예요.</p></div></div><div className="guide-key person"><UserRound/><div><b>Agent = 일하는 AI</b><p>메인 AI가 일을 맡아요. 필요하면 도우미 AI에게 일을 나눠줘요. 보라색 표시는 실제 도우미 기록이에요. Skill 하나마다 AI가 하나씩 있는 것은 아니에요.</p></div></div><div className="guide-key"><BookOpen/><div><b>‘지침 확인’은 작업 시작 전</b><p>설명서를 열어 본 기록이에요. ‘진행 보고’는 CLI가 알려준 소식이고, 확인된 Skill 명령과 따로 표시해요. 앉아 있는 연구원은 대기 모습을 보여주는 캐릭터예요. 실행이 확인될 때만 일하거나 걸어요. 연구원 수가 실제 도우미 AI 수를 뜻하지는 않아요.</p></div></div><h3>확인한 구성 · Skill {PRODUCT_SKILLS.length}개</h3><ol>{PRODUCT_SKILLS.map(s=><li key={s.id}><b>{s.no} {s.label}</b><span>{s.description}</span></li>)}</ol><p>메인 AI 1개 · 선택할 수 있는 도우미 역할 {PRODUCT_ROLES.length}개. 도우미가 항상 실행되는 것은 아니에요.</p><a href={VERIFIED_PRODUCT.url} target="_blank" rel="noreferrer">확인한 최신 릴리즈 · {VERIFIED_PRODUCT.version}<ExternalLink size={12}/></a><p className="harness-evidence-note">확인일 {VERIFIED_PRODUCT.checked}. 연결한 PC의 설치 버전은 화면 상단에서 따로 확인해요.</p></section>;
+}
