@@ -1,6 +1,13 @@
 # 신진하 — 작업기록 목차
 
 <!-- member-log:owner-updates:start -->
+- 2026-10-17 [v19 이름표 가림 방지·메인 AI 상태 색상](2026-10-17/신진하-20261017-KITCHEN-AX-V19-LABEL-CLEARANCE.md). 원본 캐릭터·병렬 확대 유지, 공개 Site 배포·135개 검사 통과; 독립 UI 보존.
+- 2026-10-17 [v18 Skill·도우미 구분과 역할별 동작](2026-10-17/신진하-20261017-KITCHEN-AX-V18-SKILL-AGENTS.md). 공개 Site 배포·133개 검사 통과; 실제 native 업무/부모 연결 한계·PM 인수와 구분.
+- 2026-10-17 [v17 A안 프리미엄 연구소 디자인](2026-10-17/신진하-20261017-KITCHEN-AX-V17-PREMIUM-LAB.md). 시각 소스4파일만 변경, 기존 분석/CLI 기록·병렬 확대 유지; 독립 보존/PM 검토 단계.
+- 2026-10-17 [v16 이전 디자인 유지·CLI 기록 기능 통합](2026-10-17/신진하-20261017-KITCHEN-AX-V16-CLASSIC-RECORDS.md). 기본 공장·v5/v15 보존, 기록 재생은 오른쪽 패널; 실제 CLI 업무/PM 인수와 구분.
+- 2026-10-16 별도 UI 보존: [KITCHEN AX v15 팀 저장소 보존·접근권한 확인](2026-10-16/신진하-20261016-KITCHEN-AX-V15-TEAM-SNAPSHOT.md). 기존 v5·제품 코드를 유지하고 새 버전 폴더/브랜치에만 추가.
+- 2026-10-15 별도 UI 보존: [KITCHEN AX 공장 대시보드 독립 스냅샷](2026-10-15/신진하-20261015-KITCHEN-AX-DASHBOARD-SNAPSHOT.md). 새 폴더·보존 브랜치만 사용하며 팀 제품 통합/PM 인수와 구분한다.
+
 ## 작성자의 최신 재개 요약
 - 최신 기록 ID / 한국시간 / 목표: `신진하-20261006-DATA190-CORE198-INTEGRATION-01a1100e` · 2026-10-06 22:40 KST · PR190/CORE198 DATA 소비 정합·web 오류7·실측225 인수/독립검수·운영 조회.
 - 완료/미완료: CORE198 고정policy를소비해conflicting 예외와실제schema4회귀/한국어7설명추가, Docker71핵심검사PASS. 전체Python/web 최종재검사중. PR200 실제225실측의원문21/질의15/모델·원문SHA/10개진단metrics 독립audit PASS(모델추가0). 승인운영3GET재조회는로컬오류2/외부502로미확인. PM운영읽기인계·FR01gold·PR190 검수/CI·CORE실모델 의미품질이남음. 부모Done 아님.

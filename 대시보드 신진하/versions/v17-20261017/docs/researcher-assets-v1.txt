@@ -1,0 +1,49 @@
+KITCHEN AX — human researcher team v1
+Mode: built-in image_gen.imagegen (edit)
+Transparent background: true
+Reference: kitchen-ax-robot-team-v1.png
+Output: kitchen-ax-researcher-team-v1.png
+
+Use case: stylized-concept / character-sheet edit.
+Asset type: transparent human researcher characters for an isometric miniature smart-kitchen product-planning factory.
+
+INPUT IMAGE ROLE: the provided robot team sheet is the EDIT TARGET. Preserve its six-character, three-column by two-row layout, separated full-body poses, coherent team identity, soft 3D miniature rendering, elevated isometric camera, ivory/sage/charcoal/orange palette, and role-related accessories. REPLACE ALL SIX ROBOTS COMPLETELY WITH ADULT HUMAN RESEARCHERS. This is the only major design change. The user's request is: "people characters, with a researcher feeling, rather than robots."
+
+SUBJECT DESIGN:
+Six warm, competent adult Korean human product researchers, a balanced team of three men and three women, with visibly HUMAN faces, natural skin, expressive eyes, noses and mouths, individual black or dark-brown hairstyles, normal human arms and legs. Tastefully stylized miniature 3D game characters with gently simplified anatomy, about four heads tall, friendly but professional. They wear tailored ivory white laboratory coats over muted sage green shirts, charcoal or sage trousers, sensible closed shoes, and tiny orange ID-card/lanyard accents. Long white lab coats are the strongest shared visual cue. Not doctors treating patients; these are appliance/product R&D engineers. No robotic body parts, no helmet heads, no visors, no spacesuits. Subtle human facial differences and varied hairstyles, understated friendly expressions.
+
+SIX ROLES, LEFT TO RIGHT:
+TOP LEFT: male main planner, neat short dark hair, open white lab coat over a sage shirt with a slightly stronger orange lanyard accent; holds a slate planning tablet in his left hand and points with his right hand.
+TOP MIDDLE: female information researcher, chin-length dark bob and slim round glasses; white lab coat, carries a small stack of ivory document folders and a compact handheld scanner.
+TOP RIGHT: male needs organizer, gently wavy dark hair; white lab coat, holds a small board with orange, pale sage, and yellow square note cards.
+BOTTOM LEFT: female product comparison researcher, dark ponytail; white lab coat, holds a slate tablet/blueprint with a simple refrigerator outline and two geometric columns, no letters.
+BOTTOM MIDDLE: male concept developer, slightly tousled dark-brown hair; white lab coat with a small orange pen in breast pocket, holds a small white appliance prototype cube and a pencil-like stylus.
+BOTTOM RIGHT: female quality reviewer, hair in a tidy bun and thin glasses; white lab coat, holds a clipboard with simple check marks and a small magnifier.
+
+RENDER / COMPOSITION:
+Soft upper-left daylight, premium matte fabric and softly modeled skin/hair, restrained shadows on the characters themselves, clean silhouettes readable when reduced to 60–100 pixels tall. Match an ivory, sage and warm-grey architectural tabletop kitchen factory diorama. Same body scale, orthographic camera, three-quarter orientation facing lower right, and foot baseline within every cell. Entire heads, hands, accessories and both feet visible. Generous transparent gutters; characters do not overlap. Exactly six people in the same 3-by-2 arrangement. No environment, no platforms, no floor, no gradients, no halo, no labels, no typography, no logos, no watermark, no cropped limbs. TRUE ALPHA TRANSPARENCY outside character silhouettes, not a checkerboard picture or colored backdrop.
+
+
+
+KITCHEN AX researcher working poses
+Built-in image_gen.imagegen edit; transparent_background=true
+Reference: kitchen-ax-researcher-team-v1.png
+Output asset: public/characters/researcher-work-v1.png (2172 x 724)
+Six columns: main planner, retrieval, needs structure, feature comparison, concept author, reviewer.
+Two rows: work pose A and B. Runtime alpha bounds and feet anchors align the sprite regions.
+
+Edit the input KITCHEN AX HUMAN RESEARCHER team sheet into a two-frame WORKING animation atlas. Keep the same six human faces, hair, white lab coats, sage green shirts, charcoal trousers, orange lanyards, shoes, miniature 3D material style and isometric orthographic viewing direction. This is a matching sprite atlas, not a poster. No robots.
+
+Precisely SIX COLUMNS by TWO ROWS, twelve separate full-body figures, equal cell dimensions. Use a wide landscape canvas approximately 3:1 so every individual remains readable. Every column is one SAME researcher at the same scale and exact foot anchor in both rows. The two rows are frame A and frame B of a restrained working loop; keep heads and torsos almost fixed, move hands and forearms visibly but plausibly. Entire heads, coat hems, hands and both feet inside each cell, generous transparent gutters, no overlapping.
+
+Column 1: main planner, the first male researcher in the input, holding tablet left hand. Row A right hand pointing forward, row B right hand bends down to gesture toward tablet.
+Column 2: information researcher, bob-haired woman with round glasses, files in left arm. Row A handheld scanner raised near files, row B scanner moved close to the file edges as she scans.
+Column 3: needs organizer, wavy-haired man with sticky-note board. Row A free index finger touching orange note, row B free index finger touching yellow note while other hand holds board unchanged.
+Column 4: product comparison researcher, ponytail woman holding refrigerator blueprint tablet. Row A right index touches one column on the tablet, row B touches the next column.
+Column 5: concept author, tousled-haired man with white prototype cube and orange stylus. Row A stylus above cube, row B stylus points toward the cube surface.
+Column 6: quality reviewer, woman with bun and round glasses. Row A magnifier over top checkbox on clipboard, row B magnifier moved down one checkbox.
+
+Frame A and frame B should differ in real arm/hand/tool poses; they are not duplicated images. Precisely aligned consistent bodies, hair and accessories. Visible skin and expressive human faces. The same raised isometric three-quarter view faces lower right, about 30-degree camera elevation. Soft upper-left lighting. No captions, numbers, cell borders, logos, environment, platform, floor, colored background, gradient, vignette, halo, motion blur or shadow outside the silhouette. Output true transparent alpha around all twelve character cutouts.
+
+
+Integration: transparent 2D sprites in the existing Three.js scene. Selection does not activate a researcher. Only activeIds and plannerWorking control work animation. Motion preview is a separate labelled view and does not write execution results. The MP4 is recorded from that preview, not actual CLI execution.
